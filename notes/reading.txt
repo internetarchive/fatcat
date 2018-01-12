@@ -1,0 +1,20 @@
+
+https://en.wikipedia.org/wiki/Anglo-American_Cataloguing_Rules
+https://en.wikipedia.org/wiki/Resource_Description_and_Access
+https://en.wikipedia.org/wiki/International_Standard_Bibliographic_Description
+https://en.wikipedia.org/wiki/BIBFRAME
+https://en.wikipedia.org/wiki/Periodical_literature
+https://en.wikipedia.org/wiki/Functional_Requirements_for_Bibliographic_Records
+
+https://www.loc.gov/cds/downloads/FRBR.PDF
+
+Dublin Core IETF RFC: https://tools.ietf.org/html/rfc5013
+                 old: https://tools.ietf.org/html/rfc2413
+
+http://dublincore.org/documents/dcmi-type-vocabulary
+    Basically just 'Text'
+
+mimetype list: https://www.iana.org/assignments/media-types/media-types.xhtml
+Lanuguages: https://tools.ietf.org/html/rfc4646
+
+https://beta.musicbrainz.org/doc/MusicBrainz_Database/Schema

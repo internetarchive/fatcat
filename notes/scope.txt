@@ -1,0 +1,42 @@
+
+Want the "scholarly web": the graph of works that cite other works. Certainly
+    every work that is cited more than once and every work that both cites and
+    is cited; "leaf nodes" and small islands might not be in scope.
+
+Focusing on written works, with some exceptions. Expect core media (going for
+completeness) to be:
+
+    journal articles
+    books
+    proceedings
+    technical memos
+    reports
+    dissertations
+
+Probably in scope:
+
+    magazine articles
+    published poetry
+    essays
+    government documents
+    conference
+    presentations (slides, video)
+
+Probably not:
+
+    patents
+    court cases and legal documents
+    manuals
+    datasheets
+    courses
+
+Definitely not:
+
+    audio recordings
+    tv show episodes
+    musical scores
+    advertisements
+
+Potential add-on services:
+
+    course syllabi
