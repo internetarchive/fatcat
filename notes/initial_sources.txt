@@ -1,0 +1,11 @@
+
+dblp
+crossref
+arxiv
+opencitations
+CORE
+oaDOI
+medline
+openlibrary
+archive.org paper/url manifest
+semantic scholar

@@ -1,0 +1,36 @@
+
+# "Add Something" Workflow
+
+## Add a Work
+
+Title
+Primary Type
+Primary Creators/Authors
+Description (not an abstract)
+Primary/Original Language
+Subject/Categorization/Tags
+Is a Stub (unpublished/unreleased)
+
+## Release Information
+
+Contributors
+Date
+Container / Part-Of
+Publisher
+Identifiers
+Language
+Type / Media
+Issue / Volume / Pages / Chapter
+
+## Anything Else?
+
+Known file / copy / url
+Citations (outbound)
+
+
+# Other Workflows
+
+Merge entities (works, releases, etc)
+Move release between works
+Split entities (works, authors, etc), including linked stuff
+
