@@ -8,5 +8,11 @@
                                         ... catalog all the things!
 
 
-
 This is just a concept for now; see [rfc](./rfc).
+
+
+## Python Prototype
+
+Use `pipenv` (which you can install with `pip`):
+
+    pipenv shell
