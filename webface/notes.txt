@@ -1,0 +1,8 @@
+
+tachyons is nice for simple css-only stuff, but let's use "Semantic UI" because
+it has a bunch of javascript form stuff.
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.13/semantic.min.css">
+    <script src="https://cdn.jsdelivr.net/semantic-ui/2.2.13/semantic.min.js"></script>
+
+

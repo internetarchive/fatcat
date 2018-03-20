@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width">
+
+  <title> </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.2.13/dist/semantic.min.css">
+  <script
+    src="https://code.jquery.com/jquery-3.1.1.min.js"
+    integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.2.13/dist/semantic.min.js"></script>
+
+</head>
+<body>
+
+<div class="ui fixed inverted menu">
+  <div class="ui container">
+    <a href="#" class="header item">
+      <!-- <img class="logo" src="assets/images/logo.png"> -->
+      Project Name
+    </a>
+    <a href="#" class="item">Home</a>
+    <div class="ui simple dropdown item">
+      Dropdown <i class="dropdown icon"></i>
+      <div class="menu">
+        <a class="item" href="#">Link Item</a>
+        <a class="item" href="#">Link Item</a>
+        <div class="divider"></div>
+        <div class="header">Header Item</div>
+        <div class="item">
+          <i class="dropdown icon"></i>
+          Sub Menu
+          <div class="menu">
+            <a class="item" href="#">Link Item</a>
+            <a class="item" href="#">Link Item</a>
+          </div>
+        </div>
+        <a class="item" href="#">Link Item</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ui main text container">
+
+<div class="ui segment">
+<h1 class="ui header">Adding a New Thing</h1>
+
+<form class="ui form" id="add_work_form">
+
+  <h3 class="ui dividing header">The Basics</h3>
+
+  <div class="ui huge field required">
+    <label>Title</label>
+    <input name="work_title" type="text" placeholder="Title of Work (in English)">
+  </div>
+
+  <div class="ui field required">
+    <label>Type of Work</label>
+    <select class="ui dropdown" id="work_type">
+      <option value="">Primary Type</option>
+      <option value="journal-article">Journal Article</option>
+      <option value="book">Book</option>
+      <option value="book-chapter">Book Chapter</option>
+      <option value="dataset">Dataset</option>
+      <option value="dissertation">Thesis or Dissertation</option>
+      <option value="monograph">Monograph</option>
+      <option value="proceedings-article">Conference Proceeding</option>
+      <option value="report">Report</option>
+      <option value="other">Other</option>
+    </select>
+  </div>
+
+  <!-- Primary Creators/Authors -->
+  <div class="ui field search" id="work_creators">
+    <label>Primary Creator(s)</label>
+    <div class="ui icon input">
+      <input class="prompt" type="text" placeholder="Search...">
+      <i class="search icon"></i>
+    </div>
+    <div class="results"></div>
+  </div>
+
+  <!-- Description (not an abstract) -->
+  <div class="ui field">
+    <label>Description</label>
+    <div class="field">
+      <label>Not an abstract...</label>
+      <textarea rows="2"></textarea>
+    </div>
+  </div>
+
+  <!-- Primary/Original Language -->
+  <div class="field">
+    <label>Primary Language</label>
+    <select class="ui search select dropdown" id="language-select">
+      <option value="">Select if Appropriate</option>
+      <option value="en">English</option>
+      <option value="es">Spanish</option>
+    </select>
+  </div>
+
+  <!-- Subject / Categorization / Tags -->
+  <div class="field">
+    <label>Subject</label>
+    <select multiple="" class="ui dropdown" id="subjects">
+      <option value="">Select Subject/Tags</option>
+      <option value="AF">Afghanistan</option>
+      <option value="AX">Åland Islands</option>
+      <option value="AL">Albania</option>
+      <option value="DZ">Algeria</option>
+      <option value="AS">American Samoa</option>
+      <option value="AD">Andorra</option>
+      <option value="AO">Angola</option>
+    </select>
+  </div>
+
+
+  <h3 class="ui dividing header">Primary Release / Edition</h3>
+
+  <!-- Contributors (and how) -->
+  <div class="ui field search" id="release_creators">
+    <label>Primary Creator(s)</label>
+    <div class="ui icon input">
+      <input class="prompt" type="text" placeholder="Search...">
+      <i class="search icon"></i>
+    </div>
+    <div class="results"></div>
+  </div>
+
+  <!-- Date -->
+  <!-- Container / Part-Of -->
+  <!-- Publisher -->
+  <!-- Identifier -->
+  <!-- Language -->
+  <!-- Type / Media -->
+  <!-- Issue / Volume / Pages / Chapter -->
+
+  <!-- Anything Else? -->
+  <h3 class="ui dividing header">Anything Else?</h3>
+
+  <!-- File / Copy / URL -->
+  <!-- Citations -->
+
+<div class="ui submit button">Create Work</div>
+</form>
+
+</div>
+</div>
+
+<!-- Form validation code -->
+<script>
+$(document).ready(function() {
+
+  $('#add_work_form')
+    .form({
+        fields: {
+        name: {
+            identifier: 'name',
+            rules: [
+            {
+                type   : 'empty',
+                prompt : 'Please enter your name'
+            }
+            ]
+        },
+        skills: {
+            identifier: 'skills',
+            rules: [
+            {
+                type   : 'minCount[2]',
+                prompt : 'Please select at least two skills'
+            }
+            ]
+        },
+        gender: {
+            identifier: 'gender',
+            rules: [
+            {
+                type   : 'empty',
+                prompt : 'Please select a gender'
+            }
+            ]
+        },
+        username: {
+            identifier: 'username',
+            rules: [
+            {
+                type   : 'empty',
+                prompt : 'Please enter a username'
+            }
+            ]
+        },
+        password: {
+            identifier: 'password',
+            rules: [
+            {
+                type   : 'empty',
+                prompt : 'Please enter a password'
+            },
+            {
+                type   : 'minLength[6]',
+                prompt : 'Your password must be at least {ruleValue} characters'
+            }
+            ]
+        },
+        terms: {
+            identifier: 'terms',
+            rules: [
+            {
+                type   : 'checked',
+                prompt : 'You must agree to the terms and conditions'
+            }
+            ]
+        }
+        }
+    })
+    ;
+
+  var example_authors = [
+    { title: 'Andorra' },
+    { title: 'United Arab Emirates' },
+    { title: 'Afghanistan' },
+    { title: 'Antigua' },
+    { title: 'Anguilla' },
+    { title: 'Albania' },
+    { title: 'Armenia' },
+    { title: 'Netherlands Antilles' },
+    { title: 'Angola' },
+    { title: 'Argentina' },
+    { title: 'American Samoa' },
+    { title: 'Austria' },
+    { title: 'Australia' },
+    { title: 'Aruba' },
+  ];
+
+  $('#work_creators')
+    .search({
+        source: example_authors
+    })
+  ;
+
+  $('#release_creators')
+    .search({
+        source: example_authors
+    })
+  ;
+
+  $('#work_type').dropdown();
+  $('#subjects').dropdown();
+  $('#language-select').dropdown();
+
+  console.log("Page loaded");
+
+});
+</script>
+
+</body>
+</html>
