@@ -254,12 +254,15 @@ are:
         name
         open-access policy
         peer-review policy
+        <has> aliases, acronyms
+        <about> subject/category
         <has> identifier
         <published in> container
         <published-by> publisher
 
     publisher
         name
+        <has> aliases, acronyms
         <has> identifier
 
 ## Controlled Vocabularies
@@ -271,8 +274,10 @@ have more controlled editing workflow... perhaps versioned in the codebase:
 - identifier namespaces (DOI, ISBN, ISSN, ORCID, etc)
 - subject categorization
 - license and open access status
-- work types
+- work "types" (article vs. book chapter vs. proceeding, etc)
 - contributor types (author, translator, illustrator, etc)
+- human languages
+- file mimetypes
 
 ## Unresolved Questions
 
@@ -309,12 +314,19 @@ I see a tension between focus and scope creep. If a central database like
 fatcat doesn't support enough fields and metadata, then it will not be possible
 to completely import other corpuses, and this becomes "yet another" partial
 bibliographic database. On the other hand, accepting arbitrary data leads to
-other problems:
+other problems: sparseness increases (we have more "partial" data), potential
+for redundancy is high, humans will start editing content that might be
+bulk-replaced, etc.
+
+There might be a need to support "stub" references between entities. Eg, when
+adding citations from PDF extraction, the cited works are likely to be
+ambiguous. Could create "stub" works to be merged/resolved later, or could
+leave the citation hanging. Same with authors, containers (journals), etc.
 
 ## References and Previous Work
 
 The closest overall analog of fatcat is [MusicBrainz][mb], a collaboratively
-edited music database. [Open Library][] is a very similar existing service,
+edited music database. [Open Library][ol] is a very similar existing service,
 which exclusively contains book metadata.
 
 [Wikidata][wd] seems to be the most successful and actively edited/developed

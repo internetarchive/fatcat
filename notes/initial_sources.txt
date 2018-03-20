@@ -1,11 +1,19 @@
 
-dblp
-crossref
-arxiv
-opencitations
-CORE
-oaDOI
-medline
-openlibrary
-archive.org paper/url manifest
-semantic scholar
+Probably start with:
+
+    crossref (including citations)
+    arxiv
+    medline
+
+then merge in:
+
+    dblp
+    CORE
+    oaDOI
+    archive.org paper/url manifest
+    semantic scholar
+
+and later:
+
+    opencitations
+    openlibrary
