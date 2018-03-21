@@ -13,6 +13,7 @@ name = "pypi"
 
 flask = "*"
 sqlalchemy = "*"
+requests = "*"
 
 
 [requires]
