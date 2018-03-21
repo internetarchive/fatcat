@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block body %}
+
+<h1>{{ work.title }}</h1>
+
+<p>Work type: {{ work.type }}
+<p><a href="/work/{{ work.id }}/history">History</a>
+<p>Contributors:
+{% for c in work.contributors %} {{ c.name }}; {% endfor %}
+
+{% if primary %}
+<h2>Primary Release/Edition</h2>
+<p>Title: {{ primary.title }}
+<p>Date: {{ primary.date }}
+
+{% if primary.container %}
+<p>Container: <a href="/container/{{ primary.container.id }}">{{ primary.container.title }}</a>
+{% endif %}
+
+{% if primary.doi %}
+<p>DOI: <a href="https://dx.doi.org/{{ primary.doi }}">{{ primary.doi }}</a>
+{% endif %}
+
+{% else %}
+<p>No primary release
+{% endif %}
+
+{% if releases %}
+<ul>
+{% for r in releases %}
+  <ul><a href="/release/{{ r.id }}">{{ r.title }}</a> ({{ y.date }} - {{ y.release_type }})
+{% endfor %}
+</ul>
+{% else %}
+{% endif %}
+
+{% endblock %}

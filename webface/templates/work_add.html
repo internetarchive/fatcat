@@ -1,51 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width">
-
-  <title> </title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.2.13/dist/semantic.min.css">
-  <script
-    src="https://code.jquery.com/jquery-3.1.1.min.js"
-    integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
-    crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.2.13/dist/semantic.min.js"></script>
-
-</head>
-<body>
-
-<div class="ui fixed inverted menu">
-  <div class="ui container">
-    <a href="#" class="header item">
-      <!-- <img class="logo" src="assets/images/logo.png"> -->
-      Project Name
-    </a>
-    <a href="#" class="item">Home</a>
-    <div class="ui simple dropdown item">
-      Dropdown <i class="dropdown icon"></i>
-      <div class="menu">
-        <a class="item" href="#">Link Item</a>
-        <a class="item" href="#">Link Item</a>
-        <div class="divider"></div>
-        <div class="header">Header Item</div>
-        <div class="item">
-          <i class="dropdown icon"></i>
-          Sub Menu
-          <div class="menu">
-            <a class="item" href="#">Link Item</a>
-            <a class="item" href="#">Link Item</a>
-          </div>
-        </div>
-        <a class="item" href="#">Link Item</a>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="ui main text container">
-
+{% extends "base.html" %}
+{% block body %}
 <div class="ui segment">
 <h1 class="ui header">Adding a New Thing</h1>
 
@@ -149,10 +103,11 @@
 </form>
 
 </div>
-</div>
+{% endblock %}
 
-<!-- Form validation code -->
+{% block postscript %}
 <script>
+<!-- Form validation code -->
 $(document).ready(function() {
 
   $('#add_work_form')
@@ -257,6 +212,4 @@ $(document).ready(function() {
 
 });
 </script>
-
-</body>
-</html>
+{% endblock %}

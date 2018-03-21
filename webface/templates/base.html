@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" style="position: relative; min-height: 100%; height: auto;">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width">
+
+  <title>{% block title %}fatcat!{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.2.13/dist/semantic.min.css">
+  <script
+    src="https://code.jquery.com/jquery-3.1.1.min.js"
+    integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.2.13/dist/semantic.min.js"></script>
+
+</head>
+<body style="margin-bottom: 100px; height: auto;">
+
+<header class="ui fixed inverted menu">
+  <div class="ui container">
+    <a href="/" class="header item">
+      <!-- <img class="logo" src="assets/images/logo.png"> -->
+      fatcat!
+    </a>
+    <a href="/about" class="item">About</a>
+    <a href="#" class="item">Guide</a>
+    <div class="right menu">
+      <div class="item">
+        <div class="ui transparent inverted icon input">
+          <i class="search icon"></i>
+          <input type="text" placeholder="Search...">
+        </div>
+      </div>
+      <div class="ui simple dropdown item">
+      acidburn <i class="dropdown icon"></i>
+        <div class="menu">
+          <a class="item" href="#">Open Submissions</a>
+          <a class="item" href="#">Edit History</a>
+          <div class="divider"></div>
+          <a class="item" href="/account">Account</a>
+          <a class="item" href="/logout">Logout</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</header>
+
+<main class="ui main text container" style="margin-top: 4em; margin-bottom: 2em;">
+{% block body %}Nothing to see here.{% endblock %}
+</main>
+
+
+<footer class="ui inverted vertical footer segment" style="margin-top: 2em; padding-top: 2em; padding-bottom:2em; position: absolute; bottom: 0px; width: 100%;">
+  <div class="ui center aligned container">
+    <div class="ui horizontal inverted small divided link list">
+      <span class="item">fatcat!</span>
+      <a class="item" href="/about">About</a>
+      <a class="item" href="/sources">Sources</a>
+      <a class="item" href="#">Status</a>
+      <a class="item" href="#">Datasets</a>
+      <a class="item" href="https://git.bnewbold.net/fatcat/">Source Code</a>
+    </div>
+  </div>
+</footer>
+
+{% block postscript %}{% endblock %}
+
+</body>
+</html>
