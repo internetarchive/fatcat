@@ -244,7 +244,7 @@ are:
         <found at> URLs
         <held-at> institution <with> accession
 
-    creator
+    contributor
         name
         <has> aliases
         <has> affiliation <for> date span
@@ -292,9 +292,9 @@ Should `identifier` and `citation` be their own entities, referencing other
 entities by UUID instead of by revision? This could save a ton of database
 space and chunder.
 
-Should creator/author contact information be retained? It could be very useful
-for disambiguation, but we don't want to build a huge database for spammers or
-"innovative" start-up marketing.
+Should contributor/author contact information be retained? It could be very
+useful for disambiguation, but we don't want to build a huge database for
+spammers or "innovative" start-up marketing.
 
 Would general purpose SQL databases like Postgres or MySQL scale well enough
 told hold several tables with billions of entries? Right from the start there

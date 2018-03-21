@@ -13,6 +13,7 @@ This is just a concept for now; see [rfc](./rfc).
 
 ## Python Prototype
 
-Use `pipenv` (which you can install with `pip`):
+Use `pipenv` (which you can install with `pip`).
 
     pipenv shell
+    python3 fatcat/api.py
