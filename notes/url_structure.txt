@@ -1,0 +1,38 @@
+
+## fatcat.org
+
+Workflow requires sessions to hold, eg, current edit group.
+
+/work/create
+/work/:id           view
+/work/:id/history   chain of revisions
+/work/:id/edit      modify work (edit group)
+/work/:id/delete    delete (edit group)
+/work/:id/merge     merge (edit group)
+/work/:id/redirect  point to another revision (edit group)
+/work/rev/:rev      view
+/work/rev/:rev/edit modify; only before submission
+
+/edit/:id
+/editgroup/:id
+/editgroup/:id/submit
+
+/signup
+/login
+/account
+/cataloger/:id           view... edits?
+
+/changelog
+/status
+/health
+
+/search
+/lookup             by identifier
+/match              different from search (discovery)?
+
+
+## api.fatcat.org
+
+/                   some sort of about page, html?
+/v0/...
+/graphql/v0/...     ?
