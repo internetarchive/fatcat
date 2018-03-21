@@ -34,6 +34,7 @@ work_revision = Table('work_revision', metadata,
     Column('state', Enum(IdState)),
     Column('redirect_id', ForeignKey('work_id.id'), nullable=True),
     Column('edit_id', ForeignKey('edit.id')),
+    Column('extra_json', ForeignKey('extra_json.sha1'), nullable=True),
 
     Column('title', String),
     Column('work_type', String),
@@ -51,6 +52,7 @@ release_revision = Table('release_revision', metadata,
     Column('state', Enum(IdState)),
     Column('redirect_id', ForeignKey('release_id.id'), nullable=True),
     Column('edit_id', ForeignKey('edit.id')),
+    Column('extra_json', ForeignKey('extra_json.sha1'), nullable=True),
 
     Column('work', ForeignKey('work_id.id')),
     Column('container', ForeignKey('container_id.id')),
@@ -72,6 +74,7 @@ creator_revision = Table('creator_revision', metadata,
     Column('state', Enum(IdState)),
     Column('redirect_id', ForeignKey('creator_id.id'), nullable=True),
     Column('edit_id', ForeignKey('edit.id')),
+    Column('extra_json', ForeignKey('extra_json.sha1'), nullable=True),
 
     Column('name', String),
     Column('sortname', String),
@@ -82,6 +85,7 @@ work_contrib = Table('work_contrib', metadata,
     Column('id', Integer, primary_key=True, autoincrement=True),
     Column('work_rev', ForeignKey('work_revision.id'), nullable=False),
     Column('creator_id', ForeignKey('creator_id.id'), nullable=False),
+    Column('stub', String, nullable=False),
     )
 
 release_contrib = Table('release_contrib', metadata,
@@ -101,6 +105,7 @@ container_revision = Table('container_revision', metadata,
     Column('state', Enum(IdState)),
     Column('redirect_id', ForeignKey('container_id.id'), nullable=True),
     Column('edit_id', ForeignKey('edit.id')),
+    Column('extra_json', ForeignKey('extra_json.sha1'), nullable=True),
 
     Column('name', String),
     Column('container', ForeignKey('container_id.id')),
@@ -113,10 +118,13 @@ edit = Table('edit', metadata,
     Column('id', Integer, primary_key=True, autoincrement=True),
     Column('edit_group', ForeignKey('edit_group.id')),
     Column('editor', ForeignKey('editor.id')),
+    Column('description', String),
     )
 
 edit_group = Table('edit_group', metadata,
     Column('id', Integer, primary_key=True, autoincrement=True),
+    Column('editor', ForeignKey('editor.id')),
+    Column('description', String),
     )
 
 editor = Table('editor', metadata,
@@ -128,6 +136,11 @@ changelog = Table('changelog', metadata,
     Column('id', Integer, primary_key=True, autoincrement=True),
     Column('edit_id', ForeignKey('edit.id')),
     Column('timestamp', Integer),
+    )
+
+extra_json = Table('extra_json', metadata,
+    Column('sha1', String, primary_key=True, autoincrement=True),
+    Column('json', String),
     )
 
 
