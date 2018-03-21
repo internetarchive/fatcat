@@ -1,23 +1,25 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "24c6cfcf0485df83f3066606e51aa72a2a4978a7e67f4ae61e2aa59ad78ed982"
+            "sha256": "fe78a27e3e59fb6689a6fe276f556286edf0daf058cd98af7f72b4088660809b"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
-            "implementation_version": "0",
+            "implementation_version": "3.5.3",
             "os_name": "posix",
             "platform_machine": "x86_64",
             "platform_python_implementation": "CPython",
-            "platform_release": "4.9.0-4-amd64",
+            "platform_release": "4.9.0-6-amd64",
             "platform_system": "Linux",
-            "platform_version": "#1 SMP Debian 4.9.51-1 (2017-09-28)",
-            "python_full_version": "2.7.13",
-            "python_version": "2.7",
-            "sys_platform": "linux2"
+            "platform_version": "#1 SMP Debian 4.9.82-1+deb9u2 (2018-02-21)",
+            "python_full_version": "3.5.3",
+            "python_version": "3.5",
+            "sys_platform": "linux"
         },
         "pipfile-spec": 6,
-        "requires": {},
+        "requires": {
+            "python_version": "3.5"
+        },
         "sources": [
             {
                 "name": "pypi",
@@ -62,9 +64,9 @@
         },
         "sqlalchemy": {
             "hashes": [
-                "sha256:9ede7070d6fd18f28058be88296ed67893e2637465516d6a596cd9afea97b154"
+                "sha256:249000654107a420a40200f1e0b555a79dfd4eff235b2ff60bc77714bd045f2d"
             ],
-            "version": "==1.2.1"
+            "version": "==1.2.5"
         },
         "werkzeug": {
             "hashes": [
