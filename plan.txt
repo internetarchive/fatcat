@@ -1,6 +1,9 @@
 
+- backend test setup: generate temporary database, insert rows (?)
+
 backend/api:
 - first-rev schema
+- json_blob table (by sha1)
 - create work, release, etc
 - get by ID
 
@@ -22,3 +25,14 @@ webface:
     files
     people
     containers
+
+#### Open Questions
+
+How to create multiple cross-referenced entities at the same time? Eg, work and
+release, with release referencing work. work_id isn't allocated/indicated until
+merge-time. As a work-around, could have a temporary work_rev_id column which
+gets overridden during merge.
+
+Mechanism for skipping edit group stage. Propose always having edit rows
+generated, containing appropriate metadata, but certain bots can skip creation
+of edit group.

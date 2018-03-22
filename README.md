@@ -17,3 +17,7 @@ Use `pipenv` (which you can install with `pip`).
 
     pipenv shell
     python3 fatcat/api.py
+
+Run tests:
+
+    pipenv run nosetests3 backend/ webface/
