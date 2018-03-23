@@ -20,4 +20,4 @@ Use `pipenv` (which you can install with `pip`).
 
 Run tests:
 
-    pipenv run nosetests3 backend/ webface/
+    pipenv run nosetests3 fatcat

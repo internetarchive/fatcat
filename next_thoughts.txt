@@ -1,0 +1,19 @@
+Should probably just UUID all the (public) ids.
+
+Instead of having a separate id pointer table, could have an extra "mutable"
+public ID column (unique, indexed) on entity rows. Backend would ensure the
+right thing happens. Changelog tables (or special redirect/deletion tables)
+would record changes and be "fallen through" to.
+
+Instead of having merge redirects, could just point all identifiers to the same
+revision (and update them all in the future). Don't need to recurse! Need to
+keep this forever though, could scale badly if "aggregations" get merged.
+
+Redirections of redirections should probably simply be disallowed.
+
+"Deletion" is really just pointing to a special or null entity.
+
+Trade-off: easy querying for common case (wanting "active" rows) vs. robust
+handling of redirects (likely to be pretty common). Also, having UUID handling
+across more than one table.
+

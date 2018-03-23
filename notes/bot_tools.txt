@@ -1,0 +1,17 @@
+
+Could be helpful for writing bots for import:
+
+metafacture: large/popular java framework for pipelines and munging library
+metadata.
+
+    https://github.com/metafacture/metafacture-core/wiki
+
+catmandu: large/popular set of perl libraries for munging bibliographic
+metadata, including a DSL ("Fix"). Can also push/pull to backends.
+
+miku/siskin: luigi and higher-level tool for running regular tasks.
+
+    https://github.com/miku/span
+
+miku/span: golang lower-level tools for parsing and normalizing specific
+formats (including KBART, DOAJ).

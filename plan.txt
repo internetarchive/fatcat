@@ -1,4 +1,7 @@
 
+Avoiding ORM and splitting into two apps seems to be like making water flow up
+hill. Going to just make this a generic flask-sqlalchemy thing for now.
+
 - backend test setup: generate temporary database, insert rows (?)
 
 backend/api:

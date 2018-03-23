@@ -9,11 +9,18 @@ then merge in:
 
     dblp
     CORE
-    oaDOI
+    MSAG dump
+    VIAF
     archive.org paper/url manifest
     semantic scholar
+    oaDOI
 
 and later:
 
+    wikidata
     opencitations
     openlibrary
+
+national libraries:
+
+    http://www.dnb.de/EN/Service/DigitaleDienste/LinkedData/linkeddata_node.html
