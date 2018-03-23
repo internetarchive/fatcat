@@ -1,7 +1,8 @@
 
 import os
 import json
-import backend
+import fatcat
+import fatcat.sql
 import unittest
 import tempfile
 from nose.tools import *
@@ -22,12 +23,13 @@ def check_entity_fields(e):
 
 ## API Tests ################################################################
 
-class BackendTestCase(unittest.TestCase):
+class FatcatTestCase(unittest.TestCase):
 
     def setUp(self):
-        backend.app.config['DATABASE_URI'] = 'sqlite://:memory:'
-        backend.app.testing = True
-        self.app = backend.app.test_client()
+        fatcat.app.config['DATABASE_URI'] = 'sqlite://:memory:'
+        fatcat.app.testing = True
+        self.app = fatcat.app.test_client()
+        fatcat.db.create_all()
 
     def test_health(self):
         rv = self.app.get('/health')
@@ -51,3 +53,7 @@ class BackendTestCase(unittest.TestCase):
         check_entity_fields(obj)
         assert obj['title']
         assert_equal(obj['work_type'], "journal-article")
+
+    def test_something(self):
+
+        fatcat.sql.populate_db()

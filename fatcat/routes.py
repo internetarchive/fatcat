@@ -1,20 +1,11 @@
-#!/usr/bin/env python3
 
 import os
-import argparse
-import requests
 from flask import Flask, render_template, send_from_directory, request, \
     url_for, abort, g, redirect, jsonify
-
-app = Flask(__name__)
-app.config.from_object(__name__)
+from fatcat import app, db
 
 
 ### Views ###################################################################
-
-@app.route('/health', methods=['GET'])
-def health():
-    return jsonify({'ok': True})
 
 @app.route('/work/create', methods=['GET'])
 def work_create():
@@ -61,27 +52,6 @@ def robots():
                                'robots.txt',
                                mimetype='text/plain')
 
-
-### Entry Point #############################################################
-
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--debug',
-        action='store_true',
-        help="enable debugging interface")
-    parser.add_argument('--host',
-        default="127.0.0.1",
-        help="listen on this host/IP")
-    parser.add_argument('--port',
-        type=int,
-        default=5050,
-        help="listen on this port")
-    parser.add_argument('--backend-api',
-        default="localhost:6060",
-        help="backend API to connect to")
-    args = parser.parse_args()
-
-    app.run(debug=args.debug, host=args.host, port=args.port)
-
-if __name__ == '__main__':
-    main()
+@app.route('/health', methods=['GET'])
+def health():
+    return jsonify({'ok': True})

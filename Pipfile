@@ -11,9 +11,10 @@ name = "pypi"
 
 [packages]
 
-flask = "*"
-sqlalchemy = "*"
+Flask = "*"
+SQLAlchemy = "*"
 requests = "*"
+Flask-SQLAlchemy = "*"
 
 
 [requires]
