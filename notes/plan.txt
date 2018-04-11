@@ -1,10 +1,41 @@
 
-sqlalchemy schema
-records (python library)
-python classes
-basic tests
-flask http api
-more tests
-flask webface
-dump tool
+Avoiding ORM and splitting into two apps seems to be like making water flow up
+hill. Going to just make this a generic flask-sqlalchemy thing for now.
 
+- backend test setup: generate temporary database, insert rows (?)
+
+backend/api:
+- first-rev schema
+- json_blob table (by sha1)
+- create work, release, etc
+- get by ID
+
+tooling:
+- query tool: by fc id, doi/issn/etc
+
+importers:
+- crossref
+- pubmed
+- dblp
+- "norwegian" journal list
+- scihub hash list
+- author list?
+
+webface:
+- creators and editors for:
+    works
+    releases
+    files
+    people
+    containers
+
+#### Open Questions
+
+How to create multiple cross-referenced entities at the same time? Eg, work and
+release, with release referencing work. work_id isn't allocated/indicated until
+merge-time. As a work-around, could have a temporary work_rev_id column which
+gets overridden during merge.
+
+Mechanism for skipping edit group stage. Propose always having edit rows
+generated, containing appropriate metadata, but certain bots can skip creation
+of edit group.
