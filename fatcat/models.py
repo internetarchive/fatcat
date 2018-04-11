@@ -2,6 +2,14 @@
 import enum
 from fatcat import db
 
+"""
+states for identifiers:
+- pre-live: points to a rev (during edit/accept period)
+- live: points to a rev
+- redirect: live, points to upstream rev, also points to redirect id
+    => if live and redirect non-null, all other fields copied from redirect target
+- deleted: live, but doesn't point to a rev
+"""
 
 # TODO: EntityMixin, EntityIdMixin
 
@@ -25,6 +33,7 @@ class WorkId(db.Model):
     """
     __tablename__ = 'work_id'
     id = db.Column(db.Integer, primary_key=True, nullable=False)
+    live = db.Column(db.Boolean, nullable=False, default=False)
     revision_id = db.Column(db.ForeignKey('work_revision.id'), nullable=True)
     redirect_id = db.Column(db.ForeignKey('work_id.id'), nullable=True)
 
@@ -64,7 +73,7 @@ class ReleaseRevision(db.Model):
     __tablename__ = 'release_revision'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     previous = db.Column(db.ForeignKey('release_revision.id'), nullable=True)
-    state = db.Column(db.String)              # TODO: enum
+    state = db.Column(db.String)            # TODO: enum
     redirect_id = db.Column(db.ForeignKey('release_id.id'), nullable=True)
     edit_id = db.Column(db.ForeignKey('edit.id'))
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)

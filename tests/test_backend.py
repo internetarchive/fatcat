@@ -14,9 +14,9 @@ import tempfile
 def check_entity_fields(e):
     for key in ('id', 'rev', 'previous', 'state', 'redirect_id', 'edit_id',
             'extra_json'):
-        assert_in(key, e)
+        assert key in e
     for key in ('id', 'rev'):
-        assert_is_not_none(e[key])
+        assert e[key] is not None
 
 ## API Tests ################################################################
 
@@ -41,17 +41,17 @@ class FatcatTestCase(unittest.TestCase):
 
         # Missing Id (TODO)
         #rv = self.app.get('/v0/work/rzga5b9cd7efgh04iljk')
-        #assert rv.status is 404
+        #assert rv.status == 404
 
-        return pytest.skip("need to put first")
+        # Valid Id (TODO)
+        #rv = self.app.get('/v0/work/r3zga5b9cd7ef8gh084714iljk')
+        #assert rv.status_code == 200
 
-        # Valid Id
-        rv = self.app.get('/v0/work/r3zga5b9cd7ef8gh084714iljk')
-        assert rv.status_code == 200
+        rv = self.app.get('/v0/work/random')
         obj = json.loads(rv.data.decode('utf-8'))
         check_entity_fields(obj)
         assert obj['title']
-        assert_equal(obj['work_type'], "journal-article")
+        assert obj['work_type'] == "journal-article"
 
     def test_something(self):
 

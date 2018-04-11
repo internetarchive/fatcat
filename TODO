@@ -1,7 +1,5 @@
 
-update public pointer tables:
-- 'live' boolean (default false)
-- redirect column (to self)
+helpers... ORM?
 
 later:
 - public IDs are UUID (sqlite hack?)
