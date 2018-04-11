@@ -1,14 +1,11 @@
 
 import os
 import json
+import pytest
 import fatcat
 import fatcat.sql
 import unittest
 import tempfile
-from nose.tools import *
-
-# TODO: replace all these "assert" with unit test version (which displays left
-# and right on failure)
 
 # TODO: http://alextechrants.blogspot.com/2013/08/unit-testing-sqlalchemy-apps.html
 

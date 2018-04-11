@@ -1,22 +1,22 @@
 [[source]]
-
 url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
 
-
 [dev-packages]
-
-
+pytest = "*"
+pytest-pythonpath = "*"
+ipython = "*"
+responses = "*"
+pytest-cov = "*"
+pylint = "*"
 
 [packages]
-
 Flask = "*"
 SQLAlchemy = "*"
 requests = "*"
 Flask-SQLAlchemy = "*"
-
+raven = "*"
 
 [requires]
-
 python_version = "3.5"

@@ -1,5 +1,7 @@
 *.sqlite
 *.sqlite3
+*,cover
+htmlcov/
 
 *.o
 *.a
@@ -16,6 +18,10 @@
 [Tt]humbs.db
 *.DS_Store
 *.log
+
+!.coveragerc
+!.gitlab-ci.yml
+!.pylintrc
 
 # Don't ignore this file itself
 !.gitignore
