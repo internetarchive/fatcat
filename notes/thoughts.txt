@@ -1,0 +1,32 @@
+
+Instead of having a separate id pointer table, could have an extra "mutable"
+public ID column (unique, indexed) on entity rows. Backend would ensure the
+right thing happens. Changelog tables (or special redirect/deletion tables)
+would record changes and be "fallen through" to.
+
+Instead of having merge redirects, could just point all identifiers to the same
+revision (and update them all in the future). Don't need to recurse! Need to
+keep this forever though, could scale badly if "aggregations" get merged.
+
+Redirections of redirections should probably simply be disallowed.
+
+"Deletion" is really just pointing to a special or null entity.
+
+Trade-off: easy querying for common case (wanting "active" rows) vs. robust
+handling of redirects (likely to be pretty common). Also, having UUID handling
+across more than one table.
+
+## Scaling database
+
+Two scaling issues: size of database due to edits (likely billions of rows) and 
+desire to do complex queries/reports ("analytics"). The later is probably not a
+concern, and could be handled by dumping and working on a cluster (or secondary
+views, etc). So just a distraction? Simpler to have all rolled up.
+
+Cockroach is postgres-like; might be able to use that for HA and scaling?
+Bottlenecks are probably complex joins (mitigated by "interleave"?) and bulk
+import performance (one-time?).
+
+Using elastic for most (eg, non-logged-in) views could keep things fast.
+
+Cockroach seems more resourced/polished than TiDB?
