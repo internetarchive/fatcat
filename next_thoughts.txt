@@ -1,3 +1,4 @@
+
 Should probably just UUID all the (public) ids.
 
 Instead of having a separate id pointer table, could have an extra "mutable"
@@ -17,3 +18,17 @@ Trade-off: easy querying for common case (wanting "active" rows) vs. robust
 handling of redirects (likely to be pretty common). Also, having UUID handling
 across more than one table.
 
+## Scaling database
+
+Two scaling issues: size of database due to edits (likely billions of rows) and 
+desire to do complex queries/reports ("analytics"). The later is probably not a
+concern, and could be handled by dumping and working on a cluster (or secondary
+views, etc). So just a distraction? Simpler to have all rolled up.
+
+Cockroach is postgres-like; might be able to use that for HA and scaling?
+Bottlenecks are probably complex joins (mitigated by "interleave"?) and bulk
+import performance (one-time?).
+
+Using elastic for most (eg, non-logged-in) views could keep things fast.
+
+Cockroach seems more resourced/polished than TiDB?

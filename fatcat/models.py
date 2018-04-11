@@ -16,16 +16,34 @@ release_contrib = db.Table("release_contrib",
     db.Column("stub", db.String, nullable=True))
 
 class WorkId(db.Model):
+    """
+    If revision_id is null, this was deleted.
+    If redirect_id is not null, this has been merged with the given id. In this
+        case revision_id is a "cached" copy of the redirect's revision_id, as
+        an optimization. If the merged work is "deleted", revision_id can be
+        null and redirect_id not-null.
+    """
     __tablename__ = 'work_id'
-    id = db.Column(db.Integer, primary_key=True)
-    revision_id = db.Column(db.ForeignKey('work_revision.id'))
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    revision_id = db.Column(db.ForeignKey('work_revision.id'), nullable=True)
+    redirect_id = db.Column(db.ForeignKey('work_id.id'), nullable=True)
+
+class WorkLog(db.Model):
+    __tablename__ = 'work_log'
+    # ID is a monotonic int here; important for ordering!
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    work_id = db.Column(db.ForeignKey('work_id.id'), nullable=False)
+    old_revision_id = db.Column(db.ForeignKey('work_revision.id'), nullable=True)
+    old_redirect_id = db.Column(db.ForeignKey('work_id.id'), nullable=True)
+    new_revision_id = db.Column(db.ForeignKey('work_revision.id'), nullable=True)
+    new_redirect_id = db.Column(db.ForeignKey('work_id.id'), nullable=True)
+    # TODO: is this right?
+    edit_id = db.Column(db.ForeignKey('edit.id'))
 
 class WorkRevision(db.Model):
     __tablename__ = 'work_revision'
     id = db.Column(db.Integer, primary_key=True)
     previous = db.Column(db.ForeignKey('work_revision.id'), nullable=True)
-    state = db.Column(db.String)
-    redirect_id = db.Column(db.ForeignKey('work_id.id'), nullable=True)
     edit_id = db.Column(db.ForeignKey('edit.id'))
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
     #work_ids = db.relationship("WorkId", backref="revision", lazy=True)
@@ -130,9 +148,14 @@ class ReleaseFil(db.Model):
 class Edit(db.Model):
     __tablename__ = 'edit'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    edit_group = db.Column(db.ForeignKey('edit_group.id'))
-    editor = db.Column(db.ForeignKey('editor.id'))
-    description = db.Column(db.String)
+    edit_group = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
+    editor = db.Column(db.ForeignKey('editor.id'), nullable=False)
+    comment = db.Column(db.String, nullable=True)
+    extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
+    # WARNING: polymorphic. Represents the id that should end up pointing to
+    # this revision.
+    # TODO: this doesn't work
+    entity_id = db.Column(db.Integer, nullable=True)
 
 class EditGroup(db.Model):
     __tablename__ = 'edit_group'
