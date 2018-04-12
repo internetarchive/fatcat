@@ -23,7 +23,7 @@ def check_entity_fields(e):
 class FatcatTestCase(unittest.TestCase):
 
     def setUp(self):
-        fatcat.app.config['DATABASE_URI'] = 'sqlite://:memory:'
+        fatcat.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
         fatcat.app.testing = True
         self.app = fatcat.app.test_client()
         fatcat.db.create_all()
