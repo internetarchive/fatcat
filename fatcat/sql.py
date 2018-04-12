@@ -184,10 +184,15 @@ def add_crossref(meta):
     extra_json = ExtraJson(json=extra, sha1=hashlib.sha1(extra).hexdigest())
     release.extra_json = extra_json.sha1
 
-    # references (TODO)
-    #refs = []
-    #for rm in meta['reference']:
-    #   rm: author, volume, first-page, year, journal-title, DOI
+    # references
+    for i, rm in enumerate(meta.get('reference', [])):
+        ref = ReleaseRef(
+            release_rev=release.id,
+            doi=rm.get("DOI", None),
+            index=i+1,
+            # TODO: how to generate a proper stub here from k/v metadata?
+            stub="| ".join(rm.values()))
+        release.refs.append(ref)
 
     db.session.add_all([work, work_id, release, release_id, container,
         container_id, extra_json])

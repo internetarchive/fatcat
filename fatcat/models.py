@@ -39,7 +39,7 @@ class ReleaseRef(db.Model):
     __tablename__ = "release_ref"
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     release_rev= db.Column(db.ForeignKey('release_revision.id'), nullable=False)
-    target_release_id= db.Column(db.ForeignKey('release_id.id'), nullable=False)
+    target_release_id= db.Column(db.ForeignKey('release_id.id'), nullable=True)
     index = db.Column(db.Integer, nullable=True)
     stub = db.Column(db.String, nullable=True)
     doi = db.Column(db.String, nullable=True)
@@ -122,9 +122,7 @@ class ReleaseRevision(db.Model):
     issue = db.Column(db.String, nullable=True)
 
     creators = db.relationship('ReleaseContrib', lazy='subquery')
-        #backref=db.backref('releases', lazy=True))
     refs = db.relationship('ReleaseRef', lazy='subquery')
-        #backref=db.backref('backrefs', lazy=True))
 
 class CreatorId(db.Model):
     __tablename__ = 'creator_id'
