@@ -20,8 +20,9 @@ def populate_db():
     pi_work_id = WorkId(revision_id=pi_work.id)
     pi_release = ReleaseRevision(
         title=pi_work.title,
-        creators=[n_elkies_id],
         work_id=pi_work.id)
+    pi_contrib = ReleaseContrib(creator=n_elkies_id)
+    pi_release.creators.append(pi_contrib)
     pi_release_id = ReleaseId(revision_id=pi_release.id)
     pi_work.primary_release = pi_release.id
 
@@ -87,7 +88,7 @@ def populate_complex_db(count=100):
         authors = set(random.sample(author_ids, 5))
         release = ReleaseRevision(
             title=work.title,
-            creators=list(authors),
+            creators=[ReleaseContrib(creator=a) for a in list(authors)],
             work_id=work.id,
             container_id=random.choice(container_ids).id)
         release_id = ReleaseId(revision_id=release.id)
@@ -95,7 +96,7 @@ def populate_complex_db(count=100):
         authors.add(random.choice(author_ids))
         release2 = ReleaseRevision(
             title=work.title + " (again)",
-            creators=list(authors),
+            creators=[ReleaseContrib(creator=a) for a in list(authors)],
             work_id=work.id,
             container_id=random.choice(container_ids).id)
         release_id2 = ReleaseId(revision_id=release2.id)
@@ -112,8 +113,11 @@ def populate_complex_db(count=100):
             sha1=file_sha,
             size=len(file_content),
             url="http://archive.invalid/{}".format(file_sha),
-            releases=[release_id, release_id2],
+            releases=[FileRelease(release=release_id), FileRelease(release=release_id2)],
         )
+        file_id = FileId(revision_id=file_rev.id)
+        file_revs.append(file_rev)
+        file_ids.append(file_id)
 
     db.session.add_all(author_revs)
     db.session.add_all(author_ids)
@@ -157,7 +161,7 @@ def add_crossref(meta):
     work_id = WorkId(revision_id=work.id)
     release = ReleaseRevision(
         title=title,
-        creators=author_ids,
+        creators=[ReleaseContrib(creator=a) for a in author_ids],
         work_id=work.id,
         container_id=container_id.id,
         release_type=meta['type'],

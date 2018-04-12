@@ -15,28 +15,46 @@ from fatcat import db
 
 # TODO: EntityMixin, EntityIdMixin
 
-work_contrib = db.Table("work_contrib",
-    db.Column("work_rev", db.ForeignKey('work_revision.id'), nullable=False, primary_key=True),
-    db.Column("creator_id", db.ForeignKey('creator_id.id'), nullable=False, primary_key=True),
-    db.Column("type", db.String, nullable=True),
-    db.Column("stub", db.String, nullable=True))
+class WorkContrib(db.Model):
+    __tablename__ = "work_contrib"
+    work_rev= db.Column(db.ForeignKey('work_revision.id'), nullable=False, primary_key=True)
+    creator_id = db.Column(db.ForeignKey('creator_id.id'), nullable=False, primary_key=True)
+    type = db.Column(db.String, nullable=True)
+    stub = db.Column(db.String, nullable=True)
 
-release_contrib = db.Table("release_contrib",
-    db.Column("release_rev", db.ForeignKey('release_revision.id'), nullable=False, primary_key=True),
-    db.Column("creator_id", db.ForeignKey('creator_id.id'), nullable=False, primary_key=True),
-    db.Column("type", db.String, nullable=True),
-    db.Column("stub", db.String, nullable=True))
+    creator = db.relationship("CreatorId")
+    work = db.relationship("WorkRevision")
 
-release_ref = db.Table("release_ref",
-    db.Column("release_rev", db.ForeignKey('release_revision.id'), nullable=False),
-    db.Column("target_release_id", db.ForeignKey('release_id.id'), nullable=False),
-    db.Column("index", db.Integer, nullable=True),
-    db.Column("stub", db.String, nullable=True),
-    db.Column("doi", db.String, nullable=True))
+class ReleaseContrib(db.Model):
+    __tablename__ = "release_contrib"
+    release_rev = db.Column(db.ForeignKey('release_revision.id'), nullable=False, primary_key=True)
+    creator_id = db.Column(db.ForeignKey('creator_id.id'), nullable=False, primary_key=True)
+    type = db.Column(db.String, nullable=True)
+    stub = db.Column(db.String, nullable=True)
 
-file_release = db.Table("file_release",
-    db.Column("release_id", db.ForeignKey('release_id.id'), nullable=False, primary_key=True),
-    db.Column("file_rev", db.ForeignKey('file_revision.id'), nullable=False, primary_key=True))
+    creator = db.relationship("CreatorId")
+    release = db.relationship("ReleaseRevision")
+
+class ReleaseRef(db.Model):
+    __tablename__ = "release_ref"
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    release_rev= db.Column(db.ForeignKey('release_revision.id'), nullable=False)
+    target_release_id= db.Column(db.ForeignKey('release_id.id'), nullable=False)
+    index = db.Column(db.Integer, nullable=True)
+    stub = db.Column(db.String, nullable=True)
+    doi = db.Column(db.String, nullable=True)
+
+    release = db.relationship("ReleaseRevision")
+    target = db.relationship("ReleaseId")
+
+class FileRelease(db.Model):
+    __tablename__ = "file_release"
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    file_rev= db.Column(db.ForeignKey('file_revision.id'), nullable=False)
+    release_id = db.Column(db.ForeignKey('release_id.id'), nullable=False)
+
+    release = db.relationship("ReleaseId")
+    file = db.relationship("FileRevision")
 
 class WorkId(db.Model):
     """
@@ -75,13 +93,15 @@ class WorkRevision(db.Model):
     work_type = db.Column(db.String)
     date = db.Column(db.String)
 
-    creators = db.relationship('CreatorId', secondary=work_contrib,
-        lazy='subquery', backref=db.backref('works', lazy=True))
+    creators = db.relationship('WorkContrib', lazy='subquery',
+        backref=db.backref('works', lazy=True))
 
 class ReleaseId(db.Model):
     __tablename__ = 'release_id'
-    id = db.Column(db.Integer, primary_key=True) #autoincrement=False
+    id = db.Column(db.Integer, primary_key=True)
+    live = db.Column(db.Boolean, nullable=False, default=False)
     revision_id = db.Column(db.ForeignKey('release_revision.id'))
+    redirect_id = db.Column(db.ForeignKey('release_id.id'), nullable=True)
 
 class ReleaseRevision(db.Model):
     __tablename__ = 'release_revision'
@@ -101,17 +121,17 @@ class ReleaseRevision(db.Model):
     pages = db.Column(db.String, nullable=True)
     issue = db.Column(db.String, nullable=True)
 
-    creators = db.relationship('CreatorId', secondary=release_contrib,
-        lazy='subquery')
+    creators = db.relationship('ReleaseContrib', lazy='subquery')
         #backref=db.backref('releases', lazy=True))
-    refs = db.relationship('ReleaseId', secondary=release_ref,
-        lazy='subquery')
+    refs = db.relationship('ReleaseRef', lazy='subquery')
         #backref=db.backref('backrefs', lazy=True))
 
 class CreatorId(db.Model):
     __tablename__ = 'creator_id'
-    id = db.Column(db.Integer, primary_key=True) #autoincrement=False)
+    id = db.Column(db.Integer, primary_key=True)
+    live = db.Column(db.Boolean, nullable=False, default=False)
     revision_id = db.Column(db.ForeignKey('creator_revision.id'))
+    redirect_id = db.Column(db.ForeignKey('creator_id.id'), nullable=True)
 
 class CreatorRevision(db.Model):
     __tablename__ = 'creator_revision'
@@ -127,8 +147,10 @@ class CreatorRevision(db.Model):
 
 class ContainerId(db.Model):
     __tablename__ = 'container_id'
-    id = db.Column(db.Integer, primary_key=True) #autoincrement=False)
+    id = db.Column(db.Integer, primary_key=True)
+    live = db.Column(db.Boolean, nullable=False, default=False)
     revision_id = db.Column(db.ForeignKey('container_revision.id'))
+    redirect_id = db.Column(db.ForeignKey('container_id.id'), nullable=True)
 
 class ContainerRevision(db.Model):
     __tablename__ = 'container_revision'
@@ -145,8 +167,10 @@ class ContainerRevision(db.Model):
 
 class FileId(db.Model):
     __tablename__ = 'file_id'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=False)
-    revision_id = db.Column('revision', db.ForeignKey('container_revision.id'))
+    id = db.Column(db.Integer, primary_key=True)
+    live = db.Column(db.Boolean, nullable=False, default=False)
+    revision_id = db.Column('revision', db.ForeignKey('file_revision.id'))
+    redirect_id = db.Column(db.ForeignKey('file_id.id'), nullable=True)
 
 class FileRevision(db.Model):
     __tablename__ = 'file_revision'
@@ -159,8 +183,7 @@ class FileRevision(db.Model):
     sha1 = db.Column(db.Integer)            # TODO: hash table... only or in addition?
     url = db.Column(db.Integer)             # TODO: URL table
 
-    releases = db.relationship('ReleaseId', secondary=file_release,
-        lazy='subquery')
+    releases = db.relationship('FileRelease', lazy='subquery')
         #backref=db.backref('backrefs', lazy=True))
 
 class Edit(db.Model):
