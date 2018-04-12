@@ -16,12 +16,21 @@ states for identifiers:
 work_contrib = db.Table("work_contrib",
     db.Column("work_rev", db.ForeignKey('work_revision.id'), nullable=False, primary_key=True),
     db.Column("creator_id", db.ForeignKey('creator_id.id'), nullable=False, primary_key=True),
+    db.Column("type", db.String, nullable=True),
     db.Column("stub", db.String, nullable=True))
 
 release_contrib = db.Table("release_contrib",
     db.Column("release_rev", db.ForeignKey('release_revision.id'), nullable=False, primary_key=True),
     db.Column("creator_id", db.ForeignKey('creator_id.id'), nullable=False, primary_key=True),
+    db.Column("type", db.String, nullable=True),
     db.Column("stub", db.String, nullable=True))
+
+release_ref = db.Table("release_ref",
+    db.Column("release_rev", db.ForeignKey('release_revision.id'), nullable=False),
+    db.Column("target_release_id", db.ForeignKey('release_id.id'), nullable=False),
+    db.Column("index", db.Integer, nullable=True),
+    db.Column("stub", db.String, nullable=True),
+    db.Column("doi", db.String, nullable=True))
 
 class WorkId(db.Model):
     """
@@ -73,23 +82,29 @@ class ReleaseRevision(db.Model):
     __tablename__ = 'release_revision'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     previous = db.Column(db.ForeignKey('release_revision.id'), nullable=True)
-    state = db.Column(db.String)            # TODO: enum
+    state = db.Column(db.String)                    # TODO: enum
     redirect_id = db.Column(db.ForeignKey('release_id.id'), nullable=True)
     edit_id = db.Column(db.ForeignKey('edit.id'))
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
     #release_ids = db.relationship("ReleaseId", backref="revision", lazy=False)
 
     work_id = db.ForeignKey('work_id.id')
-    container = db.Column(db.ForeignKey('container_id.id'))
-    title = db.Column(db.String)
-    license = db.Column(db.String)          # TODO: oa status foreign key
-    release_type = db.Column(db.String)     # TODO: foreign key
-    date = db.Column(db.String)             # TODO: datetime
-    doi = db.Column(db.String)              # TODO: identifier table
+    container = db.Column(db.ForeignKey('container_id.id'), nullable=True)
+    title = db.Column(db.String, nullable=False)
+    license = db.Column(db.String, nullable=True)   # TODO: oa status foreign key
+    release_type = db.Column(db.String)             # TODO: foreign key
+    date = db.Column(db.String, nullable=True)      # TODO: datetime
+    doi = db.Column(db.String, nullable=True)       # TODO: identifier table
+    volume = db.Column(db.String, nullable=True)
+    pages = db.Column(db.String, nullable=True)
+    issue = db.Column(db.String, nullable=True)
 
     creators = db.relationship('CreatorId', secondary=release_contrib,
         lazy='subquery')
         #backref=db.backref('releases', lazy=True))
+    refs = db.relationship('ReleaseId', secondary=release_ref,
+        lazy='subquery')
+        #backref=db.backref('backrefs', lazy=True))
 
 class CreatorId(db.Model):
     __tablename__ = 'creator_id'
@@ -148,7 +163,7 @@ class FileRevision(db.Model):
     sha1 = db.Column(db.Integer)            # TODO: hash table... only or in addition?
     url = db.Column(db.Integer)             # TODO: URL table
 
-class ReleaseFil(db.Model):
+class ReleaseFile(db.Model):
     __tablename__ = 'release_file'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     release_rev = db.Column(db.ForeignKey('release_revision.id'), nullable=False)
@@ -178,6 +193,7 @@ class Editor(db.Model):
     username = db.Column(db.String)
 
 class ChangelogEntry(db.Model):
+    # XXX: remove this?
     __tablename__= 'changelog'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     edit_id = db.Column(db.ForeignKey('edit.id'))

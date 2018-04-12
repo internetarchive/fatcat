@@ -58,3 +58,10 @@ class FatcatTestCase(unittest.TestCase):
 
     def test_populate_complex(self):
         fatcat.sql.populate_complex_db()
+
+    def test_load_crossref(self):
+        with open('./tests/files/crossref-works.2018-01-21.badsample.json', 'r') as f:
+            raw = [json.loads(l) for l in f.readlines() if len(l) > 3]
+        for obj in raw:
+            fatcat.sql.add_crossref(obj)
+
