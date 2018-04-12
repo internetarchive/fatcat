@@ -87,8 +87,6 @@ class ReleaseRevision(db.Model):
     __tablename__ = 'release_revision'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     previous = db.Column(db.ForeignKey('release_revision.id'), nullable=True)
-    state = db.Column(db.String)                    # TODO: enum
-    redirect_id = db.Column(db.ForeignKey('release_id.id'), nullable=True)
     edit_id = db.Column(db.ForeignKey('edit.id'))
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
 
@@ -119,8 +117,6 @@ class CreatorRevision(db.Model):
     __tablename__ = 'creator_revision'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     previous = db.Column(db.ForeignKey('creator_revision.id'), nullable=True)
-    state = db.Column(db.String)
-    redirect_id = db.Column(db.ForeignKey('creator_id.id'), nullable=True)
     edit_id = db.Column(db.ForeignKey('edit.id'))
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
     #creator_ids = db.relationship("CreatorId", backref="revision", lazy=False)
@@ -138,8 +134,6 @@ class ContainerRevision(db.Model):
     __tablename__ = 'container_revision'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     previous = db.Column(db.ForeignKey('container_revision.id'), nullable=True)
-    state = db.Column(db.String)
-    redirect_id = db.Column(db.ForeignKey('container_id.id'), nullable=True)
     edit_id = db.Column(db.ForeignKey('edit.id'))
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
 
@@ -158,8 +152,6 @@ class FileRevision(db.Model):
     __tablename__ = 'file_revision'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     previous = db.Column(db.ForeignKey('file_revision.id'), nullable=True)
-    state = db.Column(db.String)            # TODO: what is this?
-    redirect_id = db.Column(db.ForeignKey('file_id.id'), nullable=True)
     edit_id = db.Column(db.ForeignKey('edit.id'))
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
 
