@@ -15,10 +15,9 @@ This is just a concept for now; see [rfc](./rfc).
 
 Use `pipenv` (which you can install with `pip`).
 
+    pipenv run run.py --init-db
     pipenv run run.py
-    python fatcat/api.py
 
 Run tests:
 
-    pipenv run run.py --init-db
     pipenv run pytest
