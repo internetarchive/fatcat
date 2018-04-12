@@ -1,7 +1,4 @@
 
-import enum
-from fatcat import db
-
 """
 states for identifiers:
 - pre-live: points to a rev (during edit/accept period)
@@ -10,6 +7,8 @@ states for identifiers:
     => if live and redirect non-null, all other fields copied from redirect target
 - deleted: live, but doesn't point to a rev
 """
+
+from fatcat import db
 
 # TODO: EntityMixin, EntityIdMixin
 
@@ -203,4 +202,3 @@ class ExtraJson(db.Model):
     __tablename__ = 'extra_json'
     sha1 = db.Column(db.String, primary_key=True)
     json = db.Column(db.String)
-
