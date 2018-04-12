@@ -1,5 +1,5 @@
 [MESSAGES CONTROL]
-disable=C0323,W0142,C0301,C0103,C0111,E0213,C0302,C0203,W0703,R0201,W0223,bad-continuation,arguments-differ,unidiomatic-typecheck
+disable=C0323,W0142,C0301,C0103,C0111,E0213,C0302,C0203,W0703,R0201,W0223,bad-continuation,arguments-differ,unidiomatic-typecheck,unused-wildcard-import
 
 [REPORTS]
 output-format=colorized
