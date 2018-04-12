@@ -53,6 +53,8 @@ class FatcatTestCase(unittest.TestCase):
         assert obj['title']
         assert obj['work_type'] == "journal-article"
 
-    def test_something(self):
-
+    def test_populate(self):
         fatcat.sql.populate_db()
+
+    def test_populate_complex(self):
+        fatcat.sql.populate_complex_db()
