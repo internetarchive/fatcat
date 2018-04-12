@@ -1,5 +1,20 @@
 
-helpers... ORM?
+- tests are picking up config.py instead of using setUp()
+
+helpers/ORM and test
+x files
+x containers
+- citations
+x create from crossref dict (naive)
+- "hydrated" get: release, creator, container
+- populate_random_edit; push edit to live
+- helpers with change logging (hook?)
+
+review
+- should release point to work? I think not
+- remove 'state' and 'redirect_id' from all revision tables
 
 later:
+- crossref json import script/benchmark
+    => maybe both "raw" and string-dedupe?
 - public IDs are UUID (sqlite hack?)

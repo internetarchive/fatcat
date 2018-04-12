@@ -59,6 +59,18 @@ def populate_complex_db(count=100):
         author_revs.append(ar)
         author_ids.append(CreatorId(revision_id=ar.id))
 
+    container_revs = []
+    container_ids = []
+    for _ in range(5):
+        cr = ContainerRevision(
+            name="The Fake Journal of Stuff",
+            container_id=None,
+            publisher="Big Paper",
+            sortname="Fake Journal of Stuff",
+            issn="1234-5678")
+        container_revs.append(cr)
+        container_ids.append(ContainerId(revision_id=cr.id))
+
     title_start = ("All about ", "When I grow up I want to be",
         "The final word on", "Infinity: ", "The end of")
     title_ends = ("Humankind", "Bees", "Democracy", "Avocados", "«küßî»", "“ЌύБЇ”")
@@ -66,6 +78,8 @@ def populate_complex_db(count=100):
     work_ids = []
     release_revs = []
     release_ids = []
+    file_revs = []
+    file_ids = []
     for _ in range(count):
         title = "{} {}".format(random.choice(title_start), random.choice(title_ends))
         work = WorkRevision(title=title)
@@ -74,14 +88,16 @@ def populate_complex_db(count=100):
         release = ReleaseRevision(
             title=work.title,
             creators=list(authors),
-            work_id=work.id)
+            work_id=work.id,
+            container_id=random.choice(container_ids).id)
         release_id = ReleaseId(revision_id=release.id)
         work.primary_release = release.id
         authors.add(random.choice(author_ids))
         release2 = ReleaseRevision(
             title=work.title + " (again)",
             creators=list(authors),
-            work_id=work.id)
+            work_id=work.id,
+            container_id=random.choice(container_ids).id)
         release_id2 = ReleaseId(revision_id=release2.id)
         work_revs.append(work)
         work_ids.append(work_id)
@@ -90,12 +106,25 @@ def populate_complex_db(count=100):
         release_ids.append(release_id)
         release_ids.append(release_id2)
 
+        file_content = str(random.random()) * random.randint(3,100)
+        file_sha = hashlib.sha1(file_content.encode('utf-8')).hexdigest()
+        file_rev = FileRevision(
+            sha1=file_sha,
+            size=len(file_content),
+            url="http://archive.invalid/{}".format(file_sha),
+            releases=[release_id, release_id2],
+        )
+
     db.session.add_all(author_revs)
     db.session.add_all(author_ids)
     db.session.add_all(work_revs)
     db.session.add_all(work_ids)
     db.session.add_all(release_revs)
     db.session.add_all(release_ids)
+    db.session.add_all(container_revs)
+    db.session.add_all(container_ids)
+    db.session.add_all(file_revs)
+    db.session.add_all(file_ids)
 
     db.session.commit()
 
@@ -118,7 +147,7 @@ def add_crossref(meta):
     container = ContainerRevision(
         issn=meta['ISSN'][0],
         name=meta['container-title'][0],
-        container=None,
+        container_id=None,
         publisher=meta['publisher'],
         sortname=meta['short-container-title'][0])
     container_id = ContainerId(revision_id=container.id)
@@ -130,7 +159,7 @@ def add_crossref(meta):
         title=title,
         creators=author_ids,
         work_id=work.id,
-        container=container_id.id,
+        container_id=container_id.id,
         release_type=meta['type'],
         doi=meta['DOI'],
         date=meta['created']['date-time'],

@@ -6,6 +6,9 @@ states for identifiers:
 - redirect: live, points to upstream rev, also points to redirect id
     => if live and redirect non-null, all other fields copied from redirect target
 - deleted: live, but doesn't point to a rev
+
+possible refactors:
+- '_rev' instead of '_revision'
 """
 
 from fatcat import db
@@ -30,6 +33,10 @@ release_ref = db.Table("release_ref",
     db.Column("index", db.Integer, nullable=True),
     db.Column("stub", db.String, nullable=True),
     db.Column("doi", db.String, nullable=True))
+
+file_release = db.Table("file_release",
+    db.Column("release_id", db.ForeignKey('release_id.id'), nullable=False, primary_key=True),
+    db.Column("file_rev", db.ForeignKey('file_revision.id'), nullable=False, primary_key=True))
 
 class WorkId(db.Model):
     """
@@ -63,7 +70,6 @@ class WorkRevision(db.Model):
     previous = db.Column(db.ForeignKey('work_revision.id'), nullable=True)
     edit_id = db.Column(db.ForeignKey('edit.id'))
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
-    #work_ids = db.relationship("WorkId", backref="revision", lazy=True)
 
     title = db.Column(db.String)
     work_type = db.Column(db.String)
@@ -85,10 +91,9 @@ class ReleaseRevision(db.Model):
     redirect_id = db.Column(db.ForeignKey('release_id.id'), nullable=True)
     edit_id = db.Column(db.ForeignKey('edit.id'))
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
-    #release_ids = db.relationship("ReleaseId", backref="revision", lazy=False)
 
     work_id = db.ForeignKey('work_id.id')
-    container = db.Column(db.ForeignKey('container_id.id'), nullable=True)
+    container_id = db.Column(db.ForeignKey('container_id.id'), nullable=True)
     title = db.Column(db.String, nullable=False)
     license = db.Column(db.String, nullable=True)   # TODO: oa status foreign key
     release_type = db.Column(db.String)             # TODO: foreign key
@@ -139,7 +144,7 @@ class ContainerRevision(db.Model):
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
 
     name = db.Column(db.String)
-    container = db.Column(db.ForeignKey('container_id.id'))
+    container_id = db.Column(db.ForeignKey('container_id.id'))
     publisher = db.Column(db.String)        # TODO: foreign key
     sortname = db.Column(db.String)
     issn = db.Column(db.String)             # TODO: identifier table
@@ -153,7 +158,7 @@ class FileRevision(db.Model):
     __tablename__ = 'file_revision'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     previous = db.Column(db.ForeignKey('file_revision.id'), nullable=True)
-    state = db.Column(db.String)
+    state = db.Column(db.String)            # TODO: what is this?
     redirect_id = db.Column(db.ForeignKey('file_id.id'), nullable=True)
     edit_id = db.Column(db.ForeignKey('edit.id'))
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
@@ -162,11 +167,9 @@ class FileRevision(db.Model):
     sha1 = db.Column(db.Integer)            # TODO: hash table... only or in addition?
     url = db.Column(db.Integer)             # TODO: URL table
 
-class ReleaseFile(db.Model):
-    __tablename__ = 'release_file'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    release_rev = db.Column(db.ForeignKey('release_revision.id'), nullable=False)
-    file_id = db.Column(db.ForeignKey('file_id.id'), nullable=False)
+    releases = db.relationship('ReleaseId', secondary=file_release,
+        lazy='subquery')
+        #backref=db.backref('backrefs', lazy=True))
 
 class Edit(db.Model):
     __tablename__ = 'edit'
