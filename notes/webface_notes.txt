@@ -1,8 +1,62 @@
 
+# CSS/JS Libraries
+
 tachyons is nice for simple css-only stuff, but let's use "Semantic UI" because
 it has a bunch of javascript form stuff.
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.13/semantic.min.css">
     <script src="https://cdn.jsdelivr.net/semantic-ui/2.2.13/semantic.min.js"></script>
 
+
+# "Add Something" Workflow
+
+## Add a Work
+
+Title
+Primary Type
+Primary Creators/Authors
+Description (not an abstract)
+Primary/Original Language
+Subject/Categorization/Tags
+Is a Stub (unpublished/unreleased)
+
+## Release Information
+
+Contributors
+Date
+Container / Part-Of
+Publisher
+Identifiers
+Language
+Type / Media
+Issue / Volume / Pages / Chapter
+
+## Anything Else?
+
+Known file / copy / url
+Citations (outbound)
+
+# Queries / Searches / Views
+
+Views: work, release, creator, container, publisher
+
+Lookup by identifier
+
+# Other Workflows/Editors
+
+Single-creator-oriented helper to find works and disambiguate authorship
+
+Bulk author disambiguation helper (find other unresolved authors with same
+alias text and select; drag works between columns)
+
+Bulk query-then-edit UI: search results in a table, edit like a spreadsheet, up
+to... dozens? Query and then apply delta (eg, set topic)? Eg, author edits
+basic metadata for all their citations all at once.
+
+Release editor
+
+Merge containers (and all related releases)
+Merge entities (works, releases, etc)
+Move release between works
+Split entities (works, authors, etc), including linked stuff
 
