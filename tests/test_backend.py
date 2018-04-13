@@ -12,10 +12,9 @@ import tempfile
 ## Helpers ##################################################################
 
 def check_entity_fields(e):
-    for key in ('id', 'rev', 'previous', 'state', 'redirect_id', 'edit_id',
-            'extra_json'):
+    for key in ('id', 'rev', 'redirect_id', 'edit_id'):
         assert key in e
-    for key in ('id', 'rev'):
+    for key in ('id',):
         assert e[key] is not None
 
 ## API Tests ################################################################
@@ -36,24 +35,28 @@ class FatcatTestCase(unittest.TestCase):
         assert obj['ok']
 
     def test_works(self):
+        fatcat.sql.populate_db()
 
         # Invalid Id
         rv = self.app.get('/v0/work/_')
         assert rv.status_code == 404
 
-        # Missing Id (TODO)
-        #rv = self.app.get('/v0/work/rzga5b9cd7efgh04iljk')
-        #assert rv.status == 404
-
-        # Valid Id (TODO)
-        #rv = self.app.get('/v0/work/r3zga5b9cd7ef8gh084714iljk')
-        #assert rv.status_code == 200
-
+        # Random
         rv = self.app.get('/v0/work/random')
-        obj = json.loads(rv.data.decode('utf-8'))
-        check_entity_fields(obj)
-        assert obj['title']
-        assert obj['work_type'] == "journal-article"
+        rv = self.app.get(rv.location)
+        work = json.loads(rv.data.decode('utf-8'))
+        check_entity_fields(work)
+        print(work)
+        assert work['title']
+        assert work['work_type']
+
+        # Valid Id (from random above)
+        rv = self.app.get('/v0/work/{}'.format(work['id']))
+        assert rv.status_code == 200
+
+        # Missing Id
+        rv = self.app.get('/v0/work/r3zga5b9cd7ef8gh084714iljk')
+        assert rv.status_code == 404
 
     def test_populate(self):
         fatcat.sql.populate_db()
@@ -67,3 +70,10 @@ class FatcatTestCase(unittest.TestCase):
         for obj in raw:
             fatcat.sql.add_crossref(obj)
 
+    def test_hydrate_work(self):
+        fatcat.sql.populate_complex_db()
+        fatcat.sql.hydrate_work(1)
+
+    def test_hydrate_release(self):
+        fatcat.sql.populate_complex_db()
+        fatcat.sql.hydrate_release(1)

@@ -38,8 +38,8 @@ class ReleaseContrib(db.Model):
 class ReleaseRef(db.Model):
     __tablename__ = "release_ref"
     id = db.Column(db.Integer, primary_key=True, nullable=False)
-    release_rev= db.Column(db.ForeignKey('release_revision.id'), nullable=False)
-    target_release_id= db.Column(db.ForeignKey('release_id.id'), nullable=True)
+    release_rev = db.Column(db.ForeignKey('release_revision.id'), nullable=False)
+    target_release_id = db.Column(db.ForeignKey('release_id.id'), nullable=True)
     index = db.Column(db.Integer, nullable=True)
     stub = db.Column(db.String, nullable=True)
     doi = db.Column(db.String, nullable=True)
@@ -69,6 +69,7 @@ class WorkId(db.Model):
     live = db.Column(db.Boolean, nullable=False, default=False)
     revision_id = db.Column(db.ForeignKey('work_revision.id'), nullable=True)
     redirect_id = db.Column(db.ForeignKey('work_id.id'), nullable=True)
+    revision = db.relationship("WorkRevision")
 
 class WorkLog(db.Model):
     __tablename__ = 'work_log'
@@ -85,13 +86,12 @@ class WorkLog(db.Model):
 class WorkRevision(db.Model):
     __tablename__ = 'work_revision'
     id = db.Column(db.Integer, primary_key=True)
-    previous = db.Column(db.ForeignKey('work_revision.id'), nullable=True)
     edit_id = db.Column(db.ForeignKey('edit.id'))
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
 
     title = db.Column(db.String)
     work_type = db.Column(db.String)
-    date = db.Column(db.String)
+    primary_release_id = db.Column(db.ForeignKey('release_id.id'), nullable=True)
 
     creators = db.relationship('WorkContrib', lazy='subquery',
         backref=db.backref('works', lazy=True))
@@ -102,11 +102,11 @@ class ReleaseId(db.Model):
     live = db.Column(db.Boolean, nullable=False, default=False)
     revision_id = db.Column(db.ForeignKey('release_revision.id'))
     redirect_id = db.Column(db.ForeignKey('release_id.id'), nullable=True)
+    revision = db.relationship("ReleaseRevision")
 
 class ReleaseRevision(db.Model):
     __tablename__ = 'release_revision'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    previous = db.Column(db.ForeignKey('release_revision.id'), nullable=True)
     edit_id = db.Column(db.ForeignKey('edit.id'))
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
 
@@ -121,6 +121,8 @@ class ReleaseRevision(db.Model):
     pages = db.Column(db.String, nullable=True)
     issue = db.Column(db.String, nullable=True)
 
+    #work = db.relationship("WorkId", lazy='subquery')
+    container = db.relationship("ContainerId", lazy='subquery')
     creators = db.relationship('ReleaseContrib', lazy='subquery')
     refs = db.relationship('ReleaseRef', lazy='subquery')
 
@@ -130,11 +132,11 @@ class CreatorId(db.Model):
     live = db.Column(db.Boolean, nullable=False, default=False)
     revision_id = db.Column(db.ForeignKey('creator_revision.id'))
     redirect_id = db.Column(db.ForeignKey('creator_id.id'), nullable=True)
+    revision = db.relationship("CreatorRevision")
 
 class CreatorRevision(db.Model):
     __tablename__ = 'creator_revision'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    previous = db.Column(db.ForeignKey('creator_revision.id'), nullable=True)
     edit_id = db.Column(db.ForeignKey('edit.id'))
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
     #creator_ids = db.relationship("CreatorId", backref="revision", lazy=False)
@@ -149,16 +151,16 @@ class ContainerId(db.Model):
     live = db.Column(db.Boolean, nullable=False, default=False)
     revision_id = db.Column(db.ForeignKey('container_revision.id'))
     redirect_id = db.Column(db.ForeignKey('container_id.id'), nullable=True)
+    revision = db.relationship("ContainerRevision")
 
 class ContainerRevision(db.Model):
     __tablename__ = 'container_revision'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    previous = db.Column(db.ForeignKey('container_revision.id'), nullable=True)
     edit_id = db.Column(db.ForeignKey('edit.id'))
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
 
     name = db.Column(db.String)
-    container_id = db.Column(db.ForeignKey('container_id.id'))
+    #XXX: container_id = db.Column(db.ForeignKey('container_id.id'))
     publisher = db.Column(db.String)        # TODO: foreign key
     sortname = db.Column(db.String)
     issn = db.Column(db.String)             # TODO: identifier table
@@ -169,11 +171,11 @@ class FileId(db.Model):
     live = db.Column(db.Boolean, nullable=False, default=False)
     revision_id = db.Column('revision', db.ForeignKey('file_revision.id'))
     redirect_id = db.Column(db.ForeignKey('file_id.id'), nullable=True)
+    revision = db.relationship("FileRevision")
 
 class FileRevision(db.Model):
     __tablename__ = 'file_revision'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    previous = db.Column(db.ForeignKey('file_revision.id'), nullable=True)
     edit_id = db.Column(db.ForeignKey('edit.id'))
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
 

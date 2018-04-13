@@ -11,14 +11,11 @@ examples = {
     "work": {
         "id": "rzga5b9cd7efgh04iljk",
         "rev": "12345",
-        "previous": None,
-        "state": None,
         "redirect_id": None,
         "edit_id": None,
         "extra_json": None,
         "title": "Structure and Interpretation",
         "work_type": "journal-article",
-        "date": None,
         "contributors": [
             {"name": "Alyssa P. Hacker"},
         ],
