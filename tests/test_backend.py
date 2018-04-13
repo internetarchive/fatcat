@@ -12,7 +12,7 @@ import tempfile
 ## Helpers ##################################################################
 
 def check_entity_fields(e):
-    for key in ('id', 'rev', 'redirect_id', 'edit_id'):
+    for key in ('id', 'rev', 'redirect_id'):
         assert key in e
     for key in ('id',):
         assert e[key] is not None

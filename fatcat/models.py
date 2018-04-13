@@ -64,7 +64,6 @@ class FileRelease(db.Model):
 class WorkRev(db.Model):
     __tablename__ = 'work_rev'
     id = db.Column(db.Integer, primary_key=True)
-    edit_id = db.Column(db.ForeignKey('work_edit.id'))
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
 
     title = db.Column(db.String)
@@ -95,14 +94,15 @@ class WorkEdit(db.Model):
     ident_id = db.Column(db.ForeignKey('work_ident.id'), nullable=True)
     rev_id = db.Column(db.ForeignKey('work_rev.id'), nullable=True)
     redirect_id = db.Column(db.ForeignKey('work_ident.id'), nullable=True)
-    edit_group = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
+    edit_group_id = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
+    rev = db.relationship("WorkRev")
+    edit_group = db.relationship("EditGroup")
 
 
 class ReleaseRev(db.Model):
     __tablename__ = 'release_rev'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    edit_id = db.Column(db.ForeignKey('release_edit.id'))
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
 
     work_ident_id = db.ForeignKey('work_ident.id')
@@ -135,14 +135,13 @@ class ReleaseEdit(db.Model):
     ident_id = db.Column(db.ForeignKey('release_ident.id'), nullable=True)
     rev_id = db.Column(db.ForeignKey('release_rev.id'), nullable=True)
     redirect_id = db.Column(db.ForeignKey('release_ident.id'), nullable=True)
-    edit_group = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
+    edit_group_id = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
 
 
 class CreatorRev(db.Model):
     __tablename__ = 'creator_rev'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    edit_id = db.Column(db.ForeignKey('creator_edit.id'))
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
 
     name = db.Column(db.String)
@@ -163,14 +162,13 @@ class CreatorEdit(db.Model):
     ident_id = db.Column(db.ForeignKey('creator_ident.id'), nullable=True)
     rev_id = db.Column(db.ForeignKey('creator_rev.id'), nullable=True)
     redirect_id = db.Column(db.ForeignKey('creator_ident.id'), nullable=True)
-    edit_group = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
+    edit_group_id = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
 
 
 class ContainerRev(db.Model):
     __tablename__ = 'container_rev'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    edit_id = db.Column(db.ForeignKey('container_edit.id'))
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
 
     name = db.Column(db.String)
@@ -193,14 +191,13 @@ class ContainerEdit(db.Model):
     ident_id = db.Column(db.ForeignKey('container_ident.id'), nullable=True)
     rev_id = db.Column(db.ForeignKey('container_rev.id'), nullable=True)
     redirect_id = db.Column(db.ForeignKey('container_ident.id'), nullable=True)
-    edit_group = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
+    edit_group_id = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
 
 
 class FileRev(db.Model):
     __tablename__ = 'file_rev'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    edit_id = db.Column(db.ForeignKey('file_edit.id'))
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
 
     size = db.Column(db.Integer)
@@ -222,24 +219,11 @@ class FileEdit(db.Model):
     ident_id = db.Column(db.ForeignKey('file_ident.id'), nullable=True)
     rev_id = db.Column(db.ForeignKey('file_rev.id'), nullable=True)
     redirect_id = db.Column(db.ForeignKey('file_ident.id'), nullable=True)
-    edit_group = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
+    edit_group_id = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
 
 
 ### Editing #################################################################
-
-#class Edit(db.Model):
-#    __tablename__ = 'edit'
-#    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-#    edit_group = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
-#    editor = db.Column(db.ForeignKey('editor.id'), nullable=False)
-#    comment = db.Column(db.String, nullable=True)
-#    extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
-#    # WARNING: polymorphic. Represents the ident that should end up pointing to
-#    # this revision.
-#    entity_ident = db.Column(db.Integer, nullable=True)
-#    entity_rev = db.Column(db.Integer, nullable=True)
-#    entity_redirect = db.Column(db.Integer, nullable=True)
 
 class EditGroup(db.Model):
     __tablename__ = 'edit_group'

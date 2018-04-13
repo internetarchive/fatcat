@@ -228,7 +228,6 @@ def hydrate_work(wid):
     hydro.update({
         "work_type": work.revision.work_type,
         "title": work.revision.title,
-        "edit_id": work.revision.edit_id,
         "primary": primary,
         "creators": creators,
         "releases": releases,
@@ -244,7 +243,7 @@ def hydrate_release(rid):
         "_type": "release",
         "id": rid,
         "revision": release.rev_id,
-        "edit_id": release.revision.edit_id,
+        #"edit_id": release.revision.edit_id,
         "is_live": release.live,
 
         "work_id": release.revision.work_ident_id,
