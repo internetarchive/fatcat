@@ -99,14 +99,16 @@ behavior and schema layouts. These would all be semantic entities like "work",
 
 fatcat identifiers would be semanticly meaningless fixed length random numbers,
 usually represented in case-insensitive base32 format. Each entity type would
-have it's own identifier namespace. Eg, 96 bit identifiers would have 26
+have it's own identifier namespace. Eg, 96 bit identifiers would have 20
 characters and look like:
 
     fcwork_rzga5b9cd7efgh04iljk
-
-As a URL:
-
     https://fatcat.org/work/rzga5b9cd7efgh04iljk
+
+128-bit (UUID size) would have 26 characters:
+
+    fcwork_rzga5b9cd7efgh04iljk8f3jvz
+    https://fatcat.org/work/rzga5b9cd7efgh04iljk8f3jvz
 
 A 64 bit namespace is probably plenty though, and would work with most databse
 Integer columns:
