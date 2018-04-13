@@ -26,6 +26,8 @@ class FatcatTestCase(unittest.TestCase):
         fatcat.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
         fatcat.app.testing = True
         self.app = fatcat.app.test_client()
+        fatcat.db.session.remove()
+        fatcat.db.drop_all()
         fatcat.db.create_all()
 
     def test_health(self):
