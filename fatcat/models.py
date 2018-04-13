@@ -8,96 +8,63 @@ states for identifiers:
 - deleted: live, but doesn't point to a rev
 
 possible refactors:
-- '_rev' instead of '_revision'
+- '_rev' instead of '_rev'
+- use mixins for entities
 """
 
 from fatcat import db
 
-# TODO: EntityMixin, EntityIdMixin
+
+### Inter-Entity Relationships ###############################################
 
 class WorkContrib(db.Model):
     __tablename__ = "work_contrib"
-    work_rev= db.Column(db.ForeignKey('work_revision.id'), nullable=False, primary_key=True)
+    work_rev= db.Column(db.ForeignKey('work_rev.id'), nullable=False, primary_key=True)
     creator_ident_id = db.Column(db.ForeignKey('creator_ident.id'), nullable=False, primary_key=True)
     type = db.Column(db.String, nullable=True)
     stub = db.Column(db.String, nullable=True)
 
     creator = db.relationship("CreatorIdent")
-    work = db.relationship("WorkRevision")
+    work = db.relationship("WorkRev")
 
 class ReleaseContrib(db.Model):
     __tablename__ = "release_contrib"
-    release_rev = db.Column(db.ForeignKey('release_revision.id'), nullable=False, primary_key=True)
+    release_rev = db.Column(db.ForeignKey('release_rev.id'), nullable=False, primary_key=True)
     creator_ident_id = db.Column(db.ForeignKey('creator_ident.id'), nullable=False, primary_key=True)
     type = db.Column(db.String, nullable=True)
     stub = db.Column(db.String, nullable=True)
 
     creator = db.relationship("CreatorIdent")
-    release = db.relationship("ReleaseRevision")
+    release = db.relationship("ReleaseRev")
 
 class ReleaseRef(db.Model):
     __tablename__ = "release_ref"
     id = db.Column(db.Integer, primary_key=True, nullable=False)
-    release_rev = db.Column(db.ForeignKey('release_revision.id'), nullable=False)
+    release_rev = db.Column(db.ForeignKey('release_rev.id'), nullable=False)
     target_release_ident_id = db.Column(db.ForeignKey('release_ident.id'), nullable=True)
     index = db.Column(db.Integer, nullable=True)
     stub = db.Column(db.String, nullable=True)
     doi = db.Column(db.String, nullable=True)
 
-    release = db.relationship("ReleaseRevision")
+    release = db.relationship("ReleaseRev")
     target = db.relationship("ReleaseIdent")
 
 class FileRelease(db.Model):
     __tablename__ = "file_release"
     id = db.Column(db.Integer, primary_key=True, nullable=False)
-    file_rev= db.Column(db.ForeignKey('file_revision.id'), nullable=False)
+    file_rev= db.Column(db.ForeignKey('file_rev.id'), nullable=False)
     release_ident_id = db.Column(db.ForeignKey('release_ident.id'), nullable=False)
 
     release = db.relationship("ReleaseIdent")
-    file = db.relationship("FileRevision")
+    file = db.relationship("FileRev")
 
-class WorkIdent(db.Model):
-    """
-    If revision_id is null, this was deleted.
-    If redirect_id is not null, this has been merged with the given id. In this
-        case revision_id is a "cached" copy of the redirect's revision_id, as
-        an optimization. If the merged work is "deleted", revision_id can be
-        null and redirect_id not-null.
-    """
-    __tablename__ = 'work_ident'
-    id = db.Column(db.Integer, primary_key=True, nullable=False)
-    live = db.Column(db.Boolean, nullable=False, default=False)
-    revision_id = db.Column(db.ForeignKey('work_revision.id'), nullable=True)
-    redirect_id = db.Column(db.ForeignKey('work_ident.id'), nullable=True)
-    revision = db.relationship("WorkRevision")
 
-class WorkLog(db.Model):
-    __tablename__ = 'work_log'
-    # ID is a monotonic int here; important for ordering!
-    id = db.Column(db.Integer, primary_key=True, nullable=False)
-    work_ident_id = db.Column(db.ForeignKey('work_ident.id'), nullable=False)
-    #old_revision_id = db.Column(db.ForeignKey('work_revision.id'), nullable=True)
-    #old_redirect_id = db.Column(db.ForeignKey('work_ident.id'), nullable=True)
-    new_revision_id = db.Column(db.ForeignKey('work_revision.id'), nullable=True)
-    new_redirect_id = db.Column(db.ForeignKey('work_ident.id'), nullable=True)
-    # TODO: is this right?
-    edit_id = db.Column(db.ForeignKey('edit.id'))
+### Entities #################################################################
 
-class WorkEdit(db.Model):
-    __tablename__ = 'work_edit'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    ident_id = db.Column(db.ForeignKey('work_ident.id'), nullable=True)
-    revision_id = db.Column(db.ForeignKey('work_revision.id'), nullable=True)
-    redirect_id = db.Column(db.ForeignKey('work_ident.id'), nullable=True)
-    edit_group = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
-    editor = db.Column(db.ForeignKey('editor.id'), nullable=False)
-    comment = db.Column(db.String, nullable=True)
-    extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
-
-class WorkRevision(db.Model):
-    __tablename__ = 'work_revision'
+class WorkRev(db.Model):
+    __tablename__ = 'work_rev'
     id = db.Column(db.Integer, primary_key=True)
-    edit_id = db.Column(db.ForeignKey('edit.id'))
+    edit_id = db.Column(db.ForeignKey('work_edit.id'))
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
 
     title = db.Column(db.String)
@@ -107,18 +74,35 @@ class WorkRevision(db.Model):
     creators = db.relationship('WorkContrib', lazy='subquery',
         backref=db.backref('works', lazy=True))
 
-class ReleaseIdent(db.Model):
-    __tablename__ = 'release_ident'
-    id = db.Column(db.Integer, primary_key=True)
+class WorkIdent(db.Model):
+    """
+    If rev_id is null, this was deleted.
+    If redirect_id is not null, this has been merged with the given id. In this
+        case rev_id is a "cached" copy of the redirect's rev_id, as
+        an optimization. If the merged work is "deleted", rev_id can be
+        null and redirect_id not-null.
+    """
+    __tablename__ = 'work_ident'
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
     live = db.Column(db.Boolean, nullable=False, default=False)
-    revision_id = db.Column(db.ForeignKey('release_revision.id'))
-    redirect_id = db.Column(db.ForeignKey('release_ident.id'), nullable=True)
-    revision = db.relationship("ReleaseRevision")
+    rev_id = db.Column(db.ForeignKey('work_rev.id'), nullable=True)
+    redirect_id = db.Column(db.ForeignKey('work_ident.id'), nullable=True)
+    revision = db.relationship("WorkRev")
 
-class ReleaseRevision(db.Model):
-    __tablename__ = 'release_revision'
+class WorkEdit(db.Model):
+    __tablename__ = 'work_edit'
+    id = db.Column(db.Integer, primary_key=True)
+    ident_id = db.Column(db.ForeignKey('work_ident.id'), nullable=True)
+    rev_id = db.Column(db.ForeignKey('work_rev.id'), nullable=True)
+    redirect_id = db.Column(db.ForeignKey('work_ident.id'), nullable=True)
+    edit_group = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
+    extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
+
+
+class ReleaseRev(db.Model):
+    __tablename__ = 'release_rev'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    edit_id = db.Column(db.ForeignKey('edit.id'))
+    edit_id = db.Column(db.ForeignKey('release_edit.id'))
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
 
     work_ident_id = db.ForeignKey('work_ident.id')
@@ -137,37 +121,56 @@ class ReleaseRevision(db.Model):
     creators = db.relationship('ReleaseContrib', lazy='subquery')
     refs = db.relationship('ReleaseRef', lazy='subquery')
 
-class CreatorIdent(db.Model):
-    __tablename__ = 'creator_ident'
+class ReleaseIdent(db.Model):
+    __tablename__ = 'release_ident'
     id = db.Column(db.Integer, primary_key=True)
     live = db.Column(db.Boolean, nullable=False, default=False)
-    revision_id = db.Column(db.ForeignKey('creator_revision.id'))
-    redirect_id = db.Column(db.ForeignKey('creator_ident.id'), nullable=True)
-    revision = db.relationship("CreatorRevision")
+    rev_id = db.Column(db.ForeignKey('release_rev.id'))
+    redirect_id = db.Column(db.ForeignKey('release_ident.id'), nullable=True)
+    revision = db.relationship("ReleaseRev")
 
-class CreatorRevision(db.Model):
-    __tablename__ = 'creator_revision'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    edit_id = db.Column(db.ForeignKey('edit.id'))
+class ReleaseEdit(db.Model):
+    __tablename__ = 'release_edit'
+    id = db.Column(db.Integer, primary_key=True)
+    ident_id = db.Column(db.ForeignKey('release_ident.id'), nullable=True)
+    rev_id = db.Column(db.ForeignKey('release_rev.id'), nullable=True)
+    redirect_id = db.Column(db.ForeignKey('release_ident.id'), nullable=True)
+    edit_group = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
-    #creator_ids = db.relationship("CreatorIdent", backref="revision", lazy=False)
+
+
+class CreatorRev(db.Model):
+    __tablename__ = 'creator_rev'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    edit_id = db.Column(db.ForeignKey('creator_edit.id'))
+    extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
 
     name = db.Column(db.String)
     sortname = db.Column(db.String)
     orcid = db.Column(db.String)            # TODO: identifier table
 
-class ContainerIdent(db.Model):
-    __tablename__ = 'container_ident'
+class CreatorIdent(db.Model):
+    __tablename__ = 'creator_ident'
     id = db.Column(db.Integer, primary_key=True)
     live = db.Column(db.Boolean, nullable=False, default=False)
-    revision_id = db.Column(db.ForeignKey('container_revision.id'))
-    redirect_id = db.Column(db.ForeignKey('container_ident.id'), nullable=True)
-    revision = db.relationship("ContainerRevision")
+    rev_id = db.Column(db.ForeignKey('creator_rev.id'))
+    redirect_id = db.Column(db.ForeignKey('creator_ident.id'), nullable=True)
+    revision = db.relationship("CreatorRev")
 
-class ContainerRevision(db.Model):
-    __tablename__ = 'container_revision'
+class CreatorEdit(db.Model):
+    __tablename__ = 'creator_edit'
+    id = db.Column(db.Integer, primary_key=True)
+    ident_id = db.Column(db.ForeignKey('creator_ident.id'), nullable=True)
+    rev_id = db.Column(db.ForeignKey('creator_rev.id'), nullable=True)
+    redirect_id = db.Column(db.ForeignKey('creator_ident.id'), nullable=True)
+    edit_group = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
+    extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
+
+
+class ContainerRev(db.Model):
+    __tablename__ = 'container_rev'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    edit_id = db.Column(db.ForeignKey('edit.id'))
+    edit_id = db.Column(db.ForeignKey('container_edit.id'))
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
 
     name = db.Column(db.String)
@@ -176,55 +179,88 @@ class ContainerRevision(db.Model):
     sortname = db.Column(db.String)
     issn = db.Column(db.String)             # TODO: identifier table
 
-class FileIdent(db.Model):
-    __tablename__ = 'file_ident'
+class ContainerIdent(db.Model):
+    __tablename__ = 'container_ident'
     id = db.Column(db.Integer, primary_key=True)
     live = db.Column(db.Boolean, nullable=False, default=False)
-    revision_id = db.Column('revision', db.ForeignKey('file_revision.id'))
-    redirect_id = db.Column(db.ForeignKey('file_ident.id'), nullable=True)
-    revision = db.relationship("FileRevision")
+    rev_id = db.Column(db.ForeignKey('container_rev.id'))
+    redirect_id = db.Column(db.ForeignKey('container_ident.id'), nullable=True)
+    revision = db.relationship("ContainerRev")
 
-class FileRevision(db.Model):
-    __tablename__ = 'file_revision'
+class ContainerEdit(db.Model):
+    __tablename__ = 'container_edit'
+    id = db.Column(db.Integer, primary_key=True)
+    ident_id = db.Column(db.ForeignKey('container_ident.id'), nullable=True)
+    rev_id = db.Column(db.ForeignKey('container_rev.id'), nullable=True)
+    redirect_id = db.Column(db.ForeignKey('container_ident.id'), nullable=True)
+    edit_group = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
+    extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
+
+
+class FileRev(db.Model):
+    __tablename__ = 'file_rev'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    edit_id = db.Column(db.ForeignKey('edit.id'))
+    edit_id = db.Column(db.ForeignKey('file_edit.id'))
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
 
     size = db.Column(db.Integer)
     sha1 = db.Column(db.Integer)            # TODO: hash table... only or in addition?
     url = db.Column(db.Integer)             # TODO: URL table
-
     releases = db.relationship('FileRelease', lazy='subquery')
 
-class Edit(db.Model):
-    __tablename__ = 'edit'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+class FileIdent(db.Model):
+    __tablename__ = 'file_ident'
+    id = db.Column(db.Integer, primary_key=True)
+    live = db.Column(db.Boolean, nullable=False, default=False)
+    rev_id = db.Column('revision', db.ForeignKey('file_rev.id'))
+    redirect_id = db.Column(db.ForeignKey('file_ident.id'), nullable=True)
+    revision = db.relationship("FileRev")
+
+class FileEdit(db.Model):
+    __tablename__ = 'file_edit'
+    id = db.Column(db.Integer, primary_key=True)
+    ident_id = db.Column(db.ForeignKey('file_ident.id'), nullable=True)
+    rev_id = db.Column(db.ForeignKey('file_rev.id'), nullable=True)
+    redirect_id = db.Column(db.ForeignKey('file_ident.id'), nullable=True)
     edit_group = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
-    editor = db.Column(db.ForeignKey('editor.id'), nullable=False)
-    comment = db.Column(db.String, nullable=True)
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
-    # WARNING: polymorphic. Represents the ident that should end up pointing to
-    # this revision.
-    entity_ident = db.Column(db.Integer, nullable=True)
-    entity_rev = db.Column(db.Integer, nullable=True)
-    entity_redirect = db.Column(db.Integer, nullable=True)
+
+
+### Editing #################################################################
+
+#class Edit(db.Model):
+#    __tablename__ = 'edit'
+#    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+#    edit_group = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
+#    editor = db.Column(db.ForeignKey('editor.id'), nullable=False)
+#    comment = db.Column(db.String, nullable=True)
+#    extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
+#    # WARNING: polymorphic. Represents the ident that should end up pointing to
+#    # this revision.
+#    entity_ident = db.Column(db.Integer, nullable=True)
+#    entity_rev = db.Column(db.Integer, nullable=True)
+#    entity_redirect = db.Column(db.Integer, nullable=True)
 
 class EditGroup(db.Model):
     __tablename__ = 'edit_group'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     editor = db.Column(db.ForeignKey('editor.id'))
     description = db.Column(db.String)
+    editor = db.Column(db.ForeignKey('editor.id'), nullable=False)
 
 class Editor(db.Model):
     __tablename__ = 'editor'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String)
+    group = db.Column(db.String)
+
+
+### Other ###################################################################
 
 class ChangelogEntry(db.Model):
-    # XXX: remove this?
     __tablename__= 'changelog'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    edit_id = db.Column(db.ForeignKey('edit.id'))
+    edit_group_id = db.Column(db.ForeignKey('edit_group.id'))
     timestamp = db.Column(db.Integer)
 
 class ExtraJson(db.Model):

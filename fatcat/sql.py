@@ -10,16 +10,16 @@ def populate_db():
     TODO: doesn't create an edit trail (yet)
     """
 
-    n_elkies = CreatorRevision(
+    n_elkies = CreatorRev(
         name="Noam D. Elkies",
         sortname="Elkies, N",
         orcid=None)
     n_elkies_id = CreatorIdent(revision=n_elkies)
-    pi_work = WorkRevision(
+    pi_work = WorkRev(
         title="Why is π^2 so close to 10?",
         work_type="journal-article")
     pi_work_id = WorkIdent(revision=pi_work)
-    pi_release = ReleaseRevision(
+    pi_release = ReleaseRev(
         title=pi_work.title,
         work_ident_id=pi_work.id,
         release_type="journal-article")
@@ -36,8 +36,8 @@ def populate_db():
         pi_release_id])
 
     # TODO:
-    #ligo_collab = CreatorRevision(name="LIGO Scientific Collaboration")
-    #ligo_paper = ReleaseRevision(
+    #ligo_collab = CreatorRev(name="LIGO Scientific Collaboration")
+    #ligo_paper = ReleaseRev(
     #    title="Full Band All-sky Search for Periodic Gravitational Waves in the O1 LIGO Data")
     db.session.commit()
 
@@ -56,7 +56,7 @@ def populate_complex_db(count=100):
     for _ in range(count):
         first = random.choice(first_names)
         last = random.choice(last_names)
-        ar = CreatorRevision(
+        ar = CreatorRev(
             name="{} {}".format(first, last),
             sortname="{}, {}".format(last, first[0]),
             orcid=None)
@@ -66,7 +66,7 @@ def populate_complex_db(count=100):
     container_revs = []
     container_ids = []
     for _ in range(5):
-        cr = ContainerRevision(
+        cr = ContainerRev(
             name="The Fake Journal of Stuff",
             #container_id=None,
             publisher="Big Paper",
@@ -86,10 +86,10 @@ def populate_complex_db(count=100):
     file_ids = []
     for _ in range(count):
         title = "{} {}".format(random.choice(title_start), random.choice(title_ends))
-        work = WorkRevision(title=title)
+        work = WorkRev(title=title)
         work_id = WorkIdent(revision=work)
         authors = set(random.sample(author_ids, 5))
-        release = ReleaseRevision(
+        release = ReleaseRev(
             title=work.title,
             creators=[ReleaseContrib(creator=a) for a in list(authors)],
             #work=work,
@@ -97,7 +97,7 @@ def populate_complex_db(count=100):
         release_id = ReleaseIdent(revision=release)
         work.primary_release = release
         authors.add(random.choice(author_ids))
-        release2 = ReleaseRevision(
+        release2 = ReleaseRev(
             title=work.title + " (again)",
             creators=[ReleaseContrib(creator=a) for a in list(authors)],
             #work=work,
@@ -112,7 +112,7 @@ def populate_complex_db(count=100):
 
         file_content = str(random.random()) * random.randint(3,100)
         file_sha = hashlib.sha1(file_content.encode('utf-8')).hexdigest()
-        file_rev = FileRevision(
+        file_rev = FileRev(
             sha1=file_sha,
             size=len(file_content),
             url="http://archive.invalid/{}".format(file_sha),
@@ -143,7 +143,7 @@ def add_crossref(meta):
     author_revs = []
     author_ids = []
     for am in meta['author']:
-        ar = CreatorRevision(
+        ar = CreatorRev(
             name="{} {}".format(am['given'], am['family']),
             sortname="{}, {}".format(am['family'], am['given']),
             orcid=None)
@@ -151,7 +151,7 @@ def add_crossref(meta):
         author_ids.append(CreatorIdent(revision=ar))
 
     # container
-    container = ContainerRevision(
+    container = ContainerRev(
         issn=meta['ISSN'][0],
         name=meta['container-title'][0],
         #container_id=None,
@@ -160,9 +160,9 @@ def add_crossref(meta):
     container_id = ContainerIdent(revision=container)
 
     # work and release
-    work = WorkRevision(title=title)
+    work = WorkRev(title=title)
     work_id = WorkIdent(revision=work)
-    release = ReleaseRevision(
+    release = ReleaseRev(
         title=title,
         creators=[ReleaseContrib(creator=a) for a in author_ids],
         #work=work,
@@ -210,7 +210,7 @@ def hydrate_work(wid):
     hydro = {
         "_type": "work",
         "id": wid,
-        "rev": work.revision_id,
+        "rev": work.rev_id,
         "is_live": work.live,
         "redirect_id": work.redirect_id,
     }
@@ -243,7 +243,7 @@ def hydrate_release(rid):
     return {
         "_type": "release",
         "id": rid,
-        "revision": release.revision_id,
+        "revision": release.rev_id,
         "edit_id": release.revision.edit_id,
         "is_live": release.live,
 
