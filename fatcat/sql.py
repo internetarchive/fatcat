@@ -222,14 +222,12 @@ def hydrate_work(wid):
     primary = None
     if work.revision.primary_release_id:
         primary = hydrate_release(work.revision.primary_release_id)
-    creators = [c.creator_id for c in WorkContrib.query.filter(WorkContrib.work == work).all()]
     #releases = [r.id for r in ReleaseIdent.query.filter(ReleaseIdent.revision.work_id==work.id).all()]
     releases = []
     hydro.update({
         "work_type": work.revision.work_type,
         "title": work.revision.title,
         "primary": primary,
-        "creators": creators,
         "releases": releases,
     })
     return hydro

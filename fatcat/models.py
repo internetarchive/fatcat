@@ -17,16 +17,6 @@ from fatcat import db
 
 ### Inter-Entity Relationships ###############################################
 
-class WorkContrib(db.Model):
-    __tablename__ = "work_contrib"
-    work_rev= db.Column(db.ForeignKey('work_rev.id'), nullable=False, primary_key=True)
-    creator_ident_id = db.Column(db.ForeignKey('creator_ident.id'), nullable=False, primary_key=True)
-    type = db.Column(db.String, nullable=True)
-    stub = db.Column(db.String, nullable=True)
-
-    creator = db.relationship("CreatorIdent")
-    work = db.relationship("WorkRev")
-
 class ReleaseContrib(db.Model):
     __tablename__ = "release_contrib"
     release_rev = db.Column(db.ForeignKey('release_rev.id'), nullable=False, primary_key=True)
@@ -69,9 +59,6 @@ class WorkRev(db.Model):
     title = db.Column(db.String)
     work_type = db.Column(db.String)
     primary_release_id = db.Column(db.ForeignKey('release_ident.id'), nullable=True)
-
-    creators = db.relationship('WorkContrib', lazy='subquery',
-        backref=db.backref('works', lazy=True))
 
 class WorkIdent(db.Model):
     """
