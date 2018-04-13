@@ -17,5 +17,5 @@ def api_work_get(work_id):
 
 @app.route('/v0/work/random', methods=['GET'])
 def api_work_random():
-    work = WorkId.query.order_by(db.func.random()).first()
+    work = WorkIdent.query.order_by(db.func.random()).first()
     return redirect('/v0/work/{}'.format(work.id))
