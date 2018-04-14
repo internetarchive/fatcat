@@ -12,12 +12,32 @@ import tempfile
 ## Helpers ##################################################################
 
 def check_entity_fields(e):
-    for key in ('id', 'rev', 'is_live', 'redirect_id'):
+    for key in ('rev', 'is_live', 'redirect_id'):
         assert key in e
     for key in ('id',):
         assert e[key] is not None
 
-## API Tests ################################################################
+def check_release(e):
+    check_entity_fields(e)
+    for key in ('work', 'release_type'):
+        assert key in e
+    for key in ('title'):
+        assert e[key] is not None
+
+def check_creator(e):
+    check_entity_fields(e)
+    for key in ('name'):
+        assert e[key] is not None
+
+def check_container(e):
+    check_entity_fields(e)
+    for key in ('name'):
+        assert e[key] is not None
+
+def check_file(e):
+    check_entity_fields(e)
+    for key in ('size', 'sha1'):
+        assert e[key] is not None
 
 class FatcatTestCase(unittest.TestCase):
 
@@ -30,34 +50,10 @@ class FatcatTestCase(unittest.TestCase):
         fatcat.db.create_all()
         fatcat.sql.populate_db()
 
-    def test_health(self):
-        rv = self.app.get('/health')
-        obj = json.loads(rv.data.decode('utf-8'))
-        assert obj['ok']
 
-    def test_works(self):
-        fatcat.dummy.insert_example_works()
+## Model Tests ###############################################################
 
-        # Invalid Id
-        rv = self.app.get('/v0/work/_')
-        assert rv.status_code == 404
-
-        # Random
-        rv = self.app.get('/v0/work/random')
-        rv = self.app.get(rv.location)
-        work = json.loads(rv.data.decode('utf-8'))
-        check_entity_fields(work)
-        print(work)
-        assert work['title']
-        assert work['work_type']
-
-        # Valid Id (from random above)
-        rv = self.app.get('/v0/work/{}'.format(work['id']))
-        assert rv.status_code == 200
-
-        # Missing Id
-        rv = self.app.get('/v0/work/r3zga5b9cd7ef8gh084714iljk')
-        assert rv.status_code == 404
+class ModelTestCase(FatcatTestCase):
 
     def test_populate(self):
         fatcat.sql.populate_db()
@@ -81,3 +77,37 @@ class FatcatTestCase(unittest.TestCase):
     def test_hydrate_release(self):
         fatcat.dummy.insert_random_works()
         fatcat.sql.hydrate_release(1)
+
+
+## API Tests #################################################################
+
+class APITestCase(FatcatTestCase):
+
+    def test_health(self):
+        rv = self.app.get('/health')
+        obj = json.loads(rv.data.decode('utf-8'))
+        assert obj['ok']
+
+    def test_api_work(self):
+        fatcat.dummy.insert_example_works()
+
+        # Invalid Id
+        rv = self.app.get('/v0/work/_')
+        assert rv.status_code == 404
+
+        # Random
+        rv = self.app.get('/v0/work/random')
+        rv = self.app.get(rv.location)
+        work = json.loads(rv.data.decode('utf-8'))
+        check_entity_fields(work)
+        print(work)
+        assert work['title']
+        assert work['work_type']
+
+        # Valid Id (from random above)
+        rv = self.app.get('/v0/work/{}'.format(work['id']))
+        assert rv.status_code == 200
+
+        # Missing Id
+        rv = self.app.get('/v0/work/r3zga5b9cd7ef8gh084714iljk')
+        assert rv.status_code == 404
