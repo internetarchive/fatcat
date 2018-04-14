@@ -74,7 +74,7 @@ class WorkIdent(db.Model):
     is_live = db.Column(db.Boolean, nullable=False, default=False)
     rev_id = db.Column(db.ForeignKey('work_rev.id'), nullable=True)
     redirect_id = db.Column(db.ForeignKey('work_ident.id'), nullable=True)
-    revision = db.relationship("WorkRev")
+    rev = db.relationship("WorkRev")
 
 class WorkEdit(db.Model):
     __tablename__ = 'work_edit'
@@ -115,7 +115,7 @@ class ReleaseIdent(db.Model):
     is_live = db.Column(db.Boolean, nullable=False, default=False)
     rev_id = db.Column(db.ForeignKey('release_rev.id'))
     redirect_id = db.Column(db.ForeignKey('release_ident.id'), nullable=True)
-    revision = db.relationship("ReleaseRev")
+    rev = db.relationship("ReleaseRev")
 
 class ReleaseEdit(db.Model):
     __tablename__ = 'release_edit'
@@ -142,7 +142,7 @@ class CreatorIdent(db.Model):
     is_live = db.Column(db.Boolean, nullable=False, default=False)
     rev_id = db.Column(db.ForeignKey('creator_rev.id'))
     redirect_id = db.Column(db.ForeignKey('creator_ident.id'), nullable=True)
-    revision = db.relationship("CreatorRev")
+    rev = db.relationship("CreatorRev")
 
 class CreatorEdit(db.Model):
     __tablename__ = 'creator_edit'
@@ -171,7 +171,7 @@ class ContainerIdent(db.Model):
     is_live = db.Column(db.Boolean, nullable=False, default=False)
     rev_id = db.Column(db.ForeignKey('container_rev.id'))
     redirect_id = db.Column(db.ForeignKey('container_ident.id'), nullable=True)
-    revision = db.relationship("ContainerRev")
+    rev = db.relationship("ContainerRev")
 
 class ContainerEdit(db.Model):
     __tablename__ = 'container_edit'
@@ -197,9 +197,9 @@ class FileIdent(db.Model):
     __tablename__ = 'file_ident'
     id = db.Column(db.Integer, primary_key=True)
     is_live = db.Column(db.Boolean, nullable=False, default=False)
-    rev_id = db.Column('revision', db.ForeignKey('file_rev.id'))
+    rev_id = db.Column(db.ForeignKey('file_rev.id'))
     redirect_id = db.Column(db.ForeignKey('file_ident.id'), nullable=True)
-    revision = db.relationship("FileRev")
+    rev = db.relationship("FileRev")
 
 class FileEdit(db.Model):
     __tablename__ = 'file_edit'
@@ -242,50 +242,98 @@ class ExtraJson(db.Model):
 
 ### Marshmallow Wrappers ####################################################
 
-# TODO: base class for entities and edits
+class EntitySchema(ma.ModelSchema):
+
+    @post_dump(pass_many=False)
+    def merge_rev(self, data):
+        print(data)
+        if data.get('rev', None) != None:
+            rev_id = data['rev'].pop('id')
+            data.update(data['rev'])
+            data['rev'] = rev_id
+        else:
+            data['rev'] = None
+        # TODO: should be able to set as an allow_none field somewhere
+        if not data.get('redirect_id', None):
+            data['redirect_id'] = None
+        print(data)
+
 
 class WorkRevSchema(ma.ModelSchema):
     class Meta:
         model = WorkRev
 
-class WorkSchema(ma.ModelSchema):
-
-    @post_dump(pass_many=False)
-    def merge_rev(self, data):
-        if data.get('revision', None):
-            rev_id = data['revision'].pop('id')
-            data.update(data['revision'])
-            data.pop('revision')
-            data['rev'] = rev_id
-        if not data.get('redirect_id', None):
-            data['redirect_id'] = None
-
+class WorkSchema(EntitySchema):
     class Meta:
         model = WorkIdent
+    rev = ma.Nested(WorkRevSchema)
 
-    revision = ma.Nested(WorkRevSchema)
+class WorkEditSchema(ma.ModelSchema):
+    class Meta:
+        model = WorkEdit
 
 work_schema = WorkSchema()
+work_edit_schema = WorkEditSchema()
 
-class FileSchema(ma.ModelSchema):
 
-    @post_dump(pass_many=False)
-    def merge_rev(self, data):
-        if data['revision']:
-            data['revision'].pop('id')
-            data.update(data['revision'])
-            data.pop('revision')
-
+class ReleaseRevSchema(ma.ModelSchema):
     class Meta:
-        model = FileIdent
+        model = ReleaseRev
 
-file_schema = FileSchema()
-
-class FileEditSchema(ma.ModelSchema):
+class ReleaseSchema(EntitySchema):
     class Meta:
-        model = FileEdit
+        model = ReleaseIdent
+    rev = ma.Nested(ReleaseRevSchema)
+
+class ReleaseEditSchema(ma.ModelSchema):
+    class Meta:
+        model = ReleaseEdit
+
+release_schema = ReleaseSchema()
+release_edit_schema = ReleaseEditSchema()
+
+
+class CreatorRevSchema(ma.ModelSchema):
+    class Meta:
+        model = CreatorRev
+
+class CreatorSchema(EntitySchema):
+    class Meta:
+        model = CreatorIdent
+    rev = ma.Nested(CreatorRevSchema)
+
+class CreatorEditSchema(ma.ModelSchema):
+    class Meta:
+        model = CreatorEdit
+
+creator_schema = CreatorSchema()
+creator_edit_schema = CreatorEditSchema()
+
+
+class ContainerRevSchema(ma.ModelSchema):
+    class Meta:
+        model = ContainerRev
+
+class ContainerSchema(EntitySchema):
+    class Meta:
+        model = ContainerIdent
+    rev = ma.Nested(ContainerRevSchema)
+
+class ContainerEditSchema(ma.ModelSchema):
+    class Meta:
+        model = ContainerEdit
+
+container_schema = ContainerSchema()
+container_edit_schema = ContainerEditSchema()
+
+
+class Editor(ma.ModelSchema):
+    class Meta:
+        model = Editor
 
 class EditGroupSchema(ma.ModelSchema):
     class Meta:
         model = EditGroup
 
+editor_schema = EditGroupSchema()
+edit_group_schema = EditGroupSchema()

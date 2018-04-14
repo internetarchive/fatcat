@@ -21,7 +21,7 @@ def add_crossref(meta):
             sortname="{}, {}".format(am['family'], am['given']),
             orcid=None)
         author_revs.append(ar)
-        author_ids.append(CreatorIdent(revision=ar))
+        author_ids.append(CreatorIdent(rev=ar))
 
     # container
     container = ContainerRev(
@@ -30,11 +30,11 @@ def add_crossref(meta):
         #container_id=None,
         publisher=meta['publisher'],
         sortname=meta['short-container-title'][0])
-    container_id = ContainerIdent(revision=container)
+    container_id = ContainerIdent(rev=container)
 
     # work and release
     work = WorkRev(title=title)
-    work_id = WorkIdent(revision=work)
+    work_id = WorkIdent(rev=work)
     release = ReleaseRev(
         title=title,
         creators=[ReleaseContrib(creator=a) for a in author_ids],
@@ -47,7 +47,7 @@ def add_crossref(meta):
         issue=meta.get('issue', None),
         volume=meta.get('volume', None),
         pages=meta.get('page', None))
-    release_id = ReleaseIdent(revision=release)
+    release_id = ReleaseIdent(rev=release)
     work.primary_release = release
     extra = json.dumps({
         'crossref': {
@@ -87,19 +87,19 @@ def hydrate_work(wid):
         "is_live": work.is_live,
         "redirect_id": work.redirect_id,
     }
-    if not work.revision:
+    if not work.rev:
         # TODO: look up edit id here from changelog?
         hydro["edit_id"] = None
         return hydro
 
     primary = None
-    if work.revision.primary_release_id:
-        primary = hydrate_release(work.revision.primary_release_id)
-    #releases = [r.id for r in ReleaseIdent.query.filter(ReleaseIdent.revision.work_id==work.id).all()]
+    if work.rev.primary_release_id:
+        primary = hydrate_release(work.rev.primary_release_id)
+    #releases = [r.id for r in ReleaseIdent.query.filter(ReleaseIdent.rev.work_id==work.id).all()]
     releases = []
     hydro.update({
-        "work_type": work.revision.work_type,
-        "title": work.revision.title,
+        "work_type": work.rev.work_type,
+        "title": work.rev.title,
         "primary": primary,
         "releases": releases,
     })
@@ -113,13 +113,13 @@ def hydrate_release(rid):
     return {
         "_type": "release",
         "id": rid,
-        "revision": release.rev_id,
-        #"edit_id": release.revision.edit_id,
+        "rev": release.rev_id,
+        #"edit_id": release.rev.edit_id,
         "is_live": release.is_live,
 
-        "work_id": release.revision.work_ident_id,
-        "release_type": release.revision.release_type,
-        "title": release.revision.title,
+        "work_id": release.rev.work_ident_id,
+        "release_type": release.rev.release_type,
+        "title": release.rev.title,
         "creators": [],
         "releases": [],
         "files": [],

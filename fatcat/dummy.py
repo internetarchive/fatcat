@@ -13,18 +13,18 @@ def insert_example_works():
         name="Noam D. Elkies",
         sortname="Elkies, N",
         orcid=None)
-    n_elkies_id = CreatorIdent(revision=n_elkies)
+    n_elkies_id = CreatorIdent(rev=n_elkies)
     pi_work = WorkRev(
         title="Why is π^2 so close to 10?",
         work_type="journal-article")
-    pi_work_id = WorkIdent(revision=pi_work)
+    pi_work_id = WorkIdent(rev=pi_work)
     pi_release = ReleaseRev(
         title=pi_work.title,
         work_ident_id=pi_work.id,
         release_type="journal-article")
     pi_contrib = ReleaseContrib(creator=n_elkies_id)
     pi_release.creators.append(pi_contrib)
-    pi_release_id = ReleaseIdent(revision=pi_release)
+    pi_release_id = ReleaseIdent(rev=pi_release)
     pi_work.primary_release = pi_release
 
     # TODO:
@@ -60,7 +60,7 @@ def insert_random_works(count=100):
             sortname="{}, {}".format(last, first[0]),
             orcid=None)
         author_revs.append(ar)
-        author_ids.append(CreatorIdent(revision=ar))
+        author_ids.append(CreatorIdent(rev=ar))
 
     container_revs = []
     container_ids = []
@@ -72,7 +72,7 @@ def insert_random_works(count=100):
             sortname="Fake Journal of Stuff",
             issn="1234-5678")
         container_revs.append(cr)
-        container_ids.append(ContainerIdent(revision=cr))
+        container_ids.append(ContainerIdent(rev=cr))
 
     title_start = ("All about ", "When I grow up I want to be",
         "The final word on", "Infinity: ", "The end of")
@@ -86,14 +86,14 @@ def insert_random_works(count=100):
     for _ in range(count):
         title = "{} {}".format(random.choice(title_start), random.choice(title_ends))
         work = WorkRev(title=title)
-        work_id = WorkIdent(revision=work)
+        work_id = WorkIdent(rev=work)
         authors = set(random.sample(author_ids, 5))
         release = ReleaseRev(
             title=work.title,
             creators=[ReleaseContrib(creator=a) for a in list(authors)],
             #work=work,
             container=random.choice(container_ids))
-        release_id = ReleaseIdent(revision=release)
+        release_id = ReleaseIdent(rev=release)
         work.primary_release = release
         authors.add(random.choice(author_ids))
         release2 = ReleaseRev(
@@ -101,7 +101,7 @@ def insert_random_works(count=100):
             creators=[ReleaseContrib(creator=a) for a in list(authors)],
             #work=work,
             container=random.choice(container_ids))
-        release_id2 = ReleaseIdent(revision=release2)
+        release_id2 = ReleaseIdent(rev=release2)
         work_revs.append(work)
         work_ids.append(work_id)
         release_revs.append(release)
@@ -117,7 +117,7 @@ def insert_random_works(count=100):
             url="http://archive.invalid/{}".format(file_sha),
             releases=[FileRelease(release=release_id), FileRelease(release=release_id2)],
         )
-        file_id = FileIdent(revision=file_rev)
+        file_id = FileIdent(rev=file_rev)
         file_revs.append(file_rev)
         file_ids.append(file_id)
 
