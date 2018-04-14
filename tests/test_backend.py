@@ -67,14 +67,6 @@ class ModelTestCase(FatcatTestCase):
         for obj in raw:
             fatcat.sql.add_crossref_via_model(obj)
 
-    def test_hydrate_work(self):
-        fatcat.dummy.insert_random_works()
-        fatcat.sql.hydrate_work(1)
-
-    def test_hydrate_release(self):
-        fatcat.dummy.insert_random_works()
-        fatcat.sql.hydrate_release(1)
-
     def test_schema_release_rev(self):
         assert ReleaseRev.query.count() == 0
         e = {
@@ -178,7 +170,7 @@ class APITestCase(FatcatTestCase):
         assert WorkRev.query.count() == 0
         assert WorkEdit.query.count() == 0
         rv = self.app.post('/v0/work',
-            data=json.dumps(dict(title="dummy", work_type="thing")),
+            data=json.dumps(dict(title="dummy", work_type="thing", extra=dict(a=1, b="zing"))),
             headers={"content-type": "application/json"})
         print(rv)
         assert rv.status_code == 200

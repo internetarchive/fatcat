@@ -25,7 +25,7 @@ def insert_example_works():
     pi_contrib = ReleaseContrib(creator=n_elkies_id)
     pi_release.creators.append(pi_contrib)
     pi_release_id = ReleaseIdent(rev=pi_release)
-    pi_work.primary_release = pi_release
+    pi_work.primary_release = pi_release_id
 
     # TODO:
     #pi_file = File(
@@ -94,7 +94,7 @@ def insert_random_works(count=100):
             #work=work,
             container=random.choice(container_ids))
         release_id = ReleaseIdent(rev=release)
-        work.primary_release = release
+        work.primary_release = release_id
         authors.add(random.choice(author_ids))
         release2 = ReleaseRev(
             title=work.title + " (again)",

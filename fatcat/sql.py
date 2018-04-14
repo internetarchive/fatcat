@@ -50,7 +50,7 @@ def add_crossref_via_model(meta):
         volume=meta.get('volume', None),
         pages=meta.get('page', None))
     release_id = ReleaseIdent(rev=release)
-    work.primary_release = release
+    work.primary_release = release_id
     extra = json.dumps({
         'crossref': {
             'links': meta.get('link', []),
@@ -78,53 +78,3 @@ def add_crossref_via_model(meta):
     db.session.add_all(author_ids)
     db.session.commit()
 
-
-def hydrate_work(wid):
-
-    wid = int(wid)
-    work = WorkIdent.query.filter(WorkIdent.id==wid).first_or_404()
-    hydro = {
-        "_type": "work",
-        "id": wid,
-        "rev": work.rev_id,
-        "is_live": work.is_live,
-        "redirect_id": work.redirect_id,
-    }
-    if not work.rev:
-        # TODO: look up edit id here from changelog?
-        hydro["edit_id"] = None
-        return hydro
-
-    primary = None
-    if work.rev.primary_release_id:
-        primary = hydrate_release(work.rev.primary_release_id)
-    #releases = [r.id for r in ReleaseIdent.query.filter(ReleaseIdent.rev.work_id==work.id).all()]
-    releases = []
-    hydro.update({
-        "work_type": work.rev.work_type,
-        "title": work.rev.title,
-        "primary": primary,
-        "releases": releases,
-    })
-    return hydro
-
-def hydrate_release(rid):
-
-    wid = int(rid)
-    release = ReleaseIdent.query.filter(ReleaseIdent.id==rid).first_or_404()
-
-    return {
-        "_type": "release",
-        "id": rid,
-        "rev": release.rev_id,
-        #"edit_id": release.rev.edit_id,
-        "is_live": release.is_live,
-
-        "work_id": release.rev.work_ident_id,
-        "release_type": release.rev.release_type,
-        "title": release.rev.title,
-        "creators": [],
-        "releases": [],
-        "files": [],
-        "references": [],
-    }

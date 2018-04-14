@@ -27,8 +27,6 @@ def get_or_create_edit_group():
 def api_work_get(work_id):
     if not work_id.isdigit():
         return abort(404)
-    #work = hydrate_work(work_id)
-    #return jsonify(work)
     entity = WorkIdent.query.filter(WorkIdent.id==work_id).first_or_404()
     return work_schema.jsonify(entity)
 
@@ -37,22 +35,21 @@ def api_work_create():
     """
     1. find or create edit_group
     2. create work_edit, work_rev, work_ident
+
+    TODO: use marshmallow?
     """
-    print(request)
     params = request.get_json()
-    print(params)
     edit_group = get_or_create_edit_group()
-    edit = WorkEdit(edit_group=edit_group)
     rev = WorkRev(
         title=params.get('title', None),
         work_type=params.get('work_type', None),
     )
     ident = WorkIdent(is_live=False, rev=rev)
-    edit.ident = ident
-    edit.rev = rev
-    db.session.add(edit)
-    db.session.add(ident)
-    db.session.add(rev)
+    edit = WorkEdit(edit_group=edit_group, ident=ident, rev=rev)
+    if params.get('extra', None):
+        ser = json.dumps(params['extra'], indent=False).encode('utf-8')
+        rev.extra_json = ExtraJson(json=ser, sha1=hashlib.sha1(ser).hexdigest())
+    db.session.add_all([edit, ident, rev])
     db.session.commit()
     return work_schema.jsonify(ident)
 

@@ -55,11 +55,13 @@ class FileRelease(db.Model):
 class WorkRev(db.Model):
     __tablename__ = 'work_rev'
     id = db.Column(db.Integer, primary_key=True)
-    extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
+    extra_json_id = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
+    extra_json = db.relationship("ExtraJson") # XXX: for all entities
 
     title = db.Column(db.String)
     work_type = db.Column(db.String)
     primary_release_id = db.Column(db.ForeignKey('release_ident.id'), nullable=True)
+    primary_release = db.relationship('ReleaseIdent')
 
 class WorkIdent(db.Model):
     """
@@ -161,10 +163,11 @@ class ContainerRev(db.Model):
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
 
     name = db.Column(db.String)
-    #XXX: container_ident_id = db.Column(db.ForeignKey('container_ident.id'))
+    parent_id = db.Column(db.ForeignKey('container_ident.id', use_alter=True))
     publisher = db.Column(db.String)        # TODO: foreign key
     sortname = db.Column(db.String)
     issn = db.Column(db.String)             # TODO: identifier table
+    parent = db.relationship("ContainerIdent", foreign_keys="ContainerRev.parent_id")
 
 class ContainerIdent(db.Model):
     __tablename__ = 'container_ident'
@@ -172,7 +175,7 @@ class ContainerIdent(db.Model):
     is_live = db.Column(db.Boolean, nullable=False, default=False)
     rev_id = db.Column(db.ForeignKey('container_rev.id'))
     redirect_id = db.Column(db.ForeignKey('container_ident.id'), nullable=True)
-    rev = db.relationship("ContainerRev")
+    rev = db.relationship("ContainerRev", foreign_keys="ContainerIdent.rev_id")
 
 class ContainerEdit(db.Model):
     __tablename__ = 'container_edit'
