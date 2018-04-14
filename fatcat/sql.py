@@ -84,7 +84,7 @@ def hydrate_work(wid):
         "_type": "work",
         "id": wid,
         "rev": work.rev_id,
-        "is_live": work.live,
+        "is_live": work.is_live,
         "redirect_id": work.redirect_id,
     }
     if not work.revision:
@@ -115,7 +115,7 @@ def hydrate_release(rid):
         "id": rid,
         "revision": release.rev_id,
         #"edit_id": release.revision.edit_id,
-        "is_live": release.live,
+        "is_live": release.is_live,
 
         "work_id": release.revision.work_ident_id,
         "release_type": release.revision.release_type,

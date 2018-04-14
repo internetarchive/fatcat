@@ -12,10 +12,24 @@ from fatcat.sql import *
 def api_work_get(work_id):
     if not work_id.isdigit():
         return abort(404)
-    work = hydrate_work(work_id)
-    return jsonify(work)
+    #work = hydrate_work(work_id)
+    #return jsonify(work)
+    entity = WorkIdent.query.filter(WorkIdent.id==work_id).first_or_404()
+    return work_schema.jsonify(entity)
 
 @app.route('/v0/work/random', methods=['GET'])
 def api_work_random():
-    work = WorkIdent.query.order_by(db.func.random()).first()
-    return redirect('/v0/work/{}'.format(work.id))
+    entity = WorkIdent.query.order_by(db.func.random()).first()
+    return redirect('/v0/work/{}'.format(entity.id))
+
+@app.route('/v0/file/<file_id>', methods=['GET'])
+def api_file_get(file_id):
+    if not file_id.isdigit():
+        return abort(404)
+    entity = FileIdent.query.filter(FileIdent.id==file_id).first_or_404()
+    return file_schema.jsonify(entity)
+
+@app.route('/v0/file/random', methods=['GET'])
+def api_file_random():
+    entity = FileIdent.query.order_by(db.func.random()).first()
+    return redirect('/v0/file/{}'.format(entity.id))

@@ -12,7 +12,7 @@ possible refactors:
 - use mixins for entities
 """
 
-from marshmallow import post_load
+from marshmallow import post_dump
 from fatcat import db, ma
 
 
@@ -71,7 +71,7 @@ class WorkIdent(db.Model):
     """
     __tablename__ = 'work_ident'
     id = db.Column(db.Integer, primary_key=True, nullable=False)
-    live = db.Column(db.Boolean, nullable=False, default=False)
+    is_live = db.Column(db.Boolean, nullable=False, default=False)
     rev_id = db.Column(db.ForeignKey('work_rev.id'), nullable=True)
     redirect_id = db.Column(db.ForeignKey('work_ident.id'), nullable=True)
     revision = db.relationship("WorkRev")
@@ -112,7 +112,7 @@ class ReleaseRev(db.Model):
 class ReleaseIdent(db.Model):
     __tablename__ = 'release_ident'
     id = db.Column(db.Integer, primary_key=True)
-    live = db.Column(db.Boolean, nullable=False, default=False)
+    is_live = db.Column(db.Boolean, nullable=False, default=False)
     rev_id = db.Column(db.ForeignKey('release_rev.id'))
     redirect_id = db.Column(db.ForeignKey('release_ident.id'), nullable=True)
     revision = db.relationship("ReleaseRev")
@@ -139,7 +139,7 @@ class CreatorRev(db.Model):
 class CreatorIdent(db.Model):
     __tablename__ = 'creator_ident'
     id = db.Column(db.Integer, primary_key=True)
-    live = db.Column(db.Boolean, nullable=False, default=False)
+    is_live = db.Column(db.Boolean, nullable=False, default=False)
     rev_id = db.Column(db.ForeignKey('creator_rev.id'))
     redirect_id = db.Column(db.ForeignKey('creator_ident.id'), nullable=True)
     revision = db.relationship("CreatorRev")
@@ -168,7 +168,7 @@ class ContainerRev(db.Model):
 class ContainerIdent(db.Model):
     __tablename__ = 'container_ident'
     id = db.Column(db.Integer, primary_key=True)
-    live = db.Column(db.Boolean, nullable=False, default=False)
+    is_live = db.Column(db.Boolean, nullable=False, default=False)
     rev_id = db.Column(db.ForeignKey('container_rev.id'))
     redirect_id = db.Column(db.ForeignKey('container_ident.id'), nullable=True)
     revision = db.relationship("ContainerRev")
@@ -196,7 +196,7 @@ class FileRev(db.Model):
 class FileIdent(db.Model):
     __tablename__ = 'file_ident'
     id = db.Column(db.Integer, primary_key=True)
-    live = db.Column(db.Boolean, nullable=False, default=False)
+    is_live = db.Column(db.Boolean, nullable=False, default=False)
     rev_id = db.Column('revision', db.ForeignKey('file_rev.id'))
     redirect_id = db.Column(db.ForeignKey('file_ident.id'), nullable=True)
     revision = db.relationship("FileRev")
@@ -216,15 +216,14 @@ class FileEdit(db.Model):
 class EditGroup(db.Model):
     __tablename__ = 'edit_group'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    editor = db.Column(db.ForeignKey('editor.id'))
-    description = db.Column(db.String)
     editor = db.Column(db.ForeignKey('editor.id'), nullable=False)
+    description = db.Column(db.String)
 
 class Editor(db.Model):
     __tablename__ = 'editor'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String)
-    group = db.Column(db.String)
+    is_admin = db.Column(db.Boolean, nullable=False, default=False)
 
 class ChangelogEntry(db.Model):
     __tablename__= 'changelog'
@@ -239,3 +238,54 @@ class ExtraJson(db.Model):
     __tablename__ = 'extra_json'
     sha1 = db.Column(db.String, primary_key=True)
     json = db.Column(db.String)
+
+
+### Marshmallow Wrappers ####################################################
+
+# TODO: base class for entities and edits
+
+class WorkRevSchema(ma.ModelSchema):
+    class Meta:
+        model = WorkRev
+
+class WorkSchema(ma.ModelSchema):
+
+    @post_dump(pass_many=False)
+    def merge_rev(self, data):
+        if data.get('revision', None):
+            rev_id = data['revision'].pop('id')
+            data.update(data['revision'])
+            data.pop('revision')
+            data['rev'] = rev_id
+        if not data.get('redirect_id', None):
+            data['redirect_id'] = None
+
+    class Meta:
+        model = WorkIdent
+
+    revision = ma.Nested(WorkRevSchema)
+
+work_schema = WorkSchema()
+
+class FileSchema(ma.ModelSchema):
+
+    @post_dump(pass_many=False)
+    def merge_rev(self, data):
+        if data['revision']:
+            data['revision'].pop('id')
+            data.update(data['revision'])
+            data.pop('revision')
+
+    class Meta:
+        model = FileIdent
+
+file_schema = FileSchema()
+
+class FileEditSchema(ma.ModelSchema):
+    class Meta:
+        model = FileEdit
+
+class EditGroupSchema(ma.ModelSchema):
+    class Meta:
+        model = EditGroup
+
