@@ -4,6 +4,7 @@ import json
 import pytest
 import fatcat
 import fatcat.sql
+from fatcat.models import *
 import unittest
 import tempfile
 
@@ -18,24 +19,22 @@ def check_entity_fields(e):
         assert e[key] is not None
 
 def check_release(e):
-    check_entity_fields(e)
     for key in ('work', 'release_type'):
         assert key in e
     for key in ('title'):
         assert e[key] is not None
+    for key in ('refs', 'creators'):
+        assert type(e[key]) == list
 
 def check_creator(e):
-    check_entity_fields(e)
-    for key in ('name'):
+    for key in ('name',):
         assert e[key] is not None
 
 def check_container(e):
-    check_entity_fields(e)
-    for key in ('name'):
+    for key in ('name',):
         assert e[key] is not None
 
 def check_file(e):
-    check_entity_fields(e)
     for key in ('size', 'sha1'):
         assert e[key] is not None
 
@@ -78,6 +77,70 @@ class ModelTestCase(FatcatTestCase):
         fatcat.dummy.insert_random_works()
         fatcat.sql.hydrate_release(1)
 
+    def test_schema_release_rev(self):
+        assert ReleaseRev.query.count() == 0
+        e = {
+            "title": "Bogus title",
+            "release_type": "book",
+            "creators": [],
+            "refs": [],
+        }
+        model = release_rev_schema.load(e)
+        fatcat.db.session.add(model.data)
+        fatcat.db.session.commit()
+        assert ReleaseRev.query.count() == 1
+        model_after = ReleaseRev.query.first()
+        serial = release_rev_schema.dump(model_after).data
+        #check_release(serial)
+        for k in e.keys():
+            assert e[k] == serial[k]
+
+    def test_schema_creator_rev(self):
+        assert ReleaseRev.query.count() == 0
+        e = {
+            "name": "Robin (Batman)",
+        }
+        model = creator_rev_schema.load(e)
+        fatcat.db.session.add(model.data)
+        fatcat.db.session.commit()
+        assert CreatorRev.query.count() == 1
+        model_after = CreatorRev.query.first()
+        serial = creator_rev_schema.dump(model_after).data
+        check_creator(serial)
+        for k in e.keys():
+            assert e[k] == serial[k]
+
+    def test_schema_container_rev(self):
+        assert ReleaseRev.query.count() == 0
+        e = {
+            "name": "Papers Monthly",
+        }
+        model = container_rev_schema.load(e)
+        fatcat.db.session.add(model.data)
+        fatcat.db.session.commit()
+        assert ContainerRev.query.count() == 1
+        model_after = ContainerRev.query.first()
+        serial = container_rev_schema.dump(model_after).data
+        check_container(serial)
+        for k in e.keys():
+            assert e[k] == serial[k]
+
+    def test_schema_file_rev(self):
+        assert ReleaseRev.query.count() == 0
+        e = {
+            "sha1": "asdf",
+            "size": 6,
+        }
+        model = file_rev_schema.load(e)
+        print(model)
+        fatcat.db.session.add(model.data)
+        fatcat.db.session.commit()
+        assert FileRev.query.count() == 1
+        model_after = FileRev.query.first()
+        serial = file_rev_schema.dump(model_after).data
+        check_file(serial)
+        for k in e.keys():
+            assert e[k] == serial[k]
 
 ## API Tests #################################################################
 

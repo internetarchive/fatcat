@@ -189,7 +189,7 @@ class FileRev(db.Model):
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
 
     size = db.Column(db.Integer)
-    sha1 = db.Column(db.Integer)            # TODO: hash table... only or in addition?
+    sha1 = db.Column(db.String)             # TODO: hash table... only or in addition?
     url = db.Column(db.Integer)             # TODO: URL table
     releases = db.relationship('FileRelease', lazy='subquery')
 
@@ -236,17 +236,36 @@ class ChangelogEntry(db.Model):
 
 class ExtraJson(db.Model):
     __tablename__ = 'extra_json'
-    sha1 = db.Column(db.String, primary_key=True)
-    json = db.Column(db.String)
+    sha1 = db.Column(db.String, primary_key=True, nullable=False)
+    json = db.Column(db.String, nullable=False)
 
 
 ### Marshmallow Wrappers ####################################################
+
+class ExtraJsonSchema(ma.ModelSchema):
+
+    class Meta:
+        model = ExtraJson
+
+    @post_dump(pass_many=False)
+    def unflatten(self, data):
+        assert(hashlib.sha1sum(data['json']).hexdigest() == data['sha1'])
+        data.pop('sha1')
+        raw = data.pop('json')
+        data.update(json.loads(raw))
+
+    @post_dump(pass_many=False)
+    def flatten(self, data):
+        raw = json.dumps(data, indent=None)
+        for k in list(data.keys()):
+            data.pop(k)
+        data['sha1'] = hashlib.sha1sum(raw).hexdigest()
+        data['json'] = raw
 
 class EntitySchema(ma.ModelSchema):
 
     @post_dump(pass_many=False)
     def merge_rev(self, data):
-        print(data)
         if data.get('rev', None) != None:
             rev_id = data['rev'].pop('id')
             data.update(data['rev'])
@@ -256,8 +275,26 @@ class EntitySchema(ma.ModelSchema):
         # TODO: should be able to set as an allow_none field somewhere
         if not data.get('redirect_id', None):
             data['redirect_id'] = None
-        print(data)
 
+    extra_json = ma.Nested(ExtraJsonSchema)
+
+class ReleaseContribSchema(ma.ModelSchema):
+    class Meta:
+        model = ReleaseContrib
+    #creator = db.relationship("CreatorIdent")
+    #release = db.relationship("ReleaseRev")
+
+class ReleaseRefSchema(ma.ModelSchema):
+    class Meta:
+        model = ReleaseRef
+    #release = db.relationship("ReleaseRev")
+    #target = db.relationship("ReleaseIdent")
+
+class FileReleaseSchema(ma.ModelSchema):
+    class Meta:
+        model = FileRelease
+    #release = db.relationship("ReleaseIdent")
+    #file = db.relationship("FileRev")
 
 class WorkRevSchema(ma.ModelSchema):
     class Meta:
@@ -279,16 +316,21 @@ work_edit_schema = WorkEditSchema()
 class ReleaseRevSchema(ma.ModelSchema):
     class Meta:
         model = ReleaseRev
+    container = ma.Nested('ContainerSchema')
+    creators = ma.Nested(ReleaseContribSchema, many=True)
+    refs = ma.Nested(ReleaseRefSchema, many=True)
 
 class ReleaseSchema(EntitySchema):
     class Meta:
         model = ReleaseIdent
     rev = ma.Nested(ReleaseRevSchema)
+    # XXX: files = ma.Nested('FileSchema', many=True)
 
 class ReleaseEditSchema(ma.ModelSchema):
     class Meta:
         model = ReleaseEdit
 
+release_rev_schema = ReleaseRevSchema()
 release_schema = ReleaseSchema()
 release_edit_schema = ReleaseEditSchema()
 
@@ -306,6 +348,7 @@ class CreatorEditSchema(ma.ModelSchema):
     class Meta:
         model = CreatorEdit
 
+creator_rev_schema = CreatorRevSchema()
 creator_schema = CreatorSchema()
 creator_edit_schema = CreatorEditSchema()
 
@@ -323,11 +366,30 @@ class ContainerEditSchema(ma.ModelSchema):
     class Meta:
         model = ContainerEdit
 
+container_rev_schema = ContainerRevSchema()
 container_schema = ContainerSchema()
 container_edit_schema = ContainerEditSchema()
 
 
-class Editor(ma.ModelSchema):
+class FileRevSchema(ma.ModelSchema):
+    class Meta:
+        model = FileRev
+
+class FileSchema(EntitySchema):
+    class Meta:
+        model = FileIdent
+    rev = ma.Nested(FileRevSchema)
+
+class FileEditSchema(ma.ModelSchema):
+    class Meta:
+        model = FileEdit
+
+file_rev_schema = FileRevSchema()
+file_schema = FileSchema()
+file_edit_schema = FileEditSchema()
+
+
+class EditorSchema(ma.ModelSchema):
     class Meta:
         model = Editor
 
