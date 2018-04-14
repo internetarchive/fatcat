@@ -1,7 +1,7 @@
 
 import os
 from flask import Flask, render_template, send_from_directory, request, \
-    url_for, abort, g, redirect, jsonify
+    url_for, abort, g, redirect, jsonify, session
 from fatcat import app, db
 
 

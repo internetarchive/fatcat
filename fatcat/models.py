@@ -84,6 +84,7 @@ class WorkEdit(db.Model):
     redirect_id = db.Column(db.ForeignKey('work_ident.id'), nullable=True)
     edit_group_id = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
+    ident = db.relationship("WorkIdent", foreign_keys="WorkEdit.ident_id") # XXX: add to all other entities
     rev = db.relationship("WorkRev")
     edit_group = db.relationship("EditGroup")
 
@@ -216,14 +217,17 @@ class FileEdit(db.Model):
 class EditGroup(db.Model):
     __tablename__ = 'edit_group'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    editor = db.Column(db.ForeignKey('editor.id'), nullable=False)
+    editor_id = db.Column(db.ForeignKey('editor.id'), nullable=False)
     description = db.Column(db.String)
+    editor = db.relationship('Editor', foreign_keys='EditGroup.editor_id')
 
 class Editor(db.Model):
     __tablename__ = 'editor'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String)
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
+    active_edit_group_id = db.Column(db.ForeignKey('edit_group.id', use_alter=True))
+    active_edit_group = db.relationship('EditGroup', foreign_keys='Editor.active_edit_group_id')
 
 class ChangelogEntry(db.Model):
     __tablename__= 'changelog'

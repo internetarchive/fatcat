@@ -6,9 +6,11 @@ from fatcat import db
 from fatcat.models import *
 
 def populate_db():
-    pass
+    admin_editor = Editor(id=1, username="admin", is_admin=True)
+    db.session.add(admin_editor)
+    db.session.commit()
 
-def add_crossref(meta):
+def add_crossref_via_model(meta):
 
     title = meta['title'][0]
 
@@ -75,6 +77,7 @@ def add_crossref(meta):
     db.session.add_all(author_revs)
     db.session.add_all(author_ids)
     db.session.commit()
+
 
 def hydrate_work(wid):
 

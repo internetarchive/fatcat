@@ -43,6 +43,7 @@ class FatcatTestCase(unittest.TestCase):
     def setUp(self):
         fatcat.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
         fatcat.app.testing = True
+        fatcat.app.debug = True
         self.app = fatcat.app.test_client()
         fatcat.db.session.remove()
         fatcat.db.drop_all()
@@ -54,9 +55,6 @@ class FatcatTestCase(unittest.TestCase):
 
 class ModelTestCase(FatcatTestCase):
 
-    def test_populate(self):
-        fatcat.sql.populate_db()
-
     def test_example_works(self):
         fatcat.dummy.insert_example_works()
 
@@ -67,7 +65,7 @@ class ModelTestCase(FatcatTestCase):
         with open('./tests/files/crossref-works.2018-01-21.badsample.json', 'r') as f:
             raw = [json.loads(l) for l in f.readlines() if len(l) > 3]
         for obj in raw:
-            fatcat.sql.add_crossref(obj)
+            fatcat.sql.add_crossref_via_model(obj)
 
     def test_hydrate_work(self):
         fatcat.dummy.insert_random_works()
@@ -174,3 +172,18 @@ class APITestCase(FatcatTestCase):
         # Missing Id
         rv = self.app.get('/v0/work/r3zga5b9cd7ef8gh084714iljk')
         assert rv.status_code == 404
+
+    def test_api_work_create(self):
+        assert WorkIdent.query.count() == 0
+        assert WorkRev.query.count() == 0
+        assert WorkEdit.query.count() == 0
+        rv = self.app.post('/v0/work',
+            data=json.dumps(dict(title="dummy", work_type="thing")),
+            headers={"content-type": "application/json"})
+        print(rv)
+        assert rv.status_code == 200
+        assert WorkIdent.query.count() == 1
+        assert WorkRev.query.count() == 1
+        assert WorkEdit.query.count() == 1
+        # not alive yet
+        assert WorkIdent.query.filter(WorkIdent.is_live==True).count() == 0
