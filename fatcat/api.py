@@ -1,7 +1,7 @@
 
 from flask import Flask, render_template, send_from_directory, request, \
     url_for, abort, g, redirect, jsonify
-from fatcat import app, db, examples
+from fatcat import app, db
 from fatcat.models import *
 from fatcat.sql import *
 

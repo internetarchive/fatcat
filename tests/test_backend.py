@@ -28,6 +28,7 @@ class FatcatTestCase(unittest.TestCase):
         fatcat.db.session.remove()
         fatcat.db.drop_all()
         fatcat.db.create_all()
+        fatcat.sql.populate_db()
 
     def test_health(self):
         rv = self.app.get('/health')
@@ -35,7 +36,7 @@ class FatcatTestCase(unittest.TestCase):
         assert obj['ok']
 
     def test_works(self):
-        fatcat.sql.populate_db()
+        fatcat.dummy.insert_example_works()
 
         # Invalid Id
         rv = self.app.get('/v0/work/_')
@@ -61,8 +62,11 @@ class FatcatTestCase(unittest.TestCase):
     def test_populate(self):
         fatcat.sql.populate_db()
 
-    def test_populate_complex(self):
-        fatcat.sql.populate_complex_db()
+    def test_example_works(self):
+        fatcat.dummy.insert_example_works()
+
+    def test_random_works(self):
+        fatcat.dummy.insert_random_works()
 
     def test_load_crossref(self):
         with open('./tests/files/crossref-works.2018-01-21.badsample.json', 'r') as f:
@@ -71,9 +75,9 @@ class FatcatTestCase(unittest.TestCase):
             fatcat.sql.add_crossref(obj)
 
     def test_hydrate_work(self):
-        fatcat.sql.populate_complex_db()
+        fatcat.dummy.insert_random_works()
         fatcat.sql.hydrate_work(1)
 
     def test_hydrate_release(self):
-        fatcat.sql.populate_complex_db()
+        fatcat.dummy.insert_random_works()
         fatcat.sql.hydrate_release(1)

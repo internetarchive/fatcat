@@ -225,14 +225,14 @@ class Editor(db.Model):
     username = db.Column(db.String)
     group = db.Column(db.String)
 
-
-### Other ###################################################################
-
 class ChangelogEntry(db.Model):
     __tablename__= 'changelog'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     edit_group_id = db.Column(db.ForeignKey('edit_group.id'))
     timestamp = db.Column(db.Integer)
+
+
+### Other ###################################################################
 
 class ExtraJson(db.Model):
     __tablename__ = 'extra_json'

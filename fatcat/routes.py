@@ -2,7 +2,7 @@
 import os
 from flask import Flask, render_template, send_from_directory, request, \
     url_for, abort, g, redirect, jsonify
-from fatcat import app, db, examples
+from fatcat import app, db
 
 
 ### Views ###################################################################
@@ -13,7 +13,7 @@ def work_create():
 
 @app.route('/work/random', methods=['GET'])
 def work_random():
-    work = examples['work']
+    work = {} # XXX
     return render_template('work_view.html', work=work, primary=work['primary'])
 
 @app.route('/work/random', methods=['GET'])
