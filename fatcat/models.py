@@ -12,7 +12,8 @@ possible refactors:
 - use mixins for entities
 """
 
-from fatcat import db
+from marshmallow import post_load
+from fatcat import db, ma
 
 
 ### Inter-Entity Relationships ###############################################

@@ -17,6 +17,9 @@ SQLAlchemy = "*"
 requests = "*"
 Flask-SQLAlchemy = "*"
 raven = "*"
+flask-sqlalchemy = "*"
+marshmallow-sqlalchemy = "*"
+flask-marshmallow = "*"
 
 [requires]
 python_version = "3.5"
