@@ -1,20 +1,50 @@
 
-- tests are picking up config.py instead of using setUp()
+high-level this weekend:
+- test: create "rich" work (all entities; group approve), all via API
+- test: merge two rich works, all via API
+- naive API-based import scripts for: journals (norwegian), orcid, crossref
 
-helpers/ORM and test
-x files
-x containers
-- citations
-x create from crossref dict (naive)
-- "hydrated" get: release, creator, container
-- populate_random_edit; push edit to live
-- helpers with change logging (hook?)
+helpers/ORM
+- method to "approve" edit_group
+- helpers to deal with edits and edit groups
+
+api
+- expose all models (like work)
+- expose edit_group and editor
+
+tests
+- create "rich" work (all entities) via edit mechanism (incl. approve)
+- modify existing release via edit mechanism (and commit)
+- merge two releases
+- update (via edit) a redirect release
+- merge two works (combining releases)
+- api: try to reuse an accepted edit group
+- api: try to modify an accepted edit
+- api: multiple edits, same entity
 
 review
-- should release point to work? I think not
-- remove 'state' and 'redirect_id' from all revision tables
+- hydrate in files for releases... nested good enough?
+- add a 'live' (or 'immutable') flag to revision tables
+- how to encode proposed redirects? history goes in changelog
+    => proposed_ident_action table, which points to edits
+    => ident in edit as a partial solution (not redirects)
+    => extend edit object to have "to/from" info, and be per-entity
+
+views
+- my edits/groups
+- oldest edits/edit-groups
 
 later:
+- "hydrate" files (and maybe container/authors/refs) in release
+- transclude primary_release in work
 - crossref json import script/benchmark
     => maybe both "raw" and string-dedupe?
 - public IDs are UUID (sqlite hack?)
+
+## High-Level Priorities
+
+- manual editing of containers and works/releases
+- bulk loading of releases, files, containers
+- accurate auto-matching matching of containers (eg, via ISSN)
+- full database dump and reload
+

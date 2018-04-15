@@ -1,12 +1,20 @@
 
+Entity list:
+
+    work
+    release
+    creator
+    container
+    file
+
 ## Cookbook
 
-To create a new works:
+To create a new work:
 
     login/create account
 
-    match/lookup on first work; if found, modify not create
-    TODO: match/lookup on files?
+    match/lookup on first work; check if update actually needed
+    ? match/lookup on files
 
     new edit group (under account; wip)
     new edit (under group)
@@ -47,11 +55,29 @@ To edit, eg, a contributor:
 
 Accept edit group:
 
-    for each edit:
-      update entity ident state (activate, redirect, delete)
-      ? mark revision/edit as immutable
-      ? append log/changelog row
+    for each entity type:
+      for each edit:
+        update entity ident state (activate, redirect, delete)
+    append log/changelog row
     update edit group state
+
+
+Bulk/Fase Import Crossref:
+
+    lookup work by identifier; if exists done
+    lookup journals by ISSN
+    lookup authors by ORCID
+    create new work
+      => stub container and authors if we can't find them
+    create new release
+    submit edit group
+
+
+Import Journals (same for authors):
+
+    lookup journal by ISSN
+    create new container
+    submit edit group
 
 ## Entity Schema
 
@@ -68,7 +94,7 @@ Each entity type has tables:
       represents change metadata for a single change to one ident
       needed because an edit alwasy changes ident, but might not change rev
 
-    _log
+    _log (NOT IMPLEMENTED)
       history of when edits were actually applied
       allows fast lookups of history of an entity (ident)
       unnecessary if we keep a log of edit group accepts?
@@ -90,3 +116,37 @@ Each entity type has tables:
 
     "wip redirect" or "wip deleted" are invalid states
 
+## Entity Endpoints/Actions
+
+Actions could, in theory, be directed at any of:
+
+    entities (ident)
+    revision
+    edit
+
+A design decision to be made is how much to abstract away the distinction
+between these three types (particularly the identifier/revision distinction).
+
+Top-level entity actions (resulting in edits):
+
+    create (new rev)
+    redirect
+    split
+    update (new rev)
+    delete
+
+On existing entity edits (within a group):
+
+    update
+    delete
+
+An edit group as a whole can be:
+
+    create
+    submit
+    accept
+
+Other per-entity endpoints:
+
+    match (by field/context)
+    lookup (by external persistent identifier)

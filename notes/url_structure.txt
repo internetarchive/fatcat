@@ -36,3 +36,4 @@ Workflow requires sessions to hold, eg, current edit group.
 /                   some sort of about page, html?
 /v0/...
 /graphql/v0/...     ?
+
