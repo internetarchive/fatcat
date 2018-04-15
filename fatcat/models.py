@@ -22,8 +22,9 @@ class ReleaseContrib(db.Model):
     __tablename__ = "release_contrib"
     release_rev = db.Column(db.ForeignKey('release_rev.id'), nullable=False, primary_key=True)
     creator_ident_id = db.Column(db.ForeignKey('creator_ident.id'), nullable=False, primary_key=True)
-    type = db.Column(db.String, nullable=True)
     stub = db.Column(db.String, nullable=True)
+    type = db.Column(db.String, nullable=True)
+    # TODO: index (int)?
 
     creator = db.relationship("CreatorIdent")
     release = db.relationship("ReleaseRev")
@@ -86,7 +87,7 @@ class WorkEdit(db.Model):
     redirect_id = db.Column(db.ForeignKey('work_ident.id'), nullable=True)
     edit_group_id = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
-    ident = db.relationship("WorkIdent", foreign_keys="WorkEdit.ident_id") # XXX: add to all other entities
+    ident = db.relationship("WorkIdent", foreign_keys="WorkEdit.ident_id")
     rev = db.relationship("WorkRev")
     edit_group = db.relationship("EditGroup")
 
@@ -128,6 +129,9 @@ class ReleaseEdit(db.Model):
     redirect_id = db.Column(db.ForeignKey('release_ident.id'), nullable=True)
     edit_group_id = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
+    ident = db.relationship("ReleaseIdent", foreign_keys="ReleaseEdit.ident_id")
+    rev = db.relationship("ReleaseRev")
+    edit_group = db.relationship("EditGroup")
 
 
 class CreatorRev(db.Model):
@@ -155,6 +159,9 @@ class CreatorEdit(db.Model):
     redirect_id = db.Column(db.ForeignKey('creator_ident.id'), nullable=True)
     edit_group_id = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
+    ident = db.relationship("CreatorIdent", foreign_keys="CreatorEdit.ident_id")
+    rev = db.relationship("CreatorRev")
+    edit_group = db.relationship("EditGroup")
 
 
 class ContainerRev(db.Model):
@@ -185,6 +192,9 @@ class ContainerEdit(db.Model):
     redirect_id = db.Column(db.ForeignKey('container_ident.id'), nullable=True)
     edit_group_id = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
+    ident = db.relationship("ContainerIdent", foreign_keys="ContainerEdit.ident_id")
+    rev = db.relationship("ContainerRev")
+    edit_group = db.relationship("EditGroup")
 
 
 class FileRev(db.Model):
@@ -213,6 +223,9 @@ class FileEdit(db.Model):
     redirect_id = db.Column(db.ForeignKey('file_ident.id'), nullable=True)
     edit_group_id = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
     extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
+    ident = db.relationship("FileIdent", foreign_keys="FileEdit.ident_id")
+    rev = db.relationship("FileRev")
+    edit_group = db.relationship("EditGroup")
 
 
 ### Editing #################################################################
@@ -223,6 +236,8 @@ class EditGroup(db.Model):
     editor_id = db.Column(db.ForeignKey('editor.id'), nullable=False)
     description = db.Column(db.String)
     editor = db.relationship('Editor', foreign_keys='EditGroup.editor_id')
+    extra_json_id = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
+    extra_json = db.relationship("ExtraJson") # XXX: for all entities
 
 class Editor(db.Model):
     __tablename__ = 'editor'

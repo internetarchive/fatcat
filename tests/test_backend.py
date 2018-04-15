@@ -179,3 +179,107 @@ class APITestCase(FatcatTestCase):
         assert WorkEdit.query.count() == 1
         # not alive yet
         assert WorkIdent.query.filter(WorkIdent.is_live==True).count() == 0
+
+    def test_api_complete_create(self):
+
+        # TODO: create user?
+
+        rv = self.app.post('/v0/editgroup',
+            data=json.dumps(dict(
+                extra=dict(q=1, u="zing"))),
+            headers={"content-type": "application/json"})
+        assert rv.status_code == 200
+        obj = json.loads(rv.data.decode('utf-8'))
+        editgroup_id = obj['id']
+
+        for cls in (WorkIdent, WorkRev, WorkEdit,
+                    ContainerIdent, ContainerRev, ContainerEdit,
+                    CreatorIdent, CreatorRev, CreatorEdit,
+                    ReleaseIdent, ReleaseRev, ReleaseEdit,
+                    FileIdent, FileRev, FileEdit,
+                    ChangelogEntry):
+            assert cls.query.count() == 0
+
+        rv = self.app.post('/v0/container',
+            data=json.dumps(dict(
+                name="schmournal",
+                publisher="society of authors",
+                issn="2222-3333",
+                editgroup=editgroup_id)),
+                #extra=dict(a=1, i="zing"))),
+            headers={"content-type": "application/json"})
+        assert rv.status_code == 200
+        obj = json.loads(rv.data.decode('utf-8'))
+        container_id = obj['id']
+
+        rv = self.app.post('/v0/creator',
+            data=json.dumps(dict(
+                name="anon y. mouse",
+                orcid="0000-0002-1825-0097",
+                editgroup=editgroup_id)),
+                #extra=dict(w=1, q="zing"))),
+            headers={"content-type": "application/json"})
+        assert rv.status_code == 200
+        obj = json.loads(rv.data.decode('utf-8'))
+        creator_id = obj['id']
+
+        rv = self.app.post('/v0/work',
+            data=json.dumps(dict(
+                title="dummy work",
+                work_type="book",
+                editgroup=editgroup_id)),
+                #extra=dict(a=1, b="zing"))),
+            headers={"content-type": "application/json"})
+        assert rv.status_code == 200
+        obj = json.loads(rv.data.decode('utf-8'))
+        work_id = obj['id']
+
+        rv = self.app.post('/v0/release',
+            data=json.dumps(dict(
+                title="dummy work",
+                work_type="book",
+                #work=work_id,
+                #container=container_id,
+                #creators=[creator_id],
+                doi="10.1234/5678",
+                editgroup=editgroup_id,
+                refs=[
+                    dict(stub="some other journal article"),
+                ])),
+                #extra=dict(f=7, b="zing"))),
+            headers={"content-type": "application/json"})
+        assert rv.status_code == 200
+        obj = json.loads(rv.data.decode('utf-8'))
+        release_id = obj['id']
+
+        rv = self.app.post('/v0/file',
+            data=json.dumps(dict(
+                sha1="deadbeefdeadbeef",
+                size=1234,
+                release=release_id,
+                editgroup=editgroup_id)),
+                #extra=dict(f=7, b="zing"))),
+            headers={"content-type": "application/json"})
+        assert rv.status_code == 200
+        obj = json.loads(rv.data.decode('utf-8'))
+
+        for cls in (WorkIdent, WorkRev, WorkEdit,
+                    ContainerIdent, ContainerRev, ContainerEdit,
+                    CreatorIdent, CreatorRev, CreatorEdit,
+                    ReleaseIdent, ReleaseRev, ReleaseEdit,
+                    FileIdent, FileRev, FileEdit):
+            assert cls.query.count() == 1
+            # Ident only: assert cls.query.filter(is_live=True).count() == 1
+
+        rv = self.app.post('/v0/editgroup/{}/accept'.format(editgroup_id),
+            headers={"content-type": "application/json"})
+        # XXX: assert rv.status_code == 200
+        # XXX: assert ChangelogEntry.query.count() == 1
+
+        for cls in (WorkIdent, WorkRev, WorkEdit,
+                    ContainerIdent, ContainerRev, ContainerEdit,
+                    CreatorIdent, CreatorRev, CreatorEdit,
+                    ReleaseIdent, ReleaseRev, ReleaseEdit,
+                    FileIdent, FileRev, FileEdit):
+            assert cls.query.count() == 1
+            # Ident only: assert cls.query.filter(is_live=True).count() == 1
