@@ -12,6 +12,8 @@ possible refactors:
 - use mixins for entities
 """
 
+import json
+import hashlib
 from marshmallow import post_dump
 from fatcat import db, ma
 
@@ -271,7 +273,7 @@ class ExtraJsonSchema(ma.ModelSchema):
 
     @post_dump(pass_many=False)
     def unflatten(self, data):
-        assert(hashlib.sha1sum(data['json']).hexdigest() == data['sha1'])
+        assert hashlib.sha1sum(data['json']).hexdigest() == data['sha1']
         data.pop('sha1')
         raw = data.pop('json')
         data.update(json.loads(raw))

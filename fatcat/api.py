@@ -12,14 +12,14 @@ def get_or_create_edit_group():
     editor = Editor.query.filter(Editor.id==1).first()
     if editor.active_edit_group:
         return editor.active_edit_group
-    else:
-        edit_group = EditGroup(editor=editor)
-        db.session.add(edit_group)
-        db.session.commit()
-        editor.active_edit_group = edit_group
-        db.session.add(editor)
-        db.session.commit()
-        return edit_group
+
+    edit_group = EditGroup(editor=editor)
+    db.session.add(edit_group)
+    db.session.commit()
+    editor.active_edit_group = edit_group
+    db.session.add(editor)
+    db.session.commit()
+    return edit_group
 
 ### Views ###################################################################
 
@@ -156,7 +156,7 @@ def api_file_create():
 
 @app.route('/v0/editgroup/<int:ident>', methods=['GET'])
 def api_edit_group_get(ident):
-    entity = EditGroupIdent.query.filter(EditGroupIdent.id==ident).first_or_404()
+    entity = EditGroup.query.filter(EditGroup.id==ident).first_or_404()
     return edit_group_schema.jsonify(entity)
 
 @app.route('/v0/editgroup', methods=['POST'])
@@ -172,4 +172,3 @@ def api_edit_group_create():
     db.session.add(eg)
     db.session.commit()
     return edit_group_schema.jsonify(eg)
-

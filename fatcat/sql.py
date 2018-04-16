@@ -77,4 +77,3 @@ def add_crossref_via_model(meta):
     db.session.add_all(author_revs)
     db.session.add_all(author_ids)
     db.session.commit()
-
