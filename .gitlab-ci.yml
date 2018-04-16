@@ -5,7 +5,7 @@ before_script:
   - pip3 install pipenv
   - pipenv --version
 
-test_mapreduce:
+unittest_and_lint:
   script:
     - pipenv install --dev --deploy
     - pipenv run pytest --cov
