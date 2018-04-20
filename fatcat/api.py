@@ -8,7 +8,10 @@ from fatcat.sql import *
 
 ### Helpers #################################################################
 
-def get_or_create_edit_group():
+def get_or_create_edit_group(param=None):
+    if param != None:
+        edit_group = EditGroup.query.filter(EditGroup.id==1).first_or_404()
+        return edit_group
     editor = Editor.query.filter(Editor.id==1).first()
     if editor.active_edit_group:
         return editor.active_edit_group
@@ -37,7 +40,7 @@ def api_work_create():
     TODO: use marshmallow?
     """
     params = request.get_json()
-    edit_group = get_or_create_edit_group()
+    edit_group = get_or_create_edit_group(params.get('editgroup'))
     rev = WorkRev(
         title=params.get('title', None),
         work_type=params.get('work_type', None),
@@ -65,7 +68,7 @@ def api_release_get(ident):
 @app.route('/v0/release', methods=['POST'])
 def api_release_create():
     params = request.get_json()
-    edit_group = get_or_create_edit_group()
+    edit_group = get_or_create_edit_group(params.get('editgroup'))
     rev = ReleaseRev(
         title=params.get('title', None),
         release_type=params.get('release_type', None),
@@ -92,7 +95,7 @@ def api_creator_get(ident):
 @app.route('/v0/creator', methods=['POST'])
 def api_creator_create():
     params = request.get_json()
-    edit_group = get_or_create_edit_group()
+    edit_group = get_or_create_edit_group(params.get('editgroup'))
     rev = CreatorRev(
         name=params.get('name', None),
         orcid=params.get('orcid', None),
@@ -115,7 +118,7 @@ def api_container_get(ident):
 @app.route('/v0/container', methods=['POST'])
 def api_container_create():
     params = request.get_json()
-    edit_group = get_or_create_edit_group()
+    edit_group = get_or_create_edit_group(params.get('editgroup'))
     rev = ContainerRev(
         name=params.get('name', None),
         publisher=params.get('publisher', None),
@@ -138,7 +141,7 @@ def api_file_get(ident):
 @app.route('/v0/file', methods=['POST'])
 def api_file_create():
     params = request.get_json()
-    edit_group = get_or_create_edit_group()
+    edit_group = get_or_create_edit_group(params.get('editgroup'))
     rev = FileRev(
         sha1=params.get('sha1', None),
         size=params.get('size', None),
@@ -172,3 +175,10 @@ def api_edit_group_create():
     db.session.add(eg)
     db.session.commit()
     return edit_group_schema.jsonify(eg)
+
+@app.route('/v0/editgroup/<int:ident>/accept', methods=['POST'])
+def api_edit_group_accept(ident):
+    entity = EditGroup.query.filter(EditGroup.id==ident).first_or_404()
+    accept_editgroup(entity)
+    return jsonify({'success': True})
+

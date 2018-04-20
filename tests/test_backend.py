@@ -182,7 +182,7 @@ class APITestCase(FatcatTestCase):
         # not alive yet
         assert WorkIdent.query.filter(WorkIdent.is_live==True).count() == 0
 
-    def test_api_complete_create(self):
+    def test_api_rich_create(self):
 
         # TODO: create user?
 
@@ -240,6 +240,7 @@ class APITestCase(FatcatTestCase):
             data=json.dumps(dict(
                 title="dummy work",
                 work_type="book",
+                # XXX:
                 #work=work_id,
                 #container=container_id,
                 #creators=[creator_id],
@@ -271,12 +272,18 @@ class APITestCase(FatcatTestCase):
                     ReleaseIdent, ReleaseRev, ReleaseEdit,
                     FileIdent, FileRev, FileEdit):
             assert cls.query.count() == 1
-            # Ident only: assert cls.query.filter(is_live=True).count() == 1
+
+        for cls in (WorkIdent,
+                    ContainerIdent,
+                    CreatorIdent,
+                    ReleaseIdent,
+                    FileIdent):
+            assert cls.query.filter(cls.is_live==True).count() == 0
 
         rv = self.app.post('/v0/editgroup/{}/accept'.format(editgroup_id),
             headers={"content-type": "application/json"})
-        # XXX: assert rv.status_code == 200
-        # XXX: assert ChangelogEntry.query.count() == 1
+        assert rv.status_code == 200
+        assert ChangelogEntry.query.count() == 1
 
         for cls in (WorkIdent, WorkRev, WorkEdit,
                     ContainerIdent, ContainerRev, ContainerEdit,
@@ -284,4 +291,12 @@ class APITestCase(FatcatTestCase):
                     ReleaseIdent, ReleaseRev, ReleaseEdit,
                     FileIdent, FileRev, FileEdit):
             assert cls.query.count() == 1
-            # Ident only: assert cls.query.filter(is_live=True).count() == 1
+
+        for cls in (WorkIdent,
+                    ContainerIdent,
+                    CreatorIdent,
+                    ReleaseIdent,
+                    FileIdent):
+            assert cls.query.filter(cls.is_live==True).count() == 1
+
+        # XXX: re-fetch and test that relations work

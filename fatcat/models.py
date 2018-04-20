@@ -248,7 +248,7 @@ class EditGroup(db.Model):
     description = db.Column(db.String)
     editor = db.relationship('Editor', foreign_keys='EditGroup.editor_id')
     extra_json_id = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
-    extra_json = db.relationship("ExtraJson") # XXX: for all entities
+    extra_json = db.relationship("ExtraJson")
 
 class Editor(db.Model):
     __tablename__ = 'editor'

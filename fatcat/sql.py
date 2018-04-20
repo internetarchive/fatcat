@@ -1,5 +1,6 @@
 
 import json
+import time
 import random
 import hashlib
 from fatcat import db
@@ -76,4 +77,36 @@ def add_crossref_via_model(meta):
         container_id, extra_json])
     db.session.add_all(author_revs)
     db.session.add_all(author_ids)
+    db.session.commit()
+
+def accept_editgroup(eg):
+
+    # check if already accepted
+    # XXX: add a test for this
+    assert ChangelogEntry.query.filter(ChangelogEntry.edit_group_id==eg.id).count() == 0
+
+    # start transaction (TODO: explicitly?)
+
+    # for each entity type:
+    for cls in (WorkEdit, ReleaseEdit, CreatorEdit, ContainerEdit, FileEdit):
+        edits = cls.query.filter(cls.edit_group_id==eg.id).all()
+        print(edits)
+        # for each entity edit->ident:
+        for edit in edits:
+            # update entity ident state (activate, redirect, delete)
+            edit.ident.is_live = True
+            edit.ident.rev_id = edit.rev_id
+            edit.ident.redirect_id = edit.redirect_id
+            db.session.add(edit.ident)
+
+    # append log/changelog row
+    cle = ChangelogEntry(
+        edit_group_id=eg.id,
+        # TODO: is this UTC?
+        timestamp=int(time.time()))
+    db.session.add(cle)
+
+    # update edit group state
+    db.session.add(eg)
+
     db.session.commit()
