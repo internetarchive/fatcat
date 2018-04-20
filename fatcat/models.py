@@ -14,7 +14,7 @@ possible refactors:
 
 import json
 import hashlib
-from marshmallow import post_dump
+from marshmallow import post_dump, pre_load
 from fatcat import db, ma
 
 
@@ -287,7 +287,7 @@ class ExtraJsonSchema(ma.ModelSchema):
         raw = data.pop('json')
         data.update(json.loads(raw))
 
-    @post_dump(pass_many=False)
+    @pre_load(pass_many=False)
     def flatten(self, data):
         raw = json.dumps(data, indent=None)
         for k in list(data.keys()):
@@ -342,6 +342,7 @@ class WorkEditSchema(ma.ModelSchema):
     class Meta:
         model = WorkEdit
 
+work_rev_schema = WorkRevSchema()
 work_schema = WorkSchema()
 work_edit_schema = WorkEditSchema()
 
