@@ -71,6 +71,8 @@ def api_release_create():
     edit_group = get_or_create_edit_group(params.get('editgroup'))
     creators = params.get('creators', [])
     creators = [CreatorIdent.query.filter(CreatorIdent.id==c).first_or_404() for c in creators]
+    targets = [ref['target'] for ref in params.get('refs', []) if ref.get('target') != None]
+    targets = [ReleaseIdent.query.filter(ReleaseIdent.id==t).first_or_404() for t in targets]
     work = params.get('work')
     if work:
         work = WorkIdent.query.filter(WorkIdent.id==work).first_or_404()
@@ -87,6 +89,9 @@ def api_release_create():
     contribs = [ReleaseContrib(release=rev, creator=c) for c in creators]
     rev.creators = contribs
     db.session.add_all(contribs)
+    refs = [ReleaseRef(release=rev, target=t) for t in targets]
+    rev.refs = refs
+    db.session.add_all(refs)
     ident = ReleaseIdent(is_live=False, rev=rev)
     edit = ReleaseEdit(edit_group=edit_group, ident=ident, rev=rev)
     if params.get('extra', None):
