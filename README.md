@@ -21,3 +21,7 @@ Use `pipenv` (which you can install with `pip`).
 Run tests:
 
     pipenv run pytest
+
+    # for coverage:
+    pipenv run pytest --cov --cov-report html
+
