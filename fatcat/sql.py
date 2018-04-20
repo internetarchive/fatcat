@@ -108,4 +108,8 @@ def accept_editgroup(eg):
     # update edit group state
     db.session.add(eg)
 
+    # no longer "active"
+    eg.editor.active_edit_group = None
+    db.session.add(eg.editor)
+
     db.session.commit()

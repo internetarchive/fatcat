@@ -204,3 +204,7 @@ def test_api_rich_create(app):
     file_rv = json.loads(app.get('/v0/file/{}'.format(file_id)).data.decode('utf-8'))
     print(file_rv)
     assert(file_rv['releases'][0]['release'] == release_id)
+
+    # test that editor's active edit group is now invalid
+    editor = Editor.query.first()
+    assert editor.active_edit_group == None
