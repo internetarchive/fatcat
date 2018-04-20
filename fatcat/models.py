@@ -101,7 +101,7 @@ class ReleaseRev(db.Model):
     extra_json_id = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
     extra_json = db.relationship("ExtraJson")
 
-    work_ident_id = db.ForeignKey('work_ident.id')
+    work_ident_id = db.Column(db.ForeignKey('work_ident.id', use_alter=True), nullable=True) # XXX: nullable=False
     container_ident_id = db.Column(db.ForeignKey('container_ident.id'), nullable=True)
     title = db.Column(db.String, nullable=False)
     license = db.Column(db.String, nullable=True)   # TODO: oa status foreign key
@@ -112,7 +112,7 @@ class ReleaseRev(db.Model):
     pages = db.Column(db.String, nullable=True)
     issue = db.Column(db.String, nullable=True)
 
-    #work = db.relationship("WorkIdent", lazy='subquery')
+    work = db.relationship("WorkIdent", lazy='subquery', foreign_keys="ReleaseRev.work_ident_id")
     container = db.relationship("ContainerIdent", lazy='subquery')
     creators = db.relationship('ReleaseContrib', lazy='subquery')
     refs = db.relationship('ReleaseRef', lazy='subquery')
@@ -314,20 +314,20 @@ class EntitySchema(ma.ModelSchema):
 class ReleaseContribSchema(ma.ModelSchema):
     class Meta:
         model = ReleaseContrib
-    #creator = db.relationship("CreatorIdent")
-    #release = db.relationship("ReleaseRev")
+    creator = db.relationship("CreatorIdent")
+    release = db.relationship("ReleaseRev")
 
 class ReleaseRefSchema(ma.ModelSchema):
     class Meta:
         model = ReleaseRef
-    #release = db.relationship("ReleaseRev")
-    #target = db.relationship("ReleaseIdent")
+    release = db.relationship("ReleaseRev")
+    target = db.relationship("ReleaseIdent")
 
 class FileReleaseSchema(ma.ModelSchema):
     class Meta:
         model = FileRelease
-    #release = db.relationship("ReleaseIdent")
-    #file = db.relationship("FileRev")
+    release = db.relationship("ReleaseIdent")
+    file = db.relationship("FileRev")
 
 class WorkRevSchema(ma.ModelSchema):
     class Meta:
@@ -350,6 +350,7 @@ work_edit_schema = WorkEditSchema()
 class ReleaseRevSchema(ma.ModelSchema):
     class Meta:
         model = ReleaseRev
+    work = ma.Nested('WorkSchema')
     container = ma.Nested('ContainerSchema')
     creators = ma.Nested(ReleaseContribSchema, many=True)
     refs = ma.Nested(ReleaseRefSchema, many=True)
@@ -408,6 +409,8 @@ container_edit_schema = ContainerEditSchema()
 class FileRevSchema(ma.ModelSchema):
     class Meta:
         model = FileRev
+
+    releases = ma.Nested(FileReleaseSchema, many=True)
 
 class FileSchema(EntitySchema):
     class Meta:

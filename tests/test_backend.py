@@ -240,10 +240,9 @@ class APITestCase(FatcatTestCase):
             data=json.dumps(dict(
                 title="dummy work",
                 work_type="book",
-                # XXX:
-                #work=work_id,
-                #container=container_id,
-                #creators=[creator_id],
+                work=work_id,
+                container=container_id,
+                creators=[creator_id],
                 doi="10.1234/5678",
                 editgroup=editgroup_id,
                 refs=[
@@ -259,12 +258,13 @@ class APITestCase(FatcatTestCase):
             data=json.dumps(dict(
                 sha1="deadbeefdeadbeef",
                 size=1234,
-                release=release_id,
+                releases=[release_id],
                 editgroup=editgroup_id,
                 extra=dict(f=4, b="zing"))),
             headers={"content-type": "application/json"})
         assert rv.status_code == 200
         obj = json.loads(rv.data.decode('utf-8'))
+        file_id = obj['id']
 
         for cls in (WorkIdent, WorkRev, WorkEdit,
                     ContainerIdent, ContainerRev, ContainerEdit,
@@ -299,4 +299,13 @@ class APITestCase(FatcatTestCase):
                     FileIdent):
             assert cls.query.filter(cls.is_live==True).count() == 1
 
-        # XXX: re-fetch and test that relations work
+        # Test that foreign key relations worked
+        release_rv = json.loads(self.app.get('/v0/release/{}'.format(release_id)).data.decode('utf-8'))
+        print(release_rv)
+        assert(release_rv['creators'][0]['creator'] == creator_id)
+        assert(release_rv['container']['id'] == container_id)
+        assert(release_rv['work']['id'] == work_id)
+
+        file_rv = json.loads(self.app.get('/v0/file/{}'.format(file_id)).data.decode('utf-8'))
+        print(file_rv)
+        assert(file_rv['releases'][0]['release'] == release_id)

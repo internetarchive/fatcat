@@ -90,7 +90,6 @@ def accept_editgroup(eg):
     # for each entity type:
     for cls in (WorkEdit, ReleaseEdit, CreatorEdit, ContainerEdit, FileEdit):
         edits = cls.query.filter(cls.edit_group_id==eg.id).all()
-        print(edits)
         # for each entity edit->ident:
         for edit in edits:
             # update entity ident state (activate, redirect, delete)

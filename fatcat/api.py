@@ -69,14 +69,24 @@ def api_release_get(ident):
 def api_release_create():
     params = request.get_json()
     edit_group = get_or_create_edit_group(params.get('editgroup'))
+    creators = params.get('creators', [])
+    creators = [CreatorIdent.query.filter(CreatorIdent.id==c).first_or_404() for c in creators]
+    work = params.get('work')
+    if work:
+        work = WorkIdent.query.filter(WorkIdent.id==work).first_or_404()
+    container = params.get('container')
+    if container:
+        container = ContainerIdent.query.filter(ContainerIdent.id==container).first_or_404()
     rev = ReleaseRev(
         title=params.get('title', None),
         release_type=params.get('release_type', None),
-        creators=params.get('creators', []),
-        #work=params.get('work', None),
-        container=params.get('container', None),
+        work=work,
+        container=container,
         doi=params.get('doi', None),
     )
+    contribs = [ReleaseContrib(release=rev, creator=c) for c in creators]
+    rev.creators = contribs
+    db.session.add_all(contribs)
     ident = ReleaseIdent(is_live=False, rev=rev)
     edit = ReleaseEdit(edit_group=edit_group, ident=ident, rev=rev)
     if params.get('extra', None):
@@ -142,11 +152,16 @@ def api_file_get(ident):
 def api_file_create():
     params = request.get_json()
     edit_group = get_or_create_edit_group(params.get('editgroup'))
+    releases = params.get('releases', [])
+    releases = [ReleaseIdent.query.filter(ReleaseIdent.id==r).first_or_404() for r in releases]
     rev = FileRev(
         sha1=params.get('sha1', None),
         size=params.get('size', None),
         url=params.get('url', None),
     )
+    file_releases = [FileRelease(file=rev, release=r) for r in releases]
+    rev.releases = file_releases
+    db.session.add_all(file_releases)
     ident = FileIdent(is_live=False, rev=rev)
     edit = FileEdit(edit_group=edit_group, ident=ident, rev=rev)
     if params.get('extra', None):
