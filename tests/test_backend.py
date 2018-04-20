@@ -169,6 +169,7 @@ class APITestCase(FatcatTestCase):
         assert WorkIdent.query.count() == 0
         assert WorkRev.query.count() == 0
         assert WorkEdit.query.count() == 0
+        assert ExtraJson.query.count() == 0
         rv = self.app.post('/v0/work',
             data=json.dumps(dict(title="dummy", work_type="thing", extra=dict(a=1, b="zing"))),
             headers={"content-type": "application/json"})
@@ -177,6 +178,7 @@ class APITestCase(FatcatTestCase):
         assert WorkIdent.query.count() == 1
         assert WorkRev.query.count() == 1
         assert WorkEdit.query.count() == 1
+        assert ExtraJson.query.count() == 1
         # not alive yet
         assert WorkIdent.query.filter(WorkIdent.is_live==True).count() == 0
 
@@ -205,8 +207,8 @@ class APITestCase(FatcatTestCase):
                 name="schmournal",
                 publisher="society of authors",
                 issn="2222-3333",
-                editgroup=editgroup_id)),
-                #extra=dict(a=1, i="zing"))),
+                editgroup=editgroup_id,
+                extra=dict(a=2, i="zing"))),
             headers={"content-type": "application/json"})
         assert rv.status_code == 200
         obj = json.loads(rv.data.decode('utf-8'))
@@ -216,8 +218,8 @@ class APITestCase(FatcatTestCase):
             data=json.dumps(dict(
                 name="anon y. mouse",
                 orcid="0000-0002-1825-0097",
-                editgroup=editgroup_id)),
-                #extra=dict(w=1, q="zing"))),
+                editgroup=editgroup_id,
+                extra=dict(w=1, q="zing"))),
             headers={"content-type": "application/json"})
         assert rv.status_code == 200
         obj = json.loads(rv.data.decode('utf-8'))
@@ -227,8 +229,8 @@ class APITestCase(FatcatTestCase):
             data=json.dumps(dict(
                 title="dummy work",
                 work_type="book",
-                editgroup=editgroup_id)),
-                #extra=dict(a=1, b="zing"))),
+                editgroup=editgroup_id,
+                extra=dict(a=3, b="zing"))),
             headers={"content-type": "application/json"})
         assert rv.status_code == 200
         obj = json.loads(rv.data.decode('utf-8'))
@@ -245,8 +247,8 @@ class APITestCase(FatcatTestCase):
                 editgroup=editgroup_id,
                 refs=[
                     dict(stub="some other journal article"),
-                ])),
-                #extra=dict(f=7, b="zing"))),
+                ],
+                extra=dict(f=7, b="zing"))),
             headers={"content-type": "application/json"})
         assert rv.status_code == 200
         obj = json.loads(rv.data.decode('utf-8'))
@@ -257,8 +259,8 @@ class APITestCase(FatcatTestCase):
                 sha1="deadbeefdeadbeef",
                 size=1234,
                 release=release_id,
-                editgroup=editgroup_id)),
-                #extra=dict(f=7, b="zing"))),
+                editgroup=editgroup_id,
+                extra=dict(f=4, b="zing"))),
             headers={"content-type": "application/json"})
         assert rv.status_code == 200
         obj = json.loads(rv.data.decode('utf-8'))
