@@ -59,7 +59,7 @@ class WorkRev(db.Model):
     __tablename__ = 'work_rev'
     id = db.Column(db.Integer, primary_key=True)
     extra_json_id = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
-    extra_json = db.relationship("ExtraJson") # XXX: for all entities
+    extra_json = db.relationship("ExtraJson")
 
     title = db.Column(db.String)
     work_type = db.Column(db.String)
@@ -88,7 +88,8 @@ class WorkEdit(db.Model):
     rev_id = db.Column(db.ForeignKey('work_rev.id'), nullable=True)
     redirect_id = db.Column(db.ForeignKey('work_ident.id'), nullable=True)
     edit_group_id = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
-    extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
+    extra_json_id = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
+    extra_json = db.relationship("ExtraJson")
     ident = db.relationship("WorkIdent", foreign_keys="WorkEdit.ident_id")
     rev = db.relationship("WorkRev")
     edit_group = db.relationship("EditGroup")
@@ -97,7 +98,8 @@ class WorkEdit(db.Model):
 class ReleaseRev(db.Model):
     __tablename__ = 'release_rev'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
+    extra_json_id = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
+    extra_json = db.relationship("ExtraJson")
 
     work_ident_id = db.ForeignKey('work_ident.id')
     container_ident_id = db.Column(db.ForeignKey('container_ident.id'), nullable=True)
@@ -130,7 +132,8 @@ class ReleaseEdit(db.Model):
     rev_id = db.Column(db.ForeignKey('release_rev.id'), nullable=True)
     redirect_id = db.Column(db.ForeignKey('release_ident.id'), nullable=True)
     edit_group_id = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
-    extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
+    extra_json_id = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
+    extra_json = db.relationship("ExtraJson")
     ident = db.relationship("ReleaseIdent", foreign_keys="ReleaseEdit.ident_id")
     rev = db.relationship("ReleaseRev")
     edit_group = db.relationship("EditGroup")
@@ -139,7 +142,8 @@ class ReleaseEdit(db.Model):
 class CreatorRev(db.Model):
     __tablename__ = 'creator_rev'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
+    extra_json_id = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
+    extra_json = db.relationship("ExtraJson")
 
     name = db.Column(db.String)
     sortname = db.Column(db.String)
@@ -160,7 +164,8 @@ class CreatorEdit(db.Model):
     rev_id = db.Column(db.ForeignKey('creator_rev.id'), nullable=True)
     redirect_id = db.Column(db.ForeignKey('creator_ident.id'), nullable=True)
     edit_group_id = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
-    extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
+    extra_json_id = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
+    extra_json = db.relationship("ExtraJson")
     ident = db.relationship("CreatorIdent", foreign_keys="CreatorEdit.ident_id")
     rev = db.relationship("CreatorRev")
     edit_group = db.relationship("EditGroup")
@@ -169,7 +174,8 @@ class CreatorEdit(db.Model):
 class ContainerRev(db.Model):
     __tablename__ = 'container_rev'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
+    extra_json_id = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
+    extra_json = db.relationship("ExtraJson")
 
     name = db.Column(db.String)
     parent_id = db.Column(db.ForeignKey('container_ident.id', use_alter=True))
@@ -193,7 +199,8 @@ class ContainerEdit(db.Model):
     rev_id = db.Column(db.ForeignKey('container_rev.id'), nullable=True)
     redirect_id = db.Column(db.ForeignKey('container_ident.id'), nullable=True)
     edit_group_id = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
-    extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
+    extra_json_id = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
+    extra_json = db.relationship("ExtraJson")
     ident = db.relationship("ContainerIdent", foreign_keys="ContainerEdit.ident_id")
     rev = db.relationship("ContainerRev")
     edit_group = db.relationship("EditGroup")
@@ -202,7 +209,8 @@ class ContainerEdit(db.Model):
 class FileRev(db.Model):
     __tablename__ = 'file_rev'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
+    extra_json_id = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
+    extra_json = db.relationship("ExtraJson")
 
     size = db.Column(db.Integer)
     sha1 = db.Column(db.String)             # TODO: hash table... only or in addition?
@@ -224,7 +232,8 @@ class FileEdit(db.Model):
     rev_id = db.Column(db.ForeignKey('file_rev.id'), nullable=True)
     redirect_id = db.Column(db.ForeignKey('file_ident.id'), nullable=True)
     edit_group_id = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
-    extra_json = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
+    extra_json_id = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
+    extra_json = db.relationship("ExtraJson")
     ident = db.relationship("FileIdent", foreign_keys="FileEdit.ident_id")
     rev = db.relationship("FileRev")
     edit_group = db.relationship("EditGroup")

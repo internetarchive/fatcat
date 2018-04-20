@@ -60,7 +60,7 @@ def add_crossref_via_model(meta):
         }
     }, indent=None).encode('utf-8')
     extra_json = ExtraJson(json=extra, sha1=hashlib.sha1(extra).hexdigest())
-    release.extra_json = extra_json.sha1
+    release.extra_json_id = extra_json.sha1
 
     # references
     for i, rm in enumerate(meta.get('reference', [])):
