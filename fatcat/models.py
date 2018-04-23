@@ -305,9 +305,6 @@ class EntitySchema(ma.ModelSchema):
             data['rev'] = rev_id
         else:
             data['rev'] = None
-        # TODO: should be able to set as an allow_none field somewhere
-        if not data.get('redirect_id', None):
-            data['redirect_id'] = None
 
     extra_json = ma.Nested(ExtraJsonSchema)
 
@@ -332,10 +329,12 @@ class FileReleaseSchema(ma.ModelSchema):
 class WorkRevSchema(ma.ModelSchema):
     class Meta:
         model = WorkRev
+        include_fk = True
 
 class WorkSchema(EntitySchema):
     class Meta:
         model = WorkIdent
+        include_fk = True
     rev = ma.Nested(WorkRevSchema)
 
 class WorkEditSchema(ma.ModelSchema):
@@ -350,6 +349,7 @@ work_edit_schema = WorkEditSchema()
 class ReleaseRevSchema(ma.ModelSchema):
     class Meta:
         model = ReleaseRev
+        include_fk = True
     work = ma.Nested('WorkSchema')
     container = ma.Nested('ContainerSchema')
     creators = ma.Nested(ReleaseContribSchema, many=True)
@@ -358,6 +358,7 @@ class ReleaseRevSchema(ma.ModelSchema):
 class ReleaseSchema(EntitySchema):
     class Meta:
         model = ReleaseIdent
+        include_fk = True
     rev = ma.Nested(ReleaseRevSchema)
     # XXX: files = ma.Nested('FileSchema', many=True)
 
@@ -373,10 +374,12 @@ release_edit_schema = ReleaseEditSchema()
 class CreatorRevSchema(ma.ModelSchema):
     class Meta:
         model = CreatorRev
+        include_fk = True
 
 class CreatorSchema(EntitySchema):
     class Meta:
         model = CreatorIdent
+        include_fk = True
     rev = ma.Nested(CreatorRevSchema)
 
 class CreatorEditSchema(ma.ModelSchema):
@@ -391,10 +394,12 @@ creator_edit_schema = CreatorEditSchema()
 class ContainerRevSchema(ma.ModelSchema):
     class Meta:
         model = ContainerRev
+        include_fk = True
 
 class ContainerSchema(EntitySchema):
     class Meta:
         model = ContainerIdent
+        include_fk = True
     rev = ma.Nested(ContainerRevSchema)
 
 class ContainerEditSchema(ma.ModelSchema):
@@ -409,12 +414,14 @@ container_edit_schema = ContainerEditSchema()
 class FileRevSchema(ma.ModelSchema):
     class Meta:
         model = FileRev
+        include_fk = True
 
     releases = ma.Nested(FileReleaseSchema, many=True)
 
 class FileSchema(EntitySchema):
     class Meta:
         model = FileIdent
+        include_fk = True
     rev = ma.Nested(FileRevSchema)
 
 class FileEditSchema(ma.ModelSchema):
