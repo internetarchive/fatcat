@@ -3,7 +3,9 @@ import json
 import time
 import random
 import hashlib
+from sqlalchemy.orm.session import make_transient
 from fatcat import db
+import fatcat.api
 from fatcat.models import *
 
 def populate_db():
@@ -113,3 +115,38 @@ def accept_editgroup(eg):
     db.session.add(eg.editor)
 
     db.session.commit()
+
+def merge_works(left_id, right_id, edit_group=None):
+    """Helper to merge two works together."""
+    left = WorkIdent.query.filter(WorkIdent.id == left_id).first_or_404()
+    right = WorkIdent.query.filter(WorkIdent.id == right_id).first_or_404()
+    assert left.is_live and right.is_live
+    assert left.rev and right.rev
+    assert (left.redirect_id == None) and (right.redirect_id == None)
+
+    if edit_group is None:
+        edit_group = fatcat.api.get_or_create_edit_group()
+
+    releases = ReleaseIdent.query\
+        .join(ReleaseIdent.rev)\
+        .filter(ReleaseRev.work_ident_id == right_id)\
+        .filter(ReleaseIdent.is_live == True)\
+        .all()
+
+    # update all right releases to point to left
+    for release_ident in releases:
+        rev = release_ident.rev
+        old_id = rev.id
+        db.session.expunge(rev)
+        make_transient(rev)
+        rev.id = None
+        rev.parent = old_id
+        rev.work_ident_id = left.id
+        re = ReleaseEdit(edit_group=edit_group, ident=release_ident, rev=rev)
+        db.session.add_all([rev, re])
+
+    # redirect right id to left (via edit_group)
+    neww = WorkEdit(edit_group=edit_group, ident=right,
+        rev=left.rev, redirect_id=left.id)
+
+    db.session.add_all([neww])
