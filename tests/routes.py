@@ -18,3 +18,14 @@ def test_static_routes(rich_app):
     assert app.get("/static/bogus/route").status_code == 404
 
 
+def test_all_views(rich_app):
+    app = rich_app
+
+    for route in ('work', 'release', 'creator', 'container', 'file'):
+        print(route)
+        rv = app.get('/{}/1'.format(route))
+        assert rv.status_code == 200
+
+        rv = app.get('/v0/work/random')
+        rv = app.get(rv.location)
+        assert rv.status_code == 200

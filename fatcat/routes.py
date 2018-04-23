@@ -1,8 +1,9 @@
 
 import os
+import json
 from flask import Flask, render_template, send_from_directory, request, \
     url_for, abort, g, redirect, jsonify, session
-from fatcat import app, db
+from fatcat import app, db, api
 
 
 ### Views ###################################################################
@@ -13,12 +14,53 @@ def work_create():
 
 @app.route('/work/random', methods=['GET'])
 def work_random():
-    work = {} # XXX
-    return render_template('work_view.html', work=work, primary=work['primary'])
+    rv = app.get('/v0/work/random')
+    return redirect(rv.location)
 
-@app.route('/work/random', methods=['GET'])
-def work_view(work_id):
-    return render_template('work_view.html')
+@app.route('/work/<int:ident>', methods=['GET'])
+def work_view(ident):
+    rv = api.api_work_get(ident)
+    if rv.status_code != 200:
+        # TODO: better wrapping for all entities
+        return abort(rv.status_code)
+    entity = json.loads(rv.data.decode('utf-8'))
+    return render_template('work_view.html', work=entity)
+
+@app.route('/release/<int:ident>', methods=['GET'])
+def release_view(ident):
+    rv = api.api_release_get(ident)
+    if rv.status_code != 200:
+        # TODO: better wrapping for all entities
+        return abort(rv.status_code)
+    entity = json.loads(rv.data.decode('utf-8'))
+    return render_template('release_view.html', release=entity)
+
+@app.route('/creator/<int:ident>', methods=['GET'])
+def creator_view(ident):
+    rv = api.api_creator_get(ident)
+    if rv.status_code != 200:
+        # TODO: better wrapping for all entities
+        return abort(rv.status_code)
+    entity = json.loads(rv.data.decode('utf-8'))
+    return render_template('creator_view.html', creator=entity)
+
+@app.route('/container/<int:ident>', methods=['GET'])
+def container_view(ident):
+    rv = api.api_container_get(ident)
+    if rv.status_code != 200:
+        # TODO: better wrapping for all entities
+        return abort(rv.status_code)
+    entity = json.loads(rv.data.decode('utf-8'))
+    return render_template('container_view.html', container=entity)
+
+@app.route('/file/<int:ident>', methods=['GET'])
+def file_view(ident):
+    rv = api.api_file_get(ident)
+    if rv.status_code != 200:
+        # TODO: better wrapping for all entities
+        return abort(rv.status_code)
+    entity = json.loads(rv.data.decode('utf-8'))
+    return render_template('file_view.html', file=entity)
 
 
 ### Static Routes ###########################################################
