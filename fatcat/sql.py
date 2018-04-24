@@ -43,7 +43,7 @@ def add_crossref_via_model(meta):
     release = ReleaseRev(
         title=title,
         creators=[ReleaseContrib(creator=a) for a in author_ids],
-        #work=work,
+        # XXX: work=work,
         container=container_id,
         release_type=meta['type'],
         doi=meta['DOI'],
