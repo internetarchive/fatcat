@@ -15,3 +15,13 @@ database migrations:
 maybe also:
 - https://github.com/oklog/ulid
   like a UUID, but base32 and "sortable" (timestamp + random)
+
+for auth, start with oauth2... orcid?
+
+debug postgres with gocmdpev
+
+## Non-API stuff
+
+- logrus structured logging (or zap?)
+- testify tests
+- viper config
