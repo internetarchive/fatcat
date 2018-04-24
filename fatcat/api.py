@@ -10,7 +10,7 @@ from fatcat.sql import *
 
 def get_or_create_edit_group(param=None):
     if param != None:
-        edit_group = EditGroup.query.filter(EditGroup.id==1).first_or_404()
+        edit_group = EditGroup.query.filter(EditGroup.id==int(param)).first_or_404()
         return edit_group
     editor = Editor.query.filter(Editor.id==1).first()
     if editor.active_edit_group:
@@ -219,7 +219,9 @@ def api_file_create():
 
 @app.route('/v0/editgroup/<int:ident>', methods=['GET'])
 def api_edit_group_get(ident):
-    entity = EditGroup.query.filter(EditGroup.id==ident).first_or_404()
+    entity = EditGroup.query\
+        .join(EditGroup.editor)\
+        .filter(EditGroup.id==ident).first_or_404()
     # TODO: fill in all the related edit types...
     return edit_group_schema.jsonify(entity)
 
@@ -242,3 +244,18 @@ def api_edit_group_accept(ident):
     entity = EditGroup.query.filter(EditGroup.id==ident).first_or_404()
     accept_editgroup(entity)
     return jsonify({'success': True})
+
+
+@app.route('/v0/editor/<username>', methods=['GET'])
+def api_editor_get(username):
+    entity = Editor.query.filter(Editor.username==username).first_or_404()
+    return editor_schema.jsonify(entity)
+
+@app.route('/v0/editor/<username>/changelog', methods=['GET'])
+def api_editor_changelog(username):
+    entries = ChangelogEntry.query\
+        .join(ChangelogEntry.edit_group)\
+        .join(EditGroup.editor)\
+        .filter(Editor.username==username)\
+        .all()
+    return changelogentry_schema.jsonify(entries, many=True)

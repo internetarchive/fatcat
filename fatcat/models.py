@@ -246,15 +246,15 @@ class EditGroup(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     editor_id = db.Column(db.ForeignKey('editor.id'), nullable=False)
     description = db.Column(db.String)
-    editor = db.relationship('Editor', foreign_keys='EditGroup.editor_id')
     extra_json_id = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
     extra_json = db.relationship("ExtraJson")
-    # TODO: changelog entry relationship
+
+    editor = db.relationship("Editor", foreign_keys="EditGroup.editor_id")
 
 class Editor(db.Model):
     __tablename__ = 'editor'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String)
+    username = db.Column(db.String, nullable=False, unique=True)
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
     active_edit_group_id = db.Column(db.ForeignKey('edit_group.id', use_alter=True))
     active_edit_group = db.relationship('EditGroup', foreign_keys='Editor.active_edit_group_id')
@@ -264,6 +264,7 @@ class ChangelogEntry(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     edit_group_id = db.Column(db.ForeignKey('edit_group.id'))
     timestamp = db.Column(db.Integer)
+    edit_group = db.relationship("EditGroup")
 
 
 ### Other ###################################################################
@@ -441,6 +442,13 @@ class EditorSchema(ma.ModelSchema):
 class EditGroupSchema(ma.ModelSchema):
     class Meta:
         model = EditGroup
+    editor = ma.Nested(EditorSchema)
 
-editor_schema = EditGroupSchema()
+editor_schema = EditorSchema()
 edit_group_schema = EditGroupSchema()
+
+class ChangelogEntrySchema(ma.ModelSchema):
+    class Meta:
+        model = ChangelogEntry
+
+changelogentry_schema = ChangelogEntrySchema()

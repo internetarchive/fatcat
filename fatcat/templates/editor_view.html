@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block body %}
+
+<h1>Editor: {{ editor.username }}</h1>
+
+<p>Is Admin? {{ editor.is_admin }}
+<p><a href="/editor/{{ editor.username }}/changelog">Changelog</a>
+
+{% endblock %}

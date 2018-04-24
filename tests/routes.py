@@ -32,3 +32,9 @@ def test_all_views(rich_app):
 
     rv = app.get('/editgroup/1')
     assert rv.status_code == 200
+
+    rv = app.get('/editor/admin')
+    assert rv.status_code == 200
+
+    rv = app.get('/editor/admin/changelog')
+    assert rv.status_code == 200

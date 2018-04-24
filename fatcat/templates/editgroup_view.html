@@ -1,13 +1,9 @@
 {% extends "base.html" %}
 {% block body %}
 
-<h1>Edit Group: {{ editgroup.id}}</h1>
+<h1>Edit Group: #{{ editgroup.id}}</h1>
 
-    description = db.Column(db.String)
-    editor = db.relationship('Editor', foreign_keys='EditGroup.editor_id')
-
-
-<p>Editor: <a href="/editor/{{ editgroup.editor.id }}">{{ editgroup.editor.username }}</a>
+<p>Editor: <a href="/editor/{{ editgroup.editor.username }}">{{ editgroup.editor.username }}</a>
 <p>Description: {{ editgroup.description }}
 
 <p>TODO: list edits by type...</p>

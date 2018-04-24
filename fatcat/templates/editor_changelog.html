@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block body %}
+
+<h1>Editor Changelog: {{ editor.username }}</h1>
+
+<p>Editor: <a href="/editor/{{ editor.username }}">{{ editor.username }}</a>
+
+<p>Changes accepted (aka, merged editgroups):
+<ul>
+{% for entry in changelog_entries %}
+  <li><a href="/editgroup/{{ entry.edit_group }}">Edit Group #{{ entry.edit_group }}</a> (on {{ entry.timestamp }})
+{% else %}
+NONE
+{% endfor %}
+</ul>
+
+{% endblock %}

@@ -287,3 +287,24 @@ def test_api_container_lookup(rich_app):
         data=json.dumps(dict(issn="not_even_valid_issn")),
         headers={"content-type": "application/json"})
     assert rv.status_code == 400
+
+def test_api_editor_get(rich_app):
+    app = rich_app
+
+    rv = app.get('/v0/editor/admin',
+        headers={"content-type": "application/json"})
+    assert rv.status_code == 200
+    obj = json.loads(rv.data.decode('utf-8'))
+    print(obj)
+    assert obj['username'] == "admin"
+    assert obj['id'] == 1
+
+def test_api_editor_changelog(rich_app):
+    app = rich_app
+
+    rv = app.get('/v0/editor/admin/changelog',
+        headers={"content-type": "application/json"})
+    assert rv.status_code == 200
+    obj = json.loads(rv.data.decode('utf-8'))
+    print(obj)
+    assert len(obj) == 1

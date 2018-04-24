@@ -83,6 +83,27 @@ def editgroup_current(ident):
     eg = api.get_or_create_edit_group()
     return redirect('/editgroup/{}'.format(eg.id))
 
+@app.route('/editor/<username>', methods=['GET'])
+def editor_view(username):
+    rv = api.api_editor_get(username)
+    if rv.status_code != 200:
+        # TODO: better wrapping for all entities
+        return abort(rv.status_code)
+    entity = json.loads(rv.data.decode('utf-8'))
+    return render_template('editor_view.html', editor=entity)
+
+@app.route('/editor/<username>/changelog', methods=['GET'])
+def editor_changelog(username):
+    rv = api.api_editor_get(username)
+    if rv.status_code != 200:
+        # TODO: better wrapping for all entities
+        return abort(rv.status_code)
+    editor = json.loads(rv.data.decode('utf-8'))
+    rv = api.api_editor_changelog(username)
+    changelog_entries = json.loads(rv.data.decode('utf-8'))
+    return render_template('editor_changelog.html', editor=editor,
+        changelog_entries=changelog_entries)
+
 
 ### Static Routes ###########################################################
 
