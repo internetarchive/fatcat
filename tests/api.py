@@ -208,3 +208,29 @@ def test_api_rich_create(app):
     # test that editor's active edit group is now invalid
     editor = Editor.query.first()
     assert editor.active_edit_group == None
+
+def test_api_release_lookup(rich_app):
+    app = rich_app
+
+    rv = app.get('/v0/release/1',
+        headers={"content-type": "application/json"})
+    assert rv.status_code == 200
+    obj = json.loads(rv.data.decode('utf-8'))
+
+    rv = app.get('/v0/release/lookup',
+        data=json.dumps(dict(doi="10.1234/5678")),
+        headers={"content-type": "application/json"})
+    assert rv.status_code == 200
+    obj = json.loads(rv.data.decode('utf-8'))
+    assert obj['doi'] == "10.1234/5678"
+    assert obj.get('id') != None
+
+    rv = app.get('/v0/release/lookup',
+        data=json.dumps(dict(doi="10.1234/5678_noexit")),
+        headers={"content-type": "application/json"})
+    assert rv.status_code == 404
+
+    rv = app.get('/v0/release/lookup',
+        data=json.dumps(dict(doi="not_even_valid_doi")),
+        headers={"content-type": "application/json"})
+    assert rv.status_code == 400

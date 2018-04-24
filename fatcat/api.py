@@ -101,6 +101,19 @@ def api_release_random():
     entity = ReleaseIdent.query.order_by(db.func.random()).first()
     return redirect('/v0/release/{}'.format(entity.id))
 
+@app.route('/v0/release/lookup', methods=['GET'])
+def api_release_lookup():
+    params = request.get_json()
+    doi = params['doi'].lower()
+    if not (doi.startswith("10.") and len(doi.split('/')) == 2):
+        abort(400)
+    # TODO: proper regex
+    entity = ReleaseIdent.query\
+        .join(ReleaseIdent.rev)\
+        .filter(ReleaseRev.doi==doi)\
+        .first_or_404()
+    return release_schema.jsonify(entity)
+
 
 @app.route('/v0/creator/<int:ident>', methods=['GET'])
 def api_creator_get(ident):
