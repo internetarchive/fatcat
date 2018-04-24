@@ -22,7 +22,7 @@ def main():
     subparsers = parser.add_subparsers()
 
     sub_import_crossref = subparsers.add_parser('import-crossref',
-        aliases=['lc'])
+        aliases=['ic'])
     sub_import_crossref.set_defaults(func=import_crossref)
     sub_import_crossref.add_argument('json_file',
         help="")
