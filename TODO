@@ -1,19 +1,35 @@
 
-high-level this weekend:
-- test: create "rich" work (all entities; group approve), all via API
-- test: merge two rich works, all via API
-- naive API-based import scripts for: journals (norwegian), orcid, crossref
+routes/views:
+- sources and account page as fake links (#)
+- "current editgroup" redirect
+- per-editor history
+- actually wire up work/release creation form
 
-helpers/ORM
-- method to "approve" edit_group
-- helpers to deal with edits and edit groups
+next/high-level:
+- release, container, creator lookups (by external id)
+    => creator obj to have ORCID column
+- crossref import script:
+    => creator/container caching
+    => edit group
+- ORCID and ISSN import scripts
+- client export:
+    => one json-nl file per entity type
+- flask-apispec
+- swagger API docs?
+- naive API-based import scripts for: journals (norwegian), orcid, crossref
+- switch to marshmallow in create APIs (at least for revs)
+
+model:
+- 'parent rev' for revisions (vs. container parent)
+- helpers to deal with edits and edit groups (?)
 
 api
-- expose all models (like work)
 - expose edit_group and editor
+- work merge helper
 
 tests
-- create "rich" work (all entities) via edit mechanism (incl. approve)
+- api gets: creator, container, editgroup
+- implicit editor.active_edit_group behavior
 - modify existing release via edit mechanism (and commit)
 - merge two releases
 - update (via edit) a redirect release
@@ -35,6 +51,9 @@ views
 - oldest edits/edit-groups
 
 later:
+- switch extra_json to just be a column
+- extra_json uniqueness
+- extra_json marshmallow fixes
 - "hydrate" files (and maybe container/authors/refs) in release
 - transclude primary_release in work
 - crossref json import script/benchmark
@@ -44,7 +63,16 @@ later:
 ## High-Level Priorities
 
 - manual editing of containers and works/releases
-- bulk loading of releases, files, containers
+- bulk loading of releases, files, containers, creators
 - accurate auto-matching matching of containers (eg, via ISSN)
 - full database dump and reload
 
+## Planning...
+
+- stick with python through:
+    - initial benchmarking
+    - postgres/cockroach
+    - full dump/load
+    - UUID switch
+    - JSONB/extra_json experiments
+    - SQL query examples/experiments
