@@ -1,23 +1,52 @@
 
+import os
+import time
+import json
 import pytest
+import signal
 import fatcat
 import fatcat.sql
 from fatcat.models import *
 
 
 @pytest.fixture
-def app():
+def full_app():
     fatcat.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
     fatcat.app.testing = True
-    fatcat.app.debug = True
+    fatcat.app.debug = False
     fatcat.db.session.remove()
     fatcat.db.drop_all()
     fatcat.db.create_all()
     fatcat.sql.populate_db()
-    return fatcat.app.test_client()
+    return fatcat.app
+
+@pytest.fixture
+def app(full_app):
+    return full_app.test_client()
 
 @pytest.fixture
 def rich_app(app):
+    enrichen_test_app(app)
+    return app
+
+
+@pytest.fixture(scope="function")
+def api_client(full_app):
+
+    pid = os.fork()
+    if pid == 0:
+        full_app.testing = False
+        full_app.run(host="localhost", port=8444, debug=False)
+        os._exit(0)
+
+    time.sleep(0.2)
+    yield fatcat.api_client.FatCatApiClient("http://localhost:8444")
+    os.kill(pid, signal.SIGKILL)
+
+
+## Helpers ##################################################################
+
+def enrichen_test_app(app):
 
     rv = app.post('/v0/editgroup',
         data=json.dumps(dict(
@@ -112,35 +141,6 @@ def rich_app(app):
     rv = app.post('/v0/editgroup/{}/accept'.format(editgroup_id),
         headers={"content-type": "application/json"})
     assert rv.status_code == 200
-
-    return app
-
-def test_rich_app_fixture(rich_app):
-    app = rich_app
-
-    assert ChangelogEntry.query.count() == 1
-
-    for cls in (WorkIdent, WorkRev, WorkEdit,
-                ContainerIdent, ContainerRev, ContainerEdit,
-                CreatorIdent, CreatorRev, CreatorEdit,
-                FileIdent, FileRev, FileEdit):
-        assert cls.query.count() == 1
-    for cls in (ReleaseIdent, ReleaseRev, ReleaseEdit):
-        assert cls.query.count() == 2
-
-    for cls in (WorkIdent,
-                ContainerIdent,
-                CreatorIdent,
-                FileIdent):
-        assert cls.query.filter(cls.is_live==True).count() == 1
-    assert ReleaseIdent.query.filter(ReleaseIdent.is_live==True).count() == 2
-
-    # test that editor's active edit group is now invalid
-    editor = Editor.query.first()
-    assert editor.active_edit_group == None
-
-
-## Helpers ##################################################################
 
 def check_entity_fields(e):
     for key in ('rev', 'is_live', 'redirect_id'):
