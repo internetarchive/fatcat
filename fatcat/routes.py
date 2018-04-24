@@ -21,18 +21,12 @@ def work_random():
 @app.route('/work/<int:ident>', methods=['GET'])
 def work_view(ident):
     rv = api.api_work_get(ident)
-    if rv.status_code != 200:
-        # TODO: better wrapping for all entities
-        return abort(rv.status_code)
     entity = json.loads(rv.data.decode('utf-8'))
     return render_template('work_view.html', work=entity)
 
 @app.route('/release/<int:ident>', methods=['GET'])
 def release_view(ident):
     rv = api.api_release_get(ident)
-    if rv.status_code != 200:
-        # TODO: better wrapping for all entities
-        return abort(rv.status_code)
     entity = json.loads(rv.data.decode('utf-8'))
     return render_template('release_view.html', release=entity)
 
@@ -45,36 +39,24 @@ def release_random():
 @app.route('/creator/<int:ident>', methods=['GET'])
 def creator_view(ident):
     rv = api.api_creator_get(ident)
-    if rv.status_code != 200:
-        # TODO: better wrapping for all entities
-        return abort(rv.status_code)
     entity = json.loads(rv.data.decode('utf-8'))
     return render_template('creator_view.html', creator=entity)
 
 @app.route('/container/<int:ident>', methods=['GET'])
 def container_view(ident):
     rv = api.api_container_get(ident)
-    if rv.status_code != 200:
-        # TODO: better wrapping for all entities
-        return abort(rv.status_code)
     entity = json.loads(rv.data.decode('utf-8'))
     return render_template('container_view.html', container=entity)
 
 @app.route('/file/<int:ident>', methods=['GET'])
 def file_view(ident):
     rv = api.api_file_get(ident)
-    if rv.status_code != 200:
-        # TODO: better wrapping for all entities
-        return abort(rv.status_code)
     entity = json.loads(rv.data.decode('utf-8'))
     return render_template('file_view.html', file=entity)
 
 @app.route('/editgroup/<int:ident>', methods=['GET'])
 def editgroup_view(ident):
     rv = api.api_editgroup_get(ident)
-    if rv.status_code != 200:
-        # TODO: better wrapping for all entities
-        return abort(rv.status_code)
     entity = json.loads(rv.data.decode('utf-8'))
     return render_template('editgroup_view.html', editgroup=entity)
 
@@ -86,18 +68,12 @@ def editgroup_current():
 @app.route('/editor/<username>', methods=['GET'])
 def editor_view(username):
     rv = api.api_editor_get(username)
-    if rv.status_code != 200:
-        # TODO: better wrapping for all entities
-        return abort(rv.status_code)
     entity = json.loads(rv.data.decode('utf-8'))
     return render_template('editor_view.html', editor=entity)
 
 @app.route('/editor/<username>/changelog', methods=['GET'])
 def editor_changelog(username):
     rv = api.api_editor_get(username)
-    if rv.status_code != 200:
-        # TODO: better wrapping for all entities
-        return abort(rv.status_code)
     editor = json.loads(rv.data.decode('utf-8'))
     rv = api.api_editor_changelog(username)
     changelog_entries = json.loads(rv.data.decode('utf-8'))

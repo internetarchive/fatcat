@@ -12,13 +12,10 @@ class FatCatApiClient:
     def get(self, path):
         return self.session.get(self.host_url + path)
 
-    def post(self, path, data=None, headers=None):
-        hdrs = {"content-type": "application/json"}
-        if headers:
-            hdrs.update(headers)
-        #if type(data) == dict:
-        #    data = json.dumps(data, indent=None).encode('utf-8')
-        return self.session.post(self.host_url + path, json=data, headers=hdrs)
+    def post(self, path, data=None):
+        headers = {"content-type": "application/json"}
+        return self.session.post(self.host_url + path, json=data,
+            headers=headers)
 
     def import_crossref_file(self, json_file):
         eg = self.new_editgroup()
