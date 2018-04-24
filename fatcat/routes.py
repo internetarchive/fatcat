@@ -92,6 +92,10 @@ def editor_changelog(username):
 
 ### Static Routes ###########################################################
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
 @app.route('/', methods=['GET'])
 def homepage():
     return render_template('home.html')
