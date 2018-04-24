@@ -104,10 +104,10 @@ def api_release_random():
 @app.route('/v0/release/lookup', methods=['GET'])
 def api_release_lookup():
     params = request.get_json()
-    doi = params['doi'].lower()
+    doi = params['doi'].strip().lower()
+    # TODO: proper regex
     if not (doi.startswith("10.") and len(doi.split('/')) == 2):
         abort(400)
-    # TODO: proper regex
     entity = ReleaseIdent.query\
         .join(ReleaseIdent.rev)\
         .filter(ReleaseRev.doi==doi)\
@@ -137,6 +137,19 @@ def api_creator_create():
     db.session.commit()
     return creator_schema.jsonify(ident)
 
+@app.route('/v0/creator/lookup', methods=['GET'])
+def api_creator_lookup():
+    params = request.get_json()
+    orcid = params['orcid'].strip()
+    # TODO: proper regex
+    if not (len(orcid) == len("0000-0002-1825-0097") and len(orcid.split('-')) == 4):
+        abort(400)
+    entity = CreatorIdent.query\
+        .join(CreatorIdent.rev)\
+        .filter(CreatorRev.orcid==orcid)\
+        .first_or_404()
+    return creator_schema.jsonify(entity)
+
 
 @app.route('/v0/container/<int:ident>', methods=['GET'])
 def api_container_get(ident):
@@ -150,6 +163,7 @@ def api_container_create():
     rev = ContainerRev(
         name=params.get('name', None),
         publisher=params.get('publisher', None),
+        issn=params.get('issn', None),
     )
     ident = ContainerIdent(is_live=False, rev=rev)
     edit = ContainerEdit(edit_group=edit_group, ident=ident, rev=rev)
@@ -159,6 +173,19 @@ def api_container_create():
     db.session.add_all([edit, ident, rev])
     db.session.commit()
     return container_schema.jsonify(ident)
+
+@app.route('/v0/container/lookup', methods=['GET'])
+def api_container_lookup():
+    params = request.get_json()
+    issn = params['issn'].strip()
+    # TODO: proper regex
+    if not (len(issn) == 9 and issn[0:4].isdigit() and issn[5:7].isdigit()):
+        abort(400)
+    entity = ContainerIdent.query\
+        .join(ContainerIdent.rev)\
+        .filter(ContainerRev.issn==issn)\
+        .first_or_404()
+    return container_schema.jsonify(entity)
 
 
 @app.route('/v0/file/<int:ident>', methods=['GET'])

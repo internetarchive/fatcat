@@ -234,3 +234,56 @@ def test_api_release_lookup(rich_app):
         data=json.dumps(dict(doi="not_even_valid_doi")),
         headers={"content-type": "application/json"})
     assert rv.status_code == 400
+
+def test_api_creator_lookup(rich_app):
+    app = rich_app
+
+    rv = app.get('/v0/creator/1',
+        headers={"content-type": "application/json"})
+    assert rv.status_code == 200
+    obj = json.loads(rv.data.decode('utf-8'))
+
+    rv = app.get('/v0/creator/lookup',
+        data=json.dumps(dict(orcid="0000-0002-1825-0097")),
+        headers={"content-type": "application/json"})
+    assert rv.status_code == 200
+    obj = json.loads(rv.data.decode('utf-8'))
+    assert obj['orcid'] == "0000-0002-1825-0097"
+    assert obj.get('id') != None
+
+    rv = app.get('/v0/creator/lookup',
+        data=json.dumps(dict(orcid="0000-0002-1825-0098")),
+        headers={"content-type": "application/json"})
+    assert rv.status_code == 404
+
+    rv = app.get('/v0/creator/lookup',
+        data=json.dumps(dict(orcid="not_even_valid_orcid")),
+        headers={"content-type": "application/json"})
+    assert rv.status_code == 400
+
+
+def test_api_container_lookup(rich_app):
+    app = rich_app
+
+    rv = app.get('/v0/container/1',
+        headers={"content-type": "application/json"})
+    assert rv.status_code == 200
+    obj = json.loads(rv.data.decode('utf-8'))
+
+    rv = app.get('/v0/container/lookup',
+        data=json.dumps(dict(issn="2222-3333")),
+        headers={"content-type": "application/json"})
+    assert rv.status_code == 200
+    obj = json.loads(rv.data.decode('utf-8'))
+    assert obj['issn'] == "2222-3333"
+    assert obj.get('id') != None
+
+    rv = app.get('/v0/container/lookup',
+        data=json.dumps(dict(issn="2222-3334")),
+        headers={"content-type": "application/json"})
+    assert rv.status_code == 404
+
+    rv = app.get('/v0/container/lookup',
+        data=json.dumps(dict(issn="not_even_valid_issn")),
+        headers={"content-type": "application/json"})
+    assert rv.status_code == 400
