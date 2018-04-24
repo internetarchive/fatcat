@@ -220,6 +220,7 @@ def api_file_create():
 @app.route('/v0/editgroup/<int:ident>', methods=['GET'])
 def api_edit_group_get(ident):
     entity = EditGroup.query.filter(EditGroup.id==ident).first_or_404()
+    # TODO: fill in all the related edit types...
     return edit_group_schema.jsonify(entity)
 
 @app.route('/v0/editgroup', methods=['POST'])
@@ -241,4 +242,3 @@ def api_edit_group_accept(ident):
     entity = EditGroup.query.filter(EditGroup.id==ident).first_or_404()
     accept_editgroup(entity)
     return jsonify({'success': True})
-

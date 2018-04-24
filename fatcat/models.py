@@ -249,6 +249,7 @@ class EditGroup(db.Model):
     editor = db.relationship('Editor', foreign_keys='EditGroup.editor_id')
     extra_json_id = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
     extra_json = db.relationship("ExtraJson")
+    # TODO: changelog entry relationship
 
 class Editor(db.Model):
     __tablename__ = 'editor'

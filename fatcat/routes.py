@@ -69,6 +69,20 @@ def file_view(ident):
     entity = json.loads(rv.data.decode('utf-8'))
     return render_template('file_view.html', file=entity)
 
+@app.route('/editgroup/<int:ident>', methods=['GET'])
+def editgroup_view(ident):
+    rv = api.api_edit_group_get(ident)
+    if rv.status_code != 200:
+        # TODO: better wrapping for all entities
+        return abort(rv.status_code)
+    entity = json.loads(rv.data.decode('utf-8'))
+    return render_template('editgroup_view.html', editgroup=entity)
+
+@app.route('/editgroup/current', methods=['GET'])
+def editgroup_current(ident):
+    eg = api.get_or_create_edit_group()
+    return redirect('/editgroup/{}'.format(eg.id))
+
 
 ### Static Routes ###########################################################
 

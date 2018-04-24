@@ -29,3 +29,6 @@ def test_all_views(rich_app):
         rv = app.get('/v0/work/random')
         rv = app.get(rv.location)
         assert rv.status_code == 200
+
+    rv = app.get('/editgroup/1')
+    assert rv.status_code == 200
