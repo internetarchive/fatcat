@@ -96,6 +96,14 @@ def api_release_create():
     db.session.commit()
     return release_schema.jsonify(ident)
 
+@app.route('/v0/release/<int:ident>/changelog', methods=['GET'])
+def api_release_changelog(ident):
+    entries = ChangelogEntry.query\
+        .join(ReleaseEdit.editgroup)\
+        .filter(ReleaseEdit.ident_id==ident)\
+        .all()
+    return changelogentry_schema.jsonify(entries, many=True)
+
 @app.route('/v0/release/random', methods=['GET'])
 def api_release_random():
     entity = ReleaseIdent.query.order_by(db.func.random()).first()

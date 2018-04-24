@@ -30,6 +30,15 @@ def release_view(ident):
     entity = json.loads(rv.data.decode('utf-8'))
     return render_template('release_view.html', release=entity)
 
+@app.route('/release/<int:ident>/changelog', methods=['GET'])
+def release_changelog(ident):
+    rv = api.api_release_get(ident)
+    release = json.loads(rv.data.decode('utf-8'))
+    rv = api.api_release_changelog(ident)
+    changelog_entries = json.loads(rv.data.decode('utf-8'))
+    return render_template('release_changelog.html', release=release,
+        changelog_entries=changelog_entries)
+
 @app.route('/release/random', methods=['GET'])
 def release_random():
     rv = api.api_release_random()

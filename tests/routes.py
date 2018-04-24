@@ -42,6 +42,9 @@ def test_all_views(rich_app):
     rv = app.get('/release/random')
     assert rv.status_code == 302
 
+    rv = app.get('/release/1/changelog')
+    assert rv.status_code == 200
+
     rv = app.get('/editgroup/1')
     assert rv.status_code == 200
 
