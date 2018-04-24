@@ -207,7 +207,7 @@ def test_api_rich_create(app):
 
     # test that editor's active edit group is now invalid
     editor = Editor.query.first()
-    assert editor.active_edit_group == None
+    assert editor.active_editgroup == None
 
 def test_api_release_lookup(rich_app):
     app = rich_app

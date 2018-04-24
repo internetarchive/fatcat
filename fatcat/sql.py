@@ -85,13 +85,13 @@ def accept_editgroup(eg):
 
     # check if already accepted
     # XXX: add a test for this
-    assert ChangelogEntry.query.filter(ChangelogEntry.edit_group_id==eg.id).count() == 0
+    assert ChangelogEntry.query.filter(ChangelogEntry.editgroup_id==eg.id).count() == 0
 
     # start transaction (TODO: explicitly?)
 
     # for each entity type:
     for cls in (WorkEdit, ReleaseEdit, CreatorEdit, ContainerEdit, FileEdit):
-        edits = cls.query.filter(cls.edit_group_id==eg.id).all()
+        edits = cls.query.filter(cls.editgroup_id==eg.id).all()
         # for each entity edit->ident:
         for edit in edits:
             # update entity ident state (activate, redirect, delete)
@@ -102,7 +102,7 @@ def accept_editgroup(eg):
 
     # append log/changelog row
     cle = ChangelogEntry(
-        edit_group_id=eg.id,
+        editgroup_id=eg.id,
         # TODO: is this UTC?
         timestamp=int(time.time()))
     db.session.add(cle)
@@ -111,12 +111,12 @@ def accept_editgroup(eg):
     db.session.add(eg)
 
     # no longer "active"
-    eg.editor.active_edit_group = None
+    eg.editor.active_editgroup = None
     db.session.add(eg.editor)
 
     db.session.commit()
 
-def merge_works(left_id, right_id, edit_group=None):
+def merge_works(left_id, right_id, editgroup=None):
     """Helper to merge two works together."""
     left = WorkIdent.query.filter(WorkIdent.id == left_id).first_or_404()
     right = WorkIdent.query.filter(WorkIdent.id == right_id).first_or_404()
@@ -124,8 +124,8 @@ def merge_works(left_id, right_id, edit_group=None):
     assert left.rev and right.rev
     assert (left.redirect_id == None) and (right.redirect_id == None)
 
-    if edit_group is None:
-        edit_group = fatcat.api.get_or_create_edit_group()
+    if editgroup is None:
+        editgroup = fatcat.api.get_or_create_editgroup()
 
     releases = ReleaseIdent.query\
         .join(ReleaseIdent.rev)\
@@ -142,11 +142,11 @@ def merge_works(left_id, right_id, edit_group=None):
         rev.id = None
         rev.parent = old_id
         rev.work_ident_id = left.id
-        re = ReleaseEdit(edit_group=edit_group, ident=release_ident, rev=rev)
+        re = ReleaseEdit(editgroup=editgroup, ident=release_ident, rev=rev)
         db.session.add_all([rev, re])
 
-    # redirect right id to left (via edit_group)
-    neww = WorkEdit(edit_group=edit_group, ident=right,
+    # redirect right id to left (via editgroup)
+    neww = WorkEdit(editgroup=editgroup, ident=right,
         rev=left.rev, redirect_id=left.id)
 
     db.session.add_all([neww])

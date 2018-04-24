@@ -21,14 +21,14 @@ class FatCatApiClient:
         return self.session.post(self.host_url + path, json=data, headers=hdrs)
 
     def import_crossref_file(self, json_file):
-        eg = self.new_edit_group()
+        eg = self.new_editgroup()
         with open(json_file, 'r') as file:
             for line in file:
                 obj = json.loads(line)
                 self.import_crossref_dict(obj, editgroup=eg)
         self.accept_editgroup(eg)
 
-    def new_edit_group(self):
+    def new_editgroup(self):
         rv = self.post('/v0/editgroup', data=dict(
             editor=1))
         assert rv.status_code == 200

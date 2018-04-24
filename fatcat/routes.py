@@ -71,7 +71,7 @@ def file_view(ident):
 
 @app.route('/editgroup/<int:ident>', methods=['GET'])
 def editgroup_view(ident):
-    rv = api.api_edit_group_get(ident)
+    rv = api.api_editgroup_get(ident)
     if rv.status_code != 200:
         # TODO: better wrapping for all entities
         return abort(rv.status_code)
@@ -80,7 +80,7 @@ def editgroup_view(ident):
 
 @app.route('/editgroup/current', methods=['GET'])
 def editgroup_current():
-    eg = api.get_or_create_edit_group()
+    eg = api.get_or_create_editgroup()
     return redirect('/editgroup/{}'.format(eg.id))
 
 @app.route('/editor/<username>', methods=['GET'])

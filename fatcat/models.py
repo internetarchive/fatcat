@@ -87,12 +87,12 @@ class WorkEdit(db.Model):
     ident_id = db.Column(db.ForeignKey('work_ident.id'), nullable=True)
     rev_id = db.Column(db.ForeignKey('work_rev.id'), nullable=True)
     redirect_id = db.Column(db.ForeignKey('work_ident.id'), nullable=True)
-    edit_group_id = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
+    editgroup_id = db.Column(db.ForeignKey('editgroup.id'), nullable=True)
     extra_json_id = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
     extra_json = db.relationship("ExtraJson")
     ident = db.relationship("WorkIdent", foreign_keys="WorkEdit.ident_id")
     rev = db.relationship("WorkRev")
-    edit_group = db.relationship("EditGroup")
+    editgroup = db.relationship("EditGroup")
 
 
 class ReleaseRev(db.Model):
@@ -131,12 +131,12 @@ class ReleaseEdit(db.Model):
     ident_id = db.Column(db.ForeignKey('release_ident.id'), nullable=True)
     rev_id = db.Column(db.ForeignKey('release_rev.id'), nullable=True)
     redirect_id = db.Column(db.ForeignKey('release_ident.id'), nullable=True)
-    edit_group_id = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
+    editgroup_id = db.Column(db.ForeignKey('editgroup.id'), nullable=True)
     extra_json_id = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
     extra_json = db.relationship("ExtraJson")
     ident = db.relationship("ReleaseIdent", foreign_keys="ReleaseEdit.ident_id")
     rev = db.relationship("ReleaseRev")
-    edit_group = db.relationship("EditGroup")
+    editgroup = db.relationship("EditGroup")
 
 
 class CreatorRev(db.Model):
@@ -163,12 +163,12 @@ class CreatorEdit(db.Model):
     ident_id = db.Column(db.ForeignKey('creator_ident.id'), nullable=True)
     rev_id = db.Column(db.ForeignKey('creator_rev.id'), nullable=True)
     redirect_id = db.Column(db.ForeignKey('creator_ident.id'), nullable=True)
-    edit_group_id = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
+    editgroup_id = db.Column(db.ForeignKey('editgroup.id'), nullable=True)
     extra_json_id = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
     extra_json = db.relationship("ExtraJson")
     ident = db.relationship("CreatorIdent", foreign_keys="CreatorEdit.ident_id")
     rev = db.relationship("CreatorRev")
-    edit_group = db.relationship("EditGroup")
+    editgroup = db.relationship("EditGroup")
 
 
 class ContainerRev(db.Model):
@@ -198,12 +198,12 @@ class ContainerEdit(db.Model):
     ident_id = db.Column(db.ForeignKey('container_ident.id'), nullable=True)
     rev_id = db.Column(db.ForeignKey('container_rev.id'), nullable=True)
     redirect_id = db.Column(db.ForeignKey('container_ident.id'), nullable=True)
-    edit_group_id = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
+    editgroup_id = db.Column(db.ForeignKey('editgroup.id'), nullable=True)
     extra_json_id = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
     extra_json = db.relationship("ExtraJson")
     ident = db.relationship("ContainerIdent", foreign_keys="ContainerEdit.ident_id")
     rev = db.relationship("ContainerRev")
-    edit_group = db.relationship("EditGroup")
+    editgroup = db.relationship("EditGroup")
 
 
 class FileRev(db.Model):
@@ -231,18 +231,18 @@ class FileEdit(db.Model):
     ident_id = db.Column(db.ForeignKey('file_ident.id'), nullable=True)
     rev_id = db.Column(db.ForeignKey('file_rev.id'), nullable=True)
     redirect_id = db.Column(db.ForeignKey('file_ident.id'), nullable=True)
-    edit_group_id = db.Column(db.ForeignKey('edit_group.id'), nullable=True)
+    editgroup_id = db.Column(db.ForeignKey('editgroup.id'), nullable=True)
     extra_json_id = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
     extra_json = db.relationship("ExtraJson")
     ident = db.relationship("FileIdent", foreign_keys="FileEdit.ident_id")
     rev = db.relationship("FileRev")
-    edit_group = db.relationship("EditGroup")
+    editgroup = db.relationship("EditGroup")
 
 
 ### Editing #################################################################
 
 class EditGroup(db.Model):
-    __tablename__ = 'edit_group'
+    __tablename__ = 'editgroup'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     editor_id = db.Column(db.ForeignKey('editor.id'), nullable=False)
     description = db.Column(db.String)
@@ -256,15 +256,15 @@ class Editor(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String, nullable=False, unique=True)
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
-    active_edit_group_id = db.Column(db.ForeignKey('edit_group.id', use_alter=True))
-    active_edit_group = db.relationship('EditGroup', foreign_keys='Editor.active_edit_group_id')
+    active_editgroup_id = db.Column(db.ForeignKey('editgroup.id', use_alter=True))
+    active_editgroup = db.relationship('EditGroup', foreign_keys='Editor.active_editgroup_id')
 
 class ChangelogEntry(db.Model):
     __tablename__= 'changelog'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    edit_group_id = db.Column(db.ForeignKey('edit_group.id'))
+    editgroup_id = db.Column(db.ForeignKey('editgroup.id'))
     timestamp = db.Column(db.Integer)
-    edit_group = db.relationship("EditGroup")
+    editgroup = db.relationship("EditGroup")
 
 
 ### Other ###################################################################
@@ -445,7 +445,7 @@ class EditGroupSchema(ma.ModelSchema):
     editor = ma.Nested(EditorSchema)
 
 editor_schema = EditorSchema()
-edit_group_schema = EditGroupSchema()
+editgroup_schema = EditGroupSchema()
 
 class ChangelogEntrySchema(ma.ModelSchema):
     class Meta:

@@ -26,4 +26,4 @@ def test_rich_app_fixture(rich_app):
 
     # test that editor's active edit group is now invalid
     editor = Editor.query.first()
-    assert editor.active_edit_group == None
+    assert editor.active_editgroup == None

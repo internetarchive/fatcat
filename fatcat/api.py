@@ -8,21 +8,21 @@ from fatcat.sql import *
 
 ### Helpers #################################################################
 
-def get_or_create_edit_group(param=None):
+def get_or_create_editgroup(param=None):
     if param != None:
-        edit_group = EditGroup.query.filter(EditGroup.id==int(param)).first_or_404()
-        return edit_group
+        editgroup = EditGroup.query.filter(EditGroup.id==int(param)).first_or_404()
+        return editgroup
     editor = Editor.query.filter(Editor.id==1).first()
-    if editor.active_edit_group:
-        return editor.active_edit_group
+    if editor.active_editgroup:
+        return editor.active_editgroup
 
-    edit_group = EditGroup(editor=editor)
-    db.session.add(edit_group)
+    editgroup = EditGroup(editor=editor)
+    db.session.add(editgroup)
     db.session.commit()
-    editor.active_edit_group = edit_group
+    editor.active_editgroup = editgroup
     db.session.add(editor)
     db.session.commit()
-    return edit_group
+    return editgroup
 
 ### Views ###################################################################
 
@@ -35,13 +35,13 @@ def api_work_get(ident):
 def api_work_create():
     # TODO: Special-case to pull out primary and create that?
     params = request.get_json()
-    edit_group = get_or_create_edit_group(params.get('editgroup'))
+    editgroup = get_or_create_editgroup(params.get('editgroup'))
     rev = WorkRev(
         title=params.get('title', None),
         work_type=params.get('work_type', None),
     )
     ident = WorkIdent(is_live=False, rev=rev)
-    edit = WorkEdit(edit_group=edit_group, ident=ident, rev=rev)
+    edit = WorkEdit(editgroup=editgroup, ident=ident, rev=rev)
     if params.get('extra', None):
         ser = json.dumps(params['extra'], indent=False).encode('utf-8')
         rev.extra_json = ExtraJson(json=ser, sha1=hashlib.sha1(ser).hexdigest())
@@ -63,7 +63,7 @@ def api_release_get(ident):
 @app.route('/v0/release', methods=['POST'])
 def api_release_create():
     params = request.get_json()
-    edit_group = get_or_create_edit_group(params.get('editgroup'))
+    editgroup = get_or_create_editgroup(params.get('editgroup'))
     creators = params.get('creators', [])
     creators = [CreatorIdent.query.filter(CreatorIdent.id==c).first_or_404() for c in creators]
     targets = [ref['target'] for ref in params.get('refs', []) if ref.get('target') != None]
@@ -88,7 +88,7 @@ def api_release_create():
     rev.refs = refs
     db.session.add_all(refs)
     ident = ReleaseIdent(is_live=False, rev=rev)
-    edit = ReleaseEdit(edit_group=edit_group, ident=ident, rev=rev)
+    edit = ReleaseEdit(editgroup=editgroup, ident=ident, rev=rev)
     if params.get('extra', None):
         ser = json.dumps(params['extra'], indent=False).encode('utf-8')
         rev.extra_json = ExtraJson(json=ser, sha1=hashlib.sha1(ser).hexdigest())
@@ -123,13 +123,13 @@ def api_creator_get(ident):
 @app.route('/v0/creator', methods=['POST'])
 def api_creator_create():
     params = request.get_json()
-    edit_group = get_or_create_edit_group(params.get('editgroup'))
+    editgroup = get_or_create_editgroup(params.get('editgroup'))
     rev = CreatorRev(
         name=params.get('name', None),
         orcid=params.get('orcid', None),
     )
     ident = CreatorIdent(is_live=False, rev=rev)
-    edit = CreatorEdit(edit_group=edit_group, ident=ident, rev=rev)
+    edit = CreatorEdit(editgroup=editgroup, ident=ident, rev=rev)
     if params.get('extra', None):
         ser = json.dumps(params['extra'], indent=False).encode('utf-8')
         rev.extra_json = ExtraJson(json=ser, sha1=hashlib.sha1(ser).hexdigest())
@@ -159,14 +159,14 @@ def api_container_get(ident):
 @app.route('/v0/container', methods=['POST'])
 def api_container_create():
     params = request.get_json()
-    edit_group = get_or_create_edit_group(params.get('editgroup'))
+    editgroup = get_or_create_editgroup(params.get('editgroup'))
     rev = ContainerRev(
         name=params.get('name', None),
         publisher=params.get('publisher', None),
         issn=params.get('issn', None),
     )
     ident = ContainerIdent(is_live=False, rev=rev)
-    edit = ContainerEdit(edit_group=edit_group, ident=ident, rev=rev)
+    edit = ContainerEdit(editgroup=editgroup, ident=ident, rev=rev)
     if params.get('extra', None):
         ser = json.dumps(params['extra'], indent=False).encode('utf-8')
         rev.extra_json = ExtraJson(json=ser, sha1=hashlib.sha1(ser).hexdigest())
@@ -196,7 +196,7 @@ def api_file_get(ident):
 @app.route('/v0/file', methods=['POST'])
 def api_file_create():
     params = request.get_json()
-    edit_group = get_or_create_edit_group(params.get('editgroup'))
+    editgroup = get_or_create_editgroup(params.get('editgroup'))
     releases = params.get('releases', [])
     releases = [ReleaseIdent.query.filter(ReleaseIdent.id==r).first_or_404() for r in releases]
     rev = FileRev(
@@ -208,7 +208,7 @@ def api_file_create():
     rev.releases = file_releases
     db.session.add_all(file_releases)
     ident = FileIdent(is_live=False, rev=rev)
-    edit = FileEdit(edit_group=edit_group, ident=ident, rev=rev)
+    edit = FileEdit(editgroup=editgroup, ident=ident, rev=rev)
     if params.get('extra', None):
         ser = json.dumps(params['extra'], indent=False).encode('utf-8')
         rev.extra_json = ExtraJson(json=ser, sha1=hashlib.sha1(ser).hexdigest())
@@ -218,15 +218,15 @@ def api_file_create():
 
 
 @app.route('/v0/editgroup/<int:ident>', methods=['GET'])
-def api_edit_group_get(ident):
+def api_editgroup_get(ident):
     entity = EditGroup.query\
         .join(EditGroup.editor)\
         .filter(EditGroup.id==ident).first_or_404()
     # TODO: fill in all the related edit types...
-    return edit_group_schema.jsonify(entity)
+    return editgroup_schema.jsonify(entity)
 
 @app.route('/v0/editgroup', methods=['POST'])
-def api_edit_group_create():
+def api_editgroup_create():
     params = request.get_json()
     eg = EditGroup(
         editor_id=1,
@@ -237,10 +237,10 @@ def api_edit_group_create():
         eg.extra_json = ExtraJson(json=ser, sha1=hashlib.sha1(ser).hexdigest())
     db.session.add(eg)
     db.session.commit()
-    return edit_group_schema.jsonify(eg)
+    return editgroup_schema.jsonify(eg)
 
 @app.route('/v0/editgroup/<int:ident>/accept', methods=['POST'])
-def api_edit_group_accept(ident):
+def api_editgroup_accept(ident):
     entity = EditGroup.query.filter(EditGroup.id==ident).first_or_404()
     accept_editgroup(entity)
     return jsonify({'success': True})
@@ -254,7 +254,7 @@ def api_editor_get(username):
 @app.route('/v0/editor/<username>/changelog', methods=['GET'])
 def api_editor_changelog(username):
     entries = ChangelogEntry.query\
-        .join(ChangelogEntry.edit_group)\
+        .join(ChangelogEntry.editgroup)\
         .join(EditGroup.editor)\
         .filter(Editor.username==username)\
         .all()
