@@ -8,7 +8,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--debug',
         action='store_true',
-        help="enable debugging interface")
+        help="enable debugging interface (note: not for everything)")
     parser.add_argument('--host',
         default="127.0.0.1",
         help="listen on this host/IP")
