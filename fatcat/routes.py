@@ -79,7 +79,7 @@ def editgroup_view(ident):
     return render_template('editgroup_view.html', editgroup=entity)
 
 @app.route('/editgroup/current', methods=['GET'])
-def editgroup_current(ident):
+def editgroup_current():
     eg = api.get_or_create_edit_group()
     return redirect('/editgroup/{}'.format(eg.id))
 
