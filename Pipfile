@@ -10,6 +10,8 @@ ipython = "*"
 responses = "*"
 pytest-cov = "*"
 pylint = "*"
+pg-view = "*"
+flask-debugtoolbar = "*"
 
 [packages]
 Flask = "*"
