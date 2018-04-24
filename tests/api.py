@@ -1,8 +1,8 @@
 
 import json
-import pytest
 import unittest
 import tempfile
+import pytest
 import fatcat
 import fatcat.sql
 from fatcat.models import *
@@ -196,18 +196,18 @@ def test_api_rich_create(app):
     # Test that foreign key relations worked
     release_rv = json.loads(app.get('/v0/release/{}'.format(release_id)).data.decode('utf-8'))
     print(release_rv)
-    assert(release_rv['creators'][0]['creator'] == creator_id)
-    assert(release_rv['container']['id'] == container_id)
-    assert(release_rv['work']['id'] == work_id)
-    assert(release_rv['refs'][0]['target'] == stub_release_id)
+    assert release_rv['creators'][0]['creator'] == creator_id
+    assert release_rv['container']['id'] == container_id
+    assert release_rv['work']['id'] == work_id
+    assert release_rv['refs'][0]['target'] == stub_release_id
 
     file_rv = json.loads(app.get('/v0/file/{}'.format(file_id)).data.decode('utf-8'))
     print(file_rv)
-    assert(file_rv['releases'][0]['release'] == release_id)
+    assert file_rv['releases'][0]['release'] == release_id
 
     # test that editor's active edit group is now invalid
     editor = Editor.query.first()
-    assert editor.active_editgroup == None
+    assert editor.active_editgroup is None
 
 def test_api_release_lookup(rich_app):
     app = rich_app

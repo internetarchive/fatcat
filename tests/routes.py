@@ -1,9 +1,9 @@
 
 import json
+import tempfile
 import pytest
 import fatcat
 import fatcat.sql
-import tempfile
 from fatcat.models import *
 from fixtures import *
 

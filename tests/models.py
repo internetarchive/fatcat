@@ -1,8 +1,8 @@
 
 import json
-import pytest
 import unittest
 import tempfile
+import pytest
 import fatcat
 import fatcat.sql
 from fatcat.models import *
@@ -36,7 +36,7 @@ def test_schema_release_rev(app):
     model_after = ReleaseRev.query.first()
     serial = release_rev_schema.dump(model_after).data
     #check_release(serial)
-    for k in e.keys():
+    for k in e:
         assert e[k] == serial[k]
 
 def test_schema_creator_rev(app):

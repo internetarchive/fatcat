@@ -1,8 +1,8 @@
 
 import json
-import pytest
 import unittest
 import tempfile
+import pytest
 import fatcat
 import fatcat.sql
 from fatcat.models import *

@@ -122,15 +122,15 @@ def merge_works(left_id, right_id, editgroup=None):
     right = WorkIdent.query.filter(WorkIdent.id == right_id).first_or_404()
     assert left.is_live and right.is_live
     assert left.rev and right.rev
-    assert (left.redirect_id == None) and (right.redirect_id == None)
+    assert (left.redirect_id is None) and (right.redirect_id is None)
 
     if editgroup is None:
         editgroup = fatcat.api.get_or_create_editgroup()
 
     releases = ReleaseIdent.query\
         .join(ReleaseIdent.rev)\
-        .filter(ReleaseRev.work_ident_id == right_id)\
-        .filter(ReleaseIdent.is_live == True)\
+        .filter(ReleaseRev.work_ident_id==right_id)\
+        .filter(ReleaseIdent.is_live==True)\
         .all()
 
     # update all right releases to point to left

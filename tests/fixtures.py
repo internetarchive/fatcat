@@ -2,8 +2,8 @@
 import os
 import time
 import json
-import pytest
 import signal
+import pytest
 import fatcat
 import fatcat.sql
 from fatcat.models import *
@@ -151,7 +151,7 @@ def check_entity_fields(e):
 def check_release(e):
     for key in ('work', 'release_type'):
         assert key in e
-    for key in ('title'):
+    for key in ('title', ):
         assert e[key] is not None
     for key in ('refs', 'creators'):
         assert type(e[key]) == list
