@@ -33,12 +33,7 @@ def api_work_get(ident):
 
 @app.route('/v0/work', methods=['POST'])
 def api_work_create():
-    """
-    1. find or create edit_group
-    2. create work_edit, work_rev, work_ident
-
-    TODO: use marshmallow?
-    """
+    # TODO: Special-case to pull out primary and create that?
     params = request.get_json()
     edit_group = get_or_create_edit_group(params.get('editgroup'))
     rev = WorkRev(
@@ -100,6 +95,11 @@ def api_release_create():
     db.session.add_all([edit, ident, rev])
     db.session.commit()
     return release_schema.jsonify(ident)
+
+@app.route('/v0/release/random', methods=['GET'])
+def api_release_random():
+    entity = ReleaseIdent.query.order_by(db.func.random()).first()
+    return redirect('/v0/release/{}'.format(entity.id))
 
 
 @app.route('/v0/creator/<int:ident>', methods=['GET'])

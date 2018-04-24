@@ -14,8 +14,9 @@ def work_create():
 
 @app.route('/work/random', methods=['GET'])
 def work_random():
-    rv = app.get('/v0/work/random')
-    return redirect(rv.location)
+    rv = api.api_work_random()
+    ident = rv.location.split('/')[-1]
+    return redirect("/work/{}".format(ident))
 
 @app.route('/work/<int:ident>', methods=['GET'])
 def work_view(ident):
@@ -34,6 +35,12 @@ def release_view(ident):
         return abort(rv.status_code)
     entity = json.loads(rv.data.decode('utf-8'))
     return render_template('release_view.html', release=entity)
+
+@app.route('/release/random', methods=['GET'])
+def release_random():
+    rv = api.api_release_random()
+    ident = rv.location.split('/')[-1]
+    return redirect("/release/{}".format(ident))
 
 @app.route('/creator/<int:ident>', methods=['GET'])
 def creator_view(ident):
