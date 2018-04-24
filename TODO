@@ -1,16 +1,13 @@
 
 routes/views:
-- sources and account page as fake links (#)
-- "current editgroup" redirect
-- per-editor history
-- actually wire up work/release creation form
+- actually wire up work/release POST form
 
 next/high-level:
-- release, container, creator lookups (by external id)
-    => creator obj to have ORCID column
 - crossref import script:
+    => profile both script and API server
     => creator/container caching
     => edit group
+- database index/schema
 - ORCID and ISSN import scripts
 - client export:
     => one json-nl file per entity type
@@ -19,24 +16,24 @@ next/high-level:
 - naive API-based import scripts for: journals (norwegian), orcid, crossref
 - switch to marshmallow in create APIs (at least for revs)
 
+api:
+- PUT for mid-edit revisions
+- use marshmallow in POST for all entities
+- consider refactoring into method-method (classes)
+
 model:
 - 'parent rev' for revisions (vs. container parent)
-- helpers to deal with edits and edit groups (?)
-
-api
-- expose edit_group and editor
-- work merge helper
+- "submit" status for editgroups?
 
 tests
-- api gets: creator, container, editgroup
+- full object fields actually getting passed e2e (for rich_app)
 - implicit editor.active_edit_group behavior
 - modify existing release via edit mechanism (and commit)
-- merge two releases
+- redirect a release to another (merge)
 - update (via edit) a redirect release
-- merge two works (combining releases)
 - api: try to reuse an accepted edit group
-- api: try to modify an accepted edit
-- api: multiple edits, same entity
+- api: try to modify an accepted release
+- api: multiple edits, same entity, same editgroup
 
 review
 - hydrate in files for releases... nested good enough?
@@ -51,19 +48,13 @@ views
 - oldest edits/edit-groups
 
 later:
-- switch extra_json to just be a column
-- extra_json uniqueness
-- extra_json marshmallow fixes
-- "hydrate" files (and maybe container/authors/refs) in release
-- transclude primary_release in work
-- crossref json import script/benchmark
-    => maybe both "raw" and string-dedupe?
-- public IDs are UUID (sqlite hack?)
+- switch extra_json to just be columns
+- public IDs are UUID (sqlite hack, or just require postgres)
 
 ## High-Level Priorities
 
-- manual editing of containers and works/releases
 - bulk loading of releases, files, containers, creators
+- manual editing of containers and releases
 - accurate auto-matching matching of containers (eg, via ISSN)
 - full database dump and reload
 
@@ -76,3 +67,4 @@ later:
     - UUID switch
     - JSONB/extra_json experiments
     - SQL query examples/experiments
+

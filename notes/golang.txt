@@ -1,0 +1,17 @@
+
+- pq: basic postgres driver and ORM (similar to sqlalchemy?)
+- sqlx: small extensions to builtin sql; row to struct mapping
+
+
+code generation from SQL schema:
+- https://github.com/xo/xo
+- https://github.com/volatiletech/sqlboiler
+- kallax
+
+database migrations:
+- goose
+- https://github.com/mattes/migrate
+
+maybe also:
+- https://github.com/oklog/ulid
+  like a UUID, but base32 and "sortable" (timestamp + random)

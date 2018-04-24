@@ -1,0 +1,44 @@
+
+## Early Prototyping
+
+### 2018-04-23
+
+- fatcat as marshmallow+sqlalchemy+flask, with API client
+- no refs, contibs, files, release contribs, containers, etc
+- no extra_json
+- sqlite
+- laptop
+- editgroup every 250 edits
+
+
+    /data/crossref/crossref-works.2018-01-21.badsample_5k.json
+
+    real    3m42.912s
+    user    0m20.448s
+    sys     0m2.852s
+
+    ~22 lines per second
+    12.5 hours per million
+    ~52 days for crossref (100 million)
+
+target:
+    crossref (100 million) loaded in 48 hours
+    579 lines per second
+    this test in under 10 seconds
+    ... but could be in parallel
+
+same except postgres, via:
+
+    docker run -p 5432:5432 postgres:latest
+    ./run.py --init-db --database-uri postgres://postgres@localhost:5432
+    ./run.py --database-uri postgres://postgres@localhost:5432
+
+    API processing using 60-100% of a core. postgres 12% of a core;
+    docker-proxy similar (!). overall 70 of system CPU idle.
+
+    real    2m27.771s
+    user    0m22.860s
+    sys     0m2.852s
+
+no profiling yet; need to look at database ops. probably don't even have any
+indices!
