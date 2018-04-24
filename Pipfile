@@ -20,6 +20,7 @@ raven = "*"
 flask-sqlalchemy = "*"
 marshmallow-sqlalchemy = "*"
 flask-marshmallow = "*"
+"psycopg2" = "*"
 
 [requires]
 python_version = "3.5"
