@@ -118,8 +118,8 @@ def accept_editgroup(eg):
 
 def merge_works(left_id, right_id, editgroup=None):
     """Helper to merge two works together."""
-    left = WorkIdent.query.filter(WorkIdent.id == left_id).first_or_404()
-    right = WorkIdent.query.filter(WorkIdent.id == right_id).first_or_404()
+    left = WorkIdent.query.get_or_404(left_id)
+    right = WorkIdent.query.get_or_404(right_id)
     assert left.is_live and right.is_live
     assert left.rev and right.rev
     assert (left.redirect_id is None) and (right.redirect_id is None)

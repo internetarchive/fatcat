@@ -10,9 +10,9 @@ from fatcat.sql import *
 
 def get_or_create_editgroup(param=None):
     if param != None:
-        editgroup = EditGroup.query.filter(EditGroup.id==int(param)).first_or_404()
+        editgroup = EditGroup.query.get_or_404(int(param))
         return editgroup
-    editor = Editor.query.filter(Editor.id==1).first()
+    editor = Editor.query.get_or_404(1)
     if editor.active_editgroup:
         return editor.active_editgroup
 
@@ -28,7 +28,7 @@ def get_or_create_editgroup(param=None):
 
 @app.route('/v0/work/<int:ident>', methods=['GET'])
 def api_work_get(ident):
-    entity = WorkIdent.query.filter(WorkIdent.id==ident).first_or_404()
+    entity = WorkIdent.query.get_or_404(ident)
     return work_schema.jsonify(entity)
 
 @app.route('/v0/work', methods=['POST'])
@@ -57,7 +57,7 @@ def api_work_random():
 
 @app.route('/v0/release/<int:ident>', methods=['GET'])
 def api_release_get(ident):
-    entity = ReleaseIdent.query.filter(ReleaseIdent.id==ident).first_or_404()
+    entity = ReleaseIdent.query.get_or_404(ident)
     return release_schema.jsonify(entity)
 
 @app.route('/v0/release', methods=['POST'])
@@ -65,15 +65,15 @@ def api_release_create():
     params = request.get_json()
     editgroup = get_or_create_editgroup(params.get('editgroup'))
     creators = params.get('creators', [])
-    creators = [CreatorIdent.query.filter(CreatorIdent.id==c).first_or_404() for c in creators]
+    creators = [CreatorIdent.query.get_or_404(c) for c in creators]
     targets = [ref['target'] for ref in params.get('refs', []) if ref.get('target') != None]
-    targets = [ReleaseIdent.query.filter(ReleaseIdent.id==t).first_or_404() for t in targets]
+    targets = [ReleaseIdent.query.get_or_404(t) for t in targets]
     work = params.get('work')
     if work:
-        work = WorkIdent.query.filter(WorkIdent.id==work).first_or_404()
+        work = WorkIdent.query.get_or_404(work)
     container = params.get('container')
     if container:
-        container = ContainerIdent.query.filter(ContainerIdent.id==container).first_or_404()
+        container = ContainerIdent.query.get_or_404(container)
     rev = ReleaseRev(
         title=params.get('title', None),
         release_type=params.get('release_type', None),
@@ -125,7 +125,7 @@ def api_release_lookup():
 
 @app.route('/v0/creator/<int:ident>', methods=['GET'])
 def api_creator_get(ident):
-    entity = CreatorIdent.query.filter(CreatorIdent.id==ident).first_or_404()
+    entity = CreatorIdent.query.get_or_404(ident)
     return creator_schema.jsonify(entity)
 
 @app.route('/v0/creator', methods=['POST'])
@@ -161,7 +161,7 @@ def api_creator_lookup():
 
 @app.route('/v0/container/<int:ident>', methods=['GET'])
 def api_container_get(ident):
-    entity = ContainerIdent.query.filter(ContainerIdent.id==ident).first_or_404()
+    entity = ContainerIdent.query.get_or_404(ident)
     return container_schema.jsonify(entity)
 
 @app.route('/v0/container', methods=['POST'])
@@ -198,7 +198,7 @@ def api_container_lookup():
 
 @app.route('/v0/file/<int:ident>', methods=['GET'])
 def api_file_get(ident):
-    entity = FileIdent.query.filter(FileIdent.id==ident).first_or_404()
+    entity = FileIdent.query.get_or_404(ident)
     return file_schema.jsonify(entity)
 
 @app.route('/v0/file', methods=['POST'])
@@ -206,7 +206,7 @@ def api_file_create():
     params = request.get_json()
     editgroup = get_or_create_editgroup(params.get('editgroup'))
     releases = params.get('releases', [])
-    releases = [ReleaseIdent.query.filter(ReleaseIdent.id==r).first_or_404() for r in releases]
+    releases = [ReleaseIdent.query.get_or_404(r) for r in releases]
     rev = FileRev(
         sha1=params.get('sha1', None),
         size=params.get('size', None),
@@ -229,7 +229,8 @@ def api_file_create():
 def api_editgroup_get(ident):
     entity = EditGroup.query\
         .join(EditGroup.editor)\
-        .filter(EditGroup.id==ident).first_or_404()
+        .filter(EditGroup.id==ident)\
+        .first_or_404()
     # TODO: fill in all the related edit types...
     return editgroup_schema.jsonify(entity)
 
@@ -249,7 +250,7 @@ def api_editgroup_create():
 
 @app.route('/v0/editgroup/<int:ident>/accept', methods=['POST'])
 def api_editgroup_accept(ident):
-    entity = EditGroup.query.filter(EditGroup.id==ident).first_or_404()
+    entity = EditGroup.query.get_or_404(ident)
     accept_editgroup(entity)
     return jsonify({'success': True})
 
