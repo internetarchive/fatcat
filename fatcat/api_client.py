@@ -1,4 +1,5 @@
 
+import sys
 import json
 import requests
 
@@ -17,14 +18,6 @@ class FatCatApiClient:
         return self.session.post(self.host_url + path, json=data,
             headers=headers)
 
-    def import_crossref_file(self, json_file):
-        eg = self.new_editgroup()
-        with open(json_file, 'r') as file:
-            for line in file:
-                obj = json.loads(line)
-                self.import_crossref_dict(obj, editgroup=eg)
-        self.accept_editgroup(eg)
-
     def new_editgroup(self):
         rv = self.post('/v0/editgroup', data=dict(
             editor=1))
@@ -37,7 +30,28 @@ class FatCatApiClient:
         assert rv.status_code == 200
         return rv
 
-    def import_crossref_dict(self, meta, editgroup=None):
+    def import_crossref_file(self, json_file):
+        eg = self.new_editgroup()
+        i = 0
+        with open(json_file, 'r') as file:
+            for line in file:
+                if i % 1000 == 0:
+                    sys.stdout.write('\n{}: '.format(i))
+                if (i+1) % 20 == 0:
+                    sys.stdout.write('.')
+                i = i + 1
+                obj = json.loads(line)
+                if not ("author" in obj and "title" in obj):
+                    continue
+                try:
+                    self.import_crossref_dict(obj, editgroup=eg)
+                except Exception as e:
+                    print("ERROR: {}".format(e))
+        if i % 1000 != 0:
+            self.accept_editgroup(eg)
+        print("done!")
+
+    def import_crossref_dict(self, meta, editgroup=None, do_extra=False):
 
         # creators
         creators = []
@@ -49,7 +63,7 @@ class FatCatApiClient:
 
         # container
         container = dict(
-            issn=meta['ISSN'][0],
+            issn=meta.get('ISSN', [None])[0],
             name=meta['container-title'][0],
             #container_id=None,
             #sortname=meta['short-container-title'][0])
@@ -75,6 +89,14 @@ class FatCatApiClient:
         assert rv.status_code == 200
         work_id = rv.json()['id']
 
+        if do_extra:
+            extra = dict(crossref={
+                'links': meta.get('link', []),
+                'subject': meta.get('subject'),
+                'type': meta['type'],
+                'alternative-id': meta.get('alternative-id', [])})
+        else:
+            extra = None
         rv = self.post('/v0/release', data=dict(
             title=title,
             work=work_id,
@@ -89,11 +111,7 @@ class FatCatApiClient:
             volume=meta.get('volume', None),
             pages=meta.get('page', None),
             editgroup=editgroup,
-            extra=dict(crossref={
-                'links': meta.get('link', []),
-                'subject': meta['subject'],
-                'type': meta['type'],
-                'alternative-id': meta.get('alternative-id', [])})))
+            extra=extra))
         assert rv.status_code == 200
         release_id = rv.json()['id']
 
