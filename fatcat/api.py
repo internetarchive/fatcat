@@ -43,8 +43,7 @@ def api_work_create():
     ident = WorkIdent(is_live=False, rev=rev)
     edit = WorkEdit(editgroup=editgroup, ident=ident, rev=rev)
     if params.get('extra', None):
-        ser = json.dumps(params['extra'], indent=False).encode('utf-8')
-        rev.extra_json = ExtraJson(json=ser, sha1=hashlib.sha1(ser).hexdigest())
+        rev.extra_json = json.dumps(params['extra'], indent=False).encode('utf-8')
     db.session.add_all([edit, ident, rev])
     db.session.commit()
     return work_schema.jsonify(ident)
@@ -90,8 +89,7 @@ def api_release_create():
     ident = ReleaseIdent(is_live=False, rev=rev)
     edit = ReleaseEdit(editgroup=editgroup, ident=ident, rev=rev)
     if params.get('extra', None):
-        ser = json.dumps(params['extra'], indent=False).encode('utf-8')
-        rev.extra_json = ExtraJson(json=ser, sha1=hashlib.sha1(ser).hexdigest())
+        rev.extra_json = json.dumps(params['extra'], indent=False).encode('utf-8')
     db.session.add_all([edit, ident, rev])
     db.session.commit()
     return release_schema.jsonify(ident)
@@ -139,8 +137,7 @@ def api_creator_create():
     ident = CreatorIdent(is_live=False, rev=rev)
     edit = CreatorEdit(editgroup=editgroup, ident=ident, rev=rev)
     if params.get('extra', None):
-        ser = json.dumps(params['extra'], indent=False).encode('utf-8')
-        rev.extra_json = ExtraJson(json=ser, sha1=hashlib.sha1(ser).hexdigest())
+        rev.extra_json = json.dumps(params['extra'], indent=False).encode('utf-8')
     db.session.add_all([edit, ident, rev])
     db.session.commit()
     return creator_schema.jsonify(ident)
@@ -176,8 +173,7 @@ def api_container_create():
     ident = ContainerIdent(is_live=False, rev=rev)
     edit = ContainerEdit(editgroup=editgroup, ident=ident, rev=rev)
     if params.get('extra', None):
-        ser = json.dumps(params['extra'], indent=False).encode('utf-8')
-        rev.extra_json = ExtraJson(json=ser, sha1=hashlib.sha1(ser).hexdigest())
+        rev.extra_json = json.dumps(params['extra'], indent=False).encode('utf-8')
     db.session.add_all([edit, ident, rev])
     db.session.commit()
     return container_schema.jsonify(ident)
@@ -218,8 +214,7 @@ def api_file_create():
     ident = FileIdent(is_live=False, rev=rev)
     edit = FileEdit(editgroup=editgroup, ident=ident, rev=rev)
     if params.get('extra', None):
-        ser = json.dumps(params['extra'], indent=False).encode('utf-8')
-        rev.extra_json = ExtraJson(json=ser, sha1=hashlib.sha1(ser).hexdigest())
+        rev.extra_json = json.dumps(params['extra'], indent=False).encode('utf-8')
     db.session.add_all([edit, ident, rev])
     db.session.commit()
     return file_schema.jsonify(ident)
@@ -242,8 +237,7 @@ def api_editgroup_create():
         description=params.get('description', None),
     )
     if params.get('extra', None):
-        ser = json.dumps(params['extra'], indent=False).encode('utf-8')
-        eg.extra_json = ExtraJson(json=ser, sha1=hashlib.sha1(ser).hexdigest())
+        eg.extra_json = json.dumps(params['extra'], indent=False).encode('utf-8')
     db.session.add(eg)
     db.session.commit()
     return editgroup_schema.jsonify(eg)

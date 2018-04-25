@@ -42,7 +42,6 @@ def test_api_work_create(app):
     assert WorkIdent.query.count() == 0
     assert WorkRev.query.count() == 0
     assert WorkEdit.query.count() == 0
-    assert ExtraJson.query.count() == 0
     rv = app.post('/v0/work',
         data=json.dumps(dict(title="dummy", work_type="thing", extra=dict(a=1, b="zing"))),
         headers={"content-type": "application/json"})
@@ -51,7 +50,6 @@ def test_api_work_create(app):
     assert WorkIdent.query.count() == 1
     assert WorkRev.query.count() == 1
     assert WorkEdit.query.count() == 1
-    assert ExtraJson.query.count() == 1
     # not alive yet
     assert WorkIdent.query.filter(WorkIdent.is_live==True).count() == 0
 

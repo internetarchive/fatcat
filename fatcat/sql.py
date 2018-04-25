@@ -54,7 +54,7 @@ def add_crossref_via_model(meta):
         pages=meta.get('page', None))
     release_id = ReleaseIdent(rev=release)
     work.primary_release = release_id
-    extra = json.dumps({
+    release.extra_json = json.dumps({
         'crossref': {
             'links': meta.get('link', []),
             'subject': meta['subject'],
@@ -62,8 +62,6 @@ def add_crossref_via_model(meta):
             'alternative-id': meta.get('alternative-id', []),
         }
     }, indent=None).encode('utf-8')
-    extra_json = ExtraJson(json=extra, sha1=hashlib.sha1(extra).hexdigest())
-    release.extra_json_id = extra_json.sha1
 
     # references
     for i, rm in enumerate(meta.get('reference', [])):
@@ -76,7 +74,7 @@ def add_crossref_via_model(meta):
         release.refs.append(ref)
 
     db.session.add_all([work, work_id, release, release_id, container,
-        container_id, extra_json])
+        container_id])
     db.session.add_all(author_revs)
     db.session.add_all(author_ids)
     db.session.commit()

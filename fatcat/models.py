@@ -58,8 +58,7 @@ class FileRelease(db.Model):
 class WorkRev(db.Model):
     __tablename__ = 'work_rev'
     id = db.Column(db.Integer, primary_key=True)
-    extra_json_id = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
-    extra_json = db.relationship("ExtraJson")
+    extra_json = db.Column(db.String, nullable=True)
 
     title = db.Column(db.String)
     work_type = db.Column(db.String)
@@ -88,8 +87,7 @@ class WorkEdit(db.Model):
     rev_id = db.Column(db.ForeignKey('work_rev.id'), nullable=True)
     redirect_id = db.Column(db.ForeignKey('work_ident.id'), nullable=True)
     editgroup_id = db.Column(db.ForeignKey('editgroup.id'), nullable=True)
-    extra_json_id = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
-    extra_json = db.relationship("ExtraJson")
+    extra_json = db.Column(db.String, nullable=True)
     ident = db.relationship("WorkIdent", foreign_keys="WorkEdit.ident_id")
     rev = db.relationship("WorkRev")
     editgroup = db.relationship("EditGroup")
@@ -98,8 +96,7 @@ class WorkEdit(db.Model):
 class ReleaseRev(db.Model):
     __tablename__ = 'release_rev'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    extra_json_id = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
-    extra_json = db.relationship("ExtraJson")
+    extra_json = db.Column(db.String, nullable=True)
 
     work_ident_id = db.Column(db.ForeignKey('work_ident.id', use_alter=True), nullable=True) # XXX: nullable=False
     container_ident_id = db.Column(db.ForeignKey('container_ident.id'), nullable=True)
@@ -132,8 +129,7 @@ class ReleaseEdit(db.Model):
     rev_id = db.Column(db.ForeignKey('release_rev.id'), nullable=True)
     redirect_id = db.Column(db.ForeignKey('release_ident.id'), nullable=True)
     editgroup_id = db.Column(db.ForeignKey('editgroup.id'), nullable=True)
-    extra_json_id = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
-    extra_json = db.relationship("ExtraJson")
+    extra_json = db.Column(db.String, nullable=True)
     ident = db.relationship("ReleaseIdent", foreign_keys="ReleaseEdit.ident_id")
     rev = db.relationship("ReleaseRev")
     editgroup = db.relationship("EditGroup")
@@ -142,8 +138,7 @@ class ReleaseEdit(db.Model):
 class CreatorRev(db.Model):
     __tablename__ = 'creator_rev'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    extra_json_id = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
-    extra_json = db.relationship("ExtraJson")
+    extra_json = db.Column(db.String, nullable=True)
 
     name = db.Column(db.String)
     sortname = db.Column(db.String)
@@ -164,8 +159,7 @@ class CreatorEdit(db.Model):
     rev_id = db.Column(db.ForeignKey('creator_rev.id'), nullable=True)
     redirect_id = db.Column(db.ForeignKey('creator_ident.id'), nullable=True)
     editgroup_id = db.Column(db.ForeignKey('editgroup.id'), nullable=True)
-    extra_json_id = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
-    extra_json = db.relationship("ExtraJson")
+    extra_json = db.Column(db.String, nullable=True)
     ident = db.relationship("CreatorIdent", foreign_keys="CreatorEdit.ident_id")
     rev = db.relationship("CreatorRev")
     editgroup = db.relationship("EditGroup")
@@ -174,8 +168,7 @@ class CreatorEdit(db.Model):
 class ContainerRev(db.Model):
     __tablename__ = 'container_rev'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    extra_json_id = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
-    extra_json = db.relationship("ExtraJson")
+    extra_json = db.Column(db.String, nullable=True)
 
     name = db.Column(db.String)
     parent_id = db.Column(db.ForeignKey('container_ident.id', use_alter=True))
@@ -199,8 +192,7 @@ class ContainerEdit(db.Model):
     rev_id = db.Column(db.ForeignKey('container_rev.id'), nullable=True)
     redirect_id = db.Column(db.ForeignKey('container_ident.id'), nullable=True)
     editgroup_id = db.Column(db.ForeignKey('editgroup.id'), nullable=True)
-    extra_json_id = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
-    extra_json = db.relationship("ExtraJson")
+    extra_json = db.Column(db.String, nullable=True)
     ident = db.relationship("ContainerIdent", foreign_keys="ContainerEdit.ident_id")
     rev = db.relationship("ContainerRev")
     editgroup = db.relationship("EditGroup")
@@ -209,8 +201,7 @@ class ContainerEdit(db.Model):
 class FileRev(db.Model):
     __tablename__ = 'file_rev'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    extra_json_id = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
-    extra_json = db.relationship("ExtraJson")
+    extra_json = db.Column(db.String, nullable=True)
 
     size = db.Column(db.Integer)
     sha1 = db.Column(db.String)             # TODO: hash table... only or in addition?
@@ -232,8 +223,7 @@ class FileEdit(db.Model):
     rev_id = db.Column(db.ForeignKey('file_rev.id'), nullable=True)
     redirect_id = db.Column(db.ForeignKey('file_ident.id'), nullable=True)
     editgroup_id = db.Column(db.ForeignKey('editgroup.id'), nullable=True)
-    extra_json_id = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
-    extra_json = db.relationship("ExtraJson")
+    extra_json = db.Column(db.String, nullable=True)
     ident = db.relationship("FileIdent", foreign_keys="FileEdit.ident_id")
     rev = db.relationship("FileRev")
     editgroup = db.relationship("EditGroup")
@@ -246,8 +236,7 @@ class EditGroup(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     editor_id = db.Column(db.ForeignKey('editor.id'), nullable=False)
     description = db.Column(db.String)
-    extra_json_id = db.Column(db.ForeignKey('extra_json.sha1'), nullable=True)
-    extra_json = db.relationship("ExtraJson")
+    extra_json = db.Column(db.String, nullable=True)
 
     editor = db.relationship("Editor", foreign_keys="EditGroup.editor_id")
 
@@ -267,37 +256,25 @@ class ChangelogEntry(db.Model):
     editgroup = db.relationship("EditGroup")
 
 
-### Other ###################################################################
-
-class ExtraJson(db.Model):
-    __tablename__ = 'extra_json'
-    sha1 = db.Column(db.String, primary_key=True, nullable=False)
-    json = db.Column(db.String, nullable=False)
-
-
 ### Marshmallow Wrappers ####################################################
 
 class ExtraJsonSchema(ma.ModelSchema):
 
-    class Meta:
-        model = ExtraJson
-
     @post_dump(pass_many=False)
-    def unflatten(self, data):
-        assert hashlib.sha1sum(data['json']).hexdigest() == data['sha1']
-        data.pop('sha1')
-        raw = data.pop('json')
-        data.update(json.loads(raw))
+    def json_unflatten(self, data):
+        extra = data.pop('extra_json', None)
+        if extra != None:
+            extra = json.loads(extra)
+        data['extra'] = extra
 
     @pre_load(pass_many=False)
-    def flatten(self, data):
-        raw = json.dumps(data, indent=None)
-        for k in list(data.keys()):
-            data.pop(k)
-        data['sha1'] = hashlib.sha1sum(raw).hexdigest()
-        data['json'] = raw
+    def json_flatten(self, data):
+        extra = data.pop('extra', None)
+        if extra != None:
+            extra = json.dumps(extra)
+        data['extra_json'] = extra
 
-class EntitySchema(ma.ModelSchema):
+class EntitySchema(ExtraJsonSchema):
 
     @post_dump(pass_many=False)
     def merge_rev(self, data):
@@ -307,8 +284,6 @@ class EntitySchema(ma.ModelSchema):
             data['rev'] = rev_id
         else:
             data['rev'] = None
-
-    extra_json = ma.Nested(ExtraJsonSchema)
 
 class ReleaseContribSchema(ma.ModelSchema):
     class Meta:
