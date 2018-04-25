@@ -5,7 +5,8 @@ from fatcat.api_client import FatCatApiClient
 
 def import_crossref(args):
     fcc = FatCatApiClient(args.host_url)
-    fcc.import_crossref_file(args.json_file)
+    fcc.import_crossref_file(args.json_file,
+        create_containers=args.create_containers)
 
 def health(args):
     fcc = FatCatApiClient(args.host_url)
@@ -25,7 +26,10 @@ def main():
         aliases=['ic'])
     sub_import_crossref.set_defaults(func=import_crossref)
     sub_import_crossref.add_argument('json_file',
-        help="")
+        help="crossref JSON file to import from")
+    sub_import_crossref.add_argument('--create-containers',
+        action='store_true',
+        help="if true, create containers based on ISSN")
 
     sub_health = subparsers.add_parser('health')
     sub_health.set_defaults(func=health)

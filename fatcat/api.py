@@ -226,7 +226,7 @@ def api_editgroup_get(ident):
         .join(EditGroup.editor)\
         .filter(EditGroup.id==ident)\
         .first_or_404()
-    # TODO: fill in all the related edit types...
+    # XXX: fill in all the related edit types...
     return editgroup_schema.jsonify(entity)
 
 @app.route('/v0/editgroup', methods=['POST'])

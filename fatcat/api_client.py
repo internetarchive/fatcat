@@ -9,9 +9,12 @@ class FatCatApiClient:
     def __init__(self, host_url):
         self.host_url = host_url
         self.session = requests.Session()
+        self._issn_map = dict()
 
-    def get(self, path):
-        return self.session.get(self.host_url + path)
+    def get(self, path, data=None):
+        headers = {"content-type": "application/json"}
+        return self.session.get(self.host_url + path, json=data,
+            headers=headers)
 
     def post(self, path, data=None):
         headers = {"content-type": "application/json"}
@@ -30,7 +33,21 @@ class FatCatApiClient:
         assert rv.status_code == 200
         return rv
 
-    def import_crossref_file(self, json_file):
+    def lookup_issn(self, issn):
+        assert len(issn) == 9 and issn[4] == '-'
+        if issn in self._issn_map:
+            return self._issn_map[issn]
+        rv = self.get('/v0/container/lookup', data=dict(issn=issn))
+        container_id = None
+        if rv.status_code == 200:
+            container_id = rv.json()['id']
+        else:
+            # only other valid response is a 404; otherwise we had an error
+            assert rv.status_code == 404
+        self._issn_map[issn] = container_id
+        return container_id
+
+    def import_crossref_file(self, json_file, create_containers=False):
         eg = self.new_editgroup()
         i = 0
         with open(json_file, 'r') as file:
@@ -44,14 +61,16 @@ class FatCatApiClient:
                 if not ("author" in obj and "title" in obj):
                     continue
                 try:
-                    self.import_crossref_dict(obj, editgroup=eg)
+                    self.import_crossref_dict(obj, editgroup=eg,
+                        create_containers=create_containers)
                 except Exception as e:
                     print("ERROR: {}".format(e))
         if i % 1000 != 0:
             self.accept_editgroup(eg)
         print("done!")
 
-    def import_crossref_dict(self, meta, editgroup=None, do_extra=False):
+    def import_crossref_dict(self, meta, editgroup=None,
+            create_containers=False):
 
         # creators
         creators = []
@@ -62,15 +81,24 @@ class FatCatApiClient:
             creators.append(c)
 
         # container
+        issn = meta.get('ISSN', [None])[0]
+        container_id = self.lookup_issn(issn)
         container = dict(
-            issn=meta.get('ISSN', [None])[0],
+            issn=issn,
             name=meta['container-title'][0],
-            #container_id=None,
+            container=container_id,
             #sortname=meta['short-container-title'][0])
             publisher=meta['publisher'])
-        #rv = self.post('/v0/container', data=container)
-        #assert rv.status_code == 200
-        #container_id = rv.json()['id']
+
+        if container_id is None and create_containers and issn != None:
+            rv = self.post('/v0/container', data=dict(
+                issn=container['issn'],
+                publisher=container['publisher']))
+            assert rv.status_code == 200
+            container_id = rv.json()['id']
+            print("created container: {}".format(issn))
+            container['id'] = container_id
+            self._issn_map[issn] = container_id
 
         # references
         refs = []
@@ -89,20 +117,18 @@ class FatCatApiClient:
         assert rv.status_code == 200
         work_id = rv.json()['id']
 
-        if do_extra:
-            extra = dict(crossref={
-                'links': meta.get('link', []),
-                'subject': meta.get('subject'),
-                'type': meta['type'],
-                'alternative-id': meta.get('alternative-id', [])})
-        else:
-            extra = None
+        extra = dict(crossref={
+            'links': meta.get('link', []),
+            'subject': meta.get('subject'),
+            'type': meta['type'],
+            'alternative-id': meta.get('alternative-id', [])})
+
         rv = self.post('/v0/release', data=dict(
             title=title,
             work=work_id,
             # XXX: creators=creators,
             # XXX: refs=refs,
-            #container=container_id,
+            # XXX: container=container_id,
             release_type=meta['type'],
             doi=meta['DOI'],
             date=meta['created']['date-time'],
