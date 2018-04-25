@@ -231,8 +231,18 @@ def api_editgroup_get(ident):
         .join(EditGroup.editor)\
         .filter(EditGroup.id==ident)\
         .first_or_404()
-    # XXX: fill in all the related edit types...
-    return editgroup_schema.jsonify(entity)
+    rv = editgroup_schema.dump(entity).data
+    rv['work_edits'] = work_edit_schema.dump(
+        WorkEdit.query.filter(EditGroup.id==ident).all(), many=True).data
+    rv['release_edits'] = release_edit_schema.dump(
+        ReleaseEdit.query.filter(EditGroup.id==ident).all(), many=True).data
+    rv['creator_edits'] = creator_edit_schema.dump(
+        CreatorEdit.query.filter(EditGroup.id==ident).all(), many=True).data
+    rv['container_edits'] = container_edit_schema.dump(
+        ContainerEdit.query.filter(EditGroup.id==ident).all(), many=True).data
+    rv['file_edits'] = file_edit_schema.dump(
+        FileEdit.query.filter(EditGroup.id==ident).all(), many=True).data
+    return jsonify(rv)
 
 @app.route('/v0/editgroup', methods=['POST'])
 def api_editgroup_create(params=None):

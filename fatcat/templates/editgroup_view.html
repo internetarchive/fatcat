@@ -6,6 +6,44 @@
 <p>Editor: <a href="/editor/{{ editgroup.editor.username }}">{{ editgroup.editor.username }}</a>
 <p>Description: {{ editgroup.description }}
 
-<p>TODO: list edits by type...</p>
+<h3>Work Edits ({{ editgroup.work_edits|count }})</h3>
+<ul>
+{% for edit in editgroup.work_edits %}
+  <li><a href="/work/edit/{{ edit.id }}">Edit #{{ edit.id }}</a>:
+      <a href="/work/{{ edit.ident }}">{{ edit.ident }}</a> to rev {{ edit.rev }}
+{% endfor %}
+</ul>
+
+<h3>Release Edits ({{ editgroup.release_edits|count }})</h3>
+<ul>
+{% for edit in editgroup.release_edits %}
+  <li><a href="/release/edit/{{ edit.id }}">Edit #{{ edit.id }}</a>
+      <a href="/release/{{ edit.ident }}">{{ edit.ident }}</a> to rev {{ edit.rev }}
+{% endfor %}
+</ul>
+
+<h3>Container Edits ({{ editgroup.container_edits|count }})</h3>
+<ul>
+{% for edit in editgroup.container_edits %}
+  <li><a href="/container/edit/{{ edit.id }}">Edit #{{ edit.id }}</a>
+      <a href="/container/{{ edit.ident }}">{{ edit.ident }}</a> to rev {{ edit.rev }}
+{% endfor %}
+</ul>
+
+<h3>Creator Edits ({{ editgroup.creator_edits|count }})</h3>
+<ul>
+{% for edit in editgroup.creator_edits %}
+  <li><a href="/creator/edit/{{ edit.id }}">Edit #{{ edit.id }}</a>
+      <a href="/creator/{{ edit.ident }}">{{ edit.ident }}</a> to rev {{ edit.rev }}
+{% endfor %}
+</ul>
+
+<h3>File Edits ({{ editgroup.file_edits|count }})</h3>
+<ul>
+{% for edit in editgroup.file_edits %}
+  <li><a href="/file/edit/{{ edit.id }}">Edit #{{ edit.id }}</a>
+      <a href="/file/{{ edit.ident }}">{{ edit.ident }}</a> to rev {{ edit.rev }}
+{% endfor %}
+</ul>
 
 {% endblock %}
