@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="ui segment">
+<h1 class="ui header">Adding a New Container</h1>
+
+<p>A "container" is a anything that groups publications together. For example,
+a journal (eg, "New England Journal of Medicine"), conference proceedings, a
+book series, or a blog.
+
+<p>Not all publications are in a container.
+
+<form class="ui form" id="add_container_form" method="post" action="/container/create">
+
+  <h3 class="ui dividing header">The Basics</h3>
+
+  <div class="ui huge field required">
+    <label>Name or Title</label>
+    <input name="container_name" type="text" placeholder="Title of Container (in English)">
+  </div>
+
+  <div class="ui field required">
+    <label>Type of Container</label>
+    <select class="ui dropdown" id="container_type">
+      <option value="">Primary Type</option>
+      <option value="journal">Journal</option>
+      <option value="book-series">Book Series</option>
+      <option value="conference">Conference Proceedings</option>
+      <option value="blog">Blog</option>
+      <option value="other">Other</option>
+    </select>
+  </div>
+
+  <!-- Publisher -->
+  <div class="ui huge field required">
+    <label>Name of Publisher</label>
+    <input name="container_publisher" type="text" placeholder="Name of Publisher">
+  </div>
+
+  <!-- Identifier -->
+  <div class="ui huge field required">
+    <label>ISSN Number</label>
+    <input name="container_issn" type="text" placeholder="eg, 1234-567X">
+  </div>
+
+  <!-- Primary/Original Language -->
+  <div class="field">
+    <label>Primary Language</label>
+    <select class="ui search select dropdown" id="language-select">
+      <option value="">Select if Appropriate</option>
+      <option value="en">English</option>
+      <option value="es">Spanish</option>
+      <option value="">Russian</option>
+      <option value="">Thai</option>
+      <option value="">Indonesian</option>
+      <option value="">Chinese</option>
+    </select>
+  </div>
+
+  <!-- Subject / Categorization / Tags -->
+  <div class="field">
+    <label>Subject</label>
+    <select multiple="" class="ui dropdown" id="subjects">
+      <option value="">Select Subject/Tags</option>
+      <option value="AF">Natural Sciences</option>
+      <option value="AX">Humanities</option>
+      <option value="AL">Arts</option>
+      <option value="AL">Engineering</option>
+      <option value="AL">Other</option>
+    </select>
+  </div>
+
+  <!-- Date -->
+  <!-- Container / Part-Of -->
+  <!-- Region -->
+
+  <!-- Anything Else? -->
+  <h3 class="ui dividing header">Anything Else?</h3>
+
+<div class="ui submit button">Create container</div>
+
+<p><i>Entity will be created as part of the current edit group, which needs to be
+submited and approved before the entity will formally be included in the
+catalog.</i>
+
+</form>
+
+</div>
+{% endblock %}
+
+{% block postscript %}
+<script>
+<!-- Form validation code -->
+$(document).ready(function() {
+
+  $('#add_container_form')
+    .form({
+        fields: {
+        name: {
+            identifier: 'name',
+            rules: [
+            {
+                type   : 'empty',
+                prompt : 'Please enter your name'
+            }
+            ]
+        },
+        skills: {
+            identifier: 'skills',
+            rules: [
+            {
+                type   : 'minCount[2]',
+                prompt : 'Please select at least two skills'
+            }
+            ]
+        },
+        gender: {
+            identifier: 'gender',
+            rules: [
+            {
+                type   : 'empty',
+                prompt : 'Please select a gender'
+            }
+            ]
+        },
+        username: {
+            identifier: 'username',
+            rules: [
+            {
+                type   : 'empty',
+                prompt : 'Please enter a username'
+            }
+            ]
+        },
+        password: {
+            identifier: 'password',
+            rules: [
+            {
+                type   : 'empty',
+                prompt : 'Please enter a password'
+            },
+            {
+                type   : 'minLength[6]',
+                prompt : 'Your password must be at least {ruleValue} characters'
+            }
+            ]
+        },
+        terms: {
+            identifier: 'terms',
+            rules: [
+            {
+                type   : 'checked',
+                prompt : 'You must agree to the terms and conditions'
+            }
+            ]
+        }
+        }
+    })
+    ;
+
+  $('#container_type').dropdown();
+  $('#subjects').dropdown();
+  $('#language-select').dropdown();
+
+  console.log("Page loaded");
+
+});
+</script>
+{% endblock %}

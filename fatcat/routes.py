@@ -45,6 +45,20 @@ def release_random():
     ident = rv.location.split('/')[-1]
     return redirect("/release/{}".format(ident))
 
+@app.route('/container/create', methods=['GET'])
+def container_create_view():
+    return render_template('container_add.html')
+
+@app.route('/container/create', methods=['POST'])
+def container_create():
+    params = dict()
+    for k in request.form:
+        if k.startswith('container_'):
+            params[k[10:]] = request.form[k]
+    rv = api.api_container_create(params=params)
+    container = json.loads(rv.data.decode('utf-8'))
+    return redirect("/container/{}".format(container['id']))
+
 @app.route('/creator/<int:ident>', methods=['GET'])
 def creator_view(ident):
     rv = api.api_creator_get(ident)

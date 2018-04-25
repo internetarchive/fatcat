@@ -32,9 +32,10 @@ def api_work_get(ident):
     return work_schema.jsonify(entity)
 
 @app.route('/v0/work', methods=['POST'])
-def api_work_create():
+def api_work_create(params=None):
     # TODO: Special-case to pull out primary and create that?
-    params = request.get_json()
+    if params == None:
+        params = request.get_json()
     editgroup = get_or_create_editgroup(params.get('editgroup'))
     rev = WorkRev(
         title=params.get('title', None),
@@ -60,8 +61,9 @@ def api_release_get(ident):
     return release_schema.jsonify(entity)
 
 @app.route('/v0/release', methods=['POST'])
-def api_release_create():
-    params = request.get_json()
+def api_release_create(params=None):
+    if params == None:
+        params = request.get_json()
     editgroup = get_or_create_editgroup(params.get('editgroup'))
     creators = params.get('creators', [])
     creators = [CreatorIdent.query.get_or_404(c) for c in creators]
@@ -127,8 +129,9 @@ def api_creator_get(ident):
     return creator_schema.jsonify(entity)
 
 @app.route('/v0/creator', methods=['POST'])
-def api_creator_create():
-    params = request.get_json()
+def api_creator_create(params=None):
+    if params == None:
+        params = request.get_json()
     editgroup = get_or_create_editgroup(params.get('editgroup'))
     rev = CreatorRev(
         name=params.get('name', None),
@@ -162,8 +165,9 @@ def api_container_get(ident):
     return container_schema.jsonify(entity)
 
 @app.route('/v0/container', methods=['POST'])
-def api_container_create():
-    params = request.get_json()
+def api_container_create(params=None):
+    if params == None:
+        params = request.get_json()
     editgroup = get_or_create_editgroup(params.get('editgroup'))
     rev = ContainerRev(
         name=params.get('name', None),
@@ -198,8 +202,9 @@ def api_file_get(ident):
     return file_schema.jsonify(entity)
 
 @app.route('/v0/file', methods=['POST'])
-def api_file_create():
-    params = request.get_json()
+def api_file_create(params=None):
+    if params == None:
+        params = request.get_json()
     editgroup = get_or_create_editgroup(params.get('editgroup'))
     releases = params.get('releases', [])
     releases = [ReleaseIdent.query.get_or_404(r) for r in releases]
@@ -230,8 +235,9 @@ def api_editgroup_get(ident):
     return editgroup_schema.jsonify(entity)
 
 @app.route('/v0/editgroup', methods=['POST'])
-def api_editgroup_create():
-    params = request.get_json()
+def api_editgroup_create(params=None):
+    if params == None:
+        params = request.get_json()
     eg = EditGroup(
         editor_id=1,
         description=params.get('description', None),
