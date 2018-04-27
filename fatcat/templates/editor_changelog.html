@@ -8,7 +8,7 @@
 <p>Changes accepted (aka, merged editgroups):
 <ul>
 {% for entry in changelog_entries %}
-  <li><a href="/editgroup/{{ entry.edit_group }}">Edit Group #{{ entry.edit_group }}</a> (on {{ entry.timestamp }})
+  <li><a href="/editgroup/{{ entry.editgroup }}">Edit Group #{{ entry.editgroup }}</a> (on {{ entry.timestamp }})
 {% else %}
 NONE
 {% endfor %}
