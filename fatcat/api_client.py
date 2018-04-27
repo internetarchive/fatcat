@@ -47,12 +47,12 @@ class FatCatApiClient:
         self._issn_map[issn] = container_id
         return container_id
 
-    def import_crossref_file(self, json_file, create_containers=False):
+    def import_crossref_file(self, json_file, create_containers=False, batchsize=100):
         eg = self.new_editgroup()
         i = 0
         with open(json_file, 'r') as file:
             for line in file:
-                if i % 1000 == 0:
+                if i % batchsize == 0:
                     sys.stdout.write('\n{}: '.format(i))
                 if (i+1) % 20 == 0:
                     sys.stdout.write('.')
@@ -65,7 +65,10 @@ class FatCatApiClient:
                         create_containers=create_containers)
                 except Exception as e:
                     print("ERROR: {}".format(e))
-        if i % 1000 != 0:
+                if i % batchsize == 0:
+                    self.accept_editgroup(eg)
+                    eg = self.new_editgroup()
+        if i % batchsize != 0:
             self.accept_editgroup(eg)
         print("done!")
 
