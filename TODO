@@ -1,14 +1,6 @@
 
-routes/views:
-- actually wire up work/release POST form
-
 next/high-level:
-- crossref import script:
-    => profile both script and API server
-    => creator/container caching
-    => edit group
-- database index/schema
-- ORCID and ISSN import scripts
+- quick python ORCID and ISSN import scripts
 - client export:
     => one json-nl file per entity type
 - flask-apispec
@@ -16,10 +8,13 @@ next/high-level:
 - naive API-based import scripts for: journals (norwegian), orcid, crossref
 - switch to marshmallow in create APIs (at least for revs)
 
+- kong or oauth2_proxy for auth, rate-limit, etc
+- "authn" microservice: https://keratin.tech/
+
 api:
 - PUT for mid-edit revisions
-- use marshmallow in POST for all entities
-- consider refactoring into method-method (classes)
+/ use marshmallow in POST for all entities
+/ consider refactoring into method-method (classes)
 
 model:
 - 'parent rev' for revisions (vs. container parent)
@@ -36,6 +31,7 @@ tests
 - api: multiple edits, same entity, same editgroup
 
 review
+- what does openlibrary API look like?
 - hydrate in files for releases... nested good enough?
 - add a 'live' (or 'immutable') flag to revision tables
 - how to encode proposed redirects? history goes in changelog
@@ -44,11 +40,10 @@ review
     => extend edit object to have "to/from" info, and be per-entity
 
 views
-- my edits/groups
-- oldest edits/edit-groups
+- oldest un-merged edits/edit-groups
 
 later:
-- switch extra_json to just be columns
+- switch extra_json to just be JSONB column
 - public IDs are UUID (sqlite hack, or just require postgres)
 
 ## High-Level Priorities
@@ -60,11 +55,26 @@ later:
 
 ## Planning...
 
-- stick with python through:
-    - initial benchmarking
-    - postgres/cockroach
-    - full dump/load
-    - UUID switch
-    - JSONB/extra_json experiments
-    - SQL query examples/experiments
+before switching to golang:
+x swap extra_json to simple text field
+x profile slow bulk imports
+  client:
+    78% waiting for POST
+  api:
+    56% / 22ms api_release_create
+    36% / 13ms api_work_create
+    7% / 4ms container lookup
+- flush out web interface (POST, etc)
+    x create release
+    => edit existing release
+    => edit editgroup (remove edits)
+    => approve editgroup
+- "model" issues above
+- look at "review" issues above
+- try cockroach
+
+after switching:
+- UUID identifiers
+- faster bulk importers (API client; parallel)
+- editor accounts
 
