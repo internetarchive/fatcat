@@ -1,7 +1,8 @@
 
+## Database Schema / ORM / Generation
+
 - pq: basic postgres driver and ORM (similar to sqlalchemy?)
 - sqlx: small extensions to builtin sql; row to struct mapping
-
 
 code generation from SQL schema:
 - https://github.com/xo/xo
@@ -19,6 +20,17 @@ maybe also:
 for auth, start with oauth2... orcid?
 
 debug postgres with gocmdpev
+
+## OpenAPI/Swagger
+
+go-swagger (OpenAPI 2.0):
+- generate initial API server skeleton from a yaml definition
+- export updated yaml from code after changes
+- web UI for documentation
+- templating/references
+- auto-generate client (in golang)
+
+also look at ReDoc as a UI; all in-brower generated from JSON (react)
 
 ## Non-API stuff
 

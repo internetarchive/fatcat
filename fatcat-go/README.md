@@ -21,3 +21,6 @@ In early development, we'll make at least the following simplifications:
 - "extra" metadata is stored in-entity as JSONB. In the future this might be
   broken out to a separate table
 - libraries won't be vendored; in the future they will be via a git submodule
+
+
+## Tools
