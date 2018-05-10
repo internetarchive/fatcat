@@ -24,6 +24,10 @@ On debian/ubuntu:
     createdb -O `whoami` fatcat
     psql fatcat -f fatcat-schema.sql
 
+Build with:
+
+    go build ./cmd/*/
+
 ## Simplifications
 
 In early development, we'll make at least the following simplifications:
@@ -43,4 +47,10 @@ Install the go-swagger tool:
     go get -u github.com/go-swagger/go-swagger/cmd/swagger
 
 
+"Simple" server:
+
     swagger generate server -A Fatcat -f fatcat-openapi2.yml
+
+"Custom" server:
+
+    swagger generate server -A fatcat -f ./fatcat-openapi2.yml --exclude-main
