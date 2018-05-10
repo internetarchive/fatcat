@@ -1,14 +1,11 @@
 // This file is safe to edit. Once it exists it will not be overwritten
 
-// NB: this file isn't actually used
-
 package restapi
 
 import (
 	"crypto/tls"
 	"net/http"
 
-    log "github.com/sirupsen/logrus"
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
@@ -17,7 +14,7 @@ import (
 	"git.archive.org/bnewbold/fatcat/golang/gen/restapi/operations"
 )
 
-//go:generate swagger generate server --target .. --name Fatcat --spec ../fatcat-openapi2.yml
+//go:generate swagger generate server --target ../gen --name fatcat --spec ../fatcat-openapi2.yml --exclude-main
 
 func configureFlags(api *operations.FatcatAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -29,21 +26,18 @@ func configureAPI(api *operations.FatcatAPI) http.Handler {
 
 	// Set your custom logger if needed. Default one is log.Printf
 	// Expected interface func(string, ...interface{})
-	api.Logger = log.Printf
+	//
+	// Example:
+	// api.Logger = log.Printf
 
 	api.JSONConsumer = runtime.JSONConsumer()
 
 	api.JSONProducer = runtime.JSONProducer()
 
 	api.GetCreatorIDHandler = operations.GetCreatorIDHandlerFunc(func(params operations.GetCreatorIDParams) middleware.Responder {
-        // "get or 404" using params.ID. join creator_ident and creator_rev.
-        // populate result data
-        // return that
 		return middleware.NotImplemented("operation .GetCreatorID has not yet been implemented")
 	})
 	api.PostCreatorHandler = operations.PostCreatorHandlerFunc(func(params operations.PostCreatorParams) middleware.Responder {
-        // get-or-create editgroup based on current editor (session)
-        // insert new rev, ident, and edit
 		return middleware.NotImplemented("operation .PostCreator has not yet been implemented")
 	})
 
