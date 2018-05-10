@@ -6,7 +6,6 @@ import (
 	"fmt"
 
     log "github.com/sirupsen/logrus"
-	//middleware "github.com/go-openapi/runtime/middleware"
     "github.com/spf13/viper"
     "github.com/spf13/cobra"
     "github.com/getsentry/raven-go"
@@ -25,17 +24,19 @@ func init() {
     cobra.OnInitialize(initConfig)
     rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is ./fatcatd.toml)")
     rootCmd.PersistentFlags().BoolP("verbose", "v", false, "increase logging volume")
+    viper.BindPFlag("verbose", rootCmd.PersistentFlags().Lookup("verbose"))
+
+    serveCmd.Flags().String("db-url", "postgres://", "database connecion string")
 
     rootCmd.AddCommand(serveCmd)
 }
 
 func initConfig() {
-    viper.SetDefault("port", 9411)
-    viper.SetDefault("verbose", true)
 
+    viper.SetDefault("port", 9411)
+    viper.SetDefault("db_url", "postgres://bnewbold@localhost/fatcat")
     viper.SetEnvPrefix("FATCAT")
     viper.AutomaticEnv()
-
 
     if cfgFile != "" {
         // Use config file from the flag.
@@ -53,6 +54,11 @@ func initConfig() {
 
     // not default of stderr
     log.SetOutput(os.Stdout);
+
+    if viper.GetBool("verbose") == true {
+        log.SetLevel(log.DebugLevel)
+    }
+    log.Debug("It's verbose!")
 
     raven.SetDSN(viper.GetString("sentry_dsn"));
 

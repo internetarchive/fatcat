@@ -2,17 +2,15 @@
 package main
 
 import (
-	//"os"
 	"net/http"
 
     "github.com/spf13/viper"
     log "github.com/sirupsen/logrus"
 	loads "github.com/go-openapi/loads"
-	//flags "github.com/jessevdk/go-flags"
-    //"github.com/getsentry/raven-go"
     "github.com/carbocation/interpose"
     "github.com/carbocation/interpose/adaptors"
     "github.com/meatballhat/negroni-logrus"
+    "github.com/bradleyg/go-sentroni"
     "github.com/go-pg/pg"
     "github.com/spf13/cobra"
 
@@ -31,8 +29,6 @@ var serveCmd = &cobra.Command{
 
 func main_serve() {
 
-    log.Warn("Starting up...");
-
     // load embedded swagger file
     swaggerSpec, err := loads.Analyzed(restapi.SwaggerJSON, "")
     if err != nil {
@@ -49,36 +45,13 @@ func main_serve() {
 	server := restapi.NewServer(api)
 	defer server.Shutdown()
 
-/*
-	parser := flags.NewParser(server, flags.Default)
-	parser.ShortDescription = "fatcat"
-	parser.LongDescription = "A scalable, versioned, API-oriented catalog of bibliographic entities and file metadata"
-
-	server.ConfigureFlags()
-	for _, optsGroup := range api.CommandLineOptionsGroups {
-		_, err := parser.AddGroup(optsGroup.ShortDescription, optsGroup.LongDescription, optsGroup.Options)
-		if err != nil {
-			log.Fatalln(err)
-		}
-	}
-
-	if _, err := parser.Parse(); err != nil {
-		code := 1
-		if fe, ok := err.(*flags.Error); ok {
-			if fe.Type == flags.ErrHelp {
-				code = 0
-			}
-		}
-		os.Exit(code)
-	}
-*/
-
     server.Port = viper.GetInt("port")
 
-    db := pg.Connect(&pg.Options{
-        User: "bnewbold", // XXX:
-        Database: "fatcat",
-    })
+    db_options, err := pg.ParseURL(viper.GetString("db_url"))
+    if err != nil {
+        log.Panicf("parsing DB string: {}", err)
+    }
+    db := pg.Connect(db_options)
     defer db.Close()
 
     // register all the many handlers here
@@ -87,20 +60,19 @@ func main_serve() {
 
     middle := interpose.New()
 
-    // sentry and upstream
-    // XXX: middle.UseHandler(sentry.Recovery(raven.DefaultClient, false))
+    // sentry
+    middle.Use(adaptors.FromNegroni(sentroni.NewRecovery(viper.GetString("sentry_dsn"))))
 
     // logging
-    negroniMiddleware := negronilogrus.NewMiddleware()
-    middle.Use(adaptors.FromNegroni(negroniMiddleware))
+    middle.Use(adaptors.FromNegroni(negronilogrus.NewMiddleware()))
 
-    // add clacks (TODO: only production)
+    // add clacks
     middle.UseHandler(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
         rw.Header().Set("X-Clacks-Overhead:", "GNU Aaron Swartz, John Perry Barlow")
     }))
 
+    // actual handler
     middle.UseHandler(api.Serve(nil))
-
     server.SetHandler(middle)
 
 	if err := server.Serve(); err != nil {

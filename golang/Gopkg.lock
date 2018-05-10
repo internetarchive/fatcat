@@ -21,6 +21,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/bradleyg/go-sentroni"
+  packages = ["."]
+  revision = "16e7bf48e1494134ac32000c9e22f3cd3e54c85f"
+
+[[projects]]
+  branch = "master"
   name = "github.com/carbocation/interpose"
   packages = [
     ".",
@@ -170,6 +176,12 @@
   revision = "ef8a98b0bbce4a65b5aa4c368430a80ddc533168"
 
 [[projects]]
+  name = "github.com/inconshreveable/mousetrap"
+  packages = ["."]
+  revision = "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
+  version = "v1.0"
+
+[[projects]]
   name = "github.com/jessevdk/go-flags"
   packages = ["."]
   revision = "c6ca198ec95c841fdb89fc0de7496fed11ab854e"
@@ -247,6 +259,12 @@
   packages = ["."]
   revision = "8965335b8c7107321228e3e3702cab9832751bac"
   version = "v1.2.0"
+
+[[projects]]
+  name = "github.com/spf13/cobra"
+  packages = ["."]
+  revision = "a1f051bc3eba734da4772d60e2d677f47cf93ef4"
+  version = "v0.0.2"
 
 [[projects]]
   branch = "master"
@@ -348,6 +366,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "22b7db2e7bce9c3b5a5b85e98dfead56dce992a11035235a7d854916782a19dd"
+  inputs-digest = "6f07904be5d2765e24cd25378e28c8c1c34f6e4205100dc6f8364d0be5eafbf9"
   solver-name = "gps-cdcl"
   solver-version = 1

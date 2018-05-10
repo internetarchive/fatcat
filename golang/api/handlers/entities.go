@@ -2,8 +2,6 @@
 package handlers
 
 import (
-    //"net/http"
-
     "github.com/go-pg/pg"
     "github.com/go-openapi/runtime/middleware"
 
