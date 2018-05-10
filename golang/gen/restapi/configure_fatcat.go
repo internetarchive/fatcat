@@ -1,5 +1,7 @@
 // This file is safe to edit. Once it exists it will not be overwritten
 
+// XXX: this file isn't actually used
+
 package restapi
 
 import (
@@ -16,7 +18,7 @@ import (
     //"github.com/getsentry/raven-go"
     "github.com/meatballhat/negroni-logrus"
 
-	"git.archive.org/bnewbold/fatcat/golang/restapi/operations"
+	"git.archive.org/bnewbold/fatcat/golang/gen/restapi/operations"
 )
 
 //go:generate swagger generate server --target .. --name Fatcat --spec ../fatcat-openapi2.yml
