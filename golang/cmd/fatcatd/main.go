@@ -8,6 +8,7 @@ import (
 	loads "github.com/go-openapi/loads"
 	flags "github.com/jessevdk/go-flags"
     "github.com/spf13/viper"
+    "github.com/getsentry/raven-go"
 
 	"git.archive.org/bnewbold/fatcat/golang/restapi"
 	"git.archive.org/bnewbold/fatcat/golang/restapi/operations"
@@ -15,20 +16,24 @@ import (
 
 func init() {
 
+    viper.SetDefault("port", 9411)
+    viper.SetDefault("verbose", true)
+
     viper.SetEnvPrefix("FATCAT")
     viper.AutomaticEnv()
-    viper.SetDefault("Port", 9411)
-    viper.SetDefault("Verbose", true)
 
+    viper.SetConfigType("toml")
     viper.SetConfigName("fatcatd.toml")
     viper.AddConfigPath(".")
-    err := viper.ReadInConfig()
-    if err != nil {
-        log.Fatalf("Fatal error config file: %s \n", err)
-    }
+    //err := viper.ReadInConfig()
+    //if err != nil {
+    //    log.Fatalf("Error loading config: %s \n", err)
+    //}
 
     // not default of stderr
     log.SetOutput(os.Stdout);
+
+    raven.SetDSN(viper.GetString("sentry_dsn"));
 
 }
 

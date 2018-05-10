@@ -10,6 +10,10 @@ import (
 	runtime "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
 	graceful "github.com/tylerb/graceful"
+    "github.com/carbocation/interpose"
+    "github.com/carbocation/interpose/adaptors"
+    //"github.com/getsentry/raven-go"
+    "github.com/meatballhat/negroni-logrus"
 
 	"git.archive.org/bnewbold/fatcat/golang/restapi/operations"
 )
@@ -67,5 +71,22 @@ func setupMiddlewares(handler http.Handler) http.Handler {
 // The middleware configuration happens before anything, this middleware also applies to serving the swagger.json document.
 // So this is a good place to plug in a panic handling middleware, logging and metrics
 func setupGlobalMiddleware(handler http.Handler) http.Handler {
-	return handler
+
+    middle := interpose.New()
+
+    // sentry and upstream
+    //middle.UseHandler(sentry.Recovery(raven.DefaultClient, false))
+
+    // logging
+    negroniMiddleware := negronilogrus.NewMiddleware()
+    middle.Use(adaptors.FromNegroni(negroniMiddleware))
+
+    // add clacks
+    middle.UseHandler(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+        rw.Header().Set("X-Clacks-Overhead:", "GNU Aaron Swartz, John Perry Barlow")
+    }))
+
+    middle.UseHandler(handler)
+
+	return middle
 }

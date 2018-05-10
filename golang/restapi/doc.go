@@ -7,7 +7,6 @@ A scalable, versioned, API-oriented catalog of bibliographic entities and file m
 
     Schemes:
       http
-      https
     Host: api.fatcat.wiki
     BasePath: /v0
     Version: 0.1.0

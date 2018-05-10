@@ -15,11 +15,11 @@ import (
 	"sync/atomic"
 	"time"
 
-    log "github.com/sirupsen/logrus"
 	"github.com/go-openapi/runtime/flagext"
 	"github.com/go-openapi/swag"
 	flags "github.com/jessevdk/go-flags"
 	graceful "github.com/tylerb/graceful"
+    log "github.com/sirupsen/logrus" // manual hack for now (bnewbold)
 
 	"git.archive.org/bnewbold/fatcat/golang/restapi/operations"
 )
@@ -35,7 +35,6 @@ var defaultSchemes []string
 func init() {
 	defaultSchemes = []string{
 		schemeHTTP,
-		schemeHTTPS,
 	}
 }
 

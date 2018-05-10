@@ -20,6 +20,27 @@
   version = "v9"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/carbocation/interpose"
+  packages = [
+    ".",
+    "adaptors"
+  ]
+  revision = "723534742ba3bbda66268b735aaa41634468acc6"
+
+[[projects]]
+  name = "github.com/certifi/gocertifi"
+  packages = ["."]
+  revision = "deb3ae2ef2610fde3330947281941c562861188b"
+  version = "2018.01.18"
+
+[[projects]]
+  name = "github.com/codegangsta/inject"
+  packages = ["."]
+  revision = "37d7f8432a3e684eef9b2edece76bdfa6ac85b39"
+  version = "v1.0-rc1"
+
+[[projects]]
   name = "github.com/docker/go-units"
   packages = ["."]
   revision = "47565b4f722fb6ceae66b95f853feed578a4a51c"
@@ -30,6 +51,18 @@
   packages = ["."]
   revision = "c2828203cd70a50dcccfb2761f8b1f8ceef9a8e9"
   version = "v1.4.7"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/getsentry/raven-go"
+  packages = ["."]
+  revision = "263040ce1a362270b5897a5982572ddc1fe807be"
+
+[[projects]]
+  name = "github.com/go-martini/martini"
+  packages = ["."]
+  revision = "49411a5b646861ad29a6ddd5351717a0a9c49b94"
+  version = "v1.0"
 
 [[projects]]
   branch = "master"
@@ -141,6 +174,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/meatballhat/negroni-logrus"
+  packages = ["."]
+  revision = "31067281800f66f57548a7a32d9c6c5f963fef83"
+
+[[projects]]
+  branch = "master"
   name = "github.com/mitchellh/mapstructure"
   packages = ["."]
   revision = "00c29f56e2386353d58c599509e8dc3801b0d716"
@@ -150,6 +189,12 @@
   packages = ["."]
   revision = "acdc4509485b587f5e675510c4f2c63e90ff68a8"
   version = "v1.1.0"
+
+[[projects]]
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
+  version = "v0.8.0"
 
 [[projects]]
   name = "github.com/sirupsen/logrus"
@@ -195,6 +240,12 @@
   packages = ["."]
   revision = "4654dfbb6ad53cb5e27f37d99b02e16c1872fbbb"
   version = "v1.2.15"
+
+[[projects]]
+  name = "github.com/urfave/negroni"
+  packages = ["."]
+  revision = "5dbbc83f748fc3ad38585842b0aedab546d0ea1e"
+  version = "v0.3.0"
 
 [[projects]]
   branch = "master"
@@ -260,6 +311,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "807f92b935a836e9a4ad4bd98cfad104e6dda33965a78bde4cb6b822c4e6d135"
+  inputs-digest = "ca575bc9f4c9011b152d7815b930a1765b8e0da49ca551b346a1a2b4065516c4"
   solver-name = "gps-cdcl"
   solver-version = 1
