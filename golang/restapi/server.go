@@ -7,7 +7,6 @@ import (
 	"crypto/x509"
 	"errors"
 	"io/ioutil"
-	"log"
 	"net"
 	"net/http"
 	"os"
@@ -16,6 +15,7 @@ import (
 	"sync/atomic"
 	"time"
 
+    log "github.com/sirupsen/logrus"
 	"github.com/go-openapi/runtime/flagext"
 	"github.com/go-openapi/swag"
 	flags "github.com/jessevdk/go-flags"

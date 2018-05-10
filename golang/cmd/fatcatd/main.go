@@ -2,9 +2,9 @@
 package main
 
 import (
-	"log"
 	"os"
 
+    log "github.com/sirupsen/logrus"
 	loads "github.com/go-openapi/loads"
 	flags "github.com/jessevdk/go-flags"
 
@@ -12,7 +12,16 @@ import (
 	"git.archive.org/bnewbold/fatcat/golang/restapi/operations"
 )
 
+func init() {
+
+    // not default of stderr
+    log.SetOutput(os.Stdout);
+
+}
+
 func main() {
+
+    log.Warn("Starting up...");
 
     // load embedded swagger file
     swaggerSpec, err := loads.Analyzed(restapi.SwaggerJSON, "")

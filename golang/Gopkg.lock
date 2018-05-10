@@ -117,10 +117,22 @@
   revision = "00c29f56e2386353d58c599509e8dc3801b0d716"
 
 [[projects]]
+  name = "github.com/sirupsen/logrus"
+  packages = ["."]
+  revision = "c155da19408a8799da419ed3eeb0cb5db0ad5dbc"
+  version = "v1.0.5"
+
+[[projects]]
   name = "github.com/tylerb/graceful"
   packages = ["."]
   revision = "4654dfbb6ad53cb5e27f37d99b02e16c1872fbbb"
   version = "v1.2.15"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/crypto"
+  packages = ["ssh/terminal"]
+  revision = "2d027ae1dddd4694d54f7a8b6cbe78dca8720226"
 
 [[projects]]
   branch = "master"
@@ -130,6 +142,15 @@
     "idna"
   ]
   revision = "f73e4c9ed3b7ebdd5f699a16a880c2b1994e50dd"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/sys"
+  packages = [
+    "unix",
+    "windows"
+  ]
+  revision = "64746a42f36bf0832f86b76004f1699dbeb33e4f"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -171,6 +192,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "ca4394feb80a5db162405569df88f18596fe247fbe3817a854ecb54038e8550d"
+  inputs-digest = "909cd858ce9bdc12fadeebb01df7ee2b57ab78d03f1c6c0a1130fc56b3c9f445"
   solver-name = "gps-cdcl"
   solver-version = 1
