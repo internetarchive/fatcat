@@ -7,12 +7,25 @@ import (
     log "github.com/sirupsen/logrus"
 	loads "github.com/go-openapi/loads"
 	flags "github.com/jessevdk/go-flags"
+    "github.com/spf13/viper"
 
 	"git.archive.org/bnewbold/fatcat/golang/restapi"
 	"git.archive.org/bnewbold/fatcat/golang/restapi/operations"
 )
 
 func init() {
+
+    viper.SetEnvPrefix("FATCAT")
+    viper.AutomaticEnv()
+    viper.SetDefault("Port", 9411)
+    viper.SetDefault("Verbose", true)
+
+    viper.SetConfigName("fatcatd.toml")
+    viper.AddConfigPath(".")
+    err := viper.ReadInConfig()
+    if err != nil {
+        log.Fatalf("Fatal error config file: %s \n", err)
+    }
 
     // not default of stderr
     log.SetOutput(os.Stdout);
