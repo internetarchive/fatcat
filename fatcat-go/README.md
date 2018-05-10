@@ -10,6 +10,17 @@ fatcatd is essentially just glue between two declarative schemas:
 - a postgres-flavor SQL database schema
 - an OpenAPI/Swagger REST API definition
 
+## Dev Setup
+
+- postgres 9.6+ running locally
+- golang environment configured
+    - https://github.com/golang/dep
+
+On debian/ubuntu:
+
+    sudo -u postgres createuser -s `whoami`
+    createdb -O `whoami` fatcat
+    psql fatcat -f fatcat-schema.sql
 
 ## Simplifications
 
@@ -23,4 +34,11 @@ In early development, we'll make at least the following simplifications:
 - libraries won't be vendored; in the future they will be via a git submodule
 
 
-## Tools
+## OpenAPI Code Generation
+
+Install the go-swagger tool:
+
+    go get -u github.com/go-swagger/go-swagger/cmd/swagger
+
+
+    swagger generate server -A Fatcat -f fatcat-openapi2.yml

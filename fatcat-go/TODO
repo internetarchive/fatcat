@@ -1,0 +1,10 @@
+
+plan:
+- rename directory (fatcat/golang?)
+- "custom" swagger base command (not auto-generated)
+    -> "main" wrapper pulling in libraries
+- some form of dependency management: dep
+- config
+- logging
+- test framework
+- database creation and access

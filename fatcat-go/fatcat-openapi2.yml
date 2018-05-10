@@ -1,16 +1,22 @@
-consumes:
-- application/json
+---
+swagger: "2.0"
 info:
+  title: fatcat
   description: A scalable, versioned, API-oriented catalog of bibliographic entities
     and file metadata
-  title: fatcat
   version: 0.1.0
-paths: {}
+schemes: [http, https]
+basePath: /v0
+host: api.fatcat.wiki
+consumes:
+- application/json
 produces:
 - application/json
-schemes:
-- http
-swagger: "2.0"
+
+# TODO: try to make this work:
+#x-entity-props: &ENTITYPROPS
+#<<: *ENTITYPROPS
+
 
 definitions:
   error:
@@ -31,14 +37,18 @@ definitions:
         # actually enum of: (wip, active, redirect, deleted)
       ident:
         type: string
+        # format: uuid
       revision:
         type: string
+        # integer
       redirect:
         type: string
+        # format: uuid
       name:
         type: string
       orcid:
         type: string
+        # format: custom
 
 paths:
   /creator:
