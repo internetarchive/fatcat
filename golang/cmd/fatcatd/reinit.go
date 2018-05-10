@@ -22,12 +22,12 @@ func main_reinit() {
     box := packr.NewBox("../../sql")
     sql_schema, err := box.MustString("fatcat-schema.sql")
     if err != nil {
-        log.Panicf("finding SQL file: {}", err)
+        log.Panicf("finding SQL file: %v", err)
     }
 
     db_options, err := pg.ParseURL(viper.GetString("db_url"))
     if err != nil {
-        log.Panicf("parsing DB string: {}", err)
+        log.Panicf("parsing DB string: %v", err)
     }
     db := pg.Connect(db_options)
     defer db.Close()
@@ -35,7 +35,16 @@ func main_reinit() {
     log.Info("Starting load...")
     _, err = db.Exec(sql_schema)
     if err != nil {
-        log.Fatalf("Error loading SQL: {}", err)
+        log.Fatalf("Error loading SQL: %v", err)
+    }
+    log.Info("Loading dummy data...")
+    sql_dummy, err := box.MustString("dummy-data.sql")
+    if err != nil {
+        log.Panicf("finding SQL file: %v", err)
+    }
+    _, err = db.Exec(sql_dummy)
+    if err != nil {
+        log.Fatalf("Error loading SQL: %v", err)
     }
     log.Info("Success!")
 
