@@ -159,6 +159,12 @@
   version = "v6.11.2"
 
 [[projects]]
+  name = "github.com/gobuffalo/packr"
+  packages = ["."]
+  revision = "7f4074995d431987caaa35088199f13c44b24440"
+  version = "v1.11.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/hashicorp/hcl"
   packages = [
@@ -366,6 +372,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "6f07904be5d2765e24cd25378e28c8c1c34f6e4205100dc6f8364d0be5eafbf9"
+  inputs-digest = "551e8d9bd6a848cc1a77d0706bb2275d4ff4052d83c7e2a82494ee2ee8821805"
   solver-name = "gps-cdcl"
   solver-version = 1

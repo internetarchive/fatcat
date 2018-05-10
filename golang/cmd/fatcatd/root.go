@@ -29,12 +29,12 @@ func init() {
     serveCmd.Flags().String("db-url", "postgres://", "database connecion string")
 
     rootCmd.AddCommand(serveCmd)
+    rootCmd.AddCommand(reinitCmd)
 }
 
 func initConfig() {
 
     viper.SetDefault("port", 9411)
-    viper.SetDefault("db_url", "postgres://bnewbold@localhost/fatcat")
     viper.SetEnvPrefix("FATCAT")
     viper.AutomaticEnv()
 
