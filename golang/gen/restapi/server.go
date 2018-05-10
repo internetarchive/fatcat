@@ -7,6 +7,7 @@ import (
 	"crypto/x509"
 	"errors"
 	"io/ioutil"
+	"log"
 	"net"
 	"net/http"
 	"os"
@@ -19,9 +20,8 @@ import (
 	"github.com/go-openapi/swag"
 	flags "github.com/jessevdk/go-flags"
 	graceful "github.com/tylerb/graceful"
-    log "github.com/sirupsen/logrus" // manual hack for now (bnewbold)
 
-	"git.archive.org/bnewbold/fatcat/golang/restapi/operations"
+	"git.archive.org/bnewbold/fatcat/golang/gen/restapi/operations"
 )
 
 const (

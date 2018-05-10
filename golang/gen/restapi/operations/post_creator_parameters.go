@@ -12,7 +12,7 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
 
-	models "git.archive.org/bnewbold/fatcat/golang/models"
+	models "git.archive.org/bnewbold/fatcat/golang/gen/models"
 )
 
 // NewPostCreatorParams creates a new PostCreatorParams object

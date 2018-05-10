@@ -10,7 +10,7 @@ import (
 
 	"github.com/go-openapi/runtime"
 
-	models "git.archive.org/bnewbold/fatcat/golang/models"
+	models "git.archive.org/bnewbold/fatcat/golang/gen/models"
 )
 
 // GetCreatorIDOKCode is the HTTP code returned for type GetCreatorIDOK

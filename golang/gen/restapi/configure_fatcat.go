@@ -6,6 +6,7 @@ import (
 	"crypto/tls"
 	"net/http"
 
+    log "github.com/sirupsen/logrus"
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
@@ -30,18 +31,21 @@ func configureAPI(api *operations.FatcatAPI) http.Handler {
 
 	// Set your custom logger if needed. Default one is log.Printf
 	// Expected interface func(string, ...interface{})
-	//
-	// Example:
-	// api.Logger = log.Printf
+	api.Logger = log.Printf
 
 	api.JSONConsumer = runtime.JSONConsumer()
 
 	api.JSONProducer = runtime.JSONProducer()
 
 	api.GetCreatorIDHandler = operations.GetCreatorIDHandlerFunc(func(params operations.GetCreatorIDParams) middleware.Responder {
+        // "get or 404" using params.ID. join creator_ident and creator_rev.
+        // populate result data
+        // return that
 		return middleware.NotImplemented("operation .GetCreatorID has not yet been implemented")
 	})
 	api.PostCreatorHandler = operations.PostCreatorHandlerFunc(func(params operations.PostCreatorParams) middleware.Responder {
+        // get-or-create editgroup based on current editor (session)
+        // insert new rev, ident, and edit
 		return middleware.NotImplemented("operation .PostCreator has not yet been implemented")
 	})
 
