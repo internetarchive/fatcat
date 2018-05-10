@@ -18,6 +18,7 @@ var rootCmd = &cobra.Command{
     Use:   "fatcatd",
     Short: "REST API Server",
 	Long:  "A scalable, versioned, API-oriented catalog of bibliographic entities and file metadata",
+    Version: "0.1.0",
 }
 
 func init() {

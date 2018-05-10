@@ -7,9 +7,9 @@ x some form of dependency management: dep
 x logging
 x config
 x sentry
+x cobra command line parsing?
 - test framework
 - database creation and access
 
 later:
-- cobra command line parsing? meh
 - metrics
