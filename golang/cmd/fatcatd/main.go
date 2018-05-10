@@ -8,13 +8,15 @@ import (
     log "github.com/sirupsen/logrus"
 	loads "github.com/go-openapi/loads"
 	flags "github.com/jessevdk/go-flags"
-	middleware "github.com/go-openapi/runtime/middleware"
+	//middleware "github.com/go-openapi/runtime/middleware"
     "github.com/spf13/viper"
     "github.com/getsentry/raven-go"
     "github.com/carbocation/interpose"
     "github.com/carbocation/interpose/adaptors"
     "github.com/meatballhat/negroni-logrus"
+    "github.com/go-pg/pg"
 
+	"git.archive.org/bnewbold/fatcat/golang/api/handlers"
 	"git.archive.org/bnewbold/fatcat/golang/gen/restapi"
 	"git.archive.org/bnewbold/fatcat/golang/gen/restapi/operations"
 )
@@ -84,29 +86,28 @@ func main() {
 		os.Exit(code)
 	}
 
-	// XXX: server.ConfigureAPI()
-	api.GetCreatorIDHandler = operations.GetCreatorIDHandlerFunc(func(params operations.GetCreatorIDParams) middleware.Responder {
-        // "get or 404" using params.ID. join creator_ident and creator_rev.
-        // populate result data
-        // return that
-		return middleware.NotImplemented("operation .GetCreatorID has not yet been implemented")
-	})
-	api.PostCreatorHandler = operations.PostCreatorHandlerFunc(func(params operations.PostCreatorParams) middleware.Responder {
-        // get-or-create editgroup based on current editor (session)
-        // insert new rev, ident, and edit
-		return middleware.NotImplemented("operation .PostCreator has not yet been implemented")
-	})
+    server.Port = viper.GetInt("port")
+
+    db := pg.Connect(&pg.Options{
+        User: "bnewbold", // XXX:
+        Database: "fatcat",
+    })
+    defer db.Close()
+
+    // register all the many handlers here
+	api.GetCreatorIDHandler = handlers.NewGetCreatorIDHandler(db);
+    api.PostCreatorHandler = handlers.NewPostCreatorHandler(db);
 
     middle := interpose.New()
 
     // sentry and upstream
-    //middle.UseHandler(sentry.Recovery(raven.DefaultClient, false))
+    // XXX: middle.UseHandler(sentry.Recovery(raven.DefaultClient, false))
 
     // logging
     negroniMiddleware := negronilogrus.NewMiddleware()
     middle.Use(adaptors.FromNegroni(negroniMiddleware))
 
-    // add clacks
+    // add clacks (TODO: only production)
     middle.UseHandler(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
         rw.Header().Set("X-Clacks-Overhead:", "GNU Aaron Swartz, John Perry Barlow")
     }))
