@@ -1,25 +1,31 @@
 
 ## Database Schema / ORM / Generation
 
+start simple, with pg (or sqlx if we wanted to be DB-agnostic):
 - pq: basic postgres driver and ORM (similar to sqlalchemy?)
 - sqlx: small extensions to builtin sql; row to struct mapping
 
-code generation from SQL schema:
+debug postgres with gocmdpev
+
+later, if code is too duplicated, look in to sqlboiler (first) or xo (second):
 - https://github.com/xo/xo
 - https://github.com/volatiletech/sqlboiler
-- kallax
 
-database migrations:
-- goose
-- https://github.com/mattes/migrate
+later, to do migrations, use goose, or consider alembic (python) for
+auto-generation
+- https://github.com/steinbacher/goose
+- possibly auto-generate with python alembic
 
-maybe also:
+for identifiers, consider either built-in postgres UUID, or:
+- https://github.com/rs/xid
 - https://github.com/oklog/ulid
   like a UUID, but base32 and "sortable" (timestamp + random)
 
-for auth, start with oauth2... orcid?
+## API In General
 
-debug postgres with gocmdpev
+Hope to use Kong for authentication.
+
+start with oauth2... orcid?
 
 ## OpenAPI/Swagger
 
@@ -35,5 +41,5 @@ also look at ReDoc as a UI; all in-brower generated from JSON (react)
 ## Non-API stuff
 
 - logrus structured logging (or zap?)
-- testify tests
+- testify tests (and assert?)
 - viper config

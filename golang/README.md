@@ -15,6 +15,8 @@ fatcatd is essentially just glue between two declarative schemas:
 - postgres 9.6+ running locally
 - golang environment configured
     - https://github.com/golang/dep
+- checkout (or symlink) this repo to $GOPATH/src/git.archive.org/bnewbold/fatcat
+- dep ensure
 
 On debian/ubuntu:
 
