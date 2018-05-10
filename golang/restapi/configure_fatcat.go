@@ -11,7 +11,7 @@ import (
 	middleware "github.com/go-openapi/runtime/middleware"
 	graceful "github.com/tylerb/graceful"
 
-	"git.archive.org/bnewbold/fatcat/restapi/operations"
+	"git.archive.org/bnewbold/fatcat/golang/restapi/operations"
 )
 
 //go:generate swagger generate server --target .. --name Fatcat --spec ../fatcat-openapi2.yml

@@ -21,7 +21,7 @@ import (
 	flags "github.com/jessevdk/go-flags"
 	graceful "github.com/tylerb/graceful"
 
-	"git.archive.org/bnewbold/fatcat/restapi/operations"
+	"git.archive.org/bnewbold/fatcat/golang/restapi/operations"
 )
 
 const (
