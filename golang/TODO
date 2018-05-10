@@ -1,10 +1,15 @@
 
 plan:
-- rename directory (fatcat/golang?)
-- "custom" swagger base command (not auto-generated)
+x rename directory (fatcat/golang?)
+x "custom" swagger base command (not auto-generated)
     -> "main" wrapper pulling in libraries
-- some form of dependency management: dep
-- config
-- logging
+x some form of dependency management: dep
+x logging
+x config
+x sentry
 - test framework
 - database creation and access
+
+later:
+- cobra command line parsing? meh
+- metrics

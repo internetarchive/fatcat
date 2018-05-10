@@ -2,6 +2,7 @@
 *.sqlite3
 *,cover
 htmlcov/
+golang/fatcatd
 
 *.o
 *.a

@@ -140,6 +140,19 @@
   revision = "9286f6d0e5c1ffc7cf2bda1d59291dc3c4f2f828"
 
 [[projects]]
+  name = "github.com/go-pg/pg"
+  packages = [
+    ".",
+    "internal",
+    "internal/parser",
+    "internal/pool",
+    "orm",
+    "types"
+  ]
+  revision = "5b73ce88484575f3480edf393237f6bf79d5f166"
+  version = "v6.11.2"
+
+[[projects]]
   branch = "master"
   name = "github.com/hashicorp/hcl"
   packages = [
@@ -161,6 +174,12 @@
   packages = ["."]
   revision = "c6ca198ec95c841fdb89fc0de7496fed11ab854e"
   version = "v1.4.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/jinzhu/inflection"
+  packages = ["."]
+  revision = "04140366298a54a039076d798123ffa108fff46c"
 
 [[projects]]
   name = "github.com/magiconair/properties"
@@ -329,6 +348,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "5d595b1536b9cb05d0ea9f9aa79e06d8b0851733059190260bbecf4d54108542"
+  inputs-digest = "22b7db2e7bce9c3b5a5b85e98dfead56dce992a11035235a7d854916782a19dd"
   solver-name = "gps-cdcl"
   solver-version = 1

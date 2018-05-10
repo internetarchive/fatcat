@@ -53,4 +53,4 @@ Install the go-swagger tool:
 
 "Custom" server:
 
-    swagger generate server -A fatcat -f ./fatcat-openapi2.yml --exclude-main
+    swagger generate server -A fatcat -f ./fatcat-openapi2.yml --exclude-main -t gen
