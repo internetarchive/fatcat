@@ -24,7 +24,8 @@ type CreatorEntity struct {
 	Ident *string `json:"ident"`
 
 	// name
-	Name string `json:"name,omitempty"`
+	// Required: true
+	Name *string `json:"name"`
 
 	// orcid
 	Orcid string `json:"orcid,omitempty"`
@@ -33,7 +34,7 @@ type CreatorEntity struct {
 	Redirect string `json:"redirect,omitempty"`
 
 	// revision
-	Revision string `json:"revision,omitempty"`
+	Revision int64 `json:"revision,omitempty"`
 
 	// state
 	// Required: true
@@ -46,6 +47,10 @@ func (m *CreatorEntity) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateIdent(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateName(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -62,6 +67,15 @@ func (m *CreatorEntity) Validate(formats strfmt.Registry) error {
 func (m *CreatorEntity) validateIdent(formats strfmt.Registry) error {
 
 	if err := validate.Required("ident", "body", m.Ident); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *CreatorEntity) validateName(formats strfmt.Registry) error {
+
+	if err := validate.Required("name", "body", m.Name); err != nil {
 		return err
 	}
 

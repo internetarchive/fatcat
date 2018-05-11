@@ -54,6 +54,44 @@ func init() {
               "$ref": "#/definitions/creator_entity"
             }
           },
+          "400": {
+            "description": "bad request",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/creator/lookup": {
+      "get": {
+        "parameters": [
+          {
+            "type": "string",
+            "name": "orcid",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "find a single creator by external identifer",
+            "schema": {
+              "$ref": "#/definitions/creator_entity"
+            }
+          },
+          "404": {
+            "description": "no such creator",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
           "default": {
             "description": "generic error response",
             "schema": {
@@ -94,14 +132,191 @@ func init() {
           "required": true
         }
       ]
+    },
+    "/editgroup": {
+      "post": {
+        "responses": {
+          "201": {
+            "description": "successfully created",
+            "schema": {
+              "$ref": "#/definitions/editgroup"
+            }
+          },
+          "400": {
+            "description": "invalid request parameters",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/editgroup/{id}": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "fetch editgroup by identifier",
+            "schema": {
+              "$ref": "#/definitions/editgroup"
+            }
+          },
+          "404": {
+            "description": "no such editgroup",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/editgroup/{id}/accept": {
+      "post": {
+        "responses": {
+          "200": {
+            "description": "merged editgroup successfully (\"live\")",
+            "schema": {
+              "$ref": "#/definitions/success"
+            }
+          },
+          "400": {
+            "description": "editgroup is in an unmergable state",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "404": {
+            "description": "no such editgroup",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/editor/{username}": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "fetch generic information about an editor",
+            "schema": {
+              "$ref": "#/definitions/editor"
+            }
+          },
+          "404": {
+            "description": "username not found",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "string",
+          "name": "username",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/editor/{username}/changelog": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "find changes (editgroups) by this editor which have been merged",
+            "schema": {
+              "$ref": "#/definitions/changelogentry"
+            }
+          },
+          "404": {
+            "description": "username not found",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "string",
+          "name": "username",
+          "in": "path",
+          "required": true
+        }
+      ]
     }
   },
   "definitions": {
+    "changelogentry": {
+      "type": "object",
+      "required": [
+        "index"
+      ],
+      "properties": {
+        "editgroup_id": {
+          "type": "integer"
+        },
+        "index": {
+          "type": "integer"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "creator_entity": {
       "type": "object",
       "required": [
         "ident",
-        "state"
+        "state",
+        "name"
       ],
       "properties": {
         "ident": {
@@ -117,7 +332,7 @@ func init() {
           "type": "string"
         },
         "revision": {
-          "type": "string"
+          "type": "integer"
         },
         "state": {
           "type": "string",
@@ -130,7 +345,44 @@ func init() {
         }
       }
     },
+    "editgroup": {
+      "type": "object",
+      "required": [
+        "id",
+        "editor_id"
+      ],
+      "properties": {
+        "editor_id": {
+          "type": "integer"
+        },
+        "id": {
+          "type": "integer"
+        }
+      }
+    },
+    "editor": {
+      "type": "object",
+      "required": [
+        "username"
+      ],
+      "properties": {
+        "username": {
+          "type": "string"
+        }
+      }
+    },
     "error": {
+      "type": "object",
+      "required": [
+        "message"
+      ],
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "success": {
       "type": "object",
       "required": [
         "message"
@@ -180,6 +432,44 @@ func init() {
               "$ref": "#/definitions/creator_entity"
             }
           },
+          "400": {
+            "description": "bad request",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/creator/lookup": {
+      "get": {
+        "parameters": [
+          {
+            "type": "string",
+            "name": "orcid",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "find a single creator by external identifer",
+            "schema": {
+              "$ref": "#/definitions/creator_entity"
+            }
+          },
+          "404": {
+            "description": "no such creator",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
           "default": {
             "description": "generic error response",
             "schema": {
@@ -220,14 +510,191 @@ func init() {
           "required": true
         }
       ]
+    },
+    "/editgroup": {
+      "post": {
+        "responses": {
+          "201": {
+            "description": "successfully created",
+            "schema": {
+              "$ref": "#/definitions/editgroup"
+            }
+          },
+          "400": {
+            "description": "invalid request parameters",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/editgroup/{id}": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "fetch editgroup by identifier",
+            "schema": {
+              "$ref": "#/definitions/editgroup"
+            }
+          },
+          "404": {
+            "description": "no such editgroup",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/editgroup/{id}/accept": {
+      "post": {
+        "responses": {
+          "200": {
+            "description": "merged editgroup successfully (\"live\")",
+            "schema": {
+              "$ref": "#/definitions/success"
+            }
+          },
+          "400": {
+            "description": "editgroup is in an unmergable state",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "404": {
+            "description": "no such editgroup",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "integer",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/editor/{username}": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "fetch generic information about an editor",
+            "schema": {
+              "$ref": "#/definitions/editor"
+            }
+          },
+          "404": {
+            "description": "username not found",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "string",
+          "name": "username",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/editor/{username}/changelog": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "find changes (editgroups) by this editor which have been merged",
+            "schema": {
+              "$ref": "#/definitions/changelogentry"
+            }
+          },
+          "404": {
+            "description": "username not found",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
+          "default": {
+            "description": "generic error response",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "string",
+          "name": "username",
+          "in": "path",
+          "required": true
+        }
+      ]
     }
   },
   "definitions": {
+    "changelogentry": {
+      "type": "object",
+      "required": [
+        "index"
+      ],
+      "properties": {
+        "editgroup_id": {
+          "type": "integer"
+        },
+        "index": {
+          "type": "integer"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "creator_entity": {
       "type": "object",
       "required": [
         "ident",
-        "state"
+        "state",
+        "name"
       ],
       "properties": {
         "ident": {
@@ -243,7 +710,7 @@ func init() {
           "type": "string"
         },
         "revision": {
-          "type": "string"
+          "type": "integer"
         },
         "state": {
           "type": "string",
@@ -256,7 +723,44 @@ func init() {
         }
       }
     },
+    "editgroup": {
+      "type": "object",
+      "required": [
+        "id",
+        "editor_id"
+      ],
+      "properties": {
+        "editor_id": {
+          "type": "integer"
+        },
+        "id": {
+          "type": "integer"
+        }
+      }
+    },
+    "editor": {
+      "type": "object",
+      "required": [
+        "username"
+      ],
+      "properties": {
+        "username": {
+          "type": "string"
+        }
+      }
+    },
     "error": {
+      "type": "object",
+      "required": [
+        "message"
+      ],
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "success": {
       "type": "object",
       "required": [
         "message"

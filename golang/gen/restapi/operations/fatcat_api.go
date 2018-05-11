@@ -40,8 +40,26 @@ func NewFatcatAPI(spec *loads.Document) *FatcatAPI {
 		GetCreatorIDHandler: GetCreatorIDHandlerFunc(func(params GetCreatorIDParams) middleware.Responder {
 			return middleware.NotImplemented("operation GetCreatorID has not yet been implemented")
 		}),
+		GetCreatorLookupHandler: GetCreatorLookupHandlerFunc(func(params GetCreatorLookupParams) middleware.Responder {
+			return middleware.NotImplemented("operation GetCreatorLookup has not yet been implemented")
+		}),
+		GetEditgroupIDHandler: GetEditgroupIDHandlerFunc(func(params GetEditgroupIDParams) middleware.Responder {
+			return middleware.NotImplemented("operation GetEditgroupID has not yet been implemented")
+		}),
+		GetEditorUsernameHandler: GetEditorUsernameHandlerFunc(func(params GetEditorUsernameParams) middleware.Responder {
+			return middleware.NotImplemented("operation GetEditorUsername has not yet been implemented")
+		}),
+		GetEditorUsernameChangelogHandler: GetEditorUsernameChangelogHandlerFunc(func(params GetEditorUsernameChangelogParams) middleware.Responder {
+			return middleware.NotImplemented("operation GetEditorUsernameChangelog has not yet been implemented")
+		}),
 		PostCreatorHandler: PostCreatorHandlerFunc(func(params PostCreatorParams) middleware.Responder {
 			return middleware.NotImplemented("operation PostCreator has not yet been implemented")
+		}),
+		PostEditgroupHandler: PostEditgroupHandlerFunc(func(params PostEditgroupParams) middleware.Responder {
+			return middleware.NotImplemented("operation PostEditgroup has not yet been implemented")
+		}),
+		PostEditgroupIDAcceptHandler: PostEditgroupIDAcceptHandlerFunc(func(params PostEditgroupIDAcceptParams) middleware.Responder {
+			return middleware.NotImplemented("operation PostEditgroupIDAccept has not yet been implemented")
 		}),
 	}
 }
@@ -76,8 +94,20 @@ type FatcatAPI struct {
 
 	// GetCreatorIDHandler sets the operation handler for the get creator ID operation
 	GetCreatorIDHandler GetCreatorIDHandler
+	// GetCreatorLookupHandler sets the operation handler for the get creator lookup operation
+	GetCreatorLookupHandler GetCreatorLookupHandler
+	// GetEditgroupIDHandler sets the operation handler for the get editgroup ID operation
+	GetEditgroupIDHandler GetEditgroupIDHandler
+	// GetEditorUsernameHandler sets the operation handler for the get editor username operation
+	GetEditorUsernameHandler GetEditorUsernameHandler
+	// GetEditorUsernameChangelogHandler sets the operation handler for the get editor username changelog operation
+	GetEditorUsernameChangelogHandler GetEditorUsernameChangelogHandler
 	// PostCreatorHandler sets the operation handler for the post creator operation
 	PostCreatorHandler PostCreatorHandler
+	// PostEditgroupHandler sets the operation handler for the post editgroup operation
+	PostEditgroupHandler PostEditgroupHandler
+	// PostEditgroupIDAcceptHandler sets the operation handler for the post editgroup ID accept operation
+	PostEditgroupIDAcceptHandler PostEditgroupIDAcceptHandler
 
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
@@ -145,8 +175,32 @@ func (o *FatcatAPI) Validate() error {
 		unregistered = append(unregistered, "GetCreatorIDHandler")
 	}
 
+	if o.GetCreatorLookupHandler == nil {
+		unregistered = append(unregistered, "GetCreatorLookupHandler")
+	}
+
+	if o.GetEditgroupIDHandler == nil {
+		unregistered = append(unregistered, "GetEditgroupIDHandler")
+	}
+
+	if o.GetEditorUsernameHandler == nil {
+		unregistered = append(unregistered, "GetEditorUsernameHandler")
+	}
+
+	if o.GetEditorUsernameChangelogHandler == nil {
+		unregistered = append(unregistered, "GetEditorUsernameChangelogHandler")
+	}
+
 	if o.PostCreatorHandler == nil {
 		unregistered = append(unregistered, "PostCreatorHandler")
+	}
+
+	if o.PostEditgroupHandler == nil {
+		unregistered = append(unregistered, "PostEditgroupHandler")
+	}
+
+	if o.PostEditgroupIDAcceptHandler == nil {
+		unregistered = append(unregistered, "PostEditgroupIDAcceptHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -252,10 +306,40 @@ func (o *FatcatAPI) initHandlerCache() {
 	}
 	o.handlers["GET"]["/creator/{id}"] = NewGetCreatorID(o.context, o.GetCreatorIDHandler)
 
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/creator/lookup"] = NewGetCreatorLookup(o.context, o.GetCreatorLookupHandler)
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/editgroup/{id}"] = NewGetEditgroupID(o.context, o.GetEditgroupIDHandler)
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/editor/{username}"] = NewGetEditorUsername(o.context, o.GetEditorUsernameHandler)
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/editor/{username}/changelog"] = NewGetEditorUsernameChangelog(o.context, o.GetEditorUsernameChangelogHandler)
+
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
 	o.handlers["POST"]["/creator"] = NewPostCreator(o.context, o.PostCreatorHandler)
+
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/editgroup"] = NewPostEditgroup(o.context, o.PostEditgroupHandler)
+
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/editgroup/{id}/accept"] = NewPostEditgroupIDAccept(o.context, o.PostEditgroupIDAcceptHandler)
 
 }
 

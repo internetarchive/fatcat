@@ -26,21 +26,28 @@ definitions:
     properties:
       message:
         type: string
+  success:
+    type: object
+    required:
+      - message
+    properties:
+      message:
+        type: string
   creator_entity:
     type: object
     required:
       - ident
       - state
+      - name
     properties:
       state: 
         type: string
         enum: ["wip", "active", "redirect", "deleted"]
       ident:
         type: string
-        # format: uuid
+        #format: uuid
       revision:
-        type: string
-        # integer
+        type: integer
       redirect:
         type: string
         # format: uuid
@@ -49,6 +56,35 @@ definitions:
       orcid:
         type: string
         # format: custom
+  editor:
+    type: object
+    required:
+      - username
+    properties:
+      username: 
+        type: string
+  editgroup:
+    type: object
+    required:
+      - id
+      - editor_id
+    properties:
+      id: 
+        type: integer
+      editor_id: 
+        type: integer
+  changelogentry:
+    type: object
+    required:
+      - index
+    properties:
+      index: 
+        type: integer
+      editgroup_id: 
+        type: integer
+      timestamp: 
+        type: string
+        format: date-time
 
 paths:
   /creator:
@@ -63,6 +99,10 @@ paths:
           description: created
           schema:
             $ref: "#/definitions/creator_entity"
+        400:
+          description: bad request
+          schema:
+            $ref: "#/definitions/error"
         default:
           description: generic error response
           schema:
@@ -87,11 +127,122 @@ paths:
           description: generic error response
           schema:
             $ref: "#/definitions/error"
-# /creator/lookup:
-
-# /editgroup:
-# /editgroup/{id}:
-# /editgroup/{id}/accept:
-
-# /editor/{username}:
-# /editor/{username}/changelog:
+  /creator/lookup:
+    get:
+      parameters:
+        - name: orcid
+          in: query
+          type: string
+          required: true
+      responses:
+        200:
+          description: find a single creator by external identifer
+          schema:
+            $ref: "#/definitions/creator_entity"
+        404:
+          description: no such creator
+          schema:
+            $ref: "#/definitions/error"
+        default:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"
+  /editor/{username}:
+    parameters:
+      - name: username
+        in: path
+        type: string
+        required: true
+    get:
+      responses:
+        200:
+          description: fetch generic information about an editor
+          schema:
+            $ref: "#/definitions/editor"
+        404:
+          description: username not found
+          schema:
+            $ref: "#/definitions/error"
+        default:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"
+  /editor/{username}/changelog:
+    parameters:
+      - name: username
+        in: path
+        type: string
+        required: true
+    get:
+      responses:
+        200:
+          description: find changes (editgroups) by this editor which have been merged
+          schema:
+            $ref: "#/definitions/changelogentry"
+        404:
+          description: username not found
+          schema:
+            $ref: "#/definitions/error"
+        default:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"
+  /editgroup:
+    post:
+      responses:
+        201:
+          description: successfully created
+          schema:
+            $ref: "#/definitions/editgroup"
+        400:
+          description: invalid request parameters
+          schema:
+            $ref: "#/definitions/error"
+        default:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"
+  /editgroup/{id}:
+    parameters:
+      - name: id
+        in: path
+        type: integer
+        required: true
+    get:
+      responses:
+        200:
+          description: fetch editgroup by identifier
+          schema:
+            $ref: "#/definitions/editgroup"
+        404:
+          description: no such editgroup
+          schema:
+            $ref: "#/definitions/error"
+        default:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"
+  /editgroup/{id}/accept:
+    parameters:
+      - name: id
+        in: path
+        type: integer
+        required: true
+    post:
+      responses:
+        200:
+          description: merged editgroup successfully ("live")
+          schema:
+            $ref: "#/definitions/success"
+        400:
+          description: editgroup is in an unmergable state
+          schema:
+            $ref: "#/definitions/error"
+        404:
+          description: no such editgroup
+          schema:
+            $ref: "#/definitions/error"
+        default:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"

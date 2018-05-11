@@ -57,6 +57,50 @@ func (o *PostCreatorCreated) WriteResponse(rw http.ResponseWriter, producer runt
 	}
 }
 
+// PostCreatorBadRequestCode is the HTTP code returned for type PostCreatorBadRequest
+const PostCreatorBadRequestCode int = 400
+
+/*PostCreatorBadRequest bad request
+
+swagger:response postCreatorBadRequest
+*/
+type PostCreatorBadRequest struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewPostCreatorBadRequest creates PostCreatorBadRequest with default headers values
+func NewPostCreatorBadRequest() *PostCreatorBadRequest {
+
+	return &PostCreatorBadRequest{}
+}
+
+// WithPayload adds the payload to the post creator bad request response
+func (o *PostCreatorBadRequest) WithPayload(payload *models.Error) *PostCreatorBadRequest {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the post creator bad request response
+func (o *PostCreatorBadRequest) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *PostCreatorBadRequest) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(400)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
+}
+
 /*PostCreatorDefault generic error response
 
 swagger:response postCreatorDefault
