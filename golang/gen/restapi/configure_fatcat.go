@@ -14,7 +14,7 @@ import (
 	"git.archive.org/bnewbold/fatcat/golang/gen/restapi/operations"
 )
 
-//go:generate swagger generate server --target ../gen --name fatcat --spec ../fatcat-openapi2.yml --exclude-main
+//go:generate swagger generate server --target ../gen --name fatcat --spec ../fatcat-openapi2.json --exclude-main
 
 func configureFlags(api *operations.FatcatAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -37,8 +37,26 @@ func configureAPI(api *operations.FatcatAPI) http.Handler {
 	api.GetCreatorIDHandler = operations.GetCreatorIDHandlerFunc(func(params operations.GetCreatorIDParams) middleware.Responder {
 		return middleware.NotImplemented("operation .GetCreatorID has not yet been implemented")
 	})
+	api.GetCreatorLookupHandler = operations.GetCreatorLookupHandlerFunc(func(params operations.GetCreatorLookupParams) middleware.Responder {
+		return middleware.NotImplemented("operation .GetCreatorLookup has not yet been implemented")
+	})
+	api.GetEditgroupIDHandler = operations.GetEditgroupIDHandlerFunc(func(params operations.GetEditgroupIDParams) middleware.Responder {
+		return middleware.NotImplemented("operation .GetEditgroupID has not yet been implemented")
+	})
+	api.GetEditorUsernameHandler = operations.GetEditorUsernameHandlerFunc(func(params operations.GetEditorUsernameParams) middleware.Responder {
+		return middleware.NotImplemented("operation .GetEditorUsername has not yet been implemented")
+	})
+	api.GetEditorUsernameChangelogHandler = operations.GetEditorUsernameChangelogHandlerFunc(func(params operations.GetEditorUsernameChangelogParams) middleware.Responder {
+		return middleware.NotImplemented("operation .GetEditorUsernameChangelog has not yet been implemented")
+	})
 	api.PostCreatorHandler = operations.PostCreatorHandlerFunc(func(params operations.PostCreatorParams) middleware.Responder {
 		return middleware.NotImplemented("operation .PostCreator has not yet been implemented")
+	})
+	api.PostEditgroupHandler = operations.PostEditgroupHandlerFunc(func(params operations.PostEditgroupParams) middleware.Responder {
+		return middleware.NotImplemented("operation .PostEditgroup has not yet been implemented")
+	})
+	api.PostEditgroupIDAcceptHandler = operations.PostEditgroupIDAcceptHandlerFunc(func(params operations.PostEditgroupIDAcceptParams) middleware.Responder {
+		return middleware.NotImplemented("operation .PostEditgroupIDAccept has not yet been implemented")
 	})
 
 	api.ServerShutdown = func() {}

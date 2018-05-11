@@ -57,6 +57,35 @@ func main_serve() {
     // register all the many handlers here
 	api.GetCreatorIDHandler = handlers.NewGetCreatorIDHandler(db);
     api.PostCreatorHandler = handlers.NewPostCreatorHandler(db);
+    api.GetCreatorLookupHandler = handlers.NewGetCreatorLookupHandler(db);
+/*
+	api.GetCreatorLookupHandler = operations.GetCreatorLookupHandlerFunc(func(params operations.GetCreatorLookupParams) middleware.Responder {
+		return middleware.NotImplemented("operation .GetCreatorLookup has not yet been implemented")
+	})
+*/
+
+    api.GetEditgroupIDHandler = handlers.NewGetEditgroupIDHandler(db);
+    api.GetEditorUsernameHandler = handlers.NewGetEditorUsernameHandler(db);
+    api.GetEditorUsernameChangelogHandler = handlers.NewGetEditorUsernameChangelogHandler(db);
+    api.PostEditgroupHandler = handlers.NewPostEditgroupHandler(db);
+    api.PostEditgroupIDAcceptHandler = handlers.NewPostEditgroupIDAcceptHandler(db);
+/*
+	api.GetEditgroupIDHandler = operations.GetEditgroupIDHandlerFunc(func(params operations.GetEditgroupIDParams) middleware.Responder {
+		return middleware.NotImplemented("operation .GetEditgroupID has not yet been implemented")
+	})
+	api.GetEditorUsernameHandler = operations.GetEditorUsernameHandlerFunc(func(params operations.GetEditorUsernameParams) middleware.Responder {
+		return middleware.NotImplemented("operation .GetEditorUsername has not yet been implemented")
+	})
+	api.GetEditorUsernameChangelogHandler = operations.GetEditorUsernameChangelogHandlerFunc(func(params operations.GetEditorUsernameChangelogParams) middleware.Responder {
+		return middleware.NotImplemented("operation .GetEditorUsernameChangelog has not yet been implemented")
+	})
+	api.PostEditgroupHandler = operations.PostEditgroupHandlerFunc(func(params operations.PostEditgroupParams) middleware.Responder {
+		return middleware.NotImplemented("operation .PostEditgroup has not yet been implemented")
+	})
+	api.PostEditgroupIDAcceptHandler = operations.PostEditgroupIDAcceptHandlerFunc(func(params operations.PostEditgroupIDAcceptParams) middleware.Responder {
+		return middleware.NotImplemented("operation .PostEditgroupIDAccept has not yet been implemented")
+	})
+*/
 
     middle := interpose.New()
 

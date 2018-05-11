@@ -382,6 +382,39 @@ func init() {
         }
       }
     },
+    "release_entity": {
+      "type": "object",
+      "required": [
+        "ident",
+        "state"
+      ],
+      "properties": {
+        "ident": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "orcid": {
+          "type": "string"
+        },
+        "redirect": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "integer"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "wip",
+            "active",
+            "redirect",
+            "deleted"
+          ]
+        }
+      }
+    },
     "success": {
       "type": "object",
       "required": [
@@ -392,6 +425,26 @@ func init() {
           "type": "string"
         }
       }
+    }
+  },
+  "x-entity-props": {
+    "ident": {
+      "type": "string"
+    },
+    "redirect": {
+      "type": "string"
+    },
+    "revision": {
+      "type": "integer"
+    },
+    "state": {
+      "enum": [
+        "wip",
+        "active",
+        "redirect",
+        "deleted"
+      ],
+      "type": "string"
     }
   }
 }`))
@@ -760,6 +813,39 @@ func init() {
         }
       }
     },
+    "release_entity": {
+      "type": "object",
+      "required": [
+        "ident",
+        "state"
+      ],
+      "properties": {
+        "ident": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "orcid": {
+          "type": "string"
+        },
+        "redirect": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "integer"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "wip",
+            "active",
+            "redirect",
+            "deleted"
+          ]
+        }
+      }
+    },
     "success": {
       "type": "object",
       "required": [
@@ -770,6 +856,26 @@ func init() {
           "type": "string"
         }
       }
+    }
+  },
+  "x-entity-props": {
+    "ident": {
+      "type": "string"
+    },
+    "redirect": {
+      "type": "string"
+    },
+    "revision": {
+      "type": "integer"
+    },
+    "state": {
+      "enum": [
+        "wip",
+        "active",
+        "redirect",
+        "deleted"
+      ],
+      "type": "string"
     }
   }
 }`))
