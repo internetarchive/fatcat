@@ -6,6 +6,8 @@ package models
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"encoding/json"
+
 	strfmt "github.com/go-openapi/strfmt"
 
 	"github.com/go-openapi/errors"
@@ -35,6 +37,7 @@ type CreatorEntity struct {
 
 	// state
 	// Required: true
+	// Enum: [wip active redirect deleted]
 	State *string `json:"state"`
 }
 
@@ -65,9 +68,49 @@ func (m *CreatorEntity) validateIdent(formats strfmt.Registry) error {
 	return nil
 }
 
+var creatorEntityTypeStatePropEnum []interface{}
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["wip","active","redirect","deleted"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		creatorEntityTypeStatePropEnum = append(creatorEntityTypeStatePropEnum, v)
+	}
+}
+
+const (
+
+	// CreatorEntityStateWip captures enum value "wip"
+	CreatorEntityStateWip string = "wip"
+
+	// CreatorEntityStateActive captures enum value "active"
+	CreatorEntityStateActive string = "active"
+
+	// CreatorEntityStateRedirect captures enum value "redirect"
+	CreatorEntityStateRedirect string = "redirect"
+
+	// CreatorEntityStateDeleted captures enum value "deleted"
+	CreatorEntityStateDeleted string = "deleted"
+)
+
+// prop value enum
+func (m *CreatorEntity) validateStateEnum(path, location string, value string) error {
+	if err := validate.Enum(path, location, value, creatorEntityTypeStatePropEnum); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (m *CreatorEntity) validateState(formats strfmt.Registry) error {
 
 	if err := validate.Required("state", "body", m.State); err != nil {
+		return err
+	}
+
+	// value enum
+	if err := m.validateStateEnum("state", "body", *m.State); err != nil {
 		return err
 	}
 

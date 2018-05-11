@@ -49,7 +49,7 @@ func main_serve() {
 
     db_options, err := pg.ParseURL(viper.GetString("db_url"))
     if err != nil {
-        log.Panicf("parsing DB string: {}", err)
+        log.Panicf("parsing DB string: %v", err)
     }
     db := pg.Connect(db_options)
     defer db.Close()

@@ -34,7 +34,7 @@ definitions:
     properties:
       state: 
         type: string
-        # actually enum of: (wip, active, redirect, deleted)
+        enum: ["wip", "active", "redirect", "deleted"]
       ident:
         type: string
         # format: uuid
@@ -79,6 +79,10 @@ paths:
           description: fetch a single creator by id
           schema:
             $ref: "#/definitions/creator_entity"
+        404:
+          description: no such creator
+          schema:
+            $ref: "#/definitions/error"
         default:
           description: generic error response
           schema:

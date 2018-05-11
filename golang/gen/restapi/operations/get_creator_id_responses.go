@@ -57,6 +57,50 @@ func (o *GetCreatorIDOK) WriteResponse(rw http.ResponseWriter, producer runtime.
 	}
 }
 
+// GetCreatorIDNotFoundCode is the HTTP code returned for type GetCreatorIDNotFound
+const GetCreatorIDNotFoundCode int = 404
+
+/*GetCreatorIDNotFound no such creator
+
+swagger:response getCreatorIdNotFound
+*/
+type GetCreatorIDNotFound struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewGetCreatorIDNotFound creates GetCreatorIDNotFound with default headers values
+func NewGetCreatorIDNotFound() *GetCreatorIDNotFound {
+
+	return &GetCreatorIDNotFound{}
+}
+
+// WithPayload adds the payload to the get creator Id not found response
+func (o *GetCreatorIDNotFound) WithPayload(payload *models.Error) *GetCreatorIDNotFound {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the get creator Id not found response
+func (o *GetCreatorIDNotFound) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *GetCreatorIDNotFound) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(404)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
+}
+
 /*GetCreatorIDDefault generic error response
 
 swagger:response getCreatorIdDefault

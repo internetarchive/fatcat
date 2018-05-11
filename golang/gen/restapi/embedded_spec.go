@@ -72,6 +72,12 @@ func init() {
               "$ref": "#/definitions/creator_entity"
             }
           },
+          "404": {
+            "description": "no such creator",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
           "default": {
             "description": "generic error response",
             "schema": {
@@ -114,7 +120,13 @@ func init() {
           "type": "string"
         },
         "state": {
-          "type": "string"
+          "type": "string",
+          "enum": [
+            "wip",
+            "active",
+            "redirect",
+            "deleted"
+          ]
         }
       }
     },
@@ -186,6 +198,12 @@ func init() {
               "$ref": "#/definitions/creator_entity"
             }
           },
+          "404": {
+            "description": "no such creator",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          },
           "default": {
             "description": "generic error response",
             "schema": {
@@ -228,7 +246,13 @@ func init() {
           "type": "string"
         },
         "state": {
-          "type": "string"
+          "type": "string",
+          "enum": [
+            "wip",
+            "active",
+            "redirect",
+            "deleted"
+          ]
         }
       }
     },
