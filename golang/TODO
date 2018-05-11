@@ -8,8 +8,10 @@ x logging
 x config
 x sentry
 x cobra command line parsing?
+x database creation and access
 - test framework
-- database creation and access
+- panic recovery middleware
+- 404, not panic, when empty result
 
 later:
 - metrics

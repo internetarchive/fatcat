@@ -40,6 +40,7 @@ func GetOrCreateEditgroup() Editgroup {
     return eg
 }
 
+////
 func NewGetEditorUsernameHandler(db *pg.DB) operations.GetEditorUsernameHandler {
     return &getEditorUsername{db: db}
 }
@@ -50,7 +51,7 @@ func (d *getEditorUsername) Handle(params operations.GetEditorUsernameParams) mi
     return middleware.NotImplemented("operation .PostCreatorID has not yet been implemented")
 }
 
-
+////
 func NewGetEditorUsernameChangelogHandler(db *pg.DB) operations.GetEditorUsernameChangelogHandler {
     return &getEditorUsernameChangelog{db: db}
 }
@@ -61,6 +62,7 @@ func (d *getEditorUsernameChangelog) Handle(params operations.GetEditorUsernameC
     return middleware.NotImplemented("operation .PostCreatorID has not yet been implemented")
 }
 
+////
 func NewGetEditgroupIDHandler(db *pg.DB) operations.GetEditgroupIDHandler {
     return &getEditgroupID{db: db}
 }
@@ -71,18 +73,7 @@ func (d *getEditgroupID) Handle(params operations.GetEditgroupIDParams) middlewa
     return middleware.NotImplemented("operation .PostCreatorID has not yet been implemented")
 }
 
-/*
-func NewGetEditgroupIDHandler(db *pg.DB) operations.GetEditgroupIDHandler {
-    return &getEditgroupID{db: db}
-}
-type getCreatorID struct {
-    db *pg.DB
-}
-func (d *getCreatorID) Handle(params operations.GetEditgroupIDParams) middleware.Responder {
-    return middleware.NotImplemented("operation .PostCreatorID has not yet been implemented")
-}
-*/
-
+////
 func NewPostEditgroupHandler(db *pg.DB) operations.PostEditgroupHandler {
     return &postEditgroup{db: db}
 }
@@ -93,6 +84,7 @@ func (d *postEditgroup) Handle(params operations.PostEditgroupParams) middleware
     return middleware.NotImplemented("operation .PostEditgroupID has not yet been implemented")
 }
 
+////
 func NewPostEditgroupIDAcceptHandler(db *pg.DB) operations.PostEditgroupIDAcceptHandler {
     return &postEditgroupIDAccept{db: db}
 }
