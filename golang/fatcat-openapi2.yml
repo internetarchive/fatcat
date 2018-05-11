@@ -9,13 +9,23 @@ schemes: [http]
 basePath: /v0
 host: api.fatcat.wiki
 consumes:
-- application/json
+  - application/json
 produces:
-- application/json
+  - application/json
 
-# TODO: try to make this work:
-#x-entity-props: &ENTITYPROPS
-#<<: *ENTITYPROPS
+# Common properties across entities
+x-entity-props: &ENTITYPROPS
+  state:
+    type: string
+    enum: ["wip", "active", "redirect", "deleted"]
+  ident:
+    type: string
+    #format: uuid
+  revision:
+    type: integer
+  redirect:
+    type: string
+    #format: uuid
 
 
 definitions:
@@ -33,6 +43,18 @@ definitions:
     properties:
       message:
         type: string
+  release_entity:
+    type: object
+    required:
+      - ident
+      - state
+    properties:
+      <<: *ENTITYPROPS
+      name:
+        type: string
+      orcid:
+        type: string
+        #format: custom
   creator_entity:
     type: object
     required:
@@ -40,28 +62,18 @@ definitions:
       - state
       - name
     properties:
-      state: 
-        type: string
-        enum: ["wip", "active", "redirect", "deleted"]
-      ident:
-        type: string
-        #format: uuid
-      revision:
-        type: integer
-      redirect:
-        type: string
-        # format: uuid
+      <<: *ENTITYPROPS
       name:
         type: string
       orcid:
         type: string
-        # format: custom
+        #format: custom
   editor:
     type: object
     required:
       - username
     properties:
-      username: 
+      username:
         type: string
   editgroup:
     type: object
@@ -69,20 +81,20 @@ definitions:
       - id
       - editor_id
     properties:
-      id: 
+      id:
         type: integer
-      editor_id: 
+      editor_id:
         type: integer
   changelogentry:
     type: object
     required:
       - index
     properties:
-      index: 
+      index:
         type: integer
-      editgroup_id: 
+      editgroup_id:
         type: integer
-      timestamp: 
+      timestamp:
         type: string
         format: date-time
 

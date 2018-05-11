@@ -42,6 +42,8 @@ In early development, we'll make at least the following simplifications:
 
 ## OpenAPI Code Generation
 
+    cat fatcat-openapi2.yml | python3 -c 'import sys, yaml, json; json.dump(yaml.load(sys.stdin), sys.stdout, indent=4)' > fatcat-openapi2.json
+
 Install the go-swagger tool:
 
     go get -u github.com/go-swagger/go-swagger/cmd/swagger
@@ -49,8 +51,15 @@ Install the go-swagger tool:
 
 "Simple" server:
 
-    swagger generate server -A Fatcat -f fatcat-openapi2.yml
+    swagger generate server -A Fatcat -f fatcat-openapi2.json
 
 "Custom" server:
 
-    swagger generate server -A fatcat -f ./fatcat-openapi2.yml --exclude-main -t gen
+    swagger generate server -A fatcat -f ./fatcat-openapi2.json --exclude-main -t gen
+
+## Future
+
+Could refactor the API side to use gRPC and grpc-gateway instead of swagger
+(which would result in a compatible REST JSON interface). For faster bots and
+import, and lower latency between webface and backend.
+
