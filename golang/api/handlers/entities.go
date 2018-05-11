@@ -29,6 +29,20 @@ type CreatorIdent struct {
     tableName       struct{} `sql:"creator_ident"`
 }
 
+type CreatorEdit struct {
+    Id              int64
+    ExtraJson       string
+    IdentId         string
+    Ident           *CreatorIdent
+    RevId           int64
+    Rev             *CreatorRev
+    RedirectId      string
+    Redirect        *CreatorIdent
+    EditgroupId     int64
+    Editgroup       *Editgroup
+    tableName       struct{} `sql:"creator_edit"`
+}
+
 func (ci *CreatorIdent) State() string {
     if ci.IsLive && (ci.RedirectId == "") && (ci.RevId == 0) {
         return "deleted"
@@ -66,9 +80,9 @@ func (d *getCreatorID) Handle(params operations.GetCreatorIDParams) middleware.R
         log.Fatal(err)
     }
     api_entity := &models.CreatorEntity{
-        Ident: &db_entity_ident.Id,
-        State: swag.String(db_entity_ident.State()),
-        Name: swag.String(db_entity_ident.Rev.Name),
+        Ident: db_entity_ident.Id,
+        State: db_entity_ident.State(),
+        Name: db_entity_ident.Rev.Name,
         Orcid: db_entity_ident.Rev.Orcid,
     }
     return operations.NewGetCreatorIDOK().WithPayload(api_entity)
@@ -96,6 +110,42 @@ type postCreator struct {
 }
 func (d *postCreator) Handle(params operations.PostCreatorParams) middleware.Responder {
     // get-or-create editgroup based on current editor (session)
-    // insert new rev, ident, and edit
-    return middleware.NotImplemented("operation .PostCreatorID has not yet been implemented")
+    var eg Editgroup
+    if true {
+        eg = Editgroup{Id: 1}
+    } else {
+        eg = GetOrCreateEditgroup()
+    }
+    ce := CreatorEdit{}
+
+    // big honking SQL to update 3 tables in a single INSERT
+    _, err := d.db.QueryOne(
+    //Model(ce).ExecOne(
+        &ce,
+        `WITH rev AS ( INSERT INTO creator_rev (name, orcid)
+                       VALUES (?, ?)
+                       RETURNING id ),
+              ident AS ( INSERT INTO creator_ident (rev_id)
+                         VALUES ((SELECT rev.id FROM rev))
+                         RETURNING id )
+        INSERT INTO creator_edit (editgroup_id, ident_id, rev_id) VALUES
+            (?, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+        RETURNING *`,
+        params.Body.Name,
+        params.Body.Orcid,
+        eg.Id)
+    if err != nil {
+        log.Fatal(err)
+    }
+    if err != nil {
+        log.Fatal(err)
+    }
+    // redirect? or return the edit?
+    api_edit:= models.EntityEdit {
+        ID: ce.Id,
+        Ident: ce.IdentId,
+        Revision: ce.RevId,
+        EditgroupID: ce.EditgroupId,
+    }
+    return operations.NewPostCreatorCreated().WithPayload(&api_edit)
 }

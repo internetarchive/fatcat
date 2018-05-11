@@ -20,12 +20,10 @@ import (
 type CreatorEntity struct {
 
 	// ident
-	// Required: true
-	Ident *string `json:"ident"`
+	Ident string `json:"ident,omitempty"`
 
 	// name
-	// Required: true
-	Name *string `json:"name"`
+	Name string `json:"name,omitempty"`
 
 	// orcid
 	Orcid string `json:"orcid,omitempty"`
@@ -37,22 +35,13 @@ type CreatorEntity struct {
 	Revision int64 `json:"revision,omitempty"`
 
 	// state
-	// Required: true
 	// Enum: [wip active redirect deleted]
-	State *string `json:"state"`
+	State string `json:"state,omitempty"`
 }
 
 // Validate validates this creator entity
 func (m *CreatorEntity) Validate(formats strfmt.Registry) error {
 	var res []error
-
-	if err := m.validateIdent(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateName(formats); err != nil {
-		res = append(res, err)
-	}
 
 	if err := m.validateState(formats); err != nil {
 		res = append(res, err)
@@ -61,24 +50,6 @@ func (m *CreatorEntity) Validate(formats strfmt.Registry) error {
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
-	return nil
-}
-
-func (m *CreatorEntity) validateIdent(formats strfmt.Registry) error {
-
-	if err := validate.Required("ident", "body", m.Ident); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *CreatorEntity) validateName(formats strfmt.Registry) error {
-
-	if err := validate.Required("name", "body", m.Name); err != nil {
-		return err
-	}
-
 	return nil
 }
 
@@ -119,12 +90,12 @@ func (m *CreatorEntity) validateStateEnum(path, location string, value string) e
 
 func (m *CreatorEntity) validateState(formats strfmt.Registry) error {
 
-	if err := validate.Required("state", "body", m.State); err != nil {
-		return err
+	if swag.IsZero(m.State) { // not required
+		return nil
 	}
 
 	// value enum
-	if err := m.validateStateEnum("state", "body", *m.State); err != nil {
+	if err := m.validateStateEnum("state", "body", m.State); err != nil {
 		return err
 	}
 

@@ -51,7 +51,7 @@ func init() {
           "201": {
             "description": "created",
             "schema": {
-              "$ref": "#/definitions/creator_entity"
+              "$ref": "#/definitions/entity_edit"
             }
           },
           "400": {
@@ -313,11 +313,6 @@ func init() {
     },
     "creator_entity": {
       "type": "object",
-      "required": [
-        "ident",
-        "state",
-        "name"
-      ],
       "properties": {
         "ident": {
           "type": "string"
@@ -368,6 +363,23 @@ func init() {
       "properties": {
         "username": {
           "type": "string"
+        }
+      }
+    },
+    "entity_edit": {
+      "type": "object",
+      "properties": {
+        "editgroup_id": {
+          "type": "integer"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "ident": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "integer"
         }
       }
     },
@@ -425,6 +437,20 @@ func init() {
           "type": "string"
         }
       }
+    }
+  },
+  "x-entity-edit-props": {
+    "editgroup_id": {
+      "type": "integer"
+    },
+    "id": {
+      "type": "integer"
+    },
+    "ident": {
+      "type": "string"
+    },
+    "revision": {
+      "type": "integer"
     }
   },
   "x-entity-props": {
@@ -482,7 +508,7 @@ func init() {
           "201": {
             "description": "created",
             "schema": {
-              "$ref": "#/definitions/creator_entity"
+              "$ref": "#/definitions/entity_edit"
             }
           },
           "400": {
@@ -744,11 +770,6 @@ func init() {
     },
     "creator_entity": {
       "type": "object",
-      "required": [
-        "ident",
-        "state",
-        "name"
-      ],
       "properties": {
         "ident": {
           "type": "string"
@@ -799,6 +820,23 @@ func init() {
       "properties": {
         "username": {
           "type": "string"
+        }
+      }
+    },
+    "entity_edit": {
+      "type": "object",
+      "properties": {
+        "editgroup_id": {
+          "type": "integer"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "ident": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "integer"
         }
       }
     },
@@ -856,6 +894,20 @@ func init() {
           "type": "string"
         }
       }
+    }
+  },
+  "x-entity-edit-props": {
+    "editgroup_id": {
+      "type": "integer"
+    },
+    "id": {
+      "type": "integer"
+    },
+    "ident": {
+      "type": "string"
+    },
+    "revision": {
+      "type": "integer"
     }
   },
   "x-entity-props": {

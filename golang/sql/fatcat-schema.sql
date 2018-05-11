@@ -53,7 +53,7 @@ CREATE INDEX creator_rev_orcid_idx ON creator_rev(orcid) WHERE orcid IS NOT NULL
 
 CREATE TABLE creator_ident (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    is_live             BOOL NOT NULL,
+    is_live             BOOL NOT NULL DEFAULT false,
     rev_id              BIGINT REFERENCES creator_rev(id),
     redirect_id         UUID REFERENCES creator_ident(id)
 );

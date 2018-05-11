@@ -25,7 +25,7 @@ type PostCreatorCreated struct {
 	/*
 	  In: Body
 	*/
-	Payload *models.CreatorEntity `json:"body,omitempty"`
+	Payload *models.EntityEdit `json:"body,omitempty"`
 }
 
 // NewPostCreatorCreated creates PostCreatorCreated with default headers values
@@ -35,13 +35,13 @@ func NewPostCreatorCreated() *PostCreatorCreated {
 }
 
 // WithPayload adds the payload to the post creator created response
-func (o *PostCreatorCreated) WithPayload(payload *models.CreatorEntity) *PostCreatorCreated {
+func (o *PostCreatorCreated) WithPayload(payload *models.EntityEdit) *PostCreatorCreated {
 	o.Payload = payload
 	return o
 }
 
 // SetPayload sets the payload to the post creator created response
-func (o *PostCreatorCreated) SetPayload(payload *models.CreatorEntity) {
+func (o *PostCreatorCreated) SetPayload(payload *models.EntityEdit) {
 	o.Payload = payload
 }
 
