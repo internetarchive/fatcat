@@ -12,30 +12,31 @@ import (
 )
 
 type CreatorRev struct {
-    tableName struct{} `sql:"creator_rev"`
-    Id          string
+    Id          int64
     ExtraJson   string
     Name        string
     Orcid       string
+    tableName struct{} `sql:"creator_rev"`
 }
 
 type CreatorIdent struct {
-    tableName struct{} `sql:"creator_ident"`
-    Id          string
-    IsLive      bool
-    RevId       int64
-    //Rev         *CreatorRev
-    RedirectId  int64
+    Id              string
+    IsLive          bool
+    RevId           int64
+    Rev             *CreatorRev
+    RedirectId      string
+    Redirect        *CreatorIdent
+    tableName       struct{} `sql:"creator_ident"`
 }
 
 func (ci *CreatorIdent) State() string {
-    if ci.IsLive && (ci.RedirectId == 0) && (ci.RevId == 0) {
+    if ci.IsLive && (ci.RedirectId == "") && (ci.RevId == 0) {
         return "deleted"
-    } else if ci.IsLive && (ci.RedirectId != 0) {
+    } else if ci.IsLive && (ci.RedirectId != "") {
         return "redirect"
-    } else if ci.IsLive && (ci.RedirectId == 0) && (ci.RevId != 0) {
+    } else if ci.IsLive && (ci.RedirectId == "") && (ci.RevId != 0) {
         return "active"
-    } else if !ci.IsLive && (ci.RedirectId == 0) && (ci.RevId != 0) {
+    } else if !ci.IsLive && (ci.RedirectId == "") && (ci.RevId != 0) {
         return "wip"
     } else {
         log.Fatalf("Invalid CreatorIdent state: %v", ci)
@@ -55,12 +56,11 @@ func (d *getCreatorID) Handle(params operations.GetCreatorIDParams) middleware.R
     // "get or 404" using params.ID. join creator_ident and creator_rev.
     // populate result data
     // return that
-    db_entity_ident := &CreatorIdent{Id: swag.StringValue(&params.ID)}
-
-    err := d.db.Select(db_entity_ident)
-    //err := d.db.Model(db_entity_ident).Select()
-    //    Relation("Rev").
-    //    Select()
+    db_entity_ident := &CreatorIdent{}
+    err := d.db.Model(db_entity_ident).
+        Column("creator_ident.*", "Rev").
+        Where("creator_ident.id = ?", swag.StringValue(&params.ID)).
+        First()
     if err == pg.ErrNoRows {
         return operations.NewGetCreatorIDNotFound().WithPayload(&models.Error{Message: swag.String("no such entity")})
     } else if err != nil {
@@ -69,8 +69,8 @@ func (d *getCreatorID) Handle(params operations.GetCreatorIDParams) middleware.R
     api_entity := &models.CreatorEntity{
         Ident: &db_entity_ident.Id,
         State: swag.String(db_entity_ident.State()),
-        //Name: db_entity_ident.Rev.Name,
-        //Orcid: db_entity_ident.Rev.Orcid,
+        Name: swag.String(db_entity_ident.Rev.Name),
+        Orcid: db_entity_ident.Rev.Orcid,
     }
     return operations.NewGetCreatorIDOK().WithPayload(api_entity)
 }
