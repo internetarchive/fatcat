@@ -1,0 +1,8 @@
+[package]
+name = "fc"
+version = "0.1.0"
+authors = ["Bryan Newbold <bnewbold@archive.org>"]
+
+[dependencies]
+diesel = { version = "1.0.0", features = ["postgres"] }
+dotenv = "0.9.0"

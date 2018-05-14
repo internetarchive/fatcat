@@ -1,0 +1,19 @@
+
+libs:
+- iron_slog
+- testing: keep it simple: iron-test
+    => if that is annoying, shiny? mockers if needed.
+- sentry
+- start with dotenv+clap, then config-rs?
+- cadence (emits statsd)
+- frank_jwt and JWT for (simple?) auth
+
+similar:
+- https://github.com/DavidBM/templic-backend
+- https://github.com/alexanderbanks/rust-api
+- https://mgattozzi.com/diesel-powered-rocket
+- https://www.reddit.com/r/rust/comments/8j1xbs/new_to_rust_and_gitlab_ci/
+- https://crate-ci.github.io/
+
+"cool tools":
+- cargo-watch
