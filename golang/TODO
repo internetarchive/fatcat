@@ -9,9 +9,10 @@ x config
 x sentry
 x cobra command line parsing?
 x database creation and access
+x 404, not panic, when empty result
+- creator post
 - test framework
-- panic recovery middleware
-- 404, not panic, when empty result
 
 later:
+- panic recovery middleware
 - metrics
