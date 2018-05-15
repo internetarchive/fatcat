@@ -60,9 +60,8 @@ paths:
       operation_id: "creator_post"
       uppercase_operation_id: "CREATOR_POST"
       path: "/creator"
-      PATH_ID: "CREATOR"
-      hasPathParams: false
       HttpMethod: "Post"
+      httpmethod: "post"
   /creator/{id}:
     get:
       parameters:
@@ -103,9 +102,8 @@ paths:
       operation_id: "creator_id_get"
       uppercase_operation_id: "CREATOR_ID_GET"
       path: "/creator/:id"
-      PATH_ID: "CREATOR_ID"
-      hasPathParams: true
       HttpMethod: "Get"
+      httpmethod: "get"
   /creator/lookup:
     get:
       parameters:
@@ -155,9 +153,8 @@ paths:
       operation_id: "creator_lookup_get"
       uppercase_operation_id: "CREATOR_LOOKUP_GET"
       path: "/creator/lookup"
-      PATH_ID: "CREATOR_LOOKUP"
-      hasPathParams: false
       HttpMethod: "Get"
+      httpmethod: "get"
   /container:
     post:
       parameters:
@@ -204,9 +201,8 @@ paths:
       operation_id: "container_post"
       uppercase_operation_id: "CONTAINER_POST"
       path: "/container"
-      PATH_ID: "CONTAINER"
-      hasPathParams: false
       HttpMethod: "Post"
+      httpmethod: "post"
   /container/{id}:
     get:
       parameters:
@@ -247,9 +243,8 @@ paths:
       operation_id: "container_id_get"
       uppercase_operation_id: "CONTAINER_ID_GET"
       path: "/container/:id"
-      PATH_ID: "CONTAINER_ID"
-      hasPathParams: true
       HttpMethod: "Get"
+      httpmethod: "get"
   /container/lookup:
     get:
       parameters:
@@ -299,9 +294,8 @@ paths:
       operation_id: "container_lookup_get"
       uppercase_operation_id: "CONTAINER_LOOKUP_GET"
       path: "/container/lookup"
-      PATH_ID: "CONTAINER_LOOKUP"
-      hasPathParams: false
       HttpMethod: "Get"
+      httpmethod: "get"
   /file:
     post:
       parameters:
@@ -348,9 +342,8 @@ paths:
       operation_id: "file_post"
       uppercase_operation_id: "FILE_POST"
       path: "/file"
-      PATH_ID: "FILE"
-      hasPathParams: false
       HttpMethod: "Post"
+      httpmethod: "post"
   /file/{id}:
     get:
       parameters:
@@ -391,9 +384,8 @@ paths:
       operation_id: "file_id_get"
       uppercase_operation_id: "FILE_ID_GET"
       path: "/file/:id"
-      PATH_ID: "FILE_ID"
-      hasPathParams: true
       HttpMethod: "Get"
+      httpmethod: "get"
   /file/lookup:
     get:
       parameters:
@@ -443,9 +435,8 @@ paths:
       operation_id: "file_lookup_get"
       uppercase_operation_id: "FILE_LOOKUP_GET"
       path: "/file/lookup"
-      PATH_ID: "FILE_LOOKUP"
-      hasPathParams: false
       HttpMethod: "Get"
+      httpmethod: "get"
   /release:
     post:
       parameters:
@@ -492,9 +483,8 @@ paths:
       operation_id: "release_post"
       uppercase_operation_id: "RELEASE_POST"
       path: "/release"
-      PATH_ID: "RELEASE"
-      hasPathParams: false
       HttpMethod: "Post"
+      httpmethod: "post"
   /release/{id}:
     get:
       parameters:
@@ -535,9 +525,8 @@ paths:
       operation_id: "release_id_get"
       uppercase_operation_id: "RELEASE_ID_GET"
       path: "/release/:id"
-      PATH_ID: "RELEASE_ID"
-      hasPathParams: true
       HttpMethod: "Get"
+      httpmethod: "get"
   /release/lookup:
     get:
       parameters:
@@ -587,9 +576,8 @@ paths:
       operation_id: "release_lookup_get"
       uppercase_operation_id: "RELEASE_LOOKUP_GET"
       path: "/release/lookup"
-      PATH_ID: "RELEASE_LOOKUP"
-      hasPathParams: false
       HttpMethod: "Get"
+      httpmethod: "get"
   /work:
     post:
       parameters:
@@ -636,9 +624,8 @@ paths:
       operation_id: "work_post"
       uppercase_operation_id: "WORK_POST"
       path: "/work"
-      PATH_ID: "WORK"
-      hasPathParams: false
       HttpMethod: "Post"
+      httpmethod: "post"
   /work/{id}:
     get:
       parameters:
@@ -679,9 +666,8 @@ paths:
       operation_id: "work_id_get"
       uppercase_operation_id: "WORK_ID_GET"
       path: "/work/:id"
-      PATH_ID: "WORK_ID"
-      hasPathParams: true
       HttpMethod: "Get"
+      httpmethod: "get"
   /editor/{username}:
     get:
       parameters:
@@ -722,9 +708,8 @@ paths:
       operation_id: "editor_username_get"
       uppercase_operation_id: "EDITOR_USERNAME_GET"
       path: "/editor/:username"
-      PATH_ID: "EDITOR_USERNAME"
-      hasPathParams: true
       HttpMethod: "Get"
+      httpmethod: "get"
   /editor/{username}/changelog:
     get:
       parameters:
@@ -765,9 +750,8 @@ paths:
       operation_id: "editor_username_changelog_get"
       uppercase_operation_id: "EDITOR_USERNAME_CHANGELOG_GET"
       path: "/editor/:username/changelog"
-      PATH_ID: "EDITOR_USERNAME_CHANGELOG"
-      hasPathParams: true
       HttpMethod: "Get"
+      httpmethod: "get"
   /editgroup:
     post:
       parameters: []
@@ -802,9 +786,8 @@ paths:
       operation_id: "editgroup_post"
       uppercase_operation_id: "EDITGROUP_POST"
       path: "/editgroup"
-      PATH_ID: "EDITGROUP"
-      hasPathParams: false
       HttpMethod: "Post"
+      httpmethod: "post"
   /editgroup/{id}:
     get:
       parameters:
@@ -845,9 +828,8 @@ paths:
       operation_id: "editgroup_id_get"
       uppercase_operation_id: "EDITGROUP_ID_GET"
       path: "/editgroup/:id"
-      PATH_ID: "EDITGROUP_ID"
-      hasPathParams: true
       HttpMethod: "Get"
+      httpmethod: "get"
   /editgroup/{id}/accept:
     post:
       parameters:
@@ -897,9 +879,8 @@ paths:
       operation_id: "editgroup_id_accept_post"
       uppercase_operation_id: "EDITGROUP_ID_ACCEPT_POST"
       path: "/editgroup/:id/accept"
-      PATH_ID: "EDITGROUP_ID_ACCEPT"
-      hasPathParams: true
       HttpMethod: "Post"
+      httpmethod: "post"
 definitions:
   error:
     type: "object"

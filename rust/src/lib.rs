@@ -20,9 +20,6 @@ use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use dotenv::dotenv;
 use std::env;
-use std::io;
-//use hyper;
-//use fatcat_api;
 
 pub fn establish_connection() -> PgConnection {
     dotenv().ok();
@@ -31,16 +28,7 @@ pub fn establish_connection() -> PgConnection {
     PgConnection::establish(&database_url).expect(&format!("Error connecting to {}", database_url))
 }
 
-pub struct NewService;
-
-impl hyper::server::NewService for NewService {
-    type Request = (hyper::Request, fatcat_api::Context);
-    type Response = hyper::Response;
-    type Error = hyper::Error;
-    type Instance = fatcat_api::server::Service<api_server::Server>;
-
-    /// Instantiate a new server.
-    fn new_service(&self) -> io::Result<Self::Instance> {
-        Ok(fatcat_api::server::Service::new(api_server::Server))
-    }
+/// Instantiate a new server.
+pub fn server() -> Result<api_server::Server> {
+    Ok(api_server::Server {})
 }

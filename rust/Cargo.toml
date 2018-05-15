@@ -16,14 +16,15 @@ error-chain = "0.11"
 # API server
 chrono = { version = "0.4", features = ["serde"] }
 futures = "0.1"
-hyper = "0.11"
+hyper = "0.10"
+#hyper-openssl = {version = "0.2", optional = true}
 #hyper-tls = {version = "0.1.2", optional = true}
 iron = "0.5"
 iron-slog = "*"
 iron-test = "*"
-swagger = "0.10"
-tokio-core = "0.1.6"
-tokio-proto = "0.1.1"
+swagger = "0.7"
+#tokio-core = "0.1.6"
+#tokio-proto = "0.1.1"
 
 # TODO
 #sentry = "*"
