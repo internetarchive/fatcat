@@ -7,12 +7,12 @@ use futures::{self, Future};
 
 use std::collections::HashMap;
 
-use ConnectionPool;
 use self::models::*;
+use ConnectionPool;
 use diesel;
-use r2d2;
 use diesel::prelude::*;
 use iron_diesel_middleware::DieselPooledConnection;
+use r2d2;
 use r2d2_diesel::ConnectionManager;
 
 use swagger;
@@ -43,7 +43,7 @@ impl Api for Server {
         let conn = self.db_pool.get().expect("db_pool error");
         let c: i64 = container_rev.count().first(&*conn).expect("DB Error");
         println!("container count: {}", c);
-        let ce = ContainerEntity{
+        let ce = ContainerEntity {
             issn: None,
             publisher: Some("Hello!".into()),
             parent: None,
@@ -54,7 +54,9 @@ impl Api for Server {
             redirect: None,
             editgroup: None,
         };
-        Box::new(futures::done(Ok(ContainerIdGetResponse::FetchASingleContainerById(ce))))
+        Box::new(futures::done(Ok(
+            ContainerIdGetResponse::FetchASingleContainerById(ce),
+        )))
     }
 
     fn container_lookup_get(
