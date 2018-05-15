@@ -69,8 +69,7 @@ CREATE TABLE container_rev (
     name                TEXT,
     parent_ident_id     BIGINT REFERENCES container_rev(id),
     publisher           TEXT,
-    sortname            TEXT,
-    issn                TEXT -- TODO: char
+    issn                TEXT -- TODO: varchar
 );
 
 CREATE TABLE container_ident (
@@ -122,6 +121,7 @@ CREATE TABLE release_rev (
 
     work_ident_id       UUID, -- FOREIGN KEY; see ALRTER below
     container_ident_id  UUID REFERENCES container_ident(id),
+    title               TEXT,
     license             TEXT, -- TODO: ?
     release_type        TEXT, -- TODO: enum
     date                TEXT, -- XXX: datetime
@@ -152,7 +152,7 @@ CREATE TABLE work_rev (
     id                  BIGSERIAL PRIMARY KEY,
     extra_json          JSON,
 
-    title               TEXT,
+    -- not even a work, for now
     work_type           TEXT, -- TODO: enum?
     primary_release_id  UUID REFERENCES release_ident(id)
 );
