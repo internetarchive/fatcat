@@ -26,6 +26,7 @@ slog = "^2.0"
 slog-term = "*"
 slog-async = "*"
 
+# Unused (hyper 0.11 and https)
 #hyper-openssl = {version = "0.2", optional = true}
 #hyper-tls = {version = "0.1.2", optional = true}
 #tokio-core = "0.1.6"

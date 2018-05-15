@@ -7,7 +7,7 @@ extern crate dotenv;
 extern crate futures;
 #[macro_use]
 extern crate hyper;
-extern crate swagger;
+//extern crate swagger;
 #[macro_use]
 extern crate error_chain;
 extern crate iron;

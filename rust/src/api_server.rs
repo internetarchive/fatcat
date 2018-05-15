@@ -1,24 +1,15 @@
-//! Server implementation of fatcat.
+//! API endpoint handlers
 
-#![allow(unused_imports)]
-
-use chrono;
-use futures::{self, Future};
-
-use std::collections::HashMap;
-
-use self::models::*;
 use ConnectionPool;
-use diesel;
+use database_schema::container_rev::table as container_rev;
 use diesel::prelude::*;
-use diesel::r2d2::ConnectionManager;
-use r2d2;
-
-use swagger;
-
-use database_schema::creator_rev::table as container_rev;
-
+use futures::{self, Future};
+//use database_schema::creator_rev::table as creator_rev;
+//use database_schema::file_rev::table as file_rev;
+//use database_schema::release_rev::table as release_rev;
+//use database_schema::work_rev::table as work_rev;
 use fatcat_api::models;
+use fatcat_api::models::*;
 use fatcat_api::{Api, ApiError, ContainerIdGetResponse, ContainerLookupGetResponse,
                  ContainerPostResponse, Context, CreatorIdGetResponse, CreatorLookupGetResponse,
                  CreatorPostResponse, EditgroupIdAcceptPostResponse, EditgroupIdGetResponse,
@@ -27,7 +18,6 @@ use fatcat_api::{Api, ApiError, ContainerIdGetResponse, ContainerLookupGetRespon
                  FilePostResponse, ReleaseIdGetResponse, ReleaseLookupGetResponse,
                  ReleasePostResponse, WorkIdGetResponse, WorkPostResponse};
 
-//#[derive(Copy, Clone)]
 #[derive(Clone)]
 pub struct Server {
     pub db_pool: ConnectionPool,
