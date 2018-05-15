@@ -1,0 +1,5 @@
+# 'ignore' requires nightly rust
+#ignore = ['src/server.rs']
+
+# For now just make the width really wide
+max_width = 200

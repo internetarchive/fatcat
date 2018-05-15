@@ -145,10 +145,7 @@ pub struct Editgroup {
 
 impl Editgroup {
     pub fn new(id: isize, editor_id: isize) -> Editgroup {
-        Editgroup {
-            id: id,
-            editor_id: editor_id,
-        }
+        Editgroup { id: id, editor_id: editor_id }
     }
 }
 

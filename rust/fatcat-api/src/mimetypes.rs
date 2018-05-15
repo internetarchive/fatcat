@@ -6,8 +6,7 @@ pub mod responses {
     // The macro is called per-operation to beat the recursion limit
     /// Create Mime objects for the response content types for ContainerIdGet
     lazy_static! {
-        pub static ref CONTAINER_ID_GET_FETCH_A_SINGLE_CONTAINER_BY_ID: Mime =
-            mime!(Application / Json);
+        pub static ref CONTAINER_ID_GET_FETCH_A_SINGLE_CONTAINER_BY_ID: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for ContainerIdGet
     lazy_static! {
@@ -19,8 +18,7 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for ContainerLookupGet
     lazy_static! {
-        pub static ref CONTAINER_LOOKUP_GET_FIND_A_SINGLE_CONTAINER_BY_EXTERNAL_IDENTIFER: Mime =
-            mime!(Application / Json);
+        pub static ref CONTAINER_LOOKUP_GET_FIND_A_SINGLE_CONTAINER_BY_EXTERNAL_IDENTIFER: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for ContainerLookupGet
     lazy_static! {
@@ -60,8 +58,7 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for CreatorLookupGet
     lazy_static! {
-        pub static ref CREATOR_LOOKUP_GET_FIND_A_SINGLE_CREATOR_BY_EXTERNAL_IDENTIFER: Mime =
-            mime!(Application / Json);
+        pub static ref CREATOR_LOOKUP_GET_FIND_A_SINGLE_CREATOR_BY_EXTERNAL_IDENTIFER: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for CreatorLookupGet
     lazy_static! {
@@ -89,13 +86,11 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for EditgroupIdAcceptPost
     lazy_static! {
-        pub static ref EDITGROUP_ID_ACCEPT_POST_MERGED_EDITGROUP_SUCCESSFULLY_: Mime =
-            mime!(Application / Json);
+        pub static ref EDITGROUP_ID_ACCEPT_POST_MERGED_EDITGROUP_SUCCESSFULLY_: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for EditgroupIdAcceptPost
     lazy_static! {
-        pub static ref EDITGROUP_ID_ACCEPT_POST_EDITGROUP_IS_IN_AN_UNMERGABLE_STATE: Mime =
-            mime!(Application / Json);
+        pub static ref EDITGROUP_ID_ACCEPT_POST_EDITGROUP_IS_IN_AN_UNMERGABLE_STATE: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for EditgroupIdAcceptPost
     lazy_static! {
@@ -103,13 +98,11 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for EditgroupIdAcceptPost
     lazy_static! {
-        pub static ref EDITGROUP_ID_ACCEPT_POST_GENERIC_ERROR_RESPONSE: Mime =
-            mime!(Application / Json);
+        pub static ref EDITGROUP_ID_ACCEPT_POST_GENERIC_ERROR_RESPONSE: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for EditgroupIdGet
     lazy_static! {
-        pub static ref EDITGROUP_ID_GET_FETCH_EDITGROUP_BY_IDENTIFIER: Mime =
-            mime!(Application / Json);
+        pub static ref EDITGROUP_ID_GET_FETCH_EDITGROUP_BY_IDENTIFIER: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for EditgroupIdGet
     lazy_static! {
@@ -137,18 +130,15 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for EditorUsernameChangelogGet
     lazy_static! {
-        pub static ref EDITOR_USERNAME_CHANGELOG_GET_USERNAME_NOT_FOUND: Mime =
-            mime!(Application / Json);
+        pub static ref EDITOR_USERNAME_CHANGELOG_GET_USERNAME_NOT_FOUND: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for EditorUsernameChangelogGet
     lazy_static! {
-        pub static ref EDITOR_USERNAME_CHANGELOG_GET_GENERIC_ERROR_RESPONSE: Mime =
-            mime!(Application / Json);
+        pub static ref EDITOR_USERNAME_CHANGELOG_GET_GENERIC_ERROR_RESPONSE: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for EditorUsernameGet
     lazy_static! {
-        pub static ref EDITOR_USERNAME_GET_FETCH_GENERIC_INFORMATION_ABOUT_AN_EDITOR: Mime =
-            mime!(Application / Json);
+        pub static ref EDITOR_USERNAME_GET_FETCH_GENERIC_INFORMATION_ABOUT_AN_EDITOR: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for EditorUsernameGet
     lazy_static! {
@@ -172,8 +162,7 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for FileLookupGet
     lazy_static! {
-        pub static ref FILE_LOOKUP_GET_FIND_A_SINGLE_FILE_BY_EXTERNAL_IDENTIFER: Mime =
-            mime!(Application / Json);
+        pub static ref FILE_LOOKUP_GET_FIND_A_SINGLE_FILE_BY_EXTERNAL_IDENTIFER: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for FileLookupGet
     lazy_static! {
@@ -213,8 +202,7 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for ReleaseLookupGet
     lazy_static! {
-        pub static ref RELEASE_LOOKUP_GET_FIND_A_SINGLE_RELEASE_BY_EXTERNAL_IDENTIFER: Mime =
-            mime!(Application / Json);
+        pub static ref RELEASE_LOOKUP_GET_FIND_A_SINGLE_RELEASE_BY_EXTERNAL_IDENTIFER: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for ReleaseLookupGet
     lazy_static! {
