@@ -4,10 +4,10 @@ extern crate chrono;
 extern crate diesel;
 extern crate dotenv;
 extern crate futures;
-extern crate hyper;
+#[macro_use] extern crate hyper;
 extern crate swagger;
-#[macro_use]
-extern crate error_chain;
+#[macro_use] extern crate error_chain;
+extern crate iron;
 
 pub mod api_server;
 
@@ -20,6 +20,9 @@ use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use dotenv::dotenv;
 use std::env;
+use hyper::header::Headers;
+use iron::{Request, Response};
+use iron::middleware::AfterMiddleware;
 
 pub fn establish_connection() -> PgConnection {
     dotenv().ok();
@@ -31,4 +34,16 @@ pub fn establish_connection() -> PgConnection {
 /// Instantiate a new server.
 pub fn server() -> Result<api_server::Server> {
     Ok(api_server::Server {})
+}
+
+/// HTTP header middleware
+header! { (XClacksOverhead, "X-Clacks-Overhead") => [String] }
+
+pub struct XClacksOverheadMiddleware;
+
+impl AfterMiddleware for XClacksOverheadMiddleware {
+    fn after(&self, _req: &mut Request, mut res: Response) -> iron::IronResult<Response> {
+        res.headers.set(XClacksOverhead("GNU aaronsw, jpb".to_owned()));
+        Ok(res)
+    }
 }

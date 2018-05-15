@@ -8,10 +8,8 @@ extern crate futures;
 extern crate iron;
 extern crate iron_slog;
 extern crate swagger;
-#[macro_use]
-extern crate error_chain;
-#[macro_use]
-extern crate slog;
+#[macro_use] extern crate error_chain;
+#[macro_use] extern crate slog;
 extern crate slog_term;
 extern crate slog_async;
 
@@ -49,6 +47,8 @@ fn main() {
     // add authentication middlewares into the chain here
     // for the purpose of this example, pretend we have authenticated a user
     chain.link_before(AllowAllMiddleware::new("cosmo"));
+
+    chain.link_after(fatcat::XClacksOverheadMiddleware);
 
     if matches.is_present("https") {
         unimplemented!()
