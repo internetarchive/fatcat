@@ -5,7 +5,6 @@ extern crate chrono;
 extern crate diesel;
 extern crate dotenv;
 extern crate futures;
-extern crate iron_diesel_middleware;
 #[macro_use]
 extern crate hyper;
 extern crate swagger;
@@ -13,7 +12,6 @@ extern crate swagger;
 extern crate error_chain;
 extern crate iron;
 extern crate r2d2;
-extern crate r2d2_diesel;
 
 pub mod api_server;
 pub mod database_schema;
@@ -25,13 +23,13 @@ mod errors {
 pub use self::errors::*;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
+use diesel::r2d2::ConnectionManager;
 use dotenv::dotenv;
 use iron::middleware::AfterMiddleware;
 use iron::{Request, Response};
-use r2d2_diesel::ConnectionManager;
 use std::env;
 
-pub type ConnectionPool = r2d2::Pool<r2d2_diesel::ConnectionManager<diesel::pg::PgConnection>>;
+pub type ConnectionPool = r2d2::Pool<ConnectionManager<diesel::pg::PgConnection>>;
 
 pub fn establish_connection() -> PgConnection {
     dotenv().ok();

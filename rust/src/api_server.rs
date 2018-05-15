@@ -11,9 +11,8 @@ use self::models::*;
 use ConnectionPool;
 use diesel;
 use diesel::prelude::*;
-use iron_diesel_middleware::DieselPooledConnection;
+use diesel::r2d2::ConnectionManager;
 use r2d2;
-use r2d2_diesel::ConnectionManager;
 
 use swagger;
 
@@ -37,8 +36,8 @@ pub struct Server {
 impl Api for Server {
     fn container_id_get(
         &self,
-        id: String,
-        context: &Context,
+        _id: String,
+        _context: &Context,
     ) -> Box<Future<Item = ContainerIdGetResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
         let c: i64 = container_rev.count().first(&*conn).expect("DB Error");

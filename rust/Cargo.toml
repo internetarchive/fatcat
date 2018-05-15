@@ -8,12 +8,11 @@ members = ["fatcat-api"]
 
 [dependencies]
 fatcat-api = {version = "*", path = "fatcat-api"}
-diesel = { version = "1.0.0", features = ["postgres"] }
+diesel = { version = "1.2", features = ["postgres", "extras"] }
 dotenv = "0.9.0"
 clap = "*"
 error-chain = "0.11"
 r2d2 = "*"
-r2d2-diesel = "*"
 
 # API server
 chrono = { version = "0.4", features = ["serde"] }
@@ -26,9 +25,6 @@ swagger = "0.7"
 slog = "^2.0"
 slog-term = "*"
 slog-async = "*"
-
-[dependencies.iron_diesel_middleware]
-git = "https://github.com/darayus/iron-diesel-middleware"
 
 #hyper-openssl = {version = "0.2", optional = true}
 #hyper-tls = {version = "0.1.2", optional = true}
