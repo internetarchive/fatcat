@@ -37,6 +37,11 @@ fn main() {
     let logger = Logger::root(drain, o!());
     let formatter = DefaultLogFormatter;
 
+    dotenv().ok();
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+
+    let diesel_middleware: DieselMiddleware<diesel::pg::PgConnection> = DieselMiddleware::new(database_url).unwrap();
+
     let server = fatcat::server().unwrap();
     let router = fatcat_api::router(server);
 
@@ -49,6 +54,7 @@ fn main() {
     chain.link_before(AllowAllMiddleware::new("cosmo"));
 
     chain.link_after(fatcat::XClacksOverheadMiddleware);
+    chain.link_before(diesel_middleware);
 
     if matches.is_present("https") {
         unimplemented!()

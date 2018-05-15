@@ -2,6 +2,7 @@
 extern crate fatcat_api;
 extern crate chrono;
 extern crate diesel;
+extern crate iron_diesel_middleware;
 extern crate dotenv;
 extern crate futures;
 #[macro_use] extern crate hyper;
@@ -23,6 +24,7 @@ use std::env;
 use hyper::header::Headers;
 use iron::{Request, Response};
 use iron::middleware::AfterMiddleware;
+use iron_diesel_middleware::{DieselMiddleware, DieselPooledConnection, DieselReqExt};
 
 pub fn establish_connection() -> PgConnection {
     dotenv().ok();
