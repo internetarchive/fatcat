@@ -1,0 +1,15 @@
+- re-generate OpenAPI
+    => using whatever sagger-codegen 2.3.1 (stable?)
+    => take iron example from older generator 2.3.1 (iron)
+    => cargo swagger (docker) seems to only use latest
+- integrate API server example into a main.rs
+- iron-slog
+- get and post for creators
+
+then:
+- encode the remaining entities in SQL
+- openapi for other entities (heavily templated)
+
+
+later:
+- metrics, jwt, config, sentry, testing
