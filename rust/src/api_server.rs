@@ -33,16 +33,18 @@ impl Api for Server {
         context: &Context,
     ) -> Box<Future<Item = ContainerIdGetResponse, Error = ApiError> + Send> {
         let context = context.clone();
-        let con: DieselPooledConnection<diesel::pg::PgConnection> = req.db_conn();
+        //let con: DieselPooledConnection<diesel::pg::PgConnection> = req.db_conn();
         println!(
             "container_id_get(\"{}\") - X-Span-ID: {:?}",
             id,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
         );
+        /*
         println!(
             "container count: {}",
             containers.count().load(&con).expect("DB Error"),
         );
+        */
         Box::new(futures::failed("Generic failure".into()))
     }
 

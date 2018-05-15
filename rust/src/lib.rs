@@ -24,7 +24,6 @@ use std::env;
 use hyper::header::Headers;
 use iron::{Request, Response};
 use iron::middleware::AfterMiddleware;
-use iron_diesel_middleware::{DieselMiddleware, DieselPooledConnection, DieselReqExt};
 
 pub fn establish_connection() -> PgConnection {
     dotenv().ok();
