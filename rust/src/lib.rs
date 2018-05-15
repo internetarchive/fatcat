@@ -1,7 +1,7 @@
 #[macro_use]
 extern crate fatcat_api;
 extern crate chrono;
-extern crate diesel;
+#[macro_use] extern crate diesel;
 extern crate iron_diesel_middleware;
 extern crate dotenv;
 extern crate futures;
@@ -9,7 +9,10 @@ extern crate futures;
 extern crate swagger;
 #[macro_use] extern crate error_chain;
 extern crate iron;
+extern crate r2d2;
+extern crate r2d2_diesel;
 
+pub mod database_schema;
 pub mod api_server;
 
 mod errors {
@@ -21,9 +24,11 @@ use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use dotenv::dotenv;
 use std::env;
-use hyper::header::Headers;
 use iron::{Request, Response};
 use iron::middleware::AfterMiddleware;
+use r2d2_diesel::ConnectionManager;
+
+pub type ConnectionPool = r2d2::Pool<r2d2_diesel::ConnectionManager<diesel::pg::PgConnection>>;
 
 pub fn establish_connection() -> PgConnection {
     dotenv().ok();
@@ -34,7 +39,13 @@ pub fn establish_connection() -> PgConnection {
 
 /// Instantiate a new server.
 pub fn server() -> Result<api_server::Server> {
-    Ok(api_server::Server {})
+    dotenv().ok();
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    let manager = ConnectionManager::<PgConnection>::new(database_url);
+    let pool = r2d2::Pool::builder().build(manager).expect("Failed to create database pool.");
+    Ok(api_server::Server {
+        db_pool: pool,
+    })
 }
 
 /// HTTP header middleware

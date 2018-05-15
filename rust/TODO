@@ -2,9 +2,10 @@ x re-generate OpenAPI
     => using whatever sagger-codegen 2.3.1 (stable?)
     => take iron example from older generator 2.3.1 (iron)
     => cargo swagger (docker) seems to only use latest
-- integrate API server example into a main.rs
-- iron-slog
+x iron-slog
+x integrate API server example into a main.rs
 - get and post for creators
+- cleanup pooled database: https://github.com/diesel-rs/diesel/pull/1466
 
 then:
 - encode the remaining entities in SQL

@@ -7,12 +7,17 @@ use futures::{self, Future};
 
 use std::collections::HashMap;
 
+use ConnectionPool;
 use self::models::*;
 use diesel;
+use r2d2;
 use diesel::prelude::*;
 use iron_diesel_middleware::DieselPooledConnection;
+use r2d2_diesel::ConnectionManager;
 
 use swagger;
+
+use database_schema::creator_rev::table as container_rev;
 
 use fatcat_api::models;
 use fatcat_api::{Api, ApiError, ContainerIdGetResponse, ContainerLookupGetResponse,
@@ -23,8 +28,11 @@ use fatcat_api::{Api, ApiError, ContainerIdGetResponse, ContainerLookupGetRespon
                  FilePostResponse, ReleaseIdGetResponse, ReleaseLookupGetResponse,
                  ReleasePostResponse, WorkIdGetResponse, WorkPostResponse};
 
-#[derive(Copy, Clone)]
-pub struct Server;
+//#[derive(Copy, Clone)]
+#[derive(Clone)]
+pub struct Server {
+    pub db_pool: ConnectionPool,
+}
 
 impl Api for Server {
     fn container_id_get(
@@ -32,20 +40,21 @@ impl Api for Server {
         id: String,
         context: &Context,
     ) -> Box<Future<Item = ContainerIdGetResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        //let con: DieselPooledConnection<diesel::pg::PgConnection> = req.db_conn();
-        println!(
-            "container_id_get(\"{}\") - X-Span-ID: {:?}",
-            id,
-            context.x_span_id.unwrap_or(String::from("<none>")).clone()
-        );
-        /*
-        println!(
-            "container count: {}",
-            containers.count().load(&con).expect("DB Error"),
-        );
-        */
-        Box::new(futures::failed("Generic failure".into()))
+        let conn = self.db_pool.get().expect("db_pool error");
+        let c: i64 = container_rev.count().first(&*conn).expect("DB Error");
+        println!("container count: {}", c);
+        let ce = ContainerEntity{
+            issn: None,
+            publisher: Some("Hello!".into()),
+            parent: None,
+            name: None,
+            state: None,
+            ident: None,
+            revision: None,
+            redirect: None,
+            editgroup: None,
+        };
+        Box::new(futures::done(Ok(ContainerIdGetResponse::FetchASingleContainerById(ce))))
     }
 
     fn container_lookup_get(

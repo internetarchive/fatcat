@@ -315,6 +315,8 @@ dependencies = [
  "iron-slog 0.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "iron-test 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "iron_diesel_middleware 0.4.0 (git+https://github.com/darayus/iron-diesel-middleware)",
+ "r2d2 0.8.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "r2d2-diesel 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "slog 2.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "slog-async 2.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "slog-term 2.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
