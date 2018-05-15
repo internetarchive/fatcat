@@ -3,20 +3,27 @@ name = "fatcat"
 version = "0.1.0"
 authors = ["Bryan Newbold <bnewbold@archive.org>"]
 
+[workspace]
+members = ["fatcat-api"]
+
 [dependencies]
+fatcat-api = {version = "*", path = "fatcat-api"}
 diesel = { version = "1.0.0", features = ["postgres"] }
 dotenv = "0.9.0"
 clap = "*"
+error-chain = "0.11"
 
 # API server
 chrono = { version = "0.4", features = ["serde"] }
 futures = "0.1"
-hyper = "0.10"
-#hyper-openssl = "0.2"
+hyper = "0.11"
+#hyper-tls = {version = "0.1.2", optional = true}
 iron = "0.5"
 iron-slog = "*"
 iron-test = "*"
-swagger = "0.7"
+swagger = "0.10"
+tokio-core = "0.1.6"
+tokio-proto = "0.1.1"
 
 # TODO
 #sentry = "*"

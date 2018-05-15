@@ -1,0 +1,1196 @@
+---
+swagger: "2.0"
+info:
+  description: "A scalable, versioned, API-oriented catalog of bibliographic entities\
+    \ and file metadata"
+  version: "0.1.0"
+  title: "fatcat"
+host: "api.fatcat.wiki"
+basePath: "/v0"
+schemes:
+- "http"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+paths:
+  /creator:
+    post:
+      parameters:
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/creator_entity"
+        uppercase_data_type: "CREATORENTITY"
+        refName: "creator_entity"
+        formatString: "{:?}"
+        example: "None"
+        model_key: "changelogentry"
+        uppercase_operation_id: "CREATOR_POST"
+        consumesJson: true
+      responses:
+        201:
+          description: "created"
+          schema:
+            $ref: "#/definitions/entity_edit"
+          x-responseId: "Created"
+          x-uppercaseResponseId: "CREATED"
+          uppercase_operation_id: "CREATOR_POST"
+          uppercase_data_type: "ENTITYEDIT"
+          producesJson: true
+        400:
+          description: "bad request"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "CREATOR_POST"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "GenericErrorResponse"
+          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          uppercase_operation_id: "CREATOR_POST"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+      operation_id: "creator_post"
+      uppercase_operation_id: "CREATOR_POST"
+      path: "/creator"
+      PATH_ID: "CREATOR"
+      hasPathParams: false
+      HttpMethod: "Post"
+  /creator/{id}:
+    get:
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      responses:
+        200:
+          description: "fetch a single creator by id"
+          schema:
+            $ref: "#/definitions/creator_entity"
+          x-responseId: "FetchASingleCreatorById"
+          x-uppercaseResponseId: "FETCH_A_SINGLE_CREATOR_BY_ID"
+          uppercase_operation_id: "CREATOR_ID_GET"
+          uppercase_data_type: "CREATORENTITY"
+          producesJson: true
+        400:
+          description: "bad request"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "CREATOR_ID_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "GenericErrorResponse"
+          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          uppercase_operation_id: "CREATOR_ID_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+      operation_id: "creator_id_get"
+      uppercase_operation_id: "CREATOR_ID_GET"
+      path: "/creator/:id"
+      PATH_ID: "CREATOR_ID"
+      hasPathParams: true
+      HttpMethod: "Get"
+  /creator/lookup:
+    get:
+      parameters:
+      - name: "orcid"
+        in: "query"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"orcid_example\".to_string()"
+      responses:
+        200:
+          description: "find a single creator by external identifer"
+          schema:
+            $ref: "#/definitions/creator_entity"
+          x-responseId: "FindASingleCreatorByExternalIdentifer"
+          x-uppercaseResponseId: "FIND_A_SINGLE_CREATOR_BY_EXTERNAL_IDENTIFER"
+          uppercase_operation_id: "CREATOR_LOOKUP_GET"
+          uppercase_data_type: "CREATORENTITY"
+          producesJson: true
+        400:
+          description: "bad request"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "CREATOR_LOOKUP_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        404:
+          description: "no such creator"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "NoSuchCreator"
+          x-uppercaseResponseId: "NO_SUCH_CREATOR"
+          uppercase_operation_id: "CREATOR_LOOKUP_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "GenericErrorResponse"
+          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          uppercase_operation_id: "CREATOR_LOOKUP_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+      operation_id: "creator_lookup_get"
+      uppercase_operation_id: "CREATOR_LOOKUP_GET"
+      path: "/creator/lookup"
+      PATH_ID: "CREATOR_LOOKUP"
+      hasPathParams: false
+      HttpMethod: "Get"
+  /container:
+    post:
+      parameters:
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/container_entity"
+        uppercase_data_type: "CONTAINERENTITY"
+        refName: "container_entity"
+        formatString: "{:?}"
+        example: "None"
+        model_key: "changelogentry"
+        uppercase_operation_id: "CONTAINER_POST"
+        consumesJson: true
+      responses:
+        201:
+          description: "created"
+          schema:
+            $ref: "#/definitions/entity_edit"
+          x-responseId: "Created"
+          x-uppercaseResponseId: "CREATED"
+          uppercase_operation_id: "CONTAINER_POST"
+          uppercase_data_type: "ENTITYEDIT"
+          producesJson: true
+        400:
+          description: "bad request"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "CONTAINER_POST"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "GenericErrorResponse"
+          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          uppercase_operation_id: "CONTAINER_POST"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+      operation_id: "container_post"
+      uppercase_operation_id: "CONTAINER_POST"
+      path: "/container"
+      PATH_ID: "CONTAINER"
+      hasPathParams: false
+      HttpMethod: "Post"
+  /container/{id}:
+    get:
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      responses:
+        200:
+          description: "fetch a single container by id"
+          schema:
+            $ref: "#/definitions/container_entity"
+          x-responseId: "FetchASingleContainerById"
+          x-uppercaseResponseId: "FETCH_A_SINGLE_CONTAINER_BY_ID"
+          uppercase_operation_id: "CONTAINER_ID_GET"
+          uppercase_data_type: "CONTAINERENTITY"
+          producesJson: true
+        400:
+          description: "bad request"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "CONTAINER_ID_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "GenericErrorResponse"
+          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          uppercase_operation_id: "CONTAINER_ID_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+      operation_id: "container_id_get"
+      uppercase_operation_id: "CONTAINER_ID_GET"
+      path: "/container/:id"
+      PATH_ID: "CONTAINER_ID"
+      hasPathParams: true
+      HttpMethod: "Get"
+  /container/lookup:
+    get:
+      parameters:
+      - name: "issn"
+        in: "query"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"issn_example\".to_string()"
+      responses:
+        200:
+          description: "find a single container by external identifer"
+          schema:
+            $ref: "#/definitions/container_entity"
+          x-responseId: "FindASingleContainerByExternalIdentifer"
+          x-uppercaseResponseId: "FIND_A_SINGLE_CONTAINER_BY_EXTERNAL_IDENTIFER"
+          uppercase_operation_id: "CONTAINER_LOOKUP_GET"
+          uppercase_data_type: "CONTAINERENTITY"
+          producesJson: true
+        400:
+          description: "bad request"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "CONTAINER_LOOKUP_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        404:
+          description: "no such container"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "NoSuchContainer"
+          x-uppercaseResponseId: "NO_SUCH_CONTAINER"
+          uppercase_operation_id: "CONTAINER_LOOKUP_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "GenericErrorResponse"
+          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          uppercase_operation_id: "CONTAINER_LOOKUP_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+      operation_id: "container_lookup_get"
+      uppercase_operation_id: "CONTAINER_LOOKUP_GET"
+      path: "/container/lookup"
+      PATH_ID: "CONTAINER_LOOKUP"
+      hasPathParams: false
+      HttpMethod: "Get"
+  /file:
+    post:
+      parameters:
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/file_entity"
+        uppercase_data_type: "FILEENTITY"
+        refName: "file_entity"
+        formatString: "{:?}"
+        example: "None"
+        model_key: "changelogentry"
+        uppercase_operation_id: "FILE_POST"
+        consumesJson: true
+      responses:
+        201:
+          description: "created"
+          schema:
+            $ref: "#/definitions/entity_edit"
+          x-responseId: "Created"
+          x-uppercaseResponseId: "CREATED"
+          uppercase_operation_id: "FILE_POST"
+          uppercase_data_type: "ENTITYEDIT"
+          producesJson: true
+        400:
+          description: "bad request"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "FILE_POST"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "GenericErrorResponse"
+          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          uppercase_operation_id: "FILE_POST"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+      operation_id: "file_post"
+      uppercase_operation_id: "FILE_POST"
+      path: "/file"
+      PATH_ID: "FILE"
+      hasPathParams: false
+      HttpMethod: "Post"
+  /file/{id}:
+    get:
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      responses:
+        200:
+          description: "fetch a single file by id"
+          schema:
+            $ref: "#/definitions/file_entity"
+          x-responseId: "FetchASingleFileById"
+          x-uppercaseResponseId: "FETCH_A_SINGLE_FILE_BY_ID"
+          uppercase_operation_id: "FILE_ID_GET"
+          uppercase_data_type: "FILEENTITY"
+          producesJson: true
+        400:
+          description: "bad request"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "FILE_ID_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "GenericErrorResponse"
+          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          uppercase_operation_id: "FILE_ID_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+      operation_id: "file_id_get"
+      uppercase_operation_id: "FILE_ID_GET"
+      path: "/file/:id"
+      PATH_ID: "FILE_ID"
+      hasPathParams: true
+      HttpMethod: "Get"
+  /file/lookup:
+    get:
+      parameters:
+      - name: "sha1"
+        in: "query"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"sha1_example\".to_string()"
+      responses:
+        200:
+          description: "find a single file by external identifer"
+          schema:
+            $ref: "#/definitions/file_entity"
+          x-responseId: "FindASingleFileByExternalIdentifer"
+          x-uppercaseResponseId: "FIND_A_SINGLE_FILE_BY_EXTERNAL_IDENTIFER"
+          uppercase_operation_id: "FILE_LOOKUP_GET"
+          uppercase_data_type: "FILEENTITY"
+          producesJson: true
+        400:
+          description: "bad request"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "FILE_LOOKUP_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        404:
+          description: "no such file"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "NoSuchFile"
+          x-uppercaseResponseId: "NO_SUCH_FILE"
+          uppercase_operation_id: "FILE_LOOKUP_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "GenericErrorResponse"
+          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          uppercase_operation_id: "FILE_LOOKUP_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+      operation_id: "file_lookup_get"
+      uppercase_operation_id: "FILE_LOOKUP_GET"
+      path: "/file/lookup"
+      PATH_ID: "FILE_LOOKUP"
+      hasPathParams: false
+      HttpMethod: "Get"
+  /release:
+    post:
+      parameters:
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/release_entity"
+        uppercase_data_type: "RELEASEENTITY"
+        refName: "release_entity"
+        formatString: "{:?}"
+        example: "None"
+        model_key: "changelogentry"
+        uppercase_operation_id: "RELEASE_POST"
+        consumesJson: true
+      responses:
+        201:
+          description: "created"
+          schema:
+            $ref: "#/definitions/entity_edit"
+          x-responseId: "Created"
+          x-uppercaseResponseId: "CREATED"
+          uppercase_operation_id: "RELEASE_POST"
+          uppercase_data_type: "ENTITYEDIT"
+          producesJson: true
+        400:
+          description: "bad request"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "RELEASE_POST"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "GenericErrorResponse"
+          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          uppercase_operation_id: "RELEASE_POST"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+      operation_id: "release_post"
+      uppercase_operation_id: "RELEASE_POST"
+      path: "/release"
+      PATH_ID: "RELEASE"
+      hasPathParams: false
+      HttpMethod: "Post"
+  /release/{id}:
+    get:
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      responses:
+        200:
+          description: "fetch a single release by id"
+          schema:
+            $ref: "#/definitions/release_entity"
+          x-responseId: "FetchASingleReleaseById"
+          x-uppercaseResponseId: "FETCH_A_SINGLE_RELEASE_BY_ID"
+          uppercase_operation_id: "RELEASE_ID_GET"
+          uppercase_data_type: "RELEASEENTITY"
+          producesJson: true
+        400:
+          description: "bad request"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "RELEASE_ID_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "GenericErrorResponse"
+          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          uppercase_operation_id: "RELEASE_ID_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+      operation_id: "release_id_get"
+      uppercase_operation_id: "RELEASE_ID_GET"
+      path: "/release/:id"
+      PATH_ID: "RELEASE_ID"
+      hasPathParams: true
+      HttpMethod: "Get"
+  /release/lookup:
+    get:
+      parameters:
+      - name: "doi"
+        in: "query"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"doi_example\".to_string()"
+      responses:
+        200:
+          description: "find a single release by external identifer"
+          schema:
+            $ref: "#/definitions/release_entity"
+          x-responseId: "FindASingleReleaseByExternalIdentifer"
+          x-uppercaseResponseId: "FIND_A_SINGLE_RELEASE_BY_EXTERNAL_IDENTIFER"
+          uppercase_operation_id: "RELEASE_LOOKUP_GET"
+          uppercase_data_type: "RELEASEENTITY"
+          producesJson: true
+        400:
+          description: "bad request"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "RELEASE_LOOKUP_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        404:
+          description: "no such release"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "NoSuchRelease"
+          x-uppercaseResponseId: "NO_SUCH_RELEASE"
+          uppercase_operation_id: "RELEASE_LOOKUP_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "GenericErrorResponse"
+          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          uppercase_operation_id: "RELEASE_LOOKUP_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+      operation_id: "release_lookup_get"
+      uppercase_operation_id: "RELEASE_LOOKUP_GET"
+      path: "/release/lookup"
+      PATH_ID: "RELEASE_LOOKUP"
+      hasPathParams: false
+      HttpMethod: "Get"
+  /work:
+    post:
+      parameters:
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/work_entity"
+        uppercase_data_type: "WORKENTITY"
+        refName: "work_entity"
+        formatString: "{:?}"
+        example: "None"
+        model_key: "changelogentry"
+        uppercase_operation_id: "WORK_POST"
+        consumesJson: true
+      responses:
+        201:
+          description: "created"
+          schema:
+            $ref: "#/definitions/entity_edit"
+          x-responseId: "Created"
+          x-uppercaseResponseId: "CREATED"
+          uppercase_operation_id: "WORK_POST"
+          uppercase_data_type: "ENTITYEDIT"
+          producesJson: true
+        400:
+          description: "bad request"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "WORK_POST"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "GenericErrorResponse"
+          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          uppercase_operation_id: "WORK_POST"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+      operation_id: "work_post"
+      uppercase_operation_id: "WORK_POST"
+      path: "/work"
+      PATH_ID: "WORK"
+      hasPathParams: false
+      HttpMethod: "Post"
+  /work/{id}:
+    get:
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      responses:
+        200:
+          description: "fetch a single work by id"
+          schema:
+            $ref: "#/definitions/work_entity"
+          x-responseId: "FetchASingleWorkById"
+          x-uppercaseResponseId: "FETCH_A_SINGLE_WORK_BY_ID"
+          uppercase_operation_id: "WORK_ID_GET"
+          uppercase_data_type: "WORKENTITY"
+          producesJson: true
+        400:
+          description: "bad request"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "WORK_ID_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "GenericErrorResponse"
+          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          uppercase_operation_id: "WORK_ID_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+      operation_id: "work_id_get"
+      uppercase_operation_id: "WORK_ID_GET"
+      path: "/work/:id"
+      PATH_ID: "WORK_ID"
+      hasPathParams: true
+      HttpMethod: "Get"
+  /editor/{username}:
+    get:
+      parameters:
+      - name: "username"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"username_example\".to_string()"
+      responses:
+        200:
+          description: "fetch generic information about an editor"
+          schema:
+            $ref: "#/definitions/editor"
+          x-responseId: "FetchGenericInformationAboutAnEditor"
+          x-uppercaseResponseId: "FETCH_GENERIC_INFORMATION_ABOUT_AN_EDITOR"
+          uppercase_operation_id: "EDITOR_USERNAME_GET"
+          uppercase_data_type: "EDITOR"
+          producesJson: true
+        404:
+          description: "username not found"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "UsernameNotFound"
+          x-uppercaseResponseId: "USERNAME_NOT_FOUND"
+          uppercase_operation_id: "EDITOR_USERNAME_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "GenericErrorResponse"
+          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          uppercase_operation_id: "EDITOR_USERNAME_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+      operation_id: "editor_username_get"
+      uppercase_operation_id: "EDITOR_USERNAME_GET"
+      path: "/editor/:username"
+      PATH_ID: "EDITOR_USERNAME"
+      hasPathParams: true
+      HttpMethod: "Get"
+  /editor/{username}/changelog:
+    get:
+      parameters:
+      - name: "username"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"username_example\".to_string()"
+      responses:
+        200:
+          description: "find changes (editgroups) by this editor which have been merged"
+          schema:
+            $ref: "#/definitions/changelogentry"
+          x-responseId: "FindChanges_"
+          x-uppercaseResponseId: "FIND_CHANGES_"
+          uppercase_operation_id: "EDITOR_USERNAME_CHANGELOG_GET"
+          uppercase_data_type: "CHANGELOGENTRY"
+          producesJson: true
+        404:
+          description: "username not found"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "UsernameNotFound"
+          x-uppercaseResponseId: "USERNAME_NOT_FOUND"
+          uppercase_operation_id: "EDITOR_USERNAME_CHANGELOG_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "GenericErrorResponse"
+          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          uppercase_operation_id: "EDITOR_USERNAME_CHANGELOG_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+      operation_id: "editor_username_changelog_get"
+      uppercase_operation_id: "EDITOR_USERNAME_CHANGELOG_GET"
+      path: "/editor/:username/changelog"
+      PATH_ID: "EDITOR_USERNAME_CHANGELOG"
+      hasPathParams: true
+      HttpMethod: "Get"
+  /editgroup:
+    post:
+      parameters: []
+      responses:
+        201:
+          description: "successfully created"
+          schema:
+            $ref: "#/definitions/editgroup"
+          x-responseId: "SuccessfullyCreated"
+          x-uppercaseResponseId: "SUCCESSFULLY_CREATED"
+          uppercase_operation_id: "EDITGROUP_POST"
+          uppercase_data_type: "EDITGROUP"
+          producesJson: true
+        400:
+          description: "invalid request parameters"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "InvalidRequestParameters"
+          x-uppercaseResponseId: "INVALID_REQUEST_PARAMETERS"
+          uppercase_operation_id: "EDITGROUP_POST"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "GenericErrorResponse"
+          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          uppercase_operation_id: "EDITGROUP_POST"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+      operation_id: "editgroup_post"
+      uppercase_operation_id: "EDITGROUP_POST"
+      path: "/editgroup"
+      PATH_ID: "EDITGROUP"
+      hasPathParams: false
+      HttpMethod: "Post"
+  /editgroup/{id}:
+    get:
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "integer"
+        formatString: "{}"
+        example: "56"
+      responses:
+        200:
+          description: "fetch editgroup by identifier"
+          schema:
+            $ref: "#/definitions/editgroup"
+          x-responseId: "FetchEditgroupByIdentifier"
+          x-uppercaseResponseId: "FETCH_EDITGROUP_BY_IDENTIFIER"
+          uppercase_operation_id: "EDITGROUP_ID_GET"
+          uppercase_data_type: "EDITGROUP"
+          producesJson: true
+        404:
+          description: "no such editgroup"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "NoSuchEditgroup"
+          x-uppercaseResponseId: "NO_SUCH_EDITGROUP"
+          uppercase_operation_id: "EDITGROUP_ID_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "GenericErrorResponse"
+          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          uppercase_operation_id: "EDITGROUP_ID_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+      operation_id: "editgroup_id_get"
+      uppercase_operation_id: "EDITGROUP_ID_GET"
+      path: "/editgroup/:id"
+      PATH_ID: "EDITGROUP_ID"
+      hasPathParams: true
+      HttpMethod: "Get"
+  /editgroup/{id}/accept:
+    post:
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "integer"
+        formatString: "{}"
+        example: "56"
+      responses:
+        200:
+          description: "merged editgroup successfully (\"live\")"
+          schema:
+            $ref: "#/definitions/success"
+          x-responseId: "MergedEditgroupSuccessfully_"
+          x-uppercaseResponseId: "MERGED_EDITGROUP_SUCCESSFULLY_"
+          uppercase_operation_id: "EDITGROUP_ID_ACCEPT_POST"
+          uppercase_data_type: "SUCCESS"
+          producesJson: true
+        400:
+          description: "editgroup is in an unmergable state"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "EditgroupIsInAnUnmergableState"
+          x-uppercaseResponseId: "EDITGROUP_IS_IN_AN_UNMERGABLE_STATE"
+          uppercase_operation_id: "EDITGROUP_ID_ACCEPT_POST"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        404:
+          description: "no such editgroup"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "NoSuchEditgroup"
+          x-uppercaseResponseId: "NO_SUCH_EDITGROUP"
+          uppercase_operation_id: "EDITGROUP_ID_ACCEPT_POST"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        default:
+          description: "generic error response"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "GenericErrorResponse"
+          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          uppercase_operation_id: "EDITGROUP_ID_ACCEPT_POST"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+      operation_id: "editgroup_id_accept_post"
+      uppercase_operation_id: "EDITGROUP_ID_ACCEPT_POST"
+      path: "/editgroup/:id/accept"
+      PATH_ID: "EDITGROUP_ID_ACCEPT"
+      hasPathParams: true
+      HttpMethod: "Post"
+definitions:
+  error:
+    type: "object"
+    required:
+    - "message"
+    properties:
+      message:
+        type: "string"
+    upperCaseName: "ERROR"
+  success:
+    type: "object"
+    required:
+    - "message"
+    properties:
+      message:
+        type: "string"
+    example:
+      message: "message"
+    upperCaseName: "SUCCESS"
+  creator_entity:
+    type: "object"
+    properties:
+      orcid:
+        type: "string"
+      name:
+        type: "string"
+      editgroup:
+        type: "integer"
+      redirect:
+        type: "string"
+      revision:
+        type: "integer"
+      ident:
+        type: "string"
+      state:
+        type: "string"
+        enum:
+        - "wip"
+        - "active"
+        - "redirect"
+        - "deleted"
+    example:
+      redirect: "redirect"
+      editgroup: 0
+      ident: "ident"
+      name: "name"
+      orcid: "orcid"
+      state: "wip"
+      revision: 6
+    upperCaseName: "CREATOR_ENTITY"
+  container_entity:
+    type: "object"
+    properties:
+      issn:
+        type: "string"
+      publisher:
+        type: "string"
+      parent:
+        type: "string"
+      name:
+        type: "string"
+      state:
+        type: "string"
+        enum:
+        - "wip"
+        - "active"
+        - "redirect"
+        - "deleted"
+      ident:
+        type: "string"
+      revision:
+        type: "integer"
+      redirect:
+        type: "string"
+      editgroup:
+        type: "integer"
+    example:
+      redirect: "redirect"
+      parent: "parent"
+      editgroup: 6
+      issn: "issn"
+      ident: "ident"
+      name: "name"
+      publisher: "publisher"
+      state: "wip"
+      revision: 0
+    upperCaseName: "CONTAINER_ENTITY"
+  file_entity:
+    type: "object"
+    properties:
+      url:
+        type: "string"
+        format: "url"
+      sha1:
+        type: "string"
+      size:
+        type: "integer"
+      editgroup:
+        type: "integer"
+      redirect:
+        type: "string"
+      revision:
+        type: "integer"
+      ident:
+        type: "string"
+      state:
+        type: "string"
+        enum:
+        - "wip"
+        - "active"
+        - "redirect"
+        - "deleted"
+    example:
+      sha1: "sha1"
+      redirect: "redirect"
+      editgroup: 6
+      size: 0
+      ident: "ident"
+      state: "wip"
+      url: "http://example.com/aeiou"
+      revision: 1
+    upperCaseName: "FILE_ENTITY"
+  release_entity:
+    type: "object"
+    properties:
+      issue:
+        type: "string"
+      pages:
+        type: "string"
+      volume:
+        type: "string"
+      doi:
+        type: "string"
+      release_type:
+        type: "string"
+      license:
+        type: "string"
+      container:
+        type: "string"
+      work:
+        type: "string"
+      state:
+        type: "string"
+        enum:
+        - "wip"
+        - "active"
+        - "redirect"
+        - "deleted"
+      ident:
+        type: "string"
+      revision:
+        type: "integer"
+      redirect:
+        type: "string"
+      editgroup:
+        type: "integer"
+    example:
+      container: "container"
+      redirect: "redirect"
+      editgroup: 6
+      issue: "issue"
+      work: "work"
+      ident: "ident"
+      release_type: "release_type"
+      revision: 0
+      volume: "volume"
+      license: "license"
+      pages: "pages"
+      state: "wip"
+      doi: "doi"
+    upperCaseName: "RELEASE_ENTITY"
+  work_entity:
+    type: "object"
+    properties:
+      work_type:
+        type: "string"
+      title:
+        type: "string"
+      editgroup:
+        type: "integer"
+      redirect:
+        type: "string"
+      revision:
+        type: "integer"
+      ident:
+        type: "string"
+      state:
+        type: "string"
+        enum:
+        - "wip"
+        - "active"
+        - "redirect"
+        - "deleted"
+    example:
+      redirect: "redirect"
+      editgroup: 0
+      ident: "ident"
+      work_type: "work_type"
+      state: "wip"
+      title: "title"
+      revision: 6
+    upperCaseName: "WORK_ENTITY"
+  entity_edit:
+    type: "object"
+    properties:
+      editgroup_id:
+        type: "integer"
+      revision:
+        type: "integer"
+      ident:
+        type: "string"
+      id:
+        type: "integer"
+    example:
+      ident: "ident"
+      editgroup_id: 0
+      id: 1
+      revision: 6
+    upperCaseName: "ENTITY_EDIT"
+  editor:
+    type: "object"
+    required:
+    - "username"
+    properties:
+      username:
+        type: "string"
+    example:
+      username: "username"
+    upperCaseName: "EDITOR"
+  editgroup:
+    type: "object"
+    required:
+    - "editor_id"
+    - "id"
+    properties:
+      id:
+        type: "integer"
+      editor_id:
+        type: "integer"
+    example:
+      editor_id: 6
+      id: 0
+    upperCaseName: "EDITGROUP"
+  changelogentry:
+    type: "object"
+    required:
+    - "index"
+    properties:
+      index:
+        type: "integer"
+      editgroup_id:
+        type: "integer"
+      timestamp:
+        type: "string"
+        format: "date-time"
+    example:
+      index: 0
+      editgroup_id: 6
+      timestamp: "2000-01-23T04:56:07.000+00:00"
+    upperCaseName: "CHANGELOGENTRY"
+x-entity-props:
+  state:
+    type: "string"
+    enum:
+    - "wip"
+    - "active"
+    - "redirect"
+    - "deleted"
+  ident:
+    type: "string"
+  revision:
+    type: "integer"
+  redirect:
+    type: "string"
+  editgroup:
+    type: "integer"
+x-entity-edit-props:
+  id:
+    type: "integer"
+  ident:
+    type: "string"
+  revision:
+    type: "integer"
+  editgroup_id:
+    type: "integer"
+x-entity-responses:
+  400:
+    description: "bad request"
+    schema:
+      $ref: "#/definitions/error"
+  default:
+    description: "generic error response"
+    schema:
+      $ref: "#/definitions/error"

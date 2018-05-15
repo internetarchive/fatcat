@@ -1,0 +1,464 @@
+---
+swagger: "2.0"
+info:
+  title: fatcat
+  description: A scalable, versioned, API-oriented catalog of bibliographic entities
+    and file metadata
+  version: 0.1.0
+schemes: [http]
+basePath: /v0
+host: api.fatcat.wiki
+consumes:
+  - application/json
+produces:
+  - application/json
+
+
+# Common properties across entities
+x-entity-props: &ENTITYPROPS
+  state:
+    type: string
+    enum: ["wip", "active", "redirect", "deleted"]
+  ident:
+    type: string
+    #format: uuid
+  revision:
+    type: integer
+  redirect:
+    type: string
+    #format: uuid
+  editgroup:
+    type: integer
+x-entity-edit-props: &ENTITYEDITPROPS
+  id:
+    type: integer
+  ident:
+    type: string
+  revision:
+    type: integer
+  editgroup_id:
+    type: integer
+
+
+definitions:
+  error:
+    type: object
+    required:
+      - message
+    properties:
+      message:
+        type: string
+  success:
+    type: object
+    required:
+      - message
+    properties:
+      message:
+        type: string
+  creator_entity:
+    type: object
+    properties:
+      <<: *ENTITYPROPS
+      name:
+        type: string
+      orcid:
+        type: string
+        #format: custom
+  container_entity:
+    type: object
+    properties:
+      <<: *ENTITYPROPS
+      name:
+        type: string
+      parent:
+        type: string
+      publisher:
+        type: string
+      issn:
+        type: string
+        #format: custom
+  file_entity:
+    type: object
+    properties:
+      <<: *ENTITYPROPS
+      size:
+        type: integer
+      sha1:
+        type: string
+        #format: custom
+      url:
+        type: string
+        format: url
+  release_entity:
+    type: object
+    properties:
+      <<: *ENTITYPROPS
+      work:
+        type: string
+      container:
+        type: string
+      license:
+        type: string
+      release_type:
+        type: string
+      date:
+        type: date
+      doi:
+        type: string
+        #format: custom
+      volume:
+        type: string
+      pages:
+        type: string
+      issue:
+        type: string
+  work_entity:
+    type: object
+    properties:
+      <<: *ENTITYPROPS
+      title:
+        type: string
+      work_type:
+        type: string
+  entity_edit:
+    type: object
+    properties:
+      <<: *ENTITYEDITPROPS
+  editor:
+    type: object
+    required:
+      - username
+    properties:
+      username:
+        type: string
+  editgroup:
+    type: object
+    required:
+      - id
+      - editor_id
+    properties:
+      id:
+        type: integer
+      editor_id:
+        type: integer
+  changelogentry:
+    type: object
+    required:
+      - index
+    properties:
+      index:
+        type: integer
+      editgroup_id:
+        type: integer
+      timestamp:
+        type: string
+        format: date-time
+
+x-entity-responses: &ENTITYRESPONSES
+  400:
+    description: bad request
+    schema:
+      $ref: "#/definitions/error"
+  default:
+    description: generic error response
+    schema:
+      $ref: "#/definitions/error"
+
+paths:
+  /creator:
+    post:
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/creator_entity"
+      responses:
+        201:
+          description: created
+          schema:
+            $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+  /creator/{id}:
+    parameters:
+      - name: id
+        in: path
+        type: string
+        required: true
+    get:
+      responses:
+        200:
+          description: fetch a single creator by id
+          schema:
+            $ref: "#/definitions/creator_entity"
+        <<: *ENTITYRESPONSES
+  /creator/lookup:
+    get:
+      parameters:
+        - name: orcid
+          in: query
+          type: string
+          required: true
+      responses:
+        200:
+          description: find a single creator by external identifer
+          schema:
+            $ref: "#/definitions/creator_entity"
+        404:
+          description: no such creator
+          schema:
+            $ref: "#/definitions/error"
+        <<: *ENTITYRESPONSES
+  /container:
+    post:
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/container_entity"
+      responses:
+        201:
+          description: created
+          schema:
+            $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+  /container/{id}:
+    parameters:
+      - name: id
+        in: path
+        type: string
+        required: true
+    get:
+      responses:
+        200:
+          description: fetch a single container by id
+          schema:
+            $ref: "#/definitions/container_entity"
+        <<: *ENTITYRESPONSES
+  /container/lookup:
+    get:
+      parameters:
+        - name: issn
+          in: query
+          type: string
+          required: true
+      responses:
+        200:
+          description: find a single container by external identifer
+          schema:
+            $ref: "#/definitions/container_entity"
+        404:
+          description: no such container
+          schema:
+            $ref: "#/definitions/error"
+        <<: *ENTITYRESPONSES
+  /file:
+    post:
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/file_entity"
+      responses:
+        201:
+          description: created
+          schema:
+            $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+  /file/{id}:
+    parameters:
+      - name: id
+        in: path
+        type: string
+        required: true
+    get:
+      responses:
+        200:
+          description: fetch a single file by id
+          schema:
+            $ref: "#/definitions/file_entity"
+        <<: *ENTITYRESPONSES
+  /file/lookup:
+    get:
+      parameters:
+        - name: sha1
+          in: query
+          type: string
+          required: true
+      responses:
+        200:
+          description: find a single file by external identifer
+          schema:
+            $ref: "#/definitions/file_entity"
+        404:
+          description: no such file
+          schema:
+            $ref: "#/definitions/error"
+        <<: *ENTITYRESPONSES
+  /release:
+    post:
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/release_entity"
+      responses:
+        201:
+          description: created
+          schema:
+            $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+  /release/{id}:
+    parameters:
+      - name: id
+        in: path
+        type: string
+        required: true
+    get:
+      responses:
+        200:
+          description: fetch a single release by id
+          schema:
+            $ref: "#/definitions/release_entity"
+        <<: *ENTITYRESPONSES
+  /release/lookup:
+    get:
+      parameters:
+        - name: doi
+          in: query
+          type: string
+          required: true
+      responses:
+        200:
+          description: find a single release by external identifer
+          schema:
+            $ref: "#/definitions/release_entity"
+        404:
+          description: no such release
+          schema:
+            $ref: "#/definitions/error"
+        <<: *ENTITYRESPONSES
+  /work:
+    post:
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: "#/definitions/work_entity"
+      responses:
+        201:
+          description: created
+          schema:
+            $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+  /work/{id}:
+    parameters:
+      - name: id
+        in: path
+        type: string
+        required: true
+    get:
+      responses:
+        200:
+          description: fetch a single work by id
+          schema:
+            $ref: "#/definitions/work_entity"
+        <<: *ENTITYRESPONSES
+  /editor/{username}:
+    parameters:
+      - name: username
+        in: path
+        type: string
+        required: true
+    get:
+      responses:
+        200:
+          description: fetch generic information about an editor
+          schema:
+            $ref: "#/definitions/editor"
+        404:
+          description: username not found
+          schema:
+            $ref: "#/definitions/error"
+        default:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"
+  /editor/{username}/changelog:
+    parameters:
+      - name: username
+        in: path
+        type: string
+        required: true
+    get:
+      responses:
+        200:
+          description: find changes (editgroups) by this editor which have been merged
+          schema:
+            $ref: "#/definitions/changelogentry"
+        404:
+          description: username not found
+          schema:
+            $ref: "#/definitions/error"
+        default:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"
+  /editgroup:
+    post:
+      responses:
+        201:
+          description: successfully created
+          schema:
+            $ref: "#/definitions/editgroup"
+        400:
+          description: invalid request parameters
+          schema:
+            $ref: "#/definitions/error"
+        default:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"
+  /editgroup/{id}:
+    parameters:
+      - name: id
+        in: path
+        type: integer
+        required: true
+    get:
+      responses:
+        200:
+          description: fetch editgroup by identifier
+          schema:
+            $ref: "#/definitions/editgroup"
+        404:
+          description: no such editgroup
+          schema:
+            $ref: "#/definitions/error"
+        default:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"
+  /editgroup/{id}/accept:
+    parameters:
+      - name: id
+        in: path
+        type: integer
+        required: true
+    post:
+      responses:
+        200:
+          description: merged editgroup successfully ("live")
+          schema:
+            $ref: "#/definitions/success"
+        400:
+          description: editgroup is in an unmergable state
+          schema:
+            $ref: "#/definitions/error"
+        404:
+          description: no such editgroup
+          schema:
+            $ref: "#/definitions/error"
+        default:
+          description: generic error response
+          schema:
+            $ref: "#/definitions/error"
