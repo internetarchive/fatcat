@@ -6,10 +6,17 @@ extern crate fatcat;
 extern crate fatcat_api;
 extern crate futures;
 extern crate iron;
+extern crate iron_slog;
 extern crate swagger;
 #[macro_use]
 extern crate error_chain;
+#[macro_use]
+extern crate slog;
+extern crate slog_term;
+extern crate slog_async;
 
+use slog::{Drain, Logger};
+use iron_slog::{LoggerMiddleware, DefaultLogFormatter};
 use clap::{App, Arg};
 use iron::{Chain, Iron};
 use swagger::auth::AllowAllMiddleware;
@@ -25,10 +32,19 @@ fn main() {
         )
         .get_matches();
 
+
+    let decorator = slog_term::TermDecorator::new().build();
+    let drain = slog_term::CompactFormat::new(decorator).build().fuse();
+    let drain = slog_async::Async::new(drain).build().fuse();
+    let logger = Logger::root(drain, o!());
+    let formatter = DefaultLogFormatter;
+
     let server = fatcat::server().unwrap();
     let router = fatcat_api::router(server);
 
-    let mut chain = Chain::new(router);
+    let mut chain = Chain::new(
+        LoggerMiddleware::new(router, logger, formatter ));
+
     chain.link_before(fatcat_api::server::ExtractAuthData);
     // add authentication middlewares into the chain here
     // for the purpose of this example, pretend we have authenticated a user
