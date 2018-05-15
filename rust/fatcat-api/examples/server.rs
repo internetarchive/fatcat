@@ -4,26 +4,26 @@
 
 // Imports required by this file.
 // extern crate <name of this crate>;
-extern crate fatcat;
-extern crate swagger;
-extern crate iron;
-extern crate hyper_openssl;
 extern crate clap;
+extern crate fatcat;
+extern crate hyper_openssl;
+extern crate iron;
+extern crate swagger;
 
 // Imports required by server library.
 // extern crate fatcat;
 // extern crate swagger;
-extern crate futures;
 extern crate chrono;
+extern crate futures;
 #[macro_use]
 extern crate error_chain;
 
-use hyper_openssl::OpensslServer;
-use hyper_openssl::openssl::x509::X509_FILETYPE_PEM;
-use hyper_openssl::openssl::ssl::{SslAcceptorBuilder, SslMethod};
-use hyper_openssl::openssl::error::ErrorStack;
 use clap::{App, Arg};
-use iron::{Iron, Chain};
+use hyper_openssl::OpensslServer;
+use hyper_openssl::openssl::error::ErrorStack;
+use hyper_openssl::openssl::ssl::{SslAcceptorBuilder, SslMethod};
+use hyper_openssl::openssl::x509::X509_FILETYPE_PEM;
+use iron::{Chain, Iron};
 use swagger::auth::AllowAllMiddleware;
 
 mod server_lib;
@@ -44,9 +44,11 @@ fn ssl() -> Result<OpensslServer, ErrorStack> {
 /// and pass it to the web server.
 fn main() {
     let matches = App::new("server")
-        .arg(Arg::with_name("https")
-            .long("https")
-            .help("Whether to use HTTPS or not"))
+        .arg(
+            Arg::with_name("https")
+                .long("https")
+                .help("Whether to use HTTPS or not"),
+        )
         .get_matches();
 
     let server = server_lib::server().unwrap();
@@ -60,9 +62,13 @@ fn main() {
 
     if matches.is_present("https") {
         // Using Simple HTTPS
-        Iron::new(chain).https("localhost:8080", ssl().expect("Failed to load SSL keys")).expect("Failed to start HTTPS server");
+        Iron::new(chain)
+            .https("localhost:8080", ssl().expect("Failed to load SSL keys"))
+            .expect("Failed to start HTTPS server");
     } else {
         // Using HTTP
-        Iron::new(chain).http("localhost:8080").expect("Failed to start HTTP server");
+        Iron::new(chain)
+            .http("localhost:8080")
+            .expect("Failed to start HTTP server");
     }
 }
