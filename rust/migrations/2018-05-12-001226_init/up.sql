@@ -181,6 +181,7 @@ ALTER TABLE release_rev
 -------------------- Inter-Entity Relations
 
 CREATE TABLE release_contrib (
+    id                  BIGSERIAL PRIMARY KEY,
     release_rev         BIGSERIAL REFERENCES release_rev(id) NOT NULL,
     creator_ident_id    UUID REFERENCES creator_ident(id),
     stub                TEXT,
@@ -196,6 +197,7 @@ CREATE TABLE release_ref (
 );
 
 CREATE TABLE file_release (
+    id                      BIGSERIAL PRIMARY KEY,
     file_rev                BIGSERIAL REFERENCES file_rev(id) NOT NULL,
     target_release_ident_id UUID REFERENCES creator_ident(id) NOT NULL
 );
