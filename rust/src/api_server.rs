@@ -35,26 +35,40 @@ impl Api for Server {
     ) -> Box<Future<Item = ContainerIdGetResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
         let id = uuid::Uuid::parse_str(&id).unwrap();
+        let (ident, rev): (ContainerIdentRow, Option<ContainerRevRow>) = container_ident::table
+            .find(id)
+            .left_outer_join(container_rev::table)
+            .first(&conn)
+            .expect("error loading container");
+/*
+        let (ident, rev): (ContainerIdentRow, Option<ContainerRevRow>) = container_ident::table
+            .left_join(container_rev::table)
+            .filter(container_ident::id.equals(id))
+            .first(&conn)
+            .expect("error loading container");
+*/
+/*
         let c: ContainerIdentRow = container_ident::table
             .find(id)
             .first(&conn)
             .expect("error loading container");
         //let c: i64 = container_rev::table.count().first(&conn).expect("DB Error");
         println!("container count: {:?}", c);
+*/ 
 
-        let ce = ContainerEntity {
+        let entity = ContainerEntity {
             issn: None,
             publisher: Some("Hello!".into()),
             parent: None,
             name: None,
             state: None,
-            ident: Some(c.id.to_string()),
-            revision: c.rev_id.map(|v| v as isize),
-            redirect: None,
+            ident: Some(ident.id.to_string()),
+            revision: ident.rev_id.map(|v| v as isize),
+            redirect: ident.redirect_id.map(|u| u.to_string()),
             editgroup: None,
         };
         Box::new(futures::done(Ok(
-            ContainerIdGetResponse::FetchASingleContainerById(ce),
+            ContainerIdGetResponse::FetchASingleContainerById(entity),
         )))
     }
 

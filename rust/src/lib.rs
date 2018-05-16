@@ -13,6 +13,7 @@ extern crate hyper;
 extern crate error_chain;
 extern crate iron;
 extern crate r2d2;
+extern crate serde_json;
 
 pub mod api_server;
 pub mod database_schema;

@@ -1,5 +1,6 @@
 
 use chrono;
+use serde_json;
 use uuid::Uuid;
 //use diesel::prelude::*;
 
@@ -20,7 +21,7 @@ macro_rules! entity_structs {
             pub rev_id: Option<i64>,
             pub redirect_id: Option<Uuid>,
             pub editgroup_id: i64,
-            //pub extra_json: Option<Json>,
+            //pub extra_json: Option<String>,
         }
 
         #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
@@ -38,7 +39,7 @@ macro_rules! entity_structs {
 #[table_name = "container_rev"]
 pub struct ContainerRevRow {
     pub id: i64,
-    //extra_json: Option<Json>,
+    //pub extra_json: Option<serde_json::Value>,
     pub name: String,
     pub parent_ident_id: Option<i64>,
     pub publisher: Option<String>,
