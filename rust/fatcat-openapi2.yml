@@ -41,7 +41,7 @@ x-entity-edit-props: &ENTITYEDITPROPS
 
 
 definitions:
-  error:
+  error_response:
     type: object
     required:
       - message
@@ -162,15 +162,15 @@ x-entity-responses: &ENTITYRESPONSES
   400:
     description: Bad Request
     schema:
-      $ref: "#/definitions/error"
+      $ref: "#/definitions/error_response"
   404:
     description: Not Found
     schema:
-      $ref: "#/definitions/error"
+      $ref: "#/definitions/error_response"
   default:
     description: Generic Error
     schema:
-      $ref: "#/definitions/error"
+      $ref: "#/definitions/error_response"
 
 paths:
   /creator:
@@ -375,11 +375,11 @@ paths:
         404:
           description: Not Found
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
         default:
           description: Generic Error
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
   /editor/{username}/changelog:
     parameters:
       - name: username
@@ -395,11 +395,11 @@ paths:
         404:
           description: Not Found
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
         default:
           description: Generic Error
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
   /editgroup:
     post:
       responses:
@@ -410,11 +410,11 @@ paths:
         400:
           description: Bad Request
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
         default:
           description: Generic Error
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
   /editgroup/{id}:
     parameters:
       - name: id
@@ -430,11 +430,11 @@ paths:
         404:
           description: Not Found
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
         default:
           description: Generic Error
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
   /editgroup/{id}/accept:
     parameters:
       - name: id
@@ -450,12 +450,12 @@ paths:
         400:
           description: Unmergable
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
         404:
           description: Not Found
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
         default:
           description: Generic Error
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"

@@ -191,14 +191,14 @@ impl EntityEdit {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct Error {
+pub struct ErrorResponse {
     #[serde(rename = "message")]
     pub message: String,
 }
 
-impl Error {
-    pub fn new(message: String) -> Error {
-        Error { message: message }
+impl ErrorResponse {
+    pub fn new(message: String) -> ErrorResponse {
+        ErrorResponse { message: message }
     }
 }
 

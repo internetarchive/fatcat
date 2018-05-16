@@ -42,29 +42,29 @@ paths:
         400:
           description: "Bad Request"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
           uppercase_operation_id: "CREATOR_POST"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
           description: "Not Found"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
           uppercase_operation_id: "CREATOR_POST"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
           description: "Generic Error"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "CREATOR_POST"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
       operation_id: "creator_post"
       uppercase_operation_id: "CREATOR_POST"
@@ -94,29 +94,29 @@ paths:
         400:
           description: "Bad Request"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
           uppercase_operation_id: "CREATOR_ID_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
           description: "Not Found"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
           uppercase_operation_id: "CREATOR_ID_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
           description: "Generic Error"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "CREATOR_ID_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
       operation_id: "creator_id_get"
       uppercase_operation_id: "CREATOR_ID_GET"
@@ -145,29 +145,29 @@ paths:
         400:
           description: "Bad Request"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
           uppercase_operation_id: "CREATOR_LOOKUP_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
           description: "Not Found"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
           uppercase_operation_id: "CREATOR_LOOKUP_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
           description: "Generic Error"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "CREATOR_LOOKUP_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
       operation_id: "creator_lookup_get"
       uppercase_operation_id: "CREATOR_LOOKUP_GET"
@@ -202,29 +202,29 @@ paths:
         400:
           description: "Bad Request"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
           uppercase_operation_id: "CONTAINER_POST"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
           description: "Not Found"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
           uppercase_operation_id: "CONTAINER_POST"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
           description: "Generic Error"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "CONTAINER_POST"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
       operation_id: "container_post"
       uppercase_operation_id: "CONTAINER_POST"
@@ -254,29 +254,29 @@ paths:
         400:
           description: "Bad Request"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
           uppercase_operation_id: "CONTAINER_ID_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
           description: "Not Found"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
           uppercase_operation_id: "CONTAINER_ID_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
           description: "Generic Error"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "CONTAINER_ID_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
       operation_id: "container_id_get"
       uppercase_operation_id: "CONTAINER_ID_GET"
@@ -305,29 +305,29 @@ paths:
         400:
           description: "Bad Request"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
           uppercase_operation_id: "CONTAINER_LOOKUP_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
           description: "Not Found"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
           uppercase_operation_id: "CONTAINER_LOOKUP_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
           description: "Generic Error"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "CONTAINER_LOOKUP_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
       operation_id: "container_lookup_get"
       uppercase_operation_id: "CONTAINER_LOOKUP_GET"
@@ -362,29 +362,29 @@ paths:
         400:
           description: "Bad Request"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
           uppercase_operation_id: "FILE_POST"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
           description: "Not Found"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
           uppercase_operation_id: "FILE_POST"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
           description: "Generic Error"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "FILE_POST"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
       operation_id: "file_post"
       uppercase_operation_id: "FILE_POST"
@@ -414,29 +414,29 @@ paths:
         400:
           description: "Bad Request"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
           uppercase_operation_id: "FILE_ID_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
           description: "Not Found"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
           uppercase_operation_id: "FILE_ID_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
           description: "Generic Error"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "FILE_ID_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
       operation_id: "file_id_get"
       uppercase_operation_id: "FILE_ID_GET"
@@ -465,29 +465,29 @@ paths:
         400:
           description: "Bad Request"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
           uppercase_operation_id: "FILE_LOOKUP_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
           description: "Not Found"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
           uppercase_operation_id: "FILE_LOOKUP_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
           description: "Generic Error"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "FILE_LOOKUP_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
       operation_id: "file_lookup_get"
       uppercase_operation_id: "FILE_LOOKUP_GET"
@@ -522,29 +522,29 @@ paths:
         400:
           description: "Bad Request"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
           uppercase_operation_id: "RELEASE_POST"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
           description: "Not Found"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
           uppercase_operation_id: "RELEASE_POST"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
           description: "Generic Error"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "RELEASE_POST"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
       operation_id: "release_post"
       uppercase_operation_id: "RELEASE_POST"
@@ -574,29 +574,29 @@ paths:
         400:
           description: "Bad Request"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
           uppercase_operation_id: "RELEASE_ID_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
           description: "Not Found"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
           uppercase_operation_id: "RELEASE_ID_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
           description: "Generic Error"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "RELEASE_ID_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
       operation_id: "release_id_get"
       uppercase_operation_id: "RELEASE_ID_GET"
@@ -625,29 +625,29 @@ paths:
         400:
           description: "Bad Request"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
           uppercase_operation_id: "RELEASE_LOOKUP_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
           description: "Not Found"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
           uppercase_operation_id: "RELEASE_LOOKUP_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
           description: "Generic Error"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "RELEASE_LOOKUP_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
       operation_id: "release_lookup_get"
       uppercase_operation_id: "RELEASE_LOOKUP_GET"
@@ -682,29 +682,29 @@ paths:
         400:
           description: "Bad Request"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
           uppercase_operation_id: "WORK_POST"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
           description: "Not Found"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
           uppercase_operation_id: "WORK_POST"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
           description: "Generic Error"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "WORK_POST"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
       operation_id: "work_post"
       uppercase_operation_id: "WORK_POST"
@@ -734,29 +734,29 @@ paths:
         400:
           description: "Bad Request"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
           uppercase_operation_id: "WORK_ID_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
           description: "Not Found"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
           uppercase_operation_id: "WORK_ID_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
           description: "Generic Error"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "WORK_ID_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
       operation_id: "work_id_get"
       uppercase_operation_id: "WORK_ID_GET"
@@ -785,20 +785,20 @@ paths:
         404:
           description: "Not Found"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
           uppercase_operation_id: "EDITOR_USERNAME_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
           description: "Generic Error"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "EDITOR_USERNAME_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
       operation_id: "editor_username_get"
       uppercase_operation_id: "EDITOR_USERNAME_GET"
@@ -827,20 +827,20 @@ paths:
         404:
           description: "Not Found"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
           uppercase_operation_id: "EDITOR_USERNAME_CHANGELOG_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
           description: "Generic Error"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "EDITOR_USERNAME_CHANGELOG_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
       operation_id: "editor_username_changelog_get"
       uppercase_operation_id: "EDITOR_USERNAME_CHANGELOG_GET"
@@ -863,20 +863,20 @@ paths:
         400:
           description: "Bad Request"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
           uppercase_operation_id: "EDITGROUP_POST"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
           description: "Generic Error"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "EDITGROUP_POST"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
       operation_id: "editgroup_post"
       uppercase_operation_id: "EDITGROUP_POST"
@@ -905,20 +905,20 @@ paths:
         404:
           description: "Not Found"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
           uppercase_operation_id: "EDITGROUP_ID_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
           description: "Generic Error"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "EDITGROUP_ID_GET"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
       operation_id: "editgroup_id_get"
       uppercase_operation_id: "EDITGROUP_ID_GET"
@@ -947,29 +947,29 @@ paths:
         400:
           description: "Unmergable"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "Unmergable"
           x-uppercaseResponseId: "UNMERGABLE"
           uppercase_operation_id: "EDITGROUP_ID_ACCEPT_POST"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
           description: "Not Found"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
           uppercase_operation_id: "EDITGROUP_ID_ACCEPT_POST"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
           description: "Generic Error"
           schema:
-            $ref: "#/definitions/error"
+            $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "EDITGROUP_ID_ACCEPT_POST"
-          uppercase_data_type: "ERROR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
       operation_id: "editgroup_id_accept_post"
       uppercase_operation_id: "EDITGROUP_ID_ACCEPT_POST"
@@ -977,14 +977,14 @@ paths:
       HttpMethod: "Post"
       httpmethod: "post"
 definitions:
-  error:
+  error_response:
     type: "object"
     required:
     - "message"
     properties:
       message:
         type: "string"
-    upperCaseName: "ERROR"
+    upperCaseName: "ERROR_RESPONSE"
   success:
     type: "object"
     required:
@@ -1265,12 +1265,12 @@ x-entity-responses:
   400:
     description: "Bad Request"
     schema:
-      $ref: "#/definitions/error"
+      $ref: "#/definitions/error_response"
   404:
     description: "Not Found"
     schema:
-      $ref: "#/definitions/error"
+      $ref: "#/definitions/error_response"
   default:
     description: "Generic Error"
     schema:
-      $ref: "#/definitions/error"
+      $ref: "#/definitions/error_response"

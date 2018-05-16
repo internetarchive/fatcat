@@ -37,11 +37,11 @@ pub enum ContainerIdGetResponse {
     /// Found Entity
     FoundEntity(models::ContainerEntity),
     /// Bad Request
-    BadRequest(models::Error),
+    BadRequest(models::ErrorResponse),
     /// Not Found
-    NotFound(models::Error),
+    NotFound(models::ErrorResponse),
     /// Generic Error
-    GenericError(models::Error),
+    GenericError(models::ErrorResponse),
 }
 
 #[derive(Debug, PartialEq)]
@@ -49,11 +49,11 @@ pub enum ContainerLookupGetResponse {
     /// Found Entity
     FoundEntity(models::ContainerEntity),
     /// Bad Request
-    BadRequest(models::Error),
+    BadRequest(models::ErrorResponse),
     /// Not Found
-    NotFound(models::Error),
+    NotFound(models::ErrorResponse),
     /// Generic Error
-    GenericError(models::Error),
+    GenericError(models::ErrorResponse),
 }
 
 #[derive(Debug, PartialEq)]
@@ -61,11 +61,11 @@ pub enum ContainerPostResponse {
     /// Created Entity
     CreatedEntity(models::EntityEdit),
     /// Bad Request
-    BadRequest(models::Error),
+    BadRequest(models::ErrorResponse),
     /// Not Found
-    NotFound(models::Error),
+    NotFound(models::ErrorResponse),
     /// Generic Error
-    GenericError(models::Error),
+    GenericError(models::ErrorResponse),
 }
 
 #[derive(Debug, PartialEq)]
@@ -73,11 +73,11 @@ pub enum CreatorIdGetResponse {
     /// Found Entity
     FoundEntity(models::CreatorEntity),
     /// Bad Request
-    BadRequest(models::Error),
+    BadRequest(models::ErrorResponse),
     /// Not Found
-    NotFound(models::Error),
+    NotFound(models::ErrorResponse),
     /// Generic Error
-    GenericError(models::Error),
+    GenericError(models::ErrorResponse),
 }
 
 #[derive(Debug, PartialEq)]
@@ -85,11 +85,11 @@ pub enum CreatorLookupGetResponse {
     /// Found Entity
     FoundEntity(models::CreatorEntity),
     /// Bad Request
-    BadRequest(models::Error),
+    BadRequest(models::ErrorResponse),
     /// Not Found
-    NotFound(models::Error),
+    NotFound(models::ErrorResponse),
     /// Generic Error
-    GenericError(models::Error),
+    GenericError(models::ErrorResponse),
 }
 
 #[derive(Debug, PartialEq)]
@@ -97,11 +97,11 @@ pub enum CreatorPostResponse {
     /// Created Entity
     CreatedEntity(models::EntityEdit),
     /// Bad Request
-    BadRequest(models::Error),
+    BadRequest(models::ErrorResponse),
     /// Not Found
-    NotFound(models::Error),
+    NotFound(models::ErrorResponse),
     /// Generic Error
-    GenericError(models::Error),
+    GenericError(models::ErrorResponse),
 }
 
 #[derive(Debug, PartialEq)]
@@ -109,11 +109,11 @@ pub enum EditgroupIdAcceptPostResponse {
     /// Merged Successfully
     MergedSuccessfully(models::Success),
     /// Unmergable
-    Unmergable(models::Error),
+    Unmergable(models::ErrorResponse),
     /// Not Found
-    NotFound(models::Error),
+    NotFound(models::ErrorResponse),
     /// Generic Error
-    GenericError(models::Error),
+    GenericError(models::ErrorResponse),
 }
 
 #[derive(Debug, PartialEq)]
@@ -121,9 +121,9 @@ pub enum EditgroupIdGetResponse {
     /// Found Editgroup
     FoundEditgroup(models::Editgroup),
     /// Not Found
-    NotFound(models::Error),
+    NotFound(models::ErrorResponse),
     /// Generic Error
-    GenericError(models::Error),
+    GenericError(models::ErrorResponse),
 }
 
 #[derive(Debug, PartialEq)]
@@ -131,9 +131,9 @@ pub enum EditgroupPostResponse {
     /// Successfully Created
     SuccessfullyCreated(models::Editgroup),
     /// Bad Request
-    BadRequest(models::Error),
+    BadRequest(models::ErrorResponse),
     /// Generic Error
-    GenericError(models::Error),
+    GenericError(models::ErrorResponse),
 }
 
 #[derive(Debug, PartialEq)]
@@ -141,9 +141,9 @@ pub enum EditorUsernameChangelogGetResponse {
     /// Found Merged Changes
     FoundMergedChanges(models::Changelogentry),
     /// Not Found
-    NotFound(models::Error),
+    NotFound(models::ErrorResponse),
     /// Generic Error
-    GenericError(models::Error),
+    GenericError(models::ErrorResponse),
 }
 
 #[derive(Debug, PartialEq)]
@@ -151,9 +151,9 @@ pub enum EditorUsernameGetResponse {
     /// Found Editor
     FoundEditor(models::Editor),
     /// Not Found
-    NotFound(models::Error),
+    NotFound(models::ErrorResponse),
     /// Generic Error
-    GenericError(models::Error),
+    GenericError(models::ErrorResponse),
 }
 
 #[derive(Debug, PartialEq)]
@@ -161,11 +161,11 @@ pub enum FileIdGetResponse {
     /// Found Entity
     FoundEntity(models::FileEntity),
     /// Bad Request
-    BadRequest(models::Error),
+    BadRequest(models::ErrorResponse),
     /// Not Found
-    NotFound(models::Error),
+    NotFound(models::ErrorResponse),
     /// Generic Error
-    GenericError(models::Error),
+    GenericError(models::ErrorResponse),
 }
 
 #[derive(Debug, PartialEq)]
@@ -173,11 +173,11 @@ pub enum FileLookupGetResponse {
     /// Found Entity
     FoundEntity(models::FileEntity),
     /// Bad Request
-    BadRequest(models::Error),
+    BadRequest(models::ErrorResponse),
     /// Not Found
-    NotFound(models::Error),
+    NotFound(models::ErrorResponse),
     /// Generic Error
-    GenericError(models::Error),
+    GenericError(models::ErrorResponse),
 }
 
 #[derive(Debug, PartialEq)]
@@ -185,11 +185,11 @@ pub enum FilePostResponse {
     /// Created Entity
     CreatedEntity(models::EntityEdit),
     /// Bad Request
-    BadRequest(models::Error),
+    BadRequest(models::ErrorResponse),
     /// Not Found
-    NotFound(models::Error),
+    NotFound(models::ErrorResponse),
     /// Generic Error
-    GenericError(models::Error),
+    GenericError(models::ErrorResponse),
 }
 
 #[derive(Debug, PartialEq)]
@@ -197,11 +197,11 @@ pub enum ReleaseIdGetResponse {
     /// Found Entity
     FoundEntity(models::ReleaseEntity),
     /// Bad Request
-    BadRequest(models::Error),
+    BadRequest(models::ErrorResponse),
     /// Not Found
-    NotFound(models::Error),
+    NotFound(models::ErrorResponse),
     /// Generic Error
-    GenericError(models::Error),
+    GenericError(models::ErrorResponse),
 }
 
 #[derive(Debug, PartialEq)]
@@ -209,11 +209,11 @@ pub enum ReleaseLookupGetResponse {
     /// Found Entity
     FoundEntity(models::ReleaseEntity),
     /// Bad Request
-    BadRequest(models::Error),
+    BadRequest(models::ErrorResponse),
     /// Not Found
-    NotFound(models::Error),
+    NotFound(models::ErrorResponse),
     /// Generic Error
-    GenericError(models::Error),
+    GenericError(models::ErrorResponse),
 }
 
 #[derive(Debug, PartialEq)]
@@ -221,11 +221,11 @@ pub enum ReleasePostResponse {
     /// Created Entity
     CreatedEntity(models::EntityEdit),
     /// Bad Request
-    BadRequest(models::Error),
+    BadRequest(models::ErrorResponse),
     /// Not Found
-    NotFound(models::Error),
+    NotFound(models::ErrorResponse),
     /// Generic Error
-    GenericError(models::Error),
+    GenericError(models::ErrorResponse),
 }
 
 #[derive(Debug, PartialEq)]
@@ -233,11 +233,11 @@ pub enum WorkIdGetResponse {
     /// Found Entity
     FoundEntity(models::WorkEntity),
     /// Bad Request
-    BadRequest(models::Error),
+    BadRequest(models::ErrorResponse),
     /// Not Found
-    NotFound(models::Error),
+    NotFound(models::ErrorResponse),
     /// Generic Error
-    GenericError(models::Error),
+    GenericError(models::ErrorResponse),
 }
 
 #[derive(Debug, PartialEq)]
@@ -245,11 +245,11 @@ pub enum WorkPostResponse {
     /// Created Entity
     CreatedEntity(models::EntityEdit),
     /// Bad Request
-    BadRequest(models::Error),
+    BadRequest(models::ErrorResponse),
     /// Not Found
-    NotFound(models::Error),
+    NotFound(models::ErrorResponse),
     /// Generic Error
-    GenericError(models::Error),
+    GenericError(models::ErrorResponse),
 }
 
 /// API
