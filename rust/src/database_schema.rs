@@ -2,14 +2,14 @@ table! {
     changelog (id) {
         id -> Int8,
         editgroup_id -> Int8,
-        timestamp -> Nullable<Timestamp>,
+        timestamp -> Timestamp,
     }
 }
 
 table! {
     container_edit (id) {
         id -> Int8,
-        extra_json -> Nullable<Json>,
+        extra_json -> Nullable<Jsonb>,
         ident_id -> Uuid,
         rev_id -> Nullable<Int8>,
         redirect_id -> Nullable<Uuid>,
@@ -29,8 +29,8 @@ table! {
 table! {
     container_rev (id) {
         id -> Int8,
-        extra_json -> Nullable<Json>,
-        name -> Nullable<Text>,
+        extra_json -> Nullable<Jsonb>,
+        name -> Text,
         parent_ident_id -> Nullable<Int8>,
         publisher -> Nullable<Text>,
         issn -> Nullable<Text>,
@@ -40,7 +40,7 @@ table! {
 table! {
     creator_edit (id) {
         id -> Int8,
-        extra_json -> Nullable<Json>,
+        extra_json -> Nullable<Jsonb>,
         ident_id -> Uuid,
         rev_id -> Nullable<Int8>,
         redirect_id -> Nullable<Uuid>,
@@ -60,8 +60,8 @@ table! {
 table! {
     creator_rev (id) {
         id -> Int8,
-        extra_json -> Nullable<Json>,
-        name -> Nullable<Text>,
+        extra_json -> Nullable<Jsonb>,
+        name -> Text,
         orcid -> Nullable<Text>,
     }
 }
@@ -69,7 +69,7 @@ table! {
 table! {
     editgroup (id) {
         id -> Int8,
-        extra_json -> Nullable<Json>,
+        extra_json -> Nullable<Jsonb>,
         editor_id -> Int8,
         description -> Nullable<Text>,
     }
@@ -87,7 +87,7 @@ table! {
 table! {
     file_edit (id) {
         id -> Int8,
-        extra_json -> Nullable<Json>,
+        extra_json -> Nullable<Jsonb>,
         ident_id -> Uuid,
         rev_id -> Nullable<Int8>,
         redirect_id -> Nullable<Uuid>,
@@ -105,8 +105,7 @@ table! {
 }
 
 table! {
-    file_release (id) {
-        id -> Int8,
+    file_release (file_rev, target_release_ident_id) {
         file_rev -> Int8,
         target_release_ident_id -> Uuid,
     }
@@ -115,7 +114,7 @@ table! {
 table! {
     file_rev (id) {
         id -> Int8,
-        extra_json -> Nullable<Json>,
+        extra_json -> Nullable<Jsonb>,
         size -> Nullable<Int4>,
         sha1 -> Nullable<Text>,
         url -> Nullable<Text>,
@@ -135,7 +134,7 @@ table! {
 table! {
     release_edit (id) {
         id -> Int8,
-        extra_json -> Nullable<Json>,
+        extra_json -> Nullable<Jsonb>,
         ident_id -> Uuid,
         rev_id -> Nullable<Int8>,
         redirect_id -> Nullable<Uuid>,
@@ -165,12 +164,12 @@ table! {
 table! {
     release_rev (id) {
         id -> Int8,
-        extra_json -> Nullable<Json>,
-        work_ident_id -> Nullable<Uuid>,
+        extra_json -> Nullable<Jsonb>,
+        work_ident_id -> Uuid,
         container_ident_id -> Nullable<Uuid>,
-        title -> Nullable<Text>,
+        title -> Text,
         license -> Nullable<Text>,
-        release_type -> Nullable<Text>,
+        release_type -> Text,
         date -> Nullable<Text>,
         doi -> Nullable<Text>,
         volume -> Nullable<Text>,
@@ -182,7 +181,7 @@ table! {
 table! {
     work_edit (id) {
         id -> Int8,
-        extra_json -> Nullable<Json>,
+        extra_json -> Nullable<Jsonb>,
         ident_id -> Uuid,
         rev_id -> Nullable<Int8>,
         redirect_id -> Nullable<Uuid>,
@@ -202,7 +201,7 @@ table! {
 table! {
     work_rev (id) {
         id -> Int8,
-        extra_json -> Nullable<Json>,
+        extra_json -> Nullable<Jsonb>,
         work_type -> Nullable<Text>,
         primary_release_id -> Nullable<Uuid>,
     }
@@ -225,7 +224,7 @@ joinable!(release_contrib -> release_rev (release_rev));
 joinable!(release_edit -> editgroup (editgroup_id));
 joinable!(release_edit -> release_rev (rev_id));
 joinable!(release_ident -> release_rev (rev_id));
-joinable!(release_ref -> creator_ident (target_release_ident_id));
+joinable!(release_ref -> release_ident (target_release_ident_id));
 joinable!(release_ref -> release_rev (release_rev));
 joinable!(release_rev -> container_ident (container_ident_id));
 joinable!(release_rev -> work_ident (work_ident_id));

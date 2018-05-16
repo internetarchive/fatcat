@@ -29,7 +29,7 @@ ALTER TABLE editor
 CREATE TABLE changelog (
     id                  BIGSERIAL PRIMARY KEY,
     editgroup_id        BIGINT REFERENCES editgroup(id) NOT NULL,
-    timestamp           TIMESTAMP WITHOUT TIME ZONE DEFAULT now()
+    timestamp           TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL
 );
 
 -------------------- Creators -----------------------------------------------
@@ -37,7 +37,7 @@ CREATE TABLE creator_rev (
     id                  BIGSERIAL PRIMARY KEY,
     extra_json          JSONB,
 
-    name                TEXT,
+    name                TEXT NOT NULL,
     orcid               TEXT
 );
 
@@ -66,7 +66,7 @@ CREATE TABLE container_rev (
     id                  BIGSERIAL PRIMARY KEY,
     extra_json          JSONB,
 
-    name                TEXT,
+    name                TEXT NOT NULL,
     parent_ident_id     BIGINT REFERENCES container_rev(id),
     publisher           TEXT,
     issn                TEXT -- TODO: varchar
@@ -119,11 +119,11 @@ CREATE TABLE release_rev (
     id                  BIGSERIAL PRIMARY KEY,
     extra_json          JSONB,
 
-    work_ident_id       UUID, -- FOREIGN KEY; see ALRTER below
+    work_ident_id       UUID NOT NULL, -- FOREIGN KEY; see ALRTER below
     container_ident_id  UUID REFERENCES container_ident(id),
-    title               TEXT,
+    title               TEXT NOT NULL,
     license             TEXT, -- TODO: ?
-    release_type        TEXT, -- TODO: enum
+    release_type        TEXT NOT NULL, -- TODO: enum
     date                TEXT, -- XXX: datetime
     doi                 TEXT, -- TODO: identifier table?
     volume              TEXT,
@@ -189,11 +189,11 @@ CREATE TABLE release_contrib (
 );
 
 CREATE TABLE release_ref (
+    id                      BIGSERIAL PRIMARY KEY,
     release_rev             BIGSERIAL REFERENCES release_rev(id) NOT NULL,
-    target_release_ident_id UUID REFERENCES creator_ident(id),
+    target_release_ident_id UUID REFERENCES release_ident(id), -- or work?
     index                   INTEGER,
     stub                    TEXT
-    PRIMARY KEY (release_rev, target_release_ident_id)
 );
 
 CREATE TABLE file_release (
