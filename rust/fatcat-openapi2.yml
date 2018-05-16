@@ -160,11 +160,11 @@ definitions:
 
 x-entity-responses: &ENTITYRESPONSES
   400:
-    description: bad request
+    description: Bad Request
     schema:
       $ref: "#/definitions/error"
   default:
-    description: generic error response
+    description: Generic Error
     schema:
       $ref: "#/definitions/error"
 
@@ -179,7 +179,7 @@ paths:
             $ref: "#/definitions/creator_entity"
       responses:
         201:
-          description: created
+          description: Created Entity
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
@@ -192,7 +192,7 @@ paths:
     get:
       responses:
         200:
-          description: fetch a single creator by id
+          description: Found Entity
           schema:
             $ref: "#/definitions/creator_entity"
         <<: *ENTITYRESPONSES
@@ -205,7 +205,7 @@ paths:
           required: true
       responses:
         200:
-          description: find a single creator by external identifer
+          description: Found Entity
           schema:
             $ref: "#/definitions/creator_entity"
         404:
@@ -223,7 +223,7 @@ paths:
             $ref: "#/definitions/container_entity"
       responses:
         201:
-          description: created
+          description: Created Entity
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
@@ -236,7 +236,7 @@ paths:
     get:
       responses:
         200:
-          description: fetch a single container by id
+          description: Found Entity
           schema:
             $ref: "#/definitions/container_entity"
         <<: *ENTITYRESPONSES
@@ -249,13 +249,9 @@ paths:
           required: true
       responses:
         200:
-          description: find a single container by external identifer
+          description: Found Entity
           schema:
             $ref: "#/definitions/container_entity"
-        404:
-          description: no such container
-          schema:
-            $ref: "#/definitions/error"
         <<: *ENTITYRESPONSES
   /file:
     post:
@@ -267,7 +263,7 @@ paths:
             $ref: "#/definitions/file_entity"
       responses:
         201:
-          description: created
+          description: Created Entity
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
@@ -280,7 +276,7 @@ paths:
     get:
       responses:
         200:
-          description: fetch a single file by id
+          description: Found Entity
           schema:
             $ref: "#/definitions/file_entity"
         <<: *ENTITYRESPONSES
@@ -293,13 +289,9 @@ paths:
           required: true
       responses:
         200:
-          description: find a single file by external identifer
+          description: Found Entity
           schema:
             $ref: "#/definitions/file_entity"
-        404:
-          description: no such file
-          schema:
-            $ref: "#/definitions/error"
         <<: *ENTITYRESPONSES
   /release:
     post:
@@ -311,7 +303,7 @@ paths:
             $ref: "#/definitions/release_entity"
       responses:
         201:
-          description: created
+          description: Created Entity
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
@@ -324,7 +316,7 @@ paths:
     get:
       responses:
         200:
-          description: fetch a single release by id
+          description: Found Entity
           schema:
             $ref: "#/definitions/release_entity"
         <<: *ENTITYRESPONSES
@@ -337,13 +329,9 @@ paths:
           required: true
       responses:
         200:
-          description: find a single release by external identifer
+          description: Found Entity
           schema:
             $ref: "#/definitions/release_entity"
-        404:
-          description: no such release
-          schema:
-            $ref: "#/definitions/error"
         <<: *ENTITYRESPONSES
   /work:
     post:
@@ -355,7 +343,7 @@ paths:
             $ref: "#/definitions/work_entity"
       responses:
         201:
-          description: created
+          description: Created Entity
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
@@ -368,7 +356,7 @@ paths:
     get:
       responses:
         200:
-          description: fetch a single work by id
+          description: Found Entity
           schema:
             $ref: "#/definitions/work_entity"
         <<: *ENTITYRESPONSES
@@ -381,15 +369,15 @@ paths:
     get:
       responses:
         200:
-          description: fetch generic information about an editor
+          description: Found Editor
           schema:
             $ref: "#/definitions/editor"
         404:
-          description: username not found
+          description: Not Found
           schema:
             $ref: "#/definitions/error"
         default:
-          description: generic error response
+          description: Generic Error
           schema:
             $ref: "#/definitions/error"
   /editor/{username}/changelog:
@@ -401,30 +389,30 @@ paths:
     get:
       responses:
         200:
-          description: find changes (editgroups) by this editor which have been merged
+          description: Found Merged Changes
           schema:
             $ref: "#/definitions/changelogentry"
         404:
-          description: username not found
+          description: Not Found
           schema:
             $ref: "#/definitions/error"
         default:
-          description: generic error response
+          description: Generic Error
           schema:
             $ref: "#/definitions/error"
   /editgroup:
     post:
       responses:
         201:
-          description: successfully created
+          description: Successfully Created
           schema:
             $ref: "#/definitions/editgroup"
         400:
-          description: invalid request parameters
+          description: Bad Request
           schema:
             $ref: "#/definitions/error"
         default:
-          description: generic error response
+          description: Generic Error
           schema:
             $ref: "#/definitions/error"
   /editgroup/{id}:
@@ -436,15 +424,15 @@ paths:
     get:
       responses:
         200:
-          description: fetch editgroup by identifier
+          description: Found Editgroup
           schema:
             $ref: "#/definitions/editgroup"
         404:
-          description: no such editgroup
+          description: Not Found
           schema:
             $ref: "#/definitions/error"
         default:
-          description: generic error response
+          description: Generic Error
           schema:
             $ref: "#/definitions/error"
   /editgroup/{id}/accept:
@@ -456,18 +444,18 @@ paths:
     post:
       responses:
         200:
-          description: merged editgroup successfully ("live")
+          description: Merged Successfully
           schema:
             $ref: "#/definitions/success"
         400:
-          description: editgroup is in an unmergable state
+          description: Unmergable
           schema:
             $ref: "#/definitions/error"
         404:
-          description: no such editgroup
+          description: Not Found
           schema:
             $ref: "#/definitions/error"
         default:
-          description: generic error response
+          description: Generic Error
           schema:
             $ref: "#/definitions/error"
