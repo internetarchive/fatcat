@@ -35,10 +35,11 @@ impl Api for Server {
         let id = match uuid::Uuid::parse_str(&id) {
             Ok(some_uuid) => some_uuid,
             Err(_) => {
-                return Box::new(futures::done(Ok(
-                    ContainerIdGetResponse::BadRequest(
-                        Error { message: "Failed to parse UUID".to_string() }
-                    ))));
+                return Box::new(futures::done(Ok(ContainerIdGetResponse::BadRequest(
+                    Error {
+                        message: "Failed to parse UUID".to_string(),
+                    },
+                ))));
             }
         };
 
@@ -53,26 +54,27 @@ impl Api for Server {
                 return Box::new(futures::done(Ok(
                     // TODO: UGH, need to add 404 responses everywhere, not 400
                     //ContainerIdGetResponse::NotFound(
-                    ContainerIdGetResponse::BadRequest(
-                        Error { message: "No such container".to_string() }
-                    ))));
+                    ContainerIdGetResponse::BadRequest(Error {
+                        message: "No such container".to_string(),
+                    }),
+                )));
             }
         };
 
         let entity = ContainerEntity {
             issn: rev.issn,
             publisher: rev.publisher,
-            parent: None,         // TODO:
+            parent: None, // TODO:
             name: rev.name,
-            state: None,          // TODO:
+            state: None, // TODO:
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id.map(|v| v as isize),
             redirect: ident.redirect_id.map(|u| u.to_string()),
             editgroup: None,
         };
-        Box::new(futures::done(Ok(
-            ContainerIdGetResponse::FetchASingleContainerById(entity),
-        )))
+        Box::new(futures::done(Ok(ContainerIdGetResponse::FoundEntity(
+            entity,
+        ))))
     }
 
     fn container_lookup_get(
@@ -93,26 +95,27 @@ impl Api for Server {
                 return Box::new(futures::done(Ok(
                     // TODO: UGH, need to add 404 responses everywhere, not 400
                     //ContainerIdGetResponse::NotFound(
-                    ContainerLookupGetResponse::BadRequest(
-                        Error { message: "No such container".to_string() }
-                    ))));
+                    ContainerLookupGetResponse::BadRequest(Error {
+                        message: "No such container".to_string(),
+                    }),
+                )));
             }
         };
 
         let entity = ContainerEntity {
             issn: rev.issn,
             publisher: rev.publisher,
-            parent: None,         // TODO:
+            parent: None, // TODO:
             name: rev.name,
-            state: None,          // TODO:
+            state: None, // TODO:
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id.map(|v| v as isize),
             redirect: ident.redirect_id.map(|u| u.to_string()),
             editgroup: None,
         };
-        Box::new(futures::done(Ok(
-            ContainerLookupGetResponse::FindASingleContainerByExternalIdentifer(entity),
-        )))
+        Box::new(futures::done(Ok(ContainerLookupGetResponse::FoundEntity(
+            entity,
+        ))))
     }
 
     fn container_post(
@@ -153,7 +156,7 @@ impl Api for Server {
             ident: Some(edit.ident_id.to_string()),
             edit_id: Some(edit.id as isize),
         };
-        Box::new(futures::done(Ok(ContainerPostResponse::Created(
+        Box::new(futures::done(Ok(ContainerPostResponse::CreatedEntity(
             entity_edit,
         ))))
     }
@@ -173,9 +176,7 @@ impl Api for Server {
             redirect: None,
             editgroup: None,
         };
-        Box::new(futures::done(Ok(
-            CreatorIdGetResponse::FetchASingleCreatorById(ce),
-        )))
+        Box::new(futures::done(Ok(CreatorIdGetResponse::FoundEntity(ce))))
     }
 
     fn creator_lookup_get(
