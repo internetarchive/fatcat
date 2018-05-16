@@ -189,15 +189,15 @@ CREATE TABLE release_contrib (
 );
 
 CREATE TABLE release_ref (
-    id                      BIGSERIAL PRIMARY KEY,
     release_rev             BIGSERIAL REFERENCES release_rev(id) NOT NULL,
     target_release_ident_id UUID REFERENCES creator_ident(id),
     index                   INTEGER,
     stub                    TEXT
+    PRIMARY KEY (release_rev, target_release_ident_id)
 );
 
 CREATE TABLE file_release (
-    id                      BIGSERIAL PRIMARY KEY,
     file_rev                BIGSERIAL REFERENCES file_rev(id) NOT NULL,
-    target_release_ident_id UUID REFERENCES creator_ident(id) NOT NULL
+    target_release_ident_id UUID REFERENCES creator_ident(id) NOT NULL,
+    PRIMARY KEY (file_rev, target_release_ident_id)
 );
