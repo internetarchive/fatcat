@@ -163,6 +163,10 @@ x-entity-responses: &ENTITYRESPONSES
     description: Bad Request
     schema:
       $ref: "#/definitions/error"
+  404:
+    description: Not Found
+    schema:
+      $ref: "#/definitions/error"
   default:
     description: Generic Error
     schema:
@@ -208,10 +212,6 @@ paths:
           description: Found Entity
           schema:
             $ref: "#/definitions/creator_entity"
-        404:
-          description: no such creator
-          schema:
-            $ref: "#/definitions/error"
         <<: *ENTITYRESPONSES
   /container:
     post:

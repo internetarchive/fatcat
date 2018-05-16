@@ -6,9 +6,9 @@ x iron-slog
 x integrate API server example into a main.rs
 x get and post for creators
 x cleanup pooled database: https://github.com/diesel-rs/diesel/pull/1466
-- clean up blasse error handling a bit
-- add 404s to gets
-- wow. fix a bunch of api schema names ("FindASingleContainerByExternalIdentifer")
+x clean up blasse error handling a bit
+x add 404s to gets
+x wow. fix a bunch of api schema names ("FindASingleContainerByExternalIdentifer")
 - creators, releases, works, files (?)
 - one-to-many relationship (eg, works)
 - many-to-many relationship (eg, creators)
