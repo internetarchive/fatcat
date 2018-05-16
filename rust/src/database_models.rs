@@ -1,4 +1,5 @@
 
+use chrono;
 use uuid::Uuid;
 //use diesel::prelude::*;
 
@@ -7,216 +8,151 @@ use database_schema::*;
 // Ugh. I thought the whole point was to *not* do this, but:
 // https://github.com/diesel-rs/diesel/issues/1589
 
-/*
-table! {
-    changelog (id) {
-        id -> Int8,
-        editgroup_id -> Int8,
-        timestamp -> Nullable<Timestamp>,
-    }
-}
-*/
+// Helper for constructing tables
+macro_rules! entity_structs {
+    ($edit_table:expr, $edit_struct:ident, $ident_table:expr, $ident_struct:ident) => (
 
-#[derive(Debug, Queryable, Identifiable, Associations)] // AsChangeset
-#[table_name = "container_edit"]
-pub struct ContainerEditRow {
-    pub id: i64,
-    pub ident_id: Uuid,
-    pub rev_id: Option<i64>,
-    pub redirect_id: Option<Uuid>,
-    pub editgroup_id: i64,
-    //pub extra_json: Option<Json>,
-}
+        #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
+        #[table_name = $edit_table]
+        pub struct $edit_struct {
+            pub id: i64,
+            pub ident_id: Uuid,
+            pub rev_id: Option<i64>,
+            pub redirect_id: Option<Uuid>,
+            pub editgroup_id: i64,
+            //pub extra_json: Option<Json>,
+        }
 
-#[derive(Debug, Queryable, Identifiable, Associations)] // AsChangeset
-#[table_name = "container_ident"]
-pub struct ContainerIdentRow {
-    pub id: Uuid,
-    pub is_live: bool,
-    pub rev_id: Option<i64>,
-    pub redirect_id: Option<Uuid>,
+        #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
+        #[table_name = $ident_table]
+        pub struct $ident_struct {
+            pub id: Uuid,
+            pub is_live: bool,
+            pub rev_id: Option<i64>,
+            pub redirect_id: Option<Uuid>,
+        }
+    )
 }
 
-#[derive(Debug, Queryable, Identifiable, Associations)] // AsChangeset
+#[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
 #[table_name = "container_rev"]
 pub struct ContainerRevRow {
     pub id: i64,
     //extra_json: Option<Json>,
-    pub name: Option<String>,
+    pub name: String,
     pub parent_ident_id: Option<i64>,
     pub publisher: Option<String>,
     pub issn: Option<String>,
 }
 
+entity_structs!("container_edit", ContainerEditRow, "container_ident", ContainerIdentRow);
+
+#[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
+#[table_name = "creator_rev"]
+pub struct CreatorRevRow {
+    pub id: i64,
+    //extra_json: Option<Json>,
+    pub name: String,
+    pub orcid: Option<String>,
+}
+
+entity_structs!("creator_edit", CreatorEditRow, "creator_ident", CreatorIdentRow);
+
+#[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
+#[table_name = "file_rev"]
+pub struct FileRevRow {
+    pub id: i64,
+    //extra_json: Option<Json>,
+    pub size: Option<i32>,
+    pub sha1: Option<String>,
+    pub url: Option<String>,
+}
+
+entity_structs!("file_edit", FileEditRow, "file_ident", FileIdentRow);
+
+#[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
+#[table_name = "release_rev"]
+pub struct ReleaseRevRow {
+    pub id: i64,
+    //extra_json: Option<Json>,
+    pub work_ident_id: Option<Uuid>,
+    pub container_ident_id: Option<Uuid>,
+    pub title: Option<String>,
+    pub license: Option<String>,
+    pub release_type: Option<String>,
+    pub date: Option<String>,
+    pub doi: Option<String>,
+    pub volume: Option<String>,
+    pub pages: Option<String>,
+    pub issue: Option<String>,
+}
+
+entity_structs!("release_edit", ReleaseEditRow, "release_ident", ReleaseIdentRow);
+
+#[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
+#[table_name = "work_rev"]
+pub struct WorkRevRow {
+    pub id: i64,
+    //extra_json: Option<Json>,
+    pub work_type: Option<String>,
+    pub primary_release_id: Option<Uuid>,
+}
+
+entity_structs!("work_edit", WorkEditRow, "work_ident", WorkIdentRow);
+
+#[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
+#[table_name = "release_contrib"]
+pub struct ReleaseContribRow {
+    id: i64,
+    release_rev: i64,
+    creator_ident_id: Option<Uuid>,
+    stub: Option<String>,
+    contrib_type: Option<String>,
+}
+
+
+#[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
+#[table_name = "release_ref"]
+pub struct ReleaseRefRow {
+    id: i64,
+    release_rev: i64,
+    target_release_ident_id: Option<Uuid>,
+    index: Option<i32>,
+    stub: Option<String>,
+}
+
 /*
-table! {
-    creator_edit (id) {
-        id -> Int8,
-        extra_json -> Nullable<Json>,
-        ident_id -> Uuid,
-        rev_id -> Nullable<Int8>,
-        redirect_id -> Nullable<Uuid>,
-        editgroup_id -> Int8,
-    }
-}
-
-table! {
-    creator_ident (id) {
-        id -> Uuid,
-        is_live -> Bool,
-        rev_id -> Nullable<Int8>,
-        redirect_id -> Nullable<Uuid>,
-    }
-}
-
-table! {
-    creator_rev (id) {
-        id -> Int8,
-        extra_json -> Nullable<Json>,
-        name -> Nullable<Text>,
-        orcid -> Nullable<Text>,
-    }
-}
-
-table! {
-    editgroup (id) {
-        id -> Int8,
-        extra_json -> Nullable<Json>,
-        editor_id -> Int8,
-        description -> Nullable<Text>,
-    }
-}
-
-table! {
-    editor (id) {
-        id -> Int8,
-        username -> Text,
-        is_admin -> Bool,
-        active_editgroup_id -> Nullable<Int8>,
-    }
-}
-
-table! {
-    file_edit (id) {
-        id -> Int8,
-        extra_json -> Nullable<Json>,
-        ident_id -> Uuid,
-        rev_id -> Nullable<Int8>,
-        redirect_id -> Nullable<Uuid>,
-        editgroup_id -> Int8,
-    }
-}
-
-table! {
-    file_ident (id) {
-        id -> Uuid,
-        is_live -> Bool,
-        rev_id -> Nullable<Int8>,
-        redirect_id -> Nullable<Uuid>,
-    }
-}
-
-table! {
-    file_release (id) {
-        id -> Int8,
-        file_rev -> Int8,
-        target_release_ident_id -> Uuid,
-    }
-}
-
-table! {
-    file_rev (id) {
-        id -> Int8,
-        extra_json -> Nullable<Json>,
-        size -> Nullable<Int4>,
-        sha1 -> Nullable<Text>,
-        url -> Nullable<Text>,
-    }
-}
-
-table! {
-    release_contrib (id) {
-        id -> Int8,
-        release_rev -> Int8,
-        creator_ident_id -> Nullable<Uuid>,
-        stub -> Nullable<Text>,
-        contrib_type -> Nullable<Text>,
-    }
-}
-
-table! {
-    release_edit (id) {
-        id -> Int8,
-        extra_json -> Nullable<Json>,
-        ident_id -> Uuid,
-        rev_id -> Nullable<Int8>,
-        redirect_id -> Nullable<Uuid>,
-        editgroup_id -> Int8,
-    }
-}
-
-table! {
-    release_ident (id) {
-        id -> Uuid,
-        is_live -> Bool,
-        rev_id -> Nullable<Int8>,
-        redirect_id -> Nullable<Uuid>,
-    }
-}
-
-table! {
-    release_ref (id) {
-        id -> Int8,
-        release_rev -> Int8,
-        target_release_ident_id -> Nullable<Uuid>,
-        index -> Nullable<Int4>,
-        stub -> Nullable<Text>,
-    }
-}
-
-table! {
-    release_rev (id) {
-        id -> Int8,
-        extra_json -> Nullable<Json>,
-        work_ident_id -> Nullable<Uuid>,
-        container_ident_id -> Nullable<Uuid>,
-        title -> Nullable<Text>,
-        license -> Nullable<Text>,
-        release_type -> Nullable<Text>,
-        date -> Nullable<Text>,
-        doi -> Nullable<Text>,
-        volume -> Nullable<Text>,
-        pages -> Nullable<Text>,
-        issue -> Nullable<Text>,
-    }
-}
-
-table! {
-    work_edit (id) {
-        id -> Int8,
-        extra_json -> Nullable<Json>,
-        ident_id -> Uuid,
-        rev_id -> Nullable<Int8>,
-        redirect_id -> Nullable<Uuid>,
-        editgroup_id -> Int8,
-    }
-}
-
-table! {
-    work_ident (id) {
-        id -> Uuid,
-        is_live -> Bool,
-        rev_id -> Nullable<Int8>,
-        redirect_id -> Nullable<Uuid>,
-    }
-}
-
-table! {
-    work_rev (id) {
-        id -> Int8,
-        extra_json -> Nullable<Json>,
-        work_type -> Nullable<Text>,
-        primary_release_id -> Nullable<Uuid>,
-    }
+#[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
+#[table_name = "file_release"]
+pub struct FileReleaseRow {
+    id: i64,
+    file_rev: i64,
+    target_release_ident_id: Uuid,
 }
 */
+
+#[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
+#[table_name = "editgroup"]
+pub struct EditgroupRow {
+    id: i64,
+    //extra_json: Option<Json>,
+    editor_id: i64,
+    description: Option<String>,
+}
+
+#[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
+#[table_name = "editor"]
+pub struct EditorRow {
+    id: i64,
+    username: String,
+    is_admin: bool,
+    active_editgroup_id: Option<i64>,
+}
+
+#[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
+#[table_name = "changelog"]
+pub struct ChangelogRow {
+    id: i64,
+    editgroup_id: i64,
+    timestamp: chrono::NaiveDateTime,
+}

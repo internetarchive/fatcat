@@ -7,6 +7,7 @@ use database_schema::{container_rev, container_ident, container_edit,
                       file_rev, file_ident, file_edit,
                       release_rev, release_ident, release_edit,
                       work_rev, work_ident, work_edit,
+                      editor, editgroup, changelog
 };
 use uuid;
 use diesel::prelude::*;
@@ -88,7 +89,7 @@ impl Api for Server {
     fn creator_id_get(
         &self,
         id: String,
-        context: &Context,
+        _context: &Context,
     ) -> Box<Future<Item = CreatorIdGetResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
         /*
