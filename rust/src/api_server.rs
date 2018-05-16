@@ -8,6 +8,7 @@ use database_schema::{changelog, container_edit, container_ident, container_rev,
                       work_rev};
 use diesel::prelude::*;
 use diesel::{self, insert_into};
+use errors::*;
 use fatcat_api::models;
 use fatcat_api::models::*;
 use fatcat_api::{Api, ApiError, ContainerIdGetResponse, ContainerLookupGetResponse,
@@ -25,40 +26,21 @@ pub struct Server {
     pub db_pool: ConnectionPool,
 }
 
-impl Api for Server {
-    fn container_id_get(
-        &self,
-        id: String,
-        _context: &Context,
-    ) -> Box<Future<Item = ContainerIdGetResponse, Error = ApiError> + Send> {
-        let conn = self.db_pool.get().expect("db_pool error");
-        let id = match uuid::Uuid::parse_str(&id) {
-            Ok(some_uuid) => some_uuid,
-            Err(_) => {
-                return Box::new(futures::done(Ok(ContainerIdGetResponse::BadRequest(
-                    Error {
-                        message: "Failed to parse UUID".to_string(),
-                    },
-                ))));
-            }
-        };
+impl Server {
 
-        let res: Result<(ContainerIdentRow, ContainerRevRow), _> = container_ident::table
+    fn container_id_get_handler(&self, id: String) -> Result<Option<ContainerEntity>> {
+        let conn = self.db_pool.get().expect("db_pool error");
+        let id = uuid::Uuid::parse_str(&id)?;
+
+        let res: ::std::result::Result<(ContainerIdentRow, ContainerRevRow), _> = container_ident::table
             .find(id)
             .inner_join(container_rev::table)
             .first(&conn);
 
         let (ident, rev) = match res {
             Ok(r) => r,
-            Err(_) => {
-                return Box::new(futures::done(Ok(
-                    // TODO: UGH, need to add 404 responses everywhere, not 400
-                    //ContainerIdGetResponse::NotFound(
-                    ContainerIdGetResponse::BadRequest(Error {
-                        message: "No such container".to_string(),
-                    }),
-                )));
-            }
+            Err(diesel::result::Error::NotFound) => return Ok(None),
+            Err(e) => return Err(e.into()),
         };
 
         let entity = ContainerEntity {
@@ -72,9 +54,72 @@ impl Api for Server {
             redirect: ident.redirect_id.map(|u| u.to_string()),
             editgroup: None,
         };
-        Box::new(futures::done(Ok(ContainerIdGetResponse::FoundEntity(
-            entity,
-        ))))
+        Ok(Some(entity))
+    }
+
+    fn creator_id_get_handler(&self, id: String) -> Result<Option<CreatorEntity>> {
+        let conn = self.db_pool.get().expect("db_pool error");
+        let id = uuid::Uuid::parse_str(&id)?;
+
+        let res: ::std::result::Result<(CreatorIdentRow, CreatorRevRow), _> = creator_ident::table
+            .find(id)
+            .inner_join(creator_rev::table)
+            .first(&conn);
+
+        let (ident, rev) = match res {
+            Ok(r) => r,
+            Err(diesel::result::Error::NotFound) => return Ok(None),
+            Err(e) => return Err(e.into()),
+        };
+
+        let entity = CreatorEntity {
+            name: rev.name,
+            orcid: rev.orcid,
+            state: None, // TODO:
+            ident: Some(ident.id.to_string()),
+            revision: ident.rev_id.map(|v| v as isize),
+            redirect: ident.redirect_id.map(|u| u.to_string()),
+            editgroup: None,
+        };
+        Ok(Some(entity))
+    }
+
+    // TODO:
+    fn file_id_get_handler(&self, id: String) -> Result<Option<FileEntity>> {
+        Ok(None)
+    }
+
+    // TODO:
+    fn work_id_get_handler(&self, id: String) -> Result<Option<WorkEntity>> {
+        Ok(None)
+    }
+
+    // TODO:
+    fn release_id_get_handler(&self, id: String) -> Result<Option<ReleaseEntity>> {
+        Ok(None)
+    }
+}
+
+impl Api for Server {
+
+    fn container_id_get(
+        &self,
+        id: String,
+        _context: &Context,
+    ) -> Box<Future<Item = ContainerIdGetResponse, Error = ApiError> + Send> {
+        match self.container_id_get_handler(id) {
+            Ok(Some(entity)) =>
+                Box::new(futures::done(Ok(ContainerIdGetResponse::FoundEntity(entity)))),
+            Ok(None) =>
+                Box::new(futures::done(Ok(ContainerIdGetResponse::NotFound(
+                    ErrorResponse { message: "No such entity".to_string() }),
+                ))),
+            Err(e) =>
+                // TODO: dig in to error type here
+                Box::new(futures::done(Ok(ContainerIdGetResponse::BadRequest(
+                    ErrorResponse { message: e.to_string() },
+                )))),
+        }
     }
 
     fn container_lookup_get(
@@ -84,7 +129,7 @@ impl Api for Server {
     ) -> Box<Future<Item = ContainerLookupGetResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
 
-        let res: Result<(ContainerIdentRow, ContainerRevRow), _> = container_ident::table
+        let res: ::std::result::Result<(ContainerIdentRow, ContainerRevRow), _> = container_ident::table
             .inner_join(container_rev::table)
             .first(&conn);
         // XXX: actually do a filter/lookup
@@ -95,7 +140,7 @@ impl Api for Server {
                 return Box::new(futures::done(Ok(
                     // TODO: UGH, need to add 404 responses everywhere, not 400
                     //ContainerIdGetResponse::NotFound(
-                    ContainerLookupGetResponse::BadRequest(Error {
+                    ContainerLookupGetResponse::BadRequest(ErrorResponse {
                         message: "No such container".to_string(),
                     }),
                 )));
@@ -121,7 +166,7 @@ impl Api for Server {
     fn container_post(
         &self,
         body: models::ContainerEntity,
-        context: &Context,
+        _context: &Context,
     ) -> Box<Future<Item = ContainerPostResponse, Error = ApiError> + Send> {
         println!("{:?}", body);
         //let editgroup_id: i64 = body.editgroup.expect("need editgroup_id") as i64;
@@ -166,17 +211,19 @@ impl Api for Server {
         id: String,
         _context: &Context,
     ) -> Box<Future<Item = CreatorIdGetResponse, Error = ApiError> + Send> {
-        let conn = self.db_pool.get().expect("db_pool error");
-        let ce = CreatorEntity {
-            orcid: None,
-            name: "Dummy Name".into(),
-            state: None,
-            ident: None,
-            revision: None,
-            redirect: None,
-            editgroup: None,
-        };
-        Box::new(futures::done(Ok(CreatorIdGetResponse::FoundEntity(ce))))
+        match self.creator_id_get_handler(id) {
+            Ok(Some(entity)) =>
+                Box::new(futures::done(Ok(CreatorIdGetResponse::FoundEntity(entity)))),
+            Ok(None) =>
+                Box::new(futures::done(Ok(CreatorIdGetResponse::NotFound(
+                    ErrorResponse { message: "No such entity".to_string() }),
+                ))),
+            Err(e) =>
+                // TODO: dig in to error type here
+                Box::new(futures::done(Ok(CreatorIdGetResponse::BadRequest(
+                    ErrorResponse { message: e.to_string() },
+                )))),
+        }
     }
 
     fn creator_lookup_get(
@@ -210,15 +257,21 @@ impl Api for Server {
     fn file_id_get(
         &self,
         id: String,
-        context: &Context,
+        _context: &Context,
     ) -> Box<Future<Item = FileIdGetResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!(
-            "file_id_get(\"{}\") - X-Span-ID: {:?}",
-            id,
-            context.x_span_id.unwrap_or(String::from("<none>")).clone()
-        );
-        Box::new(futures::failed("Generic failure".into()))
+        match self.file_id_get_handler(id) {
+            Ok(Some(entity)) =>
+                Box::new(futures::done(Ok(FileIdGetResponse::FoundEntity(entity)))),
+            Ok(None) =>
+                Box::new(futures::done(Ok(FileIdGetResponse::NotFound(
+                    ErrorResponse { message: "No such entity".to_string() }),
+                ))),
+            Err(e) =>
+                // TODO: dig in to error type here
+                Box::new(futures::done(Ok(FileIdGetResponse::BadRequest(
+                    ErrorResponse { message: e.to_string() },
+                )))),
+        }
     }
 
     fn file_lookup_get(
@@ -252,15 +305,21 @@ impl Api for Server {
     fn work_id_get(
         &self,
         id: String,
-        context: &Context,
+        _context: &Context,
     ) -> Box<Future<Item = WorkIdGetResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!(
-            "work_id_get(\"{}\") - X-Span-ID: {:?}",
-            id,
-            context.x_span_id.unwrap_or(String::from("<none>")).clone()
-        );
-        Box::new(futures::failed("Generic failure".into()))
+        match self.work_id_get_handler(id) {
+            Ok(Some(entity)) =>
+                Box::new(futures::done(Ok(WorkIdGetResponse::FoundEntity(entity)))),
+            Ok(None) =>
+                Box::new(futures::done(Ok(WorkIdGetResponse::NotFound(
+                    ErrorResponse { message: "No such entity".to_string() }),
+                ))),
+            Err(e) =>
+                // TODO: dig in to error type here
+                Box::new(futures::done(Ok(WorkIdGetResponse::BadRequest(
+                    ErrorResponse { message: e.to_string() },
+                )))),
+        }
     }
 
     fn work_post(
@@ -280,15 +339,21 @@ impl Api for Server {
     fn release_id_get(
         &self,
         id: String,
-        context: &Context,
+        _context: &Context,
     ) -> Box<Future<Item = ReleaseIdGetResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!(
-            "release_id_get(\"{}\") - X-Span-ID: {:?}",
-            id,
-            context.x_span_id.unwrap_or(String::from("<none>")).clone()
-        );
-        Box::new(futures::failed("Generic failure".into()))
+        match self.release_id_get_handler(id) {
+            Ok(Some(entity)) =>
+                Box::new(futures::done(Ok(ReleaseIdGetResponse::FoundEntity(entity)))),
+            Ok(None) =>
+                Box::new(futures::done(Ok(ReleaseIdGetResponse::NotFound(
+                    ErrorResponse { message: "No such entity".to_string() }),
+                ))),
+            Err(e) =>
+                // TODO: dig in to error type here
+                Box::new(futures::done(Ok(ReleaseIdGetResponse::BadRequest(
+                    ErrorResponse { message: e.to_string() },
+                )))),
+        }
     }
 
     fn release_lookup_get(

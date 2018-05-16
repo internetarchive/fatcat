@@ -20,8 +20,18 @@ pub mod database_models;
 pub mod database_schema;
 
 mod errors {
-    error_chain!{}
+    // Create the Error, ErrorKind, ResultExt, and Result types
+    error_chain! {
+        foreign_links { Fmt(::std::fmt::Error);
+                        Diesel(::diesel::result::Error);
+                        Uuid(::uuid::ParseError);
+                        Io(::std::io::Error) #[cfg(unix)];
+        }
+    }
 }
+
+#[doc(hidden)]
+pub use errors::*;
 
 pub use self::errors::*;
 use diesel::pg::PgConnection;
