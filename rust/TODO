@@ -9,7 +9,7 @@ x cleanup pooled database: https://github.com/diesel-rs/diesel/pull/1466
 x clean up blasse error handling a bit
 x add 404s to gets
 x wow. fix a bunch of api schema names ("FindASingleContainerByExternalIdentifer")
-- refactor handlers to have a proper Result<_,_> error-chain type, so I can use '?'
+x refactor handlers to have a proper Result<_,_> error-chain type, so I can use '?'
 - one-to-many relationship (eg, works)
 - many-to-many relationship (eg, creators)
 - creators, releases, works, files (?)

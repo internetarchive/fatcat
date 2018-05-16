@@ -27,15 +27,15 @@ pub struct Server {
 }
 
 impl Server {
-
     fn container_id_get_handler(&self, id: String) -> Result<Option<ContainerEntity>> {
         let conn = self.db_pool.get().expect("db_pool error");
         let id = uuid::Uuid::parse_str(&id)?;
 
-        let res: ::std::result::Result<(ContainerIdentRow, ContainerRevRow), _> = container_ident::table
-            .find(id)
-            .inner_join(container_rev::table)
-            .first(&conn);
+        let res: ::std::result::Result<(ContainerIdentRow, ContainerRevRow), _> =
+            container_ident::table
+                .find(id)
+                .inner_join(container_rev::table)
+                .first(&conn);
 
         let (ident, rev) = match res {
             Ok(r) => r,
@@ -101,7 +101,6 @@ impl Server {
 }
 
 impl Api for Server {
-
     fn container_id_get(
         &self,
         id: String,
@@ -129,9 +128,10 @@ impl Api for Server {
     ) -> Box<Future<Item = ContainerLookupGetResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
 
-        let res: ::std::result::Result<(ContainerIdentRow, ContainerRevRow), _> = container_ident::table
-            .inner_join(container_rev::table)
-            .first(&conn);
+        let res: ::std::result::Result<(ContainerIdentRow, ContainerRevRow), _> =
+            container_ident::table
+                .inner_join(container_rev::table)
+                .first(&conn);
         // XXX: actually do a filter/lookup
 
         let (ident, rev) = match res {
