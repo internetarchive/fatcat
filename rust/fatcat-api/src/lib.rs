@@ -34,202 +34,222 @@ pub use swagger::{ApiError, Context, ContextWrapper};
 
 #[derive(Debug, PartialEq)]
 pub enum ContainerIdGetResponse {
-    /// fetch a single container by id
-    FetchASingleContainerById(models::ContainerEntity),
-    /// bad request
+    /// Found Entity
+    FoundEntity(models::ContainerEntity),
+    /// Bad Request
     BadRequest(models::Error),
-    /// generic error response
-    GenericErrorResponse(models::Error),
+    /// Not Found
+    NotFound(models::Error),
+    /// Generic Error
+    GenericError(models::Error),
 }
 
 #[derive(Debug, PartialEq)]
 pub enum ContainerLookupGetResponse {
-    /// find a single container by external identifer
-    FindASingleContainerByExternalIdentifer(models::ContainerEntity),
-    /// bad request
+    /// Found Entity
+    FoundEntity(models::ContainerEntity),
+    /// Bad Request
     BadRequest(models::Error),
-    /// no such container
-    NoSuchContainer(models::Error),
-    /// generic error response
-    GenericErrorResponse(models::Error),
+    /// Not Found
+    NotFound(models::Error),
+    /// Generic Error
+    GenericError(models::Error),
 }
 
 #[derive(Debug, PartialEq)]
 pub enum ContainerPostResponse {
-    /// created
-    Created(models::EntityEdit),
-    /// bad request
+    /// Created Entity
+    CreatedEntity(models::EntityEdit),
+    /// Bad Request
     BadRequest(models::Error),
-    /// generic error response
-    GenericErrorResponse(models::Error),
+    /// Not Found
+    NotFound(models::Error),
+    /// Generic Error
+    GenericError(models::Error),
 }
 
 #[derive(Debug, PartialEq)]
 pub enum CreatorIdGetResponse {
-    /// fetch a single creator by id
-    FetchASingleCreatorById(models::CreatorEntity),
-    /// bad request
+    /// Found Entity
+    FoundEntity(models::CreatorEntity),
+    /// Bad Request
     BadRequest(models::Error),
-    /// generic error response
-    GenericErrorResponse(models::Error),
+    /// Not Found
+    NotFound(models::Error),
+    /// Generic Error
+    GenericError(models::Error),
 }
 
 #[derive(Debug, PartialEq)]
 pub enum CreatorLookupGetResponse {
-    /// find a single creator by external identifer
-    FindASingleCreatorByExternalIdentifer(models::CreatorEntity),
-    /// bad request
+    /// Found Entity
+    FoundEntity(models::CreatorEntity),
+    /// Bad Request
     BadRequest(models::Error),
-    /// no such creator
-    NoSuchCreator(models::Error),
-    /// generic error response
-    GenericErrorResponse(models::Error),
+    /// Not Found
+    NotFound(models::Error),
+    /// Generic Error
+    GenericError(models::Error),
 }
 
 #[derive(Debug, PartialEq)]
 pub enum CreatorPostResponse {
-    /// created
-    Created(models::EntityEdit),
-    /// bad request
+    /// Created Entity
+    CreatedEntity(models::EntityEdit),
+    /// Bad Request
     BadRequest(models::Error),
-    /// generic error response
-    GenericErrorResponse(models::Error),
+    /// Not Found
+    NotFound(models::Error),
+    /// Generic Error
+    GenericError(models::Error),
 }
 
 #[derive(Debug, PartialEq)]
 pub enum EditgroupIdAcceptPostResponse {
-    /// merged editgroup successfully (\&quot;live\&quot;)
-    MergedEditgroupSuccessfully_(models::Success),
-    /// editgroup is in an unmergable state
-    EditgroupIsInAnUnmergableState(models::Error),
-    /// no such editgroup
-    NoSuchEditgroup(models::Error),
-    /// generic error response
-    GenericErrorResponse(models::Error),
+    /// Merged Successfully
+    MergedSuccessfully(models::Success),
+    /// Unmergable
+    Unmergable(models::Error),
+    /// Not Found
+    NotFound(models::Error),
+    /// Generic Error
+    GenericError(models::Error),
 }
 
 #[derive(Debug, PartialEq)]
 pub enum EditgroupIdGetResponse {
-    /// fetch editgroup by identifier
-    FetchEditgroupByIdentifier(models::Editgroup),
-    /// no such editgroup
-    NoSuchEditgroup(models::Error),
-    /// generic error response
-    GenericErrorResponse(models::Error),
+    /// Found Editgroup
+    FoundEditgroup(models::Editgroup),
+    /// Not Found
+    NotFound(models::Error),
+    /// Generic Error
+    GenericError(models::Error),
 }
 
 #[derive(Debug, PartialEq)]
 pub enum EditgroupPostResponse {
-    /// successfully created
+    /// Successfully Created
     SuccessfullyCreated(models::Editgroup),
-    /// invalid request parameters
-    InvalidRequestParameters(models::Error),
-    /// generic error response
-    GenericErrorResponse(models::Error),
+    /// Bad Request
+    BadRequest(models::Error),
+    /// Generic Error
+    GenericError(models::Error),
 }
 
 #[derive(Debug, PartialEq)]
 pub enum EditorUsernameChangelogGetResponse {
-    /// find changes (editgroups) by this editor which have been merged
-    FindChanges_(models::Changelogentry),
-    /// username not found
-    UsernameNotFound(models::Error),
-    /// generic error response
-    GenericErrorResponse(models::Error),
+    /// Found Merged Changes
+    FoundMergedChanges(models::Changelogentry),
+    /// Not Found
+    NotFound(models::Error),
+    /// Generic Error
+    GenericError(models::Error),
 }
 
 #[derive(Debug, PartialEq)]
 pub enum EditorUsernameGetResponse {
-    /// fetch generic information about an editor
-    FetchGenericInformationAboutAnEditor(models::Editor),
-    /// username not found
-    UsernameNotFound(models::Error),
-    /// generic error response
-    GenericErrorResponse(models::Error),
+    /// Found Editor
+    FoundEditor(models::Editor),
+    /// Not Found
+    NotFound(models::Error),
+    /// Generic Error
+    GenericError(models::Error),
 }
 
 #[derive(Debug, PartialEq)]
 pub enum FileIdGetResponse {
-    /// fetch a single file by id
-    FetchASingleFileById(models::FileEntity),
-    /// bad request
+    /// Found Entity
+    FoundEntity(models::FileEntity),
+    /// Bad Request
     BadRequest(models::Error),
-    /// generic error response
-    GenericErrorResponse(models::Error),
+    /// Not Found
+    NotFound(models::Error),
+    /// Generic Error
+    GenericError(models::Error),
 }
 
 #[derive(Debug, PartialEq)]
 pub enum FileLookupGetResponse {
-    /// find a single file by external identifer
-    FindASingleFileByExternalIdentifer(models::FileEntity),
-    /// bad request
+    /// Found Entity
+    FoundEntity(models::FileEntity),
+    /// Bad Request
     BadRequest(models::Error),
-    /// no such file
-    NoSuchFile(models::Error),
-    /// generic error response
-    GenericErrorResponse(models::Error),
+    /// Not Found
+    NotFound(models::Error),
+    /// Generic Error
+    GenericError(models::Error),
 }
 
 #[derive(Debug, PartialEq)]
 pub enum FilePostResponse {
-    /// created
-    Created(models::EntityEdit),
-    /// bad request
+    /// Created Entity
+    CreatedEntity(models::EntityEdit),
+    /// Bad Request
     BadRequest(models::Error),
-    /// generic error response
-    GenericErrorResponse(models::Error),
+    /// Not Found
+    NotFound(models::Error),
+    /// Generic Error
+    GenericError(models::Error),
 }
 
 #[derive(Debug, PartialEq)]
 pub enum ReleaseIdGetResponse {
-    /// fetch a single release by id
-    FetchASingleReleaseById(models::ReleaseEntity),
-    /// bad request
+    /// Found Entity
+    FoundEntity(models::ReleaseEntity),
+    /// Bad Request
     BadRequest(models::Error),
-    /// generic error response
-    GenericErrorResponse(models::Error),
+    /// Not Found
+    NotFound(models::Error),
+    /// Generic Error
+    GenericError(models::Error),
 }
 
 #[derive(Debug, PartialEq)]
 pub enum ReleaseLookupGetResponse {
-    /// find a single release by external identifer
-    FindASingleReleaseByExternalIdentifer(models::ReleaseEntity),
-    /// bad request
+    /// Found Entity
+    FoundEntity(models::ReleaseEntity),
+    /// Bad Request
     BadRequest(models::Error),
-    /// no such release
-    NoSuchRelease(models::Error),
-    /// generic error response
-    GenericErrorResponse(models::Error),
+    /// Not Found
+    NotFound(models::Error),
+    /// Generic Error
+    GenericError(models::Error),
 }
 
 #[derive(Debug, PartialEq)]
 pub enum ReleasePostResponse {
-    /// created
-    Created(models::EntityEdit),
-    /// bad request
+    /// Created Entity
+    CreatedEntity(models::EntityEdit),
+    /// Bad Request
     BadRequest(models::Error),
-    /// generic error response
-    GenericErrorResponse(models::Error),
+    /// Not Found
+    NotFound(models::Error),
+    /// Generic Error
+    GenericError(models::Error),
 }
 
 #[derive(Debug, PartialEq)]
 pub enum WorkIdGetResponse {
-    /// fetch a single work by id
-    FetchASingleWorkById(models::WorkEntity),
-    /// bad request
+    /// Found Entity
+    FoundEntity(models::WorkEntity),
+    /// Bad Request
     BadRequest(models::Error),
-    /// generic error response
-    GenericErrorResponse(models::Error),
+    /// Not Found
+    NotFound(models::Error),
+    /// Generic Error
+    GenericError(models::Error),
 }
 
 #[derive(Debug, PartialEq)]
 pub enum WorkPostResponse {
-    /// created
-    Created(models::EntityEdit),
-    /// bad request
+    /// Created Entity
+    CreatedEntity(models::EntityEdit),
+    /// Bad Request
     BadRequest(models::Error),
-    /// generic error response
-    GenericErrorResponse(models::Error),
+    /// Not Found
+    NotFound(models::Error),
+    /// Generic Error
+    GenericError(models::Error),
 }
 
 /// API

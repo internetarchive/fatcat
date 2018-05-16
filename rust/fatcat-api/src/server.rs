@@ -116,11 +116,11 @@ where
 
                 match api.container_id_get(param_id, context).wait() {
                     Ok(rsp) => match rsp {
-                        ContainerIdGetResponse::FetchASingleContainerById(body) => {
+                        ContainerIdGetResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(200), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CONTAINER_ID_GET_FETCH_A_SINGLE_CONTAINER_BY_ID.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CONTAINER_ID_GET_FOUND_ENTITY.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -136,11 +136,21 @@ where
 
                             Ok(response)
                         }
-                        ContainerIdGetResponse::GenericErrorResponse(body) => {
+                        ContainerIdGetResponse::NotFound(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(404), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::CONTAINER_ID_GET_NOT_FOUND.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                        ContainerIdGetResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(0), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CONTAINER_ID_GET_GENERIC_ERROR_RESPONSE.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CONTAINER_ID_GET_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -190,13 +200,11 @@ where
 
                 match api.container_lookup_get(param_issn, context).wait() {
                     Ok(rsp) => match rsp {
-                        ContainerLookupGetResponse::FindASingleContainerByExternalIdentifer(body) => {
+                        ContainerLookupGetResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(200), body_string));
-                            response
-                                .headers
-                                .set(ContentType(mimetypes::responses::CONTAINER_LOOKUP_GET_FIND_A_SINGLE_CONTAINER_BY_EXTERNAL_IDENTIFER.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CONTAINER_LOOKUP_GET_FOUND_ENTITY.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -212,21 +220,21 @@ where
 
                             Ok(response)
                         }
-                        ContainerLookupGetResponse::NoSuchContainer(body) => {
+                        ContainerLookupGetResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(404), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CONTAINER_LOOKUP_GET_NO_SUCH_CONTAINER.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CONTAINER_LOOKUP_GET_NOT_FOUND.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
                             Ok(response)
                         }
-                        ContainerLookupGetResponse::GenericErrorResponse(body) => {
+                        ContainerLookupGetResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(0), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CONTAINER_LOOKUP_GET_GENERIC_ERROR_RESPONSE.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CONTAINER_LOOKUP_GET_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -290,11 +298,11 @@ where
 
                 match api.container_post(param_body, context).wait() {
                     Ok(rsp) => match rsp {
-                        ContainerPostResponse::Created(body) => {
+                        ContainerPostResponse::CreatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(201), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CONTAINER_POST_CREATED.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CONTAINER_POST_CREATED_ENTITY.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -314,11 +322,23 @@ where
                             }
                             Ok(response)
                         }
-                        ContainerPostResponse::GenericErrorResponse(body) => {
+                        ContainerPostResponse::NotFound(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(404), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::CONTAINER_POST_NOT_FOUND.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        ContainerPostResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(0), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CONTAINER_POST_GENERIC_ERROR_RESPONSE.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CONTAINER_POST_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -374,11 +394,11 @@ where
 
                 match api.creator_id_get(param_id, context).wait() {
                     Ok(rsp) => match rsp {
-                        CreatorIdGetResponse::FetchASingleCreatorById(body) => {
+                        CreatorIdGetResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(200), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATOR_ID_GET_FETCH_A_SINGLE_CREATOR_BY_ID.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATOR_ID_GET_FOUND_ENTITY.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -394,11 +414,21 @@ where
 
                             Ok(response)
                         }
-                        CreatorIdGetResponse::GenericErrorResponse(body) => {
+                        CreatorIdGetResponse::NotFound(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(404), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::CREATOR_ID_GET_NOT_FOUND.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                        CreatorIdGetResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(0), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATOR_ID_GET_GENERIC_ERROR_RESPONSE.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATOR_ID_GET_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -448,13 +478,11 @@ where
 
                 match api.creator_lookup_get(param_orcid, context).wait() {
                     Ok(rsp) => match rsp {
-                        CreatorLookupGetResponse::FindASingleCreatorByExternalIdentifer(body) => {
+                        CreatorLookupGetResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(200), body_string));
-                            response
-                                .headers
-                                .set(ContentType(mimetypes::responses::CREATOR_LOOKUP_GET_FIND_A_SINGLE_CREATOR_BY_EXTERNAL_IDENTIFER.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATOR_LOOKUP_GET_FOUND_ENTITY.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -470,21 +498,21 @@ where
 
                             Ok(response)
                         }
-                        CreatorLookupGetResponse::NoSuchCreator(body) => {
+                        CreatorLookupGetResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(404), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATOR_LOOKUP_GET_NO_SUCH_CREATOR.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATOR_LOOKUP_GET_NOT_FOUND.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
                             Ok(response)
                         }
-                        CreatorLookupGetResponse::GenericErrorResponse(body) => {
+                        CreatorLookupGetResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(0), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATOR_LOOKUP_GET_GENERIC_ERROR_RESPONSE.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATOR_LOOKUP_GET_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -547,11 +575,11 @@ where
 
                 match api.creator_post(param_body, context).wait() {
                     Ok(rsp) => match rsp {
-                        CreatorPostResponse::Created(body) => {
+                        CreatorPostResponse::CreatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(201), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATOR_POST_CREATED.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATOR_POST_CREATED_ENTITY.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -571,11 +599,23 @@ where
                             }
                             Ok(response)
                         }
-                        CreatorPostResponse::GenericErrorResponse(body) => {
+                        CreatorPostResponse::NotFound(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(404), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::CREATOR_POST_NOT_FOUND.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        CreatorPostResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(0), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATOR_POST_GENERIC_ERROR_RESPONSE.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATOR_POST_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -631,43 +671,41 @@ where
 
                 match api.editgroup_id_accept_post(param_id, context).wait() {
                     Ok(rsp) => match rsp {
-                        EditgroupIdAcceptPostResponse::MergedEditgroupSuccessfully_(body) => {
+                        EditgroupIdAcceptPostResponse::MergedSuccessfully(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(200), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::EDITGROUP_ID_ACCEPT_POST_MERGED_EDITGROUP_SUCCESSFULLY_.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::EDITGROUP_ID_ACCEPT_POST_MERGED_SUCCESSFULLY.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
                             Ok(response)
                         }
-                        EditgroupIdAcceptPostResponse::EditgroupIsInAnUnmergableState(body) => {
+                        EditgroupIdAcceptPostResponse::Unmergable(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
-                            response
-                                .headers
-                                .set(ContentType(mimetypes::responses::EDITGROUP_ID_ACCEPT_POST_EDITGROUP_IS_IN_AN_UNMERGABLE_STATE.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::EDITGROUP_ID_ACCEPT_POST_UNMERGABLE.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
                             Ok(response)
                         }
-                        EditgroupIdAcceptPostResponse::NoSuchEditgroup(body) => {
+                        EditgroupIdAcceptPostResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(404), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::EDITGROUP_ID_ACCEPT_POST_NO_SUCH_EDITGROUP.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::EDITGROUP_ID_ACCEPT_POST_NOT_FOUND.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
                             Ok(response)
                         }
-                        EditgroupIdAcceptPostResponse::GenericErrorResponse(body) => {
+                        EditgroupIdAcceptPostResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(0), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::EDITGROUP_ID_ACCEPT_POST_GENERIC_ERROR_RESPONSE.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::EDITGROUP_ID_ACCEPT_POST_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -721,31 +759,31 @@ where
 
                 match api.editgroup_id_get(param_id, context).wait() {
                     Ok(rsp) => match rsp {
-                        EditgroupIdGetResponse::FetchEditgroupByIdentifier(body) => {
+                        EditgroupIdGetResponse::FoundEditgroup(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(200), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::EDITGROUP_ID_GET_FETCH_EDITGROUP_BY_IDENTIFIER.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::EDITGROUP_ID_GET_FOUND_EDITGROUP.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
                             Ok(response)
                         }
-                        EditgroupIdGetResponse::NoSuchEditgroup(body) => {
+                        EditgroupIdGetResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(404), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::EDITGROUP_ID_GET_NO_SUCH_EDITGROUP.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::EDITGROUP_ID_GET_NOT_FOUND.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
                             Ok(response)
                         }
-                        EditgroupIdGetResponse::GenericErrorResponse(body) => {
+                        EditgroupIdGetResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(0), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::EDITGROUP_ID_GET_GENERIC_ERROR_RESPONSE.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::EDITGROUP_ID_GET_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -795,21 +833,21 @@ where
 
                             Ok(response)
                         }
-                        EditgroupPostResponse::InvalidRequestParameters(body) => {
+                        EditgroupPostResponse::BadRequest(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::EDITGROUP_POST_INVALID_REQUEST_PARAMETERS.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::EDITGROUP_POST_BAD_REQUEST.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
                             Ok(response)
                         }
-                        EditgroupPostResponse::GenericErrorResponse(body) => {
+                        EditgroupPostResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(0), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::EDITGROUP_POST_GENERIC_ERROR_RESPONSE.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::EDITGROUP_POST_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -863,31 +901,31 @@ where
 
                 match api.editor_username_changelog_get(param_username, context).wait() {
                     Ok(rsp) => match rsp {
-                        EditorUsernameChangelogGetResponse::FindChanges_(body) => {
+                        EditorUsernameChangelogGetResponse::FoundMergedChanges(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(200), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::EDITOR_USERNAME_CHANGELOG_GET_FIND_CHANGES_.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::EDITOR_USERNAME_CHANGELOG_GET_FOUND_MERGED_CHANGES.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
                             Ok(response)
                         }
-                        EditorUsernameChangelogGetResponse::UsernameNotFound(body) => {
+                        EditorUsernameChangelogGetResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(404), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::EDITOR_USERNAME_CHANGELOG_GET_USERNAME_NOT_FOUND.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::EDITOR_USERNAME_CHANGELOG_GET_NOT_FOUND.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
                             Ok(response)
                         }
-                        EditorUsernameChangelogGetResponse::GenericErrorResponse(body) => {
+                        EditorUsernameChangelogGetResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(0), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::EDITOR_USERNAME_CHANGELOG_GET_GENERIC_ERROR_RESPONSE.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::EDITOR_USERNAME_CHANGELOG_GET_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -941,33 +979,31 @@ where
 
                 match api.editor_username_get(param_username, context).wait() {
                     Ok(rsp) => match rsp {
-                        EditorUsernameGetResponse::FetchGenericInformationAboutAnEditor(body) => {
+                        EditorUsernameGetResponse::FoundEditor(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(200), body_string));
-                            response
-                                .headers
-                                .set(ContentType(mimetypes::responses::EDITOR_USERNAME_GET_FETCH_GENERIC_INFORMATION_ABOUT_AN_EDITOR.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::EDITOR_USERNAME_GET_FOUND_EDITOR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
                             Ok(response)
                         }
-                        EditorUsernameGetResponse::UsernameNotFound(body) => {
+                        EditorUsernameGetResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(404), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::EDITOR_USERNAME_GET_USERNAME_NOT_FOUND.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::EDITOR_USERNAME_GET_NOT_FOUND.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
                             Ok(response)
                         }
-                        EditorUsernameGetResponse::GenericErrorResponse(body) => {
+                        EditorUsernameGetResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(0), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::EDITOR_USERNAME_GET_GENERIC_ERROR_RESPONSE.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::EDITOR_USERNAME_GET_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -1021,11 +1057,11 @@ where
 
                 match api.file_id_get(param_id, context).wait() {
                     Ok(rsp) => match rsp {
-                        FileIdGetResponse::FetchASingleFileById(body) => {
+                        FileIdGetResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(200), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::FILE_ID_GET_FETCH_A_SINGLE_FILE_BY_ID.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::FILE_ID_GET_FOUND_ENTITY.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -1041,11 +1077,21 @@ where
 
                             Ok(response)
                         }
-                        FileIdGetResponse::GenericErrorResponse(body) => {
+                        FileIdGetResponse::NotFound(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(404), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::FILE_ID_GET_NOT_FOUND.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                        FileIdGetResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(0), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::FILE_ID_GET_GENERIC_ERROR_RESPONSE.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::FILE_ID_GET_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -1095,13 +1141,11 @@ where
 
                 match api.file_lookup_get(param_sha1, context).wait() {
                     Ok(rsp) => match rsp {
-                        FileLookupGetResponse::FindASingleFileByExternalIdentifer(body) => {
+                        FileLookupGetResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(200), body_string));
-                            response
-                                .headers
-                                .set(ContentType(mimetypes::responses::FILE_LOOKUP_GET_FIND_A_SINGLE_FILE_BY_EXTERNAL_IDENTIFER.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::FILE_LOOKUP_GET_FOUND_ENTITY.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -1117,21 +1161,21 @@ where
 
                             Ok(response)
                         }
-                        FileLookupGetResponse::NoSuchFile(body) => {
+                        FileLookupGetResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(404), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::FILE_LOOKUP_GET_NO_SUCH_FILE.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::FILE_LOOKUP_GET_NOT_FOUND.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
                             Ok(response)
                         }
-                        FileLookupGetResponse::GenericErrorResponse(body) => {
+                        FileLookupGetResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(0), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::FILE_LOOKUP_GET_GENERIC_ERROR_RESPONSE.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::FILE_LOOKUP_GET_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -1194,11 +1238,11 @@ where
 
                 match api.file_post(param_body, context).wait() {
                     Ok(rsp) => match rsp {
-                        FilePostResponse::Created(body) => {
+                        FilePostResponse::CreatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(201), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::FILE_POST_CREATED.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::FILE_POST_CREATED_ENTITY.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -1218,11 +1262,23 @@ where
                             }
                             Ok(response)
                         }
-                        FilePostResponse::GenericErrorResponse(body) => {
+                        FilePostResponse::NotFound(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(404), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::FILE_POST_NOT_FOUND.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        FilePostResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(0), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::FILE_POST_GENERIC_ERROR_RESPONSE.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::FILE_POST_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -1278,11 +1334,11 @@ where
 
                 match api.release_id_get(param_id, context).wait() {
                     Ok(rsp) => match rsp {
-                        ReleaseIdGetResponse::FetchASingleReleaseById(body) => {
+                        ReleaseIdGetResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(200), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::RELEASE_ID_GET_FETCH_A_SINGLE_RELEASE_BY_ID.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::RELEASE_ID_GET_FOUND_ENTITY.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -1298,11 +1354,21 @@ where
 
                             Ok(response)
                         }
-                        ReleaseIdGetResponse::GenericErrorResponse(body) => {
+                        ReleaseIdGetResponse::NotFound(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(404), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::RELEASE_ID_GET_NOT_FOUND.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                        ReleaseIdGetResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(0), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::RELEASE_ID_GET_GENERIC_ERROR_RESPONSE.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::RELEASE_ID_GET_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -1352,13 +1418,11 @@ where
 
                 match api.release_lookup_get(param_doi, context).wait() {
                     Ok(rsp) => match rsp {
-                        ReleaseLookupGetResponse::FindASingleReleaseByExternalIdentifer(body) => {
+                        ReleaseLookupGetResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(200), body_string));
-                            response
-                                .headers
-                                .set(ContentType(mimetypes::responses::RELEASE_LOOKUP_GET_FIND_A_SINGLE_RELEASE_BY_EXTERNAL_IDENTIFER.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::RELEASE_LOOKUP_GET_FOUND_ENTITY.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -1374,21 +1438,21 @@ where
 
                             Ok(response)
                         }
-                        ReleaseLookupGetResponse::NoSuchRelease(body) => {
+                        ReleaseLookupGetResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(404), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::RELEASE_LOOKUP_GET_NO_SUCH_RELEASE.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::RELEASE_LOOKUP_GET_NOT_FOUND.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
                             Ok(response)
                         }
-                        ReleaseLookupGetResponse::GenericErrorResponse(body) => {
+                        ReleaseLookupGetResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(0), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::RELEASE_LOOKUP_GET_GENERIC_ERROR_RESPONSE.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::RELEASE_LOOKUP_GET_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -1451,11 +1515,11 @@ where
 
                 match api.release_post(param_body, context).wait() {
                     Ok(rsp) => match rsp {
-                        ReleasePostResponse::Created(body) => {
+                        ReleasePostResponse::CreatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(201), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::RELEASE_POST_CREATED.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::RELEASE_POST_CREATED_ENTITY.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -1475,11 +1539,23 @@ where
                             }
                             Ok(response)
                         }
-                        ReleasePostResponse::GenericErrorResponse(body) => {
+                        ReleasePostResponse::NotFound(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(404), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::RELEASE_POST_NOT_FOUND.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        ReleasePostResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(0), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::RELEASE_POST_GENERIC_ERROR_RESPONSE.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::RELEASE_POST_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -1535,11 +1611,11 @@ where
 
                 match api.work_id_get(param_id, context).wait() {
                     Ok(rsp) => match rsp {
-                        WorkIdGetResponse::FetchASingleWorkById(body) => {
+                        WorkIdGetResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(200), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::WORK_ID_GET_FETCH_A_SINGLE_WORK_BY_ID.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::WORK_ID_GET_FOUND_ENTITY.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -1555,11 +1631,21 @@ where
 
                             Ok(response)
                         }
-                        WorkIdGetResponse::GenericErrorResponse(body) => {
+                        WorkIdGetResponse::NotFound(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(404), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::WORK_ID_GET_NOT_FOUND.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                        WorkIdGetResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(0), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::WORK_ID_GET_GENERIC_ERROR_RESPONSE.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::WORK_ID_GET_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -1622,11 +1708,11 @@ where
 
                 match api.work_post(param_body, context).wait() {
                     Ok(rsp) => match rsp {
-                        WorkPostResponse::Created(body) => {
+                        WorkPostResponse::CreatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(201), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::WORK_POST_CREATED.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::WORK_POST_CREATED_ENTITY.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -1646,11 +1732,23 @@ where
                             }
                             Ok(response)
                         }
-                        WorkPostResponse::GenericErrorResponse(body) => {
+                        WorkPostResponse::NotFound(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(404), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::WORK_POST_NOT_FOUND.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        WorkPostResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(0), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::WORK_POST_GENERIC_ERROR_RESPONSE.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::WORK_POST_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {

@@ -180,7 +180,7 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ContainerEntity>(&buf)?;
 
-                    Ok(ContainerIdGetResponse::FetchASingleContainerById(body))
+                    Ok(ContainerIdGetResponse::FoundEntity(body))
                 }
                 400 => {
                     let mut buf = String::new();
@@ -189,12 +189,19 @@ impl Api for Client {
 
                     Ok(ContainerIdGetResponse::BadRequest(body))
                 }
+                404 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::Error>(&buf)?;
+
+                    Ok(ContainerIdGetResponse::NotFound(body))
+                }
                 0 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Error>(&buf)?;
 
-                    Ok(ContainerIdGetResponse::GenericErrorResponse(body))
+                    Ok(ContainerIdGetResponse::GenericError(body))
                 }
                 code => {
                     let mut buf = [0; 100];
@@ -236,7 +243,7 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ContainerEntity>(&buf)?;
 
-                    Ok(ContainerLookupGetResponse::FindASingleContainerByExternalIdentifer(body))
+                    Ok(ContainerLookupGetResponse::FoundEntity(body))
                 }
                 400 => {
                     let mut buf = String::new();
@@ -250,14 +257,14 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Error>(&buf)?;
 
-                    Ok(ContainerLookupGetResponse::NoSuchContainer(body))
+                    Ok(ContainerLookupGetResponse::NotFound(body))
                 }
                 0 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Error>(&buf)?;
 
-                    Ok(ContainerLookupGetResponse::GenericErrorResponse(body))
+                    Ok(ContainerLookupGetResponse::GenericError(body))
                 }
                 code => {
                     let mut buf = [0; 100];
@@ -301,7 +308,7 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::EntityEdit>(&buf)?;
 
-                    Ok(ContainerPostResponse::Created(body))
+                    Ok(ContainerPostResponse::CreatedEntity(body))
                 }
                 400 => {
                     let mut buf = String::new();
@@ -310,12 +317,19 @@ impl Api for Client {
 
                     Ok(ContainerPostResponse::BadRequest(body))
                 }
+                404 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::Error>(&buf)?;
+
+                    Ok(ContainerPostResponse::NotFound(body))
+                }
                 0 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Error>(&buf)?;
 
-                    Ok(ContainerPostResponse::GenericErrorResponse(body))
+                    Ok(ContainerPostResponse::GenericError(body))
                 }
                 code => {
                     let mut buf = [0; 100];
@@ -354,7 +368,7 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::CreatorEntity>(&buf)?;
 
-                    Ok(CreatorIdGetResponse::FetchASingleCreatorById(body))
+                    Ok(CreatorIdGetResponse::FoundEntity(body))
                 }
                 400 => {
                     let mut buf = String::new();
@@ -363,12 +377,19 @@ impl Api for Client {
 
                     Ok(CreatorIdGetResponse::BadRequest(body))
                 }
+                404 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::Error>(&buf)?;
+
+                    Ok(CreatorIdGetResponse::NotFound(body))
+                }
                 0 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Error>(&buf)?;
 
-                    Ok(CreatorIdGetResponse::GenericErrorResponse(body))
+                    Ok(CreatorIdGetResponse::GenericError(body))
                 }
                 code => {
                     let mut buf = [0; 100];
@@ -410,7 +431,7 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::CreatorEntity>(&buf)?;
 
-                    Ok(CreatorLookupGetResponse::FindASingleCreatorByExternalIdentifer(body))
+                    Ok(CreatorLookupGetResponse::FoundEntity(body))
                 }
                 400 => {
                     let mut buf = String::new();
@@ -424,14 +445,14 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Error>(&buf)?;
 
-                    Ok(CreatorLookupGetResponse::NoSuchCreator(body))
+                    Ok(CreatorLookupGetResponse::NotFound(body))
                 }
                 0 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Error>(&buf)?;
 
-                    Ok(CreatorLookupGetResponse::GenericErrorResponse(body))
+                    Ok(CreatorLookupGetResponse::GenericError(body))
                 }
                 code => {
                     let mut buf = [0; 100];
@@ -475,7 +496,7 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::EntityEdit>(&buf)?;
 
-                    Ok(CreatorPostResponse::Created(body))
+                    Ok(CreatorPostResponse::CreatedEntity(body))
                 }
                 400 => {
                     let mut buf = String::new();
@@ -484,12 +505,19 @@ impl Api for Client {
 
                     Ok(CreatorPostResponse::BadRequest(body))
                 }
+                404 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::Error>(&buf)?;
+
+                    Ok(CreatorPostResponse::NotFound(body))
+                }
                 0 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Error>(&buf)?;
 
-                    Ok(CreatorPostResponse::GenericErrorResponse(body))
+                    Ok(CreatorPostResponse::GenericError(body))
                 }
                 code => {
                     let mut buf = [0; 100];
@@ -528,28 +556,28 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Success>(&buf)?;
 
-                    Ok(EditgroupIdAcceptPostResponse::MergedEditgroupSuccessfully_(body))
+                    Ok(EditgroupIdAcceptPostResponse::MergedSuccessfully(body))
                 }
                 400 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Error>(&buf)?;
 
-                    Ok(EditgroupIdAcceptPostResponse::EditgroupIsInAnUnmergableState(body))
+                    Ok(EditgroupIdAcceptPostResponse::Unmergable(body))
                 }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Error>(&buf)?;
 
-                    Ok(EditgroupIdAcceptPostResponse::NoSuchEditgroup(body))
+                    Ok(EditgroupIdAcceptPostResponse::NotFound(body))
                 }
                 0 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Error>(&buf)?;
 
-                    Ok(EditgroupIdAcceptPostResponse::GenericErrorResponse(body))
+                    Ok(EditgroupIdAcceptPostResponse::GenericError(body))
                 }
                 code => {
                     let mut buf = [0; 100];
@@ -588,21 +616,21 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Editgroup>(&buf)?;
 
-                    Ok(EditgroupIdGetResponse::FetchEditgroupByIdentifier(body))
+                    Ok(EditgroupIdGetResponse::FoundEditgroup(body))
                 }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Error>(&buf)?;
 
-                    Ok(EditgroupIdGetResponse::NoSuchEditgroup(body))
+                    Ok(EditgroupIdGetResponse::NotFound(body))
                 }
                 0 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Error>(&buf)?;
 
-                    Ok(EditgroupIdGetResponse::GenericErrorResponse(body))
+                    Ok(EditgroupIdGetResponse::GenericError(body))
                 }
                 code => {
                     let mut buf = [0; 100];
@@ -648,14 +676,14 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Error>(&buf)?;
 
-                    Ok(EditgroupPostResponse::InvalidRequestParameters(body))
+                    Ok(EditgroupPostResponse::BadRequest(body))
                 }
                 0 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Error>(&buf)?;
 
-                    Ok(EditgroupPostResponse::GenericErrorResponse(body))
+                    Ok(EditgroupPostResponse::GenericError(body))
                 }
                 code => {
                     let mut buf = [0; 100];
@@ -698,21 +726,21 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Changelogentry>(&buf)?;
 
-                    Ok(EditorUsernameChangelogGetResponse::FindChanges_(body))
+                    Ok(EditorUsernameChangelogGetResponse::FoundMergedChanges(body))
                 }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Error>(&buf)?;
 
-                    Ok(EditorUsernameChangelogGetResponse::UsernameNotFound(body))
+                    Ok(EditorUsernameChangelogGetResponse::NotFound(body))
                 }
                 0 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Error>(&buf)?;
 
-                    Ok(EditorUsernameChangelogGetResponse::GenericErrorResponse(body))
+                    Ok(EditorUsernameChangelogGetResponse::GenericError(body))
                 }
                 code => {
                     let mut buf = [0; 100];
@@ -755,21 +783,21 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Editor>(&buf)?;
 
-                    Ok(EditorUsernameGetResponse::FetchGenericInformationAboutAnEditor(body))
+                    Ok(EditorUsernameGetResponse::FoundEditor(body))
                 }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Error>(&buf)?;
 
-                    Ok(EditorUsernameGetResponse::UsernameNotFound(body))
+                    Ok(EditorUsernameGetResponse::NotFound(body))
                 }
                 0 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Error>(&buf)?;
 
-                    Ok(EditorUsernameGetResponse::GenericErrorResponse(body))
+                    Ok(EditorUsernameGetResponse::GenericError(body))
                 }
                 code => {
                     let mut buf = [0; 100];
@@ -808,7 +836,7 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::FileEntity>(&buf)?;
 
-                    Ok(FileIdGetResponse::FetchASingleFileById(body))
+                    Ok(FileIdGetResponse::FoundEntity(body))
                 }
                 400 => {
                     let mut buf = String::new();
@@ -817,12 +845,19 @@ impl Api for Client {
 
                     Ok(FileIdGetResponse::BadRequest(body))
                 }
+                404 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::Error>(&buf)?;
+
+                    Ok(FileIdGetResponse::NotFound(body))
+                }
                 0 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Error>(&buf)?;
 
-                    Ok(FileIdGetResponse::GenericErrorResponse(body))
+                    Ok(FileIdGetResponse::GenericError(body))
                 }
                 code => {
                     let mut buf = [0; 100];
@@ -864,7 +899,7 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::FileEntity>(&buf)?;
 
-                    Ok(FileLookupGetResponse::FindASingleFileByExternalIdentifer(body))
+                    Ok(FileLookupGetResponse::FoundEntity(body))
                 }
                 400 => {
                     let mut buf = String::new();
@@ -878,14 +913,14 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Error>(&buf)?;
 
-                    Ok(FileLookupGetResponse::NoSuchFile(body))
+                    Ok(FileLookupGetResponse::NotFound(body))
                 }
                 0 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Error>(&buf)?;
 
-                    Ok(FileLookupGetResponse::GenericErrorResponse(body))
+                    Ok(FileLookupGetResponse::GenericError(body))
                 }
                 code => {
                     let mut buf = [0; 100];
@@ -929,7 +964,7 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::EntityEdit>(&buf)?;
 
-                    Ok(FilePostResponse::Created(body))
+                    Ok(FilePostResponse::CreatedEntity(body))
                 }
                 400 => {
                     let mut buf = String::new();
@@ -938,12 +973,19 @@ impl Api for Client {
 
                     Ok(FilePostResponse::BadRequest(body))
                 }
+                404 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::Error>(&buf)?;
+
+                    Ok(FilePostResponse::NotFound(body))
+                }
                 0 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Error>(&buf)?;
 
-                    Ok(FilePostResponse::GenericErrorResponse(body))
+                    Ok(FilePostResponse::GenericError(body))
                 }
                 code => {
                     let mut buf = [0; 100];
@@ -982,7 +1024,7 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ReleaseEntity>(&buf)?;
 
-                    Ok(ReleaseIdGetResponse::FetchASingleReleaseById(body))
+                    Ok(ReleaseIdGetResponse::FoundEntity(body))
                 }
                 400 => {
                     let mut buf = String::new();
@@ -991,12 +1033,19 @@ impl Api for Client {
 
                     Ok(ReleaseIdGetResponse::BadRequest(body))
                 }
+                404 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::Error>(&buf)?;
+
+                    Ok(ReleaseIdGetResponse::NotFound(body))
+                }
                 0 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Error>(&buf)?;
 
-                    Ok(ReleaseIdGetResponse::GenericErrorResponse(body))
+                    Ok(ReleaseIdGetResponse::GenericError(body))
                 }
                 code => {
                     let mut buf = [0; 100];
@@ -1038,7 +1087,7 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ReleaseEntity>(&buf)?;
 
-                    Ok(ReleaseLookupGetResponse::FindASingleReleaseByExternalIdentifer(body))
+                    Ok(ReleaseLookupGetResponse::FoundEntity(body))
                 }
                 400 => {
                     let mut buf = String::new();
@@ -1052,14 +1101,14 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Error>(&buf)?;
 
-                    Ok(ReleaseLookupGetResponse::NoSuchRelease(body))
+                    Ok(ReleaseLookupGetResponse::NotFound(body))
                 }
                 0 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Error>(&buf)?;
 
-                    Ok(ReleaseLookupGetResponse::GenericErrorResponse(body))
+                    Ok(ReleaseLookupGetResponse::GenericError(body))
                 }
                 code => {
                     let mut buf = [0; 100];
@@ -1103,7 +1152,7 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::EntityEdit>(&buf)?;
 
-                    Ok(ReleasePostResponse::Created(body))
+                    Ok(ReleasePostResponse::CreatedEntity(body))
                 }
                 400 => {
                     let mut buf = String::new();
@@ -1112,12 +1161,19 @@ impl Api for Client {
 
                     Ok(ReleasePostResponse::BadRequest(body))
                 }
+                404 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::Error>(&buf)?;
+
+                    Ok(ReleasePostResponse::NotFound(body))
+                }
                 0 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Error>(&buf)?;
 
-                    Ok(ReleasePostResponse::GenericErrorResponse(body))
+                    Ok(ReleasePostResponse::GenericError(body))
                 }
                 code => {
                     let mut buf = [0; 100];
@@ -1156,7 +1212,7 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::WorkEntity>(&buf)?;
 
-                    Ok(WorkIdGetResponse::FetchASingleWorkById(body))
+                    Ok(WorkIdGetResponse::FoundEntity(body))
                 }
                 400 => {
                     let mut buf = String::new();
@@ -1165,12 +1221,19 @@ impl Api for Client {
 
                     Ok(WorkIdGetResponse::BadRequest(body))
                 }
+                404 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::Error>(&buf)?;
+
+                    Ok(WorkIdGetResponse::NotFound(body))
+                }
                 0 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Error>(&buf)?;
 
-                    Ok(WorkIdGetResponse::GenericErrorResponse(body))
+                    Ok(WorkIdGetResponse::GenericError(body))
                 }
                 code => {
                     let mut buf = [0; 100];
@@ -1214,7 +1277,7 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::EntityEdit>(&buf)?;
 
-                    Ok(WorkPostResponse::Created(body))
+                    Ok(WorkPostResponse::CreatedEntity(body))
                 }
                 400 => {
                     let mut buf = String::new();
@@ -1223,12 +1286,19 @@ impl Api for Client {
 
                     Ok(WorkPostResponse::BadRequest(body))
                 }
+                404 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::Error>(&buf)?;
+
+                    Ok(WorkPostResponse::NotFound(body))
+                }
                 0 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Error>(&buf)?;
 
-                    Ok(WorkPostResponse::GenericErrorResponse(body))
+                    Ok(WorkPostResponse::GenericError(body))
                 }
                 code => {
                     let mut buf = [0; 100];

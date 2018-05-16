@@ -31,16 +31,16 @@ paths:
         consumesJson: true
       responses:
         201:
-          description: "created"
+          description: "Created Entity"
           schema:
             $ref: "#/definitions/entity_edit"
-          x-responseId: "Created"
-          x-uppercaseResponseId: "CREATED"
+          x-responseId: "CreatedEntity"
+          x-uppercaseResponseId: "CREATED_ENTITY"
           uppercase_operation_id: "CREATOR_POST"
           uppercase_data_type: "ENTITYEDIT"
           producesJson: true
         400:
-          description: "bad request"
+          description: "Bad Request"
           schema:
             $ref: "#/definitions/error"
           x-responseId: "BadRequest"
@@ -48,12 +48,21 @@ paths:
           uppercase_operation_id: "CREATOR_POST"
           uppercase_data_type: "ERROR"
           producesJson: true
-        default:
-          description: "generic error response"
+        404:
+          description: "Not Found"
           schema:
             $ref: "#/definitions/error"
-          x-responseId: "GenericErrorResponse"
-          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "CREATOR_POST"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        default:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "CREATOR_POST"
           uppercase_data_type: "ERROR"
           producesJson: true
@@ -74,16 +83,16 @@ paths:
         example: "\"id_example\".to_string()"
       responses:
         200:
-          description: "fetch a single creator by id"
+          description: "Found Entity"
           schema:
             $ref: "#/definitions/creator_entity"
-          x-responseId: "FetchASingleCreatorById"
-          x-uppercaseResponseId: "FETCH_A_SINGLE_CREATOR_BY_ID"
+          x-responseId: "FoundEntity"
+          x-uppercaseResponseId: "FOUND_ENTITY"
           uppercase_operation_id: "CREATOR_ID_GET"
           uppercase_data_type: "CREATORENTITY"
           producesJson: true
         400:
-          description: "bad request"
+          description: "Bad Request"
           schema:
             $ref: "#/definitions/error"
           x-responseId: "BadRequest"
@@ -91,12 +100,21 @@ paths:
           uppercase_operation_id: "CREATOR_ID_GET"
           uppercase_data_type: "ERROR"
           producesJson: true
-        default:
-          description: "generic error response"
+        404:
+          description: "Not Found"
           schema:
             $ref: "#/definitions/error"
-          x-responseId: "GenericErrorResponse"
-          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "CREATOR_ID_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        default:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "CREATOR_ID_GET"
           uppercase_data_type: "ERROR"
           producesJson: true
@@ -116,16 +134,16 @@ paths:
         example: "\"orcid_example\".to_string()"
       responses:
         200:
-          description: "find a single creator by external identifer"
+          description: "Found Entity"
           schema:
             $ref: "#/definitions/creator_entity"
-          x-responseId: "FindASingleCreatorByExternalIdentifer"
-          x-uppercaseResponseId: "FIND_A_SINGLE_CREATOR_BY_EXTERNAL_IDENTIFER"
+          x-responseId: "FoundEntity"
+          x-uppercaseResponseId: "FOUND_ENTITY"
           uppercase_operation_id: "CREATOR_LOOKUP_GET"
           uppercase_data_type: "CREATORENTITY"
           producesJson: true
         400:
-          description: "bad request"
+          description: "Bad Request"
           schema:
             $ref: "#/definitions/error"
           x-responseId: "BadRequest"
@@ -134,20 +152,20 @@ paths:
           uppercase_data_type: "ERROR"
           producesJson: true
         404:
-          description: "no such creator"
+          description: "Not Found"
           schema:
             $ref: "#/definitions/error"
-          x-responseId: "NoSuchCreator"
-          x-uppercaseResponseId: "NO_SUCH_CREATOR"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
           uppercase_operation_id: "CREATOR_LOOKUP_GET"
           uppercase_data_type: "ERROR"
           producesJson: true
         default:
-          description: "generic error response"
+          description: "Generic Error"
           schema:
             $ref: "#/definitions/error"
-          x-responseId: "GenericErrorResponse"
-          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "CREATOR_LOOKUP_GET"
           uppercase_data_type: "ERROR"
           producesJson: true
@@ -173,16 +191,16 @@ paths:
         consumesJson: true
       responses:
         201:
-          description: "created"
+          description: "Created Entity"
           schema:
             $ref: "#/definitions/entity_edit"
-          x-responseId: "Created"
-          x-uppercaseResponseId: "CREATED"
+          x-responseId: "CreatedEntity"
+          x-uppercaseResponseId: "CREATED_ENTITY"
           uppercase_operation_id: "CONTAINER_POST"
           uppercase_data_type: "ENTITYEDIT"
           producesJson: true
         400:
-          description: "bad request"
+          description: "Bad Request"
           schema:
             $ref: "#/definitions/error"
           x-responseId: "BadRequest"
@@ -190,12 +208,21 @@ paths:
           uppercase_operation_id: "CONTAINER_POST"
           uppercase_data_type: "ERROR"
           producesJson: true
-        default:
-          description: "generic error response"
+        404:
+          description: "Not Found"
           schema:
             $ref: "#/definitions/error"
-          x-responseId: "GenericErrorResponse"
-          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "CONTAINER_POST"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        default:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "CONTAINER_POST"
           uppercase_data_type: "ERROR"
           producesJson: true
@@ -216,16 +243,16 @@ paths:
         example: "\"id_example\".to_string()"
       responses:
         200:
-          description: "fetch a single container by id"
+          description: "Found Entity"
           schema:
             $ref: "#/definitions/container_entity"
-          x-responseId: "FetchASingleContainerById"
-          x-uppercaseResponseId: "FETCH_A_SINGLE_CONTAINER_BY_ID"
+          x-responseId: "FoundEntity"
+          x-uppercaseResponseId: "FOUND_ENTITY"
           uppercase_operation_id: "CONTAINER_ID_GET"
           uppercase_data_type: "CONTAINERENTITY"
           producesJson: true
         400:
-          description: "bad request"
+          description: "Bad Request"
           schema:
             $ref: "#/definitions/error"
           x-responseId: "BadRequest"
@@ -233,12 +260,21 @@ paths:
           uppercase_operation_id: "CONTAINER_ID_GET"
           uppercase_data_type: "ERROR"
           producesJson: true
-        default:
-          description: "generic error response"
+        404:
+          description: "Not Found"
           schema:
             $ref: "#/definitions/error"
-          x-responseId: "GenericErrorResponse"
-          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "CONTAINER_ID_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        default:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "CONTAINER_ID_GET"
           uppercase_data_type: "ERROR"
           producesJson: true
@@ -258,16 +294,16 @@ paths:
         example: "\"issn_example\".to_string()"
       responses:
         200:
-          description: "find a single container by external identifer"
+          description: "Found Entity"
           schema:
             $ref: "#/definitions/container_entity"
-          x-responseId: "FindASingleContainerByExternalIdentifer"
-          x-uppercaseResponseId: "FIND_A_SINGLE_CONTAINER_BY_EXTERNAL_IDENTIFER"
+          x-responseId: "FoundEntity"
+          x-uppercaseResponseId: "FOUND_ENTITY"
           uppercase_operation_id: "CONTAINER_LOOKUP_GET"
           uppercase_data_type: "CONTAINERENTITY"
           producesJson: true
         400:
-          description: "bad request"
+          description: "Bad Request"
           schema:
             $ref: "#/definitions/error"
           x-responseId: "BadRequest"
@@ -276,20 +312,20 @@ paths:
           uppercase_data_type: "ERROR"
           producesJson: true
         404:
-          description: "no such container"
+          description: "Not Found"
           schema:
             $ref: "#/definitions/error"
-          x-responseId: "NoSuchContainer"
-          x-uppercaseResponseId: "NO_SUCH_CONTAINER"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
           uppercase_operation_id: "CONTAINER_LOOKUP_GET"
           uppercase_data_type: "ERROR"
           producesJson: true
         default:
-          description: "generic error response"
+          description: "Generic Error"
           schema:
             $ref: "#/definitions/error"
-          x-responseId: "GenericErrorResponse"
-          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "CONTAINER_LOOKUP_GET"
           uppercase_data_type: "ERROR"
           producesJson: true
@@ -315,16 +351,16 @@ paths:
         consumesJson: true
       responses:
         201:
-          description: "created"
+          description: "Created Entity"
           schema:
             $ref: "#/definitions/entity_edit"
-          x-responseId: "Created"
-          x-uppercaseResponseId: "CREATED"
+          x-responseId: "CreatedEntity"
+          x-uppercaseResponseId: "CREATED_ENTITY"
           uppercase_operation_id: "FILE_POST"
           uppercase_data_type: "ENTITYEDIT"
           producesJson: true
         400:
-          description: "bad request"
+          description: "Bad Request"
           schema:
             $ref: "#/definitions/error"
           x-responseId: "BadRequest"
@@ -332,12 +368,21 @@ paths:
           uppercase_operation_id: "FILE_POST"
           uppercase_data_type: "ERROR"
           producesJson: true
-        default:
-          description: "generic error response"
+        404:
+          description: "Not Found"
           schema:
             $ref: "#/definitions/error"
-          x-responseId: "GenericErrorResponse"
-          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "FILE_POST"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        default:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "FILE_POST"
           uppercase_data_type: "ERROR"
           producesJson: true
@@ -358,16 +403,16 @@ paths:
         example: "\"id_example\".to_string()"
       responses:
         200:
-          description: "fetch a single file by id"
+          description: "Found Entity"
           schema:
             $ref: "#/definitions/file_entity"
-          x-responseId: "FetchASingleFileById"
-          x-uppercaseResponseId: "FETCH_A_SINGLE_FILE_BY_ID"
+          x-responseId: "FoundEntity"
+          x-uppercaseResponseId: "FOUND_ENTITY"
           uppercase_operation_id: "FILE_ID_GET"
           uppercase_data_type: "FILEENTITY"
           producesJson: true
         400:
-          description: "bad request"
+          description: "Bad Request"
           schema:
             $ref: "#/definitions/error"
           x-responseId: "BadRequest"
@@ -375,12 +420,21 @@ paths:
           uppercase_operation_id: "FILE_ID_GET"
           uppercase_data_type: "ERROR"
           producesJson: true
-        default:
-          description: "generic error response"
+        404:
+          description: "Not Found"
           schema:
             $ref: "#/definitions/error"
-          x-responseId: "GenericErrorResponse"
-          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "FILE_ID_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        default:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "FILE_ID_GET"
           uppercase_data_type: "ERROR"
           producesJson: true
@@ -400,16 +454,16 @@ paths:
         example: "\"sha1_example\".to_string()"
       responses:
         200:
-          description: "find a single file by external identifer"
+          description: "Found Entity"
           schema:
             $ref: "#/definitions/file_entity"
-          x-responseId: "FindASingleFileByExternalIdentifer"
-          x-uppercaseResponseId: "FIND_A_SINGLE_FILE_BY_EXTERNAL_IDENTIFER"
+          x-responseId: "FoundEntity"
+          x-uppercaseResponseId: "FOUND_ENTITY"
           uppercase_operation_id: "FILE_LOOKUP_GET"
           uppercase_data_type: "FILEENTITY"
           producesJson: true
         400:
-          description: "bad request"
+          description: "Bad Request"
           schema:
             $ref: "#/definitions/error"
           x-responseId: "BadRequest"
@@ -418,20 +472,20 @@ paths:
           uppercase_data_type: "ERROR"
           producesJson: true
         404:
-          description: "no such file"
+          description: "Not Found"
           schema:
             $ref: "#/definitions/error"
-          x-responseId: "NoSuchFile"
-          x-uppercaseResponseId: "NO_SUCH_FILE"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
           uppercase_operation_id: "FILE_LOOKUP_GET"
           uppercase_data_type: "ERROR"
           producesJson: true
         default:
-          description: "generic error response"
+          description: "Generic Error"
           schema:
             $ref: "#/definitions/error"
-          x-responseId: "GenericErrorResponse"
-          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "FILE_LOOKUP_GET"
           uppercase_data_type: "ERROR"
           producesJson: true
@@ -457,16 +511,16 @@ paths:
         consumesJson: true
       responses:
         201:
-          description: "created"
+          description: "Created Entity"
           schema:
             $ref: "#/definitions/entity_edit"
-          x-responseId: "Created"
-          x-uppercaseResponseId: "CREATED"
+          x-responseId: "CreatedEntity"
+          x-uppercaseResponseId: "CREATED_ENTITY"
           uppercase_operation_id: "RELEASE_POST"
           uppercase_data_type: "ENTITYEDIT"
           producesJson: true
         400:
-          description: "bad request"
+          description: "Bad Request"
           schema:
             $ref: "#/definitions/error"
           x-responseId: "BadRequest"
@@ -474,12 +528,21 @@ paths:
           uppercase_operation_id: "RELEASE_POST"
           uppercase_data_type: "ERROR"
           producesJson: true
-        default:
-          description: "generic error response"
+        404:
+          description: "Not Found"
           schema:
             $ref: "#/definitions/error"
-          x-responseId: "GenericErrorResponse"
-          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "RELEASE_POST"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        default:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "RELEASE_POST"
           uppercase_data_type: "ERROR"
           producesJson: true
@@ -500,16 +563,16 @@ paths:
         example: "\"id_example\".to_string()"
       responses:
         200:
-          description: "fetch a single release by id"
+          description: "Found Entity"
           schema:
             $ref: "#/definitions/release_entity"
-          x-responseId: "FetchASingleReleaseById"
-          x-uppercaseResponseId: "FETCH_A_SINGLE_RELEASE_BY_ID"
+          x-responseId: "FoundEntity"
+          x-uppercaseResponseId: "FOUND_ENTITY"
           uppercase_operation_id: "RELEASE_ID_GET"
           uppercase_data_type: "RELEASEENTITY"
           producesJson: true
         400:
-          description: "bad request"
+          description: "Bad Request"
           schema:
             $ref: "#/definitions/error"
           x-responseId: "BadRequest"
@@ -517,12 +580,21 @@ paths:
           uppercase_operation_id: "RELEASE_ID_GET"
           uppercase_data_type: "ERROR"
           producesJson: true
-        default:
-          description: "generic error response"
+        404:
+          description: "Not Found"
           schema:
             $ref: "#/definitions/error"
-          x-responseId: "GenericErrorResponse"
-          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "RELEASE_ID_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        default:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "RELEASE_ID_GET"
           uppercase_data_type: "ERROR"
           producesJson: true
@@ -542,16 +614,16 @@ paths:
         example: "\"doi_example\".to_string()"
       responses:
         200:
-          description: "find a single release by external identifer"
+          description: "Found Entity"
           schema:
             $ref: "#/definitions/release_entity"
-          x-responseId: "FindASingleReleaseByExternalIdentifer"
-          x-uppercaseResponseId: "FIND_A_SINGLE_RELEASE_BY_EXTERNAL_IDENTIFER"
+          x-responseId: "FoundEntity"
+          x-uppercaseResponseId: "FOUND_ENTITY"
           uppercase_operation_id: "RELEASE_LOOKUP_GET"
           uppercase_data_type: "RELEASEENTITY"
           producesJson: true
         400:
-          description: "bad request"
+          description: "Bad Request"
           schema:
             $ref: "#/definitions/error"
           x-responseId: "BadRequest"
@@ -560,20 +632,20 @@ paths:
           uppercase_data_type: "ERROR"
           producesJson: true
         404:
-          description: "no such release"
+          description: "Not Found"
           schema:
             $ref: "#/definitions/error"
-          x-responseId: "NoSuchRelease"
-          x-uppercaseResponseId: "NO_SUCH_RELEASE"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
           uppercase_operation_id: "RELEASE_LOOKUP_GET"
           uppercase_data_type: "ERROR"
           producesJson: true
         default:
-          description: "generic error response"
+          description: "Generic Error"
           schema:
             $ref: "#/definitions/error"
-          x-responseId: "GenericErrorResponse"
-          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "RELEASE_LOOKUP_GET"
           uppercase_data_type: "ERROR"
           producesJson: true
@@ -599,16 +671,16 @@ paths:
         consumesJson: true
       responses:
         201:
-          description: "created"
+          description: "Created Entity"
           schema:
             $ref: "#/definitions/entity_edit"
-          x-responseId: "Created"
-          x-uppercaseResponseId: "CREATED"
+          x-responseId: "CreatedEntity"
+          x-uppercaseResponseId: "CREATED_ENTITY"
           uppercase_operation_id: "WORK_POST"
           uppercase_data_type: "ENTITYEDIT"
           producesJson: true
         400:
-          description: "bad request"
+          description: "Bad Request"
           schema:
             $ref: "#/definitions/error"
           x-responseId: "BadRequest"
@@ -616,12 +688,21 @@ paths:
           uppercase_operation_id: "WORK_POST"
           uppercase_data_type: "ERROR"
           producesJson: true
-        default:
-          description: "generic error response"
+        404:
+          description: "Not Found"
           schema:
             $ref: "#/definitions/error"
-          x-responseId: "GenericErrorResponse"
-          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "WORK_POST"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        default:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "WORK_POST"
           uppercase_data_type: "ERROR"
           producesJson: true
@@ -642,16 +723,16 @@ paths:
         example: "\"id_example\".to_string()"
       responses:
         200:
-          description: "fetch a single work by id"
+          description: "Found Entity"
           schema:
             $ref: "#/definitions/work_entity"
-          x-responseId: "FetchASingleWorkById"
-          x-uppercaseResponseId: "FETCH_A_SINGLE_WORK_BY_ID"
+          x-responseId: "FoundEntity"
+          x-uppercaseResponseId: "FOUND_ENTITY"
           uppercase_operation_id: "WORK_ID_GET"
           uppercase_data_type: "WORKENTITY"
           producesJson: true
         400:
-          description: "bad request"
+          description: "Bad Request"
           schema:
             $ref: "#/definitions/error"
           x-responseId: "BadRequest"
@@ -659,12 +740,21 @@ paths:
           uppercase_operation_id: "WORK_ID_GET"
           uppercase_data_type: "ERROR"
           producesJson: true
-        default:
-          description: "generic error response"
+        404:
+          description: "Not Found"
           schema:
             $ref: "#/definitions/error"
-          x-responseId: "GenericErrorResponse"
-          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "WORK_ID_GET"
+          uppercase_data_type: "ERROR"
+          producesJson: true
+        default:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "WORK_ID_GET"
           uppercase_data_type: "ERROR"
           producesJson: true
@@ -684,29 +774,29 @@ paths:
         example: "\"username_example\".to_string()"
       responses:
         200:
-          description: "fetch generic information about an editor"
+          description: "Found Editor"
           schema:
             $ref: "#/definitions/editor"
-          x-responseId: "FetchGenericInformationAboutAnEditor"
-          x-uppercaseResponseId: "FETCH_GENERIC_INFORMATION_ABOUT_AN_EDITOR"
+          x-responseId: "FoundEditor"
+          x-uppercaseResponseId: "FOUND_EDITOR"
           uppercase_operation_id: "EDITOR_USERNAME_GET"
           uppercase_data_type: "EDITOR"
           producesJson: true
         404:
-          description: "username not found"
+          description: "Not Found"
           schema:
             $ref: "#/definitions/error"
-          x-responseId: "UsernameNotFound"
-          x-uppercaseResponseId: "USERNAME_NOT_FOUND"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
           uppercase_operation_id: "EDITOR_USERNAME_GET"
           uppercase_data_type: "ERROR"
           producesJson: true
         default:
-          description: "generic error response"
+          description: "Generic Error"
           schema:
             $ref: "#/definitions/error"
-          x-responseId: "GenericErrorResponse"
-          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "EDITOR_USERNAME_GET"
           uppercase_data_type: "ERROR"
           producesJson: true
@@ -726,29 +816,29 @@ paths:
         example: "\"username_example\".to_string()"
       responses:
         200:
-          description: "find changes (editgroups) by this editor which have been merged"
+          description: "Found Merged Changes"
           schema:
             $ref: "#/definitions/changelogentry"
-          x-responseId: "FindChanges_"
-          x-uppercaseResponseId: "FIND_CHANGES_"
+          x-responseId: "FoundMergedChanges"
+          x-uppercaseResponseId: "FOUND_MERGED_CHANGES"
           uppercase_operation_id: "EDITOR_USERNAME_CHANGELOG_GET"
           uppercase_data_type: "CHANGELOGENTRY"
           producesJson: true
         404:
-          description: "username not found"
+          description: "Not Found"
           schema:
             $ref: "#/definitions/error"
-          x-responseId: "UsernameNotFound"
-          x-uppercaseResponseId: "USERNAME_NOT_FOUND"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
           uppercase_operation_id: "EDITOR_USERNAME_CHANGELOG_GET"
           uppercase_data_type: "ERROR"
           producesJson: true
         default:
-          description: "generic error response"
+          description: "Generic Error"
           schema:
             $ref: "#/definitions/error"
-          x-responseId: "GenericErrorResponse"
-          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "EDITOR_USERNAME_CHANGELOG_GET"
           uppercase_data_type: "ERROR"
           producesJson: true
@@ -762,7 +852,7 @@ paths:
       parameters: []
       responses:
         201:
-          description: "successfully created"
+          description: "Successfully Created"
           schema:
             $ref: "#/definitions/editgroup"
           x-responseId: "SuccessfullyCreated"
@@ -771,20 +861,20 @@ paths:
           uppercase_data_type: "EDITGROUP"
           producesJson: true
         400:
-          description: "invalid request parameters"
+          description: "Bad Request"
           schema:
             $ref: "#/definitions/error"
-          x-responseId: "InvalidRequestParameters"
-          x-uppercaseResponseId: "INVALID_REQUEST_PARAMETERS"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
           uppercase_operation_id: "EDITGROUP_POST"
           uppercase_data_type: "ERROR"
           producesJson: true
         default:
-          description: "generic error response"
+          description: "Generic Error"
           schema:
             $ref: "#/definitions/error"
-          x-responseId: "GenericErrorResponse"
-          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "EDITGROUP_POST"
           uppercase_data_type: "ERROR"
           producesJson: true
@@ -804,29 +894,29 @@ paths:
         example: "56"
       responses:
         200:
-          description: "fetch editgroup by identifier"
+          description: "Found Editgroup"
           schema:
             $ref: "#/definitions/editgroup"
-          x-responseId: "FetchEditgroupByIdentifier"
-          x-uppercaseResponseId: "FETCH_EDITGROUP_BY_IDENTIFIER"
+          x-responseId: "FoundEditgroup"
+          x-uppercaseResponseId: "FOUND_EDITGROUP"
           uppercase_operation_id: "EDITGROUP_ID_GET"
           uppercase_data_type: "EDITGROUP"
           producesJson: true
         404:
-          description: "no such editgroup"
+          description: "Not Found"
           schema:
             $ref: "#/definitions/error"
-          x-responseId: "NoSuchEditgroup"
-          x-uppercaseResponseId: "NO_SUCH_EDITGROUP"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
           uppercase_operation_id: "EDITGROUP_ID_GET"
           uppercase_data_type: "ERROR"
           producesJson: true
         default:
-          description: "generic error response"
+          description: "Generic Error"
           schema:
             $ref: "#/definitions/error"
-          x-responseId: "GenericErrorResponse"
-          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "EDITGROUP_ID_GET"
           uppercase_data_type: "ERROR"
           producesJson: true
@@ -846,38 +936,38 @@ paths:
         example: "56"
       responses:
         200:
-          description: "merged editgroup successfully (\"live\")"
+          description: "Merged Successfully"
           schema:
             $ref: "#/definitions/success"
-          x-responseId: "MergedEditgroupSuccessfully_"
-          x-uppercaseResponseId: "MERGED_EDITGROUP_SUCCESSFULLY_"
+          x-responseId: "MergedSuccessfully"
+          x-uppercaseResponseId: "MERGED_SUCCESSFULLY"
           uppercase_operation_id: "EDITGROUP_ID_ACCEPT_POST"
           uppercase_data_type: "SUCCESS"
           producesJson: true
         400:
-          description: "editgroup is in an unmergable state"
+          description: "Unmergable"
           schema:
             $ref: "#/definitions/error"
-          x-responseId: "EditgroupIsInAnUnmergableState"
-          x-uppercaseResponseId: "EDITGROUP_IS_IN_AN_UNMERGABLE_STATE"
+          x-responseId: "Unmergable"
+          x-uppercaseResponseId: "UNMERGABLE"
           uppercase_operation_id: "EDITGROUP_ID_ACCEPT_POST"
           uppercase_data_type: "ERROR"
           producesJson: true
         404:
-          description: "no such editgroup"
+          description: "Not Found"
           schema:
             $ref: "#/definitions/error"
-          x-responseId: "NoSuchEditgroup"
-          x-uppercaseResponseId: "NO_SUCH_EDITGROUP"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
           uppercase_operation_id: "EDITGROUP_ID_ACCEPT_POST"
           uppercase_data_type: "ERROR"
           producesJson: true
         default:
-          description: "generic error response"
+          description: "Generic Error"
           schema:
             $ref: "#/definitions/error"
-          x-responseId: "GenericErrorResponse"
-          x-uppercaseResponseId: "GENERIC_ERROR_RESPONSE"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
           uppercase_operation_id: "EDITGROUP_ID_ACCEPT_POST"
           uppercase_data_type: "ERROR"
           producesJson: true
@@ -1173,10 +1263,14 @@ x-entity-edit-props:
     type: "integer"
 x-entity-responses:
   400:
-    description: "bad request"
+    description: "Bad Request"
+    schema:
+      $ref: "#/definitions/error"
+  404:
+    description: "Not Found"
     schema:
       $ref: "#/definitions/error"
   default:
-    description: "generic error response"
+    description: "Generic Error"
     schema:
       $ref: "#/definitions/error"
