@@ -1,16 +1,14 @@
-
 use chrono;
 //use serde_json;
-use uuid::Uuid;
 use database_schema::*;
+use uuid::Uuid;
 
 // Ugh. I thought the whole point was to *not* do this, but:
 // https://github.com/diesel-rs/diesel/issues/1589
 
 // Helper for constructing tables
 macro_rules! entity_structs {
-    ($edit_table:expr, $edit_struct:ident, $ident_table:expr, $ident_struct:ident) => (
-
+    ($edit_table:expr, $edit_struct:ident, $ident_table:expr, $ident_struct:ident) => {
         #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset, QueryableByName)]
         #[table_name = $edit_table]
         pub struct $edit_struct {
@@ -30,7 +28,7 @@ macro_rules! entity_structs {
             pub rev_id: Option<i64>,
             pub redirect_id: Option<Uuid>,
         }
-    )
+    };
 }
 
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
@@ -44,7 +42,12 @@ pub struct ContainerRevRow {
     pub issn: Option<String>,
 }
 
-entity_structs!("container_edit", ContainerEditRow, "container_ident", ContainerIdentRow);
+entity_structs!(
+    "container_edit",
+    ContainerEditRow,
+    "container_ident",
+    ContainerIdentRow
+);
 
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
 #[table_name = "creator_rev"]
@@ -55,7 +58,12 @@ pub struct CreatorRevRow {
     pub orcid: Option<String>,
 }
 
-entity_structs!("creator_edit", CreatorEditRow, "creator_ident", CreatorIdentRow);
+entity_structs!(
+    "creator_edit",
+    CreatorEditRow,
+    "creator_ident",
+    CreatorIdentRow
+);
 
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
 #[table_name = "file_rev"]
@@ -86,7 +94,12 @@ pub struct ReleaseRevRow {
     pub issue: Option<String>,
 }
 
-entity_structs!("release_edit", ReleaseEditRow, "release_ident", ReleaseIdentRow);
+entity_structs!(
+    "release_edit",
+    ReleaseEditRow,
+    "release_ident",
+    ReleaseIdentRow
+);
 
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
 #[table_name = "work_rev"]
@@ -108,7 +121,6 @@ pub struct ReleaseContribRow {
     stub: Option<String>,
     contrib_type: Option<String>,
 }
-
 
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
 #[table_name = "release_ref"]

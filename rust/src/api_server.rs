@@ -2,17 +2,12 @@
 
 use ConnectionPool;
 use database_models::*;
-use database_schema::{container_rev, container_ident, container_edit,
-                      creator_rev, creator_ident, creator_edit,
-                      file_rev, file_ident, file_edit,
-                      release_rev, release_ident, release_edit,
-                      work_rev, work_ident, work_edit,
-                      editor, editgroup, changelog
-};
-use uuid;
+use database_schema::{changelog, container_edit, container_ident, container_rev, creator_edit,
+                      creator_ident, creator_rev, editgroup, editor, file_edit, file_ident,
+                      file_rev, release_edit, release_ident, release_rev, work_edit, work_ident,
+                      work_rev};
 use diesel::prelude::*;
 use diesel::{self, insert_into};
-use futures::{self, Future};
 use fatcat_api::models;
 use fatcat_api::models::*;
 use fatcat_api::{Api, ApiError, ContainerIdGetResponse, ContainerLookupGetResponse,
@@ -22,6 +17,8 @@ use fatcat_api::{Api, ApiError, ContainerIdGetResponse, ContainerLookupGetRespon
                  EditorUsernameGetResponse, FileIdGetResponse, FileLookupGetResponse,
                  FilePostResponse, ReleaseIdGetResponse, ReleaseLookupGetResponse,
                  ReleasePostResponse, WorkIdGetResponse, WorkPostResponse};
+use futures::{self, Future};
+use uuid;
 
 #[derive(Clone)]
 pub struct Server {
@@ -36,6 +33,7 @@ impl Api for Server {
     ) -> Box<Future<Item = ContainerIdGetResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
         let id = uuid::Uuid::parse_str(&id).unwrap();
+
         let (ident, rev): (ContainerIdentRow, ContainerRevRow) = container_ident::table
             .find(id)
             .inner_join(container_rev::table)
@@ -45,9 +43,9 @@ impl Api for Server {
         let entity = ContainerEntity {
             issn: rev.issn,
             publisher: rev.publisher,
-            parent: None, // TODO
+            parent: None,         // TODO
             name: Some(rev.name), // TODO: not optional
-            state: None, // TODO:
+            state: None,          // TODO:
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id.map(|v| v as isize),
             redirect: ident.redirect_id.map(|u| u.to_string()),
@@ -79,7 +77,7 @@ impl Api for Server {
     ) -> Box<Future<Item = ContainerPostResponse, Error = ApiError> + Send> {
         println!("{:?}", body);
         let body = body.expect("missing body"); // TODO: required parameter
-        //let editgroup_id: i64 = body.editgroup.expect("need editgroup_id") as i64; // TODO: or find/create
+                                                //let editgroup_id: i64 = body.editgroup.expect("need editgroup_id") as i64; // TODO: or find/create
         let editgroup_id = 1;
         let conn = self.db_pool.get().expect("db_pool error");
 
@@ -96,8 +94,8 @@ impl Api for Server {
                             RETURNING id )
             INSERT INTO container_edit (editgroup_id, ident_id, rev_id) VALUES
                 ($3, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
-            RETURNING *")
-            .bind::<diesel::sql_types::Text, _>(name)
+            RETURNING *",
+        ).bind::<diesel::sql_types::Text, _>(name)
             .bind::<diesel::sql_types::Text, _>(issn)
             .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
             .load(&conn)
@@ -110,9 +108,9 @@ impl Api for Server {
             ident: Some(edit.ident_id.to_string()),
             id: Some(edit.id as isize),
         };
-        Box::new(futures::done(Ok(
-            ContainerPostResponse::Created(entity_edit),
-        )))
+        Box::new(futures::done(Ok(ContainerPostResponse::Created(
+            entity_edit,
+        ))))
     }
 
     fn creator_id_get(
@@ -121,16 +119,6 @@ impl Api for Server {
         _context: &Context,
     ) -> Box<Future<Item = CreatorIdGetResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
-        /*
-        let first_thing: (Uuid, bool, Option<i64>, Option<Uuid>) = creator_ident::table
-            .first(&conn)
-            .unwrap();
-        let entity_table = creator_ident::table.left_join(creator_rev::table);
-        let thing: (creator_ident::SqlType, creator_rev::SqlType) = creator_ident::table
-            .inner_join(creator_rev::table)
-            .first(&conn)
-            .expect("Error loading creator");
-        */
         let ce = CreatorEntity {
             orcid: None,
             name: None,

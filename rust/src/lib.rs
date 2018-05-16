@@ -3,9 +3,9 @@ extern crate fatcat_api;
 extern crate chrono;
 #[macro_use]
 extern crate diesel;
-extern crate uuid;
 extern crate dotenv;
 extern crate futures;
+extern crate uuid;
 #[macro_use]
 extern crate hyper;
 //extern crate swagger;
@@ -16,8 +16,8 @@ extern crate r2d2;
 extern crate serde_json;
 
 pub mod api_server;
-pub mod database_schema;
 pub mod database_models;
+pub mod database_schema;
 
 mod errors {
     error_chain!{}
