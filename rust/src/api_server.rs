@@ -32,19 +32,38 @@ impl Api for Server {
         _context: &Context,
     ) -> Box<Future<Item = ContainerIdGetResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let id = uuid::Uuid::parse_str(&id).unwrap();
+        let id = match uuid::Uuid::parse_str(&id) {
+            Ok(some_uuid) => some_uuid,
+            Err(_) => {
+                return Box::new(futures::done(Ok(
+                    ContainerIdGetResponse::BadRequest(
+                        Error { message: "Failed to parse UUID".to_string() }
+                    ))));
+            }
+        };
 
-        let (ident, rev): (ContainerIdentRow, ContainerRevRow) = container_ident::table
+        let res: Result<(ContainerIdentRow, ContainerRevRow), _> = container_ident::table
             .find(id)
             .inner_join(container_rev::table)
-            .first(&conn)
-            .expect("error loading container");
+            .first(&conn);
+
+        let (ident, rev) = match res {
+            Ok(r) => r,
+            Err(_) => {
+                return Box::new(futures::done(Ok(
+                    // TODO: UGH, need to add 404 responses everywhere, not 400
+                    //ContainerIdGetResponse::NotFound(
+                    ContainerIdGetResponse::BadRequest(
+                        Error { message: "No such container".to_string() }
+                    ))));
+            }
+        };
 
         let entity = ContainerEntity {
             issn: rev.issn,
             publisher: rev.publisher,
-            parent: None,         // TODO
-            name: Some(rev.name), // TODO: not optional
+            parent: None,         // TODO:
+            name: rev.name,
             state: None,          // TODO:
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id.map(|v| v as isize),
@@ -59,31 +78,57 @@ impl Api for Server {
     fn container_lookup_get(
         &self,
         issn: String,
-        context: &Context,
+        _context: &Context,
     ) -> Box<Future<Item = ContainerLookupGetResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!(
-            "container_lookup_get(\"{}\") - X-Span-ID: {:?}",
-            issn,
-            context.x_span_id.unwrap_or(String::from("<none>")).clone()
-        );
-        Box::new(futures::failed("Generic failure".into()))
+        let conn = self.db_pool.get().expect("db_pool error");
+
+        let res: Result<(ContainerIdentRow, ContainerRevRow), _> = container_ident::table
+            .inner_join(container_rev::table)
+            .first(&conn);
+        // XXX: actually do a filter/lookup
+
+        let (ident, rev) = match res {
+            Ok(r) => r,
+            Err(_) => {
+                return Box::new(futures::done(Ok(
+                    // TODO: UGH, need to add 404 responses everywhere, not 400
+                    //ContainerIdGetResponse::NotFound(
+                    ContainerLookupGetResponse::BadRequest(
+                        Error { message: "No such container".to_string() }
+                    ))));
+            }
+        };
+
+        let entity = ContainerEntity {
+            issn: rev.issn,
+            publisher: rev.publisher,
+            parent: None,         // TODO:
+            name: rev.name,
+            state: None,          // TODO:
+            ident: Some(ident.id.to_string()),
+            revision: ident.rev_id.map(|v| v as isize),
+            redirect: ident.redirect_id.map(|u| u.to_string()),
+            editgroup: None,
+        };
+        Box::new(futures::done(Ok(
+            ContainerLookupGetResponse::FindASingleContainerByExternalIdentifer(entity),
+        )))
     }
 
     fn container_post(
         &self,
-        body: Option<models::ContainerEntity>,
+        body: models::ContainerEntity,
         context: &Context,
     ) -> Box<Future<Item = ContainerPostResponse, Error = ApiError> + Send> {
         println!("{:?}", body);
-        let body = body.expect("missing body"); // TODO: required parameter
-                                                //let editgroup_id: i64 = body.editgroup.expect("need editgroup_id") as i64; // TODO: or find/create
+        //let editgroup_id: i64 = body.editgroup.expect("need editgroup_id") as i64;
+        // TODO: or find/create
         let editgroup_id = 1;
         let conn = self.db_pool.get().expect("db_pool error");
 
-        let name = body.name.unwrap();
-        let issn = body.issn.unwrap();
-        println!("name={} issn={}", name, issn);
+        let name = body.name;
+        let issn = body.issn;
+        println!("name={} issn={:?}", name, issn);
 
         let edit: Vec<ContainerEditRow> = diesel::sql_query(
             "WITH rev AS ( INSERT INTO container_rev (name, issn)
@@ -96,7 +141,7 @@ impl Api for Server {
                 ($3, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
         ).bind::<diesel::sql_types::Text, _>(name)
-            .bind::<diesel::sql_types::Text, _>(issn)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(issn)
             .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
             .load(&conn)
             .unwrap();
@@ -106,7 +151,7 @@ impl Api for Server {
             editgroup_id: Some(edit.editgroup_id as isize),
             revision: Some(edit.rev_id.unwrap() as isize),
             ident: Some(edit.ident_id.to_string()),
-            id: Some(edit.id as isize),
+            edit_id: Some(edit.id as isize),
         };
         Box::new(futures::done(Ok(ContainerPostResponse::Created(
             entity_edit,
@@ -121,7 +166,7 @@ impl Api for Server {
         let conn = self.db_pool.get().expect("db_pool error");
         let ce = CreatorEntity {
             orcid: None,
-            name: None,
+            name: "Dummy Name".into(),
             state: None,
             ident: None,
             revision: None,
@@ -149,12 +194,124 @@ impl Api for Server {
 
     fn creator_post(
         &self,
-        body: Option<models::CreatorEntity>,
+        body: models::CreatorEntity,
         context: &Context,
     ) -> Box<Future<Item = CreatorPostResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
             "creator_post({:?}) - X-Span-ID: {:?}",
+            body,
+            context.x_span_id.unwrap_or(String::from("<none>")).clone()
+        );
+        Box::new(futures::failed("Generic failure".into()))
+    }
+
+    fn file_id_get(
+        &self,
+        id: String,
+        context: &Context,
+    ) -> Box<Future<Item = FileIdGetResponse, Error = ApiError> + Send> {
+        let context = context.clone();
+        println!(
+            "file_id_get(\"{}\") - X-Span-ID: {:?}",
+            id,
+            context.x_span_id.unwrap_or(String::from("<none>")).clone()
+        );
+        Box::new(futures::failed("Generic failure".into()))
+    }
+
+    fn file_lookup_get(
+        &self,
+        sha1: String,
+        context: &Context,
+    ) -> Box<Future<Item = FileLookupGetResponse, Error = ApiError> + Send> {
+        let context = context.clone();
+        println!(
+            "file_lookup_get(\"{}\") - X-Span-ID: {:?}",
+            sha1,
+            context.x_span_id.unwrap_or(String::from("<none>")).clone()
+        );
+        Box::new(futures::failed("Generic failure".into()))
+    }
+
+    fn file_post(
+        &self,
+        body: models::FileEntity,
+        context: &Context,
+    ) -> Box<Future<Item = FilePostResponse, Error = ApiError> + Send> {
+        let context = context.clone();
+        println!(
+            "file_post({:?}) - X-Span-ID: {:?}",
+            body,
+            context.x_span_id.unwrap_or(String::from("<none>")).clone()
+        );
+        Box::new(futures::failed("Generic failure".into()))
+    }
+
+    fn work_id_get(
+        &self,
+        id: String,
+        context: &Context,
+    ) -> Box<Future<Item = WorkIdGetResponse, Error = ApiError> + Send> {
+        let context = context.clone();
+        println!(
+            "work_id_get(\"{}\") - X-Span-ID: {:?}",
+            id,
+            context.x_span_id.unwrap_or(String::from("<none>")).clone()
+        );
+        Box::new(futures::failed("Generic failure".into()))
+    }
+
+    fn work_post(
+        &self,
+        body: models::WorkEntity,
+        context: &Context,
+    ) -> Box<Future<Item = WorkPostResponse, Error = ApiError> + Send> {
+        let context = context.clone();
+        println!(
+            "work_post({:?}) - X-Span-ID: {:?}",
+            body,
+            context.x_span_id.unwrap_or(String::from("<none>")).clone()
+        );
+        Box::new(futures::failed("Generic failure".into()))
+    }
+
+    fn release_id_get(
+        &self,
+        id: String,
+        context: &Context,
+    ) -> Box<Future<Item = ReleaseIdGetResponse, Error = ApiError> + Send> {
+        let context = context.clone();
+        println!(
+            "release_id_get(\"{}\") - X-Span-ID: {:?}",
+            id,
+            context.x_span_id.unwrap_or(String::from("<none>")).clone()
+        );
+        Box::new(futures::failed("Generic failure".into()))
+    }
+
+    fn release_lookup_get(
+        &self,
+        doi: String,
+        context: &Context,
+    ) -> Box<Future<Item = ReleaseLookupGetResponse, Error = ApiError> + Send> {
+        let context = context.clone();
+        println!(
+            "release_lookup_get(\"{}\") - X-Span-ID: {:?}",
+            doi,
+            context.x_span_id.unwrap_or(String::from("<none>")).clone()
+        );
+        Box::new(futures::failed("Generic failure".into()))
+    }
+
+    fn release_post(
+        &self,
+        body: models::ReleaseEntity,
+        context: &Context,
+    ) -> Box<Future<Item = ReleasePostResponse, Error = ApiError> + Send> {
+        let context = context.clone();
+        println!(
+            "release_post({:?}) - X-Span-ID: {:?}",
             body,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
         );
@@ -224,118 +381,6 @@ impl Api for Server {
         println!(
             "editor_username_get(\"{}\") - X-Span-ID: {:?}",
             username,
-            context.x_span_id.unwrap_or(String::from("<none>")).clone()
-        );
-        Box::new(futures::failed("Generic failure".into()))
-    }
-
-    fn file_id_get(
-        &self,
-        id: String,
-        context: &Context,
-    ) -> Box<Future<Item = FileIdGetResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!(
-            "file_id_get(\"{}\") - X-Span-ID: {:?}",
-            id,
-            context.x_span_id.unwrap_or(String::from("<none>")).clone()
-        );
-        Box::new(futures::failed("Generic failure".into()))
-    }
-
-    fn file_lookup_get(
-        &self,
-        sha1: String,
-        context: &Context,
-    ) -> Box<Future<Item = FileLookupGetResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!(
-            "file_lookup_get(\"{}\") - X-Span-ID: {:?}",
-            sha1,
-            context.x_span_id.unwrap_or(String::from("<none>")).clone()
-        );
-        Box::new(futures::failed("Generic failure".into()))
-    }
-
-    fn file_post(
-        &self,
-        body: Option<models::FileEntity>,
-        context: &Context,
-    ) -> Box<Future<Item = FilePostResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!(
-            "file_post({:?}) - X-Span-ID: {:?}",
-            body,
-            context.x_span_id.unwrap_or(String::from("<none>")).clone()
-        );
-        Box::new(futures::failed("Generic failure".into()))
-    }
-
-    fn release_id_get(
-        &self,
-        id: String,
-        context: &Context,
-    ) -> Box<Future<Item = ReleaseIdGetResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!(
-            "release_id_get(\"{}\") - X-Span-ID: {:?}",
-            id,
-            context.x_span_id.unwrap_or(String::from("<none>")).clone()
-        );
-        Box::new(futures::failed("Generic failure".into()))
-    }
-
-    fn release_lookup_get(
-        &self,
-        doi: String,
-        context: &Context,
-    ) -> Box<Future<Item = ReleaseLookupGetResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!(
-            "release_lookup_get(\"{}\") - X-Span-ID: {:?}",
-            doi,
-            context.x_span_id.unwrap_or(String::from("<none>")).clone()
-        );
-        Box::new(futures::failed("Generic failure".into()))
-    }
-
-    fn release_post(
-        &self,
-        body: Option<models::ReleaseEntity>,
-        context: &Context,
-    ) -> Box<Future<Item = ReleasePostResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!(
-            "release_post({:?}) - X-Span-ID: {:?}",
-            body,
-            context.x_span_id.unwrap_or(String::from("<none>")).clone()
-        );
-        Box::new(futures::failed("Generic failure".into()))
-    }
-
-    fn work_id_get(
-        &self,
-        id: String,
-        context: &Context,
-    ) -> Box<Future<Item = WorkIdGetResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!(
-            "work_id_get(\"{}\") - X-Span-ID: {:?}",
-            id,
-            context.x_span_id.unwrap_or(String::from("<none>")).clone()
-        );
-        Box::new(futures::failed("Generic failure".into()))
-    }
-
-    fn work_post(
-        &self,
-        body: Option<models::WorkEntity>,
-        context: &Context,
-    ) -> Box<Future<Item = WorkPostResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!(
-            "work_post({:?}) - X-Span-ID: {:?}",
-            body,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
         );
         Box::new(futures::failed("Generic failure".into()))

@@ -144,6 +144,7 @@ definitions:
         type: integer
       editor_id:
         type: integer
+      # TODO: work_edits array, etc. ["edits"]["work"] or ["work_edits"]?
   changelogentry:
     type: object
     required:

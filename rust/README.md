@@ -9,6 +9,13 @@ Things!
 
     diesel print-schema > src/database_schema.rs
 
+Regenerate API schemas:
+
+    cargo swagger fatcat-openapi2.yml fatcat-api --docker-tag=v2.3.1
+    sudo chown `whoami`:`whoami` -R fatcat-api
+    # edit fatcat-api/Cargo.toml, set name to "fatcat-api"
+    cargo fmt
+
 Debugging SQL errors:
 
     psql fatcat_rs < migrations/2018-05-12-001226_init/up.sql

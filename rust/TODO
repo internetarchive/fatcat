@@ -4,13 +4,22 @@ x re-generate OpenAPI
     => cargo swagger (docker) seems to only use latest
 x iron-slog
 x integrate API server example into a main.rs
-- get and post for creators
-- cleanup pooled database: https://github.com/diesel-rs/diesel/pull/1466
+x get and post for creators
+x cleanup pooled database: https://github.com/diesel-rs/diesel/pull/1466
+- clean up blasse error handling a bit
+- add 404s to gets
+- wow. fix a bunch of api schema names ("FindASingleContainerByExternalIdentifer")
+- creators, releases, works, files (?)
+- one-to-many relationship (eg, works)
+- many-to-many relationship (eg, creators)
+- refactor handlers to have a proper Result<_,_> error-chain type, so I can use '?'
+- copypasta a bunch of CRUD
+- helper to calculate state of idents
 
 then:
-- encode the remaining entities in SQL
-- openapi for other entities (heavily templated)
-
+x encode the remaining entities in SQL
+x openapi for other entities (heavily templated)
+- figure out JSON(B) in both swagger and diesel
 
 later:
 - metrics, jwt, config, sentry, testing
