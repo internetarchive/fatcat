@@ -1,9 +1,7 @@
 
 use chrono;
-use serde_json;
+//use serde_json;
 use uuid::Uuid;
-//use diesel::prelude::*;
-
 use database_schema::*;
 
 // Ugh. I thought the whole point was to *not* do this, but:
@@ -13,7 +11,7 @@ use database_schema::*;
 macro_rules! entity_structs {
     ($edit_table:expr, $edit_struct:ident, $ident_table:expr, $ident_struct:ident) => (
 
-        #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
+        #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset, QueryableByName)]
         #[table_name = $edit_table]
         pub struct $edit_struct {
             pub id: i64,

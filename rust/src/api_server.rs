@@ -11,6 +11,7 @@ use database_schema::{container_rev, container_ident, container_edit,
 };
 use uuid;
 use diesel::prelude::*;
+use diesel::{self, insert_into};
 use futures::{self, Future};
 use fatcat_api::models;
 use fatcat_api::models::*;
@@ -35,33 +36,18 @@ impl Api for Server {
     ) -> Box<Future<Item = ContainerIdGetResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
         let id = uuid::Uuid::parse_str(&id).unwrap();
-        let (ident, rev): (ContainerIdentRow, Option<ContainerRevRow>) = container_ident::table
+        let (ident, rev): (ContainerIdentRow, ContainerRevRow) = container_ident::table
             .find(id)
-            .left_outer_join(container_rev::table)
+            .inner_join(container_rev::table)
             .first(&conn)
             .expect("error loading container");
-/*
-        let (ident, rev): (ContainerIdentRow, Option<ContainerRevRow>) = container_ident::table
-            .left_join(container_rev::table)
-            .filter(container_ident::id.equals(id))
-            .first(&conn)
-            .expect("error loading container");
-*/
-/*
-        let c: ContainerIdentRow = container_ident::table
-            .find(id)
-            .first(&conn)
-            .expect("error loading container");
-        //let c: i64 = container_rev::table.count().first(&conn).expect("DB Error");
-        println!("container count: {:?}", c);
-*/ 
 
         let entity = ContainerEntity {
-            issn: None,
-            publisher: Some("Hello!".into()),
-            parent: None,
-            name: None,
-            state: None,
+            issn: rev.issn,
+            publisher: rev.publisher,
+            parent: None, // TODO
+            name: Some(rev.name), // TODO: not optional
+            state: None, // TODO:
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id.map(|v| v as isize),
             redirect: ident.redirect_id.map(|u| u.to_string()),
@@ -91,13 +77,42 @@ impl Api for Server {
         body: Option<models::ContainerEntity>,
         context: &Context,
     ) -> Box<Future<Item = ContainerPostResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!(
-            "container_post({:?}) - X-Span-ID: {:?}",
-            body,
-            context.x_span_id.unwrap_or(String::from("<none>")).clone()
-        );
-        Box::new(futures::failed("Generic failure".into()))
+        println!("{:?}", body);
+        let body = body.expect("missing body"); // TODO: required parameter
+        //let editgroup_id: i64 = body.editgroup.expect("need editgroup_id") as i64; // TODO: or find/create
+        let editgroup_id = 1;
+        let conn = self.db_pool.get().expect("db_pool error");
+
+        let name = body.name.unwrap();
+        let issn = body.issn.unwrap();
+        println!("name={} issn={}", name, issn);
+
+        let edit: Vec<ContainerEditRow> = diesel::sql_query(
+            "WITH rev AS ( INSERT INTO container_rev (name, issn)
+                        VALUES ($1, $2)
+                        RETURNING id ),
+                ident AS ( INSERT INTO container_ident (rev_id)
+                            VALUES ((SELECT rev.id FROM rev))
+                            RETURNING id )
+            INSERT INTO container_edit (editgroup_id, ident_id, rev_id) VALUES
+                ($3, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+            RETURNING *")
+            .bind::<diesel::sql_types::Text, _>(name)
+            .bind::<diesel::sql_types::Text, _>(issn)
+            .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
+            .load(&conn)
+            .unwrap();
+        let edit = &edit[0];
+
+        let entity_edit = EntityEdit {
+            editgroup_id: Some(edit.editgroup_id as isize),
+            revision: Some(edit.rev_id.unwrap() as isize),
+            ident: Some(edit.ident_id.to_string()),
+            id: Some(edit.id as isize),
+        };
+        Box::new(futures::done(Ok(
+            ContainerPostResponse::Created(entity_edit),
+        )))
     }
 
     fn creator_id_get(

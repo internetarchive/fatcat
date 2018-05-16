@@ -12,3 +12,7 @@ Things!
 Debugging SQL errors:
 
     psql fatcat_rs < migrations/2018-05-12-001226_init/up.sql
+
+Creating entities:
+
+    http --json post localhost:9411/v0/container name=asdf issn=1234-5678

@@ -59,7 +59,7 @@ fn main() {
     } else {
         // Using HTTP
         Iron::new(chain)
-            .http("localhost:8080")
+            .http("localhost:9411")
             .expect("Failed to start HTTP server");
     }
 }
