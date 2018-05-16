@@ -30,7 +30,7 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn container_post(&self, body: Option<models::ContainerEntity>, context: &Context) -> Box<Future<Item = ContainerPostResponse, Error = ApiError> + Send> {
+    fn container_post(&self, body: models::ContainerEntity, context: &Context) -> Box<Future<Item = ContainerPostResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!("container_post({:?}) - X-Span-ID: {:?}", body, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))
@@ -48,7 +48,7 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn creator_post(&self, body: Option<models::CreatorEntity>, context: &Context) -> Box<Future<Item = CreatorPostResponse, Error = ApiError> + Send> {
+    fn creator_post(&self, body: models::CreatorEntity, context: &Context) -> Box<Future<Item = CreatorPostResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!("creator_post({:?}) - X-Span-ID: {:?}", body, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))
@@ -100,7 +100,7 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn file_post(&self, body: Option<models::FileEntity>, context: &Context) -> Box<Future<Item = FilePostResponse, Error = ApiError> + Send> {
+    fn file_post(&self, body: models::FileEntity, context: &Context) -> Box<Future<Item = FilePostResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!("file_post({:?}) - X-Span-ID: {:?}", body, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))
@@ -118,7 +118,7 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn release_post(&self, body: Option<models::ReleaseEntity>, context: &Context) -> Box<Future<Item = ReleasePostResponse, Error = ApiError> + Send> {
+    fn release_post(&self, body: models::ReleaseEntity, context: &Context) -> Box<Future<Item = ReleasePostResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!("release_post({:?}) - X-Span-ID: {:?}", body, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))
@@ -130,7 +130,7 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn work_post(&self, body: Option<models::WorkEntity>, context: &Context) -> Box<Future<Item = WorkPostResponse, Error = ApiError> + Send> {
+    fn work_post(&self, body: models::WorkEntity, context: &Context) -> Box<Future<Item = WorkPostResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!("work_post({:?}) - X-Span-ID: {:?}", body, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))

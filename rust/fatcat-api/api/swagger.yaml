@@ -19,13 +19,13 @@ paths:
       parameters:
       - in: "body"
         name: "body"
-        required: false
+        required: true
         schema:
           $ref: "#/definitions/creator_entity"
         uppercase_data_type: "CREATORENTITY"
         refName: "creator_entity"
         formatString: "{:?}"
-        example: "None"
+        example: "???"
         model_key: "changelogentry"
         uppercase_operation_id: "CREATOR_POST"
         consumesJson: true
@@ -62,6 +62,7 @@ paths:
       path: "/creator"
       HttpMethod: "Post"
       httpmethod: "post"
+      noClientExample: true
   /creator/{id}:
     get:
       parameters:
@@ -160,13 +161,13 @@ paths:
       parameters:
       - in: "body"
         name: "body"
-        required: false
+        required: true
         schema:
           $ref: "#/definitions/container_entity"
         uppercase_data_type: "CONTAINERENTITY"
         refName: "container_entity"
         formatString: "{:?}"
-        example: "None"
+        example: "???"
         model_key: "changelogentry"
         uppercase_operation_id: "CONTAINER_POST"
         consumesJson: true
@@ -203,6 +204,7 @@ paths:
       path: "/container"
       HttpMethod: "Post"
       httpmethod: "post"
+      noClientExample: true
   /container/{id}:
     get:
       parameters:
@@ -301,13 +303,13 @@ paths:
       parameters:
       - in: "body"
         name: "body"
-        required: false
+        required: true
         schema:
           $ref: "#/definitions/file_entity"
         uppercase_data_type: "FILEENTITY"
         refName: "file_entity"
         formatString: "{:?}"
-        example: "None"
+        example: "???"
         model_key: "changelogentry"
         uppercase_operation_id: "FILE_POST"
         consumesJson: true
@@ -344,6 +346,7 @@ paths:
       path: "/file"
       HttpMethod: "Post"
       httpmethod: "post"
+      noClientExample: true
   /file/{id}:
     get:
       parameters:
@@ -442,13 +445,13 @@ paths:
       parameters:
       - in: "body"
         name: "body"
-        required: false
+        required: true
         schema:
           $ref: "#/definitions/release_entity"
         uppercase_data_type: "RELEASEENTITY"
         refName: "release_entity"
         formatString: "{:?}"
-        example: "None"
+        example: "???"
         model_key: "changelogentry"
         uppercase_operation_id: "RELEASE_POST"
         consumesJson: true
@@ -485,6 +488,7 @@ paths:
       path: "/release"
       HttpMethod: "Post"
       httpmethod: "post"
+      noClientExample: true
   /release/{id}:
     get:
       parameters:
@@ -583,13 +587,13 @@ paths:
       parameters:
       - in: "body"
         name: "body"
-        required: false
+        required: true
         schema:
           $ref: "#/definitions/work_entity"
         uppercase_data_type: "WORKENTITY"
         refName: "work_entity"
         formatString: "{:?}"
-        example: "None"
+        example: "???"
         model_key: "changelogentry"
         uppercase_operation_id: "WORK_POST"
         consumesJson: true
@@ -626,6 +630,7 @@ paths:
       path: "/work"
       HttpMethod: "Post"
       httpmethod: "post"
+      noClientExample: true
   /work/{id}:
     get:
       parameters:
@@ -902,6 +907,8 @@ definitions:
     upperCaseName: "SUCCESS"
   creator_entity:
     type: "object"
+    required:
+    - "name"
     properties:
       orcid:
         type: "string"
@@ -933,6 +940,8 @@ definitions:
     upperCaseName: "CREATOR_ENTITY"
   container_entity:
     type: "object"
+    required:
+    - "name"
     properties:
       issn:
         type: "string"
@@ -1057,8 +1066,6 @@ definitions:
     properties:
       work_type:
         type: "string"
-      title:
-        type: "string"
       editgroup:
         type: "integer"
       redirect:
@@ -1080,7 +1087,6 @@ definitions:
       ident: "ident"
       work_type: "work_type"
       state: "wip"
-      title: "title"
       revision: 6
     upperCaseName: "WORK_ENTITY"
   entity_edit:
@@ -1092,12 +1098,12 @@ definitions:
         type: "integer"
       ident:
         type: "string"
-      id:
+      edit_id:
         type: "integer"
     example:
       ident: "ident"
+      edit_id: 1
       editgroup_id: 0
-      id: 1
       revision: 6
     upperCaseName: "ENTITY_EDIT"
   editor:
@@ -1114,7 +1120,6 @@ definitions:
     type: "object"
     required:
     - "editor_id"
-    - "id"
     properties:
       id:
         type: "integer"
@@ -1158,7 +1163,7 @@ x-entity-props:
   editgroup:
     type: "integer"
 x-entity-edit-props:
-  id:
+  edit_id:
     type: "integer"
   ident:
     type: "string"

@@ -268,22 +268,25 @@ where
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_body = req.get::<bodyparser::Raw>().unwrap_or(None);
+                let param_body = req.get::<bodyparser::Raw>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter body - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
 
                 let param_body = if let Some(param_body_raw) = param_body {
                     let deserializer = &mut serde_json::Deserializer::from_str(&param_body_raw);
 
-                    let param_body: Option<models::ContainerEntity> = serde_ignored::deserialize(deserializer, |path| {
-                        warn!("Ignoring unknown field in body: {}", path);
-                        unused_elements.push(path.to_string());
-                    }).unwrap_or(None);
+                    let param_body: Option<models::ContainerEntity> =
+                        serde_ignored::deserialize(deserializer, |path| {
+                            warn!("Ignoring unknown field in body: {}", path);
+                            unused_elements.push(path.to_string());
+                        }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter body - doesn't match schema: {}", e))))?;
 
                     param_body
                 } else {
                     None
                 };
+                let param_body = param_body.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter body".to_string())))?;
 
                 match api.container_post(param_body, context).wait() {
                     Ok(rsp) => match rsp {
@@ -523,7 +526,8 @@ where
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_body = req.get::<bodyparser::Raw>().unwrap_or(None);
+                let param_body = req.get::<bodyparser::Raw>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter body - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
 
@@ -533,12 +537,13 @@ where
                     let param_body: Option<models::CreatorEntity> = serde_ignored::deserialize(deserializer, |path| {
                         warn!("Ignoring unknown field in body: {}", path);
                         unused_elements.push(path.to_string());
-                    }).unwrap_or(None);
+                    }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter body - doesn't match schema: {}", e))))?;
 
                     param_body
                 } else {
                     None
                 };
+                let param_body = param_body.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter body".to_string())))?;
 
                 match api.creator_post(param_body, context).wait() {
                     Ok(rsp) => match rsp {
@@ -1168,7 +1173,8 @@ where
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_body = req.get::<bodyparser::Raw>().unwrap_or(None);
+                let param_body = req.get::<bodyparser::Raw>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter body - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
 
@@ -1178,12 +1184,13 @@ where
                     let param_body: Option<models::FileEntity> = serde_ignored::deserialize(deserializer, |path| {
                         warn!("Ignoring unknown field in body: {}", path);
                         unused_elements.push(path.to_string());
-                    }).unwrap_or(None);
+                    }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter body - doesn't match schema: {}", e))))?;
 
                     param_body
                 } else {
                     None
                 };
+                let param_body = param_body.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter body".to_string())))?;
 
                 match api.file_post(param_body, context).wait() {
                     Ok(rsp) => match rsp {
@@ -1423,7 +1430,8 @@ where
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_body = req.get::<bodyparser::Raw>().unwrap_or(None);
+                let param_body = req.get::<bodyparser::Raw>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter body - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
 
@@ -1433,12 +1441,13 @@ where
                     let param_body: Option<models::ReleaseEntity> = serde_ignored::deserialize(deserializer, |path| {
                         warn!("Ignoring unknown field in body: {}", path);
                         unused_elements.push(path.to_string());
-                    }).unwrap_or(None);
+                    }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter body - doesn't match schema: {}", e))))?;
 
                     param_body
                 } else {
                     None
                 };
+                let param_body = param_body.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter body".to_string())))?;
 
                 match api.release_post(param_body, context).wait() {
                     Ok(rsp) => match rsp {
@@ -1592,7 +1601,8 @@ where
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_body = req.get::<bodyparser::Raw>().unwrap_or(None);
+                let param_body = req.get::<bodyparser::Raw>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter body - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
 
@@ -1602,12 +1612,13 @@ where
                     let param_body: Option<models::WorkEntity> = serde_ignored::deserialize(deserializer, |path| {
                         warn!("Ignoring unknown field in body: {}", path);
                         unused_elements.push(path.to_string());
-                    }).unwrap_or(None);
+                    }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter body - doesn't match schema: {}", e))))?;
 
                     param_body
                 } else {
                     None
                 };
+                let param_body = param_body.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter body".to_string())))?;
 
                 match api.work_post(param_body, context).wait() {
                     Ok(rsp) => match rsp {

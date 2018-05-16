@@ -25,10 +25,8 @@ fn main() {
                 .possible_values(&[
                     "ContainerIdGet",
                     "ContainerLookupGet",
-                    "ContainerPost",
                     "CreatorIdGet",
                     "CreatorLookupGet",
-                    "CreatorPost",
                     "EditgroupIdAcceptPost",
                     "EditgroupIdGet",
                     "EditgroupPost",
@@ -36,12 +34,9 @@ fn main() {
                     "EditorUsernameGet",
                     "FileIdGet",
                     "FileLookupGet",
-                    "FilePost",
                     "ReleaseIdGet",
                     "ReleaseLookupGet",
-                    "ReleasePost",
                     "WorkIdGet",
-                    "WorkPost",
                 ])
                 .required(true)
                 .index(1),
@@ -80,11 +75,11 @@ fn main() {
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
-        Some("ContainerPost") => {
-            let result = client.container_post(None).wait();
-            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
-        }
-
+        // Disabled because there's no example.
+        // Some("ContainerPost") => {
+        //     let result = client.container_post(???).wait();
+        //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        //  },
         Some("CreatorIdGet") => {
             let result = client.creator_id_get("id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
@@ -95,11 +90,11 @@ fn main() {
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
-        Some("CreatorPost") => {
-            let result = client.creator_post(None).wait();
-            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
-        }
-
+        // Disabled because there's no example.
+        // Some("CreatorPost") => {
+        //     let result = client.creator_post(???).wait();
+        //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        //  },
         Some("EditgroupIdAcceptPost") => {
             let result = client.editgroup_id_accept_post(56).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
@@ -135,11 +130,11 @@ fn main() {
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
-        Some("FilePost") => {
-            let result = client.file_post(None).wait();
-            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
-        }
-
+        // Disabled because there's no example.
+        // Some("FilePost") => {
+        //     let result = client.file_post(???).wait();
+        //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        //  },
         Some("ReleaseIdGet") => {
             let result = client.release_id_get("id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
@@ -150,21 +145,21 @@ fn main() {
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
-        Some("ReleasePost") => {
-            let result = client.release_post(None).wait();
-            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
-        }
-
+        // Disabled because there's no example.
+        // Some("ReleasePost") => {
+        //     let result = client.release_post(???).wait();
+        //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        //  },
         Some("WorkIdGet") => {
             let result = client.work_id_get("id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
-        Some("WorkPost") => {
-            let result = client.work_post(None).wait();
-            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
-        }
-
+        // Disabled because there's no example.
+        // Some("WorkPost") => {
+        //     let result = client.work_post(???).wait();
+        //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        //  },
         _ => panic!("Invalid operation provided"),
     }
 }

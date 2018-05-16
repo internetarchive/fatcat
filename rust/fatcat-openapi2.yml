@@ -30,7 +30,7 @@ x-entity-props: &ENTITYPROPS
   editgroup:
     type: integer
 x-entity-edit-props: &ENTITYEDITPROPS
-  id:
+  edit_id:
     type: integer
   ident:
     type: string
@@ -57,6 +57,8 @@ definitions:
         type: string
   creator_entity:
     type: object
+    required:
+      - name
     properties:
       <<: *ENTITYPROPS
       name:
@@ -66,6 +68,8 @@ definitions:
         #format: custom
   container_entity:
     type: object
+    required:
+      - name
     properties:
       <<: *ENTITYPROPS
       name:
@@ -91,6 +95,8 @@ definitions:
         format: url
   release_entity:
     type: object
+    required:
+      - title
     properties:
       <<: *ENTITYPROPS
       work:
@@ -116,8 +122,6 @@ definitions:
     type: object
     properties:
       <<: *ENTITYPROPS
-      title:
-        type: string
       work_type:
         type: string
   entity_edit:
@@ -134,7 +138,6 @@ definitions:
   editgroup:
     type: object
     required:
-      - id
       - editor_id
     properties:
       id:
@@ -170,6 +173,7 @@ paths:
       parameters:
         - name: body
           in: body
+          required: true
           schema:
             $ref: "#/definitions/creator_entity"
       responses:
@@ -213,6 +217,7 @@ paths:
       parameters:
         - name: body
           in: body
+          required: true
           schema:
             $ref: "#/definitions/container_entity"
       responses:
@@ -256,6 +261,7 @@ paths:
       parameters:
         - name: body
           in: body
+          required: true
           schema:
             $ref: "#/definitions/file_entity"
       responses:
@@ -299,6 +305,7 @@ paths:
       parameters:
         - name: body
           in: body
+          required: true
           schema:
             $ref: "#/definitions/release_entity"
       responses:
@@ -342,6 +349,7 @@ paths:
       parameters:
         - name: body
           in: body
+          required: true
           schema:
             $ref: "#/definitions/work_entity"
       responses:

@@ -47,8 +47,7 @@ pub struct ContainerEntity {
     pub parent: Option<String>,
 
     #[serde(rename = "name")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub name: Option<String>,
+    pub name: String,
 
     // Note: inline enums are not fully supported by swagger-codegen
     #[serde(rename = "state")]
@@ -73,12 +72,12 @@ pub struct ContainerEntity {
 }
 
 impl ContainerEntity {
-    pub fn new() -> ContainerEntity {
+    pub fn new(name: String) -> ContainerEntity {
         ContainerEntity {
             issn: None,
             publisher: None,
             parent: None,
-            name: None,
+            name: name,
             state: None,
             ident: None,
             revision: None,
@@ -95,8 +94,7 @@ pub struct CreatorEntity {
     pub orcid: Option<String>,
 
     #[serde(rename = "name")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub name: Option<String>,
+    pub name: String,
 
     #[serde(rename = "editgroup")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -121,10 +119,10 @@ pub struct CreatorEntity {
 }
 
 impl CreatorEntity {
-    pub fn new() -> CreatorEntity {
+    pub fn new(name: String) -> CreatorEntity {
         CreatorEntity {
             orcid: None,
-            name: None,
+            name: name,
             editgroup: None,
             redirect: None,
             revision: None,
@@ -137,15 +135,16 @@ impl CreatorEntity {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Editgroup {
     #[serde(rename = "id")]
-    pub id: isize,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub id: Option<isize>,
 
     #[serde(rename = "editor_id")]
     pub editor_id: isize,
 }
 
 impl Editgroup {
-    pub fn new(id: isize, editor_id: isize) -> Editgroup {
-        Editgroup { id: id, editor_id: editor_id }
+    pub fn new(editor_id: isize) -> Editgroup {
+        Editgroup { id: None, editor_id: editor_id }
     }
 }
 
@@ -175,9 +174,9 @@ pub struct EntityEdit {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ident: Option<String>,
 
-    #[serde(rename = "id")]
+    #[serde(rename = "edit_id")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub id: Option<isize>,
+    pub edit_id: Option<isize>,
 }
 
 impl EntityEdit {
@@ -186,7 +185,7 @@ impl EntityEdit {
             editgroup_id: None,
             revision: None,
             ident: None,
-            id: None,
+            edit_id: None,
         }
     }
 }
@@ -348,10 +347,6 @@ pub struct WorkEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub work_type: Option<String>,
 
-    #[serde(rename = "title")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub title: Option<String>,
-
     #[serde(rename = "editgroup")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub editgroup: Option<isize>,
@@ -378,7 +373,6 @@ impl WorkEntity {
     pub fn new() -> WorkEntity {
         WorkEntity {
             work_type: None,
-            title: None,
             editgroup: None,
             redirect: None,
             revision: None,

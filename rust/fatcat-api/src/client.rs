@@ -277,18 +277,16 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn container_post(&self, param_body: Option<models::ContainerEntity>, context: &Context) -> Box<Future<Item = ContainerPostResponse, Error = ApiError> + Send> {
+    fn container_post(&self, param_body: models::ContainerEntity, context: &Context) -> Box<Future<Item = ContainerPostResponse, Error = ApiError> + Send> {
         let url = format!("{}/v0/container", self.base_path);
 
-        let body = param_body.map(|ref body| serde_json::to_string(body).expect("impossible to fail to serialize"));
+        let body = serde_json::to_string(&param_body).expect("impossible to fail to serialize");
+
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Post, &url);
         let mut custom_headers = hyper::header::Headers::new();
 
-        let request = match body {
-            Some(ref body) => request.body(body),
-            None => request,
-        };
+        let request = request.body(&body);
 
         custom_headers.set(ContentType(mimetypes::requests::CONTAINER_POST.clone()));
         context.x_span_id.as_ref().map(|header| custom_headers.set(XSpanId(header.clone())));
@@ -453,18 +451,16 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn creator_post(&self, param_body: Option<models::CreatorEntity>, context: &Context) -> Box<Future<Item = CreatorPostResponse, Error = ApiError> + Send> {
+    fn creator_post(&self, param_body: models::CreatorEntity, context: &Context) -> Box<Future<Item = CreatorPostResponse, Error = ApiError> + Send> {
         let url = format!("{}/v0/creator", self.base_path);
 
-        let body = param_body.map(|ref body| serde_json::to_string(body).expect("impossible to fail to serialize"));
+        let body = serde_json::to_string(&param_body).expect("impossible to fail to serialize");
+
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Post, &url);
         let mut custom_headers = hyper::header::Headers::new();
 
-        let request = match body {
-            Some(ref body) => request.body(body),
-            None => request,
-        };
+        let request = request.body(&body);
 
         custom_headers.set(ContentType(mimetypes::requests::CREATOR_POST.clone()));
         context.x_span_id.as_ref().map(|header| custom_headers.set(XSpanId(header.clone())));
@@ -909,18 +905,16 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn file_post(&self, param_body: Option<models::FileEntity>, context: &Context) -> Box<Future<Item = FilePostResponse, Error = ApiError> + Send> {
+    fn file_post(&self, param_body: models::FileEntity, context: &Context) -> Box<Future<Item = FilePostResponse, Error = ApiError> + Send> {
         let url = format!("{}/v0/file", self.base_path);
 
-        let body = param_body.map(|ref body| serde_json::to_string(body).expect("impossible to fail to serialize"));
+        let body = serde_json::to_string(&param_body).expect("impossible to fail to serialize");
+
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Post, &url);
         let mut custom_headers = hyper::header::Headers::new();
 
-        let request = match body {
-            Some(ref body) => request.body(body),
-            None => request,
-        };
+        let request = request.body(&body);
 
         custom_headers.set(ContentType(mimetypes::requests::FILE_POST.clone()));
         context.x_span_id.as_ref().map(|header| custom_headers.set(XSpanId(header.clone())));
@@ -1085,18 +1079,16 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn release_post(&self, param_body: Option<models::ReleaseEntity>, context: &Context) -> Box<Future<Item = ReleasePostResponse, Error = ApiError> + Send> {
+    fn release_post(&self, param_body: models::ReleaseEntity, context: &Context) -> Box<Future<Item = ReleasePostResponse, Error = ApiError> + Send> {
         let url = format!("{}/v0/release", self.base_path);
 
-        let body = param_body.map(|ref body| serde_json::to_string(body).expect("impossible to fail to serialize"));
+        let body = serde_json::to_string(&param_body).expect("impossible to fail to serialize");
+
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Post, &url);
         let mut custom_headers = hyper::header::Headers::new();
 
-        let request = match body {
-            Some(ref body) => request.body(body),
-            None => request,
-        };
+        let request = request.body(&body);
 
         custom_headers.set(ContentType(mimetypes::requests::RELEASE_POST.clone()));
         context.x_span_id.as_ref().map(|header| custom_headers.set(XSpanId(header.clone())));
@@ -1198,18 +1190,16 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn work_post(&self, param_body: Option<models::WorkEntity>, context: &Context) -> Box<Future<Item = WorkPostResponse, Error = ApiError> + Send> {
+    fn work_post(&self, param_body: models::WorkEntity, context: &Context) -> Box<Future<Item = WorkPostResponse, Error = ApiError> + Send> {
         let url = format!("{}/v0/work", self.base_path);
 
-        let body = param_body.map(|ref body| serde_json::to_string(body).expect("impossible to fail to serialize"));
+        let body = serde_json::to_string(&param_body).expect("impossible to fail to serialize");
+
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Post, &url);
         let mut custom_headers = hyper::header::Headers::new();
 
-        let request = match body {
-            Some(ref body) => request.body(body),
-            None => request,
-        };
+        let request = request.body(&body);
 
         custom_headers.set(ContentType(mimetypes::requests::WORK_POST.clone()));
         context.x_span_id.as_ref().map(|header| custom_headers.set(XSpanId(header.clone())));
