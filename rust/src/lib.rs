@@ -3,6 +3,7 @@ extern crate fatcat_api;
 extern crate chrono;
 #[macro_use]
 extern crate diesel;
+extern crate uuid;
 extern crate dotenv;
 extern crate futures;
 #[macro_use]
@@ -15,6 +16,7 @@ extern crate r2d2;
 
 pub mod api_server;
 pub mod database_schema;
+pub mod database_models;
 
 mod errors {
     error_chain!{}
@@ -31,6 +33,8 @@ use std::env;
 
 pub type ConnectionPool = r2d2::Pool<ConnectionManager<diesel::pg::PgConnection>>;
 
+/// Establish a direct database connection. Not currently used, but could be helpful for
+/// single-threaded tests or utilities.
 pub fn establish_connection() -> PgConnection {
     dotenv().ok();
 
@@ -38,7 +42,7 @@ pub fn establish_connection() -> PgConnection {
     PgConnection::establish(&database_url).expect(&format!("Error connecting to {}", database_url))
 }
 
-/// Instantiate a new server.
+/// Instantiate a new API server with a pooled database connection
 pub fn server() -> Result<api_server::Server> {
     dotenv().ok();
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");

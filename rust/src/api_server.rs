@@ -1,13 +1,16 @@
 //! API endpoint handlers
 
 use ConnectionPool;
-use database_schema::container_rev::table as container_rev;
+use database_models::*;
+use database_schema::{container_rev, container_ident, container_edit,
+                      creator_rev, creator_ident, creator_edit,
+                      file_rev, file_ident, file_edit,
+                      release_rev, release_ident, release_edit,
+                      work_rev, work_ident, work_edit,
+};
+use uuid;
 use diesel::prelude::*;
 use futures::{self, Future};
-//use database_schema::creator_rev::table as creator_rev;
-//use database_schema::file_rev::table as file_rev;
-//use database_schema::release_rev::table as release_rev;
-//use database_schema::work_rev::table as work_rev;
 use fatcat_api::models;
 use fatcat_api::models::*;
 use fatcat_api::{Api, ApiError, ContainerIdGetResponse, ContainerLookupGetResponse,
@@ -26,20 +29,26 @@ pub struct Server {
 impl Api for Server {
     fn container_id_get(
         &self,
-        _id: String,
+        id: String,
         _context: &Context,
     ) -> Box<Future<Item = ContainerIdGetResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let c: i64 = container_rev.count().first(&*conn).expect("DB Error");
-        println!("container count: {}", c);
+        let id = uuid::Uuid::parse_str(&id).unwrap();
+        let c: ContainerIdentRow = container_ident::table
+            .find(id)
+            .first(&conn)
+            .expect("error loading container");
+        //let c: i64 = container_rev::table.count().first(&conn).expect("DB Error");
+        println!("container count: {:?}", c);
+
         let ce = ContainerEntity {
             issn: None,
             publisher: Some("Hello!".into()),
             parent: None,
             name: None,
             state: None,
-            ident: None,
-            revision: None,
+            ident: Some(c.id.to_string()),
+            revision: c.rev_id.map(|v| v as isize),
             redirect: None,
             editgroup: None,
         };
@@ -81,13 +90,29 @@ impl Api for Server {
         id: String,
         context: &Context,
     ) -> Box<Future<Item = CreatorIdGetResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!(
-            "creator_id_get(\"{}\") - X-Span-ID: {:?}",
-            id,
-            context.x_span_id.unwrap_or(String::from("<none>")).clone()
-        );
-        Box::new(futures::failed("Generic failure".into()))
+        let conn = self.db_pool.get().expect("db_pool error");
+        /*
+        let first_thing: (Uuid, bool, Option<i64>, Option<Uuid>) = creator_ident::table
+            .first(&conn)
+            .unwrap();
+        let entity_table = creator_ident::table.left_join(creator_rev::table);
+        let thing: (creator_ident::SqlType, creator_rev::SqlType) = creator_ident::table
+            .inner_join(creator_rev::table)
+            .first(&conn)
+            .expect("Error loading creator");
+        */
+        let ce = CreatorEntity {
+            orcid: None,
+            name: None,
+            state: None,
+            ident: None,
+            revision: None,
+            redirect: None,
+            editgroup: None,
+        };
+        Box::new(futures::done(Ok(
+            CreatorIdGetResponse::FetchASingleCreatorById(ce),
+        )))
     }
 
     fn creator_lookup_get(
