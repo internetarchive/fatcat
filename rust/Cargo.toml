@@ -8,7 +8,7 @@ members = ["fatcat-api"]
 
 [dependencies]
 fatcat-api = {version = "*", path = "fatcat-api"}
-diesel = { version = "1.2", features = ["postgres", "extras", "uuid"] }
+diesel = { version = "1.2", features = ["postgres", "uuid", "serde_json", "chrono", "r2d2"] }
 dotenv = "0.9.0"
 clap = "*"
 error-chain = "0.11"
@@ -26,6 +26,7 @@ swagger = "0.7"
 slog = "^2.0"
 slog-term = "*"
 slog-async = "*"
+serde_json = "1.0"
 
 # Unused (hyper 0.11 and https)
 #hyper-openssl = {version = "0.2", optional = true}
