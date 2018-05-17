@@ -297,7 +297,7 @@ impl Server {
             pages: rev.pages,
             issue: rev.issue,
             container_id: None, // TODO
-            work_id: None,      // TODO
+            work_id: rev.work_ident_id.to_string(),
             state: None,        // TODO:
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id.map(|v| v as isize),
@@ -332,7 +332,7 @@ impl Server {
             pages: rev.pages,
             issue: rev.issue,
             container_id: None, // TODO
-            work_id: None,      // TODO
+            work_id: rev.work_ident_id.to_string(),
             state: None,        // TODO:
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id.map(|v| v as isize),
@@ -416,7 +416,7 @@ impl Api for Server {
         let editgroup_id = 1;
         let conn = self.db_pool.get().expect("db_pool error");
 
-        let edit: Vec<ContainerEditRow> = diesel::sql_query(
+        let edit: ContainerEditRow = diesel::sql_query(
             "WITH rev AS ( INSERT INTO container_rev (name, publisher, issn)
                         VALUES ($1, $2, $3)
                         RETURNING id ),
@@ -430,9 +430,9 @@ impl Api for Server {
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.publisher)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.issn)
             .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
-            .load(&conn)
+            .get_result(&conn)
             .unwrap();
-        let edit = &edit[0];
+        let edit = &edit;
 
         let entity_edit = EntityEdit {
             editgroup_id: Some(edit.editgroup_id as isize),
@@ -450,55 +450,164 @@ impl Api for Server {
         body: models::CreatorEntity,
         context: &Context,
     ) -> Box<Future<Item = CreatorPostResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!(
-            "creator_post({:?}) - X-Span-ID: {:?}",
-            body,
-            context.x_span_id.unwrap_or(String::from("<none>")).clone()
-        );
-        Box::new(futures::failed("Generic failure".into()))
+        //let editgroup_id: i64 = body.editgroup.expect("need editgroup_id") as i64;
+        // TODO: or find/create
+        let editgroup_id = 1;
+        let conn = self.db_pool.get().expect("db_pool error");
+
+        let edit: CreatorEditRow = diesel::sql_query(
+            "WITH rev AS ( INSERT INTO creator_rev (name, orcid)
+                        VALUES ($1, $2)
+                        RETURNING id ),
+                ident AS ( INSERT INTO creator_ident (rev_id)
+                            VALUES ((SELECT rev.id FROM rev))
+                            RETURNING id )
+            INSERT INTO creator_edit (editgroup_id, ident_id, rev_id) VALUES
+                ($3, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+            RETURNING *",
+        ).bind::<diesel::sql_types::Text, _>(body.name)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.orcid)
+            .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
+            .get_result(&conn)
+            .unwrap();
+        let edit = &edit;
+
+        let entity_edit = EntityEdit {
+            editgroup_id: Some(edit.editgroup_id as isize),
+            revision: Some(edit.rev_id.unwrap() as isize),
+            ident: Some(edit.ident_id.to_string()),
+            edit_id: Some(edit.id as isize),
+        };
+        Box::new(futures::done(Ok(CreatorPostResponse::CreatedEntity(
+            entity_edit,
+        ))))
     }
 
     fn file_post(
         &self,
         body: models::FileEntity,
-        context: &Context,
+        _context: &Context,
     ) -> Box<Future<Item = FilePostResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!(
-            "file_post({:?}) - X-Span-ID: {:?}",
-            body,
-            context.x_span_id.unwrap_or(String::from("<none>")).clone()
-        );
-        Box::new(futures::failed("Generic failure".into()))
+        //let editgroup_id: i64 = body.editgroup.expect("need editgroup_id") as i64;
+        // TODO: or find/create
+        let editgroup_id = 1;
+        let conn = self.db_pool.get().expect("db_pool error");
+
+        let edit: FileEditRow = diesel::sql_query(
+            "WITH rev AS ( INSERT INTO file_rev (size, sha1, url)
+                        VALUES ($1, $2, $3)
+                        RETURNING id ),
+                ident AS ( INSERT INTO file_ident (rev_id)
+                            VALUES ((SELECT rev.id FROM rev))
+                            RETURNING id )
+            INSERT INTO file_edit (editgroup_id, ident_id, rev_id) VALUES
+                ($4, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+            RETURNING *",
+        ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Int4>, _>(body.size.map(|v| v as i32))
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.sha1)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.url)
+            .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
+            .get_result(&conn)
+            .unwrap();
+        let edit = &edit;
+
+        let entity_edit = EntityEdit {
+            editgroup_id: Some(edit.editgroup_id as isize),
+            revision: Some(edit.rev_id.unwrap() as isize),
+            ident: Some(edit.ident_id.to_string()),
+            edit_id: Some(edit.id as isize),
+        };
+        Box::new(futures::done(Ok(FilePostResponse::CreatedEntity(
+            entity_edit,
+        ))))
     }
 
     fn work_post(
         &self,
         body: models::WorkEntity,
-        context: &Context,
+        _context: &Context,
     ) -> Box<Future<Item = WorkPostResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!(
-            "work_post({:?}) - X-Span-ID: {:?}",
-            body,
-            context.x_span_id.unwrap_or(String::from("<none>")).clone()
-        );
-        Box::new(futures::failed("Generic failure".into()))
+        //let editgroup_id: i64 = body.editgroup.expect("need editgroup_id") as i64;
+        // TODO: or find/create
+        let editgroup_id = 1;
+        let conn = self.db_pool.get().expect("db_pool error");
+
+        let edit: WorkEditRow = diesel::sql_query(
+            "WITH rev AS ( INSERT INTO work_rev (work_type)
+                        VALUES ($1)
+                        RETURNING id ),
+                ident AS ( INSERT INTO work_ident (rev_id)
+                            VALUES ((SELECT rev.id FROM rev))
+                            RETURNING id )
+            INSERT INTO work_edit (editgroup_id, ident_id, rev_id) VALUES
+                ($2, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+            RETURNING *",
+        ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.work_type)
+            .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
+            .get_result(&conn)
+            .unwrap();
+        let edit = &edit;
+
+        let entity_edit = EntityEdit {
+            editgroup_id: Some(edit.editgroup_id as isize),
+            revision: Some(edit.rev_id.unwrap() as isize),
+            ident: Some(edit.ident_id.to_string()),
+            edit_id: Some(edit.id as isize),
+        };
+        Box::new(futures::done(Ok(WorkPostResponse::CreatedEntity(
+            entity_edit,
+        ))))
     }
 
     fn release_post(
         &self,
         body: models::ReleaseEntity,
-        context: &Context,
+        _context: &Context,
     ) -> Box<Future<Item = ReleasePostResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!(
-            "release_post({:?}) - X-Span-ID: {:?}",
-            body,
-            context.x_span_id.unwrap_or(String::from("<none>")).clone()
-        );
-        Box::new(futures::failed("Generic failure".into()))
+        //let editgroup_id: i64 = body.editgroup.expect("need editgroup_id") as i64;
+        // TODO: or find/create
+        let editgroup_id = 1;
+        let conn = self.db_pool.get().expect("db_pool error");
+
+        let work_id = uuid::Uuid::parse_str(&body.work_id).expect("invalid UUID");
+        let container_id: Option<uuid::Uuid> = match body.container_id {
+            Some(id) => Some(uuid::Uuid::parse_str(&id).expect("invalid UUID")),
+            None => None,
+        };
+
+        let edit: ReleaseEditRow = diesel::sql_query(
+            "WITH rev AS ( INSERT INTO container_rev (title, release_type, doi, volume, pages, issue, work_ident_id)
+                        VALUES ($1, $2, $3, $4, $5, $6, $7)
+                        RETURNING id ),
+                ident AS ( INSERT INTO container_ident (rev_id)
+                            VALUES ((SELECT rev.id FROM rev))
+                            RETURNING id )
+            INSERT INTO container_edit (editgroup_id, ident_id, rev_id) VALUES
+                ($8, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+            RETURNING *",
+        ).bind::<diesel::sql_types::Text, _>(body.title)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.release_type)
+            //.bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.date)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.doi)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.volume)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.pages)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.issue)
+            .bind::<diesel::sql_types::Uuid, _>(work_id)
+            //.bind::<diesel::sql_types::Nullable<diesel::sql_types::Uuid>, _>(body.container_id)
+            .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
+            .get_result(&conn)
+            .unwrap();
+        let edit = &edit;
+
+        let entity_edit = EntityEdit {
+            editgroup_id: Some(edit.editgroup_id as isize),
+            revision: Some(edit.rev_id.unwrap() as isize),
+            ident: Some(edit.ident_id.to_string()),
+            edit_id: Some(edit.id as isize),
+        };
+        Box::new(futures::done(Ok(ReleasePostResponse::CreatedEntity(
+            entity_edit,
+        ))))
     }
 
     fn editgroup_id_accept_post(
