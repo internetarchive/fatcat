@@ -19,6 +19,10 @@ rust_build:
     paths:
     - rust/target/release/fatcat*
     - rust/target/doc/fatcat*
+    - rust/target/doc/*.css
+    - rust/target/doc/*.js
+    - rust/target/doc/*.woff
+    - rust/target/doc/*.svg
     expire_in: 1 month
 
 python_unittest_and_lint:
