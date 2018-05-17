@@ -1037,8 +1037,6 @@ definitions:
         type: "string"
       publisher:
         type: "string"
-      parent:
-        type: "string"
       name:
         type: "string"
       state:
@@ -1058,7 +1056,6 @@ definitions:
         type: "integer"
     example:
       redirect: "redirect"
-      parent: "parent"
       editgroup: 6
       issn: "issn"
       ident: "ident"
@@ -1104,6 +1101,8 @@ definitions:
     upperCaseName: "FILE_ENTITY"
   release_entity:
     type: "object"
+    required:
+    - "title"
     properties:
       issue:
         type: "string"
@@ -1115,11 +1114,11 @@ definitions:
         type: "string"
       release_type:
         type: "string"
-      license:
+      container_id:
         type: "string"
-      container:
+      work_id:
         type: "string"
-      work:
+      title:
         type: "string"
       state:
         type: "string"
@@ -1137,18 +1136,18 @@ definitions:
       editgroup:
         type: "integer"
     example:
-      container: "container"
       redirect: "redirect"
+      work_id: "work_id"
       editgroup: 6
       issue: "issue"
-      work: "work"
       ident: "ident"
       release_type: "release_type"
+      title: "title"
       revision: 0
       volume: "volume"
-      license: "license"
       pages: "pages"
       state: "wip"
+      container_id: "container_id"
       doi: "doi"
     upperCaseName: "RELEASE_ENTITY"
   work_entity:

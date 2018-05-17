@@ -42,10 +42,6 @@ pub struct ContainerEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub publisher: Option<String>,
 
-    #[serde(rename = "parent")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub parent: Option<String>,
-
     #[serde(rename = "name")]
     pub name: String,
 
@@ -76,7 +72,6 @@ impl ContainerEntity {
         ContainerEntity {
             issn: None,
             publisher: None,
-            parent: None,
             name: name,
             state: None,
             ident: None,
@@ -275,17 +270,16 @@ pub struct ReleaseEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub release_type: Option<String>,
 
-    #[serde(rename = "license")]
+    #[serde(rename = "container_id")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub license: Option<String>,
+    pub container_id: Option<String>,
 
-    #[serde(rename = "container")]
+    #[serde(rename = "work_id")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub container: Option<String>,
+    pub work_id: Option<String>,
 
-    #[serde(rename = "work")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub work: Option<String>,
+    #[serde(rename = "title")]
+    pub title: String,
 
     // Note: inline enums are not fully supported by swagger-codegen
     #[serde(rename = "state")]
@@ -310,16 +304,16 @@ pub struct ReleaseEntity {
 }
 
 impl ReleaseEntity {
-    pub fn new() -> ReleaseEntity {
+    pub fn new(title: String) -> ReleaseEntity {
         ReleaseEntity {
             issue: None,
             pages: None,
             volume: None,
             doi: None,
             release_type: None,
-            license: None,
-            container: None,
-            work: None,
+            container_id: None,
+            work_id: None,
+            title: title,
             state: None,
             ident: None,
             revision: None,

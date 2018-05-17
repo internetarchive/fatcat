@@ -74,8 +74,6 @@ definitions:
       <<: *ENTITYPROPS
       name:
         type: string
-      parent:
-        type: string
       publisher:
         type: string
       issn:
@@ -97,13 +95,14 @@ definitions:
     type: object
     required:
       - title
+      - work
     properties:
       <<: *ENTITYPROPS
-      work:
+      title:
         type: string
-      container:
+      work_id:
         type: string
-      license:
+      container_id:
         type: string
       release_type:
         type: string
