@@ -35,6 +35,9 @@ Regenerate API schemas:
     cargo fmt
     # git commit the fatcat-api directory at this point
 
+Regenerate SQL schema:
+
+    diesel database reset
     diesel print-schema > src/database_schema.rs
 
 Debugging SQL schema errors:
