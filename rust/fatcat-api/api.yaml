@@ -407,6 +407,12 @@ paths:
             $ref: "#/definitions/error_response"
   /editgroup:
     post:
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/editgroup"
       responses:
         201:
           description: Successfully Created

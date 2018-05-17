@@ -657,13 +657,18 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn editgroup_post(&self, context: &Context) -> Box<Future<Item = EditgroupPostResponse, Error = ApiError> + Send> {
+    fn editgroup_post(&self, param_body: models::Editgroup, context: &Context) -> Box<Future<Item = EditgroupPostResponse, Error = ApiError> + Send> {
         let url = format!("{}/v0/editgroup", self.base_path);
+
+        let body = serde_json::to_string(&param_body).expect("impossible to fail to serialize");
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Post, &url);
         let mut custom_headers = hyper::header::Headers::new();
 
+        let request = request.body(&body);
+
+        custom_headers.set(ContentType(mimetypes::requests::EDITGROUP_POST.clone()));
         context.x_span_id.as_ref().map(|header| custom_headers.set(XSpanId(header.clone())));
 
         let request = request.headers(custom_headers);

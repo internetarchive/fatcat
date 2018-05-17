@@ -29,7 +29,6 @@ fn main() {
                     "CreatorLookupGet",
                     "EditgroupIdAcceptPost",
                     "EditgroupIdGet",
-                    "EditgroupPost",
                     "EditorUsernameChangelogGet",
                     "EditorUsernameGet",
                     "FileIdGet",
@@ -105,11 +104,11 @@ fn main() {
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
-        Some("EditgroupPost") => {
-            let result = client.editgroup_post().wait();
-            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
-        }
-
+        // Disabled because there's no example.
+        // Some("EditgroupPost") => {
+        //     let result = client.editgroup_post(???).wait();
+        //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        //  },
         Some("EditorUsernameChangelogGet") => {
             let result = client.editor_username_changelog_get("username_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));

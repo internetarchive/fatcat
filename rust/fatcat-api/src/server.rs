@@ -831,7 +831,30 @@ where
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
 
-                match api.editgroup_post(context).wait() {
+                // Body parameters (note that non-required body parameters will ignore garbage
+                // values, rather than causing a 400 response). Produce warning header and logs for
+                // any unused fields.
+
+                let param_body = req.get::<bodyparser::Raw>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter body - not valid UTF-8: {}", e))))?;
+
+                let mut unused_elements = Vec::new();
+
+                let param_body = if let Some(param_body_raw) = param_body {
+                    let deserializer = &mut serde_json::Deserializer::from_str(&param_body_raw);
+
+                    let param_body: Option<models::Editgroup> = serde_ignored::deserialize(deserializer, |path| {
+                        warn!("Ignoring unknown field in body: {}", path);
+                        unused_elements.push(path.to_string());
+                    }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter body - doesn't match schema: {}", e))))?;
+
+                    param_body
+                } else {
+                    None
+                };
+                let param_body = param_body.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter body".to_string())))?;
+
+                match api.editgroup_post(param_body, context).wait() {
                     Ok(rsp) => match rsp {
                         EditgroupPostResponse::SuccessfullyCreated(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -840,7 +863,9 @@ where
                             response.headers.set(ContentType(mimetypes::responses::EDITGROUP_POST_SUCCESSFULLY_CREATED.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
                             Ok(response)
                         }
                         EditgroupPostResponse::BadRequest(body) => {
@@ -850,7 +875,9 @@ where
                             response.headers.set(ContentType(mimetypes::responses::EDITGROUP_POST_BAD_REQUEST.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
                             Ok(response)
                         }
                         EditgroupPostResponse::GenericError(body) => {
@@ -860,7 +887,9 @@ where
                             response.headers.set(ContentType(mimetypes::responses::EDITGROUP_POST_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
                             Ok(response)
                         }
                     },

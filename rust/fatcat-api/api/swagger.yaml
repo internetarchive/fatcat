@@ -849,7 +849,19 @@ paths:
       httpmethod: "get"
   /editgroup:
     post:
-      parameters: []
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/editgroup"
+        uppercase_data_type: "EDITGROUP"
+        refName: "editgroup"
+        formatString: "{:?}"
+        example: "???"
+        model_key: "changelogentries_inner"
+        uppercase_operation_id: "EDITGROUP_POST"
+        consumesJson: true
       responses:
         201:
           description: "Successfully Created"
@@ -883,6 +895,7 @@ paths:
       path: "/editgroup"
       HttpMethod: "Post"
       httpmethod: "post"
+      noClientExample: true
   /editgroup/{id}:
     get:
       parameters:

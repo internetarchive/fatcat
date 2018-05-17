@@ -66,9 +66,9 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn editgroup_post(&self, context: &Context) -> Box<Future<Item = EditgroupPostResponse, Error = ApiError> + Send> {
+    fn editgroup_post(&self, body: models::Editgroup, context: &Context) -> Box<Future<Item = EditgroupPostResponse, Error = ApiError> + Send> {
         let context = context.clone();
-        println!("editgroup_post() - X-Span-ID: {:?}", context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        println!("editgroup_post({:?}) - X-Span-ID: {:?}", body, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))
     }
 

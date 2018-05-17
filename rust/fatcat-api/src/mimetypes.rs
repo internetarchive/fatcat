@@ -309,6 +309,10 @@ pub mod requests {
     lazy_static! {
         pub static ref CREATOR_POST: Mime = mime!(Application / Json);
     }
+    /// Create Mime objects for the request content types for EditgroupPost
+    lazy_static! {
+        pub static ref EDITGROUP_POST: Mime = mime!(Application / Json);
+    }
     /// Create Mime objects for the request content types for FilePost
     lazy_static! {
         pub static ref FILE_POST: Mime = mime!(Application / Json);
