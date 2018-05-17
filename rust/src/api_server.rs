@@ -46,6 +46,29 @@ macro_rules! wrap_get_id_handler {
         }
     }
 }
+macro_rules! wrap_lookup_handler {
+    ($get_fn:ident, $handler:ident, $resp:ident, $idname:ident, $idtype:ident) => {
+        fn $get_fn(
+            &self,
+            $idname: $idtype,
+            _context: &Context,
+        ) -> Box<Future<Item = $resp, Error = ApiError> + Send> {
+            match self.$handler($idname) {
+                Ok(Some(entity)) =>
+                    Box::new(futures::done(Ok($resp::FoundEntity(entity)))),
+                Ok(None) =>
+                    Box::new(futures::done(Ok($resp::NotFound(
+                        ErrorResponse { message: "No such entity".to_string() }),
+                    ))),
+                Err(e) =>
+                    // TODO: dig in to error type here
+                    Box::new(futures::done(Ok($resp::BadRequest(
+                        ErrorResponse { message: e.to_string() },
+                    )))),
+            }
+        }
+    }
+}
 
 #[derive(Clone)]
 pub struct Server {
@@ -61,6 +84,36 @@ impl Server {
             container_ident::table
                 .find(id)
                 .inner_join(container_rev::table)
+                .first(&conn);
+
+        let (ident, rev) = match res {
+            Ok(r) => r,
+            Err(diesel::result::Error::NotFound) => return Ok(None),
+            Err(e) => return Err(e.into()),
+        };
+
+        let entity = ContainerEntity {
+            issn: rev.issn,
+            publisher: rev.publisher,
+            name: rev.name,
+            state: None, // TODO:
+            ident: Some(ident.id.to_string()),
+            revision: ident.rev_id.map(|v| v as isize),
+            redirect: ident.redirect_id.map(|u| u.to_string()),
+            editgroup: None,
+        };
+        Ok(Some(entity))
+    }
+
+    fn container_lookup_get_handler(&self, issn: String) -> Result<Option<ContainerEntity>> {
+        let conn = self.db_pool.get().expect("db_pool error");
+
+        let res: ::std::result::Result<(ContainerIdentRow, ContainerRevRow), _> =
+            container_ident::table
+                .inner_join(container_rev::table)
+                .filter(container_rev::issn.eq(&issn))
+                .filter(container_ident::is_live.eq(true))
+                .filter(container_ident::redirect_id.is_not_null())
                 .first(&conn);
 
         let (ident, rev) = match res {
@@ -109,6 +162,34 @@ impl Server {
         Ok(Some(entity))
     }
 
+    fn creator_lookup_get_handler(&self, orcid: String) -> Result<Option<CreatorEntity>> {
+        let conn = self.db_pool.get().expect("db_pool error");
+
+        let res: ::std::result::Result<(CreatorIdentRow, CreatorRevRow), _> = creator_ident::table
+            .inner_join(creator_rev::table)
+            .filter(creator_rev::orcid.eq(&orcid))
+            .filter(creator_ident::is_live.eq(true))
+            .filter(creator_ident::redirect_id.is_not_null())
+            .first(&conn);
+
+        let (ident, rev) = match res {
+            Ok(r) => r,
+            Err(diesel::result::Error::NotFound) => return Ok(None),
+            Err(e) => return Err(e.into()),
+        };
+
+        let entity = CreatorEntity {
+            name: rev.name,
+            orcid: rev.orcid,
+            state: None, // TODO:
+            ident: Some(ident.id.to_string()),
+            revision: ident.rev_id.map(|v| v as isize),
+            redirect: ident.redirect_id.map(|u| u.to_string()),
+            editgroup: None,
+        };
+        Ok(Some(entity))
+    }
+
     fn file_id_get_handler(&self, id: String) -> Result<Option<FileEntity>> {
         let conn = self.db_pool.get().expect("db_pool error");
         let id = uuid::Uuid::parse_str(&id)?;
@@ -116,6 +197,35 @@ impl Server {
         let res: ::std::result::Result<(FileIdentRow, FileRevRow), _> = file_ident::table
             .find(id)
             .inner_join(file_rev::table)
+            .first(&conn);
+
+        let (ident, rev) = match res {
+            Ok(r) => r,
+            Err(diesel::result::Error::NotFound) => return Ok(None),
+            Err(e) => return Err(e.into()),
+        };
+
+        let entity = FileEntity {
+            sha1: rev.sha1,
+            size: rev.size.map(|v| v as isize),
+            url: rev.url,
+            state: None, // TODO:
+            ident: Some(ident.id.to_string()),
+            revision: ident.rev_id.map(|v| v as isize),
+            redirect: ident.redirect_id.map(|u| u.to_string()),
+            editgroup: None,
+        };
+        Ok(Some(entity))
+    }
+
+    fn file_lookup_get_handler(&self, sha1: String) -> Result<Option<FileEntity>> {
+        let conn = self.db_pool.get().expect("db_pool error");
+
+        let res: ::std::result::Result<(FileIdentRow, FileRevRow), _> = file_ident::table
+            .inner_join(file_rev::table)
+            .filter(file_rev::sha1.eq(&sha1))
+            .filter(file_ident::is_live.eq(true))
+            .filter(file_ident::redirect_id.is_not_null())
             .first(&conn);
 
         let (ident, rev) = match res {
@@ -197,6 +307,41 @@ impl Server {
         Ok(Some(entity))
     }
 
+    fn release_lookup_get_handler(&self, doi: String) -> Result<Option<ReleaseEntity>> {
+        let conn = self.db_pool.get().expect("db_pool error");
+
+        let res: ::std::result::Result<(ReleaseIdentRow, ReleaseRevRow), _> = release_ident::table
+            .inner_join(release_rev::table)
+            .filter(release_rev::doi.eq(&doi))
+            .filter(release_ident::is_live.eq(true))
+            .filter(release_ident::redirect_id.is_not_null())
+            .first(&conn);
+
+        let (ident, rev) = match res {
+            Ok(r) => r,
+            Err(diesel::result::Error::NotFound) => return Ok(None),
+            Err(e) => return Err(e.into()),
+        };
+
+        let entity = ReleaseEntity {
+            title: rev.title,
+            release_type: rev.release_type,
+            //date: rev.date,
+            doi: rev.doi,
+            volume: rev.volume,
+            pages: rev.pages,
+            issue: rev.issue,
+            container_id: None, // TODO
+            work_id: None,      // TODO
+            state: None,        // TODO:
+            ident: Some(ident.id.to_string()),
+            revision: ident.rev_id.map(|v| v as isize),
+            redirect: ident.redirect_id.map(|u| u.to_string()),
+            editgroup: None,
+        };
+        Ok(Some(entity))
+    }
+
     fn editgroup_id_get_handler(&self, id: i32) -> Result<Option<Editgroup>> {
         let conn = self.db_pool.get().expect("db_pool error");
 
@@ -245,74 +390,21 @@ impl Server {
             .collect();
         Ok(Some(entries))
     }
+
 }
 
 impl Api for Server {
-    wrap_get_id_handler!(
-        container_id_get,
-        container_id_get_handler,
-        ContainerIdGetResponse,
-        String
-    );
-    wrap_get_id_handler!(
-        creator_id_get,
-        creator_id_get_handler,
-        CreatorIdGetResponse,
-        String
-    );
+    wrap_get_id_handler!(container_id_get, container_id_get_handler, ContainerIdGetResponse, String);
+    wrap_get_id_handler!(creator_id_get, creator_id_get_handler, CreatorIdGetResponse, String);
     wrap_get_id_handler!(file_id_get, file_id_get_handler, FileIdGetResponse, String);
     wrap_get_id_handler!(work_id_get, work_id_get_handler, WorkIdGetResponse, String);
-    wrap_get_id_handler!(
-        release_id_get,
-        release_id_get_handler,
-        ReleaseIdGetResponse,
-        String
-    );
-    wrap_get_id_handler!(
-        editgroup_id_get,
-        editgroup_id_get_handler,
-        EditgroupIdGetResponse,
-        i32
-    );
+    wrap_get_id_handler!(release_id_get, release_id_get_handler, ReleaseIdGetResponse, String);
+    wrap_get_id_handler!(editgroup_id_get, editgroup_id_get_handler, EditgroupIdGetResponse, i32);
 
-    fn container_lookup_get(
-        &self,
-        issn: String,
-        _context: &Context,
-    ) -> Box<Future<Item = ContainerLookupGetResponse, Error = ApiError> + Send> {
-        let conn = self.db_pool.get().expect("db_pool error");
-
-        let res: ::std::result::Result<(ContainerIdentRow, ContainerRevRow), _> =
-            container_ident::table
-                .inner_join(container_rev::table)
-                .first(&conn);
-        // XXX: actually do a filter/lookup
-
-        let (ident, rev) = match res {
-            Ok(r) => r,
-            Err(_) => {
-                return Box::new(futures::done(Ok(ContainerLookupGetResponse::BadRequest(
-                    ErrorResponse {
-                        message: "No such container".to_string(),
-                    },
-                ))));
-            }
-        };
-
-        let entity = ContainerEntity {
-            issn: rev.issn,
-            publisher: rev.publisher,
-            name: rev.name,
-            state: None, // TODO:
-            ident: Some(ident.id.to_string()),
-            revision: ident.rev_id.map(|v| v as isize),
-            redirect: ident.redirect_id.map(|u| u.to_string()),
-            editgroup: None,
-        };
-        Box::new(futures::done(Ok(ContainerLookupGetResponse::FoundEntity(
-            entity,
-        ))))
-    }
+    wrap_lookup_handler!(container_lookup_get, container_lookup_get_handler, ContainerLookupGetResponse, issn, String); 
+    wrap_lookup_handler!(creator_lookup_get, creator_lookup_get_handler, CreatorLookupGetResponse, orcid, String);
+    wrap_lookup_handler!(file_lookup_get, file_lookup_get_handler, FileLookupGetResponse, sha1, String);
+    wrap_lookup_handler!(release_lookup_get, release_lookup_get_handler, ReleaseLookupGetResponse, doi, String);
 
     fn container_post(
         &self,
@@ -353,20 +445,6 @@ impl Api for Server {
         ))))
     }
 
-    fn creator_lookup_get(
-        &self,
-        orcid: String,
-        context: &Context,
-    ) -> Box<Future<Item = CreatorLookupGetResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!(
-            "creator_lookup_get(\"{}\") - X-Span-ID: {:?}",
-            orcid,
-            context.x_span_id.unwrap_or(String::from("<none>")).clone()
-        );
-        Box::new(futures::failed("Generic failure".into()))
-    }
-
     fn creator_post(
         &self,
         body: models::CreatorEntity,
@@ -376,20 +454,6 @@ impl Api for Server {
         println!(
             "creator_post({:?}) - X-Span-ID: {:?}",
             body,
-            context.x_span_id.unwrap_or(String::from("<none>")).clone()
-        );
-        Box::new(futures::failed("Generic failure".into()))
-    }
-
-    fn file_lookup_get(
-        &self,
-        sha1: String,
-        context: &Context,
-    ) -> Box<Future<Item = FileLookupGetResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!(
-            "file_lookup_get(\"{}\") - X-Span-ID: {:?}",
-            sha1,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
         );
         Box::new(futures::failed("Generic failure".into()))
@@ -418,20 +482,6 @@ impl Api for Server {
         println!(
             "work_post({:?}) - X-Span-ID: {:?}",
             body,
-            context.x_span_id.unwrap_or(String::from("<none>")).clone()
-        );
-        Box::new(futures::failed("Generic failure".into()))
-    }
-
-    fn release_lookup_get(
-        &self,
-        doi: String,
-        context: &Context,
-    ) -> Box<Future<Item = ReleaseLookupGetResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!(
-            "release_lookup_get(\"{}\") - X-Span-ID: {:?}",
-            doi,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
         );
         Box::new(futures::failed("Generic failure".into()))
