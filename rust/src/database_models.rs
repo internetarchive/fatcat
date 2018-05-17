@@ -37,7 +37,6 @@ pub struct ContainerRevRow {
     pub id: i64,
     //pub extra_json: Option<serde_json::Value>,
     pub name: String,
-    pub parent_ident_id: Option<i64>,
     pub publisher: Option<String>,
     pub issn: Option<String>,
 }
@@ -82,10 +81,9 @@ entity_structs!("file_edit", FileEditRow, "file_ident", FileIdentRow);
 pub struct ReleaseRevRow {
     pub id: i64,
     //extra_json: Option<Json>,
-    pub work_ident_id: Option<Uuid>,
+    pub work_ident_id: Uuid,
     pub container_ident_id: Option<Uuid>,
-    pub title: Option<String>,
-    pub license: Option<String>,
+    pub title: String,
     pub release_type: Option<String>,
     pub date: Option<String>,
     pub doi: Option<String>,

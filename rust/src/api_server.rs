@@ -46,7 +46,6 @@ impl Server {
         let entity = ContainerEntity {
             issn: rev.issn,
             publisher: rev.publisher,
-            parent: None, // TODO:
             name: rev.name,
             state: None, // TODO:
             ident: Some(ident.id.to_string()),
@@ -84,19 +83,92 @@ impl Server {
         Ok(Some(entity))
     }
 
-    // TODO:
     fn file_id_get_handler(&self, id: String) -> Result<Option<FileEntity>> {
-        Ok(None)
+        let conn = self.db_pool.get().expect("db_pool error");
+        let id = uuid::Uuid::parse_str(&id)?;
+
+        let res: ::std::result::Result<(FileIdentRow, FileRevRow), _> = file_ident::table
+            .find(id)
+            .inner_join(file_rev::table)
+            .first(&conn);
+
+        let (ident, rev) = match res {
+            Ok(r) => r,
+            Err(diesel::result::Error::NotFound) => return Ok(None),
+            Err(e) => return Err(e.into()),
+        };
+
+        let entity = FileEntity {
+            sha1: rev.sha1,
+            size: rev.size.map(|v| v as isize),
+            url: rev.url,
+            state: None, // TODO:
+            ident: Some(ident.id.to_string()),
+            revision: ident.rev_id.map(|v| v as isize),
+            redirect: ident.redirect_id.map(|u| u.to_string()),
+            editgroup: None,
+        };
+        Ok(Some(entity))
     }
 
-    // TODO:
     fn work_id_get_handler(&self, id: String) -> Result<Option<WorkEntity>> {
-        Ok(None)
+        let conn = self.db_pool.get().expect("db_pool error");
+        let id = uuid::Uuid::parse_str(&id)?;
+
+        let res: ::std::result::Result<(WorkIdentRow, WorkRevRow), _> = work_ident::table
+            .find(id)
+            .inner_join(work_rev::table)
+            .first(&conn);
+
+        let (ident, rev) = match res {
+            Ok(r) => r,
+            Err(diesel::result::Error::NotFound) => return Ok(None),
+            Err(e) => return Err(e.into()),
+        };
+
+        let entity = WorkEntity {
+            work_type: rev.work_type,
+            state: None, // TODO:
+            ident: Some(ident.id.to_string()),
+            revision: ident.rev_id.map(|v| v as isize),
+            redirect: ident.redirect_id.map(|u| u.to_string()),
+            editgroup: None,
+        };
+        Ok(Some(entity))
     }
 
-    // TODO:
     fn release_id_get_handler(&self, id: String) -> Result<Option<ReleaseEntity>> {
-        Ok(None)
+        let conn = self.db_pool.get().expect("db_pool error");
+        let id = uuid::Uuid::parse_str(&id)?;
+
+        let res: ::std::result::Result<(ReleaseIdentRow, ReleaseRevRow), _> = release_ident::table
+            .find(id)
+            .inner_join(release_rev::table)
+            .first(&conn);
+
+        let (ident, rev) = match res {
+            Ok(r) => r,
+            Err(diesel::result::Error::NotFound) => return Ok(None),
+            Err(e) => return Err(e.into()),
+        };
+
+        let entity = ReleaseEntity {
+            title: rev.title,
+            release_type: rev.release_type,
+            //date: rev.date,
+            doi: rev.doi,
+            volume: rev.volume,
+            pages: rev.pages,
+            issue: rev.issue,
+            container_id: None, // TODO
+            work_id: None,      // TODO
+            state: None,        // TODO:
+            ident: Some(ident.id.to_string()),
+            revision: ident.rev_id.map(|v| v as isize),
+            redirect: ident.redirect_id.map(|u| u.to_string()),
+            editgroup: None,
+        };
+        Ok(Some(entity))
     }
 }
 
@@ -137,20 +209,17 @@ impl Api for Server {
         let (ident, rev) = match res {
             Ok(r) => r,
             Err(_) => {
-                return Box::new(futures::done(Ok(
-                    // TODO: UGH, need to add 404 responses everywhere, not 400
-                    //ContainerIdGetResponse::NotFound(
-                    ContainerLookupGetResponse::BadRequest(ErrorResponse {
+                return Box::new(futures::done(Ok(ContainerLookupGetResponse::BadRequest(
+                    ErrorResponse {
                         message: "No such container".to_string(),
-                    }),
-                )));
+                    },
+                ))));
             }
         };
 
         let entity = ContainerEntity {
             issn: rev.issn,
             publisher: rev.publisher,
-            parent: None, // TODO:
             name: rev.name,
             state: None, // TODO:
             ident: Some(ident.id.to_string()),
@@ -168,28 +237,24 @@ impl Api for Server {
         body: models::ContainerEntity,
         _context: &Context,
     ) -> Box<Future<Item = ContainerPostResponse, Error = ApiError> + Send> {
-        println!("{:?}", body);
         //let editgroup_id: i64 = body.editgroup.expect("need editgroup_id") as i64;
         // TODO: or find/create
         let editgroup_id = 1;
         let conn = self.db_pool.get().expect("db_pool error");
 
-        let name = body.name;
-        let issn = body.issn;
-        println!("name={} issn={:?}", name, issn);
-
         let edit: Vec<ContainerEditRow> = diesel::sql_query(
-            "WITH rev AS ( INSERT INTO container_rev (name, issn)
-                        VALUES ($1, $2)
+            "WITH rev AS ( INSERT INTO container_rev (name, publisher, issn)
+                        VALUES ($1, $2, $3)
                         RETURNING id ),
                 ident AS ( INSERT INTO container_ident (rev_id)
                             VALUES ((SELECT rev.id FROM rev))
                             RETURNING id )
             INSERT INTO container_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($3, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+                ($4, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
-        ).bind::<diesel::sql_types::Text, _>(name)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(issn)
+        ).bind::<diesel::sql_types::Text, _>(body.name)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.publisher)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.issn)
             .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
             .load(&conn)
             .unwrap();
