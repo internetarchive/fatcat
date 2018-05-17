@@ -67,10 +67,11 @@ CREATE TABLE container_rev (
     -- extra_json          JSON,
 
     name                TEXT NOT NULL,
-    parent_ident_id     BIGINT REFERENCES container_rev(id),
     publisher           TEXT,
     issn                TEXT -- TODO: varchar
 );
+
+CREATE INDEX container_rev_issn_idx ON container_rev(issn) WHERE issn IS NOT NULL;
 
 CREATE TABLE container_ident (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -122,14 +123,15 @@ CREATE TABLE release_rev (
     work_ident_id       UUID NOT NULL, -- FOREIGN KEY; see ALRTER below
     container_ident_id  UUID REFERENCES container_ident(id),
     title               TEXT NOT NULL,
-    license             TEXT, -- TODO: ?
-    release_type        TEXT NOT NULL, -- TODO: enum
+    release_type        TEXT, -- TODO: enum
     date                TEXT, -- XXX: datetime
     doi                 TEXT, -- TODO: identifier table?
     volume              TEXT,
     pages               TEXT,
     issue               TEXT
 );
+
+CREATE INDEX release_rev_doi_idx ON release_rev(doi) WHERE doi IS NOT NULL;
 
 CREATE TABLE release_ident (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),

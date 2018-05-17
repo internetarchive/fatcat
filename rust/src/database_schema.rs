@@ -29,7 +29,6 @@ table! {
     container_rev (id) {
         id -> Int8,
         name -> Text,
-        parent_ident_id -> Nullable<Int8>,
         publisher -> Nullable<Text>,
         issn -> Nullable<Text>,
     }
@@ -159,8 +158,7 @@ table! {
         work_ident_id -> Uuid,
         container_ident_id -> Nullable<Uuid>,
         title -> Text,
-        license -> Nullable<Text>,
-        release_type -> Text,
+        release_type -> Nullable<Text>,
         date -> Nullable<Text>,
         doi -> Nullable<Text>,
         volume -> Nullable<Text>,
