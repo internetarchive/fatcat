@@ -342,8 +342,7 @@ pub struct ReleaseEntity {
     pub container_id: Option<String>,
 
     #[serde(rename = "work_id")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub work_id: Option<String>,
+    pub work_id: String,
 
     #[serde(rename = "title")]
     pub title: String,
@@ -371,7 +370,7 @@ pub struct ReleaseEntity {
 }
 
 impl ReleaseEntity {
-    pub fn new(title: String) -> ReleaseEntity {
+    pub fn new(work_id: String, title: String) -> ReleaseEntity {
         ReleaseEntity {
             issue: None,
             pages: None,
@@ -379,7 +378,7 @@ impl ReleaseEntity {
             doi: None,
             release_type: None,
             container_id: None,
-            work_id: None,
+            work_id: work_id,
             title: title,
             state: None,
             ident: None,

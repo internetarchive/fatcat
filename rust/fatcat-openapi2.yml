@@ -95,7 +95,7 @@ definitions:
     type: object
     required:
       - title
-      - work
+      - work_id
     properties:
       <<: *ENTITYPROPS
       title:
