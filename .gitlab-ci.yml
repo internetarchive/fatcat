@@ -1,5 +1,5 @@
 
-rust_build:
+rust_test:
   image: "rust:1.26-stretch"
   variables:
     DATABASE_URL: "postgres://postgres@localhost/fatcat_test"
@@ -12,9 +12,17 @@ rust_build:
     - cd rust
     - diesel database reset && diesel migration run
     - cargo build
-    - cargo doc
     - cargo test
+
+rust_build_release:
+  only:
+    - tags  # doesn't build for most commits; only tagged
+  image: "rust:1.26-stretch"
+  script:
+    - rustc --version && cargo --version
+    - cd rust
     - cargo build --release
+    - cargo doc
   artifacts:
     paths:
     - rust/target/release/fatcat*
@@ -23,7 +31,7 @@ rust_build:
     - rust/target/doc/*.js
     - rust/target/doc/*.woff
     - rust/target/doc/*.svg
-    expire_in: 1 month
+    expire_in: 1 year
 
 python_unittest_and_lint:
   image: python:3.6-stretch
