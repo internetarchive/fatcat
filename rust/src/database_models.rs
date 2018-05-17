@@ -143,25 +143,25 @@ pub struct FileReleaseRow {
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
 #[table_name = "editgroup"]
 pub struct EditgroupRow {
-    id: i64,
+    pub id: i64,
     //extra_json: Option<Json>,
-    editor_id: i64,
-    description: Option<String>,
+    pub editor_id: i64,
+    pub description: Option<String>,
 }
 
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
 #[table_name = "editor"]
 pub struct EditorRow {
-    id: i64,
-    username: String,
-    is_admin: bool,
-    active_editgroup_id: Option<i64>,
+    pub id: i64,
+    pub username: String,
+    pub is_admin: bool,
+    pub active_editgroup_id: Option<i64>,
 }
 
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
 #[table_name = "changelog"]
 pub struct ChangelogRow {
-    id: i64,
-    editgroup_id: i64,
-    timestamp: chrono::NaiveDateTime,
+    pub id: i64,
+    pub editgroup_id: i64,
+    pub timestamp: chrono::NaiveDateTime,
 }

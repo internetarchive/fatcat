@@ -1,6 +1,7 @@
 //! API endpoint handlers
 
 use ConnectionPool;
+use chrono;
 use database_models::*;
 use database_schema::{changelog, container_edit, container_ident, container_rev, creator_edit,
                       creator_ident, creator_rev, editgroup, editor, file_edit, file_ident,
@@ -20,6 +21,31 @@ use fatcat_api::{Api, ApiError, ContainerIdGetResponse, ContainerLookupGetRespon
                  ReleasePostResponse, WorkIdGetResponse, WorkPostResponse};
 use futures::{self, Future};
 use uuid;
+
+// Helper for calling through to handlers
+macro_rules! wrap_get_id_handler {
+    ($get_fn:ident, $handler:ident, $resp:ident, $idtype:ident) => {
+        fn $get_fn(
+            &self,
+            id: $idtype,
+            _context: &Context,
+        ) -> Box<Future<Item = $resp, Error = ApiError> + Send> {
+            match self.$handler(id) {
+                Ok(Some(entity)) =>
+                    Box::new(futures::done(Ok($resp::FoundEntity(entity)))),
+                Ok(None) =>
+                    Box::new(futures::done(Ok($resp::NotFound(
+                        ErrorResponse { message: "No such entity".to_string() }),
+                    ))),
+                Err(e) =>
+                    // TODO: dig in to error type here
+                    Box::new(futures::done(Ok($resp::BadRequest(
+                        ErrorResponse { message: e.to_string() },
+                    )))),
+            }
+        }
+    }
+}
 
 #[derive(Clone)]
 pub struct Server {
@@ -170,28 +196,84 @@ impl Server {
         };
         Ok(Some(entity))
     }
+
+    fn editgroup_id_get_handler(&self, id: i32) -> Result<Option<Editgroup>> {
+        let conn = self.db_pool.get().expect("db_pool error");
+
+        let row: EditgroupRow = editgroup::table.find(id as i64).first(&conn)?;
+
+        let eg = Editgroup {
+            id: Some(row.id as isize),
+            editor_id: row.editor_id as isize,
+            description: row.description,
+        };
+        Ok(Some(eg))
+    }
+
+    fn editor_get_handler(&self, username: String) -> Result<Option<Editor>> {
+        let conn = self.db_pool.get().expect("db_pool error");
+
+        let row: EditorRow = editor::table
+            .filter(editor::username.eq(&username))
+            .first(&conn)?;
+
+        let ed = Editor {
+            username: row.username,
+        };
+        Ok(Some(ed))
+    }
+
+    fn editor_changelog_get_handler(&self, username: String) -> Result<Option<Changelogentries>> {
+        let conn = self.db_pool.get().expect("db_pool error");
+
+        // TODO: single query
+        let editor: EditorRow = editor::table
+            .filter(editor::username.eq(username))
+            .first(&conn)?;
+        let changes: Vec<(ChangelogRow, EditgroupRow)> = changelog::table
+            .inner_join(editgroup::table)
+            .filter(editgroup::editor_id.eq(editor.id))
+            .load(&conn)?;
+
+        let entries = changes
+            .iter()
+            .map(|(row, _)| ChangelogentriesInner {
+                index: row.id as isize,
+                editgroup_id: row.editgroup_id as isize,
+                timestamp: chrono::DateTime::from_utc(row.timestamp, chrono::Utc),
+            })
+            .collect();
+        Ok(Some(entries))
+    }
 }
 
 impl Api for Server {
-    fn container_id_get(
-        &self,
-        id: String,
-        _context: &Context,
-    ) -> Box<Future<Item = ContainerIdGetResponse, Error = ApiError> + Send> {
-        match self.container_id_get_handler(id) {
-            Ok(Some(entity)) =>
-                Box::new(futures::done(Ok(ContainerIdGetResponse::FoundEntity(entity)))),
-            Ok(None) =>
-                Box::new(futures::done(Ok(ContainerIdGetResponse::NotFound(
-                    ErrorResponse { message: "No such entity".to_string() }),
-                ))),
-            Err(e) =>
-                // TODO: dig in to error type here
-                Box::new(futures::done(Ok(ContainerIdGetResponse::BadRequest(
-                    ErrorResponse { message: e.to_string() },
-                )))),
-        }
-    }
+    wrap_get_id_handler!(
+        container_id_get,
+        container_id_get_handler,
+        ContainerIdGetResponse,
+        String
+    );
+    wrap_get_id_handler!(
+        creator_id_get,
+        creator_id_get_handler,
+        CreatorIdGetResponse,
+        String
+    );
+    wrap_get_id_handler!(file_id_get, file_id_get_handler, FileIdGetResponse, String);
+    wrap_get_id_handler!(work_id_get, work_id_get_handler, WorkIdGetResponse, String);
+    wrap_get_id_handler!(
+        release_id_get,
+        release_id_get_handler,
+        ReleaseIdGetResponse,
+        String
+    );
+    wrap_get_id_handler!(
+        editgroup_id_get,
+        editgroup_id_get_handler,
+        EditgroupIdGetResponse,
+        i32
+    );
 
     fn container_lookup_get(
         &self,
@@ -271,26 +353,6 @@ impl Api for Server {
         ))))
     }
 
-    fn creator_id_get(
-        &self,
-        id: String,
-        _context: &Context,
-    ) -> Box<Future<Item = CreatorIdGetResponse, Error = ApiError> + Send> {
-        match self.creator_id_get_handler(id) {
-            Ok(Some(entity)) =>
-                Box::new(futures::done(Ok(CreatorIdGetResponse::FoundEntity(entity)))),
-            Ok(None) =>
-                Box::new(futures::done(Ok(CreatorIdGetResponse::NotFound(
-                    ErrorResponse { message: "No such entity".to_string() }),
-                ))),
-            Err(e) =>
-                // TODO: dig in to error type here
-                Box::new(futures::done(Ok(CreatorIdGetResponse::BadRequest(
-                    ErrorResponse { message: e.to_string() },
-                )))),
-        }
-    }
-
     fn creator_lookup_get(
         &self,
         orcid: String,
@@ -317,26 +379,6 @@ impl Api for Server {
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
         );
         Box::new(futures::failed("Generic failure".into()))
-    }
-
-    fn file_id_get(
-        &self,
-        id: String,
-        _context: &Context,
-    ) -> Box<Future<Item = FileIdGetResponse, Error = ApiError> + Send> {
-        match self.file_id_get_handler(id) {
-            Ok(Some(entity)) =>
-                Box::new(futures::done(Ok(FileIdGetResponse::FoundEntity(entity)))),
-            Ok(None) =>
-                Box::new(futures::done(Ok(FileIdGetResponse::NotFound(
-                    ErrorResponse { message: "No such entity".to_string() }),
-                ))),
-            Err(e) =>
-                // TODO: dig in to error type here
-                Box::new(futures::done(Ok(FileIdGetResponse::BadRequest(
-                    ErrorResponse { message: e.to_string() },
-                )))),
-        }
     }
 
     fn file_lookup_get(
@@ -367,26 +409,6 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn work_id_get(
-        &self,
-        id: String,
-        _context: &Context,
-    ) -> Box<Future<Item = WorkIdGetResponse, Error = ApiError> + Send> {
-        match self.work_id_get_handler(id) {
-            Ok(Some(entity)) =>
-                Box::new(futures::done(Ok(WorkIdGetResponse::FoundEntity(entity)))),
-            Ok(None) =>
-                Box::new(futures::done(Ok(WorkIdGetResponse::NotFound(
-                    ErrorResponse { message: "No such entity".to_string() }),
-                ))),
-            Err(e) =>
-                // TODO: dig in to error type here
-                Box::new(futures::done(Ok(WorkIdGetResponse::BadRequest(
-                    ErrorResponse { message: e.to_string() },
-                )))),
-        }
-    }
-
     fn work_post(
         &self,
         body: models::WorkEntity,
@@ -399,26 +421,6 @@ impl Api for Server {
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
         );
         Box::new(futures::failed("Generic failure".into()))
-    }
-
-    fn release_id_get(
-        &self,
-        id: String,
-        _context: &Context,
-    ) -> Box<Future<Item = ReleaseIdGetResponse, Error = ApiError> + Send> {
-        match self.release_id_get_handler(id) {
-            Ok(Some(entity)) =>
-                Box::new(futures::done(Ok(ReleaseIdGetResponse::FoundEntity(entity)))),
-            Ok(None) =>
-                Box::new(futures::done(Ok(ReleaseIdGetResponse::NotFound(
-                    ErrorResponse { message: "No such entity".to_string() }),
-                ))),
-            Err(e) =>
-                // TODO: dig in to error type here
-                Box::new(futures::done(Ok(ReleaseIdGetResponse::BadRequest(
-                    ErrorResponse { message: e.to_string() },
-                )))),
-        }
     }
 
     fn release_lookup_get(
@@ -463,20 +465,6 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn editgroup_id_get(
-        &self,
-        id: i32,
-        context: &Context,
-    ) -> Box<Future<Item = EditgroupIdGetResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!(
-            "editgroup_id_get({}) - X-Span-ID: {:?}",
-            id,
-            context.x_span_id.unwrap_or(String::from("<none>")).clone()
-        );
-        Box::new(futures::failed("Generic failure".into()))
-    }
-
     fn editgroup_post(
         &self,
         context: &Context,
@@ -492,28 +480,40 @@ impl Api for Server {
     fn editor_username_changelog_get(
         &self,
         username: String,
-        context: &Context,
+        _context: &Context,
     ) -> Box<Future<Item = EditorUsernameChangelogGetResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!(
-            "editor_username_changelog_get(\"{}\") - X-Span-ID: {:?}",
-            username,
-            context.x_span_id.unwrap_or(String::from("<none>")).clone()
-        );
-        Box::new(futures::failed("Generic failure".into()))
+        match self.editor_changelog_get_handler(username) {
+            Ok(Some(entries)) =>
+                Box::new(futures::done(Ok(EditorUsernameChangelogGetResponse::FoundMergedChanges(entries)))),
+            Ok(None) =>
+                Box::new(futures::done(Ok(EditorUsernameChangelogGetResponse::NotFound(
+                    ErrorResponse { message: "No such entity".to_string() }),
+                ))),
+            Err(e) =>
+                // TODO: dig in to error type here
+                Box::new(futures::done(Ok(EditorUsernameChangelogGetResponse::GenericError(
+                    ErrorResponse { message: e.to_string() },
+                )))),
+        }
     }
 
     fn editor_username_get(
         &self,
         username: String,
-        context: &Context,
+        _context: &Context,
     ) -> Box<Future<Item = EditorUsernameGetResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!(
-            "editor_username_get(\"{}\") - X-Span-ID: {:?}",
-            username,
-            context.x_span_id.unwrap_or(String::from("<none>")).clone()
-        );
-        Box::new(futures::failed("Generic failure".into()))
+        match self.editor_get_handler(username) {
+            Ok(Some(entity)) =>
+                Box::new(futures::done(Ok(EditorUsernameGetResponse::FoundEditor(entity)))),
+            Ok(None) =>
+                Box::new(futures::done(Ok(EditorUsernameGetResponse::NotFound(
+                    ErrorResponse { message: "No such entity".to_string() }),
+                ))),
+            Err(e) =>
+                // TODO: dig in to error type here
+                Box::new(futures::done(Ok(EditorUsernameGetResponse::GenericError(
+                    ErrorResponse { message: e.to_string() },
+                )))),
+        }
     }
 }
