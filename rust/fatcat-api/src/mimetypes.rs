@@ -118,7 +118,11 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for EditgroupIdGet
     lazy_static! {
-        pub static ref EDITGROUP_ID_GET_FOUND_EDITGROUP: Mime = mime!(Application / Json);
+        pub static ref EDITGROUP_ID_GET_FOUND_ENTITY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for EditgroupIdGet
+    lazy_static! {
+        pub static ref EDITGROUP_ID_GET_BAD_REQUEST: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for EditgroupIdGet
     lazy_static! {

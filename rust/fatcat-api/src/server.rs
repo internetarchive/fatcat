@@ -759,11 +759,21 @@ where
 
                 match api.editgroup_id_get(param_id, context).wait() {
                     Ok(rsp) => match rsp {
-                        EditgroupIdGetResponse::FoundEditgroup(body) => {
+                        EditgroupIdGetResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(200), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::EDITGROUP_ID_GET_FOUND_EDITGROUP.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::EDITGROUP_ID_GET_FOUND_ENTITY.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                        EditgroupIdGetResponse::BadRequest(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(400), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::EDITGROUP_ID_GET_BAD_REQUEST.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 

@@ -118,8 +118,10 @@ pub enum EditgroupIdAcceptPostResponse {
 
 #[derive(Debug, PartialEq)]
 pub enum EditgroupIdGetResponse {
-    /// Found Editgroup
-    FoundEditgroup(models::Editgroup),
+    /// Found Entity
+    FoundEntity(models::Editgroup),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -139,7 +141,7 @@ pub enum EditgroupPostResponse {
 #[derive(Debug, PartialEq)]
 pub enum EditorUsernameChangelogGetResponse {
     /// Found Merged Changes
-    FoundMergedChanges(models::Changelogentry),
+    FoundMergedChanges(models::Changelogentries),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error

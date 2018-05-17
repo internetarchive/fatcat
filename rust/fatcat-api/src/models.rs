@@ -9,25 +9,84 @@ use std::collections::HashMap;
 use swagger;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct Changelogentry {
+pub struct Changelogentries(Vec<ChangelogentriesInner>);
+
+impl ::std::convert::From<Vec<ChangelogentriesInner>> for Changelogentries {
+    fn from(x: Vec<ChangelogentriesInner>) -> Self {
+        Changelogentries(x)
+    }
+}
+
+impl ::std::convert::From<Changelogentries> for Vec<ChangelogentriesInner> {
+    fn from(x: Changelogentries) -> Self {
+        x.0
+    }
+}
+
+impl ::std::iter::FromIterator<ChangelogentriesInner> for Changelogentries {
+    fn from_iter<U: IntoIterator<Item = ChangelogentriesInner>>(u: U) -> Self {
+        Changelogentries(Vec::<ChangelogentriesInner>::from_iter(u))
+    }
+}
+
+impl ::std::iter::IntoIterator for Changelogentries {
+    type Item = ChangelogentriesInner;
+    type IntoIter = ::std::vec::IntoIter<ChangelogentriesInner>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.into_iter()
+    }
+}
+
+impl<'a> ::std::iter::IntoIterator for &'a Changelogentries {
+    type Item = &'a ChangelogentriesInner;
+    type IntoIter = ::std::slice::Iter<'a, ChangelogentriesInner>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        (&self.0).into_iter()
+    }
+}
+
+impl<'a> ::std::iter::IntoIterator for &'a mut Changelogentries {
+    type Item = &'a mut ChangelogentriesInner;
+    type IntoIter = ::std::slice::IterMut<'a, ChangelogentriesInner>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        (&mut self.0).into_iter()
+    }
+}
+
+impl ::std::ops::Deref for Changelogentries {
+    type Target = Vec<ChangelogentriesInner>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl ::std::ops::DerefMut for Changelogentries {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ChangelogentriesInner {
     #[serde(rename = "index")]
     pub index: isize,
 
     #[serde(rename = "editgroup_id")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub editgroup_id: Option<isize>,
+    pub editgroup_id: isize,
 
     #[serde(rename = "timestamp")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub timestamp: Option<chrono::DateTime<chrono::Utc>>,
+    pub timestamp: chrono::DateTime<chrono::Utc>,
 }
 
-impl Changelogentry {
-    pub fn new(index: isize) -> Changelogentry {
-        Changelogentry {
+impl ChangelogentriesInner {
+    pub fn new(index: isize, editgroup_id: isize, timestamp: chrono::DateTime<chrono::Utc>) -> ChangelogentriesInner {
+        ChangelogentriesInner {
             index: index,
-            editgroup_id: None,
-            timestamp: None,
+            editgroup_id: editgroup_id,
+            timestamp: timestamp,
         }
     }
 }
@@ -135,11 +194,19 @@ pub struct Editgroup {
 
     #[serde(rename = "editor_id")]
     pub editor_id: isize,
+
+    #[serde(rename = "description")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
 }
 
 impl Editgroup {
     pub fn new(editor_id: isize) -> Editgroup {
-        Editgroup { id: None, editor_id: editor_id }
+        Editgroup {
+            id: None,
+            editor_id: editor_id,
+            description: None,
+        }
     }
 }
 

@@ -616,7 +616,14 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::Editgroup>(&buf)?;
 
-                    Ok(EditgroupIdGetResponse::FoundEditgroup(body))
+                    Ok(EditgroupIdGetResponse::FoundEntity(body))
+                }
+                400 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(EditgroupIdGetResponse::BadRequest(body))
                 }
                 404 => {
                     let mut buf = String::new();
@@ -724,7 +731,7 @@ impl Api for Client {
                 200 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
-                    let body = serde_json::from_str::<models::Changelogentry>(&buf)?;
+                    let body = serde_json::from_str::<models::Changelogentries>(&buf)?;
 
                     Ok(EditorUsernameChangelogGetResponse::FoundMergedChanges(body))
                 }

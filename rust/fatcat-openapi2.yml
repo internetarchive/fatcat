@@ -143,19 +143,25 @@ definitions:
         type: integer
       editor_id:
         type: integer
-      # TODO: work_edits array, etc. ["edits"]["work"] or ["work_edits"]?
-  changelogentry:
-    type: object
-    required:
-      - index
-    properties:
-      index:
-        type: integer
-      editgroup_id:
-        type: integer
-      timestamp:
+      description:
         type: string
-        format: date-time
+      # TODO: work_edits array, etc. ["edits"]["work"] or ["work_edits"]?
+  changelogentries:
+    type: array
+    items:
+      type: object
+      required:
+        - index
+        - editgroup_id
+        - timestamp
+      properties:
+        index:
+          type: integer
+        editgroup_id:
+          type: integer
+        timestamp:
+          type: string
+          format: date-time
 
 x-entity-responses: &ENTITYRESPONSES
   400:
@@ -390,7 +396,7 @@ paths:
         200:
           description: Found Merged Changes
           schema:
-            $ref: "#/definitions/changelogentry"
+            $ref: "#/definitions/changelogentries"
         404:
           description: Not Found
           schema:
@@ -423,9 +429,13 @@ paths:
     get:
       responses:
         200:
-          description: Found Editgroup
+          description: Found Entity
           schema:
             $ref: "#/definitions/editgroup"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/error_response"
         404:
           description: Not Found
           schema:

@@ -26,7 +26,7 @@ paths:
         refName: "creator_entity"
         formatString: "{:?}"
         example: "???"
-        model_key: "changelogentry"
+        model_key: "changelogentries_inner"
         uppercase_operation_id: "CREATOR_POST"
         consumesJson: true
       responses:
@@ -186,7 +186,7 @@ paths:
         refName: "container_entity"
         formatString: "{:?}"
         example: "???"
-        model_key: "changelogentry"
+        model_key: "changelogentries_inner"
         uppercase_operation_id: "CONTAINER_POST"
         consumesJson: true
       responses:
@@ -346,7 +346,7 @@ paths:
         refName: "file_entity"
         formatString: "{:?}"
         example: "???"
-        model_key: "changelogentry"
+        model_key: "changelogentries_inner"
         uppercase_operation_id: "FILE_POST"
         consumesJson: true
       responses:
@@ -506,7 +506,7 @@ paths:
         refName: "release_entity"
         formatString: "{:?}"
         example: "???"
-        model_key: "changelogentry"
+        model_key: "changelogentries_inner"
         uppercase_operation_id: "RELEASE_POST"
         consumesJson: true
       responses:
@@ -666,7 +666,7 @@ paths:
         refName: "work_entity"
         formatString: "{:?}"
         example: "???"
-        model_key: "changelogentry"
+        model_key: "changelogentries_inner"
         uppercase_operation_id: "WORK_POST"
         consumesJson: true
       responses:
@@ -818,11 +818,11 @@ paths:
         200:
           description: "Found Merged Changes"
           schema:
-            $ref: "#/definitions/changelogentry"
+            $ref: "#/definitions/changelogentries"
           x-responseId: "FoundMergedChanges"
           x-uppercaseResponseId: "FOUND_MERGED_CHANGES"
           uppercase_operation_id: "EDITOR_USERNAME_CHANGELOG_GET"
-          uppercase_data_type: "CHANGELOGENTRY"
+          uppercase_data_type: "CHANGELOGENTRIES"
           producesJson: true
         404:
           description: "Not Found"
@@ -894,13 +894,22 @@ paths:
         example: "56"
       responses:
         200:
-          description: "Found Editgroup"
+          description: "Found Entity"
           schema:
             $ref: "#/definitions/editgroup"
-          x-responseId: "FoundEditgroup"
-          x-uppercaseResponseId: "FOUND_EDITGROUP"
+          x-responseId: "FoundEntity"
+          x-uppercaseResponseId: "FOUND_ENTITY"
           uppercase_operation_id: "EDITGROUP_ID_GET"
           uppercase_data_type: "EDITGROUP"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "EDITGROUP_ID_GET"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
           description: "Not Found"
@@ -1214,14 +1223,23 @@ definitions:
         type: "integer"
       editor_id:
         type: "integer"
+      description:
+        type: "string"
     example:
+      description: "description"
       editor_id: 6
       id: 0
     upperCaseName: "EDITGROUP"
-  changelogentry:
-    type: "object"
+  changelogentries:
+    type: "array"
+    items:
+      $ref: "#/definitions/changelogentries_inner"
+    upperCaseName: "CHANGELOGENTRIES"
+  changelogentries_inner:
     required:
+    - "editgroup_id"
     - "index"
+    - "timestamp"
     properties:
       index:
         type: "integer"
@@ -1230,11 +1248,7 @@ definitions:
       timestamp:
         type: "string"
         format: "date-time"
-    example:
-      index: 0
-      editgroup_id: 6
-      timestamp: "2000-01-23T04:56:07.000+00:00"
-    upperCaseName: "CHANGELOGENTRY"
+    upperCaseName: "CHANGELOGENTRIES_INNER"
 x-entity-props:
   state:
     type: "string"
