@@ -10,7 +10,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE editor (
     id                  BIGSERIAL PRIMARY KEY,
-    username            TEXT NOT NULL,
+    username            TEXT NOT NULL UNIQUE,
     is_admin            BOOLEAN NOT NULL DEFAULT false,
     active_editgroup_id BIGINT -- REFERENCES( editgroup(id) via ALTER below
 );
