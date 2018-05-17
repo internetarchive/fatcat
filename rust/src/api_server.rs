@@ -626,14 +626,27 @@ impl Api for Server {
 
     fn editgroup_post(
         &self,
+        body: models::Editgroup,
         context: &Context,
     ) -> Box<Future<Item = EditgroupPostResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!(
-            "editgroup_post() - X-Span-ID: {:?}",
-            context.x_span_id.unwrap_or(String::from("<none>")).clone()
-        );
-        Box::new(futures::failed("Generic failure".into()))
+        let conn = self.db_pool.get().expect("db_pool error");
+
+        let row: EditgroupRow = insert_into(editgroup::table)
+            .values((
+                editgroup::editor_id.eq(body.editor_id as i64),
+                editgroup::description.eq(body.description)
+                ))
+            .get_result(&conn)
+            .expect("error creating edit group");
+
+        let new_eg = Editgroup {
+            id: Some(row.id as isize),
+            editor_id: row.editor_id as isize,
+            description: row.description,
+        };
+        Box::new(futures::done(Ok(EditgroupPostResponse::SuccessfullyCreated(
+            new_eg,
+        ))))
     }
 
     fn editor_username_changelog_get(
