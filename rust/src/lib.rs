@@ -12,7 +12,6 @@ extern crate hyper;
 #[macro_use]
 extern crate error_chain;
 extern crate iron;
-extern crate r2d2;
 extern crate serde_json;
 
 pub mod api_server;
@@ -42,7 +41,7 @@ use iron::middleware::AfterMiddleware;
 use iron::{Request, Response};
 use std::env;
 
-pub type ConnectionPool = r2d2::Pool<ConnectionManager<diesel::pg::PgConnection>>;
+pub type ConnectionPool = diesel::r2d2::Pool<ConnectionManager<diesel::pg::PgConnection>>;
 
 /// Establish a direct database connection. Not currently used, but could be helpful for
 /// single-threaded tests or utilities.
@@ -58,7 +57,7 @@ pub fn server() -> Result<api_server::Server> {
     dotenv().ok();
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let manager = ConnectionManager::<PgConnection>::new(database_url);
-    let pool = r2d2::Pool::builder()
+    let pool = diesel::r2d2::Pool::builder()
         .build(manager)
         .expect("Failed to create database pool.");
     Ok(api_server::Server { db_pool: pool })

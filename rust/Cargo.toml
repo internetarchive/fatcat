@@ -12,7 +12,6 @@ diesel = { version = "1.2", features = ["postgres", "uuid", "serde_json", "chron
 dotenv = "0.9.0"
 clap = "*"
 error-chain = "0.11"
-r2d2 = "0.8"
 uuid = "0.5"
 
 # API server
