@@ -9,6 +9,7 @@ members = ["fatcat-api"]
 [dependencies]
 fatcat-api = {version = "*", path = "fatcat-api"}
 diesel = { version = "1.2", features = ["postgres", "uuid", "serde_json", "chrono", "r2d2"] }
+diesel_migrations = "1.2"
 dotenv = "0.9.0"
 clap = "*"
 error-chain = "0.11"
