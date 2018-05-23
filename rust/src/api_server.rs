@@ -627,7 +627,7 @@ impl Api for Server {
     fn editgroup_post(
         &self,
         body: models::Editgroup,
-        context: &Context,
+        _context: &Context,
     ) -> Box<Future<Item = EditgroupPostResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
 
