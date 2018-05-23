@@ -19,8 +19,8 @@ uuid = "0.5"
 chrono = { version = "0.4", features = ["serde"] }
 futures = "0.1"
 hyper = "0.10"
-iron = "0.5"
-iron-slog = "*"
+iron = "0.6"
+iron-slog = { git = "https://github.com/bnewbold/iron-slog", branch = "bnewbold-iron-0.6" }
 iron-test = "*"
 swagger = "0.7"
 slog = "^2.0"
