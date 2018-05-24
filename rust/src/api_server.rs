@@ -100,7 +100,7 @@ impl Server {
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id.map(|v| v as isize),
             redirect: ident.redirect_id.map(|u| u.to_string()),
-            editgroup: None,
+            editgroup_id: None,
         };
         Ok(Some(entity))
     }
@@ -130,7 +130,7 @@ impl Server {
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id.map(|v| v as isize),
             redirect: ident.redirect_id.map(|u| u.to_string()),
-            editgroup: None,
+            editgroup_id: None,
         };
         Ok(Some(entity))
     }
@@ -157,7 +157,7 @@ impl Server {
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id.map(|v| v as isize),
             redirect: ident.redirect_id.map(|u| u.to_string()),
-            editgroup: None,
+            editgroup_id: None,
         };
         Ok(Some(entity))
     }
@@ -185,7 +185,7 @@ impl Server {
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id.map(|v| v as isize),
             redirect: ident.redirect_id.map(|u| u.to_string()),
-            editgroup: None,
+            editgroup_id: None,
         };
         Ok(Some(entity))
     }
@@ -213,7 +213,7 @@ impl Server {
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id.map(|v| v as isize),
             redirect: ident.redirect_id.map(|u| u.to_string()),
-            editgroup: None,
+            editgroup_id: None,
         };
         Ok(Some(entity))
     }
@@ -242,7 +242,7 @@ impl Server {
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id.map(|v| v as isize),
             redirect: ident.redirect_id.map(|u| u.to_string()),
-            editgroup: None,
+            editgroup_id: None,
         };
         Ok(Some(entity))
     }
@@ -268,7 +268,7 @@ impl Server {
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id.map(|v| v as isize),
             redirect: ident.redirect_id.map(|u| u.to_string()),
-            editgroup: None,
+            editgroup_id: None,
         };
         Ok(Some(entity))
     }
@@ -302,7 +302,7 @@ impl Server {
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id.map(|v| v as isize),
             redirect: ident.redirect_id.map(|u| u.to_string()),
-            editgroup: None,
+            editgroup_id: None,
         };
         Ok(Some(entity))
     }
@@ -337,7 +337,7 @@ impl Server {
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id.map(|v| v as isize),
             redirect: ident.redirect_id.map(|u| u.to_string()),
-            editgroup: None,
+            editgroup_id: None,
         };
         Ok(Some(entity))
     }
