@@ -64,6 +64,7 @@ table! {
 table! {
     editgroup (id) {
         id -> Int8,
+        extra_json -> Nullable<Json>,
         editor_id -> Int8,
         description -> Nullable<Text>,
     }

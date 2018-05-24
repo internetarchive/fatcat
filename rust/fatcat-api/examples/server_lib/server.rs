@@ -54,13 +54,13 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn editgroup_id_accept_post(&self, id: i32, context: &Context) -> Box<Future<Item = EditgroupIdAcceptPostResponse, Error = ApiError> + Send> {
+    fn editgroup_id_accept_post(&self, id: i64, context: &Context) -> Box<Future<Item = EditgroupIdAcceptPostResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!("editgroup_id_accept_post({}) - X-Span-ID: {:?}", id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn editgroup_id_get(&self, id: i32, context: &Context) -> Box<Future<Item = EditgroupIdGetResponse, Error = ApiError> + Send> {
+    fn editgroup_id_get(&self, id: i64, context: &Context) -> Box<Future<Item = EditgroupIdGetResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!("editgroup_id_get({}) - X-Span-ID: {:?}", id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))

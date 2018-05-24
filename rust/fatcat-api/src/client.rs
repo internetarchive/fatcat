@@ -537,7 +537,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn editgroup_id_accept_post(&self, param_id: i32, context: &Context) -> Box<Future<Item = EditgroupIdAcceptPostResponse, Error = ApiError> + Send> {
+    fn editgroup_id_accept_post(&self, param_id: i64, context: &Context) -> Box<Future<Item = EditgroupIdAcceptPostResponse, Error = ApiError> + Send> {
         let url = format!("{}/v0/editgroup/{id}/accept", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
 
         let hyper_client = (self.hyper_client)();
@@ -597,7 +597,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn editgroup_id_get(&self, param_id: i32, context: &Context) -> Box<Future<Item = EditgroupIdGetResponse, Error = ApiError> + Send> {
+    fn editgroup_id_get(&self, param_id: i64, context: &Context) -> Box<Future<Item = EditgroupIdGetResponse, Error = ApiError> + Send> {
         let url = format!("{}/v0/editgroup/{id}", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
 
         let hyper_client = (self.hyper_client)();

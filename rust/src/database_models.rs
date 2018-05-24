@@ -1,8 +1,8 @@
 use chrono;
-//use serde_json;
 use database_schema::*;
-use uuid::Uuid;
 use errors::*;
+use serde_json;
+use uuid::Uuid;
 
 // Ugh. I thought the whole point was to *not* do this, but:
 // https://github.com/diesel-rs/diesel/issues/1589
@@ -19,7 +19,7 @@ impl EntityState {
         match self {
             EntityState::WorkInProgress => "wip",
             EntityState::Active(_) => "active",
-            EntityState::Redirect(_,_) => "redirect",
+            EntityState::Redirect(_, _) => "redirect",
             EntityState::Deleted => "deleted",
         }.to_string()
     }
@@ -40,7 +40,7 @@ macro_rules! entity_structs {
             pub rev_id: Option<i64>,
             pub redirect_id: Option<Uuid>,
             pub editgroup_id: i64,
-            //pub extra_json: Option<String>,
+            //pub extra_json: Option<serde_json::Value>,
         }
 
         #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
@@ -61,7 +61,7 @@ macro_rules! entity_structs {
                     (None, None) => Ok(EntityState::Deleted),
                     (Some(redir), Some(rev)) => Ok(EntityState::Redirect(redir, rev)),
                     (None, Some(rev)) => Ok(EntityState::Active(rev)),
-                    _ => bail!("Invalid EntityIdentRow state")
+                    _ => bail!("Invalid EntityIdentRow state"),
                 }
             }
         }
@@ -89,7 +89,7 @@ entity_structs!(
 #[table_name = "creator_rev"]
 pub struct CreatorRevRow {
     pub id: i64,
-    //extra_json: Option<Json>,
+    //extra_json: Option<String>,
     pub name: String,
     pub orcid: Option<String>,
 }
@@ -105,7 +105,7 @@ entity_structs!(
 #[table_name = "file_rev"]
 pub struct FileRevRow {
     pub id: i64,
-    //extra_json: Option<Json>,
+    //extra_json: Option<String>,
     pub size: Option<i32>,
     pub sha1: Option<String>,
     pub url: Option<String>,
@@ -181,7 +181,7 @@ pub struct FileReleaseRow {
 #[table_name = "editgroup"]
 pub struct EditgroupRow {
     pub id: i64,
-    //extra_json: Option<Json>,
+    pub extra_json: Option<serde_json::Value>,
     pub editor_id: i64,
     pub description: Option<String>,
 }

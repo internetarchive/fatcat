@@ -1,8 +1,8 @@
 //! API endpoint handlers
 
 use ConnectionPool;
-use chrono;
 use api_helpers::*;
+use chrono;
 use database_models::*;
 use database_schema::{changelog, container_ident, container_rev, creator_ident, creator_rev,
                       editgroup, editor, file_ident, file_rev, release_ident, release_rev,
@@ -98,7 +98,7 @@ impl Server {
             name: rev.name,
             state: Some(ident.state().unwrap().shortname()),
             ident: Some(ident.id.to_string()),
-            revision: ident.rev_id.map(|v| v as isize),
+            revision: ident.rev_id,
             redirect: ident.redirect_id.map(|u| u.to_string()),
             editgroup_id: None,
         };
@@ -128,7 +128,7 @@ impl Server {
             name: rev.name,
             state: Some(ident.state().unwrap().shortname()),
             ident: Some(ident.id.to_string()),
-            revision: ident.rev_id.map(|v| v as isize),
+            revision: ident.rev_id,
             redirect: ident.redirect_id.map(|u| u.to_string()),
             editgroup_id: None,
         };
@@ -155,7 +155,7 @@ impl Server {
             orcid: rev.orcid,
             state: Some(ident.state().unwrap().shortname()),
             ident: Some(ident.id.to_string()),
-            revision: ident.rev_id.map(|v| v as isize),
+            revision: ident.rev_id,
             redirect: ident.redirect_id.map(|u| u.to_string()),
             editgroup_id: None,
         };
@@ -183,7 +183,7 @@ impl Server {
             orcid: rev.orcid,
             state: Some(ident.state().unwrap().shortname()),
             ident: Some(ident.id.to_string()),
-            revision: ident.rev_id.map(|v| v as isize),
+            revision: ident.rev_id,
             redirect: ident.redirect_id.map(|u| u.to_string()),
             editgroup_id: None,
         };
@@ -207,11 +207,11 @@ impl Server {
 
         let entity = FileEntity {
             sha1: rev.sha1,
-            size: rev.size.map(|v| v as isize),
+            size: rev.size.map(|v| v as i64),
             url: rev.url,
             state: Some(ident.state().unwrap().shortname()),
             ident: Some(ident.id.to_string()),
-            revision: ident.rev_id.map(|v| v as isize),
+            revision: ident.rev_id.map(|v| v),
             redirect: ident.redirect_id.map(|u| u.to_string()),
             editgroup_id: None,
         };
@@ -236,11 +236,11 @@ impl Server {
 
         let entity = FileEntity {
             sha1: rev.sha1,
-            size: rev.size.map(|v| v as isize),
+            size: rev.size.map(|v| v as i64),
             url: rev.url,
             state: Some(ident.state().unwrap().shortname()),
             ident: Some(ident.id.to_string()),
-            revision: ident.rev_id.map(|v| v as isize),
+            revision: ident.rev_id.map(|v| v),
             redirect: ident.redirect_id.map(|u| u.to_string()),
             editgroup_id: None,
         };
@@ -266,7 +266,7 @@ impl Server {
             work_type: rev.work_type,
             state: Some(ident.state().unwrap().shortname()),
             ident: Some(ident.id.to_string()),
-            revision: ident.rev_id.map(|v| v as isize),
+            revision: ident.rev_id,
             redirect: ident.redirect_id.map(|u| u.to_string()),
             editgroup_id: None,
         };
@@ -300,7 +300,7 @@ impl Server {
             work_id: rev.work_ident_id.to_string(),
             state: Some(ident.state().unwrap().shortname()),
             ident: Some(ident.id.to_string()),
-            revision: ident.rev_id.map(|v| v as isize),
+            revision: ident.rev_id,
             redirect: ident.redirect_id.map(|u| u.to_string()),
             editgroup_id: None,
         };
@@ -335,22 +335,23 @@ impl Server {
             work_id: rev.work_ident_id.to_string(),
             state: Some(ident.state().unwrap().shortname()),
             ident: Some(ident.id.to_string()),
-            revision: ident.rev_id.map(|v| v as isize),
+            revision: ident.rev_id,
             redirect: ident.redirect_id.map(|u| u.to_string()),
             editgroup_id: None,
         };
         Ok(Some(entity))
     }
 
-    fn editgroup_id_get_handler(&self, id: i32) -> Result<Option<Editgroup>> {
+    fn editgroup_id_get_handler(&self, id: i64) -> Result<Option<Editgroup>> {
         let conn = self.db_pool.get().expect("db_pool error");
 
         let row: EditgroupRow = editgroup::table.find(id as i64).first(&conn)?;
 
         let eg = Editgroup {
-            id: Some(row.id as isize),
-            editor_id: row.editor_id as isize,
+            id: Some(row.id),
+            editor_id: row.editor_id,
             description: row.description,
+            extra: None,
         };
         Ok(Some(eg))
     }
@@ -383,8 +384,8 @@ impl Server {
         let entries = changes
             .iter()
             .map(|(row, _)| ChangelogentriesInner {
-                index: row.id as isize,
-                editgroup_id: row.editgroup_id as isize,
+                index: row.id,
+                editgroup_id: row.editgroup_id,
                 timestamp: chrono::DateTime::from_utc(row.timestamp, chrono::Utc),
             })
             .collect();
@@ -417,7 +418,7 @@ impl Api for Server {
         editgroup_id_get,
         editgroup_id_get_handler,
         EditgroupIdGetResponse,
-        i32
+        i64
     );
 
     wrap_lookup_handler!(
@@ -455,7 +456,7 @@ impl Api for Server {
         _context: &Context,
     ) -> Box<Future<Item = ContainerPostResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let editor_id = 1;  // TODO: auth
+        let editor_id = 1; // TODO: auth
         let editgroup_id = match body.editgroup_id {
             None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
             Some(param) => param as i64,
@@ -480,10 +481,10 @@ impl Api for Server {
         let edit = &edit;
 
         let entity_edit = EntityEdit {
-            editgroup_id: Some(edit.editgroup_id as isize),
-            revision: Some(edit.rev_id.unwrap() as isize),
+            editgroup_id: Some(edit.editgroup_id),
+            revision: Some(edit.rev_id.unwrap()),
             ident: Some(edit.ident_id.to_string()),
-            edit_id: Some(edit.id as isize),
+            edit_id: Some(edit.id),
         };
         Box::new(futures::done(Ok(ContainerPostResponse::CreatedEntity(
             entity_edit,
@@ -496,7 +497,7 @@ impl Api for Server {
         _context: &Context,
     ) -> Box<Future<Item = CreatorPostResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let editor_id = 1;  // TODO: auth
+        let editor_id = 1; // TODO: auth
         let editgroup_id = match body.editgroup_id {
             None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
             Some(param) => param as i64,
@@ -520,10 +521,10 @@ impl Api for Server {
         let edit = &edit;
 
         let entity_edit = EntityEdit {
-            editgroup_id: Some(edit.editgroup_id as isize),
-            revision: Some(edit.rev_id.unwrap() as isize),
+            editgroup_id: Some(edit.editgroup_id),
+            revision: Some(edit.rev_id.unwrap()),
             ident: Some(edit.ident_id.to_string()),
-            edit_id: Some(edit.id as isize),
+            edit_id: Some(edit.id),
         };
         Box::new(futures::done(Ok(CreatorPostResponse::CreatedEntity(
             entity_edit,
@@ -536,7 +537,7 @@ impl Api for Server {
         _context: &Context,
     ) -> Box<Future<Item = FilePostResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let editor_id = 1;  // TODO: auth
+        let editor_id = 1; // TODO: auth
         let editgroup_id = match body.editgroup_id {
             None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
             Some(param) => param as i64,
@@ -563,10 +564,10 @@ impl Api for Server {
         let edit = &edit;
 
         let entity_edit = EntityEdit {
-            editgroup_id: Some(edit.editgroup_id as isize),
-            revision: Some(edit.rev_id.unwrap() as isize),
+            editgroup_id: Some(edit.editgroup_id),
+            revision: Some(edit.rev_id.unwrap()),
             ident: Some(edit.ident_id.to_string()),
-            edit_id: Some(edit.id as isize),
+            edit_id: Some(edit.id),
         };
         Box::new(futures::done(Ok(FilePostResponse::CreatedEntity(
             entity_edit,
@@ -579,7 +580,7 @@ impl Api for Server {
         _context: &Context,
     ) -> Box<Future<Item = WorkPostResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let editor_id = 1;  // TODO: auth
+        let editor_id = 1; // TODO: auth
         let editgroup_id = match body.editgroup_id {
             None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
             Some(param) => param as i64,
@@ -603,10 +604,10 @@ impl Api for Server {
         let edit = &edit;
 
         let entity_edit = EntityEdit {
-            editgroup_id: Some(edit.editgroup_id as isize),
-            revision: Some(edit.rev_id.unwrap() as isize),
+            editgroup_id: Some(edit.editgroup_id),
+            revision: Some(edit.rev_id.unwrap()),
             ident: Some(edit.ident_id.to_string()),
-            edit_id: Some(edit.id as isize),
+            edit_id: Some(edit.id),
         };
         Box::new(futures::done(Ok(WorkPostResponse::CreatedEntity(
             entity_edit,
@@ -619,7 +620,7 @@ impl Api for Server {
         _context: &Context,
     ) -> Box<Future<Item = ReleasePostResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let editor_id = 1;  // TODO: auth
+        let editor_id = 1; // TODO: auth
         let editgroup_id = match body.editgroup_id {
             None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
             Some(param) => param as i64,
@@ -656,10 +657,10 @@ impl Api for Server {
         let edit = &edit;
 
         let entity_edit = EntityEdit {
-            editgroup_id: Some(edit.editgroup_id as isize),
-            revision: Some(edit.rev_id.unwrap() as isize),
+            editgroup_id: Some(edit.editgroup_id),
+            revision: Some(edit.rev_id.unwrap()),
             ident: Some(edit.ident_id.to_string()),
-            edit_id: Some(edit.id as isize),
+            edit_id: Some(edit.id),
         };
         Box::new(futures::done(Ok(ReleasePostResponse::CreatedEntity(
             entity_edit,
@@ -668,16 +669,18 @@ impl Api for Server {
 
     fn editgroup_id_accept_post(
         &self,
-        id: i32,
+        id: i64,
         _context: &Context,
     ) -> Box<Future<Item = EditgroupIdAcceptPostResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
 
         accept_editgroup(id as i64, &conn).expect("failed to accept editgroup");
 
-        Box::new(futures::done(Ok(EditgroupIdAcceptPostResponse::MergedSuccessfully(
-            Success { message: "horray!".to_string() }
-        ))))
+        Box::new(futures::done(Ok(
+            EditgroupIdAcceptPostResponse::MergedSuccessfully(Success {
+                message: "horray!".to_string(),
+            }),
+        )))
     }
 
     fn editgroup_post(
@@ -696,9 +699,10 @@ impl Api for Server {
             .expect("error creating edit group");
 
         let new_eg = Editgroup {
-            id: Some(row.id as isize),
-            editor_id: row.editor_id as isize,
+            id: Some(row.id),
+            editor_id: row.editor_id,
             description: row.description,
+            extra: None,
         };
         Box::new(futures::done(Ok(
             EditgroupPostResponse::SuccessfullyCreated(new_eg),

@@ -1,15 +1,15 @@
+extern crate diesel;
 extern crate fatcat;
 extern crate fatcat_api;
 extern crate iron;
 extern crate iron_test;
-extern crate diesel;
 
-use fatcat::database_schema::*;
-use fatcat::api_helpers::*;
 use diesel::prelude::*;
-use iron::{status, Headers};
-use iron::mime::Mime;
+use fatcat::api_helpers::*;
+use fatcat::database_schema::*;
 use iron::headers::ContentType;
+use iron::mime::Mime;
+use iron::{status, Headers};
 use iron_test::{request, response};
 
 #[test]
@@ -66,7 +66,6 @@ fn test_post_container() {
     let mime: Mime = "application/json".parse().unwrap();
     headers.set(ContentType(mime));
 
-
     let response = request::post(
         "http://localhost:9411/v0/container",
         headers,
@@ -93,25 +92,33 @@ fn test_accept_editgroup() {
     let c: i64 = container_ident::table
         .filter(container_ident::is_live.eq(false))
         .count()
-        .get_result(&conn).unwrap();
+        .get_result(&conn)
+        .unwrap();
     assert_eq!(c, 0);
     let c: i64 = changelog::table
         .filter(changelog::editgroup_id.eq(editgroup_id))
         .count()
-        .get_result(&conn).unwrap();
+        .get_result(&conn)
+        .unwrap();
     assert_eq!(c, 0);
 
     let response = request::post(
         "http://localhost:9411/v0/container",
         headers.clone(),
-        &format!("{{\"name\": \"test journal 1\", \"editgroup_id\": {}}}", editgroup_id),
+        &format!(
+            "{{\"name\": \"test journal 1\", \"editgroup_id\": {}}}",
+            editgroup_id
+        ),
         &router,
     ).unwrap();
     assert_eq!(response.status, Some(status::Created));
     let response = request::post(
         "http://localhost:9411/v0/container",
         headers.clone(),
-        &format!("{{\"name\": \"test journal 2\", \"editgroup_id\": {}}}", editgroup_id),
+        &format!(
+            "{{\"name\": \"test journal 2\", \"editgroup_id\": {}}}",
+            editgroup_id
+        ),
         &router,
     ).unwrap();
     assert_eq!(response.status, Some(status::Created));
@@ -119,7 +126,8 @@ fn test_accept_editgroup() {
     let c: i64 = container_ident::table
         .filter(container_ident::is_live.eq(false))
         .count()
-        .get_result(&conn).unwrap();
+        .get_result(&conn)
+        .unwrap();
     assert_eq!(c, 2);
 
     let response = request::post(
@@ -133,11 +141,13 @@ fn test_accept_editgroup() {
     let c: i64 = container_ident::table
         .filter(container_ident::is_live.eq(false))
         .count()
-        .get_result(&conn).unwrap();
+        .get_result(&conn)
+        .unwrap();
     assert_eq!(c, 0);
     let c: i64 = changelog::table
         .filter(changelog::editgroup_id.eq(editgroup_id))
         .count()
-        .get_result(&conn).unwrap();
+        .get_result(&conn)
+        .unwrap();
     assert_eq!(c, 1);
 }

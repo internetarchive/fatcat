@@ -4,12 +4,12 @@ extern crate chrono;
 extern crate clap;
 extern crate diesel;
 //extern crate dotenv;
+extern crate error_chain;
 extern crate fatcat;
 extern crate fatcat_api;
 extern crate futures;
 extern crate iron;
 extern crate iron_slog;
-extern crate error_chain;
 #[macro_use]
 extern crate slog;
 extern crate slog_async;

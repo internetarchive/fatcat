@@ -1,9 +1,8 @@
-
-use errors::*;
-use diesel;
-use diesel::prelude::*;
 use database_models::*;
 use database_schema::*;
+use diesel;
+use diesel::prelude::*;
+use errors::*;
 
 pub fn get_or_create_editgroup(editor_id: i64, conn: &PgConnection) -> Result<i64> {
     // check for current active
@@ -14,11 +13,8 @@ pub fn get_or_create_editgroup(editor_id: i64, conn: &PgConnection) -> Result<i6
 
     // need to insert and update
     conn.build_transaction().run(|| {
-
         let eg_row: EditgroupRow = diesel::insert_into(editgroup::table)
-            .values((
-                editgroup::editor_id.eq(ed_row.id),
-            ))
+            .values((editgroup::editor_id.eq(ed_row.id),))
             .get_result(conn)?;
         diesel::update(editor::table.find(ed_row.id))
             .set(editor::active_editgroup_id.eq(eg_row.id))
@@ -29,7 +25,6 @@ pub fn get_or_create_editgroup(editor_id: i64, conn: &PgConnection) -> Result<i6
 
 pub fn accept_editgroup(editgroup_id: i64, conn: &PgConnection) -> Result<ChangelogRow> {
     conn.build_transaction().run(|| {
-
         // check that we haven't accepted already (in changelog)
         // NB: could leave this to a UNIQUE constraint
         let count: i64 = changelog::table
@@ -60,8 +55,8 @@ pub fn accept_editgroup(editgroup_id: i64, conn: &PgConnection) -> Result<Change
 
         // Sketchy... but fast? Only a few queries per accept.
         for entity in ["container", "creator", "file", "work", "release"].iter() {
-            diesel::sql_query(
-                format!("
+            diesel::sql_query(format!(
+                "
                     UPDATE {entity}_ident
                     SET
                         is_live = true,
@@ -71,16 +66,14 @@ pub fn accept_editgroup(editgroup_id: i64, conn: &PgConnection) -> Result<Change
                     WHERE
                         {entity}_ident.id = {entity}_edit.ident_id
                         AND {entity}_edit.editgroup_id = $1",
-                    entity = entity))
-                .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
+                entity = entity
+            )).bind::<diesel::sql_types::BigInt, _>(editgroup_id)
                 .execute(conn)?;
         }
 
         // append log/changelog row
         let entry: ChangelogRow = diesel::insert_into(changelog::table)
-            .values((
-                changelog::editgroup_id.eq(editgroup_id),
-            ))
+            .values((changelog::editgroup_id.eq(editgroup_id),))
             .get_result(conn)?;
 
         // update any editor's active editgroup

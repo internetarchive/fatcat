@@ -268,9 +268,9 @@ pub trait Api {
 
     fn creator_post(&self, body: models::CreatorEntity, context: &Context) -> Box<Future<Item = CreatorPostResponse, Error = ApiError> + Send>;
 
-    fn editgroup_id_accept_post(&self, id: i32, context: &Context) -> Box<Future<Item = EditgroupIdAcceptPostResponse, Error = ApiError> + Send>;
+    fn editgroup_id_accept_post(&self, id: i64, context: &Context) -> Box<Future<Item = EditgroupIdAcceptPostResponse, Error = ApiError> + Send>;
 
-    fn editgroup_id_get(&self, id: i32, context: &Context) -> Box<Future<Item = EditgroupIdGetResponse, Error = ApiError> + Send>;
+    fn editgroup_id_get(&self, id: i64, context: &Context) -> Box<Future<Item = EditgroupIdGetResponse, Error = ApiError> + Send>;
 
     fn editgroup_post(&self, body: models::Editgroup, context: &Context) -> Box<Future<Item = EditgroupPostResponse, Error = ApiError> + Send>;
 
@@ -309,9 +309,9 @@ pub trait ApiNoContext {
 
     fn creator_post(&self, body: models::CreatorEntity) -> Box<Future<Item = CreatorPostResponse, Error = ApiError> + Send>;
 
-    fn editgroup_id_accept_post(&self, id: i32) -> Box<Future<Item = EditgroupIdAcceptPostResponse, Error = ApiError> + Send>;
+    fn editgroup_id_accept_post(&self, id: i64) -> Box<Future<Item = EditgroupIdAcceptPostResponse, Error = ApiError> + Send>;
 
-    fn editgroup_id_get(&self, id: i32) -> Box<Future<Item = EditgroupIdGetResponse, Error = ApiError> + Send>;
+    fn editgroup_id_get(&self, id: i64) -> Box<Future<Item = EditgroupIdGetResponse, Error = ApiError> + Send>;
 
     fn editgroup_post(&self, body: models::Editgroup) -> Box<Future<Item = EditgroupPostResponse, Error = ApiError> + Send>;
 
@@ -376,11 +376,11 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().creator_post(body, &self.context())
     }
 
-    fn editgroup_id_accept_post(&self, id: i32) -> Box<Future<Item = EditgroupIdAcceptPostResponse, Error = ApiError> + Send> {
+    fn editgroup_id_accept_post(&self, id: i64) -> Box<Future<Item = EditgroupIdAcceptPostResponse, Error = ApiError> + Send> {
         self.api().editgroup_id_accept_post(id, &self.context())
     }
 
-    fn editgroup_id_get(&self, id: i32) -> Box<Future<Item = EditgroupIdGetResponse, Error = ApiError> + Send> {
+    fn editgroup_id_get(&self, id: i64) -> Box<Future<Item = EditgroupIdGetResponse, Error = ApiError> + Send> {
         self.api().editgroup_id_get(id, &self.context())
     }
 

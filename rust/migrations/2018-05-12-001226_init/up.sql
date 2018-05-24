@@ -17,7 +17,7 @@ CREATE TABLE editor (
 
 CREATE TABLE editgroup (
     id                  BIGSERIAL PRIMARY KEY,
-    -- extra_json          JSON,
+    extra_json          JSON,
     editor_id           BIGSERIAL REFERENCES editor(id) NOT NULL,
     description         TEXT
 );

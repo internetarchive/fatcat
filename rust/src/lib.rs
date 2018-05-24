@@ -1,5 +1,5 @@
-extern crate fatcat_api;
 extern crate chrono;
+extern crate fatcat_api;
 #[macro_use]
 extern crate diesel;
 extern crate diesel_migrations;
@@ -14,8 +14,8 @@ extern crate error_chain;
 extern crate iron;
 extern crate serde_json;
 
-pub mod api_server;
 pub mod api_helpers;
+pub mod api_server;
 pub mod database_models;
 pub mod database_schema;
 
@@ -68,7 +68,6 @@ pub fn server() -> Result<api_server::Server> {
 }
 
 pub fn test_server() -> Result<api_server::Server> {
-
     dotenv().ok();
     let database_url = env::var("TEST_DATABASE_URL").expect("TEST_DATABASE_URL must be set");
     env::set_var("DATABASE_URL", database_url);

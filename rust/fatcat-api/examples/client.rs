@@ -95,12 +95,12 @@ fn main() {
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         //  },
         Some("EditgroupIdAcceptPost") => {
-            let result = client.editgroup_id_accept_post(56).wait();
+            let result = client.editgroup_id_accept_post(789).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
         Some("EditgroupIdGet") => {
-            let result = client.editgroup_id_get(56).wait();
+            let result = client.editgroup_id_get(789).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
