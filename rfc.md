@@ -1,4 +1,3 @@
-
 fatcat is a half-baked idea to build an open, independent, collaboratively
 editable bibliographic database of most written works, with a focus on
 published research outputs like journal articles, pre-prints, and conference
@@ -22,7 +21,7 @@ A goal is to be linked-data/RDF/JSON-LD/semantic-web "compatible", but not
 necessarily "first". It should be possible to export the database in a
 relatively clean RDF form, and to fetch data in a variety of formats, but
 internally fatcat would not be backed by a triple-store, and would not be
-bound to a specific third party ontology or schema.
+bound to a specific third-party ontology or schema.
 
 Microservice daemons should be able to proxy between the primary API and
 standard protocols like ResourceSync and OAI-PMH, and bots could consume
@@ -30,15 +29,15 @@ external databases in those formats.
 
 ## Licensing
 
-The core fatcat database should only contain verifyable factual statements
+The core fatcat database should only contain verifiable factual statements
 (which isn't to say that all statements are "true"), not creative or derived
 content.
 
 The goal is to have a very permissively licensed database: CC-0 (no rights
 reserved) if possible. Under US law, it should be possible to scrape and pull
 in factual data from other corpuses without adopting their licenses. The goal
-here isn't to avoid all attibution (progeny information will be included, and a
-large sources and acknowledgements statement should be maintained), but trying
+here isn't to avoid all attribution (progeny information will be included, and a
+large sources and acknowledgments statement should be maintained), but trying
 to manage the intersection of all upstream source licenses seems untenable, and
 creates burdens for downstream users.
 
@@ -46,12 +45,12 @@ Special care will need to be taken around copyright and original works. I would
 propose either not accepting abstracts at all, or including them in a
 partitioned database to prevent copyright contamination. Likewise, even simple
 user-created content like lists, reviews, ratings, comments, discussion,
-documentation, etc should go in separate services.
+documentation, etc., should go in separate services.
 
 ## Basic Editing Workflow and Bots
 
 Both human editors and bots would have edits go through the same API, with
-humans using either the default web interface or arbitrary integrations or
+humans using either the default web interface, arbitrary integrations, or
 client software.
 
 The usual workflow would be to create edits (or creations, merges, deletions)
@@ -89,17 +88,17 @@ an immutable, append-only log table (which internally could be a SQL table)
 documenting each identifier change. This log establishes a monotonically
 increasing version number for the entire corpus, and should make interaction
 with other systems easier (eg, search engines, replicated databases,
-alternative storage backends, notification frameworks, etc).
+alternative storage backends, notification frameworks, etc.).
 
-## Itentifiers
+## Identifiers
 
-A fixed number of first class "entities" would be definied, with common
+A fixed number of first-class "entities" would be defined, with common
 behavior and schema layouts. These would all be semantic entities like "work",
 "release", "container", and "person".
 
-fatcat identifiers would be semanticly meaningless fixed length random numbers,
+fatcat identifiers would be semantically meaningless fixed-length random numbers,
 usually represented in case-insensitive base32 format. Each entity type would
-have it's own identifier namespace. Eg, 96 bit identifiers would have 20
+have its own identifier namespace. Eg, 96-bit identifiers would have 20
 characters and look like:
 
     fcwork_rzga5b9cd7efgh04iljk
@@ -110,7 +109,7 @@ characters and look like:
     fcwork_rzga5b9cd7efgh04iljk8f3jvz
     https://fatcat.org/work/rzga5b9cd7efgh04iljk8f3jvz
 
-A 64 bit namespace is probably plenty though, and would work with most databse
+A 64-bit namespace is probably plenty though, and would work with most database
 Integer columns:
 
     fcwork_rzga5b9cd7efg
@@ -118,13 +117,13 @@ Integer columns:
 
 The idea would be to only have fatcat identifiers be used to interlink between
 databases, *not* to supplant DOIs, ISBNs, handle, ARKs, and other "registered"
-persistant identifiers.
+persistent identifiers.
 
 ## Entities and Internal Schema
 
 Internally, identifiers would be lightweight pointers to actual metadata
 objects, which can be thought of as "versions". The metadata objects themselves
-would be immutable once commited; the edit process is one of creating new
+would be immutable once committed; the edit process is one of creating new
 objects and, if the edit is approved, pointing the identifier to the new
 version. Entities would reference between themselves by identifier.
 
@@ -298,14 +297,14 @@ Should contributor/author contact information be retained? It could be very
 useful for disambiguation, but we don't want to build a huge database for
 spammers or "innovative" start-up marketing.
 
-Would general purpose SQL databases like Postgres or MySQL scale well enough
-told hold several tables with billions of entries? Right from the start there
+Would general-purpose SQL databases like Postgres or MySQL scale well enough
+to hold several tables with billions of entries? Right from the start there
 are hundreds of millions of works and releases, many of which having dozens of
 citations, many authors, and many identifiers, and then we'll have potentially
 dozens of edits for each of these, which multiply out to `1e8 * 2e1 * 2e1 =
 4e10`, or 40 billion rows in the citation table. If each row was 32 bytes on
 average (uncompressed, not including index size), that would be 1.3 TByte on
-it's own, larger than common SSD disk. I think a transactional SQL datastore is
+its own, larger than common SSD disk. I think a transactional SQL datastore is
 the right answer. In my experience locking and index rebuild times are usually
 the biggest scaling challenges; the largely-immutable architecture here should
 mitigate locking. Hopefully few indexes would be needed in the primary
@@ -337,8 +336,8 @@ open bibliographic database at this time (early 2018), including the
 Wikidata is a general purpose semantic database of entities, facts, and
 relationships; bibliographic metadata has become a large fraction of all
 content in recent years. The focus there seems to be linking knowledge
-(statements) to specific sources unambigiously. Potential advantages fatcat
-would have would be a focus on a specific scope (not a general purpose database
+(statements) to specific sources unambiguously. Potential advantages fatcat
+would have would be a focus on a specific scope (not a general-purpose database
 of entities) and a goal of completeness (capturing as many works and
 relationships as rapidly as possible). However, it might be better to just
 pitch in to the wikidata efforts.
