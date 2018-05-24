@@ -113,7 +113,7 @@ impl Server {
                 .inner_join(container_rev::table)
                 .filter(container_rev::issn.eq(&issn))
                 .filter(container_ident::is_live.eq(true))
-                .filter(container_ident::redirect_id.is_not_null())
+                .filter(container_ident::redirect_id.is_null())
                 .first(&conn);
 
         let (ident, rev) = match res {
@@ -169,7 +169,7 @@ impl Server {
             .inner_join(creator_rev::table)
             .filter(creator_rev::orcid.eq(&orcid))
             .filter(creator_ident::is_live.eq(true))
-            .filter(creator_ident::redirect_id.is_not_null())
+            .filter(creator_ident::redirect_id.is_null())
             .first(&conn);
 
         let (ident, rev) = match res {
@@ -225,7 +225,7 @@ impl Server {
             .inner_join(file_rev::table)
             .filter(file_rev::sha1.eq(&sha1))
             .filter(file_ident::is_live.eq(true))
-            .filter(file_ident::redirect_id.is_not_null())
+            .filter(file_ident::redirect_id.is_null())
             .first(&conn);
 
         let (ident, rev) = match res {
@@ -314,7 +314,7 @@ impl Server {
             .inner_join(release_rev::table)
             .filter(release_rev::doi.eq(&doi))
             .filter(release_ident::is_live.eq(true))
-            .filter(release_ident::redirect_id.is_not_null())
+            .filter(release_ident::redirect_id.is_null())
             .first(&conn);
 
         let (ident, rev) = match res {

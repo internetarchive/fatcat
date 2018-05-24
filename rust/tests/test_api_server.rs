@@ -27,3 +27,27 @@ fn test_basics() {
     ).unwrap();
     assert_eq!(response.status, Some(status::NotFound));
 }
+
+#[test]
+fn test_lookups() {
+    let server = fatcat::server().unwrap();
+    let router = fatcat_api::router(server);
+
+    let response = request::get(
+        "http://localhost:9411/v0/container/lookup?issn=1234-5678",
+        Headers::new(),
+        &router,
+    ).unwrap();
+    assert_eq!(response.status, Some(status::Ok));
+    let body = response::extract_body_to_string(response);
+    assert!(body.contains("Journal of Trivial Results"));
+
+    let response = request::get(
+        "http://localhost:9411/v0/creator/lookup?orcid=0000-0003-2088-7465",
+        Headers::new(),
+        &router,
+    ).unwrap();
+    assert_eq!(response.status, Some(status::Ok));
+    let body = response::extract_body_to_string(response);
+    assert!(body.contains("Christine Moran"));
+}
