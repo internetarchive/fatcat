@@ -42,3 +42,34 @@ same except postgres, via:
 
 no profiling yet; need to look at database ops. probably don't even have any
 indices!
+
+## Rust Updates (2018-05-23)
+
+Re-running with tweaked python code, 5k sample file, postgres 9.6 running locally (not in docker):
+
+    real    2m27.598s
+    user    0m24.892s
+    sys     0m2.836s
+
+Using postgres and fatcat rust:
+
+    real    0m44.443s
+    user    0m25.288s
+    sys     0m0.880s
+
+api_client about half a core; fatcatd 3x processes, about 10% each; postgres
+very small.
+
+a bit faster, basically maxing out CPU:
+
+    time cat /data/crossref/crossref-works.2018-01-21.badsample_5k.json | parallel -j4 --pipe ./fatcat_client.py --host-url http://localhost:9411 ic -
+
+    real    0m28.998s
+    user    1m5.304s
+    sys     0m3.420s
+
+    200 lines per second; within a factor of 3; can perhaps hit target with
+    non-python client?
+
+python processes (clients) seem to be CPU limit in this case; all 4 cores
+effectively maxed out.
