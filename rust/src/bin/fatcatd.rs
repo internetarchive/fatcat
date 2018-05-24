@@ -17,7 +17,8 @@ extern crate slog_async;
 extern crate slog_term;
 
 use clap::{App, Arg};
-use iron::{Chain, Iron, IronResult, Response, Request, status};
+use iron::{Chain, Iron, IronResult, Response, Request, status, Url};
+use iron::modifiers::RedirectRaw;
 use iron_slog::{DefaultLogFormatter, LoggerMiddleware};
 use slog::{Drain, Logger};
 //use dotenv::dotenv;
@@ -44,9 +45,14 @@ fn main() {
     let server = fatcat::server().unwrap();
     let mut router = fatcat_api::router(server);
 
+    router.get("/", root_handler, "root-redirect");
     router.get("/swagger-ui", swaggerui_handler, "swagger-ui-html");
     router.get("/v0/openapi2.yml", yaml_handler, "openapi2-spec-yaml");
 
+    fn root_handler(_: &mut Request) -> IronResult<Response> {
+        //Ok(Response::with((status::Found, Redirect(Url::parse("/swagger-ui").unwrap()))))
+        Ok(Response::with((status::Found, RedirectRaw("/swagger-ui".to_string()))))
+    }
     fn swaggerui_handler(_: &mut Request) -> IronResult<Response> {
         let html_type = "text/html".parse::<iron::mime::Mime>().unwrap();
         Ok(Response::with((html_type, status::Ok, include_str!("../../swagger-ui/index.html"))))
