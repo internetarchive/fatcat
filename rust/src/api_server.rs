@@ -96,7 +96,7 @@ impl Server {
             issn: rev.issn,
             publisher: rev.publisher,
             name: rev.name,
-            state: None, // TODO:
+            state: Some(ident.state().unwrap().shortname()),
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id.map(|v| v as isize),
             redirect: ident.redirect_id.map(|u| u.to_string()),
@@ -126,7 +126,7 @@ impl Server {
             issn: rev.issn,
             publisher: rev.publisher,
             name: rev.name,
-            state: None, // TODO:
+            state: Some(ident.state().unwrap().shortname()),
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id.map(|v| v as isize),
             redirect: ident.redirect_id.map(|u| u.to_string()),
@@ -153,7 +153,7 @@ impl Server {
         let entity = CreatorEntity {
             name: rev.name,
             orcid: rev.orcid,
-            state: None, // TODO:
+            state: Some(ident.state().unwrap().shortname()),
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id.map(|v| v as isize),
             redirect: ident.redirect_id.map(|u| u.to_string()),
@@ -181,7 +181,7 @@ impl Server {
         let entity = CreatorEntity {
             name: rev.name,
             orcid: rev.orcid,
-            state: None, // TODO:
+            state: Some(ident.state().unwrap().shortname()),
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id.map(|v| v as isize),
             redirect: ident.redirect_id.map(|u| u.to_string()),
@@ -209,7 +209,7 @@ impl Server {
             sha1: rev.sha1,
             size: rev.size.map(|v| v as isize),
             url: rev.url,
-            state: None, // TODO:
+            state: Some(ident.state().unwrap().shortname()),
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id.map(|v| v as isize),
             redirect: ident.redirect_id.map(|u| u.to_string()),
@@ -238,7 +238,7 @@ impl Server {
             sha1: rev.sha1,
             size: rev.size.map(|v| v as isize),
             url: rev.url,
-            state: None, // TODO:
+            state: Some(ident.state().unwrap().shortname()),
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id.map(|v| v as isize),
             redirect: ident.redirect_id.map(|u| u.to_string()),
@@ -264,7 +264,7 @@ impl Server {
 
         let entity = WorkEntity {
             work_type: rev.work_type,
-            state: None, // TODO:
+            state: Some(ident.state().unwrap().shortname()),
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id.map(|v| v as isize),
             redirect: ident.redirect_id.map(|u| u.to_string()),
@@ -298,7 +298,7 @@ impl Server {
             issue: rev.issue,
             container_id: None, // TODO
             work_id: rev.work_ident_id.to_string(),
-            state: None, // TODO:
+            state: Some(ident.state().unwrap().shortname()),
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id.map(|v| v as isize),
             redirect: ident.redirect_id.map(|u| u.to_string()),
@@ -333,7 +333,7 @@ impl Server {
             issue: rev.issue,
             container_id: None, // TODO
             work_id: rev.work_ident_id.to_string(),
-            state: None, // TODO:
+            state: Some(ident.state().unwrap().shortname()),
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id.map(|v| v as isize),
             redirect: ident.redirect_id.map(|u| u.to_string()),

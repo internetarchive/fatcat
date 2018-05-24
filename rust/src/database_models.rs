@@ -2,9 +2,32 @@ use chrono;
 //use serde_json;
 use database_schema::*;
 use uuid::Uuid;
+use errors::*;
 
 // Ugh. I thought the whole point was to *not* do this, but:
 // https://github.com/diesel-rs/diesel/issues/1589
+
+pub enum EntityState {
+    WorkInProgress,
+    Active(i64),
+    Redirect(Uuid, i64),
+    Deleted,
+}
+
+impl EntityState {
+    pub fn shortname(&self) -> String {
+        match self {
+            EntityState::WorkInProgress => "wip",
+            EntityState::Active(_) => "active",
+            EntityState::Redirect(_,_) => "redirect",
+            EntityState::Deleted => "deleted",
+        }.to_string()
+    }
+}
+
+pub trait EntityIdentRow {
+    fn state(&self) -> Result<EntityState>;
+}
 
 // Helper for constructing tables
 macro_rules! entity_structs {
@@ -27,6 +50,20 @@ macro_rules! entity_structs {
             pub is_live: bool,
             pub rev_id: Option<i64>,
             pub redirect_id: Option<Uuid>,
+        }
+
+        impl EntityIdentRow for $ident_struct {
+            fn state(&self) -> Result<EntityState> {
+                if !self.is_live {
+                    return Ok(EntityState::WorkInProgress);
+                }
+                match (self.redirect_id, self.rev_id) {
+                    (None, None) => Ok(EntityState::Deleted),
+                    (Some(redir), Some(rev)) => Ok(EntityState::Redirect(redir, rev)),
+                    (None, Some(rev)) => Ok(EntityState::Active(rev)),
+                    _ => bail!("Invalid EntityIdentRow state")
+                }
+            }
         }
     };
 }
