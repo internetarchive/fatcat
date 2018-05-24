@@ -2,6 +2,7 @@
 
 use ConnectionPool;
 use chrono;
+use api_helpers::*;
 use database_models::*;
 use database_schema::{changelog, container_edit, container_ident, container_rev, creator_edit,
                       creator_ident, creator_rev, editgroup, editor, file_edit, file_ident,
@@ -454,10 +455,12 @@ impl Api for Server {
         body: models::ContainerEntity,
         _context: &Context,
     ) -> Box<Future<Item = ContainerPostResponse, Error = ApiError> + Send> {
-        //let editgroup_id: i64 = body.editgroup.expect("need editgroup_id") as i64;
-        // TODO: or find/create
-        let editgroup_id = 1;
         let conn = self.db_pool.get().expect("db_pool error");
+        let editor_id = 1;  // TODO: auth
+        let editgroup_id = match body.editgroup_id {
+            None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
+            Some(param) => param as i64,
+        };
 
         let edit: ContainerEditRow = diesel::sql_query(
             "WITH rev AS ( INSERT INTO container_rev (name, publisher, issn)
@@ -493,10 +496,12 @@ impl Api for Server {
         body: models::CreatorEntity,
         _context: &Context,
     ) -> Box<Future<Item = CreatorPostResponse, Error = ApiError> + Send> {
-        //let editgroup_id: i64 = body.editgroup.expect("need editgroup_id") as i64;
-        // TODO: or find/create
-        let editgroup_id = 1;
         let conn = self.db_pool.get().expect("db_pool error");
+        let editor_id = 1;  // TODO: auth
+        let editgroup_id = match body.editgroup_id {
+            None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
+            Some(param) => param as i64,
+        };
 
         let edit: CreatorEditRow = diesel::sql_query(
             "WITH rev AS ( INSERT INTO creator_rev (name, orcid)
@@ -531,10 +536,12 @@ impl Api for Server {
         body: models::FileEntity,
         _context: &Context,
     ) -> Box<Future<Item = FilePostResponse, Error = ApiError> + Send> {
-        //let editgroup_id: i64 = body.editgroup.expect("need editgroup_id") as i64;
-        // TODO: or find/create
-        let editgroup_id = 1;
         let conn = self.db_pool.get().expect("db_pool error");
+        let editor_id = 1;  // TODO: auth
+        let editgroup_id = match body.editgroup_id {
+            None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
+            Some(param) => param as i64,
+        };
 
         let edit: FileEditRow = diesel::sql_query(
             "WITH rev AS ( INSERT INTO file_rev (size, sha1, url)
@@ -572,10 +579,12 @@ impl Api for Server {
         body: models::WorkEntity,
         _context: &Context,
     ) -> Box<Future<Item = WorkPostResponse, Error = ApiError> + Send> {
-        //let editgroup_id: i64 = body.editgroup.expect("need editgroup_id") as i64;
-        // TODO: or find/create
-        let editgroup_id = 1;
         let conn = self.db_pool.get().expect("db_pool error");
+        let editor_id = 1;  // TODO: auth
+        let editgroup_id = match body.editgroup_id {
+            None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
+            Some(param) => param as i64,
+        };
 
         let edit: WorkEditRow =
             diesel::sql_query(
@@ -610,10 +619,12 @@ impl Api for Server {
         body: models::ReleaseEntity,
         _context: &Context,
     ) -> Box<Future<Item = ReleasePostResponse, Error = ApiError> + Send> {
-        //let editgroup_id: i64 = body.editgroup.expect("need editgroup_id") as i64;
-        // TODO: or find/create
-        let editgroup_id = 1;
         let conn = self.db_pool.get().expect("db_pool error");
+        let editor_id = 1;  // TODO: auth
+        let editgroup_id = match body.editgroup_id {
+            None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
+            Some(param) => param as i64,
+        };
 
         let work_id = uuid::Uuid::parse_str(&body.work_id).expect("invalid UUID");
         let _container_id: Option<uuid::Uuid> = match body.container_id {

@@ -15,6 +15,7 @@ extern crate iron;
 extern crate serde_json;
 
 pub mod api_server;
+pub mod api_helpers;
 pub mod database_models;
 pub mod database_schema;
 
