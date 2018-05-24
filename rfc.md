@@ -36,8 +36,8 @@ content.
 The goal is to have a very permissively licensed database: CC-0 (no rights
 reserved) if possible. Under US law, it should be possible to scrape and pull
 in factual data from other corpuses without adopting their licenses. The goal
-here isn't to avoid all attibution (progeny information will be included, and a
-large sources and acknowledgements statement should be maintained), but trying
+here isn't to avoid all attribution (progeny information will be included, and a
+large sources and acknowledgments statement should be maintained), but trying
 to manage the intersection of all upstream source licenses seems untenable, and
 creates burdens for downstream users.
 
@@ -90,13 +90,13 @@ increasing version number for the entire corpus, and should make interaction
 with other systems easier (eg, search engines, replicated databases,
 alternative storage backends, notification frameworks, etc.).
 
-## Itentifiers
+## Identifiers
 
-A fixed number of first class "entities" would be defined, with common
+A fixed number of first-class "entities" would be defined, with common
 behavior and schema layouts. These would all be semantic entities like "work",
 "release", "container", and "person".
 
-fatcat identifiers would be semanticly meaningless fixed-length random numbers,
+fatcat identifiers would be semantically meaningless fixed-length random numbers,
 usually represented in case-insensitive base32 format. Each entity type would
 have its own identifier namespace. Eg, 96-bit identifiers would have 20
 characters and look like:
@@ -123,7 +123,7 @@ persistent identifiers.
 
 Internally, identifiers would be lightweight pointers to actual metadata
 objects, which can be thought of as "versions". The metadata objects themselves
-would be immutable once commited; the edit process is one of creating new
+would be immutable once committed; the edit process is one of creating new
 objects and, if the edit is approved, pointing the identifier to the new
 version. Entities would reference between themselves by identifier.
 
