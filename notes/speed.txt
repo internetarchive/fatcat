@@ -73,3 +73,10 @@ a bit faster, basically maxing out CPU:
 
 python processes (clients) seem to be CPU limit in this case; all 4 cores
 effectively maxed out.
+
+running python again in parallel mode:
+
+    real    2m29.532s
+    user    0m47.692s
+    sys     0m4.840s
+
