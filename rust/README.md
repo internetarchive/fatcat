@@ -31,7 +31,10 @@ Regenerate API schemas:
     cargo install cargo-swagger  # uses docker
     cargo swagger fatcat-openapi2.yml fatcat-api --docker-tag=v2.3.1
     sudo chown `whoami`:`whoami` -R fatcat-api
-    # edit fatcat-api/Cargo.toml, set name to "fatcat-api"
+
+    # usually want to keep our changes to sub-module toml
+    git checkout fatcat-api/Cargo.toml
+
     cargo fmt
     # git commit the fatcat-api directory at this point
 
