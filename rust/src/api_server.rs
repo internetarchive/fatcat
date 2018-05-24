@@ -632,13 +632,13 @@ impl Api for Server {
         };
 
         let edit: ReleaseEditRow = diesel::sql_query(
-            "WITH rev AS ( INSERT INTO container_rev (title, release_type, doi, volume, pages, issue, work_ident_id)
+            "WITH rev AS ( INSERT INTO release_rev (title, release_type, doi, volume, pages, issue, work_ident_id)
                         VALUES ($1, $2, $3, $4, $5, $6, $7)
                         RETURNING id ),
-                ident AS ( INSERT INTO container_ident (rev_id)
+                ident AS ( INSERT INTO release_ident (rev_id)
                             VALUES ((SELECT rev.id FROM rev))
                             RETURNING id )
-            INSERT INTO container_edit (editgroup_id, ident_id, rev_id) VALUES
+            INSERT INTO release_edit (editgroup_id, ident_id, rev_id) VALUES
                 ($8, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
         ).bind::<diesel::sql_types::Text, _>(body.title)
