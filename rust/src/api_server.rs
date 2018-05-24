@@ -4,10 +4,9 @@ use ConnectionPool;
 use chrono;
 use api_helpers::*;
 use database_models::*;
-use database_schema::{changelog, container_edit, container_ident, container_rev, creator_edit,
-                      creator_ident, creator_rev, editgroup, editor, file_edit, file_ident,
-                      file_rev, release_edit, release_ident, release_rev, work_edit, work_ident,
-                      work_rev};
+use database_schema::{changelog, container_ident, container_rev, creator_ident, creator_rev,
+                      editgroup, editor, file_ident, file_rev, release_ident, release_rev,
+                      work_ident, work_rev};
 use diesel::prelude::*;
 use diesel::{self, insert_into};
 use errors::*;
@@ -670,15 +669,15 @@ impl Api for Server {
     fn editgroup_id_accept_post(
         &self,
         id: i32,
-        context: &Context,
+        _context: &Context,
     ) -> Box<Future<Item = EditgroupIdAcceptPostResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!(
-            "editgroup_id_accept_post({}) - X-Span-ID: {:?}",
-            id,
-            context.x_span_id.unwrap_or(String::from("<none>")).clone()
-        );
-        Box::new(futures::failed("Generic failure".into()))
+        let conn = self.db_pool.get().expect("db_pool error");
+
+        accept_editgroup(id as i64, &conn).expect("failed to accept editgroup");
+
+        Box::new(futures::done(Ok(EditgroupIdAcceptPostResponse::MergedSuccessfully(
+            Success { message: "horray!".to_string() }
+        ))))
     }
 
     fn editgroup_post(
