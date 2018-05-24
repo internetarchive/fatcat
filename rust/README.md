@@ -15,6 +15,7 @@ blow the entire database away.
 Create a `.env` file with configuration:
 
     DATABASE_URL=postgres://fatcat:tactaf@localhost/fatcat_rs
+    TEST_DATABASE_URL=postgres://fatcat:tactaf@localhost/fatcat_rs_test
 
 Re-create database from scratch:
 
@@ -23,6 +24,10 @@ Re-create database from scratch:
 Build and run:
 
     cargo run
+
+Tests:
+
+    cargo test -- --test-threads 1
 
 ### Special Tricks
 
