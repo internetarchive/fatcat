@@ -1,9 +1,7 @@
-#[macro_use]
 extern crate fatcat_api;
 extern crate chrono;
 #[macro_use]
 extern crate diesel;
-#[macro_use]
 extern crate diesel_migrations;
 extern crate dotenv;
 extern crate futures;

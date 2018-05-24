@@ -491,7 +491,7 @@ impl Api for Server {
     fn creator_post(
         &self,
         body: models::CreatorEntity,
-        context: &Context,
+        _context: &Context,
     ) -> Box<Future<Item = CreatorPostResponse, Error = ApiError> + Send> {
         //let editgroup_id: i64 = body.editgroup.expect("need editgroup_id") as i64;
         // TODO: or find/create
@@ -616,7 +616,7 @@ impl Api for Server {
         let conn = self.db_pool.get().expect("db_pool error");
 
         let work_id = uuid::Uuid::parse_str(&body.work_id).expect("invalid UUID");
-        let container_id: Option<uuid::Uuid> = match body.container_id {
+        let _container_id: Option<uuid::Uuid> = match body.container_id {
             Some(id) => Some(uuid::Uuid::parse_str(&id).expect("invalid UUID")),
             None => None,
         };

@@ -9,7 +9,6 @@ extern crate fatcat_api;
 extern crate futures;
 extern crate iron;
 extern crate iron_slog;
-#[macro_use]
 extern crate error_chain;
 #[macro_use]
 extern crate slog;
@@ -18,7 +17,7 @@ extern crate slog_term;
 
 use clap::{App, Arg};
 use iron::modifiers::RedirectRaw;
-use iron::{status, Chain, Iron, IronResult, Request, Response, Url};
+use iron::{status, Chain, Iron, IronResult, Request, Response};
 use iron_slog::{DefaultLogFormatter, LoggerMiddleware};
 use slog::{Drain, Logger};
 //use dotenv::dotenv;
