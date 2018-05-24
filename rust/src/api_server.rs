@@ -298,7 +298,7 @@ impl Server {
             issue: rev.issue,
             container_id: None, // TODO
             work_id: rev.work_ident_id.to_string(),
-            state: None,        // TODO:
+            state: None, // TODO:
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id.map(|v| v as isize),
             redirect: ident.redirect_id.map(|u| u.to_string()),
@@ -333,7 +333,7 @@ impl Server {
             issue: rev.issue,
             container_id: None, // TODO
             work_id: rev.work_ident_id.to_string(),
-            state: None,        // TODO:
+            state: None, // TODO:
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id.map(|v| v as isize),
             redirect: ident.redirect_id.map(|u| u.to_string()),
@@ -390,21 +390,64 @@ impl Server {
             .collect();
         Ok(Some(entries))
     }
-
 }
 
 impl Api for Server {
-    wrap_get_id_handler!(container_id_get, container_id_get_handler, ContainerIdGetResponse, String);
-    wrap_get_id_handler!(creator_id_get, creator_id_get_handler, CreatorIdGetResponse, String);
+    wrap_get_id_handler!(
+        container_id_get,
+        container_id_get_handler,
+        ContainerIdGetResponse,
+        String
+    );
+    wrap_get_id_handler!(
+        creator_id_get,
+        creator_id_get_handler,
+        CreatorIdGetResponse,
+        String
+    );
     wrap_get_id_handler!(file_id_get, file_id_get_handler, FileIdGetResponse, String);
     wrap_get_id_handler!(work_id_get, work_id_get_handler, WorkIdGetResponse, String);
-    wrap_get_id_handler!(release_id_get, release_id_get_handler, ReleaseIdGetResponse, String);
-    wrap_get_id_handler!(editgroup_id_get, editgroup_id_get_handler, EditgroupIdGetResponse, i32);
+    wrap_get_id_handler!(
+        release_id_get,
+        release_id_get_handler,
+        ReleaseIdGetResponse,
+        String
+    );
+    wrap_get_id_handler!(
+        editgroup_id_get,
+        editgroup_id_get_handler,
+        EditgroupIdGetResponse,
+        i32
+    );
 
-    wrap_lookup_handler!(container_lookup_get, container_lookup_get_handler, ContainerLookupGetResponse, issn, String); 
-    wrap_lookup_handler!(creator_lookup_get, creator_lookup_get_handler, CreatorLookupGetResponse, orcid, String);
-    wrap_lookup_handler!(file_lookup_get, file_lookup_get_handler, FileLookupGetResponse, sha1, String);
-    wrap_lookup_handler!(release_lookup_get, release_lookup_get_handler, ReleaseLookupGetResponse, doi, String);
+    wrap_lookup_handler!(
+        container_lookup_get,
+        container_lookup_get_handler,
+        ContainerLookupGetResponse,
+        issn,
+        String
+    );
+    wrap_lookup_handler!(
+        creator_lookup_get,
+        creator_lookup_get_handler,
+        CreatorLookupGetResponse,
+        orcid,
+        String
+    );
+    wrap_lookup_handler!(
+        file_lookup_get,
+        file_lookup_get_handler,
+        FileLookupGetResponse,
+        sha1,
+        String
+    );
+    wrap_lookup_handler!(
+        release_lookup_get,
+        release_lookup_get_handler,
+        ReleaseLookupGetResponse,
+        doi,
+        String
+    );
 
     fn container_post(
         &self,
@@ -503,7 +546,9 @@ impl Api for Server {
             INSERT INTO file_edit (editgroup_id, ident_id, rev_id) VALUES
                 ($4, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
-        ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Int4>, _>(body.size.map(|v| v as i32))
+        ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Int4>, _>(
+            body.size.map(|v| v as i32),
+        )
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.sha1)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.url)
             .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
@@ -532,8 +577,9 @@ impl Api for Server {
         let editgroup_id = 1;
         let conn = self.db_pool.get().expect("db_pool error");
 
-        let edit: WorkEditRow = diesel::sql_query(
-            "WITH rev AS ( INSERT INTO work_rev (work_type)
+        let edit: WorkEditRow =
+            diesel::sql_query(
+                "WITH rev AS ( INSERT INTO work_rev (work_type)
                         VALUES ($1)
                         RETURNING id ),
                 ident AS ( INSERT INTO work_ident (rev_id)
@@ -542,10 +588,10 @@ impl Api for Server {
             INSERT INTO work_edit (editgroup_id, ident_id, rev_id) VALUES
                 ($2, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
-        ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.work_type)
-            .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
-            .get_result(&conn)
-            .unwrap();
+            ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.work_type)
+                .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
+                .get_result(&conn)
+                .unwrap();
         let edit = &edit;
 
         let entity_edit = EntityEdit {
@@ -634,8 +680,8 @@ impl Api for Server {
         let row: EditgroupRow = insert_into(editgroup::table)
             .values((
                 editgroup::editor_id.eq(body.editor_id as i64),
-                editgroup::description.eq(body.description)
-                ))
+                editgroup::description.eq(body.description),
+            ))
             .get_result(&conn)
             .expect("error creating edit group");
 
@@ -644,9 +690,9 @@ impl Api for Server {
             editor_id: row.editor_id as isize,
             description: row.description,
         };
-        Box::new(futures::done(Ok(EditgroupPostResponse::SuccessfullyCreated(
-            new_eg,
-        ))))
+        Box::new(futures::done(Ok(
+            EditgroupPostResponse::SuccessfullyCreated(new_eg),
+        )))
     }
 
     fn editor_username_changelog_get(
