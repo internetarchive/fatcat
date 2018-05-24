@@ -2,7 +2,11 @@ extern crate fatcat;
 extern crate fatcat_api;
 extern crate iron;
 extern crate iron_test;
+extern crate diesel;
 
+use fatcat::database_schema::*;
+use fatcat::api_helpers::*;
+use diesel::prelude::*;
 use iron::{status, Headers};
 use iron::mime::Mime;
 use iron::headers::ContentType;
@@ -10,7 +14,7 @@ use iron_test::{request, response};
 
 #[test]
 fn test_basics() {
-    let server = fatcat::server().unwrap();
+    let server = fatcat::test_server().unwrap();
     let router = fatcat_api::router(server);
 
     let response = request::get(
@@ -32,7 +36,7 @@ fn test_basics() {
 
 #[test]
 fn test_lookups() {
-    let server = fatcat::server().unwrap();
+    let server = fatcat::test_server().unwrap();
     let router = fatcat_api::router(server);
 
     let response = request::get(
@@ -56,7 +60,7 @@ fn test_lookups() {
 
 #[test]
 fn test_post_container() {
-    let server = fatcat::server().unwrap();
+    let server = fatcat::test_server().unwrap();
     let router = fatcat_api::router(server);
     let mut headers = Headers::new();
     let mime: Mime = "application/json".parse().unwrap();
@@ -73,4 +77,67 @@ fn test_post_container() {
     let body = response::extract_body_to_string(response);
     println!("{}", body);
     //assert!(body.contains("test journal"));
+}
+
+#[test]
+fn test_accept_editgroup() {
+    let server = fatcat::test_server().unwrap();
+    let conn = server.db_pool.get().expect("db_pool error");
+    let router = fatcat_api::router(server);
+    let mut headers = Headers::new();
+    let mime: Mime = "application/json".parse().unwrap();
+    headers.set(ContentType(mime));
+
+    let editgroup_id = get_or_create_editgroup(1, &conn).unwrap();
+
+    let c: i64 = container_ident::table
+        .filter(container_ident::is_live.eq(false))
+        .count()
+        .get_result(&conn).unwrap();
+    assert_eq!(c, 0);
+    let c: i64 = changelog::table
+        .filter(changelog::editgroup_id.eq(editgroup_id))
+        .count()
+        .get_result(&conn).unwrap();
+    assert_eq!(c, 0);
+
+    let response = request::post(
+        "http://localhost:9411/v0/container",
+        headers.clone(),
+        &format!("{{\"name\": \"test journal 1\", \"editgroup_id\": {}}}", editgroup_id),
+        &router,
+    ).unwrap();
+    assert_eq!(response.status, Some(status::Created));
+    let response = request::post(
+        "http://localhost:9411/v0/container",
+        headers.clone(),
+        &format!("{{\"name\": \"test journal 2\", \"editgroup_id\": {}}}", editgroup_id),
+        &router,
+    ).unwrap();
+    assert_eq!(response.status, Some(status::Created));
+
+    let c: i64 = container_ident::table
+        .filter(container_ident::is_live.eq(false))
+        .count()
+        .get_result(&conn).unwrap();
+    assert_eq!(c, 2);
+
+    let response = request::post(
+        &format!("http://localhost:9411/v0/editgroup/{}/accept", editgroup_id),
+        headers.clone(),
+        "",
+        &router,
+    ).unwrap();
+    assert_eq!(response.status, Some(status::Ok));
+
+    let c: i64 = container_ident::table
+        .filter(container_ident::is_live.eq(false))
+        .count()
+        .get_result(&conn).unwrap();
+    assert_eq!(c, 0);
+    let c: i64 = changelog::table
+        .filter(changelog::editgroup_id.eq(editgroup_id))
+        .count()
+        .get_result(&conn).unwrap();
+    assert_eq!(c, 1);
 }

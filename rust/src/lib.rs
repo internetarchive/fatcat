@@ -36,7 +36,7 @@ pub use errors::*;
 pub use self::errors::*;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
-use diesel::r2d2::{ConnectionManager, ManageConnection};
+use diesel::r2d2::ConnectionManager;
 use dotenv::dotenv;
 use iron::middleware::AfterMiddleware;
 use iron::{Request, Response};
@@ -59,23 +59,28 @@ pub fn establish_connection() -> PgConnection {
 /// Instantiate a new API server with a pooled database connection
 pub fn server() -> Result<api_server::Server> {
     dotenv().ok();
-    let database_url = if cfg!(test) {
-        env::var("DATABASE_URL").expect("DATABASE_URL must be set")
-    } else {
-        env::var("TEST_DATABASE_URL").expect("TEST_DATABASE_URL must be set")
-    };
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let manager = ConnectionManager::<PgConnection>::new(database_url);
-    if cfg!(test) {
-        // run migrations; revert latest (dummy data); re-run latest
-        let conn = manager.connect().unwrap();
-        diesel_migrations::run_pending_migrations(&conn).unwrap();
-        diesel_migrations::revert_latest_migration(&conn).unwrap();
-        diesel_migrations::run_pending_migrations(&conn).unwrap();
-    }
     let pool = diesel::r2d2::Pool::builder()
         .build(manager)
         .expect("Failed to create database pool.");
     Ok(api_server::Server { db_pool: pool })
+}
+
+pub fn test_server() -> Result<api_server::Server> {
+
+    dotenv().ok();
+    let database_url = env::var("TEST_DATABASE_URL").expect("TEST_DATABASE_URL must be set");
+    env::set_var("DATABASE_URL", database_url);
+
+    let server = server()?;
+    let conn = server.db_pool.get().expect("db_pool error");
+
+    // run migrations; revert latest (dummy data); re-run latest
+    diesel_migrations::run_pending_migrations(&conn).unwrap();
+    diesel_migrations::revert_latest_migration(&conn).unwrap();
+    diesel_migrations::run_pending_migrations(&conn).unwrap();
+    Ok(server)
 }
 
 /// HTTP header middleware
