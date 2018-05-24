@@ -121,9 +121,9 @@ pub struct ContainerEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub redirect: Option<String>,
 
-    #[serde(rename = "editgroup")]
+    #[serde(rename = "editgroup_id")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub editgroup: Option<isize>,
+    pub editgroup_id: Option<isize>,
 }
 
 impl ContainerEntity {
@@ -136,7 +136,7 @@ impl ContainerEntity {
             ident: None,
             revision: None,
             redirect: None,
-            editgroup: None,
+            editgroup_id: None,
         }
     }
 }
@@ -150,9 +150,9 @@ pub struct CreatorEntity {
     #[serde(rename = "name")]
     pub name: String,
 
-    #[serde(rename = "editgroup")]
+    #[serde(rename = "editgroup_id")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub editgroup: Option<isize>,
+    pub editgroup_id: Option<isize>,
 
     #[serde(rename = "redirect")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -177,7 +177,7 @@ impl CreatorEntity {
         CreatorEntity {
             orcid: None,
             name: name,
-            editgroup: None,
+            editgroup_id: None,
             redirect: None,
             revision: None,
             ident: None,
@@ -278,9 +278,9 @@ pub struct FileEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub size: Option<isize>,
 
-    #[serde(rename = "editgroup")]
+    #[serde(rename = "editgroup_id")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub editgroup: Option<isize>,
+    pub editgroup_id: Option<isize>,
 
     #[serde(rename = "redirect")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -306,7 +306,7 @@ impl FileEntity {
             url: None,
             sha1: None,
             size: None,
-            editgroup: None,
+            editgroup_id: None,
             redirect: None,
             revision: None,
             ident: None,
@@ -364,9 +364,9 @@ pub struct ReleaseEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub redirect: Option<String>,
 
-    #[serde(rename = "editgroup")]
+    #[serde(rename = "editgroup_id")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub editgroup: Option<isize>,
+    pub editgroup_id: Option<isize>,
 }
 
 impl ReleaseEntity {
@@ -384,7 +384,7 @@ impl ReleaseEntity {
             ident: None,
             revision: None,
             redirect: None,
-            editgroup: None,
+            editgroup_id: None,
         }
     }
 }
@@ -407,9 +407,9 @@ pub struct WorkEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub work_type: Option<String>,
 
-    #[serde(rename = "editgroup")]
+    #[serde(rename = "editgroup_id")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub editgroup: Option<isize>,
+    pub editgroup_id: Option<isize>,
 
     #[serde(rename = "redirect")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -433,7 +433,7 @@ impl WorkEntity {
     pub fn new() -> WorkEntity {
         WorkEntity {
             work_type: None,
-            editgroup: None,
+            editgroup_id: None,
             redirect: None,
             revision: None,
             ident: None,

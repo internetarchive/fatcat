@@ -5,7 +5,6 @@ info:
     \ and file metadata"
   version: "0.1.0"
   title: "fatcat"
-host: "api.fatcat.wiki"
 basePath: "/v0"
 schemes:
 - "http"
@@ -1006,6 +1005,7 @@ definitions:
     properties:
       message:
         type: "string"
+        example: "A really confusing, totally unexpected thing happened"
     upperCaseName: "ERROR_RESPONSE"
   success:
     type: "object"
@@ -1014,8 +1014,9 @@ definitions:
     properties:
       message:
         type: "string"
+        example: "The computers did the thing successfully!"
     example:
-      message: "message"
+      message: "The computers did the thing successfully!"
     upperCaseName: "SUCCESS"
   creator_entity:
     type: "object"
@@ -1024,16 +1025,22 @@ definitions:
     properties:
       orcid:
         type: "string"
+        example: "0000-0002-1825-0097"
       name:
         type: "string"
-      editgroup:
+        example: "Grace Hopper"
+      editgroup_id:
         type: "integer"
+        example: 16
       redirect:
         type: "string"
+        example: "f1f046a3-45c9-4b99-adce-000000000002"
       revision:
         type: "integer"
+        example: 42
       ident:
         type: "string"
+        example: "f1f046a3-45c9-4b99-adce-000000000001"
       state:
         type: "string"
         enum:
@@ -1042,13 +1049,13 @@ definitions:
         - "redirect"
         - "deleted"
     example:
-      redirect: "redirect"
-      editgroup: 0
-      ident: "ident"
-      name: "name"
-      orcid: "orcid"
+      redirect: "f1f046a3-45c9-4b99-adce-000000000002"
+      ident: "f1f046a3-45c9-4b99-adce-000000000001"
+      name: "Grace Hopper"
+      editgroup_id: 16
+      orcid: "0000-0002-1825-0097"
       state: "wip"
-      revision: 6
+      revision: 42
     upperCaseName: "CREATOR_ENTITY"
   container_entity:
     type: "object"
@@ -1057,10 +1064,13 @@ definitions:
     properties:
       issn:
         type: "string"
+        example: "1234-5678"
       publisher:
         type: "string"
+        example: "Society of Curious Students"
       name:
         type: "string"
+        example: "Journal of Important Results"
       state:
         type: "string"
         enum:
@@ -1070,21 +1080,25 @@ definitions:
         - "deleted"
       ident:
         type: "string"
+        example: "f1f046a3-45c9-4b99-adce-000000000001"
       revision:
         type: "integer"
+        example: 42
       redirect:
         type: "string"
-      editgroup:
+        example: "f1f046a3-45c9-4b99-adce-000000000002"
+      editgroup_id:
         type: "integer"
+        example: 16
     example:
-      redirect: "redirect"
-      editgroup: 6
-      issn: "issn"
-      ident: "ident"
-      name: "name"
-      publisher: "publisher"
+      redirect: "f1f046a3-45c9-4b99-adce-000000000002"
+      issn: "1234-5678"
+      ident: "f1f046a3-45c9-4b99-adce-000000000001"
+      name: "Journal of Important Results"
+      publisher: "Society of Curious Students"
+      editgroup_id: 16
       state: "wip"
-      revision: 0
+      revision: 42
     upperCaseName: "CONTAINER_ENTITY"
   file_entity:
     type: "object"
@@ -1092,18 +1106,25 @@ definitions:
       url:
         type: "string"
         format: "url"
+        example: "https://example.edu/~frau/prcding.pdf"
       sha1:
         type: "string"
+        example: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
       size:
         type: "integer"
-      editgroup:
+        example: 1048576
+      editgroup_id:
         type: "integer"
+        example: 16
       redirect:
         type: "string"
+        example: "f1f046a3-45c9-4b99-adce-000000000002"
       revision:
         type: "integer"
+        example: 42
       ident:
         type: "string"
+        example: "f1f046a3-45c9-4b99-adce-000000000001"
       state:
         type: "string"
         enum:
@@ -1112,14 +1133,14 @@ definitions:
         - "redirect"
         - "deleted"
     example:
-      sha1: "sha1"
-      redirect: "redirect"
-      editgroup: 6
-      size: 0
-      ident: "ident"
+      sha1: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
+      redirect: "f1f046a3-45c9-4b99-adce-000000000002"
+      size: 1048576
+      ident: "f1f046a3-45c9-4b99-adce-000000000001"
+      editgroup_id: 16
       state: "wip"
-      url: "http://example.com/aeiou"
-      revision: 1
+      url: "https://example.edu/~frau/prcding.pdf"
+      revision: 42
     upperCaseName: "FILE_ENTITY"
   release_entity:
     type: "object"
@@ -1129,18 +1150,23 @@ definitions:
     properties:
       issue:
         type: "string"
+        example: "12"
       pages:
         type: "string"
       volume:
         type: "string"
       doi:
         type: "string"
+        example: "10.1234/abcde.789"
       release_type:
         type: "string"
+        example: "preprint"
       container_id:
         type: "string"
+        example: "f1f046a3-45c9-4b99-adce-000000000001"
       work_id:
         type: "string"
+        example: "f1f046a3-45c9-4b99-adce-000000000001"
       title:
         type: "string"
       state:
@@ -1152,40 +1178,48 @@ definitions:
         - "deleted"
       ident:
         type: "string"
+        example: "f1f046a3-45c9-4b99-adce-000000000001"
       revision:
         type: "integer"
+        example: 42
       redirect:
         type: "string"
-      editgroup:
+        example: "f1f046a3-45c9-4b99-adce-000000000002"
+      editgroup_id:
         type: "integer"
+        example: 16
     example:
-      redirect: "redirect"
-      work_id: "work_id"
-      editgroup: 6
-      issue: "issue"
-      ident: "ident"
-      release_type: "release_type"
+      redirect: "f1f046a3-45c9-4b99-adce-000000000002"
+      work_id: "f1f046a3-45c9-4b99-adce-000000000001"
+      issue: "12"
+      ident: "f1f046a3-45c9-4b99-adce-000000000001"
+      release_type: "preprint"
       title: "title"
-      revision: 0
+      revision: 42
       volume: "volume"
       pages: "pages"
+      editgroup_id: 16
       state: "wip"
-      container_id: "container_id"
-      doi: "doi"
+      container_id: "f1f046a3-45c9-4b99-adce-000000000001"
+      doi: "10.1234/abcde.789"
     upperCaseName: "RELEASE_ENTITY"
   work_entity:
     type: "object"
     properties:
       work_type:
         type: "string"
-      editgroup:
+      editgroup_id:
         type: "integer"
+        example: 16
       redirect:
         type: "string"
+        example: "f1f046a3-45c9-4b99-adce-000000000002"
       revision:
         type: "integer"
+        example: 42
       ident:
         type: "string"
+        example: "f1f046a3-45c9-4b99-adce-000000000001"
       state:
         type: "string"
         enum:
@@ -1194,29 +1228,33 @@ definitions:
         - "redirect"
         - "deleted"
     example:
-      redirect: "redirect"
-      editgroup: 0
-      ident: "ident"
+      redirect: "f1f046a3-45c9-4b99-adce-000000000002"
+      ident: "f1f046a3-45c9-4b99-adce-000000000001"
       work_type: "work_type"
+      editgroup_id: 16
       state: "wip"
-      revision: 6
+      revision: 42
     upperCaseName: "WORK_ENTITY"
   entity_edit:
     type: "object"
     properties:
       editgroup_id:
         type: "integer"
+        example: 16
       revision:
         type: "integer"
+        example: 42
       ident:
         type: "string"
+        example: "f1f046a3-45c9-4b99-adce-000000000001"
       edit_id:
         type: "integer"
+        example: 847
     example:
-      ident: "ident"
-      edit_id: 1
-      editgroup_id: 0
-      revision: 6
+      ident: "f1f046a3-45c9-4b99-adce-000000000001"
+      edit_id: 847
+      editgroup_id: 16
+      revision: 42
     upperCaseName: "ENTITY_EDIT"
   editor:
     type: "object"
@@ -1225,8 +1263,9 @@ definitions:
     properties:
       username:
         type: "string"
+        example: "zerocool93"
     example:
-      username: "username"
+      username: "zerocool93"
     upperCaseName: "EDITOR"
   editgroup:
     type: "object"
@@ -1273,21 +1312,29 @@ x-entity-props:
     - "deleted"
   ident:
     type: "string"
+    example: "f1f046a3-45c9-4b99-adce-000000000001"
   revision:
     type: "integer"
+    example: 42
   redirect:
     type: "string"
-  editgroup:
+    example: "f1f046a3-45c9-4b99-adce-000000000002"
+  editgroup_id:
     type: "integer"
+    example: 16
 x-entity-edit-props:
   edit_id:
     type: "integer"
+    example: 847
   ident:
     type: "string"
+    example: "f1f046a3-45c9-4b99-adce-000000000001"
   revision:
     type: "integer"
+    example: 42
   editgroup_id:
     type: "integer"
+    example: 16
 x-entity-responses:
   400:
     description: "Bad Request"

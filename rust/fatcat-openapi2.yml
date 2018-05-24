@@ -29,7 +29,8 @@ x-entity-props: &ENTITYPROPS
   redirect:
     type: string
     #format: uuid
-  editgroup:
+    example: "f1f046a3-45c9-4b99-adce-000000000002"
+  editgroup_id:
     type: integer
     example: 16
 x-entity-edit-props: &ENTITYEDITPROPS
