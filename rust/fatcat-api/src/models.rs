@@ -1,5 +1,6 @@
 #![allow(unused_imports, unused_qualifications, unused_extern_crates)]
 extern crate chrono;
+extern crate serde_json;
 extern crate uuid;
 
 use serde::ser::Serializer;
@@ -201,7 +202,7 @@ pub struct Editgroup {
 
     #[serde(rename = "extra")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub extra: Option<HashMap<String, String>>,
+    pub extra: Option<serde_json::Value>,
 }
 
 impl Editgroup {

@@ -1298,11 +1298,8 @@ definitions:
         type: "string"
       extra:
         type: "object"
-        additionalProperties:
-          type: "string"
     example:
-      extra:
-        key: "extra"
+      extra: "{}"
       description: "description"
       editor_id: 6
       id: 0

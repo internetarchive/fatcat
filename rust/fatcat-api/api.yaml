@@ -218,8 +218,7 @@ definitions:
 #               <<: *ENTITYEDITPROPS
       extra:
         type: object
-        additionalProperties:
-          type: string
+        additionalProperties: {}
   changelogentries:
     type: array
     items:
