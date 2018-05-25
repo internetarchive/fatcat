@@ -1,0 +1,39 @@
+
+upstream fatcatd {
+    server localhost:9411;
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    listen 443 ssl spdy;
+    listen [::]:443 ssl spdy;
+    server_name  api.fatcat.wiki;
+
+     ssl_certificate /etc/letsencrypt/live/fatcat.wiki/fullchain.pem;
+     ssl_certificate_key /etc/letsencrypt/live/fatcat.wiki/privkey.pem;
+
+     #add_header Content-Security-Policy "default-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'";
+     add_header X-Frame-Options "SAMEORIGIN";       # 'always' if nginx > 1.7.5
+     add_header X-Content-Type-Options "nosniff";   # 'always' if nginx > 1.7.5
+     add_header X-Xss-Protection "1";
+     # Enable STS with one year period (breaks http; optional)
+     #add_header Strict-Transport-Security "max-age=31557600; includeSubDomains";
+
+    access_log  /var/log/nginx/access.log;
+
+    location / {
+        root   /srv/http/default/www/;
+        proxy_set_header  X-Real-IP  $remote_addr;
+        proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+        proxy_pass http://fatcatd;
+    }
+
+    # Let's Encrypt SSL Certs
+    location /.well-known/acme-challenge/ {
+        root /var/www/letsencrypt;
+        autoindex off;
+    }
+}
