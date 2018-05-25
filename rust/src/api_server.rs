@@ -351,7 +351,7 @@ impl Server {
             id: Some(row.id),
             editor_id: row.editor_id,
             description: row.description,
-            extra: None,
+            extra: row.extra_json,
         };
         Ok(Some(eg))
     }
@@ -693,6 +693,7 @@ impl Api for Server {
             .values((
                 editgroup::editor_id.eq(body.editor_id as i64),
                 editgroup::description.eq(body.description),
+                editgroup::extra_json.eq(body.extra),
             ))
             .get_result(&conn)
             .expect("error creating edit group");
@@ -701,7 +702,7 @@ impl Api for Server {
             id: Some(row.id),
             editor_id: row.editor_id,
             description: row.description,
-            extra: None,
+            extra: row.extra_json,
         };
         Box::new(futures::done(Ok(
             EditgroupPostResponse::SuccessfullyCreated(new_eg),

@@ -181,7 +181,7 @@ pub struct FileReleaseRow {
 #[table_name = "editgroup"]
 pub struct EditgroupRow {
     pub id: i64,
-    //pub extra_json: Option<serde_json::Value>,
+    pub extra_json: Option<serde_json::Value>,
     pub editor_id: i64,
     pub description: Option<String>,
 }
