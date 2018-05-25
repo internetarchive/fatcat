@@ -303,7 +303,7 @@ impl Server {
             volume: rev.volume,
             pages: rev.pages,
             issue: rev.issue,
-            container_id: None, // TODO
+            container_id: rev.container_ident_id.map(|u| u.to_string()),
             work_id: rev.work_ident_id.to_string(),
             state: Some(ident.state().unwrap().shortname()),
             ident: Some(ident.id.to_string()),
@@ -339,7 +339,7 @@ impl Server {
             volume: rev.volume,
             pages: rev.pages,
             issue: rev.issue,
-            container_id: None, // TODO
+            container_id: rev.container_ident_id.map(|u| u.to_string()),
             work_id: rev.work_ident_id.to_string(),
             state: Some(ident.state().unwrap().shortname()),
             ident: Some(ident.id.to_string()),
@@ -639,30 +639,30 @@ impl Api for Server {
         };
 
         let work_id = uuid::Uuid::parse_str(&body.work_id).expect("invalid UUID");
-        let _container_id: Option<uuid::Uuid> = match body.container_id {
+        let container_id: Option<uuid::Uuid> = match body.container_id {
             Some(id) => Some(uuid::Uuid::parse_str(&id).expect("invalid UUID")),
             None => None,
         };
 
         let edit: ReleaseEditRow = diesel::sql_query(
-            "WITH rev AS ( INSERT INTO release_rev (title, release_type, doi, volume, pages, issue, work_ident_id)
-                        VALUES ($1, $2, $3, $4, $5, $6, $7)
+            "WITH rev AS ( INSERT INTO release_rev (title, release_type, doi, volume, pages, issue, work_ident_id, container_ident_id)
+                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
                         RETURNING id ),
                 ident AS ( INSERT INTO release_ident (rev_id)
                             VALUES ((SELECT rev.id FROM rev))
                             RETURNING id )
             INSERT INTO release_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($8, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+                ($9, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
         ).bind::<diesel::sql_types::Text, _>(body.title)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.release_type)
-            //.bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.date)
+            //XXX .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.date)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.doi)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.volume)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.pages)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.issue)
             .bind::<diesel::sql_types::Uuid, _>(work_id)
-            //.bind::<diesel::sql_types::Nullable<diesel::sql_types::Uuid>, _>(body.container_id)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Uuid>, _>(container_id)
             .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
             .get_result(&conn)
             .unwrap();
