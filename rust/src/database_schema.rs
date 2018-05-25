@@ -64,7 +64,7 @@ table! {
 table! {
     editgroup (id) {
         id -> Int8,
-        extra_json -> Nullable<Json>,
+        //extra_json -> Nullable<Json>,
         editor_id -> Int8,
         description -> Nullable<Text>,
     }
@@ -108,7 +108,7 @@ table! {
 table! {
     file_rev (id) {
         id -> Int8,
-        extra_json -> Nullable<Json>,
+        //extra_json -> Nullable<Json>,
         size -> Nullable<Int8>,
         sha1 -> Nullable<Text>,
         url -> Nullable<Text>,

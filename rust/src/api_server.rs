@@ -543,8 +543,9 @@ impl Api for Server {
             Some(param) => param as i64,
         };
 
-        let edit: FileEditRow = diesel::sql_query(
-            "WITH rev AS ( INSERT INTO file_rev (size, sha1, url)
+        let edit: FileEditRow =
+            diesel::sql_query(
+                "WITH rev AS ( INSERT INTO file_rev (size, sha1, url)
                         VALUES ($1, $2, $3)
                         RETURNING id ),
                 ident AS ( INSERT INTO file_ident (rev_id)
@@ -553,14 +554,12 @@ impl Api for Server {
             INSERT INTO file_edit (editgroup_id, ident_id, rev_id) VALUES
                 ($4, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
-        ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Int4>, _>(
-            body.size.map(|v| v as i32),
-        )
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.sha1)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.url)
-            .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
-            .get_result(&conn)
-            .unwrap();
+            ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Int8>, _>(body.size)
+                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.sha1)
+                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.url)
+                .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
+                .get_result(&conn)
+                .unwrap();
         let edit = &edit;
 
         let entity_edit = EntityEdit {

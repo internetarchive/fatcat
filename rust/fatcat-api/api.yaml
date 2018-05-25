@@ -177,11 +177,11 @@ definitions:
         format: int64
       description:
         type: string
-      container_edits:
-        type: array
-        item:
-          type: integer
-          format: int64
+#     container_edits:
+#       type: array
+#       item:
+#         type: integer
+#         format: int64
 #         properties:
 #           edit_id:
 #             type: integer

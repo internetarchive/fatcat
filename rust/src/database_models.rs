@@ -106,7 +106,7 @@ entity_structs!(
 pub struct FileRevRow {
     pub id: i64,
     //extra_json: Option<String>,
-    pub size: Option<i32>,
+    pub size: Option<i64>,
     pub sha1: Option<String>,
     pub url: Option<String>,
 }
@@ -181,7 +181,7 @@ pub struct FileReleaseRow {
 #[table_name = "editgroup"]
 pub struct EditgroupRow {
     pub id: i64,
-    pub extra_json: Option<serde_json::Value>,
+    //pub extra_json: Option<serde_json::Value>,
     pub editor_id: i64,
     pub description: Option<String>,
 }

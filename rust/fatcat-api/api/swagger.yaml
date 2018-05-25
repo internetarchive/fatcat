@@ -1296,8 +1296,6 @@ definitions:
         format: "int64"
       description:
         type: "string"
-      container_edits:
-        type: "array"
       extra:
         type: "object"
         additionalProperties:
@@ -1308,7 +1306,6 @@ definitions:
       description: "description"
       editor_id: 6
       id: 0
-      container_edits: ""
     upperCaseName: "EDITGROUP"
   changelogentries:
     type: "array"

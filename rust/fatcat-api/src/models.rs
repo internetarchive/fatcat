@@ -199,10 +199,6 @@ pub struct Editgroup {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
 
-    #[serde(rename = "container_edits")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub container_edits: Option<Vec>,
-
     #[serde(rename = "extra")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub extra: Option<HashMap<String, String>>,
@@ -214,7 +210,6 @@ impl Editgroup {
             id: None,
             editor_id: editor_id,
             description: None,
-            container_edits: None,
             extra: None,
         }
     }
