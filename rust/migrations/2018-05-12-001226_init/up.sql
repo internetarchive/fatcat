@@ -124,11 +124,12 @@ CREATE TABLE release_rev (
     container_ident_id  UUID REFERENCES container_ident(id),
     title               TEXT NOT NULL,
     release_type        TEXT, -- TODO: enum
-    date                TEXT, -- XXX: datetime
-    doi                 TEXT, -- TODO: identifier table?
+    date                DATE,
+    doi                 TEXT,
     volume              TEXT,
     pages               TEXT,
     issue               TEXT
+    -- TODO: identifier table?
 );
 
 CREATE INDEX release_rev_doi_idx ON release_rev(doi) WHERE doi IS NOT NULL;

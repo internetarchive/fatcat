@@ -168,7 +168,7 @@ table! {
         container_ident_id -> Nullable<Uuid>,
         title -> Text,
         release_type -> Nullable<Text>,
-        date -> Nullable<Text>,
+        date -> Nullable<Date>,
         doi -> Nullable<Text>,
         volume -> Nullable<Text>,
         pages -> Nullable<Text>,

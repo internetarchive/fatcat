@@ -122,7 +122,7 @@ pub struct ReleaseRevRow {
     pub container_ident_id: Option<Uuid>,
     pub title: String,
     pub release_type: Option<String>,
-    pub date: Option<String>,
+    pub date: Option<chrono::NaiveDate>,
     pub doi: Option<String>,
     pub volume: Option<String>,
     pub pages: Option<String>,
