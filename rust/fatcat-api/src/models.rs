@@ -1,7 +1,7 @@
 #![allow(unused_imports, unused_qualifications, unused_extern_crates)]
 extern crate chrono;
-extern crate serde_json;
 extern crate uuid;
+extern crate serde_json;
 
 use serde::ser::Serializer;
 
@@ -125,6 +125,10 @@ pub struct ContainerEntity {
     #[serde(rename = "editgroup_id")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub editgroup_id: Option<i64>,
+
+    #[serde(rename = "extra")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub extra: Option<serde_json::Value>,
 }
 
 impl ContainerEntity {
@@ -138,6 +142,7 @@ impl ContainerEntity {
             revision: None,
             redirect: None,
             editgroup_id: None,
+            extra: None,
         }
     }
 }
@@ -150,6 +155,10 @@ pub struct CreatorEntity {
 
     #[serde(rename = "name")]
     pub name: String,
+
+    #[serde(rename = "extra")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub extra: Option<serde_json::Value>,
 
     #[serde(rename = "editgroup_id")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -178,6 +187,7 @@ impl CreatorEntity {
         CreatorEntity {
             orcid: None,
             name: name,
+            extra: None,
             editgroup_id: None,
             redirect: None,
             revision: None,
@@ -230,6 +240,10 @@ impl Editor {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct EntityEdit {
+    #[serde(rename = "extra")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub extra: Option<serde_json::Value>,
+
     #[serde(rename = "editgroup_id")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub editgroup_id: Option<i64>,
@@ -250,6 +264,7 @@ pub struct EntityEdit {
 impl EntityEdit {
     pub fn new() -> EntityEdit {
         EntityEdit {
+            extra: None,
             editgroup_id: None,
             revision: None,
             ident: None,
@@ -284,6 +299,10 @@ pub struct FileEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub size: Option<i64>,
 
+    #[serde(rename = "extra")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub extra: Option<serde_json::Value>,
+
     #[serde(rename = "editgroup_id")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub editgroup_id: Option<i64>,
@@ -312,6 +331,7 @@ impl FileEntity {
             url: None,
             sha1: None,
             size: None,
+            extra: None,
             editgroup_id: None,
             redirect: None,
             revision: None,
@@ -373,6 +393,10 @@ pub struct ReleaseEntity {
     #[serde(rename = "editgroup_id")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub editgroup_id: Option<i64>,
+
+    #[serde(rename = "extra")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub extra: Option<serde_json::Value>,
 }
 
 impl ReleaseEntity {
@@ -391,6 +415,7 @@ impl ReleaseEntity {
             revision: None,
             redirect: None,
             editgroup_id: None,
+            extra: None,
         }
     }
 }
@@ -412,6 +437,10 @@ pub struct WorkEntity {
     #[serde(rename = "work_type")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub work_type: Option<String>,
+
+    #[serde(rename = "extra")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub extra: Option<serde_json::Value>,
 
     #[serde(rename = "editgroup_id")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -439,6 +468,7 @@ impl WorkEntity {
     pub fn new() -> WorkEntity {
         WorkEntity {
             work_type: None,
+            extra: None,
             editgroup_id: None,
             redirect: None,
             revision: None,

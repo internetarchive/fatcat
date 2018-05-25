@@ -35,6 +35,9 @@ x-entity-props: &ENTITYPROPS
     type: integer
     example: 16
     format: int64
+  extra:
+    type: object
+    additionalProperties: {}
 x-entity-edit-props: &ENTITYEDITPROPS
   edit_id:
     type: integer
@@ -51,6 +54,9 @@ x-entity-edit-props: &ENTITYEDITPROPS
     type: integer
     example: 16
     format: int64
+  extra:
+    type: object
+    additionalProperties: {}
 
 
 definitions:
@@ -177,6 +183,9 @@ definitions:
         format: int64
       description:
         type: string
+      extra:
+        type: object
+        additionalProperties: {}
 #     container_edits:
 #       type: array
 #       item:
@@ -216,9 +225,6 @@ definitions:
 #             type: object
 #             proposeties:
 #               <<: *ENTITYEDITPROPS
-      extra:
-        type: object
-        additionalProperties: {}
   changelogentries:
     type: array
     items:

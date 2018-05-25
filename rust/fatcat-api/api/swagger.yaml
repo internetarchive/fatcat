@@ -1031,6 +1031,8 @@ definitions:
       name:
         type: "string"
         example: "Grace Hopper"
+      extra:
+        type: "object"
       editgroup_id:
         type: "integer"
         format: "int64"
@@ -1055,6 +1057,7 @@ definitions:
     example:
       redirect: "f1f046a3-45c9-4b99-adce-000000000002"
       ident: "f1f046a3-45c9-4b99-adce-000000000001"
+      extra: "{}"
       name: "Grace Hopper"
       editgroup_id: 16
       orcid: "0000-0002-1825-0097"
@@ -1096,10 +1099,13 @@ definitions:
         type: "integer"
         format: "int64"
         example: 16
+      extra:
+        type: "object"
     example:
       redirect: "f1f046a3-45c9-4b99-adce-000000000002"
       issn: "1234-5678"
       ident: "f1f046a3-45c9-4b99-adce-000000000001"
+      extra: "{}"
       name: "Journal of Important Results"
       publisher: "Society of Curious Students"
       editgroup_id: 16
@@ -1120,6 +1126,8 @@ definitions:
         type: "integer"
         format: "int64"
         example: 1048576
+      extra:
+        type: "object"
       editgroup_id:
         type: "integer"
         format: "int64"
@@ -1146,6 +1154,7 @@ definitions:
       redirect: "f1f046a3-45c9-4b99-adce-000000000002"
       size: 1048576
       ident: "f1f046a3-45c9-4b99-adce-000000000001"
+      extra: "{}"
       editgroup_id: 16
       state: "wip"
       url: "https://example.edu/~frau/prcding.pdf"
@@ -1199,6 +1208,8 @@ definitions:
         type: "integer"
         format: "int64"
         example: 16
+      extra:
+        type: "object"
     example:
       redirect: "f1f046a3-45c9-4b99-adce-000000000002"
       work_id: "f1f046a3-45c9-4b99-adce-000000000001"
@@ -1209,6 +1220,7 @@ definitions:
       revision: 42
       volume: "volume"
       pages: "pages"
+      extra: "{}"
       editgroup_id: 16
       state: "wip"
       container_id: "f1f046a3-45c9-4b99-adce-000000000001"
@@ -1219,6 +1231,8 @@ definitions:
     properties:
       work_type:
         type: "string"
+      extra:
+        type: "object"
       editgroup_id:
         type: "integer"
         format: "int64"
@@ -1243,6 +1257,7 @@ definitions:
     example:
       redirect: "f1f046a3-45c9-4b99-adce-000000000002"
       ident: "f1f046a3-45c9-4b99-adce-000000000001"
+      extra: "{}"
       work_type: "work_type"
       editgroup_id: 16
       state: "wip"
@@ -1251,6 +1266,8 @@ definitions:
   entity_edit:
     type: "object"
     properties:
+      extra:
+        type: "object"
       editgroup_id:
         type: "integer"
         format: "int64"
@@ -1268,6 +1285,7 @@ definitions:
         example: 847
     example:
       ident: "f1f046a3-45c9-4b99-adce-000000000001"
+      extra: "{}"
       edit_id: 847
       editgroup_id: 16
       revision: 42
@@ -1347,6 +1365,9 @@ x-entity-props:
     type: "integer"
     example: 16
     format: "int64"
+  extra:
+    type: "object"
+    additionalProperties: {}
 x-entity-edit-props:
   edit_id:
     type: "integer"
@@ -1363,6 +1384,9 @@ x-entity-edit-props:
     type: "integer"
     example: 16
     format: "int64"
+  extra:
+    type: "object"
+    additionalProperties: {}
 x-entity-responses:
   400:
     description: "Bad Request"
