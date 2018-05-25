@@ -35,7 +35,7 @@ CREATE TABLE changelog (
 -------------------- Creators -----------------------------------------------
 CREATE TABLE creator_rev (
     id                  BIGSERIAL PRIMARY KEY,
-    -- extra_json          JSON,
+    extra_json          JSON,
 
     name                TEXT NOT NULL,
     orcid               TEXT
@@ -54,7 +54,7 @@ CREATE TABLE creator_ident (
 
 CREATE TABLE creator_edit (
     id                  BIGSERIAL PRIMARY KEY,
-    -- extra_json          JSON,
+    extra_json          JSON,
     ident_id            UUID REFERENCES creator_ident(id) NOT NULL,
     rev_id              BIGINT REFERENCES creator_rev(id),
     redirect_id         UUID REFERENCES creator_ident(id),
@@ -64,7 +64,7 @@ CREATE TABLE creator_edit (
 -------------------- Containers --------------------------------------------
 CREATE TABLE container_rev (
     id                  BIGSERIAL PRIMARY KEY,
-    -- extra_json          JSON,
+    extra_json          JSON,
 
     name                TEXT NOT NULL,
     publisher           TEXT,
@@ -82,7 +82,7 @@ CREATE TABLE container_ident (
 
 CREATE TABLE container_edit (
     id                  BIGSERIAL PRIMARY KEY,
-    -- extra_json          JSON,
+    extra_json          JSON,
     ident_id            UUID REFERENCES container_ident(id) NOT NULL,
     rev_id              BIGINT REFERENCES container_rev(id),
     redirect_id         UUID REFERENCES container_ident(id),
@@ -92,7 +92,7 @@ CREATE TABLE container_edit (
 -------------------- Files -------------------------------------------------
 CREATE TABLE file_rev (
     id                  BIGSERIAL PRIMARY KEY,
-    -- extra_json          JSON,
+    extra_json          JSON,
 
     size                BIGINT,
     sha1                TEXT, -- TODO: varchar or bytes
@@ -108,7 +108,7 @@ CREATE TABLE file_ident (
 
 CREATE TABLE file_edit (
     id                  BIGSERIAL PRIMARY KEY,
-    -- extra_json          JSON,
+    extra_json          JSON,
     ident_id            UUID REFERENCES file_ident(id) NOT NULL,
     rev_id              BIGINT REFERENCES file_rev(id),
     redirect_id         UUID REFERENCES file_ident(id),
@@ -118,7 +118,7 @@ CREATE TABLE file_edit (
 -------------------- Release -----------------------------------------------
 CREATE TABLE release_rev (
     id                  BIGSERIAL PRIMARY KEY,
-    -- extra_json          JSON,
+    extra_json          JSON,
 
     work_ident_id       UUID NOT NULL, -- FOREIGN KEY; see ALRTER below
     container_ident_id  UUID REFERENCES container_ident(id),
@@ -142,7 +142,7 @@ CREATE TABLE release_ident (
 
 CREATE TABLE release_edit (
     id                  BIGSERIAL PRIMARY KEY,
-    -- extra_json          JSON,
+    extra_json          JSON,
     ident_id            UUID REFERENCES release_ident(id) NOT NULL,
     rev_id              BIGINT REFERENCES release_rev(id),
     redirect_id         UUID REFERENCES release_ident(id),
@@ -152,7 +152,7 @@ CREATE TABLE release_edit (
 -------------------- Works --------------------------------------------------
 CREATE TABLE work_rev (
     id                  BIGSERIAL PRIMARY KEY,
-    -- extra_json          JSON,
+    extra_json          JSON,
 
     -- not even a work, for now
     work_type           TEXT, -- TODO: enum?
@@ -168,7 +168,7 @@ CREATE TABLE work_ident (
 
 CREATE TABLE work_edit (
     id                  BIGSERIAL PRIMARY KEY,
-    -- extra_json          JSON,
+    extra_json          JSON,
     ident_id            UUID REFERENCES work_ident(id) NOT NULL,
     rev_id              BIGINT REFERENCES work_rev(id),
     redirect_id         UUID REFERENCES work_ident(id),

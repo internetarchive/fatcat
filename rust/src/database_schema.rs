@@ -9,6 +9,7 @@ table! {
 table! {
     container_edit (id) {
         id -> Int8,
+        extra_json -> Nullable<Json>,
         ident_id -> Uuid,
         rev_id -> Nullable<Int8>,
         redirect_id -> Nullable<Uuid>,
@@ -28,6 +29,7 @@ table! {
 table! {
     container_rev (id) {
         id -> Int8,
+        extra_json -> Nullable<Json>,
         name -> Text,
         publisher -> Nullable<Text>,
         issn -> Nullable<Text>,
@@ -37,6 +39,7 @@ table! {
 table! {
     creator_edit (id) {
         id -> Int8,
+        extra_json -> Nullable<Json>,
         ident_id -> Uuid,
         rev_id -> Nullable<Int8>,
         redirect_id -> Nullable<Uuid>,
@@ -56,6 +59,7 @@ table! {
 table! {
     creator_rev (id) {
         id -> Int8,
+        extra_json -> Nullable<Json>,
         name -> Text,
         orcid -> Nullable<Text>,
     }
@@ -82,6 +86,7 @@ table! {
 table! {
     file_edit (id) {
         id -> Int8,
+        extra_json -> Nullable<Json>,
         ident_id -> Uuid,
         rev_id -> Nullable<Int8>,
         redirect_id -> Nullable<Uuid>,
@@ -108,6 +113,7 @@ table! {
 table! {
     file_rev (id) {
         id -> Int8,
+        extra_json -> Nullable<Json>,
         size -> Nullable<Int8>,
         sha1 -> Nullable<Text>,
         url -> Nullable<Text>,
@@ -127,6 +133,7 @@ table! {
 table! {
     release_edit (id) {
         id -> Int8,
+        extra_json -> Nullable<Json>,
         ident_id -> Uuid,
         rev_id -> Nullable<Int8>,
         redirect_id -> Nullable<Uuid>,
@@ -156,6 +163,7 @@ table! {
 table! {
     release_rev (id) {
         id -> Int8,
+        extra_json -> Nullable<Json>,
         work_ident_id -> Uuid,
         container_ident_id -> Nullable<Uuid>,
         title -> Text,
@@ -171,6 +179,7 @@ table! {
 table! {
     work_edit (id) {
         id -> Int8,
+        extra_json -> Nullable<Json>,
         ident_id -> Uuid,
         rev_id -> Nullable<Int8>,
         redirect_id -> Nullable<Uuid>,
@@ -190,6 +199,7 @@ table! {
 table! {
     work_rev (id) {
         id -> Int8,
+        extra_json -> Nullable<Json>,
         work_type -> Nullable<Text>,
         primary_release_id -> Nullable<Uuid>,
     }

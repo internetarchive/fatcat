@@ -101,6 +101,7 @@ impl Server {
             revision: ident.rev_id,
             redirect: ident.redirect_id.map(|u| u.to_string()),
             editgroup_id: None,
+            extra: rev.extra_json,
         };
         Ok(Some(entity))
     }
@@ -131,6 +132,7 @@ impl Server {
             revision: ident.rev_id,
             redirect: ident.redirect_id.map(|u| u.to_string()),
             editgroup_id: None,
+            extra: rev.extra_json,
         };
         Ok(Some(entity))
     }
@@ -158,6 +160,7 @@ impl Server {
             revision: ident.rev_id,
             redirect: ident.redirect_id.map(|u| u.to_string()),
             editgroup_id: None,
+            extra: rev.extra_json,
         };
         Ok(Some(entity))
     }
@@ -186,6 +189,7 @@ impl Server {
             revision: ident.rev_id,
             redirect: ident.redirect_id.map(|u| u.to_string()),
             editgroup_id: None,
+            extra: rev.extra_json,
         };
         Ok(Some(entity))
     }
@@ -214,6 +218,7 @@ impl Server {
             revision: ident.rev_id.map(|v| v),
             redirect: ident.redirect_id.map(|u| u.to_string()),
             editgroup_id: None,
+            extra: rev.extra_json,
         };
         Ok(Some(entity))
     }
@@ -243,6 +248,7 @@ impl Server {
             revision: ident.rev_id.map(|v| v),
             redirect: ident.redirect_id.map(|u| u.to_string()),
             editgroup_id: None,
+            extra: rev.extra_json,
         };
         Ok(Some(entity))
     }
@@ -269,6 +275,7 @@ impl Server {
             revision: ident.rev_id,
             redirect: ident.redirect_id.map(|u| u.to_string()),
             editgroup_id: None,
+            extra: rev.extra_json,
         };
         Ok(Some(entity))
     }
@@ -303,6 +310,7 @@ impl Server {
             revision: ident.rev_id,
             redirect: ident.redirect_id.map(|u| u.to_string()),
             editgroup_id: None,
+            extra: rev.extra_json,
         };
         Ok(Some(entity))
     }
@@ -338,6 +346,7 @@ impl Server {
             revision: ident.rev_id,
             redirect: ident.redirect_id.map(|u| u.to_string()),
             editgroup_id: None,
+            extra: rev.extra_json,
         };
         Ok(Some(entity))
     }
@@ -485,6 +494,7 @@ impl Api for Server {
             revision: Some(edit.rev_id.unwrap()),
             ident: Some(edit.ident_id.to_string()),
             edit_id: Some(edit.id),
+            extra: edit.extra_json.clone(),
         };
         Box::new(futures::done(Ok(ContainerPostResponse::CreatedEntity(
             entity_edit,
@@ -525,6 +535,7 @@ impl Api for Server {
             revision: Some(edit.rev_id.unwrap()),
             ident: Some(edit.ident_id.to_string()),
             edit_id: Some(edit.id),
+            extra: edit.extra_json.clone(),
         };
         Box::new(futures::done(Ok(CreatorPostResponse::CreatedEntity(
             entity_edit,
@@ -567,6 +578,7 @@ impl Api for Server {
             revision: Some(edit.rev_id.unwrap()),
             ident: Some(edit.ident_id.to_string()),
             edit_id: Some(edit.id),
+            extra: edit.extra_json.clone(),
         };
         Box::new(futures::done(Ok(FilePostResponse::CreatedEntity(
             entity_edit,
@@ -607,6 +619,7 @@ impl Api for Server {
             revision: Some(edit.rev_id.unwrap()),
             ident: Some(edit.ident_id.to_string()),
             edit_id: Some(edit.id),
+            extra: edit.extra_json.clone(),
         };
         Box::new(futures::done(Ok(WorkPostResponse::CreatedEntity(
             entity_edit,
@@ -660,6 +673,7 @@ impl Api for Server {
             revision: Some(edit.rev_id.unwrap()),
             ident: Some(edit.ident_id.to_string()),
             edit_id: Some(edit.id),
+            extra: edit.extra_json.clone(),
         };
         Box::new(futures::done(Ok(ReleasePostResponse::CreatedEntity(
             entity_edit,

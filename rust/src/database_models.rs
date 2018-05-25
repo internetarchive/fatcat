@@ -40,7 +40,7 @@ macro_rules! entity_structs {
             pub rev_id: Option<i64>,
             pub redirect_id: Option<Uuid>,
             pub editgroup_id: i64,
-            //pub extra_json: Option<serde_json::Value>,
+            pub extra_json: Option<serde_json::Value>,
         }
 
         #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
@@ -72,7 +72,7 @@ macro_rules! entity_structs {
 #[table_name = "container_rev"]
 pub struct ContainerRevRow {
     pub id: i64,
-    //pub extra_json: Option<serde_json::Value>,
+    pub extra_json: Option<serde_json::Value>,
     pub name: String,
     pub publisher: Option<String>,
     pub issn: Option<String>,
@@ -89,7 +89,7 @@ entity_structs!(
 #[table_name = "creator_rev"]
 pub struct CreatorRevRow {
     pub id: i64,
-    //extra_json: Option<String>,
+    pub extra_json: Option<serde_json::Value>,
     pub name: String,
     pub orcid: Option<String>,
 }
@@ -105,7 +105,7 @@ entity_structs!(
 #[table_name = "file_rev"]
 pub struct FileRevRow {
     pub id: i64,
-    //extra_json: Option<String>,
+    pub extra_json: Option<serde_json::Value>,
     pub size: Option<i64>,
     pub sha1: Option<String>,
     pub url: Option<String>,
@@ -117,7 +117,7 @@ entity_structs!("file_edit", FileEditRow, "file_ident", FileIdentRow);
 #[table_name = "release_rev"]
 pub struct ReleaseRevRow {
     pub id: i64,
-    //extra_json: Option<Json>,
+    pub extra_json: Option<serde_json::Value>,
     pub work_ident_id: Uuid,
     pub container_ident_id: Option<Uuid>,
     pub title: String,
@@ -140,7 +140,7 @@ entity_structs!(
 #[table_name = "work_rev"]
 pub struct WorkRevRow {
     pub id: i64,
-    //extra_json: Option<Json>,
+    pub extra_json: Option<serde_json::Value>,
     pub work_type: Option<String>,
     pub primary_release_id: Option<Uuid>,
 }
