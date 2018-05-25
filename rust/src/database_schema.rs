@@ -108,7 +108,8 @@ table! {
 table! {
     file_rev (id) {
         id -> Int8,
-        size -> Nullable<Int4>,
+        extra_json -> Nullable<Json>,
+        size -> Nullable<Int8>,
         sha1 -> Nullable<Text>,
         url -> Nullable<Text>,
     }
@@ -148,7 +149,7 @@ table! {
         id -> Int8,
         release_rev -> Int8,
         target_release_ident_id -> Nullable<Uuid>,
-        index -> Nullable<Int4>,
+        index -> Nullable<Int8>,
         stub -> Nullable<Text>,
     }
 }

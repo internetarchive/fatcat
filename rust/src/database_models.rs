@@ -163,7 +163,7 @@ pub struct ReleaseRefRow {
     id: i64,
     release_rev: i64,
     target_release_ident_id: Option<Uuid>,
-    index: Option<i32>,
+    index: Option<i64>,
     stub: Option<String>,
 }
 

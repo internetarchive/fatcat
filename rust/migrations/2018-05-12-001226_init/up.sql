@@ -94,7 +94,7 @@ CREATE TABLE file_rev (
     id                  BIGSERIAL PRIMARY KEY,
     -- extra_json          JSON,
 
-    size                INTEGER, -- TODO: uint64
+    size                BIGINT,
     sha1                TEXT, -- TODO: varchar or bytes
     url                 TEXT  -- TODO: URL table
 );
@@ -194,7 +194,7 @@ CREATE TABLE release_ref (
     id                      BIGSERIAL PRIMARY KEY,
     release_rev             BIGSERIAL REFERENCES release_rev(id) NOT NULL,
     target_release_ident_id UUID REFERENCES release_ident(id), -- or work?
-    index                   INTEGER,
+    index                   BIGINT,
     stub                    TEXT
 );
 
