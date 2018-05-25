@@ -167,7 +167,6 @@ pub struct ReleaseRefRow {
     stub: Option<String>,
 }
 
-/*
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
 #[table_name = "file_release"]
 pub struct FileReleaseRow {
@@ -175,7 +174,6 @@ pub struct FileReleaseRow {
     file_rev: i64,
     target_release_ident_id: Uuid,
 }
-*/
 
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
 #[table_name = "editgroup"]

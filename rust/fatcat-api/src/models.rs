@@ -1,7 +1,7 @@
 #![allow(unused_imports, unused_qualifications, unused_extern_crates)]
 extern crate chrono;
-extern crate uuid;
 extern crate serde_json;
+extern crate uuid;
 
 use serde::ser::Serializer;
 
@@ -213,6 +213,10 @@ pub struct Editgroup {
     #[serde(rename = "extra")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub extra: Option<serde_json::Value>,
+
+    #[serde(rename = "edits")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub edits: Option<models::EditgroupEdits>,
 }
 
 impl Editgroup {
@@ -222,6 +226,42 @@ impl Editgroup {
             editor_id: editor_id,
             description: None,
             extra: None,
+            edits: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct EditgroupEdits {
+    #[serde(rename = "containers")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub containers: Option<Vec<models::EntityEdit>>,
+
+    #[serde(rename = "creators")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub creators: Option<Vec<models::EntityEdit>>,
+
+    #[serde(rename = "files")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub files: Option<Vec<models::EntityEdit>>,
+
+    #[serde(rename = "releases")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub releases: Option<Vec<models::EntityEdit>>,
+
+    #[serde(rename = "works")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub works: Option<Vec<models::EntityEdit>>,
+}
+
+impl EditgroupEdits {
+    pub fn new() -> EditgroupEdits {
+        EditgroupEdits {
+            containers: None,
+            creators: None,
+            files: None,
+            releases: None,
+            works: None,
         }
     }
 }
@@ -342,7 +382,45 @@ impl FileEntity {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ReleaseContrib {
+    #[serde(rename = "index")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub index: Option<i64>,
+
+    #[serde(rename = "creator_id")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub creator_id: Option<String>,
+
+    #[serde(rename = "creator_stub")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub creator_stub: Option<String>,
+
+    #[serde(rename = "contrib_type")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub contrib_type: Option<String>,
+}
+
+impl ReleaseContrib {
+    pub fn new() -> ReleaseContrib {
+        ReleaseContrib {
+            index: None,
+            creator_id: None,
+            creator_stub: None,
+            contrib_type: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReleaseEntity {
+    #[serde(rename = "refs")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub refs: Option<Vec<String>>,
+
+    #[serde(rename = "contribs")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub contribs: Option<Vec<String>>,
+
     #[serde(rename = "issue")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub issue: Option<String>,
@@ -402,6 +480,8 @@ pub struct ReleaseEntity {
 impl ReleaseEntity {
     pub fn new(work_id: String, title: String) -> ReleaseEntity {
         ReleaseEntity {
+            refs: None,
+            contribs: None,
             issue: None,
             pages: None,
             volume: None,
@@ -416,6 +496,31 @@ impl ReleaseEntity {
             redirect: None,
             editgroup_id: None,
             extra: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ReleaseRef {
+    #[serde(rename = "index")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub index: Option<i64>,
+
+    #[serde(rename = "target_release_id")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub target_release_id: Option<String>,
+
+    #[serde(rename = "stub")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub stub: Option<String>,
+}
+
+impl ReleaseRef {
+    pub fn new() -> ReleaseRef {
+        ReleaseRef {
+            index: None,
+            target_release_id: None,
+            stub: None,
         }
     }
 }

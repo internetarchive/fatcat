@@ -152,6 +152,16 @@ definitions:
       issue:
         type: string
         example: "12"
+      contribs:
+        type: array
+        items:
+          type: string
+          #$ref: "#/definitions/release_contrib"
+      refs:
+        type: array
+        items:
+          type: string
+          #$ref: "#/definitions/release_ref"
   work_entity:
     type: object
     properties:
@@ -186,45 +196,29 @@ definitions:
       extra:
         type: object
         additionalProperties: {}
-#     container_edits:
-#       type: array
-#       item:
-#         type: integer
-#         format: int64
-#         properties:
-#           edit_id:
-#             type: integer
-#             example: 847
-#             format: int64
-#       type: array
-#       items:
-#         type: object
-#         proposeties:
-#           <<: *ENTITYEDITPROPS
-#         creators:
-#           type: array
-#           items:
-#             type: object
-#             proposeties:
-#               <<: *ENTITYEDITPROPS
-#         files:
-#           type: array
-#           items:
-#             type: object
-#             proposeties:
-#               <<: *ENTITYEDITPROPS
-#         releases:
-#           type: array
-#           items:
-#             type: object
-#             proposeties:
-#               <<: *ENTITYEDITPROPS
-#         works:
-#           type: array
-#           items:
-#             type: object
-#             proposeties:
-#               <<: *ENTITYEDITPROPS
+      edits:
+        type: object
+        properties:
+          containers:
+            type: array
+            items:
+              $ref: "#/definitions/entity_edit"
+          creators:
+            type: array
+            items:
+              $ref: "#/definitions/entity_edit"
+          files:
+            type: array
+            items:
+              $ref: "#/definitions/entity_edit"
+          releases:
+            type: array
+            items:
+              $ref: "#/definitions/entity_edit"
+          works:
+            type: array
+            items:
+              $ref: "#/definitions/entity_edit"
   changelogentries:
     type: array
     items:
@@ -243,6 +237,30 @@ definitions:
         timestamp:
           type: string
           format: date-time
+  release_ref:
+    type: object
+    properties:
+      index:
+        type: integer
+        format: int64
+      target_release_id:
+        type: string
+        #format: uuid
+      stub:
+        type: string
+  release_contrib:
+    type: object
+    properties:
+      index:
+        type: integer
+        format: int64
+      creator_id:
+        type: string
+        #format: uuid
+      creator_stub:
+        type: string
+      contrib_type:
+        type: string
 
 x-entity-responses: &ENTITYRESPONSES
   400:

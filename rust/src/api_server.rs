@@ -305,6 +305,8 @@ impl Server {
             issue: rev.issue,
             container_id: rev.container_ident_id.map(|u| u.to_string()),
             work_id: rev.work_ident_id.to_string(),
+            refs: None,
+            contribs: None,
             state: Some(ident.state().unwrap().shortname()),
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id,
@@ -341,6 +343,8 @@ impl Server {
             issue: rev.issue,
             container_id: rev.container_ident_id.map(|u| u.to_string()),
             work_id: rev.work_ident_id.to_string(),
+            refs: None,
+            contribs: None,
             state: Some(ident.state().unwrap().shortname()),
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id,
@@ -360,6 +364,7 @@ impl Server {
             id: Some(row.id),
             editor_id: row.editor_id,
             description: row.description,
+            edits: None,
             extra: row.extra_json,
         };
         Ok(Some(eg))
@@ -716,6 +721,7 @@ impl Api for Server {
             id: Some(row.id),
             editor_id: row.editor_id,
             description: row.description,
+            edits: None,
             extra: row.extra_json,
         };
         Box::new(futures::done(Ok(

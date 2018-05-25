@@ -1166,6 +1166,14 @@ definitions:
     - "title"
     - "work_id"
     properties:
+      refs:
+        type: "array"
+        items:
+          type: "string"
+      contribs:
+        type: "array"
+        items:
+          type: "string"
       issue:
         type: "string"
         example: "12"
@@ -1217,9 +1225,15 @@ definitions:
       ident: "f1f046a3-45c9-4b99-adce-000000000001"
       release_type: "preprint"
       title: "title"
+      contribs:
+      - "contribs"
+      - "contribs"
       revision: 42
       volume: "volume"
       pages: "pages"
+      refs:
+      - "refs"
+      - "refs"
       extra: "{}"
       editgroup_id: 16
       state: "wip"
@@ -1316,8 +1330,66 @@ definitions:
         type: "string"
       extra:
         type: "object"
+      edits:
+        $ref: "#/definitions/editgroup_edits"
     example:
       extra: "{}"
+      edits:
+        works:
+        - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+          extra: "{}"
+          edit_id: 847
+          editgroup_id: 16
+          revision: 42
+        - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+          extra: "{}"
+          edit_id: 847
+          editgroup_id: 16
+          revision: 42
+        creators:
+        - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+          extra: "{}"
+          edit_id: 847
+          editgroup_id: 16
+          revision: 42
+        - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+          extra: "{}"
+          edit_id: 847
+          editgroup_id: 16
+          revision: 42
+        files:
+        - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+          extra: "{}"
+          edit_id: 847
+          editgroup_id: 16
+          revision: 42
+        - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+          extra: "{}"
+          edit_id: 847
+          editgroup_id: 16
+          revision: 42
+        containers:
+        - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+          extra: "{}"
+          edit_id: 847
+          editgroup_id: 16
+          revision: 42
+        - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+          extra: "{}"
+          edit_id: 847
+          editgroup_id: 16
+          revision: 42
+        releases:
+        - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+          extra: "{}"
+          edit_id: 847
+          editgroup_id: 16
+          revision: 42
+        - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+          extra: "{}"
+          edit_id: 847
+          editgroup_id: 16
+          revision: 42
       description: "description"
       editor_id: 6
       id: 0
@@ -1327,6 +1399,109 @@ definitions:
     items:
       $ref: "#/definitions/changelogentries_inner"
     upperCaseName: "CHANGELOGENTRIES"
+  release_ref:
+    type: "object"
+    properties:
+      index:
+        type: "integer"
+        format: "int64"
+      target_release_id:
+        type: "string"
+      stub:
+        type: "string"
+    upperCaseName: "RELEASE_REF"
+  release_contrib:
+    type: "object"
+    properties:
+      index:
+        type: "integer"
+        format: "int64"
+      creator_id:
+        type: "string"
+      creator_stub:
+        type: "string"
+      contrib_type:
+        type: "string"
+    upperCaseName: "RELEASE_CONTRIB"
+  editgroup_edits:
+    properties:
+      containers:
+        type: "array"
+        items:
+          $ref: "#/definitions/entity_edit"
+      creators:
+        type: "array"
+        items:
+          $ref: "#/definitions/entity_edit"
+      files:
+        type: "array"
+        items:
+          $ref: "#/definitions/entity_edit"
+      releases:
+        type: "array"
+        items:
+          $ref: "#/definitions/entity_edit"
+      works:
+        type: "array"
+        items:
+          $ref: "#/definitions/entity_edit"
+    example:
+      works:
+      - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+        extra: "{}"
+        edit_id: 847
+        editgroup_id: 16
+        revision: 42
+      - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+        extra: "{}"
+        edit_id: 847
+        editgroup_id: 16
+        revision: 42
+      creators:
+      - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+        extra: "{}"
+        edit_id: 847
+        editgroup_id: 16
+        revision: 42
+      - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+        extra: "{}"
+        edit_id: 847
+        editgroup_id: 16
+        revision: 42
+      files:
+      - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+        extra: "{}"
+        edit_id: 847
+        editgroup_id: 16
+        revision: 42
+      - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+        extra: "{}"
+        edit_id: 847
+        editgroup_id: 16
+        revision: 42
+      containers:
+      - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+        extra: "{}"
+        edit_id: 847
+        editgroup_id: 16
+        revision: 42
+      - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+        extra: "{}"
+        edit_id: 847
+        editgroup_id: 16
+        revision: 42
+      releases:
+      - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+        extra: "{}"
+        edit_id: 847
+        editgroup_id: 16
+        revision: 42
+      - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+        extra: "{}"
+        edit_id: 847
+        editgroup_id: 16
+        revision: 42
+    upperCaseName: "EDITGROUP_EDITS"
   changelogentries_inner:
     required:
     - "editgroup_id"
