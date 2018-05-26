@@ -327,6 +327,10 @@ impl ErrorResponse {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct FileEntity {
+    #[serde(rename = "releases")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub releases: Option<Vec<String>>,
+
     #[serde(rename = "url")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
@@ -368,6 +372,7 @@ pub struct FileEntity {
 impl FileEntity {
     pub fn new() -> FileEntity {
         FileEntity {
+            releases: None,
             url: None,
             sha1: None,
             size: None,

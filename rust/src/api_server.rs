@@ -5,8 +5,8 @@ use api_helpers::*;
 use chrono;
 use database_models::*;
 use database_schema::{changelog, container_ident, container_rev, creator_ident, creator_rev,
-                      editgroup, editor, file_ident, file_rev, release_ident, release_rev,
-                      release_contrib, release_ref, work_ident, work_rev};
+                      editgroup, editor, file_ident, file_release, file_rev, release_contrib,
+                      release_ident, release_ref, release_rev, work_ident, work_rev};
 use diesel::prelude::*;
 use diesel::{self, insert_into};
 use errors::*;
@@ -209,10 +209,19 @@ impl Server {
             Err(e) => return Err(e.into()),
         };
 
+        let releases: Vec<String> = file_release::table
+            .filter(file_release::file_rev.eq(rev.id))
+            .get_results(&conn)
+            .expect("fetch file releases")
+            .iter()
+            .map(|r: &FileReleaseRow| r.target_release_ident_id.to_string())
+            .collect();
+
         let entity = FileEntity {
             sha1: rev.sha1,
             size: rev.size.map(|v| v as i64),
             url: rev.url,
+            releases: Some(releases),
             state: Some(ident.state().unwrap().shortname()),
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id.map(|v| v),
@@ -223,6 +232,7 @@ impl Server {
         Ok(Some(entity))
     }
 
+    // TODO: refactor this to not be redundant with file_id_get_handler() code
     fn file_lookup_get_handler(&self, sha1: String) -> Result<Option<FileEntity>> {
         let conn = self.db_pool.get().expect("db_pool error");
 
@@ -239,10 +249,19 @@ impl Server {
             Err(e) => return Err(e.into()),
         };
 
+        let releases: Vec<String> = file_release::table
+            .filter(file_release::file_rev.eq(rev.id))
+            .get_results(&conn)
+            .expect("fetch file releases")
+            .iter()
+            .map(|r: &FileReleaseRow| r.target_release_ident_id.to_string())
+            .collect();
+
         let entity = FileEntity {
             sha1: rev.sha1,
             size: rev.size.map(|v| v as i64),
             url: rev.url,
+            releases: Some(releases),
             state: Some(ident.state().unwrap().shortname()),
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id.map(|v| v),
@@ -303,7 +322,7 @@ impl Server {
             .map(|r: &ReleaseRefRow| ReleaseRef {
                 index: r.index.clone(),
                 stub: r.stub.clone(),
-                target_release_id: r.target_release_ident_id.map(|v| v.to_string())
+                target_release_id: r.target_release_ident_id.map(|v| v.to_string()),
             })
             .collect();
 
@@ -367,7 +386,7 @@ impl Server {
             .map(|r: &ReleaseRefRow| ReleaseRef {
                 index: r.index.clone(),
                 stub: r.stub.clone(),
-                target_release_id: r.target_release_ident_id.map(|v| v.to_string())
+                target_release_id: r.target_release_ident_id.map(|v| v.to_string()),
             })
             .collect();
 
@@ -630,6 +649,29 @@ impl Api for Server {
                 .unwrap();
         let edit = &edit;
 
+        let _releases: Option<Vec<FileReleaseRow>> = match body.releases {
+            None => None,
+            Some(release_list) => {
+                if release_list.len() == 0 {
+                    Some(vec![])
+                } else {
+                    let release_rows: Vec<FileReleaseRow> = release_list
+                        .iter()
+                        .map(|r| FileReleaseRow {
+                            file_rev: edit.rev_id.unwrap(),
+                            target_release_ident_id:
+                                uuid::Uuid::parse_str(r).expect("valid UUID"),
+                        })
+                        .collect();
+                    let release_rows: Vec<FileReleaseRow> = insert_into(file_release::table)
+                        .values(release_rows)
+                        .get_results(&conn)
+                        .expect("error inserting file_releases");
+                    Some(release_rows)
+                }
+            }
+        };
+
         let entity_edit = EntityEdit {
             editgroup_id: Some(edit.editgroup_id),
             revision: Some(edit.rev_id.unwrap()),
@@ -733,14 +775,18 @@ impl Api for Server {
                 if ref_list.len() == 0 {
                     Some(vec![])
                 } else {
-                    let ref_rows: Vec<ReleaseRefNewRow> = ref_list.iter().map(|r| ReleaseRefNewRow {
-                        release_rev: edit.rev_id.unwrap(),
-                        target_release_ident_id: 
-                            r.target_release_id.clone().map(|v| uuid::Uuid::parse_str(&v).expect("valid UUID")),
-                        // XXX: index: r.index,
-                        index: None,
-                        stub: r.stub.clone(),
-                    }).collect();
+                    let ref_rows: Vec<ReleaseRefNewRow> = ref_list
+                        .iter()
+                        .map(|r| ReleaseRefNewRow {
+                            release_rev: edit.rev_id.unwrap(),
+                            target_release_ident_id: r.target_release_id
+                                .clone()
+                                .map(|v| uuid::Uuid::parse_str(&v).expect("valid UUID")),
+                            // XXX: index: r.index,
+                            index: None,
+                            stub: r.stub.clone(),
+                        })
+                        .collect();
                     let ref_rows: Vec<ReleaseRefRow> = insert_into(release_ref::table)
                         .values(ref_rows)
                         .get_results(&conn)
@@ -756,14 +802,18 @@ impl Api for Server {
                 if contrib_list.len() == 0 {
                     Some(vec![])
                 } else {
-                    let contrib_rows: Vec<ReleaseContribNewRow> = contrib_list.iter().map(|c| ReleaseContribNewRow {
-                        release_rev: edit.rev_id.unwrap(),
-                        creator_ident_id: 
-                            c.creator_id.clone().map(|v| uuid::Uuid::parse_str(&v).expect("valid UUID")),
-                        // XXX: index: r.index,
-                        contrib_type: c.contrib_type.clone(),
-                        stub: c.creator_stub.clone(),
-                    }).collect();
+                    let contrib_rows: Vec<ReleaseContribNewRow> = contrib_list
+                        .iter()
+                        .map(|c| ReleaseContribNewRow {
+                            release_rev: edit.rev_id.unwrap(),
+                            creator_ident_id: c.creator_id
+                                .clone()
+                                .map(|v| uuid::Uuid::parse_str(&v).expect("valid UUID")),
+                            // XXX: index: r.index,
+                            contrib_type: c.contrib_type.clone(),
+                            stub: c.creator_stub.clone(),
+                        })
+                        .collect();
                     let contrib_rows: Vec<ReleaseContribRow> = insert_into(release_contrib::table)
                         .values(contrib_rows)
                         .get_results(&conn)

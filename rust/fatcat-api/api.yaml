@@ -121,6 +121,11 @@ definitions:
         type: string
         format: url
         example: "https://example.edu/~frau/prcding.pdf"
+      releases:
+        type: array
+        items:
+          type: string
+          #format: uuid
   release_entity:
     type: object
     required:

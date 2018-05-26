@@ -79,13 +79,52 @@ fn test_post_container() {
 }
 
 #[test]
+fn test_post_file() {
+    let server = fatcat::test_server().unwrap();
+    let router = fatcat_api::router(server);
+    let mut headers = Headers::new();
+    let mime: Mime = "application/json".parse().unwrap();
+    headers.set(ContentType(mime));
+
+    let response = request::post(
+        "http://localhost:9411/v0/file",
+        headers.clone(),
+        r#"{ }"#,
+        &router,
+    ).unwrap();
+    let status = response.status;
+    let body = response::extract_body_to_string(response);
+    println!("{}", body);
+    assert_eq!(status, Some(status::Created));
+
+    let response = request::post(
+        "http://localhost:9411/v0/file",
+        headers,
+        r#"{"size": 76543,
+            "sha1": "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8",
+            "url": "http://archive.org/asdf.txt",
+            "releases": [
+                "f1f046a3-45c9-4b99-4444-000000000001",
+                "f1f046a3-45c9-4b99-4444-000000000002"
+            ]
+            }"#,
+        &router,
+    ).unwrap();
+    let status = response.status;
+    let body = response::extract_body_to_string(response);
+    println!("{}", body);
+    assert_eq!(status, Some(status::Created));
+    //assert!(body.contains("secret paper"));
+}
+
+#[test]
 fn test_post_release() {
     let server = fatcat::test_server().unwrap();
     let router = fatcat_api::router(server);
     let mut headers = Headers::new();
     let mime: Mime = "application/json".parse().unwrap();
     headers.set(ContentType(mime));
- 
+
     let response = request::post(
         "http://localhost:9411/v0/release",
         headers.clone(),

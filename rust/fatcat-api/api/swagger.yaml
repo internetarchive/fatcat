@@ -1115,6 +1115,10 @@ definitions:
   file_entity:
     type: "object"
     properties:
+      releases:
+        type: "array"
+        items:
+          type: "string"
       url:
         type: "string"
         format: "url"
@@ -1158,6 +1162,9 @@ definitions:
       editgroup_id: 16
       state: "wip"
       url: "https://example.edu/~frau/prcding.pdf"
+      releases:
+      - "releases"
+      - "releases"
       revision: 42
     upperCaseName: "FILE_ENTITY"
   release_entity:

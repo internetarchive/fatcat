@@ -187,10 +187,9 @@ pub struct ReleaseRefNewRow {
     pub stub: Option<String>,
 }
 
-#[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
+#[derive(Debug, Queryable, Insertable, Associations, AsChangeset)]
 #[table_name = "file_release"]
 pub struct FileReleaseRow {
-    pub id: i64,
     pub file_rev: i64,
     pub target_release_ident_id: Uuid,
 }
