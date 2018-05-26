@@ -546,18 +546,19 @@ impl Api for Server {
         };
 
         let edit: ContainerEditRow = diesel::sql_query(
-            "WITH rev AS ( INSERT INTO container_rev (name, publisher, issn)
-                        VALUES ($1, $2, $3)
+            "WITH rev AS ( INSERT INTO container_rev (name, publisher, issn, extra_json)
+                        VALUES ($1, $2, $3, $4)
                         RETURNING id ),
                 ident AS ( INSERT INTO container_ident (rev_id)
                             VALUES ((SELECT rev.id FROM rev))
                             RETURNING id )
             INSERT INTO container_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($4, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+                ($5, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
         ).bind::<diesel::sql_types::Text, _>(body.name)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.publisher)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.issn)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(body.extra)
             .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
             .get_result(&conn)
             .unwrap();
@@ -588,17 +589,18 @@ impl Api for Server {
         };
 
         let edit: CreatorEditRow = diesel::sql_query(
-            "WITH rev AS ( INSERT INTO creator_rev (name, orcid)
-                        VALUES ($1, $2)
+            "WITH rev AS ( INSERT INTO creator_rev (name, orcid, extra_json)
+                        VALUES ($1, $2, $3)
                         RETURNING id ),
                 ident AS ( INSERT INTO creator_ident (rev_id)
                             VALUES ((SELECT rev.id FROM rev))
                             RETURNING id )
             INSERT INTO creator_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($3, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+                ($4, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
         ).bind::<diesel::sql_types::Text, _>(body.name)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.orcid)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(body.extra)
             .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
             .get_result(&conn)
             .unwrap();
@@ -630,18 +632,19 @@ impl Api for Server {
 
         let edit: FileEditRow =
             diesel::sql_query(
-                "WITH rev AS ( INSERT INTO file_rev (size, sha1, url)
-                        VALUES ($1, $2, $3)
+                "WITH rev AS ( INSERT INTO file_rev (size, sha1, url, extra_json)
+                        VALUES ($1, $2, $3, $4)
                         RETURNING id ),
                 ident AS ( INSERT INTO file_ident (rev_id)
                             VALUES ((SELECT rev.id FROM rev))
                             RETURNING id )
             INSERT INTO file_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($4, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+                ($5, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
             ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Int8>, _>(body.size)
                 .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.sha1)
                 .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.url)
+                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(body.extra)
                 .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
                 .get_result(&conn)
                 .unwrap();
@@ -695,16 +698,17 @@ impl Api for Server {
 
         let edit: WorkEditRow =
             diesel::sql_query(
-                "WITH rev AS ( INSERT INTO work_rev (work_type)
-                        VALUES ($1)
+                "WITH rev AS ( INSERT INTO work_rev (work_type, extra_json)
+                        VALUES ($1, $2)
                         RETURNING id ),
                 ident AS ( INSERT INTO work_ident (rev_id)
                             VALUES ((SELECT rev.id FROM rev))
                             RETURNING id )
             INSERT INTO work_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($2, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+                ($3, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
             ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.work_type)
+                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(body.extra)
                 .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
                 .get_result(&conn)
                 .unwrap();
@@ -741,14 +745,14 @@ impl Api for Server {
         };
 
         let edit: ReleaseEditRow = diesel::sql_query(
-            "WITH rev AS ( INSERT INTO release_rev (title, release_type, date, doi, volume, pages, issue, work_ident_id, container_ident_id)
-                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            "WITH rev AS ( INSERT INTO release_rev (title, release_type, date, doi, volume, pages, issue, work_ident_id, container_ident_id, extra_json)
+                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
                         RETURNING id ),
                 ident AS ( INSERT INTO release_ident (rev_id)
                             VALUES ((SELECT rev.id FROM rev))
                             RETURNING id )
             INSERT INTO release_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($10, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+                ($11, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
         ).bind::<diesel::sql_types::Text, _>(body.title)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.release_type)
@@ -759,8 +763,8 @@ impl Api for Server {
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.issue)
             .bind::<diesel::sql_types::Uuid, _>(work_id)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Uuid>, _>(container_id)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(body.extra)
             .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
-            //XXX: extra_json
             .get_result(&conn)
             .unwrap();
         let edit = &edit;

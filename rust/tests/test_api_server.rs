@@ -203,7 +203,8 @@ fn test_post_file() {
                 "releases": [
                     "f1f046a3-45c9-4b99-4444-000000000001",
                     "f1f046a3-45c9-4b99-4444-000000000002"
-                ]
+                ],
+                "extra": { "source": "speculation" }
                 }"#,
             &router,
         ),
@@ -257,7 +258,8 @@ fn test_post_release() {
                         "contrib_type": "author"
                     },{
                         "creator_stub": "shorter"
-                    }]
+                    }],
+                "extra": { "source": "speculation" }
                 }"#,
             &router,
         ),
@@ -275,7 +277,10 @@ fn test_post_work() {
             "http://localhost:9411/v0/work",
             headers.clone(),
             // TODO: target_work_id
-            r#"{"work_type": "journal-article"}"#,
+            r#"{
+                "work_type": "journal-article",
+                "extra": { "source": "speculation" }
+            }"#,
             &router,
         ),
         status::Created,
