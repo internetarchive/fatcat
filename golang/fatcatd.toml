@@ -1,2 +1,0 @@
-verbose = false
-db_url = "postgres://fatcat:tactaf@localhost/fatcat"
