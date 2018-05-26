@@ -145,7 +145,8 @@ definitions:
         type: string
         example: "preprint"
       date:
-        type: date
+        type: string
+        format: date
       doi:
         type: string
         #format: custom

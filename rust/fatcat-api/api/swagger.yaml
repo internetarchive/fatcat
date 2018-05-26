@@ -1191,6 +1191,9 @@ definitions:
       doi:
         type: "string"
         example: "10.1234/abcde.789"
+      date:
+        type: "string"
+        format: "date"
       release_type:
         type: "string"
         example: "preprint"
@@ -1226,6 +1229,7 @@ definitions:
       extra:
         type: "object"
     example:
+      date: "2000-01-23"
       redirect: "f1f046a3-45c9-4b99-adce-000000000002"
       work_id: "f1f046a3-45c9-4b99-adce-000000000001"
       issue: "12"

@@ -342,7 +342,7 @@ impl Server {
         let entity = ReleaseEntity {
             title: rev.title,
             release_type: rev.release_type,
-            // XXX: date: rev.date,
+            date: rev.date.map(|v| chrono::DateTime::from_utc(v.and_hms(0, 0, 0), chrono::Utc)),
             doi: rev.doi,
             volume: rev.volume,
             pages: rev.pages,
@@ -405,7 +405,7 @@ impl Server {
         let entity = ReleaseEntity {
             title: rev.title,
             release_type: rev.release_type,
-            // XXX: date: rev.date,
+            date: rev.date.map(|v| chrono::DateTime::from_utc(v.and_hms(0, 0, 0), chrono::Utc)),
             doi: rev.doi,
             volume: rev.volume,
             pages: rev.pages,
@@ -740,20 +740,19 @@ impl Api for Server {
             None => None,
         };
 
-        println!("{:?}", container_id);
         let edit: ReleaseEditRow = diesel::sql_query(
-            "WITH rev AS ( INSERT INTO release_rev (title, release_type, doi, volume, pages, issue, work_ident_id, container_ident_id)
-                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            "WITH rev AS ( INSERT INTO release_rev (title, release_type, date, doi, volume, pages, issue, work_ident_id, container_ident_id)
+                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                         RETURNING id ),
                 ident AS ( INSERT INTO release_ident (rev_id)
                             VALUES ((SELECT rev.id FROM rev))
                             RETURNING id )
             INSERT INTO release_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($9, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+                ($10, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
         ).bind::<diesel::sql_types::Text, _>(body.title)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.release_type)
-            //XXX .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.date)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Date>, _>(body.date.map(|v| v.naive_utc().date()))
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.doi)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.volume)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.pages)

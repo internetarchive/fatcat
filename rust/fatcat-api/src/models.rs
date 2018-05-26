@@ -442,6 +442,10 @@ pub struct ReleaseEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub doi: Option<String>,
 
+    #[serde(rename = "date")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub date: Option<chrono::DateTime<chrono::Utc>>,
+
     #[serde(rename = "release_type")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub release_type: Option<String>,
@@ -491,6 +495,7 @@ impl ReleaseEntity {
             pages: None,
             volume: None,
             doi: None,
+            date: None,
             release_type: None,
             container_id: None,
             work_id: work_id,
