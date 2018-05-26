@@ -1300,6 +1300,10 @@ definitions:
     upperCaseName: "WORK_ENTITY"
   entity_edit:
     type: "object"
+    required:
+    - "edit_id"
+    - "editgroup_id"
+    - "ident"
     properties:
       extra:
         type: "object"
@@ -1307,6 +1311,9 @@ definitions:
         type: "integer"
         format: "int64"
         example: 16
+      redirect_ident:
+        type: "string"
+        example: "f1f046a3-45c9-4b99-adce-000000000002"
       revision:
         type: "integer"
         format: "int64"
@@ -1322,6 +1329,7 @@ definitions:
       ident: "f1f046a3-45c9-4b99-adce-000000000001"
       extra: "{}"
       edit_id: 847
+      redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
       editgroup_id: 16
       revision: 42
     upperCaseName: "ENTITY_EDIT"
@@ -1360,55 +1368,65 @@ definitions:
         - ident: "f1f046a3-45c9-4b99-adce-000000000001"
           extra: "{}"
           edit_id: 847
+          redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
           editgroup_id: 16
           revision: 42
         - ident: "f1f046a3-45c9-4b99-adce-000000000001"
           extra: "{}"
           edit_id: 847
+          redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
           editgroup_id: 16
           revision: 42
         creators:
         - ident: "f1f046a3-45c9-4b99-adce-000000000001"
           extra: "{}"
           edit_id: 847
+          redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
           editgroup_id: 16
           revision: 42
         - ident: "f1f046a3-45c9-4b99-adce-000000000001"
           extra: "{}"
           edit_id: 847
+          redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
           editgroup_id: 16
           revision: 42
         files:
         - ident: "f1f046a3-45c9-4b99-adce-000000000001"
           extra: "{}"
           edit_id: 847
+          redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
           editgroup_id: 16
           revision: 42
         - ident: "f1f046a3-45c9-4b99-adce-000000000001"
           extra: "{}"
           edit_id: 847
+          redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
           editgroup_id: 16
           revision: 42
         containers:
         - ident: "f1f046a3-45c9-4b99-adce-000000000001"
           extra: "{}"
           edit_id: 847
+          redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
           editgroup_id: 16
           revision: 42
         - ident: "f1f046a3-45c9-4b99-adce-000000000001"
           extra: "{}"
           edit_id: 847
+          redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
           editgroup_id: 16
           revision: 42
         releases:
         - ident: "f1f046a3-45c9-4b99-adce-000000000001"
           extra: "{}"
           edit_id: 847
+          redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
           editgroup_id: 16
           revision: 42
         - ident: "f1f046a3-45c9-4b99-adce-000000000001"
           extra: "{}"
           edit_id: 847
+          redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
           editgroup_id: 16
           revision: 42
       description: "description"
@@ -1480,55 +1498,65 @@ definitions:
       - ident: "f1f046a3-45c9-4b99-adce-000000000001"
         extra: "{}"
         edit_id: 847
+        redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
         editgroup_id: 16
         revision: 42
       - ident: "f1f046a3-45c9-4b99-adce-000000000001"
         extra: "{}"
         edit_id: 847
+        redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
         editgroup_id: 16
         revision: 42
       creators:
       - ident: "f1f046a3-45c9-4b99-adce-000000000001"
         extra: "{}"
         edit_id: 847
+        redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
         editgroup_id: 16
         revision: 42
       - ident: "f1f046a3-45c9-4b99-adce-000000000001"
         extra: "{}"
         edit_id: 847
+        redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
         editgroup_id: 16
         revision: 42
       files:
       - ident: "f1f046a3-45c9-4b99-adce-000000000001"
         extra: "{}"
         edit_id: 847
+        redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
         editgroup_id: 16
         revision: 42
       - ident: "f1f046a3-45c9-4b99-adce-000000000001"
         extra: "{}"
         edit_id: 847
+        redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
         editgroup_id: 16
         revision: 42
       containers:
       - ident: "f1f046a3-45c9-4b99-adce-000000000001"
         extra: "{}"
         edit_id: 847
+        redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
         editgroup_id: 16
         revision: 42
       - ident: "f1f046a3-45c9-4b99-adce-000000000001"
         extra: "{}"
         edit_id: 847
+        redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
         editgroup_id: 16
         revision: 42
       releases:
       - ident: "f1f046a3-45c9-4b99-adce-000000000001"
         extra: "{}"
         edit_id: 847
+        redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
         editgroup_id: 16
         revision: 42
       - ident: "f1f046a3-45c9-4b99-adce-000000000001"
         extra: "{}"
         edit_id: 847
+        redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
         editgroup_id: 16
         revision: 42
     upperCaseName: "EDITGROUP_EDITS"
@@ -1585,6 +1613,9 @@ x-entity-edit-props:
     type: "integer"
     example: 42
     format: "int64"
+  redirect_ident:
+    type: "string"
+    example: "f1f046a3-45c9-4b99-adce-000000000002"
   editgroup_id:
     type: "integer"
     example: 16

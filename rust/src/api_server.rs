@@ -4,9 +4,10 @@ use ConnectionPool;
 use api_helpers::*;
 use chrono;
 use database_models::*;
-use database_schema::{changelog, container_ident, container_rev, creator_ident, creator_rev,
-                      editgroup, editor, file_ident, file_release, file_rev, release_contrib,
-                      release_ident, release_ref, release_rev, work_ident, work_rev};
+use database_schema::{changelog, container_edit, container_ident, container_rev, creator_edit,
+                      creator_ident, creator_rev, editgroup, editor, file_edit, file_ident,
+                      file_release, file_rev, release_contrib, release_edit, release_ident,
+                      release_ref, release_rev, work_edit, work_ident, work_rev};
 use diesel::prelude::*;
 use diesel::{self, insert_into};
 use errors::*;
@@ -342,7 +343,8 @@ impl Server {
         let entity = ReleaseEntity {
             title: rev.title,
             release_type: rev.release_type,
-            date: rev.date.map(|v| chrono::DateTime::from_utc(v.and_hms(0, 0, 0), chrono::Utc)),
+            date: rev.date
+                .map(|v| chrono::DateTime::from_utc(v.and_hms(0, 0, 0), chrono::Utc)),
             doi: rev.doi,
             volume: rev.volume,
             pages: rev.pages,
@@ -405,7 +407,8 @@ impl Server {
         let entity = ReleaseEntity {
             title: rev.title,
             release_type: rev.release_type,
-            date: rev.date.map(|v| chrono::DateTime::from_utc(v.and_hms(0, 0, 0), chrono::Utc)),
+            date: rev.date
+                .map(|v| chrono::DateTime::from_utc(v.and_hms(0, 0, 0), chrono::Utc)),
             doi: rev.doi,
             volume: rev.volume,
             pages: rev.pages,
@@ -429,11 +432,94 @@ impl Server {
 
         let row: EditgroupRow = editgroup::table.find(id as i64).first(&conn)?;
 
+        let edits = EditgroupEdits {
+            containers: Some(
+                container_edit::table
+                    .filter(container_edit::editgroup_id.eq(id))
+                    .get_results(&conn)
+                    .unwrap()
+                    .iter()
+                    .map(|e: &ContainerEditRow| EntityEdit {
+                        edit_id: e.id,
+                        editgroup_id: e.editgroup_id,
+                        revision: e.rev_id,
+                        redirect_ident: e.redirect_id.map(|v| v.to_string()),
+                        ident: e.ident_id.to_string(),
+                        extra: e.extra_json.clone(),
+                    })
+                    .collect(),
+            ),
+            creators: Some(
+                creator_edit::table
+                    .filter(creator_edit::editgroup_id.eq(id))
+                    .get_results(&conn)
+                    .unwrap()
+                    .iter()
+                    .map(|e: &CreatorEditRow| EntityEdit {
+                        edit_id: e.id,
+                        editgroup_id: e.editgroup_id,
+                        revision: e.rev_id,
+                        redirect_ident: e.redirect_id.map(|v| v.to_string()),
+                        ident: e.ident_id.to_string(),
+                        extra: e.extra_json.clone(),
+                    })
+                    .collect(),
+            ),
+            files: Some(
+                file_edit::table
+                    .filter(file_edit::editgroup_id.eq(id))
+                    .get_results(&conn)
+                    .unwrap()
+                    .iter()
+                    .map(|e: &FileEditRow| EntityEdit {
+                        edit_id: e.id,
+                        editgroup_id: e.editgroup_id,
+                        revision: e.rev_id,
+                        redirect_ident: e.redirect_id.map(|v| v.to_string()),
+                        ident: e.ident_id.to_string(),
+                        extra: e.extra_json.clone(),
+                    })
+                    .collect(),
+            ),
+            releases: Some(
+                release_edit::table
+                    .filter(release_edit::editgroup_id.eq(id))
+                    .get_results(&conn)
+                    .unwrap()
+                    .iter()
+                    .map(|e: &ReleaseEditRow| EntityEdit {
+                        edit_id: e.id,
+                        editgroup_id: e.editgroup_id,
+                        revision: e.rev_id,
+                        redirect_ident: e.redirect_id.map(|v| v.to_string()),
+                        ident: e.ident_id.to_string(),
+                        extra: e.extra_json.clone(),
+                    })
+                    .collect(),
+            ),
+            works: Some(
+                work_edit::table
+                    .filter(work_edit::editgroup_id.eq(id))
+                    .get_results(&conn)
+                    .unwrap()
+                    .iter()
+                    .map(|e: &WorkEditRow| EntityEdit {
+                        edit_id: e.id,
+                        editgroup_id: e.editgroup_id,
+                        revision: e.rev_id,
+                        redirect_ident: e.redirect_id.map(|v| v.to_string()),
+                        ident: e.ident_id.to_string(),
+                        extra: e.extra_json.clone(),
+                    })
+                    .collect(),
+            ),
+        };
+
         let eg = Editgroup {
             id: Some(row.id),
             editor_id: row.editor_id,
             description: row.description,
-            edits: None,
+            edits: Some(edits),
             extra: row.extra_json,
         };
         Ok(Some(eg))
@@ -565,10 +651,11 @@ impl Api for Server {
         let edit = &edit;
 
         let entity_edit = EntityEdit {
-            editgroup_id: Some(edit.editgroup_id),
+            editgroup_id: edit.editgroup_id,
             revision: Some(edit.rev_id.unwrap()),
-            ident: Some(edit.ident_id.to_string()),
-            edit_id: Some(edit.id),
+            redirect_ident: None,
+            ident: edit.ident_id.to_string(),
+            edit_id: edit.id,
             extra: edit.extra_json.clone(),
         };
         Box::new(futures::done(Ok(ContainerPostResponse::CreatedEntity(
@@ -607,10 +694,11 @@ impl Api for Server {
         let edit = &edit;
 
         let entity_edit = EntityEdit {
-            editgroup_id: Some(edit.editgroup_id),
+            editgroup_id: edit.editgroup_id,
             revision: Some(edit.rev_id.unwrap()),
-            ident: Some(edit.ident_id.to_string()),
-            edit_id: Some(edit.id),
+            redirect_ident: None,
+            ident: edit.ident_id.to_string(),
+            edit_id: edit.id,
             extra: edit.extra_json.clone(),
         };
         Box::new(futures::done(Ok(CreatorPostResponse::CreatedEntity(
@@ -673,10 +761,11 @@ impl Api for Server {
         };
 
         let entity_edit = EntityEdit {
-            editgroup_id: Some(edit.editgroup_id),
+            editgroup_id: edit.editgroup_id,
             revision: Some(edit.rev_id.unwrap()),
-            ident: Some(edit.ident_id.to_string()),
-            edit_id: Some(edit.id),
+            redirect_ident: None,
+            ident: edit.ident_id.to_string(),
+            edit_id: edit.id,
             extra: edit.extra_json.clone(),
         };
         Box::new(futures::done(Ok(FilePostResponse::CreatedEntity(
@@ -715,10 +804,11 @@ impl Api for Server {
         let edit = &edit;
 
         let entity_edit = EntityEdit {
-            editgroup_id: Some(edit.editgroup_id),
+            editgroup_id: edit.editgroup_id,
             revision: Some(edit.rev_id.unwrap()),
-            ident: Some(edit.ident_id.to_string()),
-            edit_id: Some(edit.id),
+            redirect_ident: None,
+            ident: edit.ident_id.to_string(),
+            edit_id: edit.id,
             extra: edit.extra_json.clone(),
         };
         Box::new(futures::done(Ok(WorkPostResponse::CreatedEntity(
@@ -823,10 +913,11 @@ impl Api for Server {
         };
 
         let entity_edit = EntityEdit {
-            editgroup_id: Some(edit.editgroup_id),
+            editgroup_id: edit.editgroup_id,
             revision: Some(edit.rev_id.unwrap()),
-            ident: Some(edit.ident_id.to_string()),
-            edit_id: Some(edit.id),
+            redirect_ident: None,
+            ident: edit.ident_id.to_string(),
+            edit_id: edit.id,
             extra: edit.extra_json.clone(),
         };
         Box::new(futures::done(Ok(ReleasePostResponse::CreatedEntity(

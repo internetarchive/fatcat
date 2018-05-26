@@ -285,30 +285,32 @@ pub struct EntityEdit {
     pub extra: Option<serde_json::Value>,
 
     #[serde(rename = "editgroup_id")]
+    pub editgroup_id: i64,
+
+    #[serde(rename = "redirect_ident")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub editgroup_id: Option<i64>,
+    pub redirect_ident: Option<String>,
 
     #[serde(rename = "revision")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub revision: Option<i64>,
 
     #[serde(rename = "ident")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub ident: Option<String>,
+    pub ident: String,
 
     #[serde(rename = "edit_id")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub edit_id: Option<i64>,
+    pub edit_id: i64,
 }
 
 impl EntityEdit {
-    pub fn new() -> EntityEdit {
+    pub fn new(editgroup_id: i64, ident: String, edit_id: i64) -> EntityEdit {
         EntityEdit {
             extra: None,
-            editgroup_id: None,
+            editgroup_id: editgroup_id,
+            redirect_ident: None,
             revision: None,
-            ident: None,
-            edit_id: None,
+            ident: ident,
+            edit_id: edit_id,
         }
     }
 }

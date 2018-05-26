@@ -54,11 +54,11 @@ CREATE TABLE creator_ident (
 
 CREATE TABLE creator_edit (
     id                  BIGSERIAL PRIMARY KEY,
-    extra_json          JSON,
+    editgroup_id        BIGINT REFERENCES editgroup(id) NOT NULL,
     ident_id            UUID REFERENCES creator_ident(id) NOT NULL,
     rev_id              BIGINT REFERENCES creator_rev(id),
     redirect_id         UUID REFERENCES creator_ident(id),
-    editgroup_id        BIGINT REFERENCES editgroup(id) NOT NULL
+    extra_json          JSON
 );
 
 -------------------- Containers --------------------------------------------
@@ -82,11 +82,11 @@ CREATE TABLE container_ident (
 
 CREATE TABLE container_edit (
     id                  BIGSERIAL PRIMARY KEY,
-    extra_json          JSON,
+    editgroup_id        BIGINT REFERENCES editgroup(id) NOT NULL,
     ident_id            UUID REFERENCES container_ident(id) NOT NULL,
     rev_id              BIGINT REFERENCES container_rev(id),
     redirect_id         UUID REFERENCES container_ident(id),
-    editgroup_id        BIGINT REFERENCES editgroup(id) NOT NULL
+    extra_json          JSON
 );
 
 -------------------- Files -------------------------------------------------
@@ -108,11 +108,11 @@ CREATE TABLE file_ident (
 
 CREATE TABLE file_edit (
     id                  BIGSERIAL PRIMARY KEY,
-    extra_json          JSON,
+    editgroup_id        BIGINT REFERENCES editgroup(id) NOT NULL,
     ident_id            UUID REFERENCES file_ident(id) NOT NULL,
     rev_id              BIGINT REFERENCES file_rev(id),
     redirect_id         UUID REFERENCES file_ident(id),
-    editgroup_id        BIGINT REFERENCES editgroup(id) NOT NULL
+    extra_json          JSON
 );
 
 -------------------- Release -----------------------------------------------
@@ -143,11 +143,11 @@ CREATE TABLE release_ident (
 
 CREATE TABLE release_edit (
     id                  BIGSERIAL PRIMARY KEY,
-    extra_json          JSON,
+    editgroup_id        BIGINT REFERENCES editgroup(id) NOT NULL,
     ident_id            UUID REFERENCES release_ident(id) NOT NULL,
     rev_id              BIGINT REFERENCES release_rev(id),
     redirect_id         UUID REFERENCES release_ident(id),
-    editgroup_id        BIGINT REFERENCES editgroup(id) NOT NULL
+    extra_json          JSON
 );
 
 -------------------- Works --------------------------------------------------
@@ -169,11 +169,11 @@ CREATE TABLE work_ident (
 
 CREATE TABLE work_edit (
     id                  BIGSERIAL PRIMARY KEY,
-    extra_json          JSON,
+    editgroup_id        BIGINT REFERENCES editgroup(id) NOT NULL,
     ident_id            UUID REFERENCES work_ident(id) NOT NULL,
     rev_id              BIGINT REFERENCES work_rev(id),
     redirect_id         UUID REFERENCES work_ident(id),
-    editgroup_id        BIGINT REFERENCES editgroup(id) NOT NULL
+    extra_json          JSON
 );
 
 

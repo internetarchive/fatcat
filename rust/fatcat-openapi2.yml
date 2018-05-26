@@ -50,6 +50,10 @@ x-entity-edit-props: &ENTITYEDITPROPS
     type: integer
     example: 42
     format: int64
+  redirect_ident:
+    type: string
+    example: "f1f046a3-45c9-4b99-adce-000000000002"
+    #format: uuid 
   editgroup_id:
     type: integer
     example: 16
@@ -174,6 +178,10 @@ definitions:
         type: string
   entity_edit:
     type: object
+    required:
+      - edit_id
+      - ident
+      - editgroup_id
     properties:
       <<: *ENTITYEDITPROPS
   editor:

@@ -342,6 +342,16 @@ fn test_accept_editgroup() {
     assert_eq!(c, 2);
 
     check_response(
+        request::get(
+            &format!("http://localhost:9411/v0/editgroup/{}", editgroup_id),
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        None,
+    );
+
+    check_response(
         request::post(
             &format!("http://localhost:9411/v0/editgroup/{}/accept", editgroup_id),
             headers.clone(),

@@ -36,10 +36,10 @@ macro_rules! entity_structs {
         #[table_name = $edit_table]
         pub struct $edit_struct {
             pub id: i64,
+            pub editgroup_id: i64,
             pub ident_id: Uuid,
             pub rev_id: Option<i64>,
             pub redirect_id: Option<Uuid>,
-            pub editgroup_id: i64,
             pub extra_json: Option<serde_json::Value>,
         }
 

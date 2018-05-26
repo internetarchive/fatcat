@@ -9,11 +9,11 @@ table! {
 table! {
     container_edit (id) {
         id -> Int8,
-        extra_json -> Nullable<Json>,
+        editgroup_id -> Int8,
         ident_id -> Uuid,
         rev_id -> Nullable<Int8>,
         redirect_id -> Nullable<Uuid>,
-        editgroup_id -> Int8,
+        extra_json -> Nullable<Json>,
     }
 }
 
@@ -39,11 +39,11 @@ table! {
 table! {
     creator_edit (id) {
         id -> Int8,
-        extra_json -> Nullable<Json>,
+        editgroup_id -> Int8,
         ident_id -> Uuid,
         rev_id -> Nullable<Int8>,
         redirect_id -> Nullable<Uuid>,
-        editgroup_id -> Int8,
+        extra_json -> Nullable<Json>,
     }
 }
 
@@ -86,11 +86,11 @@ table! {
 table! {
     file_edit (id) {
         id -> Int8,
-        extra_json -> Nullable<Json>,
+        editgroup_id -> Int8,
         ident_id -> Uuid,
         rev_id -> Nullable<Int8>,
         redirect_id -> Nullable<Uuid>,
-        editgroup_id -> Int8,
+        extra_json -> Nullable<Json>,
     }
 }
 
@@ -134,11 +134,11 @@ table! {
 table! {
     release_edit (id) {
         id -> Int8,
-        extra_json -> Nullable<Json>,
+        editgroup_id -> Int8,
         ident_id -> Uuid,
         rev_id -> Nullable<Int8>,
         redirect_id -> Nullable<Uuid>,
-        editgroup_id -> Int8,
+        extra_json -> Nullable<Json>,
     }
 }
 
@@ -180,11 +180,11 @@ table! {
 table! {
     work_edit (id) {
         id -> Int8,
-        extra_json -> Nullable<Json>,
+        editgroup_id -> Int8,
         ident_id -> Uuid,
         rev_id -> Nullable<Int8>,
         redirect_id -> Nullable<Uuid>,
-        editgroup_id -> Int8,
+        extra_json -> Nullable<Json>,
     }
 }
 
