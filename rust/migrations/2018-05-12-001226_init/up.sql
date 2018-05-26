@@ -201,7 +201,7 @@ CREATE TABLE release_ref (
 
 CREATE TABLE file_release (
     file_rev                BIGSERIAL REFERENCES file_rev(id) NOT NULL,
-    target_release_ident_id UUID REFERENCES creator_ident(id) NOT NULL,
+    target_release_ident_id UUID REFERENCES release_ident(id) NOT NULL,
     PRIMARY KEY (file_rev, target_release_ident_id)
 );
 
@@ -236,6 +236,18 @@ INSERT INTO changelog (editgroup_id) VALUES
     (4),
     (5);
 
+INSERT INTO container_rev (name, issn) VALUES
+    ('Journal of Trivial Results', '1234-5678'),
+    ('MySpace Blog', null);
+
+INSERT INTO container_ident (id, is_live, rev_id, redirect_id) VALUES
+    ('f1f046a3-45c9-4b99-cccc-000000000001', true, 1, null),
+    ('f1f046a3-45c9-4b99-cccc-000000000002', true, 2, null);
+
+INSERT INTO container_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
+    ('f1f046a3-45c9-4b99-cccc-000000000001', 1, null, 4),
+    ('f1f046a3-45c9-4b99-cccc-000000000002', 2, null, 5);
+
 INSERT INTO creator_rev (name, orcid) VALUES
     ('Grace Hopper', null),
     ('Emily Noethe', null),
@@ -253,16 +265,51 @@ INSERT INTO creator_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
     ('f1f046a3-45c9-4b99-adce-000000000003', 3, null, 3),
     ('f1f046a3-45c9-4b99-adce-000000000004', 2, null, 4);
 
-INSERT INTO container_rev (name, issn) VALUES
-    ('Journal of Trivial Results', '1234-5678'),
-    ('MySpace Blog', null);
+INSERT INTO file_rev (size, sha1, url) VALUES
+    (null, null, null),
+    (4321, '7d97e98f8af710c7e7fe703abc8f639e0ee507c4', 'http://archive.org/robots.txt');
 
-INSERT INTO container_ident (id, is_live, rev_id, redirect_id) VALUES
-    ('f1f046a3-45c9-4b99-cccc-000000000001', true, 1, null),
-    ('f1f046a3-45c9-4b99-cccc-000000000002', true, 2, null);
+INSERT INTO file_ident (id, is_live, rev_id, redirect_id) VALUES
+    ('f1f046a3-45c9-4b99-ffff-000000000001', true, 1, null),
+    ('f1f046a3-45c9-4b99-ffff-000000000002', true, 2, null);
 
-INSERT INTO container_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
-    ('f1f046a3-45c9-4b99-cccc-000000000001', 1, null, 4),
-    ('f1f046a3-45c9-4b99-cccc-000000000002', 2, null, 5);
+INSERT INTO file_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
+    ('f1f046a3-45c9-4b99-ffff-000000000001', 1, null, 4),
+    ('f1f046a3-45c9-4b99-ffff-000000000002', 2, null, 5);
+
+INSERT INTO work_rev (work_type, primary_release_id) VALUES
+    (null, null),
+    ('journal-article', null);
+
+INSERT INTO work_ident (id, is_live, rev_id, redirect_id) VALUES
+    ('f1f046a3-45c9-4b99-3333-000000000001', true, 1, null),
+    ('f1f046a3-45c9-4b99-3333-000000000002', true, 2, null);
+
+INSERT INTO work_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
+    ('f1f046a3-45c9-4b99-3333-000000000001', 1, null, 4),
+    ('f1f046a3-45c9-4b99-3333-000000000002', 2, null, 5);
+
+INSERT INTO release_rev (work_ident_id, container_ident_id, title, release_type, date, doi, volume, pages, issue) VALUES
+    ('f1f046a3-45c9-4b99-3333-000000000001',                                   null,  'example title',              null,         null,         null,  null,  null, null),
+    ('f1f046a3-45c9-4b99-3333-000000000002', 'f1f046a3-45c9-4b99-cccc-000000000001', 'bigger example', 'journal-article', '2018-01-01', '10.123/abc',  '12', '5-9', 'IV');
+
+INSERT INTO release_ident (id, is_live, rev_id, redirect_id) VALUES
+    ('f1f046a3-45c9-4b99-4444-000000000001', true, 1, null),
+    ('f1f046a3-45c9-4b99-4444-000000000002', true, 2, null);
+
+INSERT INTO release_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
+    ('f1f046a3-45c9-4b99-4444-000000000001', 1, null, 4),
+    ('f1f046a3-45c9-4b99-4444-000000000002', 2, null, 5);
+
+INSERT INTO release_contrib (release_rev, creator_ident_id, stub, contrib_type) VALUES
+    (2, null, null, null),
+    (2, 'f1f046a3-45c9-4b99-adce-000000000002', 'some contrib', 'editor');
+
+INSERT INTO release_ref (release_rev, target_release_ident_id, index, stub) VALUES
+    (2, null, null, null),
+    (2, 'f1f046a3-45c9-4b99-4444-000000000001', 4, 'citation note');
+
+INSERT INTO file_release (file_rev, target_release_ident_id) VALUES
+    (2, 'f1f046a3-45c9-4b99-4444-000000000002');
 
 COMMIT;
