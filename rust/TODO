@@ -10,16 +10,45 @@ x clean up blasse error handling a bit
 x add 404s to gets
 x wow. fix a bunch of api schema names ("FindASingleContainerByExternalIdentifer")
 x refactor handlers to have a proper Result<_,_> error-chain type, so I can use '?'
-- one-to-many relationship (eg, works)
-- many-to-many relationship (eg, creators)
-- creators, releases, works, files (?)
-- copypasta a bunch of CRUD
-- helper to calculate state of idents
-
-then:
+x move python to subdirectory
+x rename binary
+x copypasta a bunch of CRUD
+x swagger endpoint
+x helper to calculate 'state' of idents
+x tests for orcid and issn lookups
+x editgroup helper (for POST)
+x creators, releases, works, files
+x editgroup accept
+x edits, groups, etc
+x JSON
+x one-to-many relationship (eg, works)
+x more dummy data (tests the schema)
 x encode the remaining entities in SQL
 x openapi for other entities (heavily templated)
-- figure out JSON(B) in both swagger and diesel
+x testing framework
+x file/release relation
+x refactor tests (response check, setup)
+x better test coverage (all entity types, get and post)
+x editgroup GET API schema arrays
 
 later:
-- metrics, jwt, config, sentry, testing
+- generate python client library?
+- web interface?
+- editgroup: state to track review status?
+- all those python tests
+- enforce "no editing if editgroup accepted" behavior
+- refactor entity creation/editing (DRY)
+- refactor to allow Result<> in all handlers
+- real auth
+- metrics, jwt, config, sentry
+- ansible/deployment/DNS story
+- refactor logging; use slog
+
+schema/api questions:
+- url table (for files)
+- get works/releases by creator
+- "types"
+- define release field stuff
+- what should entity POST return? include both the entity and the edit?
+- PUTs (updates) to entities
+

@@ -5,12 +5,16 @@ Rust implementation of fatcat API server (`fatcatd`).
 
 - HTTP API
     - [ ] base32 encoding of UUID identifiers
+    - [ ] inverse many-to-many helpers (files-by-release, release-by-creator)
 - SQL Schema
     - [x] Basic entities
-    - [ ] one-to-many and many-to-many entities
-    - [ ] JSON(B) "extra" metadata fields
+    - [x] one-to-many and many-to-many entities
+    - [x] JSON(B) "extra" metadata fields
+    - [ ] full rev1 schema for all entities
+    - [ ] editgroup review: comments? actions?
 - Web Interface
     - [ ] Migrate Python codebase
+    - [ ] Creation and editing of all entities
 - Other
     - [x] Basic logging
     - [x] Swagger-UI 
@@ -18,6 +22,7 @@ Rust implementation of fatcat API server (`fatcatd`).
     - [ ] Metrics
     - [ ] Authentication (eg, accounts, OAuth2, JWT)
     - [ ] Authorization (aka, roles)
+    - [ ] bot vs. editor
 
 ## Development
 
@@ -83,17 +88,11 @@ On a bare server, as root:
 
 ### Special Tricks
 
-Regenerate API schemas:
+Regenerate API schemas (this will, as a side-effect, also run `cargo fmt` on
+the whole project, so don't run it with your editor open):
 
     cargo install cargo-swagger  # uses docker
-    cargo swagger fatcat-openapi2.yml fatcat-api --docker-tag=v2.3.1
-    sudo chown `whoami`:`whoami` -R fatcat-api
-
-    # usually want to keep our changes to sub-module toml
-    git checkout fatcat-api/Cargo.toml
-
-    cargo fmt
-    # git commit the fatcat-api directory at this point
+    ./codegen_openapi2.sh
 
 Regenerate SQL schema:
 
