@@ -154,7 +154,7 @@ pub struct ReleaseContribRow {
     pub release_rev: i64,
     pub creator_ident_id: Option<Uuid>,
     pub stub: Option<String>,
-    // XXX: pub index: Option<i64>,
+    pub index: Option<i64>,
     pub contrib_type: Option<String>,
 }
 
@@ -164,7 +164,7 @@ pub struct ReleaseContribNewRow {
     pub release_rev: i64,
     pub creator_ident_id: Option<Uuid>,
     pub stub: Option<String>,
-    // XXX: pub index: Option<i64>,
+    pub index: Option<i64>,
     pub contrib_type: Option<String>,
 }
 

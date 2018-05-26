@@ -187,8 +187,9 @@ CREATE TABLE release_contrib (
     id                  BIGSERIAL PRIMARY KEY,
     release_rev         BIGSERIAL REFERENCES release_rev(id) NOT NULL,
     creator_ident_id    UUID REFERENCES creator_ident(id),
-    stub                TEXT,
-    contrib_type        TEXT
+    contrib_type        TEXT,
+    index               BIGINT,
+    stub                TEXT
 );
 
 CREATE TABLE release_ref (
@@ -301,9 +302,9 @@ INSERT INTO release_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
     ('f1f046a3-45c9-4b99-4444-000000000001', 1, null, 4),
     ('f1f046a3-45c9-4b99-4444-000000000002', 2, null, 5);
 
-INSERT INTO release_contrib (release_rev, creator_ident_id, stub, contrib_type) VALUES
-    (2, null, null, null),
-    (2, 'f1f046a3-45c9-4b99-adce-000000000002', 'some contrib', 'editor');
+INSERT INTO release_contrib (release_rev, creator_ident_id, stub, contrib_type, index) VALUES
+    (2, null, null, null, null),
+    (2, 'f1f046a3-45c9-4b99-adce-000000000002', 'some contrib', 'editor', 4);
 
 INSERT INTO release_ref (release_rev, target_release_ident_id, index, stub) VALUES
     (2, null, null, null),

@@ -125,8 +125,9 @@ table! {
         id -> Int8,
         release_rev -> Int8,
         creator_ident_id -> Nullable<Uuid>,
-        stub -> Nullable<Text>,
         contrib_type -> Nullable<Text>,
+        index -> Nullable<Int8>,
+        stub -> Nullable<Text>,
     }
 }
 

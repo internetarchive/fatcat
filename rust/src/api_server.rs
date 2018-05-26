@@ -332,8 +332,7 @@ impl Server {
             .expect("fetch release refs")
             .iter()
             .map(|c: &ReleaseContribRow| ReleaseContrib {
-                // XXX: index: c.index,
-                index: None,
+                index: c.index,
                 contrib_type: c.contrib_type.clone(),
                 creator_stub: c.stub.clone(),
                 creator_id: c.creator_ident_id.map(|v| v.to_string()),
@@ -396,8 +395,7 @@ impl Server {
             .expect("fetch release refs")
             .iter()
             .map(|c: &ReleaseContribRow| ReleaseContrib {
-                // XXX: index: c.index,
-                index: None,
+                index: c.index,
                 contrib_type: c.contrib_type.clone(),
                 creator_stub: c.stub.clone(),
                 creator_id: c.creator_ident_id.map(|v| v.to_string()),
@@ -781,8 +779,7 @@ impl Api for Server {
                             target_release_ident_id: r.target_release_id
                                 .clone()
                                 .map(|v| uuid::Uuid::parse_str(&v).expect("valid UUID")),
-                            // XXX: index: r.index,
-                            index: None,
+                            index: r.index,
                             stub: r.stub.clone(),
                         })
                         .collect();
@@ -808,7 +805,7 @@ impl Api for Server {
                             creator_ident_id: c.creator_id
                                 .clone()
                                 .map(|v| uuid::Uuid::parse_str(&v).expect("valid UUID")),
-                            // XXX: index: r.index,
+                            index: c.index,
                             contrib_type: c.contrib_type.clone(),
                             stub: c.creator_stub.clone(),
                         })
