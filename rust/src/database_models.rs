@@ -150,29 +150,49 @@ entity_structs!("work_edit", WorkEditRow, "work_ident", WorkIdentRow);
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
 #[table_name = "release_contrib"]
 pub struct ReleaseContribRow {
-    id: i64,
-    release_rev: i64,
-    creator_ident_id: Option<Uuid>,
-    stub: Option<String>,
-    contrib_type: Option<String>,
+    pub id: i64,
+    pub release_rev: i64,
+    pub creator_ident_id: Option<Uuid>,
+    pub stub: Option<String>,
+    // XXX: pub index: Option<i64>,
+    pub contrib_type: Option<String>,
+}
+
+#[derive(Debug, Insertable)]
+#[table_name = "release_contrib"]
+pub struct ReleaseContribNewRow {
+    pub release_rev: i64,
+    pub creator_ident_id: Option<Uuid>,
+    pub stub: Option<String>,
+    // XXX: pub index: Option<i64>,
+    pub contrib_type: Option<String>,
 }
 
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
 #[table_name = "release_ref"]
 pub struct ReleaseRefRow {
-    id: i64,
-    release_rev: i64,
-    target_release_ident_id: Option<Uuid>,
-    index: Option<i64>,
-    stub: Option<String>,
+    pub id: i64,
+    pub release_rev: i64,
+    pub target_release_ident_id: Option<Uuid>,
+    pub index: Option<i64>,
+    pub stub: Option<String>,
+}
+
+#[derive(Debug, Insertable, AsChangeset)]
+#[table_name = "release_ref"]
+pub struct ReleaseRefNewRow {
+    pub release_rev: i64,
+    pub target_release_ident_id: Option<Uuid>,
+    pub index: Option<i64>,
+    pub stub: Option<String>,
 }
 
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
 #[table_name = "file_release"]
 pub struct FileReleaseRow {
-    id: i64,
-    file_rev: i64,
-    target_release_ident_id: Uuid,
+    pub id: i64,
+    pub file_rev: i64,
+    pub target_release_ident_id: Uuid,
 }
 
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]

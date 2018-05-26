@@ -155,13 +155,11 @@ definitions:
       contribs:
         type: array
         items:
-          type: string
-          #$ref: "#/definitions/release_contrib"
+          $ref: "#/definitions/release_contrib"
       refs:
         type: array
         items:
-          type: string
-          #$ref: "#/definitions/release_ref"
+          $ref: "#/definitions/release_ref"
   work_entity:
     type: object
     properties:

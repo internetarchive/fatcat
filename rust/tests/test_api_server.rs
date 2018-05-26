@@ -79,6 +79,66 @@ fn test_post_container() {
 }
 
 #[test]
+fn test_post_release() {
+    let server = fatcat::test_server().unwrap();
+    let router = fatcat_api::router(server);
+    let mut headers = Headers::new();
+    let mime: Mime = "application/json".parse().unwrap();
+    headers.set(ContentType(mime));
+ 
+    let response = request::post(
+        "http://localhost:9411/v0/release",
+        headers.clone(),
+        // TODO: target_release_id
+        r#"{"title": "secret minimal paper",
+            "release_type": "journal-article",
+            "work_id": "f1f046a3-45c9-4b99-3333-000000000001"
+            }"#,
+        &router,
+    ).unwrap();
+    let status = response.status;
+    let body = response::extract_body_to_string(response);
+    println!("{}", body);
+    assert_eq!(status, Some(status::Created));
+    //assert!(body.contains("secret paper"));
+    //
+    let response = request::post(
+        "http://localhost:9411/v0/release",
+        headers,
+        // TODO: target_release_id
+        r#"{"title": "secret paper",
+            "release_type": "journal-article",
+            "doi": "10.1234/abcde.781231231239",
+            "volume": "439",
+            "pages": "1-399",
+            "issue": "IV",
+            "work_id": "f1f046a3-45c9-4b99-3333-000000000002",
+            "container_id": "f1f046a3-45c9-4b99-cccc-000000000001",
+            "refs": [{
+                    "index": 3,
+                    "stub": "just a string"
+                },{
+                    "stub": "just a string"
+                }],
+            "contribs": [{
+                    "index": 1,
+                    "creator_stub": "textual description of contributor (aka, name)",
+                    "creator_id": "f1f046a3-45c9-4b99-adce-000000000001",
+                    "contrib_type": "author"
+                },{
+                    "creator_stub": "shorter"
+                }]
+            }"#,
+        &router,
+    ).unwrap();
+    let status = response.status;
+    let body = response::extract_body_to_string(response);
+    println!("{}", body);
+    assert_eq!(status, Some(status::Created));
+    //assert!(body.contains("secret paper"));
+}
+
+#[test]
 fn test_accept_editgroup() {
     let server = fatcat::test_server().unwrap();
     let conn = server.db_pool.get().expect("db_pool error");

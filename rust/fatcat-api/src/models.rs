@@ -415,11 +415,11 @@ impl ReleaseContrib {
 pub struct ReleaseEntity {
     #[serde(rename = "refs")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub refs: Option<Vec<String>>,
+    pub refs: Option<Vec<models::ReleaseRef>>,
 
     #[serde(rename = "contribs")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub contribs: Option<Vec<String>>,
+    pub contribs: Option<Vec<models::ReleaseContrib>>,
 
     #[serde(rename = "issue")]
     #[serde(skip_serializing_if = "Option::is_none")]

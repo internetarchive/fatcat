@@ -6,7 +6,7 @@ use chrono;
 use database_models::*;
 use database_schema::{changelog, container_ident, container_rev, creator_ident, creator_rev,
                       editgroup, editor, file_ident, file_rev, release_ident, release_rev,
-                      work_ident, work_rev};
+                      release_contrib, release_ref, work_ident, work_rev};
 use diesel::prelude::*;
 use diesel::{self, insert_into};
 use errors::*;
@@ -295,18 +295,44 @@ impl Server {
             Err(e) => return Err(e.into()),
         };
 
+        let refs: Vec<ReleaseRef> = release_ref::table
+            .filter(release_ref::release_rev.eq(rev.id))
+            .get_results(&conn)
+            .expect("fetch release refs")
+            .iter()
+            .map(|r: &ReleaseRefRow| ReleaseRef {
+                index: r.index.clone(),
+                stub: r.stub.clone(),
+                target_release_id: r.target_release_ident_id.map(|v| v.to_string())
+            })
+            .collect();
+
+        let contribs: Vec<ReleaseContrib> = release_contrib::table
+            .filter(release_contrib::release_rev.eq(rev.id))
+            .get_results(&conn)
+            .expect("fetch release refs")
+            .iter()
+            .map(|c: &ReleaseContribRow| ReleaseContrib {
+                // XXX: index: c.index,
+                index: None,
+                contrib_type: c.contrib_type.clone(),
+                creator_stub: c.stub.clone(),
+                creator_id: c.creator_ident_id.map(|v| v.to_string()),
+            })
+            .collect();
+
         let entity = ReleaseEntity {
             title: rev.title,
             release_type: rev.release_type,
-            //date: rev.date,
+            // XXX: date: rev.date,
             doi: rev.doi,
             volume: rev.volume,
             pages: rev.pages,
             issue: rev.issue,
             container_id: rev.container_ident_id.map(|u| u.to_string()),
             work_id: rev.work_ident_id.to_string(),
-            refs: None,
-            contribs: None,
+            refs: Some(refs),
+            contribs: Some(contribs),
             state: Some(ident.state().unwrap().shortname()),
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id,
@@ -333,18 +359,44 @@ impl Server {
             Err(e) => return Err(e.into()),
         };
 
+        let refs: Vec<ReleaseRef> = release_ref::table
+            .filter(release_ref::release_rev.eq(rev.id))
+            .get_results(&conn)
+            .expect("fetch release refs")
+            .iter()
+            .map(|r: &ReleaseRefRow| ReleaseRef {
+                index: r.index.clone(),
+                stub: r.stub.clone(),
+                target_release_id: r.target_release_ident_id.map(|v| v.to_string())
+            })
+            .collect();
+
+        let contribs: Vec<ReleaseContrib> = release_contrib::table
+            .filter(release_contrib::release_rev.eq(rev.id))
+            .get_results(&conn)
+            .expect("fetch release refs")
+            .iter()
+            .map(|c: &ReleaseContribRow| ReleaseContrib {
+                // XXX: index: c.index,
+                index: None,
+                contrib_type: c.contrib_type.clone(),
+                creator_stub: c.stub.clone(),
+                creator_id: c.creator_ident_id.map(|v| v.to_string()),
+            })
+            .collect();
+
         let entity = ReleaseEntity {
             title: rev.title,
             release_type: rev.release_type,
-            //date: rev.date,
+            // XXX: date: rev.date,
             doi: rev.doi,
             volume: rev.volume,
             pages: rev.pages,
             issue: rev.issue,
             container_id: rev.container_ident_id.map(|u| u.to_string()),
             work_id: rev.work_ident_id.to_string(),
-            refs: None,
-            contribs: None,
+            refs: Some(refs),
+            contribs: Some(contribs),
             state: Some(ident.state().unwrap().shortname()),
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id,
@@ -649,6 +701,7 @@ impl Api for Server {
             None => None,
         };
 
+        println!("{:?}", container_id);
         let edit: ReleaseEditRow = diesel::sql_query(
             "WITH rev AS ( INSERT INTO release_rev (title, release_type, doi, volume, pages, issue, work_ident_id, container_ident_id)
                         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
@@ -669,9 +722,56 @@ impl Api for Server {
             .bind::<diesel::sql_types::Uuid, _>(work_id)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Uuid>, _>(container_id)
             .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
+            //XXX: extra_json
             .get_result(&conn)
             .unwrap();
         let edit = &edit;
+
+        let _refs: Option<Vec<ReleaseRefRow>> = match body.refs {
+            None => None,
+            Some(ref_list) => {
+                if ref_list.len() == 0 {
+                    Some(vec![])
+                } else {
+                    let ref_rows: Vec<ReleaseRefNewRow> = ref_list.iter().map(|r| ReleaseRefNewRow {
+                        release_rev: edit.rev_id.unwrap(),
+                        target_release_ident_id: 
+                            r.target_release_id.clone().map(|v| uuid::Uuid::parse_str(&v).expect("valid UUID")),
+                        // XXX: index: r.index,
+                        index: None,
+                        stub: r.stub.clone(),
+                    }).collect();
+                    let ref_rows: Vec<ReleaseRefRow> = insert_into(release_ref::table)
+                        .values(ref_rows)
+                        .get_results(&conn)
+                        .expect("error inserting release_refs");
+                    Some(ref_rows)
+                }
+            }
+        };
+
+        let _contribs: Option<Vec<ReleaseContribRow>> = match body.contribs {
+            None => None,
+            Some(contrib_list) => {
+                if contrib_list.len() == 0 {
+                    Some(vec![])
+                } else {
+                    let contrib_rows: Vec<ReleaseContribNewRow> = contrib_list.iter().map(|c| ReleaseContribNewRow {
+                        release_rev: edit.rev_id.unwrap(),
+                        creator_ident_id: 
+                            c.creator_id.clone().map(|v| uuid::Uuid::parse_str(&v).expect("valid UUID")),
+                        // XXX: index: r.index,
+                        contrib_type: c.contrib_type.clone(),
+                        stub: c.creator_stub.clone(),
+                    }).collect();
+                    let contrib_rows: Vec<ReleaseContribRow> = insert_into(release_contrib::table)
+                        .values(contrib_rows)
+                        .get_results(&conn)
+                        .expect("error inserting release_contribs");
+                    Some(contrib_rows)
+                }
+            }
+        };
 
         let entity_edit = EntityEdit {
             editgroup_id: Some(edit.editgroup_id),

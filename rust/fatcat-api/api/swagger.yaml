@@ -1169,11 +1169,11 @@ definitions:
       refs:
         type: "array"
         items:
-          type: "string"
+          $ref: "#/definitions/release_ref"
       contribs:
         type: "array"
         items:
-          type: "string"
+          $ref: "#/definitions/release_contrib"
       issue:
         type: "string"
         example: "12"
@@ -1226,14 +1226,24 @@ definitions:
       release_type: "preprint"
       title: "title"
       contribs:
-      - "contribs"
-      - "contribs"
+      - creator_stub: "creator_stub"
+        creator_id: "creator_id"
+        index: 6
+        contrib_type: "contrib_type"
+      - creator_stub: "creator_stub"
+        creator_id: "creator_id"
+        index: 6
+        contrib_type: "contrib_type"
       revision: 42
       volume: "volume"
       pages: "pages"
       refs:
-      - "refs"
-      - "refs"
+      - target_release_id: "target_release_id"
+        stub: "stub"
+        index: 0
+      - target_release_id: "target_release_id"
+        stub: "stub"
+        index: 0
       extra: "{}"
       editgroup_id: 16
       state: "wip"
@@ -1409,6 +1419,10 @@ definitions:
         type: "string"
       stub:
         type: "string"
+    example:
+      target_release_id: "target_release_id"
+      stub: "stub"
+      index: 0
     upperCaseName: "RELEASE_REF"
   release_contrib:
     type: "object"
@@ -1422,6 +1436,11 @@ definitions:
         type: "string"
       contrib_type:
         type: "string"
+    example:
+      creator_stub: "creator_stub"
+      creator_id: "creator_id"
+      index: 6
+      contrib_type: "contrib_type"
     upperCaseName: "RELEASE_CONTRIB"
   editgroup_edits:
     properties:
