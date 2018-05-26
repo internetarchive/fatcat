@@ -659,8 +659,7 @@ impl Api for Server {
                         .iter()
                         .map(|r| FileReleaseRow {
                             file_rev: edit.rev_id.unwrap(),
-                            target_release_ident_id:
-                                uuid::Uuid::parse_str(r).expect("valid UUID"),
+                            target_release_ident_id: uuid::Uuid::parse_str(r).expect("valid UUID"),
                         })
                         .collect();
                     let release_rows: Vec<FileReleaseRow> = insert_into(file_release::table)
