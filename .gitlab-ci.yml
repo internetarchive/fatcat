@@ -2,7 +2,11 @@
 rust_test:
   image: "rust:1.26-stretch"
   variables:
-    TEST_DATABASE_URL: "postgres://postgres@localhost/fatcat_test"
+    POSTGRES_DB: "fatcat_test"
+    POSTGRES_USER: "fatcat_user"
+    POSTGRES_PASSWORD: "fatcat_pw"
+    DATABASE_URL: "postgres://fatcat_user:fatcat_pw:@localhost/fatcat_test"
+    TEST_DATABASE_URL: "postgres://fatcat_user:fatcat_pw:@localhost/fatcat_test"
   services:
     - "postgres:9.6"
   before_script:
