@@ -42,8 +42,18 @@ fn check_response(
 }
 
 #[test]
-fn test_basics() {
+fn test_entity_gets() {
     let (headers, router, _conn) = setup();
+
+    check_response(
+        request::get(
+            "http://localhost:9411/v0/container/f1f046a3-45c9-4b99-cccc-000000000002",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("MySpace"),
+    );
 
     check_response(
         request::get(
@@ -54,6 +64,41 @@ fn test_basics() {
         status::Ok,
         Some("Grace Hopper"),
     );
+
+    check_response(
+        request::get(
+            "http://localhost:9411/v0/file/f1f046a3-45c9-4b99-ffff-000000000002",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("archive.org"),
+    );
+
+    check_response(
+        request::get(
+            "http://localhost:9411/v0/work/f1f046a3-45c9-4b99-3333-000000000002",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        None,
+    );
+
+    check_response(
+        request::get(
+            "http://localhost:9411/v0/release/f1f046a3-45c9-4b99-4444-000000000002",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("bigger example"),
+    );
+}
+
+#[test]
+fn test_entity_404() {
+    let (headers, router, _conn) = setup();
 
     check_response(
         request::get(
@@ -89,6 +134,16 @@ fn test_lookups() {
         status::Ok,
         Some("Christine Moran"),
     );
+
+    check_response(
+        request::get(
+            "http://localhost:9411/v0/file/lookup?sha1=7d97e98f8af710c7e7fe703abc8f639e0ee507c4",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("robots.txt"),
+    );
 }
 
 #[test]
@@ -105,6 +160,22 @@ fn test_post_container() {
         status::Created,
         None,
     ); // TODO: "test journal"
+}
+
+#[test]
+fn test_post_creator() {
+    let (headers, router, _conn) = setup();
+
+    check_response(
+        request::post(
+            "http://localhost:9411/v0/creator",
+            headers,
+            r#"{"name": "some person"}"#,
+            &router,
+        ),
+        status::Created,
+        None,
+    );
 }
 
 #[test]
@@ -193,6 +264,23 @@ fn test_post_release() {
         status::Created,
         None,
     ); // TODO: "secret paper"
+}
+
+#[test]
+fn test_post_work() {
+    let (headers, router, _conn) = setup();
+
+    check_response(
+        request::post(
+            "http://localhost:9411/v0/work",
+            headers.clone(),
+            // TODO: target_work_id
+            r#"{"work_type": "journal-article"}"#,
+            &router,
+        ),
+        status::Created,
+        None,
+    );
 }
 
 #[test]
