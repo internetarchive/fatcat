@@ -284,10 +284,10 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn container_post(&self, param_body: models::ContainerEntity, context: &Context) -> Box<Future<Item = ContainerPostResponse, Error = ApiError> + Send> {
+    fn container_post(&self, param_entity: models::ContainerEntity, context: &Context) -> Box<Future<Item = ContainerPostResponse, Error = ApiError> + Send> {
         let url = format!("{}/v0/container", self.base_path);
 
-        let body = serde_json::to_string(&param_body).expect("impossible to fail to serialize");
+        let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Post, &url);
@@ -472,10 +472,10 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn creator_post(&self, param_body: models::CreatorEntity, context: &Context) -> Box<Future<Item = CreatorPostResponse, Error = ApiError> + Send> {
+    fn creator_post(&self, param_entity: models::CreatorEntity, context: &Context) -> Box<Future<Item = CreatorPostResponse, Error = ApiError> + Send> {
         let url = format!("{}/v0/creator", self.base_path);
 
-        let body = serde_json::to_string(&param_body).expect("impossible to fail to serialize");
+        let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Post, &url);
@@ -657,10 +657,10 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn editgroup_post(&self, param_body: models::Editgroup, context: &Context) -> Box<Future<Item = EditgroupPostResponse, Error = ApiError> + Send> {
+    fn editgroup_post(&self, param_entity: models::Editgroup, context: &Context) -> Box<Future<Item = EditgroupPostResponse, Error = ApiError> + Send> {
         let url = format!("{}/v0/editgroup", self.base_path);
 
-        let body = serde_json::to_string(&param_body).expect("impossible to fail to serialize");
+        let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Post, &url);
@@ -952,10 +952,10 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn file_post(&self, param_body: models::FileEntity, context: &Context) -> Box<Future<Item = FilePostResponse, Error = ApiError> + Send> {
+    fn file_post(&self, param_entity: models::FileEntity, context: &Context) -> Box<Future<Item = FilePostResponse, Error = ApiError> + Send> {
         let url = format!("{}/v0/file", self.base_path);
 
-        let body = serde_json::to_string(&param_body).expect("impossible to fail to serialize");
+        let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Post, &url);
@@ -1140,10 +1140,10 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn release_post(&self, param_body: models::ReleaseEntity, context: &Context) -> Box<Future<Item = ReleasePostResponse, Error = ApiError> + Send> {
+    fn release_post(&self, param_entity: models::ReleaseEntity, context: &Context) -> Box<Future<Item = ReleasePostResponse, Error = ApiError> + Send> {
         let url = format!("{}/v0/release", self.base_path);
 
-        let body = serde_json::to_string(&param_body).expect("impossible to fail to serialize");
+        let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Post, &url);
@@ -1265,10 +1265,10 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn work_post(&self, param_body: models::WorkEntity, context: &Context) -> Box<Future<Item = WorkPostResponse, Error = ApiError> + Send> {
+    fn work_post(&self, param_entity: models::WorkEntity, context: &Context) -> Box<Future<Item = WorkPostResponse, Error = ApiError> + Send> {
         let url = format!("{}/v0/work", self.base_path);
 
-        let body = serde_json::to_string(&param_body).expect("impossible to fail to serialize");
+        let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Post, &url);

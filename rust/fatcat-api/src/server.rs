@@ -276,27 +276,27 @@ where
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_body = req.get::<bodyparser::Raw>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter body - not valid UTF-8: {}", e))))?;
+                let param_entity = req.get::<bodyparser::Raw>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
 
-                let param_body = if let Some(param_body_raw) = param_body {
-                    let deserializer = &mut serde_json::Deserializer::from_str(&param_body_raw);
+                let param_entity = if let Some(param_entity_raw) = param_entity {
+                    let deserializer = &mut serde_json::Deserializer::from_str(&param_entity_raw);
 
-                    let param_body: Option<models::ContainerEntity> =
+                    let param_entity: Option<models::ContainerEntity> =
                         serde_ignored::deserialize(deserializer, |path| {
                             warn!("Ignoring unknown field in body: {}", path);
                             unused_elements.push(path.to_string());
-                        }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter body - doesn't match schema: {}", e))))?;
+                        }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - doesn't match schema: {}", e))))?;
 
-                    param_body
+                    param_entity
                 } else {
                     None
                 };
-                let param_body = param_body.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter body".to_string())))?;
+                let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
 
-                match api.container_post(param_body, context).wait() {
+                match api.container_post(param_entity, context).wait() {
                     Ok(rsp) => match rsp {
                         ContainerPostResponse::CreatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -554,26 +554,27 @@ where
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_body = req.get::<bodyparser::Raw>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter body - not valid UTF-8: {}", e))))?;
+                let param_entity = req.get::<bodyparser::Raw>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
 
-                let param_body = if let Some(param_body_raw) = param_body {
-                    let deserializer = &mut serde_json::Deserializer::from_str(&param_body_raw);
+                let param_entity = if let Some(param_entity_raw) = param_entity {
+                    let deserializer = &mut serde_json::Deserializer::from_str(&param_entity_raw);
 
-                    let param_body: Option<models::CreatorEntity> = serde_ignored::deserialize(deserializer, |path| {
-                        warn!("Ignoring unknown field in body: {}", path);
-                        unused_elements.push(path.to_string());
-                    }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter body - doesn't match schema: {}", e))))?;
+                    let param_entity: Option<models::CreatorEntity> =
+                        serde_ignored::deserialize(deserializer, |path| {
+                            warn!("Ignoring unknown field in body: {}", path);
+                            unused_elements.push(path.to_string());
+                        }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - doesn't match schema: {}", e))))?;
 
-                    param_body
+                    param_entity
                 } else {
                     None
                 };
-                let param_body = param_body.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter body".to_string())))?;
+                let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
 
-                match api.creator_post(param_body, context).wait() {
+                match api.creator_post(param_entity, context).wait() {
                     Ok(rsp) => match rsp {
                         CreatorPostResponse::CreatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -835,26 +836,26 @@ where
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_body = req.get::<bodyparser::Raw>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter body - not valid UTF-8: {}", e))))?;
+                let param_entity = req.get::<bodyparser::Raw>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
 
-                let param_body = if let Some(param_body_raw) = param_body {
-                    let deserializer = &mut serde_json::Deserializer::from_str(&param_body_raw);
+                let param_entity = if let Some(param_entity_raw) = param_entity {
+                    let deserializer = &mut serde_json::Deserializer::from_str(&param_entity_raw);
 
-                    let param_body: Option<models::Editgroup> = serde_ignored::deserialize(deserializer, |path| {
+                    let param_entity: Option<models::Editgroup> = serde_ignored::deserialize(deserializer, |path| {
                         warn!("Ignoring unknown field in body: {}", path);
                         unused_elements.push(path.to_string());
-                    }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter body - doesn't match schema: {}", e))))?;
+                    }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - doesn't match schema: {}", e))))?;
 
-                    param_body
+                    param_entity
                 } else {
                     None
                 };
-                let param_body = param_body.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter body".to_string())))?;
+                let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
 
-                match api.editgroup_post(param_body, context).wait() {
+                match api.editgroup_post(param_entity, context).wait() {
                     Ok(rsp) => match rsp {
                         EditgroupPostResponse::SuccessfullyCreated(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -1256,26 +1257,27 @@ where
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_body = req.get::<bodyparser::Raw>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter body - not valid UTF-8: {}", e))))?;
+                let param_entity = req.get::<bodyparser::Raw>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
 
-                let param_body = if let Some(param_body_raw) = param_body {
-                    let deserializer = &mut serde_json::Deserializer::from_str(&param_body_raw);
+                let param_entity = if let Some(param_entity_raw) = param_entity {
+                    let deserializer = &mut serde_json::Deserializer::from_str(&param_entity_raw);
 
-                    let param_body: Option<models::FileEntity> = serde_ignored::deserialize(deserializer, |path| {
-                        warn!("Ignoring unknown field in body: {}", path);
-                        unused_elements.push(path.to_string());
-                    }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter body - doesn't match schema: {}", e))))?;
+                    let param_entity: Option<models::FileEntity> =
+                        serde_ignored::deserialize(deserializer, |path| {
+                            warn!("Ignoring unknown field in body: {}", path);
+                            unused_elements.push(path.to_string());
+                        }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - doesn't match schema: {}", e))))?;
 
-                    param_body
+                    param_entity
                 } else {
                     None
                 };
-                let param_body = param_body.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter body".to_string())))?;
+                let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
 
-                match api.file_post(param_body, context).wait() {
+                match api.file_post(param_entity, context).wait() {
                     Ok(rsp) => match rsp {
                         FilePostResponse::CreatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -1533,26 +1535,27 @@ where
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_body = req.get::<bodyparser::Raw>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter body - not valid UTF-8: {}", e))))?;
+                let param_entity = req.get::<bodyparser::Raw>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
 
-                let param_body = if let Some(param_body_raw) = param_body {
-                    let deserializer = &mut serde_json::Deserializer::from_str(&param_body_raw);
+                let param_entity = if let Some(param_entity_raw) = param_entity {
+                    let deserializer = &mut serde_json::Deserializer::from_str(&param_entity_raw);
 
-                    let param_body: Option<models::ReleaseEntity> = serde_ignored::deserialize(deserializer, |path| {
-                        warn!("Ignoring unknown field in body: {}", path);
-                        unused_elements.push(path.to_string());
-                    }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter body - doesn't match schema: {}", e))))?;
+                    let param_entity: Option<models::ReleaseEntity> =
+                        serde_ignored::deserialize(deserializer, |path| {
+                            warn!("Ignoring unknown field in body: {}", path);
+                            unused_elements.push(path.to_string());
+                        }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - doesn't match schema: {}", e))))?;
 
-                    param_body
+                    param_entity
                 } else {
                     None
                 };
-                let param_body = param_body.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter body".to_string())))?;
+                let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
 
-                match api.release_post(param_body, context).wait() {
+                match api.release_post(param_entity, context).wait() {
                     Ok(rsp) => match rsp {
                         ReleasePostResponse::CreatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -1726,26 +1729,27 @@ where
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_body = req.get::<bodyparser::Raw>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter body - not valid UTF-8: {}", e))))?;
+                let param_entity = req.get::<bodyparser::Raw>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
 
-                let param_body = if let Some(param_body_raw) = param_body {
-                    let deserializer = &mut serde_json::Deserializer::from_str(&param_body_raw);
+                let param_entity = if let Some(param_entity_raw) = param_entity {
+                    let deserializer = &mut serde_json::Deserializer::from_str(&param_entity_raw);
 
-                    let param_body: Option<models::WorkEntity> = serde_ignored::deserialize(deserializer, |path| {
-                        warn!("Ignoring unknown field in body: {}", path);
-                        unused_elements.push(path.to_string());
-                    }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter body - doesn't match schema: {}", e))))?;
+                    let param_entity: Option<models::WorkEntity> =
+                        serde_ignored::deserialize(deserializer, |path| {
+                            warn!("Ignoring unknown field in body: {}", path);
+                            unused_elements.push(path.to_string());
+                        }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - doesn't match schema: {}", e))))?;
 
-                    param_body
+                    param_entity
                 } else {
                     None
                 };
-                let param_body = param_body.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter body".to_string())))?;
+                let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
 
-                match api.work_post(param_body, context).wait() {
+                match api.work_post(param_entity, context).wait() {
                     Ok(rsp) => match rsp {
                         WorkPostResponse::CreatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");

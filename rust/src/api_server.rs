@@ -54,10 +54,10 @@ macro_rules! wrap_entity_handlers {
 
         fn $post_fn(
             &self,
-            body: models::$model,
+            entity: models::$model,
             _context: &Context,
         ) -> Box<Future<Item = $post_resp, Error = ApiError> + Send> {
-            let ret = match self.$post_handler(body) {
+            let ret = match self.$post_handler(entity) {
                 Ok(edit) =>
                     $post_resp::CreatedEntity(edit),
                 Err(Error(ErrorKind::Diesel(e), _)) =>
@@ -374,10 +374,10 @@ impl Server {
         work_row2entity(Some(ident), rev)
     }
 
-    fn container_post_handler(&self, body: models::ContainerEntity) -> Result<EntityEdit> {
+    fn container_post_handler(&self, entity: models::ContainerEntity) -> Result<EntityEdit> {
         let conn = self.db_pool.get().expect("db_pool error");
         let editor_id = 1; // TODO: auth
-        let editgroup_id = match body.editgroup_id {
+        let editgroup_id = match entity.editgroup_id {
             None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
             Some(param) => param as i64,
         };
@@ -392,22 +392,22 @@ impl Server {
             INSERT INTO container_edit (editgroup_id, ident_id, rev_id) VALUES
                 ($7, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
-        ).bind::<diesel::sql_types::Text, _>(body.name)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.publisher)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.issnl)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.abbrev)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.coden)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(body.extra)
+        ).bind::<diesel::sql_types::Text, _>(entity.name)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.publisher)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.issnl)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.abbrev)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.coden)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
             .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
             .get_result(&conn)?;
 
         edit.to_model()
     }
 
-    fn creator_post_handler(&self, body: models::CreatorEntity) -> Result<EntityEdit> {
+    fn creator_post_handler(&self, entity: models::CreatorEntity) -> Result<EntityEdit> {
         let conn = self.db_pool.get().expect("db_pool error");
         let editor_id = 1; // TODO: auth
-        let editgroup_id = match body.editgroup_id {
+        let editgroup_id = match entity.editgroup_id {
             None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
             Some(param) => param as i64,
         };
@@ -422,19 +422,19 @@ impl Server {
             INSERT INTO creator_edit (editgroup_id, ident_id, rev_id) VALUES
                 ($4, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
-        ).bind::<diesel::sql_types::Text, _>(body.full_name)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.orcid)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(body.extra)
+        ).bind::<diesel::sql_types::Text, _>(entity.full_name)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.orcid)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
             .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
             .get_result(&conn)?;
 
         edit.to_model()
     }
 
-    fn file_post_handler(&self, body: models::FileEntity) -> Result<EntityEdit> {
+    fn file_post_handler(&self, entity: models::FileEntity) -> Result<EntityEdit> {
         let conn = self.db_pool.get().expect("db_pool error");
         let editor_id = 1; // TODO: auth
-        let editgroup_id = match body.editgroup_id {
+        let editgroup_id = match entity.editgroup_id {
             None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
             Some(param) => param as i64,
         };
@@ -450,15 +450,15 @@ impl Server {
             INSERT INTO file_edit (editgroup_id, ident_id, rev_id) VALUES
                 ($6, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
-            ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Int8>, _>(body.size)
-                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.sha1)
-                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.md5)
-                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.url)
-                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(body.extra)
+            ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Int8>, _>(entity.size)
+                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.sha1)
+                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.md5)
+                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.url)
+                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
                 .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
                 .get_result(&conn)?;
 
-        let _releases: Option<Vec<FileReleaseRow>> = match body.releases {
+        let _releases: Option<Vec<FileReleaseRow>> = match entity.releases {
             None => None,
             Some(release_list) => {
                 if release_list.len() == 0 {
@@ -483,10 +483,10 @@ impl Server {
         edit.to_model()
     }
 
-    fn work_post_handler(&self, body: models::WorkEntity) -> Result<EntityEdit> {
+    fn work_post_handler(&self, entity: models::WorkEntity) -> Result<EntityEdit> {
         let conn = self.db_pool.get().expect("db_pool error");
         let editor_id = 1; // TODO: auth
-        let editgroup_id = match body.editgroup_id {
+        let editgroup_id = match entity.editgroup_id {
             None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
             Some(param) => param as i64,
         };
@@ -502,24 +502,24 @@ impl Server {
             INSERT INTO work_edit (editgroup_id, ident_id, rev_id) VALUES
                 ($3, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
-            ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.work_type)
-                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(body.extra)
+            ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.work_type)
+                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
                 .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
                 .get_result(&conn)?;
 
         edit.to_model()
     }
 
-    fn release_post_handler(&self, body: models::ReleaseEntity) -> Result<EntityEdit> {
+    fn release_post_handler(&self, entity: models::ReleaseEntity) -> Result<EntityEdit> {
         let conn = self.db_pool.get().expect("db_pool error");
         let editor_id = 1; // TODO: auth
-        let editgroup_id = match body.editgroup_id {
+        let editgroup_id = match entity.editgroup_id {
             None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
             Some(param) => param as i64,
         };
 
-        let work_id = uuid::Uuid::parse_str(&body.work_id).expect("invalid UUID");
-        let container_id: Option<uuid::Uuid> = match body.container_id {
+        let work_id = uuid::Uuid::parse_str(&entity.work_id).expect("invalid UUID");
+        let container_id: Option<uuid::Uuid> = match entity.container_id {
             Some(id) => Some(uuid::Uuid::parse_str(&id).expect("invalid UUID")),
             None => None,
         };
@@ -534,23 +534,23 @@ impl Server {
             INSERT INTO release_edit (editgroup_id, ident_id, rev_id) VALUES
                 ($13, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
-        ).bind::<diesel::sql_types::Text, _>(body.title)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.release_type)
+        ).bind::<diesel::sql_types::Text, _>(entity.title)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.release_type)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Date>, _>(
-                body.date.map(|v| v.naive_utc().date()))
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.doi)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.isbn13)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.volume)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.pages)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.issue)
+                entity.date.map(|v| v.naive_utc().date()))
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.doi)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.isbn13)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.volume)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.pages)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.issue)
             .bind::<diesel::sql_types::Uuid, _>(work_id)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Uuid>, _>(container_id)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.publisher)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(body.extra)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.publisher)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
             .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
             .get_result(&conn)?;
 
-        let _refs: Option<Vec<ReleaseRefRow>> = match body.refs {
+        let _refs: Option<Vec<ReleaseRefRow>> = match entity.refs {
             None => None,
             Some(ref_list) => {
                 if ref_list.len() == 0 {
@@ -576,7 +576,7 @@ impl Server {
             }
         };
 
-        let _contribs: Option<Vec<ReleaseContribRow>> = match body.contribs {
+        let _contribs: Option<Vec<ReleaseContribRow>> = match entity.contribs {
             None => None,
             Some(contrib_list) => {
                 if contrib_list.len() == 0 {
@@ -813,16 +813,16 @@ impl Api for Server {
 
     fn editgroup_post(
         &self,
-        body: models::Editgroup,
+        entity: models::Editgroup,
         _context: &Context,
     ) -> Box<Future<Item = EditgroupPostResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
 
         let row: EditgroupRow = insert_into(editgroup::table)
             .values((
-                editgroup::editor_id.eq(body.editor_id as i64),
-                editgroup::description.eq(body.description),
-                editgroup::extra_json.eq(body.extra),
+                editgroup::editor_id.eq(entity.editor_id as i64),
+                editgroup::description.eq(entity.description),
+                editgroup::extra_json.eq(entity.extra),
             ))
             .get_result(&conn)
             .expect("error creating edit group");

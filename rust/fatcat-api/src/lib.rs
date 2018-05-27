@@ -260,19 +260,19 @@ pub trait Api {
 
     fn container_lookup_get(&self, issnl: String, context: &Context) -> Box<Future<Item = ContainerLookupGetResponse, Error = ApiError> + Send>;
 
-    fn container_post(&self, body: models::ContainerEntity, context: &Context) -> Box<Future<Item = ContainerPostResponse, Error = ApiError> + Send>;
+    fn container_post(&self, entity: models::ContainerEntity, context: &Context) -> Box<Future<Item = ContainerPostResponse, Error = ApiError> + Send>;
 
     fn creator_id_get(&self, id: String, context: &Context) -> Box<Future<Item = CreatorIdGetResponse, Error = ApiError> + Send>;
 
     fn creator_lookup_get(&self, orcid: String, context: &Context) -> Box<Future<Item = CreatorLookupGetResponse, Error = ApiError> + Send>;
 
-    fn creator_post(&self, body: models::CreatorEntity, context: &Context) -> Box<Future<Item = CreatorPostResponse, Error = ApiError> + Send>;
+    fn creator_post(&self, entity: models::CreatorEntity, context: &Context) -> Box<Future<Item = CreatorPostResponse, Error = ApiError> + Send>;
 
     fn editgroup_id_accept_post(&self, id: i64, context: &Context) -> Box<Future<Item = EditgroupIdAcceptPostResponse, Error = ApiError> + Send>;
 
     fn editgroup_id_get(&self, id: i64, context: &Context) -> Box<Future<Item = EditgroupIdGetResponse, Error = ApiError> + Send>;
 
-    fn editgroup_post(&self, body: models::Editgroup, context: &Context) -> Box<Future<Item = EditgroupPostResponse, Error = ApiError> + Send>;
+    fn editgroup_post(&self, entity: models::Editgroup, context: &Context) -> Box<Future<Item = EditgroupPostResponse, Error = ApiError> + Send>;
 
     fn editor_username_changelog_get(&self, username: String, context: &Context) -> Box<Future<Item = EditorUsernameChangelogGetResponse, Error = ApiError> + Send>;
 
@@ -282,17 +282,17 @@ pub trait Api {
 
     fn file_lookup_get(&self, sha1: String, context: &Context) -> Box<Future<Item = FileLookupGetResponse, Error = ApiError> + Send>;
 
-    fn file_post(&self, body: models::FileEntity, context: &Context) -> Box<Future<Item = FilePostResponse, Error = ApiError> + Send>;
+    fn file_post(&self, entity: models::FileEntity, context: &Context) -> Box<Future<Item = FilePostResponse, Error = ApiError> + Send>;
 
     fn release_id_get(&self, id: String, context: &Context) -> Box<Future<Item = ReleaseIdGetResponse, Error = ApiError> + Send>;
 
     fn release_lookup_get(&self, doi: String, context: &Context) -> Box<Future<Item = ReleaseLookupGetResponse, Error = ApiError> + Send>;
 
-    fn release_post(&self, body: models::ReleaseEntity, context: &Context) -> Box<Future<Item = ReleasePostResponse, Error = ApiError> + Send>;
+    fn release_post(&self, entity: models::ReleaseEntity, context: &Context) -> Box<Future<Item = ReleasePostResponse, Error = ApiError> + Send>;
 
     fn work_id_get(&self, id: String, context: &Context) -> Box<Future<Item = WorkIdGetResponse, Error = ApiError> + Send>;
 
-    fn work_post(&self, body: models::WorkEntity, context: &Context) -> Box<Future<Item = WorkPostResponse, Error = ApiError> + Send>;
+    fn work_post(&self, entity: models::WorkEntity, context: &Context) -> Box<Future<Item = WorkPostResponse, Error = ApiError> + Send>;
 }
 
 /// API without a `Context`
@@ -301,19 +301,19 @@ pub trait ApiNoContext {
 
     fn container_lookup_get(&self, issnl: String) -> Box<Future<Item = ContainerLookupGetResponse, Error = ApiError> + Send>;
 
-    fn container_post(&self, body: models::ContainerEntity) -> Box<Future<Item = ContainerPostResponse, Error = ApiError> + Send>;
+    fn container_post(&self, entity: models::ContainerEntity) -> Box<Future<Item = ContainerPostResponse, Error = ApiError> + Send>;
 
     fn creator_id_get(&self, id: String) -> Box<Future<Item = CreatorIdGetResponse, Error = ApiError> + Send>;
 
     fn creator_lookup_get(&self, orcid: String) -> Box<Future<Item = CreatorLookupGetResponse, Error = ApiError> + Send>;
 
-    fn creator_post(&self, body: models::CreatorEntity) -> Box<Future<Item = CreatorPostResponse, Error = ApiError> + Send>;
+    fn creator_post(&self, entity: models::CreatorEntity) -> Box<Future<Item = CreatorPostResponse, Error = ApiError> + Send>;
 
     fn editgroup_id_accept_post(&self, id: i64) -> Box<Future<Item = EditgroupIdAcceptPostResponse, Error = ApiError> + Send>;
 
     fn editgroup_id_get(&self, id: i64) -> Box<Future<Item = EditgroupIdGetResponse, Error = ApiError> + Send>;
 
-    fn editgroup_post(&self, body: models::Editgroup) -> Box<Future<Item = EditgroupPostResponse, Error = ApiError> + Send>;
+    fn editgroup_post(&self, entity: models::Editgroup) -> Box<Future<Item = EditgroupPostResponse, Error = ApiError> + Send>;
 
     fn editor_username_changelog_get(&self, username: String) -> Box<Future<Item = EditorUsernameChangelogGetResponse, Error = ApiError> + Send>;
 
@@ -323,17 +323,17 @@ pub trait ApiNoContext {
 
     fn file_lookup_get(&self, sha1: String) -> Box<Future<Item = FileLookupGetResponse, Error = ApiError> + Send>;
 
-    fn file_post(&self, body: models::FileEntity) -> Box<Future<Item = FilePostResponse, Error = ApiError> + Send>;
+    fn file_post(&self, entity: models::FileEntity) -> Box<Future<Item = FilePostResponse, Error = ApiError> + Send>;
 
     fn release_id_get(&self, id: String) -> Box<Future<Item = ReleaseIdGetResponse, Error = ApiError> + Send>;
 
     fn release_lookup_get(&self, doi: String) -> Box<Future<Item = ReleaseLookupGetResponse, Error = ApiError> + Send>;
 
-    fn release_post(&self, body: models::ReleaseEntity) -> Box<Future<Item = ReleasePostResponse, Error = ApiError> + Send>;
+    fn release_post(&self, entity: models::ReleaseEntity) -> Box<Future<Item = ReleasePostResponse, Error = ApiError> + Send>;
 
     fn work_id_get(&self, id: String) -> Box<Future<Item = WorkIdGetResponse, Error = ApiError> + Send>;
 
-    fn work_post(&self, body: models::WorkEntity) -> Box<Future<Item = WorkPostResponse, Error = ApiError> + Send>;
+    fn work_post(&self, entity: models::WorkEntity) -> Box<Future<Item = WorkPostResponse, Error = ApiError> + Send>;
 }
 
 /// Trait to extend an API to make it easy to bind it to a context.
@@ -360,8 +360,8 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().container_lookup_get(issnl, &self.context())
     }
 
-    fn container_post(&self, body: models::ContainerEntity) -> Box<Future<Item = ContainerPostResponse, Error = ApiError> + Send> {
-        self.api().container_post(body, &self.context())
+    fn container_post(&self, entity: models::ContainerEntity) -> Box<Future<Item = ContainerPostResponse, Error = ApiError> + Send> {
+        self.api().container_post(entity, &self.context())
     }
 
     fn creator_id_get(&self, id: String) -> Box<Future<Item = CreatorIdGetResponse, Error = ApiError> + Send> {
@@ -372,8 +372,8 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().creator_lookup_get(orcid, &self.context())
     }
 
-    fn creator_post(&self, body: models::CreatorEntity) -> Box<Future<Item = CreatorPostResponse, Error = ApiError> + Send> {
-        self.api().creator_post(body, &self.context())
+    fn creator_post(&self, entity: models::CreatorEntity) -> Box<Future<Item = CreatorPostResponse, Error = ApiError> + Send> {
+        self.api().creator_post(entity, &self.context())
     }
 
     fn editgroup_id_accept_post(&self, id: i64) -> Box<Future<Item = EditgroupIdAcceptPostResponse, Error = ApiError> + Send> {
@@ -384,8 +384,8 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().editgroup_id_get(id, &self.context())
     }
 
-    fn editgroup_post(&self, body: models::Editgroup) -> Box<Future<Item = EditgroupPostResponse, Error = ApiError> + Send> {
-        self.api().editgroup_post(body, &self.context())
+    fn editgroup_post(&self, entity: models::Editgroup) -> Box<Future<Item = EditgroupPostResponse, Error = ApiError> + Send> {
+        self.api().editgroup_post(entity, &self.context())
     }
 
     fn editor_username_changelog_get(&self, username: String) -> Box<Future<Item = EditorUsernameChangelogGetResponse, Error = ApiError> + Send> {
@@ -404,8 +404,8 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().file_lookup_get(sha1, &self.context())
     }
 
-    fn file_post(&self, body: models::FileEntity) -> Box<Future<Item = FilePostResponse, Error = ApiError> + Send> {
-        self.api().file_post(body, &self.context())
+    fn file_post(&self, entity: models::FileEntity) -> Box<Future<Item = FilePostResponse, Error = ApiError> + Send> {
+        self.api().file_post(entity, &self.context())
     }
 
     fn release_id_get(&self, id: String) -> Box<Future<Item = ReleaseIdGetResponse, Error = ApiError> + Send> {
@@ -416,16 +416,16 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().release_lookup_get(doi, &self.context())
     }
 
-    fn release_post(&self, body: models::ReleaseEntity) -> Box<Future<Item = ReleasePostResponse, Error = ApiError> + Send> {
-        self.api().release_post(body, &self.context())
+    fn release_post(&self, entity: models::ReleaseEntity) -> Box<Future<Item = ReleasePostResponse, Error = ApiError> + Send> {
+        self.api().release_post(entity, &self.context())
     }
 
     fn work_id_get(&self, id: String) -> Box<Future<Item = WorkIdGetResponse, Error = ApiError> + Send> {
         self.api().work_id_get(id, &self.context())
     }
 
-    fn work_post(&self, body: models::WorkEntity) -> Box<Future<Item = WorkPostResponse, Error = ApiError> + Send> {
-        self.api().work_post(body, &self.context())
+    fn work_post(&self, entity: models::WorkEntity) -> Box<Future<Item = WorkPostResponse, Error = ApiError> + Send> {
+        self.api().work_post(entity, &self.context())
     }
 }
 

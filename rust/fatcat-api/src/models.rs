@@ -290,37 +290,37 @@ impl Editor {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct EntityEdit {
-    #[serde(rename = "extra")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub extra: Option<serde_json::Value>,
+    #[serde(rename = "edit_id")]
+    pub edit_id: i64,
 
-    #[serde(rename = "editgroup_id")]
-    pub editgroup_id: i64,
-
-    #[serde(rename = "redirect_ident")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub redirect_ident: Option<String>,
+    #[serde(rename = "ident")]
+    pub ident: String,
 
     #[serde(rename = "revision")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub revision: Option<i64>,
 
-    #[serde(rename = "ident")]
-    pub ident: String,
+    #[serde(rename = "redirect_ident")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub redirect_ident: Option<String>,
 
-    #[serde(rename = "edit_id")]
-    pub edit_id: i64,
+    #[serde(rename = "editgroup_id")]
+    pub editgroup_id: i64,
+
+    #[serde(rename = "extra")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub extra: Option<serde_json::Value>,
 }
 
 impl EntityEdit {
-    pub fn new(editgroup_id: i64, ident: String, edit_id: i64) -> EntityEdit {
+    pub fn new(edit_id: i64, ident: String, editgroup_id: i64) -> EntityEdit {
         EntityEdit {
-            extra: None,
-            editgroup_id: editgroup_id,
-            redirect_ident: None,
-            revision: None,
-            ident: ident,
             edit_id: edit_id,
+            ident: ident,
+            revision: None,
+            redirect_ident: None,
+            editgroup_id: editgroup_id,
+            extra: None,
         }
     }
 }

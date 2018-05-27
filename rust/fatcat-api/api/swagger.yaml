@@ -17,7 +17,7 @@ paths:
     post:
       parameters:
       - in: "body"
-        name: "body"
+        name: "entity"
         required: true
         schema:
           $ref: "#/definitions/creator_entity"
@@ -177,7 +177,7 @@ paths:
     post:
       parameters:
       - in: "body"
-        name: "body"
+        name: "entity"
         required: true
         schema:
           $ref: "#/definitions/container_entity"
@@ -337,7 +337,7 @@ paths:
     post:
       parameters:
       - in: "body"
-        name: "body"
+        name: "entity"
         required: true
         schema:
           $ref: "#/definitions/file_entity"
@@ -497,7 +497,7 @@ paths:
     post:
       parameters:
       - in: "body"
-        name: "body"
+        name: "entity"
         required: true
         schema:
           $ref: "#/definitions/release_entity"
@@ -657,7 +657,7 @@ paths:
     post:
       parameters:
       - in: "body"
-        name: "body"
+        name: "entity"
         required: true
         schema:
           $ref: "#/definitions/work_entity"
@@ -850,7 +850,7 @@ paths:
     post:
       parameters:
       - in: "body"
-        name: "body"
+        name: "entity"
         required: true
         schema:
           $ref: "#/definitions/editgroup"
@@ -1321,30 +1321,30 @@ definitions:
     - "editgroup_id"
     - "ident"
     properties:
-      extra:
-        type: "object"
-      editgroup_id:
-        type: "integer"
-        format: "int64"
-        example: 16
-      redirect_ident:
-        type: "string"
-        example: "f1f046a3-45c9-4b99-adce-000000000002"
-      revision:
-        type: "integer"
-        format: "int64"
-        example: 42
-      ident:
-        type: "string"
-        example: "f1f046a3-45c9-4b99-adce-000000000001"
       edit_id:
         type: "integer"
         format: "int64"
         example: 847
+      ident:
+        type: "string"
+        example: "f1f046a3-45c9-4b99-adce-000000000001"
+      revision:
+        type: "integer"
+        format: "int64"
+        example: 42
+      redirect_ident:
+        type: "string"
+        example: "f1f046a3-45c9-4b99-adce-000000000002"
+      editgroup_id:
+        type: "integer"
+        format: "int64"
+        example: 16
+      extra:
+        type: "object"
     example:
       ident: "f1f046a3-45c9-4b99-adce-000000000001"
-      extra: "{}"
       edit_id: 847
+      extra: "{}"
       redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
       editgroup_id: 16
       revision: 42
@@ -1382,66 +1382,66 @@ definitions:
       edits:
         works:
         - ident: "f1f046a3-45c9-4b99-adce-000000000001"
-          extra: "{}"
           edit_id: 847
+          extra: "{}"
           redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
           editgroup_id: 16
           revision: 42
         - ident: "f1f046a3-45c9-4b99-adce-000000000001"
-          extra: "{}"
           edit_id: 847
+          extra: "{}"
           redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
           editgroup_id: 16
           revision: 42
         creators:
         - ident: "f1f046a3-45c9-4b99-adce-000000000001"
-          extra: "{}"
           edit_id: 847
+          extra: "{}"
           redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
           editgroup_id: 16
           revision: 42
         - ident: "f1f046a3-45c9-4b99-adce-000000000001"
-          extra: "{}"
           edit_id: 847
+          extra: "{}"
           redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
           editgroup_id: 16
           revision: 42
         files:
         - ident: "f1f046a3-45c9-4b99-adce-000000000001"
-          extra: "{}"
           edit_id: 847
+          extra: "{}"
           redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
           editgroup_id: 16
           revision: 42
         - ident: "f1f046a3-45c9-4b99-adce-000000000001"
-          extra: "{}"
           edit_id: 847
+          extra: "{}"
           redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
           editgroup_id: 16
           revision: 42
         containers:
         - ident: "f1f046a3-45c9-4b99-adce-000000000001"
-          extra: "{}"
           edit_id: 847
+          extra: "{}"
           redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
           editgroup_id: 16
           revision: 42
         - ident: "f1f046a3-45c9-4b99-adce-000000000001"
-          extra: "{}"
           edit_id: 847
+          extra: "{}"
           redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
           editgroup_id: 16
           revision: 42
         releases:
         - ident: "f1f046a3-45c9-4b99-adce-000000000001"
-          extra: "{}"
           edit_id: 847
+          extra: "{}"
           redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
           editgroup_id: 16
           revision: 42
         - ident: "f1f046a3-45c9-4b99-adce-000000000001"
-          extra: "{}"
           edit_id: 847
+          extra: "{}"
           redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
           editgroup_id: 16
           revision: 42
@@ -1512,66 +1512,66 @@ definitions:
     example:
       works:
       - ident: "f1f046a3-45c9-4b99-adce-000000000001"
-        extra: "{}"
         edit_id: 847
+        extra: "{}"
         redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
         editgroup_id: 16
         revision: 42
       - ident: "f1f046a3-45c9-4b99-adce-000000000001"
-        extra: "{}"
         edit_id: 847
+        extra: "{}"
         redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
         editgroup_id: 16
         revision: 42
       creators:
       - ident: "f1f046a3-45c9-4b99-adce-000000000001"
-        extra: "{}"
         edit_id: 847
+        extra: "{}"
         redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
         editgroup_id: 16
         revision: 42
       - ident: "f1f046a3-45c9-4b99-adce-000000000001"
-        extra: "{}"
         edit_id: 847
+        extra: "{}"
         redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
         editgroup_id: 16
         revision: 42
       files:
       - ident: "f1f046a3-45c9-4b99-adce-000000000001"
-        extra: "{}"
         edit_id: 847
+        extra: "{}"
         redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
         editgroup_id: 16
         revision: 42
       - ident: "f1f046a3-45c9-4b99-adce-000000000001"
-        extra: "{}"
         edit_id: 847
+        extra: "{}"
         redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
         editgroup_id: 16
         revision: 42
       containers:
       - ident: "f1f046a3-45c9-4b99-adce-000000000001"
-        extra: "{}"
         edit_id: 847
+        extra: "{}"
         redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
         editgroup_id: 16
         revision: 42
       - ident: "f1f046a3-45c9-4b99-adce-000000000001"
-        extra: "{}"
         edit_id: 847
+        extra: "{}"
         redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
         editgroup_id: 16
         revision: 42
       releases:
       - ident: "f1f046a3-45c9-4b99-adce-000000000001"
-        extra: "{}"
         edit_id: 847
+        extra: "{}"
         redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
         editgroup_id: 16
         revision: 42
       - ident: "f1f046a3-45c9-4b99-adce-000000000001"
-        extra: "{}"
         edit_id: 847
+        extra: "{}"
         redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
         editgroup_id: 16
         revision: 42
@@ -1608,28 +1608,6 @@ x-entity-props:
     example: 42
     format: "int64"
   redirect:
-    type: "string"
-    example: "f1f046a3-45c9-4b99-adce-000000000002"
-  editgroup_id:
-    type: "integer"
-    example: 16
-    format: "int64"
-  extra:
-    type: "object"
-    additionalProperties: {}
-x-entity-edit-props:
-  edit_id:
-    type: "integer"
-    example: 847
-    format: "int64"
-  ident:
-    type: "string"
-    example: "f1f046a3-45c9-4b99-adce-000000000001"
-  revision:
-    type: "integer"
-    example: 42
-    format: "int64"
-  redirect_ident:
     type: "string"
     example: "f1f046a3-45c9-4b99-adce-000000000002"
   editgroup_id:
