@@ -25,18 +25,34 @@ use uuid;
 
 // Helper for calling through to handlers
 macro_rules! wrap_entity_handlers {
-    ($get_fn:ident, $get_handler:ident, $get_resp:ident) => {
+    ($get_fn:ident, $get_handler:ident, $get_resp:ident, $post_fn:ident, $post_handler:ident,
+            $post_resp:ident, $model:ident) => {
         fn $get_fn(
             &self,
             id: String,
             _context: &Context,
         ) -> Box<Future<Item = $get_resp, Error = ApiError> + Send> {
-            let ret = match self.$get_handler(id) {
+            let ret = match self.$get_handler(id.clone()) {
                 Ok(Some(entity)) =>
                     $get_resp::FoundEntity(entity),
                 Ok(None) =>
-                    $get_resp::NotFound(ErrorResponse { message: "No such entity".to_string() }),
+                    $get_resp::NotFound(ErrorResponse { message: format!("No such entity {}: {}", stringify!($model), id) }),
                 Err(e) => $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+            };
+            Box::new(futures::done(Ok(ret)))
+        }
+
+        fn $post_fn(
+            &self,
+            body: models::$model,
+            _context: &Context,
+        ) -> Box<Future<Item = $post_resp, Error = ApiError> + Send> {
+            // TODO: look for diesel foreign key and other type errors, return as BadRequest; other
+            // errors are a 500.
+            let ret = match self.$post_handler(body) {
+                Ok(edit) =>
+                    $post_resp::CreatedEntity(edit),
+                Err(e) => $post_resp::BadRequest(ErrorResponse { message: e.to_string() }),
             };
             Box::new(futures::done(Ok(ret)))
         }
@@ -429,6 +445,278 @@ impl Server {
         Ok(Some(entity))
     }
 
+    fn container_post_handler(&self, body: models::ContainerEntity) -> Result<EntityEdit> {
+        let conn = self.db_pool.get().expect("db_pool error");
+        let editor_id = 1; // TODO: auth
+        let editgroup_id = match body.editgroup_id {
+            None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
+            Some(param) => param as i64,
+        };
+
+        let edit: ContainerEditRow = diesel::sql_query(
+            "WITH rev AS ( INSERT INTO container_rev (name, publisher, issnl, abbrev, coden, extra_json)
+                        VALUES ($1, $2, $3, $4, $5, $6)
+                        RETURNING id ),
+                ident AS ( INSERT INTO container_ident (rev_id)
+                            VALUES ((SELECT rev.id FROM rev))
+                            RETURNING id )
+            INSERT INTO container_edit (editgroup_id, ident_id, rev_id) VALUES
+                ($7, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+            RETURNING *",
+        ).bind::<diesel::sql_types::Text, _>(body.name)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.publisher)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.issnl)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.abbrev)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.coden)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(body.extra)
+            .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
+            .get_result(&conn)?;
+        let edit = &edit;
+
+        Ok(EntityEdit {
+            editgroup_id: edit.editgroup_id,
+            revision: Some(edit.rev_id.unwrap()),
+            redirect_ident: None,
+            ident: edit.ident_id.to_string(),
+            edit_id: edit.id,
+            extra: edit.extra_json.clone(),
+        })
+    }
+
+    fn creator_post_handler(&self, body: models::CreatorEntity) -> Result<EntityEdit> {
+        let conn = self.db_pool.get().expect("db_pool error");
+        let editor_id = 1; // TODO: auth
+        let editgroup_id = match body.editgroup_id {
+            None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
+            Some(param) => param as i64,
+        };
+
+        let edit: CreatorEditRow = diesel::sql_query(
+            "WITH rev AS ( INSERT INTO creator_rev (full_name, orcid, extra_json)
+                        VALUES ($1, $2, $3)
+                        RETURNING id ),
+                ident AS ( INSERT INTO creator_ident (rev_id)
+                            VALUES ((SELECT rev.id FROM rev))
+                            RETURNING id )
+            INSERT INTO creator_edit (editgroup_id, ident_id, rev_id) VALUES
+                ($4, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+            RETURNING *",
+        ).bind::<diesel::sql_types::Text, _>(body.full_name)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.orcid)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(body.extra)
+            .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
+            .get_result(&conn)?;
+        let edit = &edit;
+
+        Ok(EntityEdit {
+            editgroup_id: edit.editgroup_id,
+            revision: Some(edit.rev_id.unwrap()),
+            redirect_ident: None,
+            ident: edit.ident_id.to_string(),
+            edit_id: edit.id,
+            extra: edit.extra_json.clone(),
+        })
+    }
+
+    fn file_post_handler(&self, body: models::FileEntity) -> Result<EntityEdit> {
+        let conn = self.db_pool.get().expect("db_pool error");
+        let editor_id = 1; // TODO: auth
+        let editgroup_id = match body.editgroup_id {
+            None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
+            Some(param) => param as i64,
+        };
+
+        let edit: FileEditRow =
+            diesel::sql_query(
+                "WITH rev AS ( INSERT INTO file_rev (size, sha1, md5, url, extra_json)
+                        VALUES ($1, $2, $3, $4, $5)
+                        RETURNING id ),
+                ident AS ( INSERT INTO file_ident (rev_id)
+                            VALUES ((SELECT rev.id FROM rev))
+                            RETURNING id )
+            INSERT INTO file_edit (editgroup_id, ident_id, rev_id) VALUES
+                ($6, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+            RETURNING *",
+            ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Int8>, _>(body.size)
+                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.sha1)
+                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.md5)
+                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.url)
+                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(body.extra)
+                .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
+                .get_result(&conn)?;
+        let edit = &edit;
+
+        let _releases: Option<Vec<FileReleaseRow>> = match body.releases {
+            None => None,
+            Some(release_list) => {
+                if release_list.len() == 0 {
+                    Some(vec![])
+                } else {
+                    let release_rows: Vec<FileReleaseRow> = release_list
+                        .iter()
+                        .map(|r| FileReleaseRow {
+                            file_rev: edit.rev_id.unwrap(),
+                            target_release_ident_id: uuid::Uuid::parse_str(r).expect("valid UUID"),
+                        })
+                        .collect();
+                    let release_rows: Vec<FileReleaseRow> = insert_into(file_release::table)
+                        .values(release_rows)
+                        .get_results(&conn)
+                        .expect("error inserting file_releases");
+                    Some(release_rows)
+                }
+            }
+        };
+
+        Ok(EntityEdit {
+            editgroup_id: edit.editgroup_id,
+            revision: Some(edit.rev_id.unwrap()),
+            redirect_ident: None,
+            ident: edit.ident_id.to_string(),
+            edit_id: edit.id,
+            extra: edit.extra_json.clone(),
+        })
+    }
+
+    fn work_post_handler(&self, body: models::WorkEntity) -> Result<EntityEdit> {
+        let conn = self.db_pool.get().expect("db_pool error");
+        let editor_id = 1; // TODO: auth
+        let editgroup_id = match body.editgroup_id {
+            None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
+            Some(param) => param as i64,
+        };
+
+        let edit: WorkEditRow =
+            diesel::sql_query(
+                "WITH rev AS ( INSERT INTO work_rev (work_type, extra_json)
+                        VALUES ($1, $2)
+                        RETURNING id ),
+                ident AS ( INSERT INTO work_ident (rev_id)
+                            VALUES ((SELECT rev.id FROM rev))
+                            RETURNING id )
+            INSERT INTO work_edit (editgroup_id, ident_id, rev_id) VALUES
+                ($3, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+            RETURNING *",
+            ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.work_type)
+                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(body.extra)
+                .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
+                .get_result(&conn)?;
+        let edit = &edit;
+
+        Ok(EntityEdit {
+            editgroup_id: edit.editgroup_id,
+            revision: Some(edit.rev_id.unwrap()),
+            redirect_ident: None,
+            ident: edit.ident_id.to_string(),
+            edit_id: edit.id,
+            extra: edit.extra_json.clone(),
+        })
+    }
+
+    fn release_post_handler(&self, body: models::ReleaseEntity) -> Result<EntityEdit> {
+        let conn = self.db_pool.get().expect("db_pool error");
+        let editor_id = 1; // TODO: auth
+        let editgroup_id = match body.editgroup_id {
+            None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
+            Some(param) => param as i64,
+        };
+
+        let work_id = uuid::Uuid::parse_str(&body.work_id).expect("invalid UUID");
+        let container_id: Option<uuid::Uuid> = match body.container_id {
+            Some(id) => Some(uuid::Uuid::parse_str(&id).expect("invalid UUID")),
+            None => None,
+        };
+
+        let edit: ReleaseEditRow = diesel::sql_query(
+            "WITH rev AS ( INSERT INTO release_rev (title, release_type, date, doi, isbn13, volume, pages, issue, work_ident_id, container_ident_id, publisher, extra_json)
+                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+                        RETURNING id ),
+                ident AS ( INSERT INTO release_ident (rev_id)
+                            VALUES ((SELECT rev.id FROM rev))
+                            RETURNING id )
+            INSERT INTO release_edit (editgroup_id, ident_id, rev_id) VALUES
+                ($13, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+            RETURNING *",
+        ).bind::<diesel::sql_types::Text, _>(body.title)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.release_type)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Date>, _>(
+                body.date.map(|v| v.naive_utc().date()))
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.doi)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.isbn13)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.volume)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.pages)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.issue)
+            .bind::<diesel::sql_types::Uuid, _>(work_id)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Uuid>, _>(container_id)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.publisher)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(body.extra)
+            .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
+            .get_result(&conn)?;
+        let edit = &edit;
+
+        let _refs: Option<Vec<ReleaseRefRow>> = match body.refs {
+            None => None,
+            Some(ref_list) => {
+                if ref_list.len() == 0 {
+                    Some(vec![])
+                } else {
+                    let ref_rows: Vec<ReleaseRefNewRow> = ref_list
+                        .iter()
+                        .map(|r| ReleaseRefNewRow {
+                            release_rev: edit.rev_id.unwrap(),
+                            target_release_ident_id: r.target_release_id
+                                .clone()
+                                .map(|v| uuid::Uuid::parse_str(&v).expect("valid UUID")),
+                            index: r.index,
+                            stub: r.stub.clone(),
+                        })
+                        .collect();
+                    let ref_rows: Vec<ReleaseRefRow> = insert_into(release_ref::table)
+                        .values(ref_rows)
+                        .get_results(&conn)
+                        .expect("error inserting release_refs");
+                    Some(ref_rows)
+                }
+            }
+        };
+
+        let _contribs: Option<Vec<ReleaseContribRow>> = match body.contribs {
+            None => None,
+            Some(contrib_list) => {
+                if contrib_list.len() == 0 {
+                    Some(vec![])
+                } else {
+                    let contrib_rows: Vec<ReleaseContribNewRow> = contrib_list
+                        .iter()
+                        .map(|c| ReleaseContribNewRow {
+                            release_rev: edit.rev_id.unwrap(),
+                            creator_ident_id: c.creator_id
+                                .clone()
+                                .map(|v| uuid::Uuid::parse_str(&v).expect("valid UUID")),
+                            index: c.index,
+                            role: c.role.clone(),
+                            stub: c.creator_stub.clone(),
+                        })
+                        .collect();
+                    let contrib_rows: Vec<ReleaseContribRow> = insert_into(release_contrib::table)
+                        .values(contrib_rows)
+                        .get_results(&conn)
+                        .expect("error inserting release_contribs");
+                    Some(contrib_rows)
+                }
+            }
+        };
+
+        Ok(EntityEdit {
+            editgroup_id: edit.editgroup_id,
+            revision: Some(edit.rev_id.unwrap()),
+            redirect_ident: None,
+            ident: edit.ident_id.to_string(),
+            edit_id: edit.id,
+            extra: edit.extra_json.clone(),
+        })
+    }
+
     fn editgroup_id_get_handler(&self, id: i64) -> Result<Option<Editgroup>> {
         let conn = self.db_pool.get().expect("db_pool error");
 
@@ -438,8 +726,7 @@ impl Server {
             containers: Some(
                 container_edit::table
                     .filter(container_edit::editgroup_id.eq(id))
-                    .get_results(&conn)
-                    .unwrap()
+                    .get_results(&conn)?
                     .iter()
                     .map(|e: &ContainerEditRow| EntityEdit {
                         edit_id: e.id,
@@ -454,8 +741,7 @@ impl Server {
             creators: Some(
                 creator_edit::table
                     .filter(creator_edit::editgroup_id.eq(id))
-                    .get_results(&conn)
-                    .unwrap()
+                    .get_results(&conn)?
                     .iter()
                     .map(|e: &CreatorEditRow| EntityEdit {
                         edit_id: e.id,
@@ -470,8 +756,7 @@ impl Server {
             files: Some(
                 file_edit::table
                     .filter(file_edit::editgroup_id.eq(id))
-                    .get_results(&conn)
-                    .unwrap()
+                    .get_results(&conn)?
                     .iter()
                     .map(|e: &FileEditRow| EntityEdit {
                         edit_id: e.id,
@@ -486,8 +771,7 @@ impl Server {
             releases: Some(
                 release_edit::table
                     .filter(release_edit::editgroup_id.eq(id))
-                    .get_results(&conn)
-                    .unwrap()
+                    .get_results(&conn)?
                     .iter()
                     .map(|e: &ReleaseEditRow| EntityEdit {
                         edit_id: e.id,
@@ -502,8 +786,7 @@ impl Server {
             works: Some(
                 work_edit::table
                     .filter(work_edit::editgroup_id.eq(id))
-                    .get_results(&conn)
-                    .unwrap()
+                    .get_results(&conn)?
                     .iter()
                     .map(|e: &WorkEditRow| EntityEdit {
                         edit_id: e.id,
@@ -568,16 +851,48 @@ impl Api for Server {
     wrap_entity_handlers!(
         container_id_get,
         container_id_get_handler,
-        ContainerIdGetResponse
+        ContainerIdGetResponse,
+        container_post,
+        container_post_handler,
+        ContainerPostResponse,
+        ContainerEntity
     );
     wrap_entity_handlers!(
         creator_id_get,
         creator_id_get_handler,
-        CreatorIdGetResponse
+        CreatorIdGetResponse,
+        creator_post,
+        creator_post_handler,
+        CreatorPostResponse,
+        CreatorEntity
     );
-    wrap_entity_handlers!(file_id_get, file_id_get_handler, FileIdGetResponse);
-    wrap_entity_handlers!(work_id_get, work_id_get_handler, WorkIdGetResponse);
-    wrap_entity_handlers!(release_id_get, release_id_get_handler, ReleaseIdGetResponse);
+    wrap_entity_handlers!(
+        file_id_get,
+        file_id_get_handler,
+        FileIdGetResponse,
+        file_post,
+        file_post_handler,
+        FilePostResponse,
+        FileEntity
+    );
+    wrap_entity_handlers!(
+        release_id_get,
+        release_id_get_handler,
+        ReleaseIdGetResponse,
+        release_post,
+        release_post_handler,
+        ReleasePostResponse,
+        ReleaseEntity
+    );
+    wrap_entity_handlers!(
+        work_id_get,
+        work_id_get_handler,
+        WorkIdGetResponse,
+        work_post,
+        work_post_handler,
+        WorkPostResponse,
+        WorkEntity
+    );
 
     wrap_lookup_handler!(
         container_lookup_get,
@@ -608,317 +923,6 @@ impl Api for Server {
         String
     );
 
-    fn container_post(
-        &self,
-        body: models::ContainerEntity,
-        _context: &Context,
-    ) -> Box<Future<Item = ContainerPostResponse, Error = ApiError> + Send> {
-        let conn = self.db_pool.get().expect("db_pool error");
-        let editor_id = 1; // TODO: auth
-        let editgroup_id = match body.editgroup_id {
-            None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
-            Some(param) => param as i64,
-        };
-
-        let edit: ContainerEditRow = diesel::sql_query(
-            "WITH rev AS ( INSERT INTO container_rev (name, publisher, issnl, abbrev, coden, extra_json)
-                        VALUES ($1, $2, $3, $4, $5, $6)
-                        RETURNING id ),
-                ident AS ( INSERT INTO container_ident (rev_id)
-                            VALUES ((SELECT rev.id FROM rev))
-                            RETURNING id )
-            INSERT INTO container_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($7, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
-            RETURNING *",
-        ).bind::<diesel::sql_types::Text, _>(body.name)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.publisher)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.issnl)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.abbrev)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.coden)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(body.extra)
-            .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
-            .get_result(&conn)
-            .unwrap();
-        let edit = &edit;
-
-        let entity_edit = EntityEdit {
-            editgroup_id: edit.editgroup_id,
-            revision: Some(edit.rev_id.unwrap()),
-            redirect_ident: None,
-            ident: edit.ident_id.to_string(),
-            edit_id: edit.id,
-            extra: edit.extra_json.clone(),
-        };
-        Box::new(futures::done(Ok(ContainerPostResponse::CreatedEntity(
-            entity_edit,
-        ))))
-    }
-
-    fn creator_post(
-        &self,
-        body: models::CreatorEntity,
-        _context: &Context,
-    ) -> Box<Future<Item = CreatorPostResponse, Error = ApiError> + Send> {
-        let conn = self.db_pool.get().expect("db_pool error");
-        let editor_id = 1; // TODO: auth
-        let editgroup_id = match body.editgroup_id {
-            None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
-            Some(param) => param as i64,
-        };
-
-        let edit: CreatorEditRow = diesel::sql_query(
-            "WITH rev AS ( INSERT INTO creator_rev (full_name, orcid, extra_json)
-                        VALUES ($1, $2, $3)
-                        RETURNING id ),
-                ident AS ( INSERT INTO creator_ident (rev_id)
-                            VALUES ((SELECT rev.id FROM rev))
-                            RETURNING id )
-            INSERT INTO creator_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($4, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
-            RETURNING *",
-        ).bind::<diesel::sql_types::Text, _>(body.full_name)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.orcid)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(body.extra)
-            .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
-            .get_result(&conn)
-            .unwrap();
-        let edit = &edit;
-
-        let entity_edit = EntityEdit {
-            editgroup_id: edit.editgroup_id,
-            revision: Some(edit.rev_id.unwrap()),
-            redirect_ident: None,
-            ident: edit.ident_id.to_string(),
-            edit_id: edit.id,
-            extra: edit.extra_json.clone(),
-        };
-        Box::new(futures::done(Ok(CreatorPostResponse::CreatedEntity(
-            entity_edit,
-        ))))
-    }
-
-    fn file_post(
-        &self,
-        body: models::FileEntity,
-        _context: &Context,
-    ) -> Box<Future<Item = FilePostResponse, Error = ApiError> + Send> {
-        let conn = self.db_pool.get().expect("db_pool error");
-        let editor_id = 1; // TODO: auth
-        let editgroup_id = match body.editgroup_id {
-            None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
-            Some(param) => param as i64,
-        };
-
-        let edit: FileEditRow =
-            diesel::sql_query(
-                "WITH rev AS ( INSERT INTO file_rev (size, sha1, md5, url, extra_json)
-                        VALUES ($1, $2, $3, $4, $5)
-                        RETURNING id ),
-                ident AS ( INSERT INTO file_ident (rev_id)
-                            VALUES ((SELECT rev.id FROM rev))
-                            RETURNING id )
-            INSERT INTO file_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($6, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
-            RETURNING *",
-            ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Int8>, _>(body.size)
-                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.sha1)
-                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.md5)
-                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.url)
-                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(body.extra)
-                .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
-                .get_result(&conn)
-                .unwrap();
-        let edit = &edit;
-
-        let _releases: Option<Vec<FileReleaseRow>> = match body.releases {
-            None => None,
-            Some(release_list) => {
-                if release_list.len() == 0 {
-                    Some(vec![])
-                } else {
-                    let release_rows: Vec<FileReleaseRow> = release_list
-                        .iter()
-                        .map(|r| FileReleaseRow {
-                            file_rev: edit.rev_id.unwrap(),
-                            target_release_ident_id: uuid::Uuid::parse_str(r).expect("valid UUID"),
-                        })
-                        .collect();
-                    let release_rows: Vec<FileReleaseRow> = insert_into(file_release::table)
-                        .values(release_rows)
-                        .get_results(&conn)
-                        .expect("error inserting file_releases");
-                    Some(release_rows)
-                }
-            }
-        };
-
-        let entity_edit = EntityEdit {
-            editgroup_id: edit.editgroup_id,
-            revision: Some(edit.rev_id.unwrap()),
-            redirect_ident: None,
-            ident: edit.ident_id.to_string(),
-            edit_id: edit.id,
-            extra: edit.extra_json.clone(),
-        };
-        Box::new(futures::done(Ok(FilePostResponse::CreatedEntity(
-            entity_edit,
-        ))))
-    }
-
-    fn work_post(
-        &self,
-        body: models::WorkEntity,
-        _context: &Context,
-    ) -> Box<Future<Item = WorkPostResponse, Error = ApiError> + Send> {
-        let conn = self.db_pool.get().expect("db_pool error");
-        let editor_id = 1; // TODO: auth
-        let editgroup_id = match body.editgroup_id {
-            None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
-            Some(param) => param as i64,
-        };
-
-        let edit: WorkEditRow =
-            diesel::sql_query(
-                "WITH rev AS ( INSERT INTO work_rev (work_type, extra_json)
-                        VALUES ($1, $2)
-                        RETURNING id ),
-                ident AS ( INSERT INTO work_ident (rev_id)
-                            VALUES ((SELECT rev.id FROM rev))
-                            RETURNING id )
-            INSERT INTO work_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($3, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
-            RETURNING *",
-            ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.work_type)
-                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(body.extra)
-                .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
-                .get_result(&conn)
-                .unwrap();
-        let edit = &edit;
-
-        let entity_edit = EntityEdit {
-            editgroup_id: edit.editgroup_id,
-            revision: Some(edit.rev_id.unwrap()),
-            redirect_ident: None,
-            ident: edit.ident_id.to_string(),
-            edit_id: edit.id,
-            extra: edit.extra_json.clone(),
-        };
-        Box::new(futures::done(Ok(WorkPostResponse::CreatedEntity(
-            entity_edit,
-        ))))
-    }
-
-    fn release_post(
-        &self,
-        body: models::ReleaseEntity,
-        _context: &Context,
-    ) -> Box<Future<Item = ReleasePostResponse, Error = ApiError> + Send> {
-        let conn = self.db_pool.get().expect("db_pool error");
-        let editor_id = 1; // TODO: auth
-        let editgroup_id = match body.editgroup_id {
-            None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
-            Some(param) => param as i64,
-        };
-
-        let work_id = uuid::Uuid::parse_str(&body.work_id).expect("invalid UUID");
-        let container_id: Option<uuid::Uuid> = match body.container_id {
-            Some(id) => Some(uuid::Uuid::parse_str(&id).expect("invalid UUID")),
-            None => None,
-        };
-
-        let edit: ReleaseEditRow = diesel::sql_query(
-            "WITH rev AS ( INSERT INTO release_rev (title, release_type, date, doi, isbn13, volume, pages, issue, work_ident_id, container_ident_id, publisher, extra_json)
-                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-                        RETURNING id ),
-                ident AS ( INSERT INTO release_ident (rev_id)
-                            VALUES ((SELECT rev.id FROM rev))
-                            RETURNING id )
-            INSERT INTO release_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($13, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
-            RETURNING *",
-        ).bind::<diesel::sql_types::Text, _>(body.title)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.release_type)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Date>, _>(body.date.map(|v| v.naive_utc().date()))
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.doi)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.isbn13)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.volume)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.pages)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.issue)
-            .bind::<diesel::sql_types::Uuid, _>(work_id)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Uuid>, _>(container_id)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.publisher)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(body.extra)
-            .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
-            .get_result(&conn)
-            .unwrap();
-        let edit = &edit;
-
-        let _refs: Option<Vec<ReleaseRefRow>> = match body.refs {
-            None => None,
-            Some(ref_list) => {
-                if ref_list.len() == 0 {
-                    Some(vec![])
-                } else {
-                    let ref_rows: Vec<ReleaseRefNewRow> = ref_list
-                        .iter()
-                        .map(|r| ReleaseRefNewRow {
-                            release_rev: edit.rev_id.unwrap(),
-                            target_release_ident_id: r.target_release_id
-                                .clone()
-                                .map(|v| uuid::Uuid::parse_str(&v).expect("valid UUID")),
-                            index: r.index,
-                            stub: r.stub.clone(),
-                        })
-                        .collect();
-                    let ref_rows: Vec<ReleaseRefRow> = insert_into(release_ref::table)
-                        .values(ref_rows)
-                        .get_results(&conn)
-                        .expect("error inserting release_refs");
-                    Some(ref_rows)
-                }
-            }
-        };
-
-        let _contribs: Option<Vec<ReleaseContribRow>> = match body.contribs {
-            None => None,
-            Some(contrib_list) => {
-                if contrib_list.len() == 0 {
-                    Some(vec![])
-                } else {
-                    let contrib_rows: Vec<ReleaseContribNewRow> = contrib_list
-                        .iter()
-                        .map(|c| ReleaseContribNewRow {
-                            release_rev: edit.rev_id.unwrap(),
-                            creator_ident_id: c.creator_id
-                                .clone()
-                                .map(|v| uuid::Uuid::parse_str(&v).expect("valid UUID")),
-                            index: c.index,
-                            role: c.role.clone(),
-                            stub: c.creator_stub.clone(),
-                        })
-                        .collect();
-                    let contrib_rows: Vec<ReleaseContribRow> = insert_into(release_contrib::table)
-                        .values(contrib_rows)
-                        .get_results(&conn)
-                        .expect("error inserting release_contribs");
-                    Some(contrib_rows)
-                }
-            }
-        };
-
-        let entity_edit = EntityEdit {
-            editgroup_id: edit.editgroup_id,
-            revision: Some(edit.rev_id.unwrap()),
-            redirect_ident: None,
-            ident: edit.ident_id.to_string(),
-            edit_id: edit.id,
-            extra: edit.extra_json.clone(),
-        };
-        Box::new(futures::done(Ok(ReleasePostResponse::CreatedEntity(
-            entity_edit,
-        ))))
-    }
-
     fn editgroup_id_accept_post(
         &self,
         id: i64,
@@ -928,7 +932,9 @@ impl Api for Server {
 
         accept_editgroup(id as i64, &conn).expect("failed to accept editgroup");
 
-        let ret = EditgroupIdAcceptPostResponse::MergedSuccessfully(Success { message: "horray!".to_string()});
+        let ret = EditgroupIdAcceptPostResponse::MergedSuccessfully(Success {
+            message: "horray!".to_string(),
+        });
         Box::new(futures::done(Ok(ret)))
     }
 
@@ -988,10 +994,12 @@ impl Api for Server {
             Ok(Some(entries)) =>
                 EditorUsernameChangelogGetResponse::FoundMergedChanges(entries),
             Ok(None) =>
-                EditorUsernameChangelogGetResponse::NotFound(ErrorResponse { message: "No such entity".to_string() }),
+                EditorUsernameChangelogGetResponse::NotFound(
+                    ErrorResponse { message: "No such entity".to_string() }),
             Err(e) =>
                 // TODO: dig in to error type here
-                EditorUsernameChangelogGetResponse::GenericError(ErrorResponse { message: e.to_string() }),
+                EditorUsernameChangelogGetResponse::GenericError(
+                    ErrorResponse { message: e.to_string() }),
         };
         Box::new(futures::done(Ok(ret)))
     }
