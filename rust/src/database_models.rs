@@ -3,6 +3,7 @@ use database_schema::*;
 use errors::*;
 use serde_json;
 use uuid::Uuid;
+use fatcat_api::models::EntityEdit;
 
 // Ugh. I thought the whole point was to *not* do this, but:
 // https://github.com/diesel-rs/diesel/issues/1589
@@ -29,6 +30,10 @@ pub trait EntityIdentRow {
     fn state(&self) -> Result<EntityState>;
 }
 
+pub trait EntityEditRow {
+    fn to_model(self) -> Result<EntityEdit>;
+}
+
 // Helper for constructing tables
 macro_rules! entity_structs {
     ($edit_table:expr, $edit_struct:ident, $ident_table:expr, $ident_struct:ident) => {
@@ -41,6 +46,20 @@ macro_rules! entity_structs {
             pub rev_id: Option<i64>,
             pub redirect_id: Option<Uuid>,
             pub extra_json: Option<serde_json::Value>,
+        }
+
+        impl EntityEditRow for $edit_struct {
+            /// Go from a row (SQL model) to an API model
+            fn to_model(self) -> Result<EntityEdit> {
+                Ok(EntityEdit {
+                    editgroup_id: self.editgroup_id,
+                    revision: self.rev_id,
+                    redirect_ident: self.redirect_id.map(|v| v.to_string()),
+                    ident: self.ident_id.to_string(),
+                    edit_id: self.id,
+                    extra: self.extra_json,
+                })
+            }
         }
 
         #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
