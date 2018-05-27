@@ -25,8 +25,14 @@ use uuid;
 
 type DbConn = diesel::r2d2::PooledConnection<diesel::r2d2::ConnectionManager<diesel::PgConnection>>;
 
-// Helper for calling through to handlers
+/// Helper for generating wrappers (which return "Box::new(futures::done(Ok(BLAH)))" like the
+/// codegen fatcat-api code wants) that call through to actual helpers (which have simple Result<>
+/// return types)
 macro_rules! wrap_entity_handlers {
+    // Would much rather just have entity ident, then generate the other fields from that, but Rust
+    // stable doesn't have a mechanism to "concat" or generate new identifiers in macros, at least
+    // in the context of defining new functions.
+    // The only stable approach I know of would be: https://github.com/dtolnay/mashup
     ($get_fn:ident, $get_handler:ident, $get_resp:ident, $post_fn:ident, $post_handler:ident,
             $post_resp:ident, $model:ident) => {
         fn $get_fn(
@@ -87,12 +93,16 @@ pub struct Server {
     pub db_pool: ConnectionPool,
 }
 
-fn container_row2entity(ident: Option<ContainerIdentRow>, rev: ContainerRevRow) -> Result<ContainerEntity> {
+fn container_row2entity(
+    ident: Option<ContainerIdentRow>,
+    rev: ContainerRevRow,
+) -> Result<ContainerEntity> {
     let (state, ident_id, redirect_id) = match ident {
         Some(i) => (
             Some(i.state().unwrap().shortname()),
             Some(i.id.to_string()),
-            i.redirect_id.map(|u| u.to_string())),
+            i.redirect_id.map(|u| u.to_string()),
+        ),
         None => (None, None, None),
     };
     Ok(ContainerEntity {
@@ -115,7 +125,8 @@ fn creator_row2entity(ident: Option<CreatorIdentRow>, rev: CreatorRevRow) -> Res
         Some(i) => (
             Some(i.state().unwrap().shortname()),
             Some(i.id.to_string()),
-            i.redirect_id.map(|u| u.to_string())),
+            i.redirect_id.map(|u| u.to_string()),
+        ),
         None => (None, None, None),
     };
     Ok(CreatorEntity {
@@ -130,13 +141,17 @@ fn creator_row2entity(ident: Option<CreatorIdentRow>, rev: CreatorRevRow) -> Res
     })
 }
 
-fn file_row2entity(ident: Option<FileIdentRow>, rev: FileRevRow, conn: DbConn) -> Result<FileEntity> {
-
+fn file_row2entity(
+    ident: Option<FileIdentRow>,
+    rev: FileRevRow,
+    conn: DbConn,
+) -> Result<FileEntity> {
     let (state, ident_id, redirect_id) = match ident {
         Some(i) => (
             Some(i.state().unwrap().shortname()),
             Some(i.id.to_string()),
-            i.redirect_id.map(|u| u.to_string())),
+            i.redirect_id.map(|u| u.to_string()),
+        ),
         None => (None, None, None),
     };
 
@@ -162,13 +177,17 @@ fn file_row2entity(ident: Option<FileIdentRow>, rev: FileRevRow, conn: DbConn) -
     })
 }
 
-fn release_row2entity(ident: Option<ReleaseIdentRow>, rev: ReleaseRevRow, conn: DbConn) -> Result<ReleaseEntity> {
-
+fn release_row2entity(
+    ident: Option<ReleaseIdentRow>,
+    rev: ReleaseRevRow,
+    conn: DbConn,
+) -> Result<ReleaseEntity> {
     let (state, ident_id, redirect_id) = match ident {
         Some(i) => (
             Some(i.state().unwrap().shortname()),
             Some(i.id.to_string()),
-            i.redirect_id.map(|u| u.to_string())),
+            i.redirect_id.map(|u| u.to_string()),
+        ),
         None => (None, None, None),
     };
 
@@ -226,7 +245,8 @@ fn work_row2entity(ident: Option<WorkIdentRow>, rev: WorkRevRow) -> Result<WorkE
         Some(i) => (
             Some(i.state().unwrap().shortname()),
             Some(i.id.to_string()),
-            i.redirect_id.map(|u| u.to_string())),
+            i.redirect_id.map(|u| u.to_string()),
+        ),
         None => (None, None, None),
     };
     Ok(WorkEntity {
@@ -241,17 +261,15 @@ fn work_row2entity(ident: Option<WorkIdentRow>, rev: WorkRevRow) -> Result<WorkE
 }
 
 impl Server {
-
     fn container_id_get_handler(&self, id: String) -> Result<ContainerEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
         let id = uuid::Uuid::parse_str(&id)?;
 
         // TODO: handle Deletions
-        let (ident, rev): (ContainerIdentRow, ContainerRevRow) =
-            container_ident::table
-                .find(id)
-                .inner_join(container_rev::table)
-                .first(&conn)?;
+        let (ident, rev): (ContainerIdentRow, ContainerRevRow) = container_ident::table
+            .find(id)
+            .inner_join(container_rev::table)
+            .first(&conn)?;
 
         container_row2entity(Some(ident), rev)
     }
@@ -259,13 +277,12 @@ impl Server {
     fn container_lookup_get_handler(&self, issnl: String) -> Result<ContainerEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
 
-        let (ident, rev): (ContainerIdentRow, ContainerRevRow) =
-            container_ident::table
-                .inner_join(container_rev::table)
-                .filter(container_rev::issnl.eq(&issnl))
-                .filter(container_ident::is_live.eq(true))
-                .filter(container_ident::redirect_id.is_null())
-                .first(&conn)?;
+        let (ident, rev): (ContainerIdentRow, ContainerRevRow) = container_ident::table
+            .inner_join(container_rev::table)
+            .filter(container_rev::issnl.eq(&issnl))
+            .filter(container_ident::is_live.eq(true))
+            .filter(container_ident::redirect_id.is_null())
+            .first(&conn)?;
 
         container_row2entity(Some(ident), rev)
     }
@@ -599,75 +616,40 @@ impl Server {
                 container_edit::table
                     .filter(container_edit::editgroup_id.eq(id))
                     .get_results(&conn)?
-                    .iter()
-                    .map(|e: &ContainerEditRow| EntityEdit {
-                        edit_id: e.id,
-                        editgroup_id: e.editgroup_id,
-                        revision: e.rev_id,
-                        redirect_ident: e.redirect_id.map(|v| v.to_string()),
-                        ident: e.ident_id.to_string(),
-                        extra: e.extra_json.clone(),
-                    })
+                    .into_iter()
+                    .map(|e: ContainerEditRow| e.to_model().unwrap())
                     .collect(),
             ),
             creators: Some(
                 creator_edit::table
                     .filter(creator_edit::editgroup_id.eq(id))
                     .get_results(&conn)?
-                    .iter()
-                    .map(|e: &CreatorEditRow| EntityEdit {
-                        edit_id: e.id,
-                        editgroup_id: e.editgroup_id,
-                        revision: e.rev_id,
-                        redirect_ident: e.redirect_id.map(|v| v.to_string()),
-                        ident: e.ident_id.to_string(),
-                        extra: e.extra_json.clone(),
-                    })
+                    .into_iter()
+                    .map(|e: CreatorEditRow| e.to_model().unwrap())
                     .collect(),
             ),
             files: Some(
                 file_edit::table
                     .filter(file_edit::editgroup_id.eq(id))
                     .get_results(&conn)?
-                    .iter()
-                    .map(|e: &FileEditRow| EntityEdit {
-                        edit_id: e.id,
-                        editgroup_id: e.editgroup_id,
-                        revision: e.rev_id,
-                        redirect_ident: e.redirect_id.map(|v| v.to_string()),
-                        ident: e.ident_id.to_string(),
-                        extra: e.extra_json.clone(),
-                    })
+                    .into_iter()
+                    .map(|e: FileEditRow| e.to_model().unwrap())
                     .collect(),
             ),
             releases: Some(
                 release_edit::table
                     .filter(release_edit::editgroup_id.eq(id))
                     .get_results(&conn)?
-                    .iter()
-                    .map(|e: &ReleaseEditRow| EntityEdit {
-                        edit_id: e.id,
-                        editgroup_id: e.editgroup_id,
-                        revision: e.rev_id,
-                        redirect_ident: e.redirect_id.map(|v| v.to_string()),
-                        ident: e.ident_id.to_string(),
-                        extra: e.extra_json.clone(),
-                    })
+                    .into_iter()
+                    .map(|e: ReleaseEditRow| e.to_model().unwrap())
                     .collect(),
             ),
             works: Some(
                 work_edit::table
                     .filter(work_edit::editgroup_id.eq(id))
                     .get_results(&conn)?
-                    .iter()
-                    .map(|e: &WorkEditRow| EntityEdit {
-                        edit_id: e.id,
-                        editgroup_id: e.editgroup_id,
-                        revision: e.rev_id,
-                        redirect_ident: e.redirect_id.map(|v| v.to_string()),
-                        ident: e.ident_id.to_string(),
-                        extra: e.extra_json.clone(),
-                    })
+                    .into_iter()
+                    .map(|e: WorkEditRow| e.to_model().unwrap())
                     .collect(),
             ),
         };

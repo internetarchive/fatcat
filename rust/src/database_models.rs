@@ -1,9 +1,9 @@
 use chrono;
 use database_schema::*;
 use errors::*;
+use fatcat_api::models::EntityEdit;
 use serde_json;
 use uuid::Uuid;
-use fatcat_api::models::EntityEdit;
 
 // Ugh. I thought the whole point was to *not* do this, but:
 // https://github.com/diesel-rs/diesel/issues/1589
