@@ -24,26 +24,21 @@ use futures::{self, Future};
 use uuid;
 
 // Helper for calling through to handlers
-macro_rules! wrap_get_id_handler {
-    ($get_fn:ident, $handler:ident, $resp:ident, $idtype:ident) => {
+macro_rules! wrap_entity_handlers {
+    ($get_fn:ident, $get_handler:ident, $get_resp:ident) => {
         fn $get_fn(
             &self,
-            id: $idtype,
+            id: String,
             _context: &Context,
-        ) -> Box<Future<Item = $resp, Error = ApiError> + Send> {
-            match self.$handler(id) {
+        ) -> Box<Future<Item = $get_resp, Error = ApiError> + Send> {
+            let ret = match self.$get_handler(id) {
                 Ok(Some(entity)) =>
-                    Box::new(futures::done(Ok($resp::FoundEntity(entity)))),
+                    $get_resp::FoundEntity(entity),
                 Ok(None) =>
-                    Box::new(futures::done(Ok($resp::NotFound(
-                        ErrorResponse { message: "No such entity".to_string() }),
-                    ))),
-                Err(e) =>
-                    // TODO: dig in to error type here
-                    Box::new(futures::done(Ok($resp::BadRequest(
-                        ErrorResponse { message: e.to_string() },
-                    )))),
-            }
+                    $get_resp::NotFound(ErrorResponse { message: "No such entity".to_string() }),
+                Err(e) => $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+            };
+            Box::new(futures::done(Ok(ret)))
         }
     }
 }
@@ -54,19 +49,16 @@ macro_rules! wrap_lookup_handler {
             $idname: $idtype,
             _context: &Context,
         ) -> Box<Future<Item = $resp, Error = ApiError> + Send> {
-            match self.$handler($idname) {
+            let ret = match self.$handler($idname) {
                 Ok(Some(entity)) =>
-                    Box::new(futures::done(Ok($resp::FoundEntity(entity)))),
+                    $resp::FoundEntity(entity),
                 Ok(None) =>
-                    Box::new(futures::done(Ok($resp::NotFound(
-                        ErrorResponse { message: "No such entity".to_string() }),
-                    ))),
+                    $resp::NotFound(ErrorResponse { message: "No such entity".to_string() }),
                 Err(e) =>
                     // TODO: dig in to error type here
-                    Box::new(futures::done(Ok($resp::BadRequest(
-                        ErrorResponse { message: e.to_string() },
-                    )))),
-            }
+                    $resp::BadRequest(ErrorResponse { message: e.to_string() }),
+            };
+            Box::new(futures::done(Ok(ret)))
         }
     }
 }
@@ -573,32 +565,19 @@ impl Server {
 }
 
 impl Api for Server {
-    wrap_get_id_handler!(
+    wrap_entity_handlers!(
         container_id_get,
         container_id_get_handler,
-        ContainerIdGetResponse,
-        String
+        ContainerIdGetResponse
     );
-    wrap_get_id_handler!(
+    wrap_entity_handlers!(
         creator_id_get,
         creator_id_get_handler,
-        CreatorIdGetResponse,
-        String
+        CreatorIdGetResponse
     );
-    wrap_get_id_handler!(file_id_get, file_id_get_handler, FileIdGetResponse, String);
-    wrap_get_id_handler!(work_id_get, work_id_get_handler, WorkIdGetResponse, String);
-    wrap_get_id_handler!(
-        release_id_get,
-        release_id_get_handler,
-        ReleaseIdGetResponse,
-        String
-    );
-    wrap_get_id_handler!(
-        editgroup_id_get,
-        editgroup_id_get_handler,
-        EditgroupIdGetResponse,
-        i64
-    );
+    wrap_entity_handlers!(file_id_get, file_id_get_handler, FileIdGetResponse);
+    wrap_entity_handlers!(work_id_get, work_id_get_handler, WorkIdGetResponse);
+    wrap_entity_handlers!(release_id_get, release_id_get_handler, ReleaseIdGetResponse);
 
     wrap_lookup_handler!(
         container_lookup_get,
@@ -949,11 +928,27 @@ impl Api for Server {
 
         accept_editgroup(id as i64, &conn).expect("failed to accept editgroup");
 
-        Box::new(futures::done(Ok(
-            EditgroupIdAcceptPostResponse::MergedSuccessfully(Success {
-                message: "horray!".to_string(),
-            }),
-        )))
+        let ret = EditgroupIdAcceptPostResponse::MergedSuccessfully(Success { message: "horray!".to_string()});
+        Box::new(futures::done(Ok(ret)))
+    }
+
+    fn editgroup_id_get(
+        &self,
+        id: i64,
+        _context: &Context,
+    ) -> Box<Future<Item = EditgroupIdGetResponse, Error = ApiError> + Send> {
+        let ret = match self.editgroup_id_get_handler(id) {
+            Ok(Some(entity)) =>
+                EditgroupIdGetResponse::FoundEntity(entity),
+            Ok(None) =>
+                EditgroupIdGetResponse::NotFound(
+                    ErrorResponse { message: "No such entity".to_string() }),
+            Err(e) =>
+                // TODO: dig in to error type here
+                EditgroupIdGetResponse::BadRequest(
+                    ErrorResponse { message: e.to_string() }),
+        };
+        Box::new(futures::done(Ok(ret)))
     }
 
     fn editgroup_post(
@@ -989,19 +984,16 @@ impl Api for Server {
         username: String,
         _context: &Context,
     ) -> Box<Future<Item = EditorUsernameChangelogGetResponse, Error = ApiError> + Send> {
-        match self.editor_changelog_get_handler(username) {
+        let ret = match self.editor_changelog_get_handler(username) {
             Ok(Some(entries)) =>
-                Box::new(futures::done(Ok(EditorUsernameChangelogGetResponse::FoundMergedChanges(entries)))),
+                EditorUsernameChangelogGetResponse::FoundMergedChanges(entries),
             Ok(None) =>
-                Box::new(futures::done(Ok(EditorUsernameChangelogGetResponse::NotFound(
-                    ErrorResponse { message: "No such entity".to_string() }),
-                ))),
+                EditorUsernameChangelogGetResponse::NotFound(ErrorResponse { message: "No such entity".to_string() }),
             Err(e) =>
                 // TODO: dig in to error type here
-                Box::new(futures::done(Ok(EditorUsernameChangelogGetResponse::GenericError(
-                    ErrorResponse { message: e.to_string() },
-                )))),
-        }
+                EditorUsernameChangelogGetResponse::GenericError(ErrorResponse { message: e.to_string() }),
+        };
+        Box::new(futures::done(Ok(ret)))
     }
 
     fn editor_username_get(
@@ -1009,18 +1001,15 @@ impl Api for Server {
         username: String,
         _context: &Context,
     ) -> Box<Future<Item = EditorUsernameGetResponse, Error = ApiError> + Send> {
-        match self.editor_get_handler(username) {
+        let ret = match self.editor_get_handler(username) {
             Ok(Some(entity)) =>
-                Box::new(futures::done(Ok(EditorUsernameGetResponse::FoundEditor(entity)))),
+                EditorUsernameGetResponse::FoundEditor(entity),
             Ok(None) =>
-                Box::new(futures::done(Ok(EditorUsernameGetResponse::NotFound(
-                    ErrorResponse { message: "No such entity".to_string() }),
-                ))),
+                EditorUsernameGetResponse::NotFound(ErrorResponse { message: "No such entity".to_string() }),
             Err(e) =>
                 // TODO: dig in to error type here
-                Box::new(futures::done(Ok(EditorUsernameGetResponse::GenericError(
-                    ErrorResponse { message: e.to_string() },
-                )))),
-        }
+                EditorUsernameGetResponse::GenericError(ErrorResponse { message: e.to_string() }),
+        };
+        Box::new(futures::done(Ok(ret)))
     }
 }
