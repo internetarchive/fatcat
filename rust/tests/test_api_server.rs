@@ -163,6 +163,22 @@ fn test_post_container() {
 }
 
 #[test]
+fn test_post_batch_container() {
+    let (headers, router, _conn) = setup();
+
+    check_response(
+        request::post(
+            "http://localhost:9411/v0/container/batch",
+            headers,
+            r#"[{"name": "test journal"}, {"name": "another test journal"}]"#,
+            &router,
+        ),
+        status::Created,
+        None,
+    ); // TODO: "test journal"
+}
+
+#[test]
 fn test_post_creator() {
     let (headers, router, _conn) = setup();
 

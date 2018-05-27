@@ -57,19 +57,6 @@ definitions:
       message:
         type: string
         example: "The computers did the thing successfully!"
-  creator_entity:
-    type: object
-    required:
-      - full_name
-    properties:
-      <<: *ENTITYPROPS
-      full_name:
-        type: string
-        example: "Grace Hopper"
-      orcid:
-        type: string
-        #format: custom
-        example: "0000-0002-1825-0097"
   container_entity:
     type: object
     required:
@@ -90,6 +77,19 @@ definitions:
         type: string
       coden:
         type: string
+  creator_entity:
+    type: object
+    required:
+      - full_name
+    properties:
+      <<: *ENTITYPROPS
+      full_name:
+        type: string
+        example: "Grace Hopper"
+      orcid:
+        type: string
+        #format: custom
+        example: "0000-0002-1825-0097"
   file_entity:
     type: object
     properties:
@@ -300,64 +300,6 @@ x-entity-responses: &ENTITYRESPONSES
       $ref: "#/definitions/error_response"
 
 paths:
-  /creator:
-    post:
-      parameters:
-        - name: entity
-          in: body
-          required: true
-          schema:
-            $ref: "#/definitions/creator_entity"
-      responses:
-        201:
-          description: Created Entity
-          schema:
-            $ref: "#/definitions/entity_edit"
-        <<: *ENTITYRESPONSES
-# /creator/batch:
-#   post:
-#     parameters:
-#       - name: entity_list
-#         in: body
-#         required: true
-#         schema:
-#           type: array
-#           items:
-#             $ref: "#/definitions/creator_entity"
-#     responses:
-#       201:
-#         description: Created Entities
-#         schema:
-#           type: array
-#           items:
-#             $ref: "#/definitions/entity_edit"
-#       <<: *ENTITYRESPONSES
-  /creator/{id}:
-    parameters:
-      - name: id
-        in: path
-        type: string
-        required: true
-    get:
-      responses:
-        200:
-          description: Found Entity
-          schema:
-            $ref: "#/definitions/creator_entity"
-        <<: *ENTITYRESPONSES
-  /creator/lookup:
-    get:
-      parameters:
-        - name: orcid
-          in: query
-          type: string
-          required: true
-      responses:
-        200:
-          description: Found Entity
-          schema:
-            $ref: "#/definitions/creator_entity"
-        <<: *ENTITYRESPONSES
   /container:
     post:
       parameters:
@@ -371,6 +313,24 @@ paths:
           description: Created Entity
           schema:
             $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+  /container/batch:
+    post:
+      parameters:
+        - name: entity_list
+          in: body
+          required: true
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/container_entity"
+      responses:
+        201:
+          description: Created Entities
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
   /container/{id}:
     parameters:
@@ -398,6 +358,64 @@ paths:
           schema:
             $ref: "#/definitions/container_entity"
         <<: *ENTITYRESPONSES
+  /creator:
+    post:
+      parameters:
+        - name: entity
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/creator_entity"
+      responses:
+        201:
+          description: Created Entity
+          schema:
+            $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+  /creator/batch:
+    post:
+      parameters:
+        - name: entity_list
+          in: body
+          required: true
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/creator_entity"
+      responses:
+        201:
+          description: Created Entities
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+  /creator/{id}:
+    parameters:
+      - name: id
+        in: path
+        type: string
+        required: true
+    get:
+      responses:
+        200:
+          description: Found Entity
+          schema:
+            $ref: "#/definitions/creator_entity"
+        <<: *ENTITYRESPONSES
+  /creator/lookup:
+    get:
+      parameters:
+        - name: orcid
+          in: query
+          type: string
+          required: true
+      responses:
+        200:
+          description: Found Entity
+          schema:
+            $ref: "#/definitions/creator_entity"
+        <<: *ENTITYRESPONSES
   /file:
     post:
       parameters:
@@ -411,6 +429,24 @@ paths:
           description: Created Entity
           schema:
             $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+  /file/batch:
+    post:
+      parameters:
+        - name: entity_list
+          in: body
+          required: true
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/file_entity"
+      responses:
+        201:
+          description: Created Entities
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
   /file/{id}:
     parameters:
@@ -452,6 +488,24 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+  /release/batch:
+    post:
+      parameters:
+        - name: entity_list
+          in: body
+          required: true
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/release_entity"
+      responses:
+        201:
+          description: Created Entities
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
   /release/{id}:
     parameters:
       - name: id
@@ -491,6 +545,24 @@ paths:
           description: Created Entity
           schema:
             $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+  /work/batch:
+    post:
+      parameters:
+        - name: entity_list
+          in: body
+          required: true
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/work_entity"
+      responses:
+        201:
+          description: Created Entities
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
   /work/{id}:
     parameters:

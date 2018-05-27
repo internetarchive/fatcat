@@ -13,13 +13,7 @@ use diesel::{self, insert_into};
 use errors::*;
 use fatcat_api::models;
 use fatcat_api::models::*;
-use fatcat_api::{Api, ApiError, ContainerIdGetResponse, ContainerLookupGetResponse,
-                 ContainerPostResponse, Context, CreatorIdGetResponse, CreatorLookupGetResponse,
-                 CreatorPostResponse, EditgroupIdAcceptPostResponse, EditgroupIdGetResponse,
-                 EditgroupPostResponse, EditorUsernameChangelogGetResponse,
-                 EditorUsernameGetResponse, FileIdGetResponse, FileLookupGetResponse,
-                 FilePostResponse, ReleaseIdGetResponse, ReleaseLookupGetResponse,
-                 ReleasePostResponse, WorkIdGetResponse, WorkPostResponse};
+use fatcat_api::*;
 use futures::{self, Future};
 use uuid;
 
@@ -34,7 +28,8 @@ macro_rules! wrap_entity_handlers {
     // in the context of defining new functions.
     // The only stable approach I know of would be: https://github.com/dtolnay/mashup
     ($get_fn:ident, $get_handler:ident, $get_resp:ident, $post_fn:ident, $post_handler:ident,
-            $post_resp:ident, $model:ident) => {
+            $post_resp:ident, $post_batch_fn:ident, $post_batch_handler:ident,
+            $post_batch_resp:ident, $model:ident) => {
         fn $get_fn(
             &self,
             id: String,
@@ -57,7 +52,7 @@ macro_rules! wrap_entity_handlers {
             entity: models::$model,
             _context: &Context,
         ) -> Box<Future<Item = $post_resp, Error = ApiError> + Send> {
-            let ret = match self.$post_handler(entity) {
+            let ret = match self.$post_handler(entity, None) {
                 Ok(edit) =>
                     $post_resp::CreatedEntity(edit),
                 Err(Error(ErrorKind::Diesel(e), _)) =>
@@ -66,8 +61,38 @@ macro_rules! wrap_entity_handlers {
             };
             Box::new(futures::done(Ok(ret)))
         }
+
+        fn $post_batch_fn(
+            &self,
+            entity_list: &Vec<models::$model>,
+            _context: &Context,
+        ) -> Box<Future<Item = $post_batch_resp, Error = ApiError> + Send> {
+            let ret = match self.$post_batch_handler(entity_list) {
+                Ok(edit) =>
+                    $post_batch_resp::CreatedEntities(edit),
+                Err(Error(ErrorKind::Diesel(e), _)) =>
+                    $post_batch_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(e) => $post_batch_resp::GenericError(ErrorResponse { message: e.to_string() }),
+            };
+            Box::new(futures::done(Ok(ret)))
+        }
     }
 }
+
+macro_rules! entity_batch_post_handler {
+    ($post_handler:ident, $post_batch_handler:ident, $model:ident) => {
+        fn $post_batch_handler(&self, entity_list: &Vec<models::$model>) -> Result<Vec<EntityEdit>> {
+            let conn = self.db_pool.get().expect("db_pool error");
+            // TODO: start a transaction
+            let mut ret: Vec<EntityEdit> = vec![];
+            for entity in entity_list.into_iter() {
+                ret.push(self.$post_handler(entity.clone(), Some(&conn))?);
+            }
+            Ok(ret)
+        }
+    }
+}
+
 macro_rules! wrap_lookup_handler {
     ($get_fn:ident, $get_handler:ident, $get_resp:ident, $idname:ident, $idtype:ident) => {
         fn $get_fn(
@@ -374,11 +399,20 @@ impl Server {
         work_row2entity(Some(ident), rev)
     }
 
-    fn container_post_handler(&self, entity: models::ContainerEntity) -> Result<EntityEdit> {
-        let conn = self.db_pool.get().expect("db_pool error");
+    fn container_post_handler(&self, entity: models::ContainerEntity, conn: Option<&DbConn>) -> Result<EntityEdit> {
+        // TODO: still can't cast for some reason
+        // There mut be a cleaner way to manage the lifetime here
+        let real_conn = match conn {
+            Some(_) => None,
+            None => { Some(self.db_pool.get().expect("database pool")) },
+        };
+        let conn = match real_conn {
+            Some(ref c) => c,
+            None => conn.unwrap(),
+        };
         let editor_id = 1; // TODO: auth
         let editgroup_id = match entity.editgroup_id {
-            None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
+            None => get_or_create_editgroup(editor_id, &conn)?,
             Some(param) => param as i64,
         };
 
@@ -399,13 +433,38 @@ impl Server {
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.coden)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
             .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
-            .get_result(&conn)?;
+            .get_result(conn)?;
 
         edit.to_model()
     }
 
-    fn creator_post_handler(&self, entity: models::CreatorEntity) -> Result<EntityEdit> {
+    entity_batch_post_handler!(container_post_handler, container_batch_post_handler, ContainerEntity);
+    entity_batch_post_handler!(creator_post_handler, creator_batch_post_handler, CreatorEntity);
+    entity_batch_post_handler!(file_post_handler, file_batch_post_handler, FileEntity);
+    entity_batch_post_handler!(release_post_handler, release_batch_post_handler, ReleaseEntity);
+    entity_batch_post_handler!(work_post_handler, work_batch_post_handler, WorkEntity);
+/* XXX:
+    fn container_batch_post_handler(&self, entity_list: &Vec<models::ContainerEntity>) -> Result<Vec<EntityEdit>> {
         let conn = self.db_pool.get().expect("db_pool error");
+        // TODO: start a transaction
+        let ret: Vec<EntityEdit> = vec![];
+        for entity in entity_list.into_iter() {
+            ret.push(self.container_post_handler(*entity, Some(conn))?);
+        }
+        Ok(ret)
+    }
+*/
+
+    fn creator_post_handler(&self, entity: models::CreatorEntity, conn: Option<&DbConn>) -> Result<EntityEdit> {
+        // There mut be a cleaner way to manage the lifetime here
+        let real_conn = match conn {
+            Some(_) => None,
+            None => { Some(self.db_pool.get().expect("database pool")) },
+        };
+        let conn = match real_conn {
+            Some(ref c) => c,
+            None => conn.unwrap(),
+        };
         let editor_id = 1; // TODO: auth
         let editgroup_id = match entity.editgroup_id {
             None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
@@ -426,13 +485,21 @@ impl Server {
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.orcid)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
             .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
-            .get_result(&conn)?;
+            .get_result(conn)?;
 
         edit.to_model()
     }
 
-    fn file_post_handler(&self, entity: models::FileEntity) -> Result<EntityEdit> {
-        let conn = self.db_pool.get().expect("db_pool error");
+    fn file_post_handler(&self, entity: models::FileEntity, conn: Option<&DbConn>) -> Result<EntityEdit> {
+        // There mut be a cleaner way to manage the lifetime here
+        let real_conn = match conn {
+            Some(_) => None,
+            None => { Some(self.db_pool.get().expect("database pool")) },
+        };
+        let conn = match real_conn {
+            Some(ref c) => c,
+            None => conn.unwrap(),
+        };
         let editor_id = 1; // TODO: auth
         let editgroup_id = match entity.editgroup_id {
             None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
@@ -456,7 +523,7 @@ impl Server {
                 .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.url)
                 .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
                 .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
-                .get_result(&conn)?;
+                .get_result(conn)?;
 
         let _releases: Option<Vec<FileReleaseRow>> = match entity.releases {
             None => None,
@@ -473,7 +540,7 @@ impl Server {
                         .collect();
                     let release_rows: Vec<FileReleaseRow> = insert_into(file_release::table)
                         .values(release_rows)
-                        .get_results(&conn)
+                        .get_results(conn)
                         .expect("error inserting file_releases");
                     Some(release_rows)
                 }
@@ -483,35 +550,16 @@ impl Server {
         edit.to_model()
     }
 
-    fn work_post_handler(&self, entity: models::WorkEntity) -> Result<EntityEdit> {
-        let conn = self.db_pool.get().expect("db_pool error");
-        let editor_id = 1; // TODO: auth
-        let editgroup_id = match entity.editgroup_id {
-            None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
-            Some(param) => param as i64,
+    fn release_post_handler(&self, entity: models::ReleaseEntity, conn: Option<&DbConn>) -> Result<EntityEdit> {
+        // There mut be a cleaner way to manage the lifetime here
+        let real_conn = match conn {
+            Some(_) => None,
+            None => { Some(self.db_pool.get().expect("database pool")) },
         };
-
-        let edit: WorkEditRow =
-            diesel::sql_query(
-                "WITH rev AS ( INSERT INTO work_rev (work_type, extra_json)
-                        VALUES ($1, $2)
-                        RETURNING id ),
-                ident AS ( INSERT INTO work_ident (rev_id)
-                            VALUES ((SELECT rev.id FROM rev))
-                            RETURNING id )
-            INSERT INTO work_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($3, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
-            RETURNING *",
-            ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.work_type)
-                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
-                .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
-                .get_result(&conn)?;
-
-        edit.to_model()
-    }
-
-    fn release_post_handler(&self, entity: models::ReleaseEntity) -> Result<EntityEdit> {
-        let conn = self.db_pool.get().expect("db_pool error");
+        let conn = match real_conn {
+            Some(ref c) => c,
+            None => conn.unwrap(),
+        };
         let editor_id = 1; // TODO: auth
         let editgroup_id = match entity.editgroup_id {
             None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
@@ -548,7 +596,7 @@ impl Server {
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.publisher)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
             .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
-            .get_result(&conn)?;
+            .get_result(conn)?;
 
         let _refs: Option<Vec<ReleaseRefRow>> = match entity.refs {
             None => None,
@@ -569,7 +617,7 @@ impl Server {
                         .collect();
                     let ref_rows: Vec<ReleaseRefRow> = insert_into(release_ref::table)
                         .values(ref_rows)
-                        .get_results(&conn)
+                        .get_results(conn)
                         .expect("error inserting release_refs");
                     Some(ref_rows)
                 }
@@ -596,12 +644,48 @@ impl Server {
                         .collect();
                     let contrib_rows: Vec<ReleaseContribRow> = insert_into(release_contrib::table)
                         .values(contrib_rows)
-                        .get_results(&conn)
+                        .get_results(conn)
                         .expect("error inserting release_contribs");
                     Some(contrib_rows)
                 }
             }
         };
+
+        edit.to_model()
+    }
+
+    fn work_post_handler(&self, entity: models::WorkEntity, conn: Option<&DbConn>) -> Result<EntityEdit> {
+        // There mut be a cleaner way to manage the lifetime here
+        let real_conn = match conn {
+            Some(_) => None,
+            None => { Some(self.db_pool.get().expect("database pool")) },
+        };
+        let conn = match real_conn {
+            Some(ref c) => c,
+            None => conn.unwrap(),
+        };
+
+        let editor_id = 1; // TODO: auth
+        let editgroup_id = match entity.editgroup_id {
+            None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
+            Some(param) => param as i64,
+        };
+
+        let edit: WorkEditRow =
+            diesel::sql_query(
+                "WITH rev AS ( INSERT INTO work_rev (work_type, extra_json)
+                        VALUES ($1, $2)
+                        RETURNING id ),
+                ident AS ( INSERT INTO work_ident (rev_id)
+                            VALUES ((SELECT rev.id FROM rev))
+                            RETURNING id )
+            INSERT INTO work_edit (editgroup_id, ident_id, rev_id) VALUES
+                ($3, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+            RETURNING *",
+            ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.work_type)
+                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
+                .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
+                .get_result(conn)?;
 
         edit.to_model()
     }
@@ -709,6 +793,9 @@ impl Api for Server {
         container_post,
         container_post_handler,
         ContainerPostResponse,
+        container_batch_post,
+        container_batch_post_handler,
+        ContainerBatchPostResponse,
         ContainerEntity
     );
     wrap_entity_handlers!(
@@ -718,6 +805,9 @@ impl Api for Server {
         creator_post,
         creator_post_handler,
         CreatorPostResponse,
+        creator_batch_post,
+        creator_batch_post_handler,
+        CreatorBatchPostResponse,
         CreatorEntity
     );
     wrap_entity_handlers!(
@@ -727,6 +817,9 @@ impl Api for Server {
         file_post,
         file_post_handler,
         FilePostResponse,
+        file_batch_post,
+        file_batch_post_handler,
+        FileBatchPostResponse,
         FileEntity
     );
     wrap_entity_handlers!(
@@ -736,6 +829,9 @@ impl Api for Server {
         release_post,
         release_post_handler,
         ReleasePostResponse,
+        release_batch_post,
+        release_batch_post_handler,
+        ReleaseBatchPostResponse,
         ReleaseEntity
     );
     wrap_entity_handlers!(
@@ -745,6 +841,9 @@ impl Api for Server {
         work_post,
         work_post_handler,
         WorkPostResponse,
+        work_batch_post,
+        work_batch_post_handler,
+        WorkBatchPostResponse,
         WorkEntity
     );
 

@@ -4,6 +4,22 @@ pub mod responses {
     use hyper::mime::*;
 
     // The macro is called per-operation to beat the recursion limit
+    /// Create Mime objects for the response content types for ContainerBatchPost
+    lazy_static! {
+        pub static ref CONTAINER_BATCH_POST_CREATED_ENTITIES: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for ContainerBatchPost
+    lazy_static! {
+        pub static ref CONTAINER_BATCH_POST_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for ContainerBatchPost
+    lazy_static! {
+        pub static ref CONTAINER_BATCH_POST_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for ContainerBatchPost
+    lazy_static! {
+        pub static ref CONTAINER_BATCH_POST_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
     /// Create Mime objects for the response content types for ContainerIdGet
     lazy_static! {
         pub static ref CONTAINER_ID_GET_FOUND_ENTITY: Mime = mime!(Application / Json);
@@ -51,6 +67,22 @@ pub mod responses {
     /// Create Mime objects for the response content types for ContainerPost
     lazy_static! {
         pub static ref CONTAINER_POST_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreatorBatchPost
+    lazy_static! {
+        pub static ref CREATOR_BATCH_POST_CREATED_ENTITIES: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreatorBatchPost
+    lazy_static! {
+        pub static ref CREATOR_BATCH_POST_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreatorBatchPost
+    lazy_static! {
+        pub static ref CREATOR_BATCH_POST_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreatorBatchPost
+    lazy_static! {
+        pub static ref CREATOR_BATCH_POST_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for CreatorIdGet
     lazy_static! {
@@ -168,6 +200,22 @@ pub mod responses {
     lazy_static! {
         pub static ref EDITOR_USERNAME_GET_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
+    /// Create Mime objects for the response content types for FileBatchPost
+    lazy_static! {
+        pub static ref FILE_BATCH_POST_CREATED_ENTITIES: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for FileBatchPost
+    lazy_static! {
+        pub static ref FILE_BATCH_POST_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for FileBatchPost
+    lazy_static! {
+        pub static ref FILE_BATCH_POST_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for FileBatchPost
+    lazy_static! {
+        pub static ref FILE_BATCH_POST_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
     /// Create Mime objects for the response content types for FileIdGet
     lazy_static! {
         pub static ref FILE_ID_GET_FOUND_ENTITY: Mime = mime!(Application / Json);
@@ -215,6 +263,22 @@ pub mod responses {
     /// Create Mime objects for the response content types for FilePost
     lazy_static! {
         pub static ref FILE_POST_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for ReleaseBatchPost
+    lazy_static! {
+        pub static ref RELEASE_BATCH_POST_CREATED_ENTITIES: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for ReleaseBatchPost
+    lazy_static! {
+        pub static ref RELEASE_BATCH_POST_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for ReleaseBatchPost
+    lazy_static! {
+        pub static ref RELEASE_BATCH_POST_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for ReleaseBatchPost
+    lazy_static! {
+        pub static ref RELEASE_BATCH_POST_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for ReleaseIdGet
     lazy_static! {
@@ -264,6 +328,22 @@ pub mod responses {
     lazy_static! {
         pub static ref RELEASE_POST_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
+    /// Create Mime objects for the response content types for WorkBatchPost
+    lazy_static! {
+        pub static ref WORK_BATCH_POST_CREATED_ENTITIES: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for WorkBatchPost
+    lazy_static! {
+        pub static ref WORK_BATCH_POST_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for WorkBatchPost
+    lazy_static! {
+        pub static ref WORK_BATCH_POST_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for WorkBatchPost
+    lazy_static! {
+        pub static ref WORK_BATCH_POST_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
     /// Create Mime objects for the response content types for WorkIdGet
     lazy_static! {
         pub static ref WORK_ID_GET_FOUND_ENTITY: Mime = mime!(Application / Json);
@@ -301,9 +381,17 @@ pub mod responses {
 
 pub mod requests {
     use hyper::mime::*;
+    /// Create Mime objects for the request content types for ContainerBatchPost
+    lazy_static! {
+        pub static ref CONTAINER_BATCH_POST: Mime = mime!(Application / Json);
+    }
     /// Create Mime objects for the request content types for ContainerPost
     lazy_static! {
         pub static ref CONTAINER_POST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the request content types for CreatorBatchPost
+    lazy_static! {
+        pub static ref CREATOR_BATCH_POST: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the request content types for CreatorPost
     lazy_static! {
@@ -313,13 +401,25 @@ pub mod requests {
     lazy_static! {
         pub static ref EDITGROUP_POST: Mime = mime!(Application / Json);
     }
+    /// Create Mime objects for the request content types for FileBatchPost
+    lazy_static! {
+        pub static ref FILE_BATCH_POST: Mime = mime!(Application / Json);
+    }
     /// Create Mime objects for the request content types for FilePost
     lazy_static! {
         pub static ref FILE_POST: Mime = mime!(Application / Json);
     }
+    /// Create Mime objects for the request content types for ReleaseBatchPost
+    lazy_static! {
+        pub static ref RELEASE_BATCH_POST: Mime = mime!(Application / Json);
+    }
     /// Create Mime objects for the request content types for ReleasePost
     lazy_static! {
         pub static ref RELEASE_POST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the request content types for WorkBatchPost
+    lazy_static! {
+        pub static ref WORK_BATCH_POST: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the request content types for WorkPost
     lazy_static! {

@@ -13,166 +13,6 @@ consumes:
 produces:
 - "application/json"
 paths:
-  /creator:
-    post:
-      parameters:
-      - in: "body"
-        name: "entity"
-        required: true
-        schema:
-          $ref: "#/definitions/creator_entity"
-        uppercase_data_type: "CREATORENTITY"
-        refName: "creator_entity"
-        formatString: "{:?}"
-        example: "???"
-        model_key: "changelogentries_inner"
-        uppercase_operation_id: "CREATOR_POST"
-        consumesJson: true
-      responses:
-        201:
-          description: "Created Entity"
-          schema:
-            $ref: "#/definitions/entity_edit"
-          x-responseId: "CreatedEntity"
-          x-uppercaseResponseId: "CREATED_ENTITY"
-          uppercase_operation_id: "CREATOR_POST"
-          uppercase_data_type: "ENTITYEDIT"
-          producesJson: true
-        400:
-          description: "Bad Request"
-          schema:
-            $ref: "#/definitions/error_response"
-          x-responseId: "BadRequest"
-          x-uppercaseResponseId: "BAD_REQUEST"
-          uppercase_operation_id: "CREATOR_POST"
-          uppercase_data_type: "ERRORRESPONSE"
-          producesJson: true
-        404:
-          description: "Not Found"
-          schema:
-            $ref: "#/definitions/error_response"
-          x-responseId: "NotFound"
-          x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "CREATOR_POST"
-          uppercase_data_type: "ERRORRESPONSE"
-          producesJson: true
-        default:
-          description: "Generic Error"
-          schema:
-            $ref: "#/definitions/error_response"
-          x-responseId: "GenericError"
-          x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "CREATOR_POST"
-          uppercase_data_type: "ERRORRESPONSE"
-          producesJson: true
-      operation_id: "creator_post"
-      uppercase_operation_id: "CREATOR_POST"
-      path: "/creator"
-      HttpMethod: "Post"
-      httpmethod: "post"
-      noClientExample: true
-  /creator/{id}:
-    get:
-      parameters:
-      - name: "id"
-        in: "path"
-        required: true
-        type: "string"
-        formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
-      responses:
-        200:
-          description: "Found Entity"
-          schema:
-            $ref: "#/definitions/creator_entity"
-          x-responseId: "FoundEntity"
-          x-uppercaseResponseId: "FOUND_ENTITY"
-          uppercase_operation_id: "CREATOR_ID_GET"
-          uppercase_data_type: "CREATORENTITY"
-          producesJson: true
-        400:
-          description: "Bad Request"
-          schema:
-            $ref: "#/definitions/error_response"
-          x-responseId: "BadRequest"
-          x-uppercaseResponseId: "BAD_REQUEST"
-          uppercase_operation_id: "CREATOR_ID_GET"
-          uppercase_data_type: "ERRORRESPONSE"
-          producesJson: true
-        404:
-          description: "Not Found"
-          schema:
-            $ref: "#/definitions/error_response"
-          x-responseId: "NotFound"
-          x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "CREATOR_ID_GET"
-          uppercase_data_type: "ERRORRESPONSE"
-          producesJson: true
-        default:
-          description: "Generic Error"
-          schema:
-            $ref: "#/definitions/error_response"
-          x-responseId: "GenericError"
-          x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "CREATOR_ID_GET"
-          uppercase_data_type: "ERRORRESPONSE"
-          producesJson: true
-      operation_id: "creator_id_get"
-      uppercase_operation_id: "CREATOR_ID_GET"
-      path: "/creator/:id"
-      HttpMethod: "Get"
-      httpmethod: "get"
-  /creator/lookup:
-    get:
-      parameters:
-      - name: "orcid"
-        in: "query"
-        required: true
-        type: "string"
-        formatString: "\\\"{}\\\""
-        example: "\"orcid_example\".to_string()"
-      responses:
-        200:
-          description: "Found Entity"
-          schema:
-            $ref: "#/definitions/creator_entity"
-          x-responseId: "FoundEntity"
-          x-uppercaseResponseId: "FOUND_ENTITY"
-          uppercase_operation_id: "CREATOR_LOOKUP_GET"
-          uppercase_data_type: "CREATORENTITY"
-          producesJson: true
-        400:
-          description: "Bad Request"
-          schema:
-            $ref: "#/definitions/error_response"
-          x-responseId: "BadRequest"
-          x-uppercaseResponseId: "BAD_REQUEST"
-          uppercase_operation_id: "CREATOR_LOOKUP_GET"
-          uppercase_data_type: "ERRORRESPONSE"
-          producesJson: true
-        404:
-          description: "Not Found"
-          schema:
-            $ref: "#/definitions/error_response"
-          x-responseId: "NotFound"
-          x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "CREATOR_LOOKUP_GET"
-          uppercase_data_type: "ERRORRESPONSE"
-          producesJson: true
-        default:
-          description: "Generic Error"
-          schema:
-            $ref: "#/definitions/error_response"
-          x-responseId: "GenericError"
-          x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "CREATOR_LOOKUP_GET"
-          uppercase_data_type: "ERRORRESPONSE"
-          producesJson: true
-      operation_id: "creator_lookup_get"
-      uppercase_operation_id: "CREATOR_LOOKUP_GET"
-      path: "/creator/lookup"
-      HttpMethod: "Get"
-      httpmethod: "get"
   /container:
     post:
       parameters:
@@ -231,6 +71,65 @@ paths:
       HttpMethod: "Post"
       httpmethod: "post"
       noClientExample: true
+  /container/batch:
+    post:
+      parameters:
+      - in: "body"
+        name: "entity_list"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/container_entity"
+        formatString: "{:?}"
+        example: "&Vec::new()"
+        model_key: "changelogentries_inner"
+        uppercase_operation_id: "CONTAINER_BATCH_POST"
+        consumesJson: true
+      responses:
+        201:
+          description: "Created Entities"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/entity_edit"
+          x-responseId: "CreatedEntities"
+          x-uppercaseResponseId: "CREATED_ENTITIES"
+          uppercase_operation_id: "CONTAINER_BATCH_POST"
+          uppercase_data_type: "VEC<ENTITYEDIT>"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "CONTAINER_BATCH_POST"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "CONTAINER_BATCH_POST"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        default:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "CONTAINER_BATCH_POST"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "container_batch_post"
+      uppercase_operation_id: "CONTAINER_BATCH_POST"
+      path: "/container/batch"
+      HttpMethod: "Post"
+      httpmethod: "post"
   /container/{id}:
     get:
       parameters:
@@ -333,6 +232,225 @@ paths:
       path: "/container/lookup"
       HttpMethod: "Get"
       httpmethod: "get"
+  /creator:
+    post:
+      parameters:
+      - in: "body"
+        name: "entity"
+        required: true
+        schema:
+          $ref: "#/definitions/creator_entity"
+        uppercase_data_type: "CREATORENTITY"
+        refName: "creator_entity"
+        formatString: "{:?}"
+        example: "???"
+        model_key: "changelogentries_inner"
+        uppercase_operation_id: "CREATOR_POST"
+        consumesJson: true
+      responses:
+        201:
+          description: "Created Entity"
+          schema:
+            $ref: "#/definitions/entity_edit"
+          x-responseId: "CreatedEntity"
+          x-uppercaseResponseId: "CREATED_ENTITY"
+          uppercase_operation_id: "CREATOR_POST"
+          uppercase_data_type: "ENTITYEDIT"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "CREATOR_POST"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "CREATOR_POST"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        default:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "CREATOR_POST"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "creator_post"
+      uppercase_operation_id: "CREATOR_POST"
+      path: "/creator"
+      HttpMethod: "Post"
+      httpmethod: "post"
+      noClientExample: true
+  /creator/batch:
+    post:
+      parameters:
+      - in: "body"
+        name: "entity_list"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/creator_entity"
+        formatString: "{:?}"
+        example: "&Vec::new()"
+        model_key: "changelogentries_inner"
+        uppercase_operation_id: "CREATOR_BATCH_POST"
+        consumesJson: true
+      responses:
+        201:
+          description: "Created Entities"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/entity_edit"
+          x-responseId: "CreatedEntities"
+          x-uppercaseResponseId: "CREATED_ENTITIES"
+          uppercase_operation_id: "CREATOR_BATCH_POST"
+          uppercase_data_type: "VEC<ENTITYEDIT>"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "CREATOR_BATCH_POST"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "CREATOR_BATCH_POST"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        default:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "CREATOR_BATCH_POST"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "creator_batch_post"
+      uppercase_operation_id: "CREATOR_BATCH_POST"
+      path: "/creator/batch"
+      HttpMethod: "Post"
+      httpmethod: "post"
+  /creator/{id}:
+    get:
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      responses:
+        200:
+          description: "Found Entity"
+          schema:
+            $ref: "#/definitions/creator_entity"
+          x-responseId: "FoundEntity"
+          x-uppercaseResponseId: "FOUND_ENTITY"
+          uppercase_operation_id: "CREATOR_ID_GET"
+          uppercase_data_type: "CREATORENTITY"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "CREATOR_ID_GET"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "CREATOR_ID_GET"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        default:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "CREATOR_ID_GET"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "creator_id_get"
+      uppercase_operation_id: "CREATOR_ID_GET"
+      path: "/creator/:id"
+      HttpMethod: "Get"
+      httpmethod: "get"
+  /creator/lookup:
+    get:
+      parameters:
+      - name: "orcid"
+        in: "query"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"orcid_example\".to_string()"
+      responses:
+        200:
+          description: "Found Entity"
+          schema:
+            $ref: "#/definitions/creator_entity"
+          x-responseId: "FoundEntity"
+          x-uppercaseResponseId: "FOUND_ENTITY"
+          uppercase_operation_id: "CREATOR_LOOKUP_GET"
+          uppercase_data_type: "CREATORENTITY"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "CREATOR_LOOKUP_GET"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "CREATOR_LOOKUP_GET"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        default:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "CREATOR_LOOKUP_GET"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "creator_lookup_get"
+      uppercase_operation_id: "CREATOR_LOOKUP_GET"
+      path: "/creator/lookup"
+      HttpMethod: "Get"
+      httpmethod: "get"
   /file:
     post:
       parameters:
@@ -391,6 +509,65 @@ paths:
       HttpMethod: "Post"
       httpmethod: "post"
       noClientExample: true
+  /file/batch:
+    post:
+      parameters:
+      - in: "body"
+        name: "entity_list"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/file_entity"
+        formatString: "{:?}"
+        example: "&Vec::new()"
+        model_key: "changelogentries_inner"
+        uppercase_operation_id: "FILE_BATCH_POST"
+        consumesJson: true
+      responses:
+        201:
+          description: "Created Entities"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/entity_edit"
+          x-responseId: "CreatedEntities"
+          x-uppercaseResponseId: "CREATED_ENTITIES"
+          uppercase_operation_id: "FILE_BATCH_POST"
+          uppercase_data_type: "VEC<ENTITYEDIT>"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "FILE_BATCH_POST"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "FILE_BATCH_POST"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        default:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "FILE_BATCH_POST"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "file_batch_post"
+      uppercase_operation_id: "FILE_BATCH_POST"
+      path: "/file/batch"
+      HttpMethod: "Post"
+      httpmethod: "post"
   /file/{id}:
     get:
       parameters:
@@ -551,6 +728,65 @@ paths:
       HttpMethod: "Post"
       httpmethod: "post"
       noClientExample: true
+  /release/batch:
+    post:
+      parameters:
+      - in: "body"
+        name: "entity_list"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/release_entity"
+        formatString: "{:?}"
+        example: "&Vec::new()"
+        model_key: "changelogentries_inner"
+        uppercase_operation_id: "RELEASE_BATCH_POST"
+        consumesJson: true
+      responses:
+        201:
+          description: "Created Entities"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/entity_edit"
+          x-responseId: "CreatedEntities"
+          x-uppercaseResponseId: "CREATED_ENTITIES"
+          uppercase_operation_id: "RELEASE_BATCH_POST"
+          uppercase_data_type: "VEC<ENTITYEDIT>"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "RELEASE_BATCH_POST"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "RELEASE_BATCH_POST"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        default:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "RELEASE_BATCH_POST"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "release_batch_post"
+      uppercase_operation_id: "RELEASE_BATCH_POST"
+      path: "/release/batch"
+      HttpMethod: "Post"
+      httpmethod: "post"
   /release/{id}:
     get:
       parameters:
@@ -711,6 +947,65 @@ paths:
       HttpMethod: "Post"
       httpmethod: "post"
       noClientExample: true
+  /work/batch:
+    post:
+      parameters:
+      - in: "body"
+        name: "entity_list"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/work_entity"
+        formatString: "{:?}"
+        example: "&Vec::new()"
+        model_key: "changelogentries_inner"
+        uppercase_operation_id: "WORK_BATCH_POST"
+        consumesJson: true
+      responses:
+        201:
+          description: "Created Entities"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/entity_edit"
+          x-responseId: "CreatedEntities"
+          x-uppercaseResponseId: "CREATED_ENTITIES"
+          uppercase_operation_id: "WORK_BATCH_POST"
+          uppercase_data_type: "VEC<ENTITYEDIT>"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "WORK_BATCH_POST"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "WORK_BATCH_POST"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        default:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "WORK_BATCH_POST"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "work_batch_post"
+      uppercase_operation_id: "WORK_BATCH_POST"
+      path: "/work/batch"
+      HttpMethod: "Post"
+      httpmethod: "post"
   /work/{id}:
     get:
       parameters:
@@ -1020,50 +1315,6 @@ definitions:
     example:
       message: "The computers did the thing successfully!"
     upperCaseName: "SUCCESS"
-  creator_entity:
-    type: "object"
-    required:
-    - "full_name"
-    properties:
-      orcid:
-        type: "string"
-        example: "0000-0002-1825-0097"
-      full_name:
-        type: "string"
-        example: "Grace Hopper"
-      extra:
-        type: "object"
-      editgroup_id:
-        type: "integer"
-        format: "int64"
-        example: 16
-      redirect:
-        type: "string"
-        example: "f1f046a3-45c9-4b99-adce-000000000002"
-      revision:
-        type: "integer"
-        format: "int64"
-        example: 42
-      ident:
-        type: "string"
-        example: "f1f046a3-45c9-4b99-adce-000000000001"
-      state:
-        type: "string"
-        enum:
-        - "wip"
-        - "active"
-        - "redirect"
-        - "deleted"
-    example:
-      redirect: "f1f046a3-45c9-4b99-adce-000000000002"
-      full_name: "Grace Hopper"
-      ident: "f1f046a3-45c9-4b99-adce-000000000001"
-      extra: "{}"
-      editgroup_id: 16
-      orcid: "0000-0002-1825-0097"
-      state: "wip"
-      revision: 42
-    upperCaseName: "CREATOR_ENTITY"
   container_entity:
     type: "object"
     required:
@@ -1082,6 +1333,53 @@ definitions:
       name:
         type: "string"
         example: "Journal of Important Results"
+      extra:
+        type: "object"
+      editgroup_id:
+        type: "integer"
+        format: "int64"
+        example: 16
+      redirect:
+        type: "string"
+        example: "f1f046a3-45c9-4b99-adce-000000000002"
+      revision:
+        type: "integer"
+        format: "int64"
+        example: 42
+      ident:
+        type: "string"
+        example: "f1f046a3-45c9-4b99-adce-000000000001"
+      state:
+        type: "string"
+        enum:
+        - "wip"
+        - "active"
+        - "redirect"
+        - "deleted"
+    example:
+      redirect: "f1f046a3-45c9-4b99-adce-000000000002"
+      coden: "coden"
+      ident: "f1f046a3-45c9-4b99-adce-000000000001"
+      extra: "{}"
+      name: "Journal of Important Results"
+      publisher: "Society of Curious Students"
+      editgroup_id: 16
+      issnl: "1234-5678"
+      abbrev: "abbrev"
+      state: "wip"
+      revision: 42
+    upperCaseName: "CONTAINER_ENTITY"
+  creator_entity:
+    type: "object"
+    required:
+    - "full_name"
+    properties:
+      orcid:
+        type: "string"
+        example: "0000-0002-1825-0097"
+      full_name:
+        type: "string"
+        example: "Grace Hopper"
       state:
         type: "string"
         enum:
@@ -1107,17 +1405,14 @@ definitions:
         type: "object"
     example:
       redirect: "f1f046a3-45c9-4b99-adce-000000000002"
-      coden: "coden"
+      full_name: "Grace Hopper"
       ident: "f1f046a3-45c9-4b99-adce-000000000001"
       extra: "{}"
-      name: "Journal of Important Results"
-      publisher: "Society of Curious Students"
       editgroup_id: 16
-      issnl: "1234-5678"
-      abbrev: "abbrev"
+      orcid: "0000-0002-1825-0097"
       state: "wip"
       revision: 42
-    upperCaseName: "CONTAINER_ENTITY"
+    upperCaseName: "CREATOR_ENTITY"
   file_entity:
     type: "object"
     properties:

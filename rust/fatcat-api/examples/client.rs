@@ -11,9 +11,10 @@ extern crate uuid;
 
 use clap::{App, Arg};
 #[allow(unused_imports)]
-use fatcat::{ApiError, ApiNoContext, ContainerIdGetResponse, ContainerLookupGetResponse, ContainerPostResponse, ContextWrapperExt, CreatorIdGetResponse, CreatorLookupGetResponse,
-             CreatorPostResponse, EditgroupIdAcceptPostResponse, EditgroupIdGetResponse, EditgroupPostResponse, EditorUsernameChangelogGetResponse, EditorUsernameGetResponse, FileIdGetResponse,
-             FileLookupGetResponse, FilePostResponse, ReleaseIdGetResponse, ReleaseLookupGetResponse, ReleasePostResponse, WorkIdGetResponse, WorkPostResponse};
+use fatcat::{ApiError, ApiNoContext, ContainerBatchPostResponse, ContainerIdGetResponse, ContainerLookupGetResponse, ContainerPostResponse, ContextWrapperExt, CreatorBatchPostResponse,
+             CreatorIdGetResponse, CreatorLookupGetResponse, CreatorPostResponse, EditgroupIdAcceptPostResponse, EditgroupIdGetResponse, EditgroupPostResponse, EditorUsernameChangelogGetResponse,
+             EditorUsernameGetResponse, FileBatchPostResponse, FileIdGetResponse, FileLookupGetResponse, FilePostResponse, ReleaseBatchPostResponse, ReleaseIdGetResponse, ReleaseLookupGetResponse,
+             ReleasePostResponse, WorkBatchPostResponse, WorkIdGetResponse, WorkPostResponse};
 #[allow(unused_imports)]
 use futures::{future, stream, Future, Stream};
 
@@ -23,18 +24,23 @@ fn main() {
             Arg::with_name("operation")
                 .help("Sets the operation to run")
                 .possible_values(&[
+                    "ContainerBatchPost",
                     "ContainerIdGet",
                     "ContainerLookupGet",
+                    "CreatorBatchPost",
                     "CreatorIdGet",
                     "CreatorLookupGet",
                     "EditgroupIdAcceptPost",
                     "EditgroupIdGet",
                     "EditorUsernameChangelogGet",
                     "EditorUsernameGet",
+                    "FileBatchPost",
                     "FileIdGet",
                     "FileLookupGet",
+                    "ReleaseBatchPost",
                     "ReleaseIdGet",
                     "ReleaseLookupGet",
+                    "WorkBatchPost",
                     "WorkIdGet",
                 ])
                 .required(true)
@@ -64,6 +70,11 @@ fn main() {
     let client = client.with_context(fatcat::Context::new_with_span_id(self::uuid::Uuid::new_v4().to_string()));
 
     match matches.value_of("operation") {
+        Some("ContainerBatchPost") => {
+            let result = client.container_batch_post(&Vec::new()).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
         Some("ContainerIdGet") => {
             let result = client.container_id_get("id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
@@ -79,6 +90,11 @@ fn main() {
         //     let result = client.container_post(???).wait();
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         //  },
+        Some("CreatorBatchPost") => {
+            let result = client.creator_batch_post(&Vec::new()).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
         Some("CreatorIdGet") => {
             let result = client.creator_id_get("id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
@@ -119,6 +135,11 @@ fn main() {
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
+        Some("FileBatchPost") => {
+            let result = client.file_batch_post(&Vec::new()).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
         Some("FileIdGet") => {
             let result = client.file_id_get("id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
@@ -134,6 +155,11 @@ fn main() {
         //     let result = client.file_post(???).wait();
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         //  },
+        Some("ReleaseBatchPost") => {
+            let result = client.release_batch_post(&Vec::new()).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
         Some("ReleaseIdGet") => {
             let result = client.release_id_get("id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
@@ -149,6 +175,11 @@ fn main() {
         //     let result = client.release_post(???).wait();
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         //  },
+        Some("WorkBatchPost") => {
+            let result = client.work_batch_post(&Vec::new()).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
         Some("WorkIdGet") => {
             let result = client.work_id_get("id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));

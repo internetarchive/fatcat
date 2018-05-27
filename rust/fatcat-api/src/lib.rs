@@ -33,6 +33,18 @@ mod mimetypes;
 pub use swagger::{ApiError, Context, ContextWrapper};
 
 #[derive(Debug, PartialEq)]
+pub enum ContainerBatchPostResponse {
+    /// Created Entities
+    CreatedEntities(Vec<models::EntityEdit>),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
 pub enum ContainerIdGetResponse {
     /// Found Entity
     FoundEntity(models::ContainerEntity),
@@ -60,6 +72,18 @@ pub enum ContainerLookupGetResponse {
 pub enum ContainerPostResponse {
     /// Created Entity
     CreatedEntity(models::EntityEdit),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum CreatorBatchPostResponse {
+    /// Created Entities
+    CreatedEntities(Vec<models::EntityEdit>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
     /// Not Found
@@ -159,6 +183,18 @@ pub enum EditorUsernameGetResponse {
 }
 
 #[derive(Debug, PartialEq)]
+pub enum FileBatchPostResponse {
+    /// Created Entities
+    CreatedEntities(Vec<models::EntityEdit>),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
 pub enum FileIdGetResponse {
     /// Found Entity
     FoundEntity(models::FileEntity),
@@ -186,6 +222,18 @@ pub enum FileLookupGetResponse {
 pub enum FilePostResponse {
     /// Created Entity
     CreatedEntity(models::EntityEdit),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum ReleaseBatchPostResponse {
+    /// Created Entities
+    CreatedEntities(Vec<models::EntityEdit>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
     /// Not Found
@@ -231,6 +279,18 @@ pub enum ReleasePostResponse {
 }
 
 #[derive(Debug, PartialEq)]
+pub enum WorkBatchPostResponse {
+    /// Created Entities
+    CreatedEntities(Vec<models::EntityEdit>),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
 pub enum WorkIdGetResponse {
     /// Found Entity
     FoundEntity(models::WorkEntity),
@@ -256,11 +316,15 @@ pub enum WorkPostResponse {
 
 /// API
 pub trait Api {
+    fn container_batch_post(&self, entity_list: &Vec<models::ContainerEntity>, context: &Context) -> Box<Future<Item = ContainerBatchPostResponse, Error = ApiError> + Send>;
+
     fn container_id_get(&self, id: String, context: &Context) -> Box<Future<Item = ContainerIdGetResponse, Error = ApiError> + Send>;
 
     fn container_lookup_get(&self, issnl: String, context: &Context) -> Box<Future<Item = ContainerLookupGetResponse, Error = ApiError> + Send>;
 
     fn container_post(&self, entity: models::ContainerEntity, context: &Context) -> Box<Future<Item = ContainerPostResponse, Error = ApiError> + Send>;
+
+    fn creator_batch_post(&self, entity_list: &Vec<models::CreatorEntity>, context: &Context) -> Box<Future<Item = CreatorBatchPostResponse, Error = ApiError> + Send>;
 
     fn creator_id_get(&self, id: String, context: &Context) -> Box<Future<Item = CreatorIdGetResponse, Error = ApiError> + Send>;
 
@@ -278,17 +342,23 @@ pub trait Api {
 
     fn editor_username_get(&self, username: String, context: &Context) -> Box<Future<Item = EditorUsernameGetResponse, Error = ApiError> + Send>;
 
+    fn file_batch_post(&self, entity_list: &Vec<models::FileEntity>, context: &Context) -> Box<Future<Item = FileBatchPostResponse, Error = ApiError> + Send>;
+
     fn file_id_get(&self, id: String, context: &Context) -> Box<Future<Item = FileIdGetResponse, Error = ApiError> + Send>;
 
     fn file_lookup_get(&self, sha1: String, context: &Context) -> Box<Future<Item = FileLookupGetResponse, Error = ApiError> + Send>;
 
     fn file_post(&self, entity: models::FileEntity, context: &Context) -> Box<Future<Item = FilePostResponse, Error = ApiError> + Send>;
 
+    fn release_batch_post(&self, entity_list: &Vec<models::ReleaseEntity>, context: &Context) -> Box<Future<Item = ReleaseBatchPostResponse, Error = ApiError> + Send>;
+
     fn release_id_get(&self, id: String, context: &Context) -> Box<Future<Item = ReleaseIdGetResponse, Error = ApiError> + Send>;
 
     fn release_lookup_get(&self, doi: String, context: &Context) -> Box<Future<Item = ReleaseLookupGetResponse, Error = ApiError> + Send>;
 
     fn release_post(&self, entity: models::ReleaseEntity, context: &Context) -> Box<Future<Item = ReleasePostResponse, Error = ApiError> + Send>;
+
+    fn work_batch_post(&self, entity_list: &Vec<models::WorkEntity>, context: &Context) -> Box<Future<Item = WorkBatchPostResponse, Error = ApiError> + Send>;
 
     fn work_id_get(&self, id: String, context: &Context) -> Box<Future<Item = WorkIdGetResponse, Error = ApiError> + Send>;
 
@@ -297,11 +367,15 @@ pub trait Api {
 
 /// API without a `Context`
 pub trait ApiNoContext {
+    fn container_batch_post(&self, entity_list: &Vec<models::ContainerEntity>) -> Box<Future<Item = ContainerBatchPostResponse, Error = ApiError> + Send>;
+
     fn container_id_get(&self, id: String) -> Box<Future<Item = ContainerIdGetResponse, Error = ApiError> + Send>;
 
     fn container_lookup_get(&self, issnl: String) -> Box<Future<Item = ContainerLookupGetResponse, Error = ApiError> + Send>;
 
     fn container_post(&self, entity: models::ContainerEntity) -> Box<Future<Item = ContainerPostResponse, Error = ApiError> + Send>;
+
+    fn creator_batch_post(&self, entity_list: &Vec<models::CreatorEntity>) -> Box<Future<Item = CreatorBatchPostResponse, Error = ApiError> + Send>;
 
     fn creator_id_get(&self, id: String) -> Box<Future<Item = CreatorIdGetResponse, Error = ApiError> + Send>;
 
@@ -319,17 +393,23 @@ pub trait ApiNoContext {
 
     fn editor_username_get(&self, username: String) -> Box<Future<Item = EditorUsernameGetResponse, Error = ApiError> + Send>;
 
+    fn file_batch_post(&self, entity_list: &Vec<models::FileEntity>) -> Box<Future<Item = FileBatchPostResponse, Error = ApiError> + Send>;
+
     fn file_id_get(&self, id: String) -> Box<Future<Item = FileIdGetResponse, Error = ApiError> + Send>;
 
     fn file_lookup_get(&self, sha1: String) -> Box<Future<Item = FileLookupGetResponse, Error = ApiError> + Send>;
 
     fn file_post(&self, entity: models::FileEntity) -> Box<Future<Item = FilePostResponse, Error = ApiError> + Send>;
 
+    fn release_batch_post(&self, entity_list: &Vec<models::ReleaseEntity>) -> Box<Future<Item = ReleaseBatchPostResponse, Error = ApiError> + Send>;
+
     fn release_id_get(&self, id: String) -> Box<Future<Item = ReleaseIdGetResponse, Error = ApiError> + Send>;
 
     fn release_lookup_get(&self, doi: String) -> Box<Future<Item = ReleaseLookupGetResponse, Error = ApiError> + Send>;
 
     fn release_post(&self, entity: models::ReleaseEntity) -> Box<Future<Item = ReleasePostResponse, Error = ApiError> + Send>;
+
+    fn work_batch_post(&self, entity_list: &Vec<models::WorkEntity>) -> Box<Future<Item = WorkBatchPostResponse, Error = ApiError> + Send>;
 
     fn work_id_get(&self, id: String) -> Box<Future<Item = WorkIdGetResponse, Error = ApiError> + Send>;
 
@@ -352,6 +432,10 @@ impl<'a, T: Api + Sized> ContextWrapperExt<'a> for T {
 }
 
 impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
+    fn container_batch_post(&self, entity_list: &Vec<models::ContainerEntity>) -> Box<Future<Item = ContainerBatchPostResponse, Error = ApiError> + Send> {
+        self.api().container_batch_post(entity_list, &self.context())
+    }
+
     fn container_id_get(&self, id: String) -> Box<Future<Item = ContainerIdGetResponse, Error = ApiError> + Send> {
         self.api().container_id_get(id, &self.context())
     }
@@ -362,6 +446,10 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
 
     fn container_post(&self, entity: models::ContainerEntity) -> Box<Future<Item = ContainerPostResponse, Error = ApiError> + Send> {
         self.api().container_post(entity, &self.context())
+    }
+
+    fn creator_batch_post(&self, entity_list: &Vec<models::CreatorEntity>) -> Box<Future<Item = CreatorBatchPostResponse, Error = ApiError> + Send> {
+        self.api().creator_batch_post(entity_list, &self.context())
     }
 
     fn creator_id_get(&self, id: String) -> Box<Future<Item = CreatorIdGetResponse, Error = ApiError> + Send> {
@@ -396,6 +484,10 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().editor_username_get(username, &self.context())
     }
 
+    fn file_batch_post(&self, entity_list: &Vec<models::FileEntity>) -> Box<Future<Item = FileBatchPostResponse, Error = ApiError> + Send> {
+        self.api().file_batch_post(entity_list, &self.context())
+    }
+
     fn file_id_get(&self, id: String) -> Box<Future<Item = FileIdGetResponse, Error = ApiError> + Send> {
         self.api().file_id_get(id, &self.context())
     }
@@ -408,6 +500,10 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().file_post(entity, &self.context())
     }
 
+    fn release_batch_post(&self, entity_list: &Vec<models::ReleaseEntity>) -> Box<Future<Item = ReleaseBatchPostResponse, Error = ApiError> + Send> {
+        self.api().release_batch_post(entity_list, &self.context())
+    }
+
     fn release_id_get(&self, id: String) -> Box<Future<Item = ReleaseIdGetResponse, Error = ApiError> + Send> {
         self.api().release_id_get(id, &self.context())
     }
@@ -418,6 +514,10 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
 
     fn release_post(&self, entity: models::ReleaseEntity) -> Box<Future<Item = ReleasePostResponse, Error = ApiError> + Send> {
         self.api().release_post(entity, &self.context())
+    }
+
+    fn work_batch_post(&self, entity_list: &Vec<models::WorkEntity>) -> Box<Future<Item = WorkBatchPostResponse, Error = ApiError> + Send> {
+        self.api().work_batch_post(entity_list, &self.context())
     }
 
     fn work_id_get(&self, id: String) -> Box<Future<Item = WorkIdGetResponse, Error = ApiError> + Send> {

@@ -113,30 +113,30 @@ pub struct ContainerEntity {
     #[serde(rename = "name")]
     pub name: String,
 
-    // Note: inline enums are not fully supported by swagger-codegen
-    #[serde(rename = "state")]
+    #[serde(rename = "extra")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub state: Option<String>,
-
-    #[serde(rename = "ident")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub ident: Option<String>,
-
-    #[serde(rename = "revision")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub revision: Option<i64>,
-
-    #[serde(rename = "redirect")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub redirect: Option<String>,
+    pub extra: Option<serde_json::Value>,
 
     #[serde(rename = "editgroup_id")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub editgroup_id: Option<i64>,
 
-    #[serde(rename = "extra")]
+    #[serde(rename = "redirect")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub extra: Option<serde_json::Value>,
+    pub redirect: Option<String>,
+
+    #[serde(rename = "revision")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub revision: Option<i64>,
+
+    #[serde(rename = "ident")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ident: Option<String>,
+
+    // Note: inline enums are not fully supported by swagger-codegen
+    #[serde(rename = "state")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub state: Option<String>,
 }
 
 impl ContainerEntity {
@@ -147,12 +147,12 @@ impl ContainerEntity {
             issnl: None,
             publisher: None,
             name: name,
-            state: None,
-            ident: None,
-            revision: None,
-            redirect: None,
-            editgroup_id: None,
             extra: None,
+            editgroup_id: None,
+            redirect: None,
+            revision: None,
+            ident: None,
+            state: None,
         }
     }
 }
@@ -166,30 +166,30 @@ pub struct CreatorEntity {
     #[serde(rename = "full_name")]
     pub full_name: String,
 
-    #[serde(rename = "extra")]
+    // Note: inline enums are not fully supported by swagger-codegen
+    #[serde(rename = "state")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub extra: Option<serde_json::Value>,
-
-    #[serde(rename = "editgroup_id")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub editgroup_id: Option<i64>,
-
-    #[serde(rename = "redirect")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub redirect: Option<String>,
-
-    #[serde(rename = "revision")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub revision: Option<i64>,
+    pub state: Option<String>,
 
     #[serde(rename = "ident")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ident: Option<String>,
 
-    // Note: inline enums are not fully supported by swagger-codegen
-    #[serde(rename = "state")]
+    #[serde(rename = "revision")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub state: Option<String>,
+    pub revision: Option<i64>,
+
+    #[serde(rename = "redirect")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub redirect: Option<String>,
+
+    #[serde(rename = "editgroup_id")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub editgroup_id: Option<i64>,
+
+    #[serde(rename = "extra")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub extra: Option<serde_json::Value>,
 }
 
 impl CreatorEntity {
@@ -197,12 +197,12 @@ impl CreatorEntity {
         CreatorEntity {
             orcid: None,
             full_name: full_name,
-            extra: None,
-            editgroup_id: None,
-            redirect: None,
-            revision: None,
-            ident: None,
             state: None,
+            ident: None,
+            revision: None,
+            redirect: None,
+            editgroup_id: None,
+            extra: None,
         }
     }
 }

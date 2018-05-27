@@ -24,6 +24,7 @@ mod errors {
     error_chain! {
         foreign_links { Fmt(::std::fmt::Error);
                         Diesel(::diesel::result::Error);
+                        R2d2(::diesel::r2d2::Error);
                         Uuid(::uuid::ParseError);
                         Io(::std::io::Error) #[cfg(unix)];
         }
