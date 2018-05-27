@@ -5,12 +5,12 @@ rust_test:
     POSTGRES_DB: "fatcat_test"
     POSTGRES_USER: "fatcat_user"
     POSTGRES_PASSWORD: "fatcat_pw"
-    DATABASE_URL: "postgres://fatcat_user:fatcat_pw:@localhost/fatcat_test"
-    TEST_DATABASE_URL: "postgres://fatcat_user:fatcat_pw:@localhost/fatcat_test"
+    DATABASE_URL: "postgres://fatcat_user:fatcat_pw:@postgres/fatcat_test"
+    TEST_DATABASE_URL: "postgres://fatcat_user:fatcat_pw:@postgres/fatcat_test"
   services:
     - "postgres:9.6"
   before_script:
-    - cargo install diesel_cli --version 1.2
+    - cargo install diesel_cli --version 1.3.1
   script:
     - rustc --version && cargo --version && diesel --version
     - cd rust
