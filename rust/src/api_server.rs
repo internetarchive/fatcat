@@ -33,10 +33,15 @@ macro_rules! wrap_entity_handlers {
             _context: &Context,
         ) -> Box<Future<Item = $get_resp, Error = ApiError> + Send> {
             let ret = match self.$get_handler(id.clone()) {
-                Ok(Some(entity)) =>
+                //Ok(Some(entity)) =>
+                Ok(entity) =>
                     $get_resp::FoundEntity(entity),
-                Ok(None) =>
+                //Ok(None) =>
+                //    $get_resp::NotFound(ErrorResponse { message: format!("No such entity {}: {}", stringify!($model), id) }),
+                Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
                     $get_resp::NotFound(ErrorResponse { message: format!("No such entity {}: {}", stringify!($model), id) }),
+                Err(Error(ErrorKind::Uuid(e), _)) =>
+                    $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
             };
             Box::new(futures::done(Ok(ret)))
@@ -84,37 +89,44 @@ pub struct Server {
     pub db_pool: ConnectionPool,
 }
 
+fn container_row2entity(ident: ContainerIdentRow, rev: ContainerRevRow) -> Result<ContainerEntity> {
+    Ok(ContainerEntity {
+        issnl: rev.issnl,
+        publisher: rev.publisher,
+        name: rev.name,
+        abbrev: rev.abbrev,
+        coden: rev.coden,
+        state: Some(ident.state().unwrap().shortname()),
+        ident: Some(ident.id.to_string()),
+        revision: ident.rev_id,
+        redirect: ident.redirect_id.map(|u| u.to_string()),
+        editgroup_id: None,
+        extra: rev.extra_json,
+    })
+}
+
 impl Server {
-    fn container_id_get_handler(&self, id: String) -> Result<Option<ContainerEntity>> {
+
+    fn container_id_get_handler(&self, id: String) -> Result<ContainerEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
         let id = uuid::Uuid::parse_str(&id)?;
 
-        let res: ::std::result::Result<(ContainerIdentRow, ContainerRevRow), _> =
+        //let res: ::std::result::Result<(ContainerIdentRow, ContainerRevRow), _> =
+        let (ident, rev): (ContainerIdentRow, ContainerRevRow) =
             container_ident::table
                 .find(id)
                 .inner_join(container_rev::table)
-                .first(&conn);
-
+                .first(&conn)?;
+/*
         let (ident, rev) = match res {
             Ok(r) => r,
-            Err(diesel::result::Error::NotFound) => return Ok(None),
+            Err(::diesel::result::Error::NotFound) => return Ok(None),
             Err(e) => return Err(e.into()),
         };
+*/
 
-        let entity = ContainerEntity {
-            issnl: rev.issnl,
-            publisher: rev.publisher,
-            name: rev.name,
-            abbrev: rev.abbrev,
-            coden: rev.coden,
-            state: Some(ident.state().unwrap().shortname()),
-            ident: Some(ident.id.to_string()),
-            revision: ident.rev_id,
-            redirect: ident.redirect_id.map(|u| u.to_string()),
-            editgroup_id: None,
-            extra: rev.extra_json,
-        };
-        Ok(Some(entity))
+        //container_row2entity(ident, rev).map(|e| Some(e))
+        container_row2entity(ident, rev)
     }
 
     fn container_lookup_get_handler(&self, issnl: String) -> Result<Option<ContainerEntity>> {
@@ -130,40 +142,21 @@ impl Server {
 
         let (ident, rev) = match res {
             Ok(r) => r,
-            Err(diesel::result::Error::NotFound) => return Ok(None),
+            Err(::diesel::result::Error::NotFound) => return Ok(None),
             Err(e) => return Err(e.into()),
         };
 
-        let entity = ContainerEntity {
-            issnl: rev.issnl,
-            publisher: rev.publisher,
-            name: rev.name,
-            abbrev: rev.abbrev,
-            coden: rev.coden,
-            state: Some(ident.state().unwrap().shortname()),
-            ident: Some(ident.id.to_string()),
-            revision: ident.rev_id,
-            redirect: ident.redirect_id.map(|u| u.to_string()),
-            editgroup_id: None,
-            extra: rev.extra_json,
-        };
-        Ok(Some(entity))
+        container_row2entity(ident, rev).map(|e| Some(e))
     }
 
-    fn creator_id_get_handler(&self, id: String) -> Result<Option<CreatorEntity>> {
+    fn creator_id_get_handler(&self, id: String) -> Result<CreatorEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
         let id = uuid::Uuid::parse_str(&id)?;
 
-        let res: ::std::result::Result<(CreatorIdentRow, CreatorRevRow), _> = creator_ident::table
+        let (ident, rev): (CreatorIdentRow, CreatorRevRow) = creator_ident::table
             .find(id)
             .inner_join(creator_rev::table)
-            .first(&conn);
-
-        let (ident, rev) = match res {
-            Ok(r) => r,
-            Err(diesel::result::Error::NotFound) => return Ok(None),
-            Err(e) => return Err(e.into()),
-        };
+            .first(&conn)?;
 
         let entity = CreatorEntity {
             full_name: rev.full_name,
@@ -175,12 +168,13 @@ impl Server {
             editgroup_id: None,
             extra: rev.extra_json,
         };
-        Ok(Some(entity))
+        Ok(entity)
     }
 
     fn creator_lookup_get_handler(&self, orcid: String) -> Result<Option<CreatorEntity>> {
         let conn = self.db_pool.get().expect("db_pool error");
 
+        //let (ident, rev): (CreatorIdentRow, CreatorRevRow) = creator_ident::table
         let res: ::std::result::Result<(CreatorIdentRow, CreatorRevRow), _> = creator_ident::table
             .inner_join(creator_rev::table)
             .filter(creator_rev::orcid.eq(&orcid))
@@ -207,20 +201,14 @@ impl Server {
         Ok(Some(entity))
     }
 
-    fn file_id_get_handler(&self, id: String) -> Result<Option<FileEntity>> {
+    fn file_id_get_handler(&self, id: String) -> Result<FileEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
         let id = uuid::Uuid::parse_str(&id)?;
 
-        let res: ::std::result::Result<(FileIdentRow, FileRevRow), _> = file_ident::table
+        let (ident, rev): (FileIdentRow, FileRevRow) = file_ident::table
             .find(id)
             .inner_join(file_rev::table)
-            .first(&conn);
-
-        let (ident, rev) = match res {
-            Ok(r) => r,
-            Err(diesel::result::Error::NotFound) => return Ok(None),
-            Err(e) => return Err(e.into()),
-        };
+            .first(&conn)?;
 
         let releases: Vec<String> = file_release::table
             .filter(file_release::file_rev.eq(rev.id))
@@ -243,7 +231,7 @@ impl Server {
             editgroup_id: None,
             extra: rev.extra_json,
         };
-        Ok(Some(entity))
+        Ok(entity)
     }
 
     // TODO: refactor this to not be redundant with file_id_get_handler() code
@@ -287,47 +275,14 @@ impl Server {
         Ok(Some(entity))
     }
 
-    fn work_id_get_handler(&self, id: String) -> Result<Option<WorkEntity>> {
+    fn release_id_get_handler(&self, id: String) -> Result<ReleaseEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
         let id = uuid::Uuid::parse_str(&id)?;
 
-        let res: ::std::result::Result<(WorkIdentRow, WorkRevRow), _> = work_ident::table
-            .find(id)
-            .inner_join(work_rev::table)
-            .first(&conn);
-
-        let (ident, rev) = match res {
-            Ok(r) => r,
-            Err(diesel::result::Error::NotFound) => return Ok(None),
-            Err(e) => return Err(e.into()),
-        };
-
-        let entity = WorkEntity {
-            work_type: rev.work_type,
-            state: Some(ident.state().unwrap().shortname()),
-            ident: Some(ident.id.to_string()),
-            revision: ident.rev_id,
-            redirect: ident.redirect_id.map(|u| u.to_string()),
-            editgroup_id: None,
-            extra: rev.extra_json,
-        };
-        Ok(Some(entity))
-    }
-
-    fn release_id_get_handler(&self, id: String) -> Result<Option<ReleaseEntity>> {
-        let conn = self.db_pool.get().expect("db_pool error");
-        let id = uuid::Uuid::parse_str(&id)?;
-
-        let res: ::std::result::Result<(ReleaseIdentRow, ReleaseRevRow), _> = release_ident::table
+        let (ident, rev): (ReleaseIdentRow, ReleaseRevRow) = release_ident::table
             .find(id)
             .inner_join(release_rev::table)
-            .first(&conn);
-
-        let (ident, rev) = match res {
-            Ok(r) => r,
-            Err(diesel::result::Error::NotFound) => return Ok(None),
-            Err(e) => return Err(e.into()),
-        };
+            .first(&conn)?;
 
         let refs: Vec<ReleaseRef> = release_ref::table
             .filter(release_ref::release_rev.eq(rev.id))
@@ -376,7 +331,7 @@ impl Server {
             editgroup_id: None,
             extra: rev.extra_json,
         };
-        Ok(Some(entity))
+        Ok(entity)
     }
 
     fn release_lookup_get_handler(&self, doi: String) -> Result<Option<ReleaseEntity>> {
@@ -443,6 +398,27 @@ impl Server {
             extra: rev.extra_json,
         };
         Ok(Some(entity))
+    }
+
+    fn work_id_get_handler(&self, id: String) -> Result<WorkEntity> {
+        let conn = self.db_pool.get().expect("db_pool error");
+        let id = uuid::Uuid::parse_str(&id)?;
+
+        let (ident, rev): (WorkIdentRow, WorkRevRow) = work_ident::table
+            .find(id)
+            .inner_join(work_rev::table)
+            .first(&conn)?;
+
+        let entity = WorkEntity {
+            work_type: rev.work_type,
+            state: Some(ident.state().unwrap().shortname()),
+            ident: Some(ident.id.to_string()),
+            revision: ident.rev_id,
+            redirect: ident.redirect_id.map(|u| u.to_string()),
+            editgroup_id: None,
+            extra: rev.extra_json,
+        };
+        Ok(entity)
     }
 
     fn container_post_handler(&self, body: models::ContainerEntity) -> Result<EntityEdit> {
