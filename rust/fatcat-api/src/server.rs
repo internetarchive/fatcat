@@ -190,15 +190,15 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_issn = query_params
-                    .get("issn")
-                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter issn".to_string())))?
+                let param_issnl = query_params
+                    .get("issnl")
+                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter issnl".to_string())))?
                     .first()
-                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter issn was empty".to_string())))?
+                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter issnl was empty".to_string())))?
                     .parse::<String>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter issn - doesn't match schema: {}", e))))?;
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter issnl - doesn't match schema: {}", e))))?;
 
-                match api.container_lookup_get(param_issn, context).wait() {
+                match api.container_lookup_get(param_issnl, context).wait() {
                     Ok(rsp) => match rsp {
                         ContainerLookupGetResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");

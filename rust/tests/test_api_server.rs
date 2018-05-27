@@ -117,7 +117,7 @@ fn test_lookups() {
 
     check_response(
         request::get(
-            "http://localhost:9411/v0/container/lookup?issn=1234-5678",
+            "http://localhost:9411/v0/container/lookup?issnl=1234-5678",
             headers.clone(),
             &router,
         ),
@@ -170,7 +170,7 @@ fn test_post_creator() {
         request::post(
             "http://localhost:9411/v0/creator",
             headers,
-            r#"{"name": "some person"}"#,
+            r#"{"full_name": "some person"}"#,
             &router,
         ),
         status::Created,

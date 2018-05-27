@@ -94,9 +94,11 @@ impl Server {
         };
 
         let entity = ContainerEntity {
-            issn: rev.issn,
+            issnl: rev.issnl,
             publisher: rev.publisher,
             name: rev.name,
+            abbrev: rev.abbrev,
+            coden: rev.coden,
             state: Some(ident.state().unwrap().shortname()),
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id,
@@ -107,13 +109,13 @@ impl Server {
         Ok(Some(entity))
     }
 
-    fn container_lookup_get_handler(&self, issn: String) -> Result<Option<ContainerEntity>> {
+    fn container_lookup_get_handler(&self, issnl: String) -> Result<Option<ContainerEntity>> {
         let conn = self.db_pool.get().expect("db_pool error");
 
         let res: ::std::result::Result<(ContainerIdentRow, ContainerRevRow), _> =
             container_ident::table
                 .inner_join(container_rev::table)
-                .filter(container_rev::issn.eq(&issn))
+                .filter(container_rev::issnl.eq(&issnl))
                 .filter(container_ident::is_live.eq(true))
                 .filter(container_ident::redirect_id.is_null())
                 .first(&conn);
@@ -125,9 +127,11 @@ impl Server {
         };
 
         let entity = ContainerEntity {
-            issn: rev.issn,
+            issnl: rev.issnl,
             publisher: rev.publisher,
             name: rev.name,
+            abbrev: rev.abbrev,
+            coden: rev.coden,
             state: Some(ident.state().unwrap().shortname()),
             ident: Some(ident.id.to_string()),
             revision: ident.rev_id,
@@ -154,7 +158,7 @@ impl Server {
         };
 
         let entity = CreatorEntity {
-            name: rev.name,
+            full_name: rev.full_name,
             orcid: rev.orcid,
             state: Some(ident.state().unwrap().shortname()),
             ident: Some(ident.id.to_string()),
@@ -183,7 +187,7 @@ impl Server {
         };
 
         let entity = CreatorEntity {
-            name: rev.name,
+            full_name: rev.full_name,
             orcid: rev.orcid,
             state: Some(ident.state().unwrap().shortname()),
             ident: Some(ident.id.to_string()),
@@ -220,6 +224,7 @@ impl Server {
 
         let entity = FileEntity {
             sha1: rev.sha1,
+            md5: rev.md5,
             size: rev.size.map(|v| v as i64),
             url: rev.url,
             releases: Some(releases),
@@ -260,6 +265,7 @@ impl Server {
 
         let entity = FileEntity {
             sha1: rev.sha1,
+            md5: rev.md5,
             size: rev.size.map(|v| v as i64),
             url: rev.url,
             releases: Some(releases),
@@ -334,7 +340,7 @@ impl Server {
             .iter()
             .map(|c: &ReleaseContribRow| ReleaseContrib {
                 index: c.index,
-                contrib_type: c.contrib_type.clone(),
+                role: c.role.clone(),
                 creator_stub: c.stub.clone(),
                 creator_id: c.creator_ident_id.map(|v| v.to_string()),
             })
@@ -346,10 +352,12 @@ impl Server {
             date: rev.date
                 .map(|v| chrono::DateTime::from_utc(v.and_hms(0, 0, 0), chrono::Utc)),
             doi: rev.doi,
+            isbn13: rev.isbn13,
             volume: rev.volume,
             pages: rev.pages,
             issue: rev.issue,
             container_id: rev.container_ident_id.map(|u| u.to_string()),
+            publisher: rev.publisher,
             work_id: rev.work_ident_id.to_string(),
             refs: Some(refs),
             contribs: Some(contribs),
@@ -398,7 +406,7 @@ impl Server {
             .iter()
             .map(|c: &ReleaseContribRow| ReleaseContrib {
                 index: c.index,
-                contrib_type: c.contrib_type.clone(),
+                role: c.role.clone(),
                 creator_stub: c.stub.clone(),
                 creator_id: c.creator_ident_id.map(|v| v.to_string()),
             })
@@ -410,10 +418,12 @@ impl Server {
             date: rev.date
                 .map(|v| chrono::DateTime::from_utc(v.and_hms(0, 0, 0), chrono::Utc)),
             doi: rev.doi,
+            isbn13: rev.isbn13,
             volume: rev.volume,
             pages: rev.pages,
             issue: rev.issue,
             container_id: rev.container_ident_id.map(|u| u.to_string()),
+            publisher: rev.publisher,
             work_id: rev.work_ident_id.to_string(),
             refs: Some(refs),
             contribs: Some(contribs),
@@ -594,7 +604,7 @@ impl Api for Server {
         container_lookup_get,
         container_lookup_get_handler,
         ContainerLookupGetResponse,
-        issn,
+        issnl,
         String
     );
     wrap_lookup_handler!(
@@ -632,18 +642,20 @@ impl Api for Server {
         };
 
         let edit: ContainerEditRow = diesel::sql_query(
-            "WITH rev AS ( INSERT INTO container_rev (name, publisher, issn, extra_json)
-                        VALUES ($1, $2, $3, $4)
+            "WITH rev AS ( INSERT INTO container_rev (name, publisher, issnl, abbrev, coden, extra_json)
+                        VALUES ($1, $2, $3, $4, $5, $6)
                         RETURNING id ),
                 ident AS ( INSERT INTO container_ident (rev_id)
                             VALUES ((SELECT rev.id FROM rev))
                             RETURNING id )
             INSERT INTO container_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($5, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+                ($7, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
         ).bind::<diesel::sql_types::Text, _>(body.name)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.publisher)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.issn)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.issnl)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.abbrev)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.coden)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(body.extra)
             .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
             .get_result(&conn)
@@ -676,7 +688,7 @@ impl Api for Server {
         };
 
         let edit: CreatorEditRow = diesel::sql_query(
-            "WITH rev AS ( INSERT INTO creator_rev (name, orcid, extra_json)
+            "WITH rev AS ( INSERT INTO creator_rev (full_name, orcid, extra_json)
                         VALUES ($1, $2, $3)
                         RETURNING id ),
                 ident AS ( INSERT INTO creator_ident (rev_id)
@@ -685,7 +697,7 @@ impl Api for Server {
             INSERT INTO creator_edit (editgroup_id, ident_id, rev_id) VALUES
                 ($4, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
-        ).bind::<diesel::sql_types::Text, _>(body.name)
+        ).bind::<diesel::sql_types::Text, _>(body.full_name)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.orcid)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(body.extra)
             .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
@@ -720,17 +732,18 @@ impl Api for Server {
 
         let edit: FileEditRow =
             diesel::sql_query(
-                "WITH rev AS ( INSERT INTO file_rev (size, sha1, url, extra_json)
-                        VALUES ($1, $2, $3, $4)
+                "WITH rev AS ( INSERT INTO file_rev (size, sha1, md5, url, extra_json)
+                        VALUES ($1, $2, $3, $4, $5)
                         RETURNING id ),
                 ident AS ( INSERT INTO file_ident (rev_id)
                             VALUES ((SELECT rev.id FROM rev))
                             RETURNING id )
             INSERT INTO file_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($5, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+                ($6, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
             ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Int8>, _>(body.size)
                 .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.sha1)
+                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.md5)
                 .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.url)
                 .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(body.extra)
                 .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
@@ -835,24 +848,26 @@ impl Api for Server {
         };
 
         let edit: ReleaseEditRow = diesel::sql_query(
-            "WITH rev AS ( INSERT INTO release_rev (title, release_type, date, doi, volume, pages, issue, work_ident_id, container_ident_id, extra_json)
-                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+            "WITH rev AS ( INSERT INTO release_rev (title, release_type, date, doi, isbn13, volume, pages, issue, work_ident_id, container_ident_id, publisher, extra_json)
+                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
                         RETURNING id ),
                 ident AS ( INSERT INTO release_ident (rev_id)
                             VALUES ((SELECT rev.id FROM rev))
                             RETURNING id )
             INSERT INTO release_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($11, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+                ($13, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
         ).bind::<diesel::sql_types::Text, _>(body.title)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.release_type)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Date>, _>(body.date.map(|v| v.naive_utc().date()))
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.doi)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.isbn13)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.volume)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.pages)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.issue)
             .bind::<diesel::sql_types::Uuid, _>(work_id)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Uuid>, _>(container_id)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(body.publisher)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(body.extra)
             .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
             .get_result(&conn)
@@ -899,7 +914,7 @@ impl Api for Server {
                                 .clone()
                                 .map(|v| uuid::Uuid::parse_str(&v).expect("valid UUID")),
                             index: c.index,
-                            contrib_type: c.contrib_type.clone(),
+                            role: c.role.clone(),
                             stub: c.creator_stub.clone(),
                         })
                         .collect();

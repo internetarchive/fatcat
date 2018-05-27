@@ -75,7 +75,9 @@ pub struct ContainerRevRow {
     pub extra_json: Option<serde_json::Value>,
     pub name: String,
     pub publisher: Option<String>,
-    pub issn: Option<String>,
+    pub issnl: Option<String>,
+    pub abbrev: Option<String>,
+    pub coden: Option<String>,
 }
 
 entity_structs!(
@@ -90,7 +92,7 @@ entity_structs!(
 pub struct CreatorRevRow {
     pub id: i64,
     pub extra_json: Option<serde_json::Value>,
-    pub name: String,
+    pub full_name: String,
     pub orcid: Option<String>,
 }
 
@@ -108,6 +110,7 @@ pub struct FileRevRow {
     pub extra_json: Option<serde_json::Value>,
     pub size: Option<i64>,
     pub sha1: Option<String>,
+    pub md5: Option<String>,
     pub url: Option<String>,
 }
 
@@ -124,9 +127,11 @@ pub struct ReleaseRevRow {
     pub release_type: Option<String>,
     pub date: Option<chrono::NaiveDate>,
     pub doi: Option<String>,
+    pub isbn13: Option<String>,
     pub volume: Option<String>,
     pub pages: Option<String>,
     pub issue: Option<String>,
+    pub publisher: Option<String>,
 }
 
 entity_structs!(
@@ -153,9 +158,9 @@ pub struct ReleaseContribRow {
     pub id: i64,
     pub release_rev: i64,
     pub creator_ident_id: Option<Uuid>,
-    pub stub: Option<String>,
+    pub role: Option<String>,
     pub index: Option<i64>,
-    pub contrib_type: Option<String>,
+    pub stub: Option<String>,
 }
 
 #[derive(Debug, Insertable)]
@@ -163,9 +168,9 @@ pub struct ReleaseContribRow {
 pub struct ReleaseContribNewRow {
     pub release_rev: i64,
     pub creator_ident_id: Option<Uuid>,
-    pub stub: Option<String>,
+    pub role: Option<String>,
     pub index: Option<i64>,
-    pub contrib_type: Option<String>,
+    pub stub: Option<String>,
 }
 
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]

@@ -221,11 +221,11 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn container_lookup_get(&self, param_issn: String, context: &Context) -> Box<Future<Item = ContainerLookupGetResponse, Error = ApiError> + Send> {
+    fn container_lookup_get(&self, param_issnl: String, context: &Context) -> Box<Future<Item = ContainerLookupGetResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_issn = format!("issn={issn}&", issn = param_issn.to_string());
+        let query_issnl = format!("issnl={issnl}&", issnl = param_issnl.to_string());
 
-        let url = format!("{}/v0/container/lookup?{issn}", self.base_path, issn = utf8_percent_encode(&query_issn, QUERY_ENCODE_SET));
+        let url = format!("{}/v0/container/lookup?{issnl}", self.base_path, issnl = utf8_percent_encode(&query_issnl, QUERY_ENCODE_SET));
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Get, &url);

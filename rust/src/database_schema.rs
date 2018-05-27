@@ -32,7 +32,9 @@ table! {
         extra_json -> Nullable<Json>,
         name -> Text,
         publisher -> Nullable<Text>,
-        issn -> Nullable<Text>,
+        issnl -> Nullable<Text>,
+        abbrev -> Nullable<Text>,
+        coden -> Nullable<Text>,
     }
 }
 
@@ -60,7 +62,7 @@ table! {
     creator_rev (id) {
         id -> Int8,
         extra_json -> Nullable<Json>,
-        name -> Text,
+        full_name -> Text,
         orcid -> Nullable<Text>,
     }
 }
@@ -116,6 +118,7 @@ table! {
         extra_json -> Nullable<Json>,
         size -> Nullable<Int8>,
         sha1 -> Nullable<Text>,
+        md5 -> Nullable<Text>,
         url -> Nullable<Text>,
     }
 }
@@ -125,7 +128,7 @@ table! {
         id -> Int8,
         release_rev -> Int8,
         creator_ident_id -> Nullable<Uuid>,
-        contrib_type -> Nullable<Text>,
+        role -> Nullable<Text>,
         index -> Nullable<Int8>,
         stub -> Nullable<Text>,
     }
@@ -171,9 +174,11 @@ table! {
         release_type -> Nullable<Text>,
         date -> Nullable<Date>,
         doi -> Nullable<Text>,
+        isbn13 -> Nullable<Text>,
         volume -> Nullable<Text>,
         pages -> Nullable<Text>,
         issue -> Nullable<Text>,
+        publisher -> Nullable<Text>,
     }
 }
 

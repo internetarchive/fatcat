@@ -37,8 +37,10 @@ CREATE TABLE creator_rev (
     id                  BIGSERIAL PRIMARY KEY,
     extra_json          JSON,
 
-    name                TEXT NOT NULL,
+    full_name           TEXT NOT NULL,
     orcid               TEXT
+    -- TODO: aliases/alternatives
+    -- TODO: sortable name?
 );
 
 -- Could denormalize a "is_live" flag into revision tables, to make indices
@@ -68,10 +70,12 @@ CREATE TABLE container_rev (
 
     name                TEXT NOT NULL,
     publisher           TEXT,
-    issn                TEXT -- TODO: varchar
+    issnl               TEXT, -- TODO: varchar
+    abbrev              TEXT,
+    coden               TEXT
 );
 
-CREATE INDEX container_rev_issn_idx ON container_rev(issn) WHERE issn IS NOT NULL;
+CREATE INDEX container_rev_issnl_idx ON container_rev(issnl) WHERE issnl IS NOT NULL;
 
 CREATE TABLE container_ident (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -96,6 +100,7 @@ CREATE TABLE file_rev (
 
     size                BIGINT,
     sha1                TEXT, -- TODO: varchar or bytes
+    md5                 TEXT, -- TODO: varchar or bytes
     url                 TEXT  -- TODO: URL table
 );
 
@@ -126,9 +131,11 @@ CREATE TABLE release_rev (
     release_type        TEXT, -- TODO: enum
     date                DATE,
     doi                 TEXT,
+    isbn13              TEXT,
     volume              TEXT,
     pages               TEXT,
-    issue               TEXT
+    issue               TEXT,
+    publisher           TEXT -- for books, NOT if container exists
     -- TODO: identifier table?
 );
 
@@ -187,7 +194,7 @@ CREATE TABLE release_contrib (
     id                  BIGSERIAL PRIMARY KEY,
     release_rev         BIGSERIAL REFERENCES release_rev(id) NOT NULL,
     creator_ident_id    UUID REFERENCES creator_ident(id),
-    contrib_type        TEXT,
+    role                TEXT, -- TODO: enum?
     index               BIGINT,
     stub                TEXT
 );
@@ -237,9 +244,9 @@ INSERT INTO changelog (editgroup_id) VALUES
     (4),
     (5);
 
-INSERT INTO container_rev (name, issn) VALUES
-    ('Journal of Trivial Results', '1234-5678'),
-    ('MySpace Blog', null);
+INSERT INTO container_rev (name, issnl, abbrev, coden) VALUES
+    ('Journal of Trivial Results', '1234-5678', null, null),
+    ('MySpace Blog', null, null, null);
 
 INSERT INTO container_ident (id, is_live, rev_id, redirect_id) VALUES
     ('f1f046a3-45c9-4b99-cccc-000000000001', true, 1, null),
@@ -249,7 +256,7 @@ INSERT INTO container_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
     ('f1f046a3-45c9-4b99-cccc-000000000001', 1, null, 4),
     ('f1f046a3-45c9-4b99-cccc-000000000002', 2, null, 5);
 
-INSERT INTO creator_rev (name, orcid) VALUES
+INSERT INTO creator_rev (full_name, orcid) VALUES
     ('Grace Hopper', null),
     ('Emily Noethe', null),
     ('Christine Moran', '0000-0003-2088-7465');
@@ -266,9 +273,9 @@ INSERT INTO creator_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
     ('f1f046a3-45c9-4b99-adce-000000000003', 3, null, 3),
     ('f1f046a3-45c9-4b99-adce-000000000004', 2, null, 4);
 
-INSERT INTO file_rev (size, sha1, url) VALUES
-    (null, null, null),
-    (4321, '7d97e98f8af710c7e7fe703abc8f639e0ee507c4', 'http://archive.org/robots.txt');
+INSERT INTO file_rev (size, sha1, md5, url) VALUES
+    (null, null, null, null),
+    (4321, '7d97e98f8af710c7e7fe703abc8f639e0ee507c4', null, 'http://archive.org/robots.txt');
 
 INSERT INTO file_ident (id, is_live, rev_id, redirect_id) VALUES
     ('f1f046a3-45c9-4b99-ffff-000000000001', true, 1, null),
@@ -290,9 +297,9 @@ INSERT INTO work_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
     ('f1f046a3-45c9-4b99-3333-000000000001', 1, null, 4),
     ('f1f046a3-45c9-4b99-3333-000000000002', 2, null, 5);
 
-INSERT INTO release_rev (work_ident_id, container_ident_id, title, release_type, date, doi, volume, pages, issue) VALUES
-    ('f1f046a3-45c9-4b99-3333-000000000001',                                   null,  'example title',              null,         null,         null,  null,  null, null),
-    ('f1f046a3-45c9-4b99-3333-000000000002', 'f1f046a3-45c9-4b99-cccc-000000000001', 'bigger example', 'journal-article', '2018-01-01', '10.123/abc',  '12', '5-9', 'IV');
+INSERT INTO release_rev (work_ident_id, container_ident_id, title, release_type, date, doi, isbn13, volume, pages, issue, publisher) VALUES
+    ('f1f046a3-45c9-4b99-3333-000000000001',                                   null,  'example title',              null,         null, null,         null,  null,  null, null, null),
+    ('f1f046a3-45c9-4b99-3333-000000000002', 'f1f046a3-45c9-4b99-cccc-000000000001', 'bigger example', 'journal-article', '2018-01-01', null, '10.123/abc',  '12', '5-9', 'IV', null);
 
 INSERT INTO release_ident (id, is_live, rev_id, redirect_id) VALUES
     ('f1f046a3-45c9-4b99-4444-000000000001', true, 1, null),
@@ -302,7 +309,7 @@ INSERT INTO release_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
     ('f1f046a3-45c9-4b99-4444-000000000001', 1, null, 4),
     ('f1f046a3-45c9-4b99-4444-000000000002', 2, null, 5);
 
-INSERT INTO release_contrib (release_rev, creator_ident_id, stub, contrib_type, index) VALUES
+INSERT INTO release_contrib (release_rev, creator_ident_id, stub, role, index) VALUES
     (2, null, null, null, null),
     (2, 'f1f046a3-45c9-4b99-adce-000000000002', 'some contrib', 'editor', 4);
 

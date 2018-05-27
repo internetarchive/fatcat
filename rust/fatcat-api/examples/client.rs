@@ -70,7 +70,7 @@ fn main() {
         }
 
         Some("ContainerLookupGet") => {
-            let result = client.container_lookup_get("issn_example".to_string()).wait();
+            let result = client.container_lookup_get("issnl_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 

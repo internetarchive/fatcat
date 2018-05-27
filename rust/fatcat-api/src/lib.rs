@@ -258,7 +258,7 @@ pub enum WorkPostResponse {
 pub trait Api {
     fn container_id_get(&self, id: String, context: &Context) -> Box<Future<Item = ContainerIdGetResponse, Error = ApiError> + Send>;
 
-    fn container_lookup_get(&self, issn: String, context: &Context) -> Box<Future<Item = ContainerLookupGetResponse, Error = ApiError> + Send>;
+    fn container_lookup_get(&self, issnl: String, context: &Context) -> Box<Future<Item = ContainerLookupGetResponse, Error = ApiError> + Send>;
 
     fn container_post(&self, body: models::ContainerEntity, context: &Context) -> Box<Future<Item = ContainerPostResponse, Error = ApiError> + Send>;
 
@@ -299,7 +299,7 @@ pub trait Api {
 pub trait ApiNoContext {
     fn container_id_get(&self, id: String) -> Box<Future<Item = ContainerIdGetResponse, Error = ApiError> + Send>;
 
-    fn container_lookup_get(&self, issn: String) -> Box<Future<Item = ContainerLookupGetResponse, Error = ApiError> + Send>;
+    fn container_lookup_get(&self, issnl: String) -> Box<Future<Item = ContainerLookupGetResponse, Error = ApiError> + Send>;
 
     fn container_post(&self, body: models::ContainerEntity) -> Box<Future<Item = ContainerPostResponse, Error = ApiError> + Send>;
 
@@ -356,8 +356,8 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().container_id_get(id, &self.context())
     }
 
-    fn container_lookup_get(&self, issn: String) -> Box<Future<Item = ContainerLookupGetResponse, Error = ApiError> + Send> {
-        self.api().container_lookup_get(issn, &self.context())
+    fn container_lookup_get(&self, issnl: String) -> Box<Future<Item = ContainerLookupGetResponse, Error = ApiError> + Send> {
+        self.api().container_lookup_get(issnl, &self.context())
     }
 
     fn container_post(&self, body: models::ContainerEntity) -> Box<Future<Item = ContainerPostResponse, Error = ApiError> + Send> {

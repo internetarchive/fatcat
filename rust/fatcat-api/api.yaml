@@ -83,10 +83,10 @@ definitions:
   creator_entity:
     type: object
     required:
-      - name
+      - full_name
     properties:
       <<: *ENTITYPROPS
-      name:
+      full_name:
         type: string
         example: "Grace Hopper"
       orcid:
@@ -105,10 +105,14 @@ definitions:
       publisher:
         type: string
         example: "Society of Curious Students"
-      issn:
+      issnl:
         type: string
         #format: custom
         example: "1234-5678"
+      abbrev:
+        type: string
+      coden:
+        type: string
   file_entity:
     type: object
     properties:
@@ -121,6 +125,10 @@ definitions:
         type: string
         #format: custom
         example: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
+      md5:
+        type: string
+        #format: custom
+        example: "d41efcc592d1e40ac13905377399eb9b"
       url:
         type: string
         format: url
@@ -155,6 +163,9 @@ definitions:
         type: string
         #format: custom
         example: "10.1234/abcde.789"
+      isbn13:
+        type: string
+        #format: custom
       volume:
         type: string
       pages:
@@ -162,6 +173,8 @@ definitions:
       issue:
         type: string
         example: "12"
+      publisher:
+        type: string
       contribs:
         type: array
         items:
@@ -271,7 +284,7 @@ definitions:
         #format: uuid
       creator_stub:
         type: string
-      contrib_type:
+      role:
         type: string
 
 x-entity-responses: &ENTITYRESPONSES
@@ -359,7 +372,7 @@ paths:
   /container/lookup:
     get:
       parameters:
-        - name: issn
+        - name: issnl
           in: query
           type: string
           required: true

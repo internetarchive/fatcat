@@ -94,9 +94,17 @@ impl ChangelogentriesInner {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ContainerEntity {
-    #[serde(rename = "issn")]
+    #[serde(rename = "coden")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub issn: Option<String>,
+    pub coden: Option<String>,
+
+    #[serde(rename = "abbrev")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub abbrev: Option<String>,
+
+    #[serde(rename = "issnl")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub issnl: Option<String>,
 
     #[serde(rename = "publisher")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -134,7 +142,9 @@ pub struct ContainerEntity {
 impl ContainerEntity {
     pub fn new(name: String) -> ContainerEntity {
         ContainerEntity {
-            issn: None,
+            coden: None,
+            abbrev: None,
+            issnl: None,
             publisher: None,
             name: name,
             state: None,
@@ -153,8 +163,8 @@ pub struct CreatorEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub orcid: Option<String>,
 
-    #[serde(rename = "name")]
-    pub name: String,
+    #[serde(rename = "full_name")]
+    pub full_name: String,
 
     #[serde(rename = "extra")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -183,10 +193,10 @@ pub struct CreatorEntity {
 }
 
 impl CreatorEntity {
-    pub fn new(name: String) -> CreatorEntity {
+    pub fn new(full_name: String) -> CreatorEntity {
         CreatorEntity {
             orcid: None,
-            name: name,
+            full_name: full_name,
             extra: None,
             editgroup_id: None,
             redirect: None,
@@ -337,6 +347,10 @@ pub struct FileEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
 
+    #[serde(rename = "md5")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub md5: Option<String>,
+
     #[serde(rename = "sha1")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub sha1: Option<String>,
@@ -376,6 +390,7 @@ impl FileEntity {
         FileEntity {
             releases: None,
             url: None,
+            md5: None,
             sha1: None,
             size: None,
             extra: None,
@@ -402,9 +417,9 @@ pub struct ReleaseContrib {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub creator_stub: Option<String>,
 
-    #[serde(rename = "contrib_type")]
+    #[serde(rename = "role")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub contrib_type: Option<String>,
+    pub role: Option<String>,
 }
 
 impl ReleaseContrib {
@@ -413,7 +428,7 @@ impl ReleaseContrib {
             index: None,
             creator_id: None,
             creator_stub: None,
-            contrib_type: None,
+            role: None,
         }
     }
 }
@@ -428,6 +443,10 @@ pub struct ReleaseEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub contribs: Option<Vec<models::ReleaseContrib>>,
 
+    #[serde(rename = "publisher")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub publisher: Option<String>,
+
     #[serde(rename = "issue")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub issue: Option<String>,
@@ -439,6 +458,10 @@ pub struct ReleaseEntity {
     #[serde(rename = "volume")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub volume: Option<String>,
+
+    #[serde(rename = "isbn13")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub isbn13: Option<String>,
 
     #[serde(rename = "doi")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -493,9 +516,11 @@ impl ReleaseEntity {
         ReleaseEntity {
             refs: None,
             contribs: None,
+            publisher: None,
             issue: None,
             pages: None,
             volume: None,
+            isbn13: None,
             doi: None,
             date: None,
             release_type: None,

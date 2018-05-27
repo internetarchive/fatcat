@@ -285,12 +285,12 @@ paths:
   /container/lookup:
     get:
       parameters:
-      - name: "issn"
+      - name: "issnl"
         in: "query"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"issn_example\".to_string()"
+        example: "\"issnl_example\".to_string()"
       responses:
         200:
           description: "Found Entity"
@@ -1023,12 +1023,12 @@ definitions:
   creator_entity:
     type: "object"
     required:
-    - "name"
+    - "full_name"
     properties:
       orcid:
         type: "string"
         example: "0000-0002-1825-0097"
-      name:
+      full_name:
         type: "string"
         example: "Grace Hopper"
       extra:
@@ -1056,9 +1056,9 @@ definitions:
         - "deleted"
     example:
       redirect: "f1f046a3-45c9-4b99-adce-000000000002"
+      full_name: "Grace Hopper"
       ident: "f1f046a3-45c9-4b99-adce-000000000001"
       extra: "{}"
-      name: "Grace Hopper"
       editgroup_id: 16
       orcid: "0000-0002-1825-0097"
       state: "wip"
@@ -1069,7 +1069,11 @@ definitions:
     required:
     - "name"
     properties:
-      issn:
+      coden:
+        type: "string"
+      abbrev:
+        type: "string"
+      issnl:
         type: "string"
         example: "1234-5678"
       publisher:
@@ -1103,12 +1107,14 @@ definitions:
         type: "object"
     example:
       redirect: "f1f046a3-45c9-4b99-adce-000000000002"
-      issn: "1234-5678"
+      coden: "coden"
       ident: "f1f046a3-45c9-4b99-adce-000000000001"
       extra: "{}"
       name: "Journal of Important Results"
       publisher: "Society of Curious Students"
       editgroup_id: 16
+      issnl: "1234-5678"
+      abbrev: "abbrev"
       state: "wip"
       revision: 42
     upperCaseName: "CONTAINER_ENTITY"
@@ -1123,6 +1129,9 @@ definitions:
         type: "string"
         format: "url"
         example: "https://example.edu/~frau/prcding.pdf"
+      md5:
+        type: "string"
+        example: "d41efcc592d1e40ac13905377399eb9b"
       sha1:
         type: "string"
         example: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
@@ -1165,6 +1174,7 @@ definitions:
       releases:
       - "releases"
       - "releases"
+      md5: "d41efcc592d1e40ac13905377399eb9b"
       revision: 42
     upperCaseName: "FILE_ENTITY"
   release_entity:
@@ -1181,12 +1191,16 @@ definitions:
         type: "array"
         items:
           $ref: "#/definitions/release_contrib"
+      publisher:
+        type: "string"
       issue:
         type: "string"
         example: "12"
       pages:
         type: "string"
       volume:
+        type: "string"
+      isbn13:
         type: "string"
       doi:
         type: "string"
@@ -1237,14 +1251,14 @@ definitions:
       release_type: "preprint"
       title: "title"
       contribs:
-      - creator_stub: "creator_stub"
+      - role: "role"
+        creator_stub: "creator_stub"
         creator_id: "creator_id"
         index: 6
-        contrib_type: "contrib_type"
-      - creator_stub: "creator_stub"
+      - role: "role"
+        creator_stub: "creator_stub"
         creator_id: "creator_id"
         index: 6
-        contrib_type: "contrib_type"
       revision: 42
       volume: "volume"
       pages: "pages"
@@ -1255,7 +1269,9 @@ definitions:
       - target_release_id: "target_release_id"
         stub: "stub"
         index: 0
+      isbn13: "isbn13"
       extra: "{}"
+      publisher: "publisher"
       editgroup_id: 16
       state: "wip"
       container_id: "f1f046a3-45c9-4b99-adce-000000000001"
@@ -1463,13 +1479,13 @@ definitions:
         type: "string"
       creator_stub:
         type: "string"
-      contrib_type:
+      role:
         type: "string"
     example:
+      role: "role"
       creator_stub: "creator_stub"
       creator_id: "creator_id"
       index: 6
-      contrib_type: "contrib_type"
     upperCaseName: "RELEASE_CONTRIB"
   editgroup_edits:
     properties:

@@ -24,9 +24,9 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn container_lookup_get(&self, issn: String, context: &Context) -> Box<Future<Item = ContainerLookupGetResponse, Error = ApiError> + Send> {
+    fn container_lookup_get(&self, issnl: String, context: &Context) -> Box<Future<Item = ContainerLookupGetResponse, Error = ApiError> + Send> {
         let context = context.clone();
-        println!("container_lookup_get(\"{}\") - X-Span-ID: {:?}", issn, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        println!("container_lookup_get(\"{}\") - X-Span-ID: {:?}", issnl, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))
     }
 
