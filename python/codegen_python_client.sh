@@ -1,10 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 
-set -ex
+set -exu
+set -o pipefail
 
 OUTPUT=`pwd`/codegen-out
 mkdir -p $OUTPUT
-cp ../rust/fatcat-openapi2.yml $OUTPUT/api.yml
+cp ../fatcat-openapi2.yml $OUTPUT/api.yml
 
 docker run \
     -v $OUTPUT:/tmp/swagger/ \
@@ -18,3 +19,4 @@ docker run \
 sudo chown -R `whoami`:`whoami` $OUTPUT
 cp -r $OUTPUT/fatcat_client fatcat_client
 cp -r $OUTPUT/test tests/codegen_tests
+#rm -rf $OUTPUT

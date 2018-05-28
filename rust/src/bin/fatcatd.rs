@@ -66,7 +66,7 @@ fn main() {
     fn yaml_handler(_: &mut Request) -> IronResult<Response> {
         Ok(Response::with((
             status::Ok,
-            include_str!("../../fatcat-openapi2.yml"),
+            include_str!("../../../fatcat-openapi2.yml"),
         )))
     }
 
