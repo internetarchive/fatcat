@@ -3,10 +3,25 @@ import os
 import json
 from flask import Flask, render_template, send_from_directory, request, \
     url_for, abort, g, redirect, jsonify, session
-from fatcat import app
+from fatcat import app, api
+from fatcat_client.rest import ApiException
 
 
 ### Views ###################################################################
+
+
+@app.route('/container/<ident>', methods=['GET'])
+def container_view(ident):
+    try:
+        entity = api.get_container(ident)
+    except ApiException as ae:
+        abort(ae.status)
+    return render_template('container_view.html', container=entity)
+
+@app.route('/container/random', methods=['GET'])
+def container_random():
+    """Not actually random, just a dummy example"""
+    return redirect("/container/00000000-0000-0000-1111-000000000002")
 
 @app.route('/container/create', methods=['GET'])
 def container_create_view():
@@ -18,90 +33,102 @@ def container_create():
     for k in request.form:
         if k.startswith('container_'):
             params[k[10:]] = request.form[k]
-    rv = api.api_container_create(params=params)
-    container = json.loads(rv.data.decode('utf-8'))
-    return redirect("/container/{}".format(container['id']))
+    edit = api.create_container(params=params)
+    return redirect("/container/{}".format(edit.ident))
 
-@app.route('/container/<int:ident>', methods=['GET'])
-def container_view(ident):
-    rv = api.api_container_get(ident)
-    entity = json.loads(rv.data.decode('utf-8'))
-    return render_template('container_view.html', container=entity)
+@app.route('/creator/<ident>', methods=['GET'])
+def creator_view(ident):
+    try:
+        entity = api.get_creator(ident)
+    except ApiException as ae:
+        abort(ae.status)
+    return render_template('creator_view.html', creator=entity)
 
 @app.route('/creator/random', methods=['GET'])
 def creator_random():
     """Not actually random, just a dummy example"""
-    return redirect("/creator/f1f046a3-45c9-4b99-adce-000000000002")
+    return redirect("/creator/00000000-0000-0000-2222-000000000002")
 
-@app.route('/creator/<int:ident>', methods=['GET'])
-def creator_view(ident):
-    rv = api.api_creator_get(ident)
-    entity = json.loads(rv.data.decode('utf-8'))
-    return render_template('creator_view.html', creator=entity)
-
-@app.route('/file/<int:ident>', methods=['GET'])
+@app.route('/file/<ident>', methods=['GET'])
 def file_view(ident):
-    rv = api.api_file_get(ident)
-    entity = json.loads(rv.data.decode('utf-8'))
+    try:
+        entity = api.get_file(ident)
+    except ApiException as ae:
+        abort(ae.status)
     return render_template('file_view.html', file=entity)
-@app.route('/work/create', methods=['GET'])
-def work_create():
-    return render_template('work_add.html')
 
-@app.route('/release/<int:ident>', methods=['GET'])
+@app.route('/file/random', methods=['GET'])
+def file_random():
+    """Not actually random, just a dummy example"""
+    return redirect("/file/00000000-0000-0000-3333-000000000002")
+
+@app.route('/release/<ident>', methods=['GET'])
 def release_view(ident):
-    rv = api.api_release_get(ident)
-    entity = json.loads(rv.data.decode('utf-8'))
+    try:
+        entity = api.get_release(ident)
+    except ApiException as ae:
+        abort(ae.status)
     return render_template('release_view.html', release=entity)
-
-@app.route('/release/<int:ident>/changelog', methods=['GET'])
-def release_changelog(ident):
-    rv = api.api_release_get(ident)
-    release = json.loads(rv.data.decode('utf-8'))
-    rv = api.api_release_changelog(ident)
-    changelog_entries = json.loads(rv.data.decode('utf-8'))
-    return render_template('release_changelog.html', release=release,
-        changelog_entries=changelog_entries)
 
 @app.route('/release/random', methods=['GET'])
 def release_random():
     """Not actually random, just a dummy example"""
-    return redirect("/release/f1f046a3-45c9-4b99-3333-000000000002")
+    return redirect("/release/00000000-0000-0000-4444-000000000002")
 
-@app.route('/editgroup/<int:ident>', methods=['GET'])
-def editgroup_view(ident):
-    rv = api.api_editgroup_get(ident)
-    entity = json.loads(rv.data.decode('utf-8'))
-    return render_template('editgroup_view.html', editgroup=entity)
+#@app.route('/release/<ident>/changelog', methods=['GET'])
+#def release_changelog(ident):
+#    try:
+#        entity = api.get_release(ident)
+#    except ApiException as ae:
+#        abort(ae.status)
+#    try:
+#        entries = api.release_changelog(ident)
+#    except ApiException as ae:
+#        abort(ae.status)
+#    return render_template('release_changelog.html', release=entity,
+#        changelog_entries=entries)
+
+@app.route('/work/<ident>', methods=['GET'])
+def work_view(ident):
+    try:
+        entity = api.get_work(ident)
+    except ApiException as ae:
+        abort(ae.status)
+    return render_template('work_view.html', work=entity)
 
 @app.route('/work/random', methods=['GET'])
 def work_random():
     """Not actually random, just a dummy example"""
-    return redirect("/work/f1f046a3-45c9-4b99-3333-000000000002")
+    return redirect("/work/00000000-0000-0000-5555-000000000002")
 
-@app.route('/work/<int:ident>', methods=['GET'])
-def work_view(ident):
-    rv = api.api_work_get(ident)
-    entity = json.loads(rv.data.decode('utf-8'))
-    return render_template('work_view.html', work=entity)
+@app.route('/work/create', methods=['GET'])
+def work_create():
+    return render_template('work_add.html')
+
+@app.route('/editgroup/<int:ident>', methods=['GET'])
+def editgroup_view(ident):
+    try:
+        entity = api.get_editgroup(ident)
+    except ApiException as ae:
+        print(ae.body)
+        abort(ae.status)
+    return render_template('editgroup_view.html', editgroup=entity)
 
 @app.route('/editgroup/current', methods=['GET'])
 def editgroup_current():
-    eg = api.get_or_create_editgroup()
-    return redirect('/editgroup/{}'.format(eg.id))
+    raise NotImplemented()
+    #eg = api.get_or_create_editgroup()
+    #return redirect('/editgroup/{}'.format(eg.id))
 
 @app.route('/editor/<username>', methods=['GET'])
 def editor_view(username):
-    rv = api.api_editor_get(username)
-    entity = json.loads(rv.data.decode('utf-8'))
+    entity = api.get_editor(username)
     return render_template('editor_view.html', editor=entity)
 
 @app.route('/editor/<username>/changelog', methods=['GET'])
 def editor_changelog(username):
-    rv = api.api_editor_get(username)
-    editor = json.loads(rv.data.decode('utf-8'))
-    rv = api.api_editor_changelog(username)
-    changelog_entries = json.loads(rv.data.decode('utf-8'))
+    editor = api.get_editor(username)
+    changelog_entries = api.get_editor_changelog(username)
     return render_template('editor_changelog.html', editor=editor,
         changelog_entries=changelog_entries)
 

@@ -4,8 +4,9 @@ import fatcat.api_client
 from fixtures import *
 
 
-def test_client_health(api_client):
-    assert api_client.health() != None
+# TODO:
+#def test_client_health(api_client):
+#    assert api_client.health() != None
 
 
 def test_import_crossref(api_client):

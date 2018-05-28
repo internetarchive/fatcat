@@ -3,7 +3,8 @@
 
 <h1>Edit Group: #{{ editgroup.id}}</h1>
 
-<p>Editor: <a href="/editor/{{ editgroup.editor.username }}">{{ editgroup.editor.username }}</a>
+{# TODO: <p>Editor: <a href="/editor/{{ editgroup.editor.username }}">{{ editgroup.editor.username }}</a> #}
+<p>Editor: {{ editgroup.editor_id }}
 <p>Description: {{ editgroup.description }}
 
 <h3>Work Edits ({{ editgroup.work_edits|count }})</h3>

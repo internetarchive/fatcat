@@ -23,8 +23,10 @@ class FatCatApiClient:
 
     def new_editgroup(self):
         rv = self.post('/v0/editgroup', data=dict(
-            editor=1))
-        assert rv.status_code == 200
+            editor_id=1))
+        print(rv)
+        print(rv.json())
+        assert rv.status_code == 201
         editgroup_id = rv.json()['id']
         return editgroup_id
 
@@ -97,7 +99,7 @@ class FatCatApiClient:
             rv = self.post('/v0/container', data=dict(
                 issn=container['issn'],
                 publisher=container['publisher']))
-            assert rv.status_code == 200
+            assert rv.status_code == 201
             container_id = rv.json()['id']
             print("created container: {}".format(issn))
             container['id'] = container_id
@@ -117,7 +119,7 @@ class FatCatApiClient:
         title = meta['title'][0]
         rv = self.post('/v0/work',
             data=dict(title=title, editgroup=editgroup)) #work_type="book"
-        assert rv.status_code == 200
+        assert rv.status_code == 201
         work_id = rv.json()['id']
 
         extra = dict(crossref={
@@ -141,7 +143,7 @@ class FatCatApiClient:
             pages=meta.get('page', None),
             editgroup=editgroup,
             extra=extra))
-        assert rv.status_code == 200
+        assert rv.status_code == 201
         release_id = rv.json()['id']
 
     def import_issn_file(self, json_file, create_containers=False, batchsize=100):
