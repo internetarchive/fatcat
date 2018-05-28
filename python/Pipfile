@@ -22,6 +22,7 @@ raven = "*"
 flask-sqlalchemy = "*"
 marshmallow-sqlalchemy = "*"
 flask-marshmallow = "*"
+flask-uuid = "*"
 "psycopg2" = "*"
 
 [requires]

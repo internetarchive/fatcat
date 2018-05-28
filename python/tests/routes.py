@@ -18,10 +18,8 @@ def test_static_routes(app):
 def test_all_views(app):
     for route in ('work', 'release', 'creator', 'container', 'file'):
         print(route)
-        #with pytest.raises(ApiException) as api_fail:
-        #    rv = app.get('/{}/999999999999'.format(route))
         rv = app.get('/{}/9999999999'.format(route))
-        assert rv.status_code == 400
+        assert rv.status_code == 404
 
         rv = app.get('/{}/f1f046a3-45c9-ffff-ffff-ffffffffffff'.format(route))
         assert rv.status_code == 404

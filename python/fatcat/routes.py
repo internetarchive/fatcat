@@ -10,10 +10,10 @@ from fatcat_client.rest import ApiException
 ### Views ###################################################################
 
 
-@app.route('/container/<ident>', methods=['GET'])
+@app.route('/container/<uuid:ident>', methods=['GET'])
 def container_view(ident):
     try:
-        entity = api.get_container(ident)
+        entity = api.get_container(str(ident))
     except ApiException as ae:
         abort(ae.status)
     return render_template('container_view.html', container=entity)
@@ -36,10 +36,10 @@ def container_create():
     edit = api.create_container(params=params)
     return redirect("/container/{}".format(edit.ident))
 
-@app.route('/creator/<ident>', methods=['GET'])
+@app.route('/creator/<uuid:ident>', methods=['GET'])
 def creator_view(ident):
     try:
-        entity = api.get_creator(ident)
+        entity = api.get_creator(str(ident))
     except ApiException as ae:
         abort(ae.status)
     return render_template('creator_view.html', creator=entity)
@@ -49,10 +49,10 @@ def creator_random():
     """Not actually random, just a dummy example"""
     return redirect("/creator/00000000-0000-0000-2222-000000000002")
 
-@app.route('/file/<ident>', methods=['GET'])
+@app.route('/file/<uuid:ident>', methods=['GET'])
 def file_view(ident):
     try:
-        entity = api.get_file(ident)
+        entity = api.get_file(str(ident))
     except ApiException as ae:
         abort(ae.status)
     return render_template('file_view.html', file=entity)
@@ -62,10 +62,10 @@ def file_random():
     """Not actually random, just a dummy example"""
     return redirect("/file/00000000-0000-0000-3333-000000000002")
 
-@app.route('/release/<ident>', methods=['GET'])
+@app.route('/release/<uuid:ident>', methods=['GET'])
 def release_view(ident):
     try:
-        entity = api.get_release(ident)
+        entity = api.get_release(str(ident))
     except ApiException as ae:
         abort(ae.status)
     return render_template('release_view.html', release=entity)
@@ -75,23 +75,23 @@ def release_random():
     """Not actually random, just a dummy example"""
     return redirect("/release/00000000-0000-0000-4444-000000000002")
 
-#@app.route('/release/<ident>/changelog', methods=['GET'])
+#@app.route('/release/<uuid:ident>/changelog', methods=['GET'])
 #def release_changelog(ident):
 #    try:
-#        entity = api.get_release(ident)
+#        entity = api.get_release(str(ident))
 #    except ApiException as ae:
 #        abort(ae.status)
 #    try:
-#        entries = api.release_changelog(ident)
+#        entries = api.release_changelog(str(ident))
 #    except ApiException as ae:
 #        abort(ae.status)
 #    return render_template('release_changelog.html', release=entity,
 #        changelog_entries=entries)
 
-@app.route('/work/<ident>', methods=['GET'])
+@app.route('/work/<uuid:ident>', methods=['GET'])
 def work_view(ident):
     try:
-        entity = api.get_work(ident)
+        entity = api.get_work(str(ident))
     except ApiException as ae:
         abort(ae.status)
     return render_template('work_view.html', work=entity)
@@ -108,7 +108,7 @@ def work_create():
 @app.route('/editgroup/<int:ident>', methods=['GET'])
 def editgroup_view(ident):
     try:
-        entity = api.get_editgroup(ident)
+        entity = api.get_editgroup(str(ident))
     except ApiException as ae:
         print(ae.body)
         abort(ae.status)
