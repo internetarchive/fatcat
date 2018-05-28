@@ -1,9 +1,8 @@
 
-## Python Prototype
+## Python Web Interface and API Client Library
 
 Use `pipenv` (which you can install with `pip`).
 
-    pipenv run run.py --init-db
     pipenv run run.py
 
 Run tests:
@@ -13,3 +12,6 @@ Run tests:
     # for coverage:
     pipenv run pytest --cov --cov-report html
 
+Regeneate swagger-codegen python client library (requires docker):
+
+    ./codegen_python_client.sh

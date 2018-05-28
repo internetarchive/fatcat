@@ -1,0 +1,4 @@
+codegen-out/
+!.coveragerc
+!.pylintrc
+!.gitignore
