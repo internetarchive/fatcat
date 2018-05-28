@@ -711,7 +711,7 @@ impl Server {
         edit.to_model()
     }
 
-    fn editgroup_handler(&self, id: i64) -> Result<Option<Editgroup>> {
+    fn get_editgroup_handler(&self, id: i64) -> Result<Editgroup> {
         let conn = self.db_pool.get().expect("db_pool error");
 
         let row: EditgroupRow = editgroup::table.find(id as i64).first(&conn)?;
@@ -766,10 +766,10 @@ impl Server {
             edits: Some(edits),
             extra: row.extra_json,
         };
-        Ok(Some(eg))
+        Ok(eg)
     }
 
-    fn get_editor_handler(&self, username: String) -> Result<Option<Editor>> {
+    fn get_editor_handler(&self, username: String) -> Result<Editor> {
         let conn = self.db_pool.get().expect("db_pool error");
 
         let row: EditorRow = editor::table
@@ -779,10 +779,10 @@ impl Server {
         let ed = Editor {
             username: row.username,
         };
-        Ok(Some(ed))
+        Ok(ed)
     }
 
-    fn editor_changelog_get_handler(&self, username: String) -> Result<Option<Changelogentries>> {
+    fn editor_changelog_get_handler(&self, username: String) -> Result<Changelogentries> {
         let conn = self.db_pool.get().expect("db_pool error");
 
         // TODO: single query
@@ -802,7 +802,7 @@ impl Server {
                 timestamp: chrono::DateTime::from_utc(row.timestamp, chrono::Utc),
             })
             .collect();
-        Ok(Some(entries))
+        Ok(entries)
     }
 }
 
@@ -917,15 +917,15 @@ impl Api for Server {
         id: i64,
         _context: &Context,
     ) -> Box<Future<Item = GetEditgroupResponse, Error = ApiError> + Send> {
-        let ret = match self.editgroup_handler(id) {
-            Ok(Some(entity)) =>
+        let ret = match self.get_editgroup_handler(id) {
+            Ok(entity) =>
                 GetEditgroupResponse::FoundEntity(entity),
-            Ok(None) =>
+            Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
                 GetEditgroupResponse::NotFound(
-                    ErrorResponse { message: "No such entity".to_string() }),
+                    ErrorResponse { message: format!("No such editgroup: {}", id) }),
             Err(e) =>
                 // TODO: dig in to error type here
-                GetEditgroupResponse::BadRequest(
+                GetEditgroupResponse::GenericError(
                     ErrorResponse { message: e.to_string() }),
         };
         Box::new(futures::done(Ok(ret)))
@@ -964,12 +964,12 @@ impl Api for Server {
         username: String,
         _context: &Context,
     ) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send> {
-        let ret = match self.editor_changelog_get_handler(username) {
-            Ok(Some(entries)) =>
+        let ret = match self.editor_changelog_get_handler(username.clone()) {
+            Ok(entries) =>
                 GetEditorChangelogResponse::FoundMergedChanges(entries),
-            Ok(None) =>
+            Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
                 GetEditorChangelogResponse::NotFound(
-                    ErrorResponse { message: "No such entity".to_string() }),
+                    ErrorResponse { message: format!("No such editor: {}", username.clone()) }),
             Err(e) =>
                 // TODO: dig in to error type here
                 GetEditorChangelogResponse::GenericError(
@@ -983,11 +983,12 @@ impl Api for Server {
         username: String,
         _context: &Context,
     ) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send> {
-        let ret = match self.get_editor_handler(username) {
-            Ok(Some(entity)) =>
+        let ret = match self.get_editor_handler(username.clone()) {
+            Ok(entity) =>
                 GetEditorResponse::FoundEditor(entity),
-            Ok(None) =>
-                GetEditorResponse::NotFound(ErrorResponse { message: "No such entity".to_string() }),
+            Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
+                GetEditorResponse::NotFound(
+                    ErrorResponse { message: format!("No such editor: {}", username.clone()) }),
             Err(e) =>
                 // TODO: dig in to error type here
                 GetEditorResponse::GenericError(ErrorResponse { message: e.to_string() }),
