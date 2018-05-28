@@ -17,6 +17,9 @@ docker run \
     -DpackageName=fatcat_client
 
 sudo chown -R `whoami`:`whoami` $OUTPUT
-cp -r $OUTPUT/fatcat_client fatcat_client
-cp -r $OUTPUT/test tests/codegen_tests
+mkdir -p fatcat_client
+mkdir -p tests/codegen_tests
+cp -r $OUTPUT/fatcat_client/* fatcat_client
+cp -r $OUTPUT/test/* tests/codegen_tests
+cp $OUTPUT/README.md README_codegen.md
 #rm -rf $OUTPUT
