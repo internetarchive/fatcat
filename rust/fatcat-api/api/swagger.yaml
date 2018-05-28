@@ -15,6 +15,7 @@ produces:
 paths:
   /container:
     post:
+      operationId: "create_container"
       parameters:
       - in: "body"
         name: "entity"
@@ -26,7 +27,7 @@ paths:
         formatString: "{:?}"
         example: "???"
         model_key: "changelogentries_inner"
-        uppercase_operation_id: "CONTAINER_POST"
+        uppercase_operation_id: "CREATE_CONTAINER"
         consumesJson: true
       responses:
         201:
@@ -35,7 +36,7 @@ paths:
             $ref: "#/definitions/entity_edit"
           x-responseId: "CreatedEntity"
           x-uppercaseResponseId: "CREATED_ENTITY"
-          uppercase_operation_id: "CONTAINER_POST"
+          uppercase_operation_id: "CREATE_CONTAINER"
           uppercase_data_type: "ENTITYEDIT"
           producesJson: true
         400:
@@ -44,7 +45,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
-          uppercase_operation_id: "CONTAINER_POST"
+          uppercase_operation_id: "CREATE_CONTAINER"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
@@ -53,7 +54,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "CONTAINER_POST"
+          uppercase_operation_id: "CREATE_CONTAINER"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
@@ -62,17 +63,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "CONTAINER_POST"
+          uppercase_operation_id: "CREATE_CONTAINER"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-      operation_id: "container_post"
-      uppercase_operation_id: "CONTAINER_POST"
+      operation_id: "create_container"
+      uppercase_operation_id: "CREATE_CONTAINER"
       path: "/container"
       HttpMethod: "Post"
       httpmethod: "post"
       noClientExample: true
   /container/batch:
     post:
+      operationId: "create_container_batch"
       parameters:
       - in: "body"
         name: "entity_list"
@@ -84,7 +86,7 @@ paths:
         formatString: "{:?}"
         example: "&Vec::new()"
         model_key: "changelogentries_inner"
-        uppercase_operation_id: "CONTAINER_BATCH_POST"
+        uppercase_operation_id: "CREATE_CONTAINER_BATCH"
         consumesJson: true
       responses:
         201:
@@ -95,7 +97,7 @@ paths:
               $ref: "#/definitions/entity_edit"
           x-responseId: "CreatedEntities"
           x-uppercaseResponseId: "CREATED_ENTITIES"
-          uppercase_operation_id: "CONTAINER_BATCH_POST"
+          uppercase_operation_id: "CREATE_CONTAINER_BATCH"
           uppercase_data_type: "VEC<ENTITYEDIT>"
           producesJson: true
         400:
@@ -104,7 +106,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
-          uppercase_operation_id: "CONTAINER_BATCH_POST"
+          uppercase_operation_id: "CREATE_CONTAINER_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
@@ -113,7 +115,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "CONTAINER_BATCH_POST"
+          uppercase_operation_id: "CREATE_CONTAINER_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
@@ -122,16 +124,17 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "CONTAINER_BATCH_POST"
+          uppercase_operation_id: "CREATE_CONTAINER_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-      operation_id: "container_batch_post"
-      uppercase_operation_id: "CONTAINER_BATCH_POST"
+      operation_id: "create_container_batch"
+      uppercase_operation_id: "CREATE_CONTAINER_BATCH"
       path: "/container/batch"
       HttpMethod: "Post"
       httpmethod: "post"
   /container/{id}:
     get:
+      operationId: "get_container"
       parameters:
       - name: "id"
         in: "path"
@@ -146,7 +149,7 @@ paths:
             $ref: "#/definitions/container_entity"
           x-responseId: "FoundEntity"
           x-uppercaseResponseId: "FOUND_ENTITY"
-          uppercase_operation_id: "CONTAINER_ID_GET"
+          uppercase_operation_id: "GET_CONTAINER"
           uppercase_data_type: "CONTAINERENTITY"
           producesJson: true
         400:
@@ -155,7 +158,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
-          uppercase_operation_id: "CONTAINER_ID_GET"
+          uppercase_operation_id: "GET_CONTAINER"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
@@ -164,7 +167,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "CONTAINER_ID_GET"
+          uppercase_operation_id: "GET_CONTAINER"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
@@ -173,16 +176,17 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "CONTAINER_ID_GET"
+          uppercase_operation_id: "GET_CONTAINER"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-      operation_id: "container_id_get"
-      uppercase_operation_id: "CONTAINER_ID_GET"
+      operation_id: "get_container"
+      uppercase_operation_id: "GET_CONTAINER"
       path: "/container/:id"
       HttpMethod: "Get"
       httpmethod: "get"
   /container/lookup:
     get:
+      operationId: "lookup_container"
       parameters:
       - name: "issnl"
         in: "query"
@@ -197,7 +201,7 @@ paths:
             $ref: "#/definitions/container_entity"
           x-responseId: "FoundEntity"
           x-uppercaseResponseId: "FOUND_ENTITY"
-          uppercase_operation_id: "CONTAINER_LOOKUP_GET"
+          uppercase_operation_id: "LOOKUP_CONTAINER"
           uppercase_data_type: "CONTAINERENTITY"
           producesJson: true
         400:
@@ -206,7 +210,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
-          uppercase_operation_id: "CONTAINER_LOOKUP_GET"
+          uppercase_operation_id: "LOOKUP_CONTAINER"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
@@ -215,7 +219,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "CONTAINER_LOOKUP_GET"
+          uppercase_operation_id: "LOOKUP_CONTAINER"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
@@ -224,16 +228,17 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "CONTAINER_LOOKUP_GET"
+          uppercase_operation_id: "LOOKUP_CONTAINER"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-      operation_id: "container_lookup_get"
-      uppercase_operation_id: "CONTAINER_LOOKUP_GET"
+      operation_id: "lookup_container"
+      uppercase_operation_id: "LOOKUP_CONTAINER"
       path: "/container/lookup"
       HttpMethod: "Get"
       httpmethod: "get"
   /creator:
     post:
+      operationId: "create_creator"
       parameters:
       - in: "body"
         name: "entity"
@@ -245,7 +250,7 @@ paths:
         formatString: "{:?}"
         example: "???"
         model_key: "changelogentries_inner"
-        uppercase_operation_id: "CREATOR_POST"
+        uppercase_operation_id: "CREATE_CREATOR"
         consumesJson: true
       responses:
         201:
@@ -254,7 +259,7 @@ paths:
             $ref: "#/definitions/entity_edit"
           x-responseId: "CreatedEntity"
           x-uppercaseResponseId: "CREATED_ENTITY"
-          uppercase_operation_id: "CREATOR_POST"
+          uppercase_operation_id: "CREATE_CREATOR"
           uppercase_data_type: "ENTITYEDIT"
           producesJson: true
         400:
@@ -263,7 +268,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
-          uppercase_operation_id: "CREATOR_POST"
+          uppercase_operation_id: "CREATE_CREATOR"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
@@ -272,7 +277,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "CREATOR_POST"
+          uppercase_operation_id: "CREATE_CREATOR"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
@@ -281,17 +286,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "CREATOR_POST"
+          uppercase_operation_id: "CREATE_CREATOR"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-      operation_id: "creator_post"
-      uppercase_operation_id: "CREATOR_POST"
+      operation_id: "create_creator"
+      uppercase_operation_id: "CREATE_CREATOR"
       path: "/creator"
       HttpMethod: "Post"
       httpmethod: "post"
       noClientExample: true
   /creator/batch:
     post:
+      operationId: "create_creator_batch"
       parameters:
       - in: "body"
         name: "entity_list"
@@ -303,7 +309,7 @@ paths:
         formatString: "{:?}"
         example: "&Vec::new()"
         model_key: "changelogentries_inner"
-        uppercase_operation_id: "CREATOR_BATCH_POST"
+        uppercase_operation_id: "CREATE_CREATOR_BATCH"
         consumesJson: true
       responses:
         201:
@@ -314,7 +320,7 @@ paths:
               $ref: "#/definitions/entity_edit"
           x-responseId: "CreatedEntities"
           x-uppercaseResponseId: "CREATED_ENTITIES"
-          uppercase_operation_id: "CREATOR_BATCH_POST"
+          uppercase_operation_id: "CREATE_CREATOR_BATCH"
           uppercase_data_type: "VEC<ENTITYEDIT>"
           producesJson: true
         400:
@@ -323,7 +329,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
-          uppercase_operation_id: "CREATOR_BATCH_POST"
+          uppercase_operation_id: "CREATE_CREATOR_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
@@ -332,7 +338,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "CREATOR_BATCH_POST"
+          uppercase_operation_id: "CREATE_CREATOR_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
@@ -341,16 +347,17 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "CREATOR_BATCH_POST"
+          uppercase_operation_id: "CREATE_CREATOR_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-      operation_id: "creator_batch_post"
-      uppercase_operation_id: "CREATOR_BATCH_POST"
+      operation_id: "create_creator_batch"
+      uppercase_operation_id: "CREATE_CREATOR_BATCH"
       path: "/creator/batch"
       HttpMethod: "Post"
       httpmethod: "post"
   /creator/{id}:
     get:
+      operationId: "get_creator"
       parameters:
       - name: "id"
         in: "path"
@@ -365,7 +372,7 @@ paths:
             $ref: "#/definitions/creator_entity"
           x-responseId: "FoundEntity"
           x-uppercaseResponseId: "FOUND_ENTITY"
-          uppercase_operation_id: "CREATOR_ID_GET"
+          uppercase_operation_id: "GET_CREATOR"
           uppercase_data_type: "CREATORENTITY"
           producesJson: true
         400:
@@ -374,7 +381,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
-          uppercase_operation_id: "CREATOR_ID_GET"
+          uppercase_operation_id: "GET_CREATOR"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
@@ -383,7 +390,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "CREATOR_ID_GET"
+          uppercase_operation_id: "GET_CREATOR"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
@@ -392,16 +399,17 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "CREATOR_ID_GET"
+          uppercase_operation_id: "GET_CREATOR"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-      operation_id: "creator_id_get"
-      uppercase_operation_id: "CREATOR_ID_GET"
+      operation_id: "get_creator"
+      uppercase_operation_id: "GET_CREATOR"
       path: "/creator/:id"
       HttpMethod: "Get"
       httpmethod: "get"
   /creator/lookup:
     get:
+      operationId: "lookup_creator"
       parameters:
       - name: "orcid"
         in: "query"
@@ -416,7 +424,7 @@ paths:
             $ref: "#/definitions/creator_entity"
           x-responseId: "FoundEntity"
           x-uppercaseResponseId: "FOUND_ENTITY"
-          uppercase_operation_id: "CREATOR_LOOKUP_GET"
+          uppercase_operation_id: "LOOKUP_CREATOR"
           uppercase_data_type: "CREATORENTITY"
           producesJson: true
         400:
@@ -425,7 +433,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
-          uppercase_operation_id: "CREATOR_LOOKUP_GET"
+          uppercase_operation_id: "LOOKUP_CREATOR"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
@@ -434,7 +442,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "CREATOR_LOOKUP_GET"
+          uppercase_operation_id: "LOOKUP_CREATOR"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
@@ -443,16 +451,17 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "CREATOR_LOOKUP_GET"
+          uppercase_operation_id: "LOOKUP_CREATOR"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-      operation_id: "creator_lookup_get"
-      uppercase_operation_id: "CREATOR_LOOKUP_GET"
+      operation_id: "lookup_creator"
+      uppercase_operation_id: "LOOKUP_CREATOR"
       path: "/creator/lookup"
       HttpMethod: "Get"
       httpmethod: "get"
   /file:
     post:
+      operationId: "create_file"
       parameters:
       - in: "body"
         name: "entity"
@@ -464,7 +473,7 @@ paths:
         formatString: "{:?}"
         example: "???"
         model_key: "changelogentries_inner"
-        uppercase_operation_id: "FILE_POST"
+        uppercase_operation_id: "CREATE_FILE"
         consumesJson: true
       responses:
         201:
@@ -473,7 +482,7 @@ paths:
             $ref: "#/definitions/entity_edit"
           x-responseId: "CreatedEntity"
           x-uppercaseResponseId: "CREATED_ENTITY"
-          uppercase_operation_id: "FILE_POST"
+          uppercase_operation_id: "CREATE_FILE"
           uppercase_data_type: "ENTITYEDIT"
           producesJson: true
         400:
@@ -482,7 +491,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
-          uppercase_operation_id: "FILE_POST"
+          uppercase_operation_id: "CREATE_FILE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
@@ -491,7 +500,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "FILE_POST"
+          uppercase_operation_id: "CREATE_FILE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
@@ -500,17 +509,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "FILE_POST"
+          uppercase_operation_id: "CREATE_FILE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-      operation_id: "file_post"
-      uppercase_operation_id: "FILE_POST"
+      operation_id: "create_file"
+      uppercase_operation_id: "CREATE_FILE"
       path: "/file"
       HttpMethod: "Post"
       httpmethod: "post"
       noClientExample: true
   /file/batch:
     post:
+      operationId: "create_file_batch"
       parameters:
       - in: "body"
         name: "entity_list"
@@ -522,7 +532,7 @@ paths:
         formatString: "{:?}"
         example: "&Vec::new()"
         model_key: "changelogentries_inner"
-        uppercase_operation_id: "FILE_BATCH_POST"
+        uppercase_operation_id: "CREATE_FILE_BATCH"
         consumesJson: true
       responses:
         201:
@@ -533,7 +543,7 @@ paths:
               $ref: "#/definitions/entity_edit"
           x-responseId: "CreatedEntities"
           x-uppercaseResponseId: "CREATED_ENTITIES"
-          uppercase_operation_id: "FILE_BATCH_POST"
+          uppercase_operation_id: "CREATE_FILE_BATCH"
           uppercase_data_type: "VEC<ENTITYEDIT>"
           producesJson: true
         400:
@@ -542,7 +552,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
-          uppercase_operation_id: "FILE_BATCH_POST"
+          uppercase_operation_id: "CREATE_FILE_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
@@ -551,7 +561,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "FILE_BATCH_POST"
+          uppercase_operation_id: "CREATE_FILE_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
@@ -560,16 +570,17 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "FILE_BATCH_POST"
+          uppercase_operation_id: "CREATE_FILE_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-      operation_id: "file_batch_post"
-      uppercase_operation_id: "FILE_BATCH_POST"
+      operation_id: "create_file_batch"
+      uppercase_operation_id: "CREATE_FILE_BATCH"
       path: "/file/batch"
       HttpMethod: "Post"
       httpmethod: "post"
   /file/{id}:
     get:
+      operationId: "get_file"
       parameters:
       - name: "id"
         in: "path"
@@ -584,7 +595,7 @@ paths:
             $ref: "#/definitions/file_entity"
           x-responseId: "FoundEntity"
           x-uppercaseResponseId: "FOUND_ENTITY"
-          uppercase_operation_id: "FILE_ID_GET"
+          uppercase_operation_id: "GET_FILE"
           uppercase_data_type: "FILEENTITY"
           producesJson: true
         400:
@@ -593,7 +604,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
-          uppercase_operation_id: "FILE_ID_GET"
+          uppercase_operation_id: "GET_FILE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
@@ -602,7 +613,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "FILE_ID_GET"
+          uppercase_operation_id: "GET_FILE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
@@ -611,16 +622,17 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "FILE_ID_GET"
+          uppercase_operation_id: "GET_FILE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-      operation_id: "file_id_get"
-      uppercase_operation_id: "FILE_ID_GET"
+      operation_id: "get_file"
+      uppercase_operation_id: "GET_FILE"
       path: "/file/:id"
       HttpMethod: "Get"
       httpmethod: "get"
   /file/lookup:
     get:
+      operationId: "lookup_file"
       parameters:
       - name: "sha1"
         in: "query"
@@ -635,7 +647,7 @@ paths:
             $ref: "#/definitions/file_entity"
           x-responseId: "FoundEntity"
           x-uppercaseResponseId: "FOUND_ENTITY"
-          uppercase_operation_id: "FILE_LOOKUP_GET"
+          uppercase_operation_id: "LOOKUP_FILE"
           uppercase_data_type: "FILEENTITY"
           producesJson: true
         400:
@@ -644,7 +656,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
-          uppercase_operation_id: "FILE_LOOKUP_GET"
+          uppercase_operation_id: "LOOKUP_FILE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
@@ -653,7 +665,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "FILE_LOOKUP_GET"
+          uppercase_operation_id: "LOOKUP_FILE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
@@ -662,16 +674,17 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "FILE_LOOKUP_GET"
+          uppercase_operation_id: "LOOKUP_FILE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-      operation_id: "file_lookup_get"
-      uppercase_operation_id: "FILE_LOOKUP_GET"
+      operation_id: "lookup_file"
+      uppercase_operation_id: "LOOKUP_FILE"
       path: "/file/lookup"
       HttpMethod: "Get"
       httpmethod: "get"
   /release:
     post:
+      operationId: "create_release"
       parameters:
       - in: "body"
         name: "entity"
@@ -683,7 +696,7 @@ paths:
         formatString: "{:?}"
         example: "???"
         model_key: "changelogentries_inner"
-        uppercase_operation_id: "RELEASE_POST"
+        uppercase_operation_id: "CREATE_RELEASE"
         consumesJson: true
       responses:
         201:
@@ -692,7 +705,7 @@ paths:
             $ref: "#/definitions/entity_edit"
           x-responseId: "CreatedEntity"
           x-uppercaseResponseId: "CREATED_ENTITY"
-          uppercase_operation_id: "RELEASE_POST"
+          uppercase_operation_id: "CREATE_RELEASE"
           uppercase_data_type: "ENTITYEDIT"
           producesJson: true
         400:
@@ -701,7 +714,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
-          uppercase_operation_id: "RELEASE_POST"
+          uppercase_operation_id: "CREATE_RELEASE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
@@ -710,7 +723,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "RELEASE_POST"
+          uppercase_operation_id: "CREATE_RELEASE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
@@ -719,17 +732,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "RELEASE_POST"
+          uppercase_operation_id: "CREATE_RELEASE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-      operation_id: "release_post"
-      uppercase_operation_id: "RELEASE_POST"
+      operation_id: "create_release"
+      uppercase_operation_id: "CREATE_RELEASE"
       path: "/release"
       HttpMethod: "Post"
       httpmethod: "post"
       noClientExample: true
   /release/batch:
     post:
+      operationId: "create_release_batch"
       parameters:
       - in: "body"
         name: "entity_list"
@@ -741,7 +755,7 @@ paths:
         formatString: "{:?}"
         example: "&Vec::new()"
         model_key: "changelogentries_inner"
-        uppercase_operation_id: "RELEASE_BATCH_POST"
+        uppercase_operation_id: "CREATE_RELEASE_BATCH"
         consumesJson: true
       responses:
         201:
@@ -752,7 +766,7 @@ paths:
               $ref: "#/definitions/entity_edit"
           x-responseId: "CreatedEntities"
           x-uppercaseResponseId: "CREATED_ENTITIES"
-          uppercase_operation_id: "RELEASE_BATCH_POST"
+          uppercase_operation_id: "CREATE_RELEASE_BATCH"
           uppercase_data_type: "VEC<ENTITYEDIT>"
           producesJson: true
         400:
@@ -761,7 +775,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
-          uppercase_operation_id: "RELEASE_BATCH_POST"
+          uppercase_operation_id: "CREATE_RELEASE_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
@@ -770,7 +784,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "RELEASE_BATCH_POST"
+          uppercase_operation_id: "CREATE_RELEASE_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
@@ -779,16 +793,17 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "RELEASE_BATCH_POST"
+          uppercase_operation_id: "CREATE_RELEASE_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-      operation_id: "release_batch_post"
-      uppercase_operation_id: "RELEASE_BATCH_POST"
+      operation_id: "create_release_batch"
+      uppercase_operation_id: "CREATE_RELEASE_BATCH"
       path: "/release/batch"
       HttpMethod: "Post"
       httpmethod: "post"
   /release/{id}:
     get:
+      operationId: "get_release"
       parameters:
       - name: "id"
         in: "path"
@@ -803,7 +818,7 @@ paths:
             $ref: "#/definitions/release_entity"
           x-responseId: "FoundEntity"
           x-uppercaseResponseId: "FOUND_ENTITY"
-          uppercase_operation_id: "RELEASE_ID_GET"
+          uppercase_operation_id: "GET_RELEASE"
           uppercase_data_type: "RELEASEENTITY"
           producesJson: true
         400:
@@ -812,7 +827,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
-          uppercase_operation_id: "RELEASE_ID_GET"
+          uppercase_operation_id: "GET_RELEASE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
@@ -821,7 +836,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "RELEASE_ID_GET"
+          uppercase_operation_id: "GET_RELEASE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
@@ -830,16 +845,17 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "RELEASE_ID_GET"
+          uppercase_operation_id: "GET_RELEASE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-      operation_id: "release_id_get"
-      uppercase_operation_id: "RELEASE_ID_GET"
+      operation_id: "get_release"
+      uppercase_operation_id: "GET_RELEASE"
       path: "/release/:id"
       HttpMethod: "Get"
       httpmethod: "get"
   /release/lookup:
     get:
+      operationId: "lookup_release"
       parameters:
       - name: "doi"
         in: "query"
@@ -854,7 +870,7 @@ paths:
             $ref: "#/definitions/release_entity"
           x-responseId: "FoundEntity"
           x-uppercaseResponseId: "FOUND_ENTITY"
-          uppercase_operation_id: "RELEASE_LOOKUP_GET"
+          uppercase_operation_id: "LOOKUP_RELEASE"
           uppercase_data_type: "RELEASEENTITY"
           producesJson: true
         400:
@@ -863,7 +879,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
-          uppercase_operation_id: "RELEASE_LOOKUP_GET"
+          uppercase_operation_id: "LOOKUP_RELEASE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
@@ -872,7 +888,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "RELEASE_LOOKUP_GET"
+          uppercase_operation_id: "LOOKUP_RELEASE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
@@ -881,16 +897,17 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "RELEASE_LOOKUP_GET"
+          uppercase_operation_id: "LOOKUP_RELEASE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-      operation_id: "release_lookup_get"
-      uppercase_operation_id: "RELEASE_LOOKUP_GET"
+      operation_id: "lookup_release"
+      uppercase_operation_id: "LOOKUP_RELEASE"
       path: "/release/lookup"
       HttpMethod: "Get"
       httpmethod: "get"
   /work:
     post:
+      operationId: "create_work"
       parameters:
       - in: "body"
         name: "entity"
@@ -902,7 +919,7 @@ paths:
         formatString: "{:?}"
         example: "???"
         model_key: "changelogentries_inner"
-        uppercase_operation_id: "WORK_POST"
+        uppercase_operation_id: "CREATE_WORK"
         consumesJson: true
       responses:
         201:
@@ -911,7 +928,7 @@ paths:
             $ref: "#/definitions/entity_edit"
           x-responseId: "CreatedEntity"
           x-uppercaseResponseId: "CREATED_ENTITY"
-          uppercase_operation_id: "WORK_POST"
+          uppercase_operation_id: "CREATE_WORK"
           uppercase_data_type: "ENTITYEDIT"
           producesJson: true
         400:
@@ -920,7 +937,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
-          uppercase_operation_id: "WORK_POST"
+          uppercase_operation_id: "CREATE_WORK"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
@@ -929,7 +946,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "WORK_POST"
+          uppercase_operation_id: "CREATE_WORK"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
@@ -938,17 +955,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "WORK_POST"
+          uppercase_operation_id: "CREATE_WORK"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-      operation_id: "work_post"
-      uppercase_operation_id: "WORK_POST"
+      operation_id: "create_work"
+      uppercase_operation_id: "CREATE_WORK"
       path: "/work"
       HttpMethod: "Post"
       httpmethod: "post"
       noClientExample: true
   /work/batch:
     post:
+      operationId: "create_work_batch"
       parameters:
       - in: "body"
         name: "entity_list"
@@ -960,7 +978,7 @@ paths:
         formatString: "{:?}"
         example: "&Vec::new()"
         model_key: "changelogentries_inner"
-        uppercase_operation_id: "WORK_BATCH_POST"
+        uppercase_operation_id: "CREATE_WORK_BATCH"
         consumesJson: true
       responses:
         201:
@@ -971,7 +989,7 @@ paths:
               $ref: "#/definitions/entity_edit"
           x-responseId: "CreatedEntities"
           x-uppercaseResponseId: "CREATED_ENTITIES"
-          uppercase_operation_id: "WORK_BATCH_POST"
+          uppercase_operation_id: "CREATE_WORK_BATCH"
           uppercase_data_type: "VEC<ENTITYEDIT>"
           producesJson: true
         400:
@@ -980,7 +998,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
-          uppercase_operation_id: "WORK_BATCH_POST"
+          uppercase_operation_id: "CREATE_WORK_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
@@ -989,7 +1007,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "WORK_BATCH_POST"
+          uppercase_operation_id: "CREATE_WORK_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
@@ -998,16 +1016,17 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "WORK_BATCH_POST"
+          uppercase_operation_id: "CREATE_WORK_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-      operation_id: "work_batch_post"
-      uppercase_operation_id: "WORK_BATCH_POST"
+      operation_id: "create_work_batch"
+      uppercase_operation_id: "CREATE_WORK_BATCH"
       path: "/work/batch"
       HttpMethod: "Post"
       httpmethod: "post"
   /work/{id}:
     get:
+      operationId: "get_work"
       parameters:
       - name: "id"
         in: "path"
@@ -1022,7 +1041,7 @@ paths:
             $ref: "#/definitions/work_entity"
           x-responseId: "FoundEntity"
           x-uppercaseResponseId: "FOUND_ENTITY"
-          uppercase_operation_id: "WORK_ID_GET"
+          uppercase_operation_id: "GET_WORK"
           uppercase_data_type: "WORKENTITY"
           producesJson: true
         400:
@@ -1031,7 +1050,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
-          uppercase_operation_id: "WORK_ID_GET"
+          uppercase_operation_id: "GET_WORK"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
@@ -1040,7 +1059,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "WORK_ID_GET"
+          uppercase_operation_id: "GET_WORK"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
@@ -1049,16 +1068,17 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "WORK_ID_GET"
+          uppercase_operation_id: "GET_WORK"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-      operation_id: "work_id_get"
-      uppercase_operation_id: "WORK_ID_GET"
+      operation_id: "get_work"
+      uppercase_operation_id: "GET_WORK"
       path: "/work/:id"
       HttpMethod: "Get"
       httpmethod: "get"
   /editor/{username}:
     get:
+      operationId: "get_editor"
       parameters:
       - name: "username"
         in: "path"
@@ -1073,7 +1093,7 @@ paths:
             $ref: "#/definitions/editor"
           x-responseId: "FoundEditor"
           x-uppercaseResponseId: "FOUND_EDITOR"
-          uppercase_operation_id: "EDITOR_USERNAME_GET"
+          uppercase_operation_id: "GET_EDITOR"
           uppercase_data_type: "EDITOR"
           producesJson: true
         404:
@@ -1082,7 +1102,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "EDITOR_USERNAME_GET"
+          uppercase_operation_id: "GET_EDITOR"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
@@ -1091,16 +1111,17 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "EDITOR_USERNAME_GET"
+          uppercase_operation_id: "GET_EDITOR"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-      operation_id: "editor_username_get"
-      uppercase_operation_id: "EDITOR_USERNAME_GET"
+      operation_id: "get_editor"
+      uppercase_operation_id: "GET_EDITOR"
       path: "/editor/:username"
       HttpMethod: "Get"
       httpmethod: "get"
   /editor/{username}/changelog:
     get:
+      operationId: "get_editor_changelog"
       parameters:
       - name: "username"
         in: "path"
@@ -1115,7 +1136,7 @@ paths:
             $ref: "#/definitions/changelogentries"
           x-responseId: "FoundMergedChanges"
           x-uppercaseResponseId: "FOUND_MERGED_CHANGES"
-          uppercase_operation_id: "EDITOR_USERNAME_CHANGELOG_GET"
+          uppercase_operation_id: "GET_EDITOR_CHANGELOG"
           uppercase_data_type: "CHANGELOGENTRIES"
           producesJson: true
         404:
@@ -1124,7 +1145,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "EDITOR_USERNAME_CHANGELOG_GET"
+          uppercase_operation_id: "GET_EDITOR_CHANGELOG"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
@@ -1133,16 +1154,17 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "EDITOR_USERNAME_CHANGELOG_GET"
+          uppercase_operation_id: "GET_EDITOR_CHANGELOG"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-      operation_id: "editor_username_changelog_get"
-      uppercase_operation_id: "EDITOR_USERNAME_CHANGELOG_GET"
+      operation_id: "get_editor_changelog"
+      uppercase_operation_id: "GET_EDITOR_CHANGELOG"
       path: "/editor/:username/changelog"
       HttpMethod: "Get"
       httpmethod: "get"
   /editgroup:
     post:
+      operationId: "create_editgroup"
       parameters:
       - in: "body"
         name: "entity"
@@ -1154,7 +1176,7 @@ paths:
         formatString: "{:?}"
         example: "???"
         model_key: "changelogentries_inner"
-        uppercase_operation_id: "EDITGROUP_POST"
+        uppercase_operation_id: "CREATE_EDITGROUP"
         consumesJson: true
       responses:
         201:
@@ -1163,7 +1185,7 @@ paths:
             $ref: "#/definitions/editgroup"
           x-responseId: "SuccessfullyCreated"
           x-uppercaseResponseId: "SUCCESSFULLY_CREATED"
-          uppercase_operation_id: "EDITGROUP_POST"
+          uppercase_operation_id: "CREATE_EDITGROUP"
           uppercase_data_type: "EDITGROUP"
           producesJson: true
         400:
@@ -1172,7 +1194,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
-          uppercase_operation_id: "EDITGROUP_POST"
+          uppercase_operation_id: "CREATE_EDITGROUP"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
@@ -1181,17 +1203,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "EDITGROUP_POST"
+          uppercase_operation_id: "CREATE_EDITGROUP"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-      operation_id: "editgroup_post"
-      uppercase_operation_id: "EDITGROUP_POST"
+      operation_id: "create_editgroup"
+      uppercase_operation_id: "CREATE_EDITGROUP"
       path: "/editgroup"
       HttpMethod: "Post"
       httpmethod: "post"
       noClientExample: true
   /editgroup/{id}:
     get:
+      operationId: "get_editgroup"
       parameters:
       - name: "id"
         in: "path"
@@ -1207,7 +1230,7 @@ paths:
             $ref: "#/definitions/editgroup"
           x-responseId: "FoundEntity"
           x-uppercaseResponseId: "FOUND_ENTITY"
-          uppercase_operation_id: "EDITGROUP_ID_GET"
+          uppercase_operation_id: "GET_EDITGROUP"
           uppercase_data_type: "EDITGROUP"
           producesJson: true
         400:
@@ -1216,7 +1239,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
-          uppercase_operation_id: "EDITGROUP_ID_GET"
+          uppercase_operation_id: "GET_EDITGROUP"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
@@ -1225,7 +1248,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "EDITGROUP_ID_GET"
+          uppercase_operation_id: "GET_EDITGROUP"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
@@ -1234,16 +1257,17 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "EDITGROUP_ID_GET"
+          uppercase_operation_id: "GET_EDITGROUP"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-      operation_id: "editgroup_id_get"
-      uppercase_operation_id: "EDITGROUP_ID_GET"
+      operation_id: "get_editgroup"
+      uppercase_operation_id: "GET_EDITGROUP"
       path: "/editgroup/:id"
       HttpMethod: "Get"
       httpmethod: "get"
   /editgroup/{id}/accept:
     post:
+      operationId: "accept_editgroup"
       parameters:
       - name: "id"
         in: "path"
@@ -1259,7 +1283,7 @@ paths:
             $ref: "#/definitions/success"
           x-responseId: "MergedSuccessfully"
           x-uppercaseResponseId: "MERGED_SUCCESSFULLY"
-          uppercase_operation_id: "EDITGROUP_ID_ACCEPT_POST"
+          uppercase_operation_id: "ACCEPT_EDITGROUP"
           uppercase_data_type: "SUCCESS"
           producesJson: true
         400:
@@ -1268,7 +1292,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "Unmergable"
           x-uppercaseResponseId: "UNMERGABLE"
-          uppercase_operation_id: "EDITGROUP_ID_ACCEPT_POST"
+          uppercase_operation_id: "ACCEPT_EDITGROUP"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
@@ -1277,7 +1301,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "EDITGROUP_ID_ACCEPT_POST"
+          uppercase_operation_id: "ACCEPT_EDITGROUP"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         default:
@@ -1286,11 +1310,11 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "EDITGROUP_ID_ACCEPT_POST"
+          uppercase_operation_id: "ACCEPT_EDITGROUP"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-      operation_id: "editgroup_id_accept_post"
-      uppercase_operation_id: "EDITGROUP_ID_ACCEPT_POST"
+      operation_id: "accept_editgroup"
+      uppercase_operation_id: "ACCEPT_EDITGROUP"
       path: "/editgroup/:id/accept"
       HttpMethod: "Post"
       httpmethod: "post"

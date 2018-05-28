@@ -11,10 +11,10 @@ extern crate uuid;
 
 use clap::{App, Arg};
 #[allow(unused_imports)]
-use fatcat::{ApiError, ApiNoContext, ContainerBatchPostResponse, ContainerIdGetResponse, ContainerLookupGetResponse, ContainerPostResponse, ContextWrapperExt, CreatorBatchPostResponse,
-             CreatorIdGetResponse, CreatorLookupGetResponse, CreatorPostResponse, EditgroupIdAcceptPostResponse, EditgroupIdGetResponse, EditgroupPostResponse, EditorUsernameChangelogGetResponse,
-             EditorUsernameGetResponse, FileBatchPostResponse, FileIdGetResponse, FileLookupGetResponse, FilePostResponse, ReleaseBatchPostResponse, ReleaseIdGetResponse, ReleaseLookupGetResponse,
-             ReleasePostResponse, WorkBatchPostResponse, WorkIdGetResponse, WorkPostResponse};
+use fatcat::{AcceptEditgroupResponse, ApiError, ApiNoContext, ContextWrapperExt, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse,
+             CreateEditgroupResponse, CreateFileBatchResponse, CreateFileResponse, CreateReleaseBatchResponse, CreateReleaseResponse, CreateWorkBatchResponse, CreateWorkResponse,
+             GetContainerResponse, GetCreatorResponse, GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileResponse, GetReleaseResponse, GetWorkResponse,
+             LookupContainerResponse, LookupCreatorResponse, LookupFileResponse, LookupReleaseResponse};
 #[allow(unused_imports)]
 use futures::{future, stream, Future, Stream};
 
@@ -24,24 +24,24 @@ fn main() {
             Arg::with_name("operation")
                 .help("Sets the operation to run")
                 .possible_values(&[
-                    "ContainerBatchPost",
-                    "ContainerIdGet",
-                    "ContainerLookupGet",
-                    "CreatorBatchPost",
-                    "CreatorIdGet",
-                    "CreatorLookupGet",
-                    "EditgroupIdAcceptPost",
-                    "EditgroupIdGet",
-                    "EditorUsernameChangelogGet",
-                    "EditorUsernameGet",
-                    "FileBatchPost",
-                    "FileIdGet",
-                    "FileLookupGet",
-                    "ReleaseBatchPost",
-                    "ReleaseIdGet",
-                    "ReleaseLookupGet",
-                    "WorkBatchPost",
-                    "WorkIdGet",
+                    "AcceptEditgroup",
+                    "CreateContainerBatch",
+                    "CreateCreatorBatch",
+                    "CreateFileBatch",
+                    "CreateReleaseBatch",
+                    "CreateWorkBatch",
+                    "GetContainer",
+                    "GetCreator",
+                    "GetEditgroup",
+                    "GetEditor",
+                    "GetEditorChangelog",
+                    "GetFile",
+                    "GetRelease",
+                    "GetWork",
+                    "LookupContainer",
+                    "LookupCreator",
+                    "LookupFile",
+                    "LookupRelease",
                 ])
                 .required(true)
                 .index(1),
@@ -70,126 +70,127 @@ fn main() {
     let client = client.with_context(fatcat::Context::new_with_span_id(self::uuid::Uuid::new_v4().to_string()));
 
     match matches.value_of("operation") {
-        Some("ContainerBatchPost") => {
-            let result = client.container_batch_post(&Vec::new()).wait();
-            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
-        }
-
-        Some("ContainerIdGet") => {
-            let result = client.container_id_get("id_example".to_string()).wait();
-            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
-        }
-
-        Some("ContainerLookupGet") => {
-            let result = client.container_lookup_get("issnl_example".to_string()).wait();
+        Some("AcceptEditgroup") => {
+            let result = client.accept_editgroup(789).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
         // Disabled because there's no example.
-        // Some("ContainerPost") => {
-        //     let result = client.container_post(???).wait();
+        // Some("CreateContainer") => {
+        //     let result = client.create_container(???).wait();
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         //  },
-        Some("CreatorBatchPost") => {
-            let result = client.creator_batch_post(&Vec::new()).wait();
-            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
-        }
-
-        Some("CreatorIdGet") => {
-            let result = client.creator_id_get("id_example".to_string()).wait();
-            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
-        }
-
-        Some("CreatorLookupGet") => {
-            let result = client.creator_lookup_get("orcid_example".to_string()).wait();
+        Some("CreateContainerBatch") => {
+            let result = client.create_container_batch(&Vec::new()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
         // Disabled because there's no example.
-        // Some("CreatorPost") => {
-        //     let result = client.creator_post(???).wait();
+        // Some("CreateCreator") => {
+        //     let result = client.create_creator(???).wait();
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         //  },
-        Some("EditgroupIdAcceptPost") => {
-            let result = client.editgroup_id_accept_post(789).wait();
-            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
-        }
-
-        Some("EditgroupIdGet") => {
-            let result = client.editgroup_id_get(789).wait();
+        Some("CreateCreatorBatch") => {
+            let result = client.create_creator_batch(&Vec::new()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
         // Disabled because there's no example.
-        // Some("EditgroupPost") => {
-        //     let result = client.editgroup_post(???).wait();
+        // Some("CreateEditgroup") => {
+        //     let result = client.create_editgroup(???).wait();
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         //  },
-        Some("EditorUsernameChangelogGet") => {
-            let result = client.editor_username_changelog_get("username_example".to_string()).wait();
-            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
-        }
 
-        Some("EditorUsernameGet") => {
-            let result = client.editor_username_get("username_example".to_string()).wait();
-            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
-        }
-
-        Some("FileBatchPost") => {
-            let result = client.file_batch_post(&Vec::new()).wait();
-            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
-        }
-
-        Some("FileIdGet") => {
-            let result = client.file_id_get("id_example".to_string()).wait();
-            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
-        }
-
-        Some("FileLookupGet") => {
-            let result = client.file_lookup_get("sha1_example".to_string()).wait();
+        // Disabled because there's no example.
+        // Some("CreateFile") => {
+        //     let result = client.create_file(???).wait();
+        //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        //  },
+        Some("CreateFileBatch") => {
+            let result = client.create_file_batch(&Vec::new()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
         // Disabled because there's no example.
-        // Some("FilePost") => {
-        //     let result = client.file_post(???).wait();
+        // Some("CreateRelease") => {
+        //     let result = client.create_release(???).wait();
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         //  },
-        Some("ReleaseBatchPost") => {
-            let result = client.release_batch_post(&Vec::new()).wait();
-            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
-        }
-
-        Some("ReleaseIdGet") => {
-            let result = client.release_id_get("id_example".to_string()).wait();
-            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
-        }
-
-        Some("ReleaseLookupGet") => {
-            let result = client.release_lookup_get("doi_example".to_string()).wait();
+        Some("CreateReleaseBatch") => {
+            let result = client.create_release_batch(&Vec::new()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
         // Disabled because there's no example.
-        // Some("ReleasePost") => {
-        //     let result = client.release_post(???).wait();
+        // Some("CreateWork") => {
+        //     let result = client.create_work(???).wait();
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         //  },
-        Some("WorkBatchPost") => {
-            let result = client.work_batch_post(&Vec::new()).wait();
+        Some("CreateWorkBatch") => {
+            let result = client.create_work_batch(&Vec::new()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
-        Some("WorkIdGet") => {
-            let result = client.work_id_get("id_example".to_string()).wait();
+        Some("GetContainer") => {
+            let result = client.get_container("id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
-        // Disabled because there's no example.
-        // Some("WorkPost") => {
-        //     let result = client.work_post(???).wait();
-        //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
-        //  },
+        Some("GetCreator") => {
+            let result = client.get_creator("id_example".to_string()).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("GetEditgroup") => {
+            let result = client.get_editgroup(789).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("GetEditor") => {
+            let result = client.get_editor("username_example".to_string()).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("GetEditorChangelog") => {
+            let result = client.get_editor_changelog("username_example".to_string()).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("GetFile") => {
+            let result = client.get_file("id_example".to_string()).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("GetRelease") => {
+            let result = client.get_release("id_example".to_string()).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("GetWork") => {
+            let result = client.get_work("id_example".to_string()).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("LookupContainer") => {
+            let result = client.lookup_container("issnl_example".to_string()).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("LookupCreator") => {
+            let result = client.lookup_creator("orcid_example".to_string()).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("LookupFile") => {
+            let result = client.lookup_file("sha1_example".to_string()).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("LookupRelease") => {
+            let result = client.lookup_release("doi_example".to_string()).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
         _ => panic!("Invalid operation provided"),
     }
 }

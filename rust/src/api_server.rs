@@ -79,7 +79,7 @@ macro_rules! wrap_entity_handlers {
     }
 }
 
-macro_rules! entity_batch_post_handler {
+macro_rules! entity_batch_handler {
     ($post_handler:ident, $post_batch_handler:ident, $model:ident) => {
         fn $post_batch_handler(&self, entity_list: &Vec<models::$model>) -> Result<Vec<EntityEdit>> {
             let conn = self.db_pool.get().expect("db_pool error");
@@ -286,7 +286,7 @@ fn work_row2entity(ident: Option<WorkIdentRow>, rev: WorkRevRow) -> Result<WorkE
 }
 
 impl Server {
-    fn container_id_get_handler(&self, id: String) -> Result<ContainerEntity> {
+    fn get_container_handler(&self, id: String) -> Result<ContainerEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
         let id = uuid::Uuid::parse_str(&id)?;
 
@@ -299,7 +299,7 @@ impl Server {
         container_row2entity(Some(ident), rev)
     }
 
-    fn container_lookup_get_handler(&self, issnl: String) -> Result<ContainerEntity> {
+    fn lookup_container_handler(&self, issnl: String) -> Result<ContainerEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
 
         let (ident, rev): (ContainerIdentRow, ContainerRevRow) = container_ident::table
@@ -312,7 +312,7 @@ impl Server {
         container_row2entity(Some(ident), rev)
     }
 
-    fn creator_id_get_handler(&self, id: String) -> Result<CreatorEntity> {
+    fn get_creator_handler(&self, id: String) -> Result<CreatorEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
         let id = uuid::Uuid::parse_str(&id)?;
 
@@ -324,7 +324,7 @@ impl Server {
         creator_row2entity(Some(ident), rev)
     }
 
-    fn creator_lookup_get_handler(&self, orcid: String) -> Result<CreatorEntity> {
+    fn lookup_creator_handler(&self, orcid: String) -> Result<CreatorEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
 
         let (ident, rev): (CreatorIdentRow, CreatorRevRow) = creator_ident::table
@@ -337,7 +337,7 @@ impl Server {
         creator_row2entity(Some(ident), rev)
     }
 
-    fn file_id_get_handler(&self, id: String) -> Result<FileEntity> {
+    fn get_file_handler(&self, id: String) -> Result<FileEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
         let id = uuid::Uuid::parse_str(&id)?;
 
@@ -349,7 +349,7 @@ impl Server {
         file_row2entity(Some(ident), rev, conn)
     }
 
-    fn file_lookup_get_handler(&self, sha1: String) -> Result<FileEntity> {
+    fn lookup_file_handler(&self, sha1: String) -> Result<FileEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
 
         let (ident, rev): (FileIdentRow, FileRevRow) = file_ident::table
@@ -362,7 +362,7 @@ impl Server {
         file_row2entity(Some(ident), rev, conn)
     }
 
-    fn release_id_get_handler(&self, id: String) -> Result<ReleaseEntity> {
+    fn get_release_handler(&self, id: String) -> Result<ReleaseEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
         let id = uuid::Uuid::parse_str(&id)?;
 
@@ -374,7 +374,7 @@ impl Server {
         release_row2entity(Some(ident), rev, conn)
     }
 
-    fn release_lookup_get_handler(&self, doi: String) -> Result<ReleaseEntity> {
+    fn lookup_release_handler(&self, doi: String) -> Result<ReleaseEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
 
         let (ident, rev): (ReleaseIdentRow, ReleaseRevRow) = release_ident::table
@@ -387,7 +387,7 @@ impl Server {
         release_row2entity(Some(ident), rev, conn)
     }
 
-    fn work_id_get_handler(&self, id: String) -> Result<WorkEntity> {
+    fn get_work_handler(&self, id: String) -> Result<WorkEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
         let id = uuid::Uuid::parse_str(&id)?;
 
@@ -399,12 +399,16 @@ impl Server {
         work_row2entity(Some(ident), rev)
     }
 
-    fn container_post_handler(&self, entity: models::ContainerEntity, conn: Option<&DbConn>) -> Result<EntityEdit> {
+    fn create_container_handler(
+        &self,
+        entity: models::ContainerEntity,
+        conn: Option<&DbConn>,
+    ) -> Result<EntityEdit> {
         // TODO: still can't cast for some reason
         // There mut be a cleaner way to manage the lifetime here
         let real_conn = match conn {
             Some(_) => None,
-            None => { Some(self.db_pool.get().expect("database pool")) },
+            None => Some(self.db_pool.get().expect("database pool")),
         };
         let conn = match real_conn {
             Some(ref c) => c,
@@ -438,28 +442,33 @@ impl Server {
         edit.to_model()
     }
 
-    entity_batch_post_handler!(container_post_handler, container_batch_post_handler, ContainerEntity);
-    entity_batch_post_handler!(creator_post_handler, creator_batch_post_handler, CreatorEntity);
-    entity_batch_post_handler!(file_post_handler, file_batch_post_handler, FileEntity);
-    entity_batch_post_handler!(release_post_handler, release_batch_post_handler, ReleaseEntity);
-    entity_batch_post_handler!(work_post_handler, work_batch_post_handler, WorkEntity);
-/* XXX:
-    fn container_batch_post_handler(&self, entity_list: &Vec<models::ContainerEntity>) -> Result<Vec<EntityEdit>> {
-        let conn = self.db_pool.get().expect("db_pool error");
-        // TODO: start a transaction
-        let ret: Vec<EntityEdit> = vec![];
-        for entity in entity_list.into_iter() {
-            ret.push(self.container_post_handler(*entity, Some(conn))?);
-        }
-        Ok(ret)
-    }
-*/
+    entity_batch_handler!(
+        create_container_handler,
+        create_container_batch_handler,
+        ContainerEntity
+    );
+    entity_batch_handler!(
+        create_creator_handler,
+        create_creator_batch_handler,
+        CreatorEntity
+    );
+    entity_batch_handler!(create_file_handler, create_file_batch_handler, FileEntity);
+    entity_batch_handler!(
+        create_release_handler,
+        create_release_batch_handler,
+        ReleaseEntity
+    );
+    entity_batch_handler!(create_work_handler, create_work_batch_handler, WorkEntity);
 
-    fn creator_post_handler(&self, entity: models::CreatorEntity, conn: Option<&DbConn>) -> Result<EntityEdit> {
+    fn create_creator_handler(
+        &self,
+        entity: models::CreatorEntity,
+        conn: Option<&DbConn>,
+    ) -> Result<EntityEdit> {
         // There mut be a cleaner way to manage the lifetime here
         let real_conn = match conn {
             Some(_) => None,
-            None => { Some(self.db_pool.get().expect("database pool")) },
+            None => Some(self.db_pool.get().expect("database pool")),
         };
         let conn = match real_conn {
             Some(ref c) => c,
@@ -490,11 +499,15 @@ impl Server {
         edit.to_model()
     }
 
-    fn file_post_handler(&self, entity: models::FileEntity, conn: Option<&DbConn>) -> Result<EntityEdit> {
+    fn create_file_handler(
+        &self,
+        entity: models::FileEntity,
+        conn: Option<&DbConn>,
+    ) -> Result<EntityEdit> {
         // There mut be a cleaner way to manage the lifetime here
         let real_conn = match conn {
             Some(_) => None,
-            None => { Some(self.db_pool.get().expect("database pool")) },
+            None => Some(self.db_pool.get().expect("database pool")),
         };
         let conn = match real_conn {
             Some(ref c) => c,
@@ -550,11 +563,15 @@ impl Server {
         edit.to_model()
     }
 
-    fn release_post_handler(&self, entity: models::ReleaseEntity, conn: Option<&DbConn>) -> Result<EntityEdit> {
+    fn create_release_handler(
+        &self,
+        entity: models::ReleaseEntity,
+        conn: Option<&DbConn>,
+    ) -> Result<EntityEdit> {
         // There mut be a cleaner way to manage the lifetime here
         let real_conn = match conn {
             Some(_) => None,
-            None => { Some(self.db_pool.get().expect("database pool")) },
+            None => Some(self.db_pool.get().expect("database pool")),
         };
         let conn = match real_conn {
             Some(ref c) => c,
@@ -654,11 +671,15 @@ impl Server {
         edit.to_model()
     }
 
-    fn work_post_handler(&self, entity: models::WorkEntity, conn: Option<&DbConn>) -> Result<EntityEdit> {
+    fn create_work_handler(
+        &self,
+        entity: models::WorkEntity,
+        conn: Option<&DbConn>,
+    ) -> Result<EntityEdit> {
         // There mut be a cleaner way to manage the lifetime here
         let real_conn = match conn {
             Some(_) => None,
-            None => { Some(self.db_pool.get().expect("database pool")) },
+            None => Some(self.db_pool.get().expect("database pool")),
         };
         let conn = match real_conn {
             Some(ref c) => c,
@@ -690,7 +711,7 @@ impl Server {
         edit.to_model()
     }
 
-    fn editgroup_id_get_handler(&self, id: i64) -> Result<Option<Editgroup>> {
+    fn editgroup_handler(&self, id: i64) -> Result<Option<Editgroup>> {
         let conn = self.db_pool.get().expect("db_pool error");
 
         let row: EditgroupRow = editgroup::table.find(id as i64).first(&conn)?;
@@ -748,7 +769,7 @@ impl Server {
         Ok(Some(eg))
     }
 
-    fn editor_get_handler(&self, username: String) -> Result<Option<Editor>> {
+    fn get_editor_handler(&self, username: String) -> Result<Option<Editor>> {
         let conn = self.db_pool.get().expect("db_pool error");
 
         let row: EditorRow = editor::table
@@ -787,134 +808,134 @@ impl Server {
 
 impl Api for Server {
     wrap_entity_handlers!(
-        container_id_get,
-        container_id_get_handler,
-        ContainerIdGetResponse,
-        container_post,
-        container_post_handler,
-        ContainerPostResponse,
-        container_batch_post,
-        container_batch_post_handler,
-        ContainerBatchPostResponse,
+        get_container,
+        get_container_handler,
+        GetContainerResponse,
+        create_container,
+        create_container_handler,
+        CreateContainerResponse,
+        create_container_batch,
+        create_container_batch_handler,
+        CreateContainerBatchResponse,
         ContainerEntity
     );
     wrap_entity_handlers!(
-        creator_id_get,
-        creator_id_get_handler,
-        CreatorIdGetResponse,
-        creator_post,
-        creator_post_handler,
-        CreatorPostResponse,
-        creator_batch_post,
-        creator_batch_post_handler,
-        CreatorBatchPostResponse,
+        get_creator,
+        get_creator_handler,
+        GetCreatorResponse,
+        create_creator,
+        create_creator_handler,
+        CreateCreatorResponse,
+        create_creator_batch,
+        create_creator_batch_handler,
+        CreateCreatorBatchResponse,
         CreatorEntity
     );
     wrap_entity_handlers!(
-        file_id_get,
-        file_id_get_handler,
-        FileIdGetResponse,
-        file_post,
-        file_post_handler,
-        FilePostResponse,
-        file_batch_post,
-        file_batch_post_handler,
-        FileBatchPostResponse,
+        get_file,
+        get_file_handler,
+        GetFileResponse,
+        create_file,
+        create_file_handler,
+        CreateFileResponse,
+        create_file_batch,
+        create_file_batch_handler,
+        CreateFileBatchResponse,
         FileEntity
     );
     wrap_entity_handlers!(
-        release_id_get,
-        release_id_get_handler,
-        ReleaseIdGetResponse,
-        release_post,
-        release_post_handler,
-        ReleasePostResponse,
-        release_batch_post,
-        release_batch_post_handler,
-        ReleaseBatchPostResponse,
+        get_release,
+        get_release_handler,
+        GetReleaseResponse,
+        create_release,
+        create_release_handler,
+        CreateReleaseResponse,
+        create_release_batch,
+        create_release_batch_handler,
+        CreateReleaseBatchResponse,
         ReleaseEntity
     );
     wrap_entity_handlers!(
-        work_id_get,
-        work_id_get_handler,
-        WorkIdGetResponse,
-        work_post,
-        work_post_handler,
-        WorkPostResponse,
-        work_batch_post,
-        work_batch_post_handler,
-        WorkBatchPostResponse,
+        get_work,
+        get_work_handler,
+        GetWorkResponse,
+        create_work,
+        create_work_handler,
+        CreateWorkResponse,
+        create_work_batch,
+        create_work_batch_handler,
+        CreateWorkBatchResponse,
         WorkEntity
     );
 
     wrap_lookup_handler!(
-        container_lookup_get,
-        container_lookup_get_handler,
-        ContainerLookupGetResponse,
+        lookup_container,
+        lookup_container_handler,
+        LookupContainerResponse,
         issnl,
         String
     );
     wrap_lookup_handler!(
-        creator_lookup_get,
-        creator_lookup_get_handler,
-        CreatorLookupGetResponse,
+        lookup_creator,
+        lookup_creator_handler,
+        LookupCreatorResponse,
         orcid,
         String
     );
     wrap_lookup_handler!(
-        file_lookup_get,
-        file_lookup_get_handler,
-        FileLookupGetResponse,
+        lookup_file,
+        lookup_file_handler,
+        LookupFileResponse,
         sha1,
         String
     );
     wrap_lookup_handler!(
-        release_lookup_get,
-        release_lookup_get_handler,
-        ReleaseLookupGetResponse,
+        lookup_release,
+        lookup_release_handler,
+        LookupReleaseResponse,
         doi,
         String
     );
 
-    fn editgroup_id_accept_post(
+    fn accept_editgroup(
         &self,
         id: i64,
         _context: &Context,
-    ) -> Box<Future<Item = EditgroupIdAcceptPostResponse, Error = ApiError> + Send> {
+    ) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
 
         accept_editgroup(id as i64, &conn).expect("failed to accept editgroup");
 
-        let ret = EditgroupIdAcceptPostResponse::MergedSuccessfully(Success {
+        let ret = AcceptEditgroupResponse::MergedSuccessfully(Success {
             message: "horray!".to_string(),
         });
         Box::new(futures::done(Ok(ret)))
     }
 
-    fn editgroup_id_get(
+    fn get_editgroup(
         &self,
         id: i64,
         _context: &Context,
-    ) -> Box<Future<Item = EditgroupIdGetResponse, Error = ApiError> + Send> {
-        let ret = match self.editgroup_id_get_handler(id) {
+    ) -> Box<Future<Item = GetEditgroupResponse, Error = ApiError> + Send> {
+        let ret = match self.editgroup_handler(id) {
             Ok(Some(entity)) =>
-                EditgroupIdGetResponse::FoundEntity(entity),
+                GetEditgroupResponse::FoundEntity(entity),
             Ok(None) =>
-                EditgroupIdGetResponse::NotFound(
+                GetEditgroupResponse::NotFound(
                     ErrorResponse { message: "No such entity".to_string() }),
             Err(e) =>
                 // TODO: dig in to error type here
-                EditgroupIdGetResponse::BadRequest(
+                GetEditgroupResponse::BadRequest(
                     ErrorResponse { message: e.to_string() }),
         };
         Box::new(futures::done(Ok(ret)))
     }
 
-    fn editgroup_post(
+    fn create_editgroup(
         &self,
         entity: models::Editgroup,
         _context: &Context,
-    ) -> Box<Future<Item = EditgroupPostResponse, Error = ApiError> + Send> {
+    ) -> Box<Future<Item = CreateEditgroupResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
 
         let row: EditgroupRow = insert_into(editgroup::table)
@@ -934,42 +955,42 @@ impl Api for Server {
             extra: row.extra_json,
         };
         Box::new(futures::done(Ok(
-            EditgroupPostResponse::SuccessfullyCreated(new_eg),
+            CreateEditgroupResponse::SuccessfullyCreated(new_eg),
         )))
     }
 
-    fn editor_username_changelog_get(
+    fn get_editor_changelog(
         &self,
         username: String,
         _context: &Context,
-    ) -> Box<Future<Item = EditorUsernameChangelogGetResponse, Error = ApiError> + Send> {
+    ) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send> {
         let ret = match self.editor_changelog_get_handler(username) {
             Ok(Some(entries)) =>
-                EditorUsernameChangelogGetResponse::FoundMergedChanges(entries),
+                GetEditorChangelogResponse::FoundMergedChanges(entries),
             Ok(None) =>
-                EditorUsernameChangelogGetResponse::NotFound(
+                GetEditorChangelogResponse::NotFound(
                     ErrorResponse { message: "No such entity".to_string() }),
             Err(e) =>
                 // TODO: dig in to error type here
-                EditorUsernameChangelogGetResponse::GenericError(
+                GetEditorChangelogResponse::GenericError(
                     ErrorResponse { message: e.to_string() }),
         };
         Box::new(futures::done(Ok(ret)))
     }
 
-    fn editor_username_get(
+    fn get_editor(
         &self,
         username: String,
         _context: &Context,
-    ) -> Box<Future<Item = EditorUsernameGetResponse, Error = ApiError> + Send> {
-        let ret = match self.editor_get_handler(username) {
+    ) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send> {
+        let ret = match self.get_editor_handler(username) {
             Ok(Some(entity)) =>
-                EditorUsernameGetResponse::FoundEditor(entity),
+                GetEditorResponse::FoundEditor(entity),
             Ok(None) =>
-                EditorUsernameGetResponse::NotFound(ErrorResponse { message: "No such entity".to_string() }),
+                GetEditorResponse::NotFound(ErrorResponse { message: "No such entity".to_string() }),
             Err(e) =>
                 // TODO: dig in to error type here
-                EditorUsernameGetResponse::GenericError(ErrorResponse { message: e.to_string() }),
+                GetEditorResponse::GenericError(ErrorResponse { message: e.to_string() }),
         };
         Box::new(futures::done(Ok(ret)))
     }
