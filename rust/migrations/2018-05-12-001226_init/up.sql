@@ -249,12 +249,12 @@ INSERT INTO container_rev (name, issnl, abbrev, coden) VALUES
     ('MySpace Blog', null, null, null);
 
 INSERT INTO container_ident (id, is_live, rev_id, redirect_id) VALUES
-    ('f1f046a3-45c9-4b99-cccc-000000000001', true, 1, null),
-    ('f1f046a3-45c9-4b99-cccc-000000000002', true, 2, null);
+    ('00000000-0000-0000-1111-000000000001', true, 1, null),
+    ('00000000-0000-0000-1111-000000000002', true, 2, null);
 
 INSERT INTO container_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
-    ('f1f046a3-45c9-4b99-cccc-000000000001', 1, null, 4),
-    ('f1f046a3-45c9-4b99-cccc-000000000002', 2, null, 5);
+    ('00000000-0000-0000-1111-000000000001', 1, null, 4),
+    ('00000000-0000-0000-1111-000000000002', 2, null, 5);
 
 INSERT INTO creator_rev (full_name, orcid) VALUES
     ('Grace Hopper', null),
@@ -262,62 +262,62 @@ INSERT INTO creator_rev (full_name, orcid) VALUES
     ('Christine Moran', '0000-0003-2088-7465');
 
 INSERT INTO creator_ident (id, is_live, rev_id, redirect_id) VALUES
-    ('f1f046a3-45c9-4b99-adce-000000000001', true, 1, null),
-    ('f1f046a3-45c9-4b99-adce-000000000002', true, 2, null),
-    ('f1f046a3-45c9-4b99-adce-000000000003', true, 3, null),
-    ('f1f046a3-45c9-4b99-adce-000000000004', false, 2, null);
+    ('00000000-0000-0000-2222-000000000001', true, 1, null),
+    ('00000000-0000-0000-2222-000000000002', true, 2, null),
+    ('00000000-0000-0000-2222-000000000003', true, 3, null),
+    ('00000000-0000-0000-2222-000000000004', false, 2, null);
 
 INSERT INTO creator_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
-    ('f1f046a3-45c9-4b99-adce-000000000001', 1, null, 1),
-    ('f1f046a3-45c9-4b99-adce-000000000002', 2, null, 2),
-    ('f1f046a3-45c9-4b99-adce-000000000003', 3, null, 3),
-    ('f1f046a3-45c9-4b99-adce-000000000004', 2, null, 4);
+    ('00000000-0000-0000-2222-000000000001', 1, null, 1),
+    ('00000000-0000-0000-2222-000000000002', 2, null, 2),
+    ('00000000-0000-0000-2222-000000000003', 3, null, 3),
+    ('00000000-0000-0000-2222-000000000004', 2, null, 4);
 
 INSERT INTO file_rev (size, sha1, md5, url) VALUES
     (null, null, null, null),
     (4321, '7d97e98f8af710c7e7fe703abc8f639e0ee507c4', null, 'http://archive.org/robots.txt');
 
 INSERT INTO file_ident (id, is_live, rev_id, redirect_id) VALUES
-    ('f1f046a3-45c9-4b99-ffff-000000000001', true, 1, null),
-    ('f1f046a3-45c9-4b99-ffff-000000000002', true, 2, null);
+    ('00000000-0000-0000-3333-000000000001', true, 1, null),
+    ('00000000-0000-0000-3333-000000000002', true, 2, null);
 
 INSERT INTO file_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
-    ('f1f046a3-45c9-4b99-ffff-000000000001', 1, null, 4),
-    ('f1f046a3-45c9-4b99-ffff-000000000002', 2, null, 5);
+    ('00000000-0000-0000-3333-000000000001', 1, null, 4),
+    ('00000000-0000-0000-3333-000000000002', 2, null, 5);
 
 INSERT INTO work_rev (work_type, primary_release_id) VALUES
     (null, null),
     ('journal-article', null);
 
 INSERT INTO work_ident (id, is_live, rev_id, redirect_id) VALUES
-    ('f1f046a3-45c9-4b99-3333-000000000001', true, 1, null),
-    ('f1f046a3-45c9-4b99-3333-000000000002', true, 2, null);
+    ('00000000-0000-0000-5555-000000000001', true, 1, null),
+    ('00000000-0000-0000-5555-000000000002', true, 2, null);
 
 INSERT INTO work_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
-    ('f1f046a3-45c9-4b99-3333-000000000001', 1, null, 4),
-    ('f1f046a3-45c9-4b99-3333-000000000002', 2, null, 5);
+    ('00000000-0000-0000-5555-000000000001', 1, null, 4),
+    ('00000000-0000-0000-5555-000000000002', 2, null, 5);
 
 INSERT INTO release_rev (work_ident_id, container_ident_id, title, release_type, date, doi, isbn13, volume, pages, issue, publisher) VALUES
-    ('f1f046a3-45c9-4b99-3333-000000000001',                                   null,  'example title',              null,         null, null,         null,  null,  null, null, null),
-    ('f1f046a3-45c9-4b99-3333-000000000002', 'f1f046a3-45c9-4b99-cccc-000000000001', 'bigger example', 'journal-article', '2018-01-01', null, '10.123/abc',  '12', '5-9', 'IV', null);
+    ('00000000-0000-0000-5555-000000000001',                                   null,  'example title',              null,         null, null,         null,  null,  null, null, null),
+    ('00000000-0000-0000-5555-000000000002', '00000000-0000-0000-1111-000000000001', 'bigger example', 'journal-article', '2018-01-01', null, '10.123/abc',  '12', '5-9', 'IV', null);
 
 INSERT INTO release_ident (id, is_live, rev_id, redirect_id) VALUES
-    ('f1f046a3-45c9-4b99-4444-000000000001', true, 1, null),
-    ('f1f046a3-45c9-4b99-4444-000000000002', true, 2, null);
+    ('00000000-0000-0000-4444-000000000001', true, 1, null),
+    ('00000000-0000-0000-4444-000000000002', true, 2, null);
 
 INSERT INTO release_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
-    ('f1f046a3-45c9-4b99-4444-000000000001', 1, null, 4),
-    ('f1f046a3-45c9-4b99-4444-000000000002', 2, null, 5);
+    ('00000000-0000-0000-4444-000000000001', 1, null, 4),
+    ('00000000-0000-0000-4444-000000000002', 2, null, 5);
 
 INSERT INTO release_contrib (release_rev, creator_ident_id, stub, role, index) VALUES
     (2, null, null, null, null),
-    (2, 'f1f046a3-45c9-4b99-adce-000000000002', 'some contrib', 'editor', 4);
+    (2, '00000000-0000-0000-2222-000000000002', 'some contrib', 'editor', 4);
 
 INSERT INTO release_ref (release_rev, target_release_ident_id, index, stub) VALUES
     (2, null, null, null),
-    (2, 'f1f046a3-45c9-4b99-4444-000000000001', 4, 'citation note');
+    (2, '00000000-0000-0000-4444-000000000001', 4, 'citation note');
 
 INSERT INTO file_release (file_rev, target_release_ident_id) VALUES
-    (2, 'f1f046a3-45c9-4b99-4444-000000000002');
+    (2, '00000000-0000-0000-4444-000000000002');
 
 COMMIT;

@@ -47,7 +47,7 @@ fn test_entity_gets() {
 
     check_response(
         request::get(
-            "http://localhost:9411/v0/container/f1f046a3-45c9-4b99-cccc-000000000002",
+            "http://localhost:9411/v0/container/00000000-0000-0000-1111-000000000002",
             headers.clone(),
             &router,
         ),
@@ -57,7 +57,7 @@ fn test_entity_gets() {
 
     check_response(
         request::get(
-            "http://localhost:9411/v0/creator/f1f046a3-45c9-4b99-adce-000000000001",
+            "http://localhost:9411/v0/creator/00000000-0000-0000-2222-000000000001",
             headers.clone(),
             &router,
         ),
@@ -67,7 +67,7 @@ fn test_entity_gets() {
 
     check_response(
         request::get(
-            "http://localhost:9411/v0/file/f1f046a3-45c9-4b99-ffff-000000000002",
+            "http://localhost:9411/v0/file/00000000-0000-0000-3333-000000000002",
             headers.clone(),
             &router,
         ),
@@ -77,22 +77,22 @@ fn test_entity_gets() {
 
     check_response(
         request::get(
-            "http://localhost:9411/v0/work/f1f046a3-45c9-4b99-3333-000000000002",
-            headers.clone(),
-            &router,
-        ),
-        status::Ok,
-        None,
-    );
-
-    check_response(
-        request::get(
-            "http://localhost:9411/v0/release/f1f046a3-45c9-4b99-4444-000000000002",
+            "http://localhost:9411/v0/release/00000000-0000-0000-4444-000000000002",
             headers.clone(),
             &router,
         ),
         status::Ok,
         Some("bigger example"),
+    );
+
+    check_response(
+        request::get(
+            "http://localhost:9411/v0/work/00000000-0000-0000-5555-000000000002",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        None,
     );
 }
 
@@ -102,7 +102,7 @@ fn test_entity_404() {
 
     check_response(
         request::get(
-            "http://localhost:9411/v0/creator/f1f046a3-45c9-4b99-adce-999999999999",
+            "http://localhost:9411/v0/creator/00000000-0000-0000-2222-999999999999",
             headers.clone(),
             &router,
         ),
@@ -217,8 +217,8 @@ fn test_post_file() {
                 "sha1": "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8",
                 "url": "http://archive.org/asdf.txt",
                 "releases": [
-                    "f1f046a3-45c9-4b99-4444-000000000001",
-                    "f1f046a3-45c9-4b99-4444-000000000002"
+                    "00000000-0000-0000-4444-000000000001",
+                    "00000000-0000-0000-4444-000000000002"
                 ],
                 "extra": { "source": "speculation" }
                 }"#,
@@ -240,7 +240,7 @@ fn test_post_release() {
             // TODO: target_release_id
             r#"{"title": "secret minimal paper",
                 "release_type": "journal-article",
-                "work_id": "f1f046a3-45c9-4b99-3333-000000000001"
+                "work_id": "00000000-0000-0000-5555-000000000001"
                 }"#,
             &router,
         ),
@@ -259,8 +259,8 @@ fn test_post_release() {
                 "volume": "439",
                 "pages": "1-399",
                 "issue": "IV",
-                "work_id": "f1f046a3-45c9-4b99-3333-000000000002",
-                "container_id": "f1f046a3-45c9-4b99-cccc-000000000001",
+                "work_id": "00000000-0000-0000-5555-000000000002",
+                "container_id": "00000000-0000-0000-1111-000000000001",
                 "refs": [{
                         "index": 3,
                         "stub": "just a string"
@@ -270,7 +270,7 @@ fn test_post_release() {
                 "contribs": [{
                         "index": 1,
                         "creator_stub": "textual description of contributor (aka, name)",
-                        "creator_id": "f1f046a3-45c9-4b99-adce-000000000001",
+                        "creator_id": "00000000-0000-0000-2222-000000000001",
                         "contrib_type": "author"
                     },{
                         "creator_stub": "shorter"
