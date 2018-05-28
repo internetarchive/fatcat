@@ -3,14 +3,10 @@ import json
 import tempfile
 import pytest
 import fatcat
-import fatcat.sql
-from fatcat.models import *
 from fixtures import *
 
 
-def test_static_routes(rich_app):
-    app = rich_app
-
+def test_static_routes(app):
     for route in ('/health', '/robots.txt', '/', '/about'):
         rv = app.get(route)
         assert rv.status_code == 200
@@ -18,9 +14,7 @@ def test_static_routes(rich_app):
     assert app.get("/static/bogus/route").status_code == 404
 
 
-def test_all_views(rich_app):
-    app = rich_app
-
+def test_all_views(app):
     for route in ('work', 'release', 'creator', 'container', 'file'):
         print(route)
         rv = app.get('/{}/1'.format(route))

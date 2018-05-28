@@ -17,4 +17,4 @@ docker run \
 
 sudo chown -R `whoami`:`whoami` $OUTPUT
 cp -r $OUTPUT/fatcat_client fatcat_client
-cp -r $OUTPUT/test tests/fatcat_client
+cp -r $OUTPUT/test tests/codegen_tests

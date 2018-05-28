@@ -18,7 +18,7 @@ def main():
         action='store_true',
         help="enable debugging interface")
     parser.add_argument('--host-url',
-        default="http://localhost:8040",
+        default="http://localhost:9411",
         help="connect to this host/port")
     subparsers = parser.add_subparsers()
 

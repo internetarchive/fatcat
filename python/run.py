@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
-import fatcat.sql
-from fatcat import app, db
+from fatcat import app
 
 def main():
     parser = argparse.ArgumentParser()
@@ -14,7 +13,7 @@ def main():
         help="listen on this host/IP")
     parser.add_argument('--port',
         type=int,
-        default=8040,
+        default=9810,
         help="listen on this port")
     parser.add_argument('--database-uri',
         default=app.config['SQLALCHEMY_DATABASE_URI'],
