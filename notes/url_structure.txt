@@ -1,8 +1,6 @@
 
 ## fatcat.org
 
-Workflow requires sessions to hold, eg, current edit group.
-
 /work/create
 /work/:id           view
 /work/:id/history   chain of revisions
@@ -13,14 +11,14 @@ Workflow requires sessions to hold, eg, current edit group.
 /work/rev/:rev      view
 /work/rev/:rev/edit modify; only before submission
 
-/edit/:id
 /editgroup/:id
+/editgroup/:id/accept
 /editgroup/:id/submit
 
 /signup
 /login
 /account
-/cataloger/:id           view... edits?
+/editor/:id         view... edits?
 
 /changelog
 /status

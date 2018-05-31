@@ -1,11 +1,11 @@
 
 Entity list:
 
-    work
-    release
-    creator
     container
+    creator
     file
+    release
+    work
 
 ## Cookbook
 
@@ -94,7 +94,9 @@ Each entity type has tables:
       represents change metadata for a single change to one ident
       needed because an edit alwasy changes ident, but might not change rev
 
-    _log (NOT IMPLEMENTED)
+Could someday also have:
+
+    _log
       history of when edits were actually applied
       allows fast lookups of history of an entity (ident)
       unnecessary if we keep a log of edit group accepts?

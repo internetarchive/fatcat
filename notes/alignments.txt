@@ -1,0 +1,9 @@
+bibtex
+BIBFRAME
+schema.org: http://schema.org/CreativeWork
+dublin core
+
+entity specific:
+- crossref / release
+- orcid / creator
+- issn / container
