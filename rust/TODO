@@ -31,6 +31,8 @@ x refactor tests (response check, setup)
 x better test coverage (all entity types, get and post)
 x editgroup GET API schema arrays
 
+- editor_id vs. editor; can't GET by id, so need to return username?
+
 later:
 - generate python client library?
 - web interface?

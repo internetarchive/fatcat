@@ -1,0 +1,30 @@
+
+## High-Level Priorities
+
+- bulk loading of releases, files, containers, creators
+- manual editing of containers and releases
+- accurate auto-matching matching of containers (eg, via ISSN)
+- full database dump and reload
+
+
+## Other
+
+- kong or oauth2_proxy for auth, rate-limit, etc
+- "authn" microservice: https://keratin.tech/
+- PUT for mid-edit revisions
+- 'parent rev' for revisions (vs. container parent)
+- "submit" status for editgroups?
+
+api:
+- all files for a given release
+
+review
+- what does openlibrary API look like?
+- add a 'live' (or 'immutable') flag to revision tables
+
+CSL:
+- https://citationstyles.org/
+- https://github.com/citation-style-language/documentation/blob/master/primer.txt
+- https://citeproc-js.readthedocs.io/en/latest/csl-json/markup.html
+- https://github.com/citation-style-language/schema/blob/master/csl-types.rnc
+- perhaps a "create from CSL" endpoint?
