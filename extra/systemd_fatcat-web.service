@@ -1,0 +1,16 @@
+[Unit]
+Description=fatcat web interface
+# TODO: would add syslog.target here if we used it
+After=network.target
+
+[Service]
+WorkingDirectory=/srv/fatcat/src/python
+SyslogIdentifier=fatcat-web
+#Environment="TMPDIR=/run/grobid/tmp/"
+# XXX: insert uwsgi_fatcat-web.sh here
+ExecStart=
+User=fatcat
+Type=simple
+
+[Install]
+WantedBy=multi-user.target
