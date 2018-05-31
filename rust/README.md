@@ -13,7 +13,7 @@ Rust implementation of fatcat API server (`fatcatd`).
     - [ ] full rev1 schema for all entities
     - [ ] editgroup review: comments? actions?
 - Web Interface
-    - [ ] Migrate Python codebase
+    - [x] Migrate Python codebase
     - [ ] Creation and editing of all entities
 - Other
     - [x] Basic logging
