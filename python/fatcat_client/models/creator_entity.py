@@ -32,7 +32,9 @@ class CreatorEntity(object):
     """
     swagger_types = {
         'orcid': 'str',
-        'full_name': 'str',
+        'surname': 'str',
+        'given_name': 'str',
+        'display_name': 'str',
         'state': 'str',
         'ident': 'str',
         'revision': 'int',
@@ -43,7 +45,9 @@ class CreatorEntity(object):
 
     attribute_map = {
         'orcid': 'orcid',
-        'full_name': 'full_name',
+        'surname': 'surname',
+        'given_name': 'given_name',
+        'display_name': 'display_name',
         'state': 'state',
         'ident': 'ident',
         'revision': 'revision',
@@ -52,11 +56,13 @@ class CreatorEntity(object):
         'extra': 'extra'
     }
 
-    def __init__(self, orcid=None, full_name=None, state=None, ident=None, revision=None, redirect=None, editgroup_id=None, extra=None):  # noqa: E501
+    def __init__(self, orcid=None, surname=None, given_name=None, display_name=None, state=None, ident=None, revision=None, redirect=None, editgroup_id=None, extra=None):  # noqa: E501
         """CreatorEntity - a model defined in Swagger"""  # noqa: E501
 
         self._orcid = None
-        self._full_name = None
+        self._surname = None
+        self._given_name = None
+        self._display_name = None
         self._state = None
         self._ident = None
         self._revision = None
@@ -67,7 +73,11 @@ class CreatorEntity(object):
 
         if orcid is not None:
             self.orcid = orcid
-        self.full_name = full_name
+        if surname is not None:
+            self.surname = surname
+        if given_name is not None:
+            self.given_name = given_name
+        self.display_name = display_name
         if state is not None:
             self.state = state
         if ident is not None:
@@ -103,27 +113,69 @@ class CreatorEntity(object):
         self._orcid = orcid
 
     @property
-    def full_name(self):
-        """Gets the full_name of this CreatorEntity.  # noqa: E501
+    def surname(self):
+        """Gets the surname of this CreatorEntity.  # noqa: E501
 
 
-        :return: The full_name of this CreatorEntity.  # noqa: E501
+        :return: The surname of this CreatorEntity.  # noqa: E501
         :rtype: str
         """
-        return self._full_name
+        return self._surname
 
-    @full_name.setter
-    def full_name(self, full_name):
-        """Sets the full_name of this CreatorEntity.
+    @surname.setter
+    def surname(self, surname):
+        """Sets the surname of this CreatorEntity.
 
 
-        :param full_name: The full_name of this CreatorEntity.  # noqa: E501
+        :param surname: The surname of this CreatorEntity.  # noqa: E501
         :type: str
         """
-        if full_name is None:
-            raise ValueError("Invalid value for `full_name`, must not be `None`")  # noqa: E501
 
-        self._full_name = full_name
+        self._surname = surname
+
+    @property
+    def given_name(self):
+        """Gets the given_name of this CreatorEntity.  # noqa: E501
+
+
+        :return: The given_name of this CreatorEntity.  # noqa: E501
+        :rtype: str
+        """
+        return self._given_name
+
+    @given_name.setter
+    def given_name(self, given_name):
+        """Sets the given_name of this CreatorEntity.
+
+
+        :param given_name: The given_name of this CreatorEntity.  # noqa: E501
+        :type: str
+        """
+
+        self._given_name = given_name
+
+    @property
+    def display_name(self):
+        """Gets the display_name of this CreatorEntity.  # noqa: E501
+
+
+        :return: The display_name of this CreatorEntity.  # noqa: E501
+        :rtype: str
+        """
+        return self._display_name
+
+    @display_name.setter
+    def display_name(self, display_name):
+        """Sets the display_name of this CreatorEntity.
+
+
+        :param display_name: The display_name of this CreatorEntity.  # noqa: E501
+        :type: str
+        """
+        if display_name is None:
+            raise ValueError("Invalid value for `display_name`, must not be `None`")  # noqa: E501
+
+        self._display_name = display_name
 
     @property
     def state(self):

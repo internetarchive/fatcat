@@ -36,13 +36,15 @@ class ReleaseEntity(object):
     swagger_types = {
         'refs': 'list[ReleaseRef]',
         'contribs': 'list[ReleaseContrib]',
+        'language': 'str',
         'publisher': 'str',
         'issue': 'str',
         'pages': 'str',
         'volume': 'str',
         'isbn13': 'str',
         'doi': 'str',
-        'date': 'date',
+        'release_date': 'date',
+        'release_status': 'str',
         'release_type': 'str',
         'container_id': 'str',
         'work_id': 'str',
@@ -58,13 +60,15 @@ class ReleaseEntity(object):
     attribute_map = {
         'refs': 'refs',
         'contribs': 'contribs',
+        'language': 'language',
         'publisher': 'publisher',
         'issue': 'issue',
         'pages': 'pages',
         'volume': 'volume',
         'isbn13': 'isbn13',
         'doi': 'doi',
-        'date': 'date',
+        'release_date': 'release_date',
+        'release_status': 'release_status',
         'release_type': 'release_type',
         'container_id': 'container_id',
         'work_id': 'work_id',
@@ -77,18 +81,20 @@ class ReleaseEntity(object):
         'extra': 'extra'
     }
 
-    def __init__(self, refs=None, contribs=None, publisher=None, issue=None, pages=None, volume=None, isbn13=None, doi=None, date=None, release_type=None, container_id=None, work_id=None, title=None, state=None, ident=None, revision=None, redirect=None, editgroup_id=None, extra=None):  # noqa: E501
+    def __init__(self, refs=None, contribs=None, language=None, publisher=None, issue=None, pages=None, volume=None, isbn13=None, doi=None, release_date=None, release_status=None, release_type=None, container_id=None, work_id=None, title=None, state=None, ident=None, revision=None, redirect=None, editgroup_id=None, extra=None):  # noqa: E501
         """ReleaseEntity - a model defined in Swagger"""  # noqa: E501
 
         self._refs = None
         self._contribs = None
+        self._language = None
         self._publisher = None
         self._issue = None
         self._pages = None
         self._volume = None
         self._isbn13 = None
         self._doi = None
-        self._date = None
+        self._release_date = None
+        self._release_status = None
         self._release_type = None
         self._container_id = None
         self._work_id = None
@@ -105,6 +111,8 @@ class ReleaseEntity(object):
             self.refs = refs
         if contribs is not None:
             self.contribs = contribs
+        if language is not None:
+            self.language = language
         if publisher is not None:
             self.publisher = publisher
         if issue is not None:
@@ -117,8 +125,10 @@ class ReleaseEntity(object):
             self.isbn13 = isbn13
         if doi is not None:
             self.doi = doi
-        if date is not None:
-            self.date = date
+        if release_date is not None:
+            self.release_date = release_date
+        if release_status is not None:
+            self.release_status = release_status
         if release_type is not None:
             self.release_type = release_type
         if container_id is not None:
@@ -179,6 +189,27 @@ class ReleaseEntity(object):
         """
 
         self._contribs = contribs
+
+    @property
+    def language(self):
+        """Gets the language of this ReleaseEntity.  # noqa: E501
+
+
+        :return: The language of this ReleaseEntity.  # noqa: E501
+        :rtype: str
+        """
+        return self._language
+
+    @language.setter
+    def language(self, language):
+        """Sets the language of this ReleaseEntity.
+
+
+        :param language: The language of this ReleaseEntity.  # noqa: E501
+        :type: str
+        """
+
+        self._language = language
 
     @property
     def publisher(self):
@@ -307,25 +338,46 @@ class ReleaseEntity(object):
         self._doi = doi
 
     @property
-    def date(self):
-        """Gets the date of this ReleaseEntity.  # noqa: E501
+    def release_date(self):
+        """Gets the release_date of this ReleaseEntity.  # noqa: E501
 
 
-        :return: The date of this ReleaseEntity.  # noqa: E501
+        :return: The release_date of this ReleaseEntity.  # noqa: E501
         :rtype: date
         """
-        return self._date
+        return self._release_date
 
-    @date.setter
-    def date(self, date):
-        """Sets the date of this ReleaseEntity.
+    @release_date.setter
+    def release_date(self, release_date):
+        """Sets the release_date of this ReleaseEntity.
 
 
-        :param date: The date of this ReleaseEntity.  # noqa: E501
+        :param release_date: The release_date of this ReleaseEntity.  # noqa: E501
         :type: date
         """
 
-        self._date = date
+        self._release_date = release_date
+
+    @property
+    def release_status(self):
+        """Gets the release_status of this ReleaseEntity.  # noqa: E501
+
+
+        :return: The release_status of this ReleaseEntity.  # noqa: E501
+        :rtype: str
+        """
+        return self._release_status
+
+    @release_status.setter
+    def release_status(self, release_status):
+        """Sets the release_status of this ReleaseEntity.
+
+
+        :param release_status: The release_status of this ReleaseEntity.  # noqa: E501
+        :type: str
+        """
+
+        self._release_status = release_status
 
     @property
     def release_type(self):

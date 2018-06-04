@@ -29,146 +29,146 @@ class TestDefaultApi(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_container_batch_post(self):
-        """Test case for container_batch_post
+    def test_accept_editgroup(self):
+        """Test case for accept_editgroup
 
         """
         pass
 
-    def test_container_id_get(self):
-        """Test case for container_id_get
+    def test_create_container(self):
+        """Test case for create_container
 
         """
         pass
 
-    def test_container_lookup_get(self):
-        """Test case for container_lookup_get
+    def test_create_container_batch(self):
+        """Test case for create_container_batch
 
         """
         pass
 
-    def test_container_post(self):
-        """Test case for container_post
+    def test_create_creator(self):
+        """Test case for create_creator
 
         """
         pass
 
-    def test_creator_batch_post(self):
-        """Test case for creator_batch_post
+    def test_create_creator_batch(self):
+        """Test case for create_creator_batch
 
         """
         pass
 
-    def test_creator_id_get(self):
-        """Test case for creator_id_get
+    def test_create_editgroup(self):
+        """Test case for create_editgroup
 
         """
         pass
 
-    def test_creator_lookup_get(self):
-        """Test case for creator_lookup_get
+    def test_create_file(self):
+        """Test case for create_file
 
         """
         pass
 
-    def test_creator_post(self):
-        """Test case for creator_post
+    def test_create_file_batch(self):
+        """Test case for create_file_batch
 
         """
         pass
 
-    def test_editgroup_id_accept_post(self):
-        """Test case for editgroup_id_accept_post
+    def test_create_release(self):
+        """Test case for create_release
 
         """
         pass
 
-    def test_editgroup_id_get(self):
-        """Test case for editgroup_id_get
+    def test_create_release_batch(self):
+        """Test case for create_release_batch
 
         """
         pass
 
-    def test_editgroup_post(self):
-        """Test case for editgroup_post
+    def test_create_work(self):
+        """Test case for create_work
 
         """
         pass
 
-    def test_editor_username_changelog_get(self):
-        """Test case for editor_username_changelog_get
+    def test_create_work_batch(self):
+        """Test case for create_work_batch
 
         """
         pass
 
-    def test_editor_username_get(self):
-        """Test case for editor_username_get
+    def test_get_container(self):
+        """Test case for get_container
 
         """
         pass
 
-    def test_file_batch_post(self):
-        """Test case for file_batch_post
+    def test_get_creator(self):
+        """Test case for get_creator
 
         """
         pass
 
-    def test_file_id_get(self):
-        """Test case for file_id_get
+    def test_get_editgroup(self):
+        """Test case for get_editgroup
 
         """
         pass
 
-    def test_file_lookup_get(self):
-        """Test case for file_lookup_get
+    def test_get_editor(self):
+        """Test case for get_editor
 
         """
         pass
 
-    def test_file_post(self):
-        """Test case for file_post
+    def test_get_editor_changelog(self):
+        """Test case for get_editor_changelog
 
         """
         pass
 
-    def test_release_batch_post(self):
-        """Test case for release_batch_post
+    def test_get_file(self):
+        """Test case for get_file
 
         """
         pass
 
-    def test_release_id_get(self):
-        """Test case for release_id_get
+    def test_get_release(self):
+        """Test case for get_release
 
         """
         pass
 
-    def test_release_lookup_get(self):
-        """Test case for release_lookup_get
+    def test_get_work(self):
+        """Test case for get_work
 
         """
         pass
 
-    def test_release_post(self):
-        """Test case for release_post
+    def test_lookup_container(self):
+        """Test case for lookup_container
 
         """
         pass
 
-    def test_work_batch_post(self):
-        """Test case for work_batch_post
+    def test_lookup_creator(self):
+        """Test case for lookup_creator
 
         """
         pass
 
-    def test_work_id_get(self):
-        """Test case for work_id_get
+    def test_lookup_file(self):
+        """Test case for lookup_file
 
         """
         pass
 
-    def test_work_post(self):
-        """Test case for work_post
+    def test_lookup_release(self):
+        """Test case for lookup_release
 
         """
         pass

@@ -33,29 +33,54 @@ class ReleaseRef(object):
     swagger_types = {
         'index': 'int',
         'target_release_id': 'str',
-        'stub': 'str'
+        'raw': 'str',
+        'key': 'str',
+        'year': 'int',
+        'container_title': 'str',
+        'title': 'str',
+        'locator': 'str'
     }
 
     attribute_map = {
         'index': 'index',
         'target_release_id': 'target_release_id',
-        'stub': 'stub'
+        'raw': 'raw',
+        'key': 'key',
+        'year': 'year',
+        'container_title': 'container_title',
+        'title': 'title',
+        'locator': 'locator'
     }
 
-    def __init__(self, index=None, target_release_id=None, stub=None):  # noqa: E501
+    def __init__(self, index=None, target_release_id=None, raw=None, key=None, year=None, container_title=None, title=None, locator=None):  # noqa: E501
         """ReleaseRef - a model defined in Swagger"""  # noqa: E501
 
         self._index = None
         self._target_release_id = None
-        self._stub = None
+        self._raw = None
+        self._key = None
+        self._year = None
+        self._container_title = None
+        self._title = None
+        self._locator = None
         self.discriminator = None
 
         if index is not None:
             self.index = index
         if target_release_id is not None:
             self.target_release_id = target_release_id
-        if stub is not None:
-            self.stub = stub
+        if raw is not None:
+            self.raw = raw
+        if key is not None:
+            self.key = key
+        if year is not None:
+            self.year = year
+        if container_title is not None:
+            self.container_title = container_title
+        if title is not None:
+            self.title = title
+        if locator is not None:
+            self.locator = locator
 
     @property
     def index(self):
@@ -100,25 +125,130 @@ class ReleaseRef(object):
         self._target_release_id = target_release_id
 
     @property
-    def stub(self):
-        """Gets the stub of this ReleaseRef.  # noqa: E501
+    def raw(self):
+        """Gets the raw of this ReleaseRef.  # noqa: E501
 
 
-        :return: The stub of this ReleaseRef.  # noqa: E501
+        :return: The raw of this ReleaseRef.  # noqa: E501
         :rtype: str
         """
-        return self._stub
+        return self._raw
 
-    @stub.setter
-    def stub(self, stub):
-        """Sets the stub of this ReleaseRef.
+    @raw.setter
+    def raw(self, raw):
+        """Sets the raw of this ReleaseRef.
 
 
-        :param stub: The stub of this ReleaseRef.  # noqa: E501
+        :param raw: The raw of this ReleaseRef.  # noqa: E501
         :type: str
         """
 
-        self._stub = stub
+        self._raw = raw
+
+    @property
+    def key(self):
+        """Gets the key of this ReleaseRef.  # noqa: E501
+
+
+        :return: The key of this ReleaseRef.  # noqa: E501
+        :rtype: str
+        """
+        return self._key
+
+    @key.setter
+    def key(self, key):
+        """Sets the key of this ReleaseRef.
+
+
+        :param key: The key of this ReleaseRef.  # noqa: E501
+        :type: str
+        """
+
+        self._key = key
+
+    @property
+    def year(self):
+        """Gets the year of this ReleaseRef.  # noqa: E501
+
+
+        :return: The year of this ReleaseRef.  # noqa: E501
+        :rtype: int
+        """
+        return self._year
+
+    @year.setter
+    def year(self, year):
+        """Sets the year of this ReleaseRef.
+
+
+        :param year: The year of this ReleaseRef.  # noqa: E501
+        :type: int
+        """
+
+        self._year = year
+
+    @property
+    def container_title(self):
+        """Gets the container_title of this ReleaseRef.  # noqa: E501
+
+
+        :return: The container_title of this ReleaseRef.  # noqa: E501
+        :rtype: str
+        """
+        return self._container_title
+
+    @container_title.setter
+    def container_title(self, container_title):
+        """Sets the container_title of this ReleaseRef.
+
+
+        :param container_title: The container_title of this ReleaseRef.  # noqa: E501
+        :type: str
+        """
+
+        self._container_title = container_title
+
+    @property
+    def title(self):
+        """Gets the title of this ReleaseRef.  # noqa: E501
+
+
+        :return: The title of this ReleaseRef.  # noqa: E501
+        :rtype: str
+        """
+        return self._title
+
+    @title.setter
+    def title(self, title):
+        """Sets the title of this ReleaseRef.
+
+
+        :param title: The title of this ReleaseRef.  # noqa: E501
+        :type: str
+        """
+
+        self._title = title
+
+    @property
+    def locator(self):
+        """Gets the locator of this ReleaseRef.  # noqa: E501
+
+
+        :return: The locator of this ReleaseRef.  # noqa: E501
+        :rtype: str
+        """
+        return self._locator
+
+    @locator.setter
+    def locator(self, locator):
+        """Sets the locator of this ReleaseRef.
+
+
+        :param locator: The locator of this ReleaseRef.  # noqa: E501
+        :type: str
+        """
+
+        self._locator = locator
 
     def to_dict(self):
         """Returns the model properties as a dict"""

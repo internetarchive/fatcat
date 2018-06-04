@@ -33,23 +33,23 @@ class ReleaseContrib(object):
     swagger_types = {
         'index': 'int',
         'creator_id': 'str',
-        'creator_stub': 'str',
+        'raw': 'str',
         'role': 'str'
     }
 
     attribute_map = {
         'index': 'index',
         'creator_id': 'creator_id',
-        'creator_stub': 'creator_stub',
+        'raw': 'raw',
         'role': 'role'
     }
 
-    def __init__(self, index=None, creator_id=None, creator_stub=None, role=None):  # noqa: E501
+    def __init__(self, index=None, creator_id=None, raw=None, role=None):  # noqa: E501
         """ReleaseContrib - a model defined in Swagger"""  # noqa: E501
 
         self._index = None
         self._creator_id = None
-        self._creator_stub = None
+        self._raw = None
         self._role = None
         self.discriminator = None
 
@@ -57,8 +57,8 @@ class ReleaseContrib(object):
             self.index = index
         if creator_id is not None:
             self.creator_id = creator_id
-        if creator_stub is not None:
-            self.creator_stub = creator_stub
+        if raw is not None:
+            self.raw = raw
         if role is not None:
             self.role = role
 
@@ -105,25 +105,25 @@ class ReleaseContrib(object):
         self._creator_id = creator_id
 
     @property
-    def creator_stub(self):
-        """Gets the creator_stub of this ReleaseContrib.  # noqa: E501
+    def raw(self):
+        """Gets the raw of this ReleaseContrib.  # noqa: E501
 
 
-        :return: The creator_stub of this ReleaseContrib.  # noqa: E501
+        :return: The raw of this ReleaseContrib.  # noqa: E501
         :rtype: str
         """
-        return self._creator_stub
+        return self._raw
 
-    @creator_stub.setter
-    def creator_stub(self, creator_stub):
-        """Sets the creator_stub of this ReleaseContrib.
+    @raw.setter
+    def raw(self, raw):
+        """Sets the raw of this ReleaseContrib.
 
 
-        :param creator_stub: The creator_stub of this ReleaseContrib.  # noqa: E501
+        :param raw: The raw of this ReleaseContrib.  # noqa: E501
         :type: str
         """
 
-        self._creator_stub = creator_stub
+        self._raw = raw
 
     @property
     def role(self):

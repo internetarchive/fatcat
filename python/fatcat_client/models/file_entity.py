@@ -32,7 +32,9 @@ class FileEntity(object):
     """
     swagger_types = {
         'releases': 'list[str]',
+        'mimetype': 'str',
         'url': 'str',
+        'sha256': 'str',
         'md5': 'str',
         'sha1': 'str',
         'size': 'int',
@@ -46,7 +48,9 @@ class FileEntity(object):
 
     attribute_map = {
         'releases': 'releases',
+        'mimetype': 'mimetype',
         'url': 'url',
+        'sha256': 'sha256',
         'md5': 'md5',
         'sha1': 'sha1',
         'size': 'size',
@@ -58,11 +62,13 @@ class FileEntity(object):
         'state': 'state'
     }
 
-    def __init__(self, releases=None, url=None, md5=None, sha1=None, size=None, extra=None, editgroup_id=None, redirect=None, revision=None, ident=None, state=None):  # noqa: E501
+    def __init__(self, releases=None, mimetype=None, url=None, sha256=None, md5=None, sha1=None, size=None, extra=None, editgroup_id=None, redirect=None, revision=None, ident=None, state=None):  # noqa: E501
         """FileEntity - a model defined in Swagger"""  # noqa: E501
 
         self._releases = None
+        self._mimetype = None
         self._url = None
+        self._sha256 = None
         self._md5 = None
         self._sha1 = None
         self._size = None
@@ -76,8 +82,12 @@ class FileEntity(object):
 
         if releases is not None:
             self.releases = releases
+        if mimetype is not None:
+            self.mimetype = mimetype
         if url is not None:
             self.url = url
+        if sha256 is not None:
+            self.sha256 = sha256
         if md5 is not None:
             self.md5 = md5
         if sha1 is not None:
@@ -119,6 +129,27 @@ class FileEntity(object):
         self._releases = releases
 
     @property
+    def mimetype(self):
+        """Gets the mimetype of this FileEntity.  # noqa: E501
+
+
+        :return: The mimetype of this FileEntity.  # noqa: E501
+        :rtype: str
+        """
+        return self._mimetype
+
+    @mimetype.setter
+    def mimetype(self, mimetype):
+        """Sets the mimetype of this FileEntity.
+
+
+        :param mimetype: The mimetype of this FileEntity.  # noqa: E501
+        :type: str
+        """
+
+        self._mimetype = mimetype
+
+    @property
     def url(self):
         """Gets the url of this FileEntity.  # noqa: E501
 
@@ -138,6 +169,27 @@ class FileEntity(object):
         """
 
         self._url = url
+
+    @property
+    def sha256(self):
+        """Gets the sha256 of this FileEntity.  # noqa: E501
+
+
+        :return: The sha256 of this FileEntity.  # noqa: E501
+        :rtype: str
+        """
+        return self._sha256
+
+    @sha256.setter
+    def sha256(self, sha256):
+        """Sets the sha256 of this FileEntity.
+
+
+        :param sha256: The sha256 of this FileEntity.  # noqa: E501
+        :type: str
+        """
+
+        self._sha256 = sha256
 
     @property
     def md5(self):
