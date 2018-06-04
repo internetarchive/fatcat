@@ -37,7 +37,9 @@ CREATE TABLE creator_rev (
     id                  BIGSERIAL PRIMARY KEY,
     extra_json          JSON,
 
-    full_name           TEXT NOT NULL,
+    display_name        TEXT NOT NULL,
+    given_name          TEXT,
+    surname             TEXT,
     orcid               TEXT
     -- TODO: aliases/alternatives
     -- TODO: sortable name?
@@ -100,8 +102,10 @@ CREATE TABLE file_rev (
 
     size                BIGINT,
     sha1                TEXT, -- TODO: varchar or bytes
+    sha256              TEXT, -- TODO: varchar or bytes
     md5                 TEXT, -- TODO: varchar or bytes
-    url                 TEXT  -- TODO: URL table
+    url                 TEXT, -- TODO: URL table
+    mimetype            TEXT
 );
 
 CREATE TABLE file_ident (
@@ -129,13 +133,15 @@ CREATE TABLE release_rev (
     container_ident_id  UUID REFERENCES container_ident(id),
     title               TEXT NOT NULL,
     release_type        TEXT, -- TODO: enum
-    date                DATE,
+    release_status      TEXT, -- TODO: enum
+    release_date        DATE,
     doi                 TEXT,
     isbn13              TEXT,
     volume              TEXT,
     pages               TEXT,
     issue               TEXT,
-    publisher           TEXT -- for books, NOT if container exists
+    publisher           TEXT, -- for books, NOT if container exists
+    language            TEXT  -- primary language of the work's fulltext
     -- TODO: identifier table?
 );
 
@@ -196,7 +202,7 @@ CREATE TABLE release_contrib (
     creator_ident_id    UUID REFERENCES creator_ident(id),
     role                TEXT, -- TODO: enum?
     index               BIGINT,
-    stub                TEXT
+    raw                 TEXT
 );
 
 CREATE TABLE release_ref (
@@ -204,7 +210,12 @@ CREATE TABLE release_ref (
     release_rev             BIGSERIAL REFERENCES release_rev(id) NOT NULL,
     target_release_ident_id UUID REFERENCES release_ident(id), -- or work?
     index                   BIGINT,
-    stub                    TEXT
+    key                     TEXT,
+    raw                     TEXT,
+    container_title         TEXT,
+    year                    BIGINT,
+    title                   TEXT,
+    locator                 TEXT
 );
 
 CREATE TABLE file_release (
@@ -256,10 +267,10 @@ INSERT INTO container_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
     ('00000000-0000-0000-1111-000000000001', 1, null, 4),
     ('00000000-0000-0000-1111-000000000002', 2, null, 5);
 
-INSERT INTO creator_rev (full_name, orcid) VALUES
-    ('Grace Hopper', null),
-    ('Emily Noethe', null),
-    ('Christine Moran', '0000-0003-2088-7465');
+INSERT INTO creator_rev (display_name, given_name, surname, orcid) VALUES
+    ('Grace Hopper', null, null, null),
+    ('Emily Noether', 'Emily', 'Noether', null),
+    ('Christine Moran', 'Christine', 'Moran', '0000-0003-2088-7465');
 
 INSERT INTO creator_ident (id, is_live, rev_id, redirect_id) VALUES
     ('00000000-0000-0000-2222-000000000001', true, 1, null),
@@ -273,9 +284,9 @@ INSERT INTO creator_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
     ('00000000-0000-0000-2222-000000000003', 3, null, 3),
     ('00000000-0000-0000-2222-000000000004', 2, null, 4);
 
-INSERT INTO file_rev (size, sha1, md5, url) VALUES
-    (null, null, null, null),
-    (4321, '7d97e98f8af710c7e7fe703abc8f639e0ee507c4', null, 'http://archive.org/robots.txt');
+INSERT INTO file_rev (size, sha1, sha256, md5, url, mimetype) VALUES
+    (null, null, null, null, null, null),
+    (4321, '7d97e98f8af710c7e7fe703abc8f639e0ee507c4', null, null, 'http://archive.org/robots.txt', 'text/plain');
 
 INSERT INTO file_ident (id, is_live, rev_id, redirect_id) VALUES
     ('00000000-0000-0000-3333-000000000001', true, 1, null),
@@ -297,7 +308,7 @@ INSERT INTO work_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
     ('00000000-0000-0000-5555-000000000001', 1, null, 4),
     ('00000000-0000-0000-5555-000000000002', 2, null, 5);
 
-INSERT INTO release_rev (work_ident_id, container_ident_id, title, release_type, date, doi, isbn13, volume, pages, issue, publisher) VALUES
+INSERT INTO release_rev (work_ident_id, container_ident_id, title, release_type, release_date, doi, isbn13, volume, pages, issue, publisher) VALUES
     ('00000000-0000-0000-5555-000000000001',                                   null,  'example title',              null,         null, null,         null,  null,  null, null, null),
     ('00000000-0000-0000-5555-000000000002', '00000000-0000-0000-1111-000000000001', 'bigger example', 'journal-article', '2018-01-01', null, '10.123/abc',  '12', '5-9', 'IV', null);
 
@@ -309,11 +320,11 @@ INSERT INTO release_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
     ('00000000-0000-0000-4444-000000000001', 1, null, 4),
     ('00000000-0000-0000-4444-000000000002', 2, null, 5);
 
-INSERT INTO release_contrib (release_rev, creator_ident_id, stub, role, index) VALUES
+INSERT INTO release_contrib (release_rev, creator_ident_id, raw, role, index) VALUES
     (2, null, null, null, null),
     (2, '00000000-0000-0000-2222-000000000002', 'some contrib', 'editor', 4);
 
-INSERT INTO release_ref (release_rev, target_release_ident_id, index, stub) VALUES
+INSERT INTO release_ref (release_rev, target_release_ident_id, index, raw) VALUES
     (2, null, null, null),
     (2, '00000000-0000-0000-4444-000000000001', 4, 'citation note');
 

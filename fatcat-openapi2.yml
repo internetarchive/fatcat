@@ -80,12 +80,16 @@ definitions:
   creator_entity:
     type: object
     required:
-      - full_name
+      - display_name
     properties:
       <<: *ENTITYPROPS
-      full_name:
+      display_name:
         type: string
         example: "Grace Hopper"
+      given_name:
+        type: string
+      surname:
+        type: string
       orcid:
         type: string
         #format: custom
@@ -106,10 +110,17 @@ definitions:
         type: string
         #format: custom
         example: "d41efcc592d1e40ac13905377399eb9b"
+      sha256:
+        type: string
+        #format: custom
+        example: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
       url:
         type: string
         format: url
         example: "https://example.edu/~frau/prcding.pdf"
+      mimetype:
+        type: string
+        example: "application/pdf"
       releases:
         type: array
         items:
@@ -132,8 +143,11 @@ definitions:
         example: "00000000-0000-0000-adce-000000000001"
       release_type:
         type: string
+        example: "book"
+      release_status:
+        type: string
         example: "preprint"
-      date:
+      release_date:
         type: string
         format: date
       doi:
@@ -151,6 +165,8 @@ definitions:
         type: string
         example: "12"
       publisher:
+        type: string
+      language:
         type: string
       contribs:
         type: array
@@ -269,8 +285,20 @@ definitions:
       target_release_id:
         type: string
         #format: uuid
-      stub:
+      raw:
         type: string
+      key:
+        type: string
+      year:
+        type: integer
+        format: int64
+      container_title:
+        type: string
+      title:
+        type: string
+      locator:
+        type: string
+        example: "p123"
   release_contrib:
     type: object
     properties:
@@ -280,7 +308,7 @@ definitions:
       creator_id:
         type: string
         #format: uuid
-      creator_stub:
+      raw:
         type: string
       role:
         type: string
