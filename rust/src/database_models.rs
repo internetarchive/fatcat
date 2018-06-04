@@ -111,7 +111,9 @@ entity_structs!(
 pub struct CreatorRevRow {
     pub id: i64,
     pub extra_json: Option<serde_json::Value>,
-    pub full_name: String,
+    pub display_name: String,
+    pub given_name: Option<String>,
+    pub surname: Option<String>,
     pub orcid: Option<String>,
 }
 
@@ -129,8 +131,10 @@ pub struct FileRevRow {
     pub extra_json: Option<serde_json::Value>,
     pub size: Option<i64>,
     pub sha1: Option<String>,
+    pub sha256: Option<String>,
     pub md5: Option<String>,
     pub url: Option<String>,
+    pub mimetype: Option<String>,
 }
 
 entity_structs!("file_edit", FileEditRow, "file_ident", FileIdentRow);
@@ -144,13 +148,15 @@ pub struct ReleaseRevRow {
     pub container_ident_id: Option<Uuid>,
     pub title: String,
     pub release_type: Option<String>,
-    pub date: Option<chrono::NaiveDate>,
+    pub release_status: Option<String>,
+    pub release_date: Option<chrono::NaiveDate>,
     pub doi: Option<String>,
     pub isbn13: Option<String>,
     pub volume: Option<String>,
     pub pages: Option<String>,
     pub issue: Option<String>,
     pub publisher: Option<String>,
+    pub language: Option<String>,
 }
 
 entity_structs!(
@@ -179,7 +185,7 @@ pub struct ReleaseContribRow {
     pub creator_ident_id: Option<Uuid>,
     pub role: Option<String>,
     pub index: Option<i64>,
-    pub stub: Option<String>,
+    pub raw: Option<String>,
 }
 
 #[derive(Debug, Insertable)]
@@ -189,7 +195,7 @@ pub struct ReleaseContribNewRow {
     pub creator_ident_id: Option<Uuid>,
     pub role: Option<String>,
     pub index: Option<i64>,
-    pub stub: Option<String>,
+    pub raw: Option<String>,
 }
 
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
@@ -199,7 +205,12 @@ pub struct ReleaseRefRow {
     pub release_rev: i64,
     pub target_release_ident_id: Option<Uuid>,
     pub index: Option<i64>,
-    pub stub: Option<String>,
+    pub key: Option<String>,
+    pub raw: Option<String>,
+    pub container_title: Option<String>,
+    pub year: Option<i64>,
+    pub title: Option<String>,
+    pub locator: Option<String>,
 }
 
 #[derive(Debug, Insertable, AsChangeset)]
@@ -208,7 +219,12 @@ pub struct ReleaseRefNewRow {
     pub release_rev: i64,
     pub target_release_ident_id: Option<Uuid>,
     pub index: Option<i64>,
-    pub stub: Option<String>,
+    pub key: Option<String>,
+    pub raw: Option<String>,
+    pub container_title: Option<String>,
+    pub year: Option<i64>,
+    pub title: Option<String>,
+    pub locator: Option<String>,
 }
 
 #[derive(Debug, Queryable, Insertable, Associations, AsChangeset)]

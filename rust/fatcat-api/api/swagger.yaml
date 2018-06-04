@@ -1365,14 +1365,14 @@ definitions:
         example: 16
       redirect:
         type: "string"
-        example: "f1f046a3-45c9-4b99-adce-000000000002"
+        example: "00000000-0000-0000-adce-000000000002"
       revision:
         type: "integer"
         format: "int64"
         example: 42
       ident:
         type: "string"
-        example: "f1f046a3-45c9-4b99-adce-000000000001"
+        example: "00000000-0000-0000-adce-000000000001"
       state:
         type: "string"
         enum:
@@ -1381,9 +1381,9 @@ definitions:
         - "redirect"
         - "deleted"
     example:
-      redirect: "f1f046a3-45c9-4b99-adce-000000000002"
+      redirect: "00000000-0000-0000-adce-000000000002"
       coden: "coden"
-      ident: "f1f046a3-45c9-4b99-adce-000000000001"
+      ident: "00000000-0000-0000-adce-000000000001"
       extra: "{}"
       name: "Journal of Important Results"
       publisher: "Society of Curious Students"
@@ -1396,12 +1396,16 @@ definitions:
   creator_entity:
     type: "object"
     required:
-    - "full_name"
+    - "display_name"
     properties:
       orcid:
         type: "string"
         example: "0000-0002-1825-0097"
-      full_name:
+      surname:
+        type: "string"
+      given_name:
+        type: "string"
+      display_name:
         type: "string"
         example: "Grace Hopper"
       state:
@@ -1413,14 +1417,14 @@ definitions:
         - "deleted"
       ident:
         type: "string"
-        example: "f1f046a3-45c9-4b99-adce-000000000001"
+        example: "00000000-0000-0000-adce-000000000001"
       revision:
         type: "integer"
         format: "int64"
         example: 42
       redirect:
         type: "string"
-        example: "f1f046a3-45c9-4b99-adce-000000000002"
+        example: "00000000-0000-0000-adce-000000000002"
       editgroup_id:
         type: "integer"
         format: "int64"
@@ -1428,13 +1432,15 @@ definitions:
       extra:
         type: "object"
     example:
-      redirect: "f1f046a3-45c9-4b99-adce-000000000002"
-      full_name: "Grace Hopper"
-      ident: "f1f046a3-45c9-4b99-adce-000000000001"
+      redirect: "00000000-0000-0000-adce-000000000002"
+      surname: "surname"
+      ident: "00000000-0000-0000-adce-000000000001"
       extra: "{}"
       editgroup_id: 16
       orcid: "0000-0002-1825-0097"
       state: "wip"
+      given_name: "given_name"
+      display_name: "Grace Hopper"
       revision: 42
     upperCaseName: "CREATOR_ENTITY"
   file_entity:
@@ -1444,10 +1450,16 @@ definitions:
         type: "array"
         items:
           type: "string"
+      mimetype:
+        type: "string"
+        example: "application/pdf"
       url:
         type: "string"
         format: "url"
         example: "https://example.edu/~frau/prcding.pdf"
+      sha256:
+        type: "string"
+        example: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
       md5:
         type: "string"
         example: "d41efcc592d1e40ac13905377399eb9b"
@@ -1466,14 +1478,14 @@ definitions:
         example: 16
       redirect:
         type: "string"
-        example: "f1f046a3-45c9-4b99-adce-000000000002"
+        example: "00000000-0000-0000-adce-000000000002"
       revision:
         type: "integer"
         format: "int64"
         example: 42
       ident:
         type: "string"
-        example: "f1f046a3-45c9-4b99-adce-000000000001"
+        example: "00000000-0000-0000-adce-000000000001"
       state:
         type: "string"
         enum:
@@ -1482,19 +1494,21 @@ definitions:
         - "redirect"
         - "deleted"
     example:
-      sha1: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
-      redirect: "f1f046a3-45c9-4b99-adce-000000000002"
-      size: 1048576
-      ident: "f1f046a3-45c9-4b99-adce-000000000001"
-      extra: "{}"
-      editgroup_id: 16
-      state: "wip"
+      redirect: "00000000-0000-0000-adce-000000000002"
+      sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+      ident: "00000000-0000-0000-adce-000000000001"
       url: "https://example.edu/~frau/prcding.pdf"
       releases:
       - "releases"
       - "releases"
-      md5: "d41efcc592d1e40ac13905377399eb9b"
       revision: 42
+      sha1: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
+      size: 1048576
+      extra: "{}"
+      editgroup_id: 16
+      mimetype: "application/pdf"
+      state: "wip"
+      md5: "d41efcc592d1e40ac13905377399eb9b"
     upperCaseName: "FILE_ENTITY"
   release_entity:
     type: "object"
@@ -1510,6 +1524,8 @@ definitions:
         type: "array"
         items:
           $ref: "#/definitions/release_contrib"
+      language:
+        type: "string"
       publisher:
         type: "string"
       issue:
@@ -1524,18 +1540,21 @@ definitions:
       doi:
         type: "string"
         example: "10.1234/abcde.789"
-      date:
+      release_date:
         type: "string"
         format: "date"
-      release_type:
+      release_status:
         type: "string"
         example: "preprint"
+      release_type:
+        type: "string"
+        example: "book"
       container_id:
         type: "string"
-        example: "f1f046a3-45c9-4b99-adce-000000000001"
+        example: "00000000-0000-0000-adce-000000000001"
       work_id:
         type: "string"
-        example: "f1f046a3-45c9-4b99-adce-000000000001"
+        example: "00000000-0000-0000-adce-000000000001"
       title:
         type: "string"
       state:
@@ -1547,14 +1566,14 @@ definitions:
         - "deleted"
       ident:
         type: "string"
-        example: "f1f046a3-45c9-4b99-adce-000000000001"
+        example: "00000000-0000-0000-adce-000000000001"
       revision:
         type: "integer"
         format: "int64"
         example: 42
       redirect:
         type: "string"
-        example: "f1f046a3-45c9-4b99-adce-000000000002"
+        example: "00000000-0000-0000-adce-000000000002"
       editgroup_id:
         type: "integer"
         format: "int64"
@@ -1562,38 +1581,50 @@ definitions:
       extra:
         type: "object"
     example:
-      date: "2000-01-23"
-      redirect: "f1f046a3-45c9-4b99-adce-000000000002"
-      work_id: "f1f046a3-45c9-4b99-adce-000000000001"
+      redirect: "00000000-0000-0000-adce-000000000002"
+      work_id: "00000000-0000-0000-adce-000000000001"
       issue: "12"
-      ident: "f1f046a3-45c9-4b99-adce-000000000001"
-      release_type: "preprint"
+      ident: "00000000-0000-0000-adce-000000000001"
+      release_type: "book"
+      language: "language"
       title: "title"
+      release_status: "preprint"
       contribs:
       - role: "role"
-        creator_stub: "creator_stub"
         creator_id: "creator_id"
-        index: 6
+        index: 1
+        raw: "raw"
       - role: "role"
-        creator_stub: "creator_stub"
         creator_id: "creator_id"
-        index: 6
+        index: 1
+        raw: "raw"
       revision: 42
       volume: "volume"
       pages: "pages"
       refs:
       - target_release_id: "target_release_id"
-        stub: "stub"
+        year: 6
+        container_title: "container_title"
         index: 0
+        raw: "raw"
+        title: "title"
+        locator: "p123"
+        key: "key"
       - target_release_id: "target_release_id"
-        stub: "stub"
+        year: 6
+        container_title: "container_title"
         index: 0
+        raw: "raw"
+        title: "title"
+        locator: "p123"
+        key: "key"
+      release_date: "2000-01-23"
       isbn13: "isbn13"
       extra: "{}"
       publisher: "publisher"
       editgroup_id: 16
       state: "wip"
-      container_id: "f1f046a3-45c9-4b99-adce-000000000001"
+      container_id: "00000000-0000-0000-adce-000000000001"
       doi: "10.1234/abcde.789"
     upperCaseName: "RELEASE_ENTITY"
   work_entity:
@@ -1609,14 +1640,14 @@ definitions:
         example: 16
       redirect:
         type: "string"
-        example: "f1f046a3-45c9-4b99-adce-000000000002"
+        example: "00000000-0000-0000-adce-000000000002"
       revision:
         type: "integer"
         format: "int64"
         example: 42
       ident:
         type: "string"
-        example: "f1f046a3-45c9-4b99-adce-000000000001"
+        example: "00000000-0000-0000-adce-000000000001"
       state:
         type: "string"
         enum:
@@ -1625,8 +1656,8 @@ definitions:
         - "redirect"
         - "deleted"
     example:
-      redirect: "f1f046a3-45c9-4b99-adce-000000000002"
-      ident: "f1f046a3-45c9-4b99-adce-000000000001"
+      redirect: "00000000-0000-0000-adce-000000000002"
+      ident: "00000000-0000-0000-adce-000000000001"
       extra: "{}"
       work_type: "work_type"
       editgroup_id: 16
@@ -1646,14 +1677,14 @@ definitions:
         example: 847
       ident:
         type: "string"
-        example: "f1f046a3-45c9-4b99-adce-000000000001"
+        example: "00000000-0000-0000-adce-000000000001"
       revision:
         type: "integer"
         format: "int64"
         example: 42
       redirect_ident:
         type: "string"
-        example: "f1f046a3-45c9-4b99-adce-000000000002"
+        example: "00000000-0000-0000-adce-000000000002"
       editgroup_id:
         type: "integer"
         format: "int64"
@@ -1661,10 +1692,10 @@ definitions:
       extra:
         type: "object"
     example:
-      ident: "f1f046a3-45c9-4b99-adce-000000000001"
+      ident: "00000000-0000-0000-adce-000000000001"
       edit_id: 847
       extra: "{}"
-      redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
+      redirect_ident: "00000000-0000-0000-adce-000000000002"
       editgroup_id: 16
       revision: 42
     upperCaseName: "ENTITY_EDIT"
@@ -1700,68 +1731,68 @@ definitions:
       extra: "{}"
       edits:
         works:
-        - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+        - ident: "00000000-0000-0000-adce-000000000001"
           edit_id: 847
           extra: "{}"
-          redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
+          redirect_ident: "00000000-0000-0000-adce-000000000002"
           editgroup_id: 16
           revision: 42
-        - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+        - ident: "00000000-0000-0000-adce-000000000001"
           edit_id: 847
           extra: "{}"
-          redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
+          redirect_ident: "00000000-0000-0000-adce-000000000002"
           editgroup_id: 16
           revision: 42
         creators:
-        - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+        - ident: "00000000-0000-0000-adce-000000000001"
           edit_id: 847
           extra: "{}"
-          redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
+          redirect_ident: "00000000-0000-0000-adce-000000000002"
           editgroup_id: 16
           revision: 42
-        - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+        - ident: "00000000-0000-0000-adce-000000000001"
           edit_id: 847
           extra: "{}"
-          redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
+          redirect_ident: "00000000-0000-0000-adce-000000000002"
           editgroup_id: 16
           revision: 42
         files:
-        - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+        - ident: "00000000-0000-0000-adce-000000000001"
           edit_id: 847
           extra: "{}"
-          redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
+          redirect_ident: "00000000-0000-0000-adce-000000000002"
           editgroup_id: 16
           revision: 42
-        - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+        - ident: "00000000-0000-0000-adce-000000000001"
           edit_id: 847
           extra: "{}"
-          redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
+          redirect_ident: "00000000-0000-0000-adce-000000000002"
           editgroup_id: 16
           revision: 42
         containers:
-        - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+        - ident: "00000000-0000-0000-adce-000000000001"
           edit_id: 847
           extra: "{}"
-          redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
+          redirect_ident: "00000000-0000-0000-adce-000000000002"
           editgroup_id: 16
           revision: 42
-        - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+        - ident: "00000000-0000-0000-adce-000000000001"
           edit_id: 847
           extra: "{}"
-          redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
+          redirect_ident: "00000000-0000-0000-adce-000000000002"
           editgroup_id: 16
           revision: 42
         releases:
-        - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+        - ident: "00000000-0000-0000-adce-000000000001"
           edit_id: 847
           extra: "{}"
-          redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
+          redirect_ident: "00000000-0000-0000-adce-000000000002"
           editgroup_id: 16
           revision: 42
-        - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+        - ident: "00000000-0000-0000-adce-000000000001"
           edit_id: 847
           extra: "{}"
-          redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
+          redirect_ident: "00000000-0000-0000-adce-000000000002"
           editgroup_id: 16
           revision: 42
       description: "description"
@@ -1781,12 +1812,29 @@ definitions:
         format: "int64"
       target_release_id:
         type: "string"
-      stub:
+      raw:
         type: "string"
+      key:
+        type: "string"
+      year:
+        type: "integer"
+        format: "int64"
+      container_title:
+        type: "string"
+      title:
+        type: "string"
+      locator:
+        type: "string"
+        example: "p123"
     example:
       target_release_id: "target_release_id"
-      stub: "stub"
+      year: 6
+      container_title: "container_title"
       index: 0
+      raw: "raw"
+      title: "title"
+      locator: "p123"
+      key: "key"
     upperCaseName: "RELEASE_REF"
   release_contrib:
     type: "object"
@@ -1796,15 +1844,15 @@ definitions:
         format: "int64"
       creator_id:
         type: "string"
-      creator_stub:
+      raw:
         type: "string"
       role:
         type: "string"
     example:
       role: "role"
-      creator_stub: "creator_stub"
       creator_id: "creator_id"
-      index: 6
+      index: 1
+      raw: "raw"
     upperCaseName: "RELEASE_CONTRIB"
   editgroup_edits:
     properties:
@@ -1830,68 +1878,68 @@ definitions:
           $ref: "#/definitions/entity_edit"
     example:
       works:
-      - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+      - ident: "00000000-0000-0000-adce-000000000001"
         edit_id: 847
         extra: "{}"
-        redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
+        redirect_ident: "00000000-0000-0000-adce-000000000002"
         editgroup_id: 16
         revision: 42
-      - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+      - ident: "00000000-0000-0000-adce-000000000001"
         edit_id: 847
         extra: "{}"
-        redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
+        redirect_ident: "00000000-0000-0000-adce-000000000002"
         editgroup_id: 16
         revision: 42
       creators:
-      - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+      - ident: "00000000-0000-0000-adce-000000000001"
         edit_id: 847
         extra: "{}"
-        redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
+        redirect_ident: "00000000-0000-0000-adce-000000000002"
         editgroup_id: 16
         revision: 42
-      - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+      - ident: "00000000-0000-0000-adce-000000000001"
         edit_id: 847
         extra: "{}"
-        redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
+        redirect_ident: "00000000-0000-0000-adce-000000000002"
         editgroup_id: 16
         revision: 42
       files:
-      - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+      - ident: "00000000-0000-0000-adce-000000000001"
         edit_id: 847
         extra: "{}"
-        redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
+        redirect_ident: "00000000-0000-0000-adce-000000000002"
         editgroup_id: 16
         revision: 42
-      - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+      - ident: "00000000-0000-0000-adce-000000000001"
         edit_id: 847
         extra: "{}"
-        redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
+        redirect_ident: "00000000-0000-0000-adce-000000000002"
         editgroup_id: 16
         revision: 42
       containers:
-      - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+      - ident: "00000000-0000-0000-adce-000000000001"
         edit_id: 847
         extra: "{}"
-        redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
+        redirect_ident: "00000000-0000-0000-adce-000000000002"
         editgroup_id: 16
         revision: 42
-      - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+      - ident: "00000000-0000-0000-adce-000000000001"
         edit_id: 847
         extra: "{}"
-        redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
+        redirect_ident: "00000000-0000-0000-adce-000000000002"
         editgroup_id: 16
         revision: 42
       releases:
-      - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+      - ident: "00000000-0000-0000-adce-000000000001"
         edit_id: 847
         extra: "{}"
-        redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
+        redirect_ident: "00000000-0000-0000-adce-000000000002"
         editgroup_id: 16
         revision: 42
-      - ident: "f1f046a3-45c9-4b99-adce-000000000001"
+      - ident: "00000000-0000-0000-adce-000000000001"
         edit_id: 847
         extra: "{}"
-        redirect_ident: "f1f046a3-45c9-4b99-adce-000000000002"
+        redirect_ident: "00000000-0000-0000-adce-000000000002"
         editgroup_id: 16
         revision: 42
     upperCaseName: "EDITGROUP_EDITS"
@@ -1921,14 +1969,14 @@ x-entity-props:
     - "deleted"
   ident:
     type: "string"
-    example: "f1f046a3-45c9-4b99-adce-000000000001"
+    example: "00000000-0000-0000-adce-000000000001"
   revision:
     type: "integer"
     example: 42
     format: "int64"
   redirect:
     type: "string"
-    example: "f1f046a3-45c9-4b99-adce-000000000002"
+    example: "00000000-0000-0000-adce-000000000002"
   editgroup_id:
     type: "integer"
     example: 16

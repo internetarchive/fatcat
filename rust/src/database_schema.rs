@@ -62,7 +62,9 @@ table! {
     creator_rev (id) {
         id -> Int8,
         extra_json -> Nullable<Json>,
-        full_name -> Text,
+        display_name -> Text,
+        given_name -> Nullable<Text>,
+        surname -> Nullable<Text>,
         orcid -> Nullable<Text>,
     }
 }
@@ -118,8 +120,10 @@ table! {
         extra_json -> Nullable<Json>,
         size -> Nullable<Int8>,
         sha1 -> Nullable<Text>,
+        sha256 -> Nullable<Text>,
         md5 -> Nullable<Text>,
         url -> Nullable<Text>,
+        mimetype -> Nullable<Text>,
     }
 }
 
@@ -130,7 +134,7 @@ table! {
         creator_ident_id -> Nullable<Uuid>,
         role -> Nullable<Text>,
         index -> Nullable<Int8>,
-        stub -> Nullable<Text>,
+        raw -> Nullable<Text>,
     }
 }
 
@@ -160,7 +164,12 @@ table! {
         release_rev -> Int8,
         target_release_ident_id -> Nullable<Uuid>,
         index -> Nullable<Int8>,
-        stub -> Nullable<Text>,
+        key -> Nullable<Text>,
+        raw -> Nullable<Text>,
+        container_title -> Nullable<Text>,
+        year -> Nullable<Int8>,
+        title -> Nullable<Text>,
+        locator -> Nullable<Text>,
     }
 }
 
@@ -172,13 +181,15 @@ table! {
         container_ident_id -> Nullable<Uuid>,
         title -> Text,
         release_type -> Nullable<Text>,
-        date -> Nullable<Date>,
+        release_status -> Nullable<Text>,
+        release_date -> Nullable<Date>,
         doi -> Nullable<Text>,
         isbn13 -> Nullable<Text>,
         volume -> Nullable<Text>,
         pages -> Nullable<Text>,
         issue -> Nullable<Text>,
         publisher -> Nullable<Text>,
+        language -> Nullable<Text>,
     }
 }
 

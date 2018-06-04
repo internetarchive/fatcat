@@ -186,7 +186,7 @@ fn test_post_creator() {
         request::post(
             "http://localhost:9411/v0/creator",
             headers,
-            r#"{"full_name": "some person"}"#,
+            r#"{"display_name": "some person"}"#,
             &router,
         ),
         status::Created,
@@ -215,7 +215,10 @@ fn test_post_file() {
             headers,
             r#"{"size": 76543,
                 "sha1": "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8",
+                "md5": "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8",
+                "sha256": "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8",
                 "url": "http://archive.org/asdf.txt",
+                "mimetype": "application/pdf",
                 "releases": [
                     "00000000-0000-0000-4444-000000000001",
                     "00000000-0000-0000-4444-000000000002"
@@ -263,17 +266,17 @@ fn test_post_release() {
                 "container_id": "00000000-0000-0000-1111-000000000001",
                 "refs": [{
                         "index": 3,
-                        "stub": "just a string"
+                        "raw": "just a string"
                     },{
-                        "stub": "just a string"
+                        "raw": "just a string"
                     }],
                 "contribs": [{
                         "index": 1,
-                        "creator_stub": "textual description of contributor (aka, name)",
+                        "raw": "textual description of contributor (aka, name)",
                         "creator_id": "00000000-0000-0000-2222-000000000001",
                         "contrib_type": "author"
                     },{
-                        "creator_stub": "shorter"
+                        "raw": "shorter"
                     }],
                 "extra": { "source": "speculation" }
                 }"#,

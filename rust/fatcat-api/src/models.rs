@@ -163,8 +163,16 @@ pub struct CreatorEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub orcid: Option<String>,
 
-    #[serde(rename = "full_name")]
-    pub full_name: String,
+    #[serde(rename = "surname")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub surname: Option<String>,
+
+    #[serde(rename = "given_name")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub given_name: Option<String>,
+
+    #[serde(rename = "display_name")]
+    pub display_name: String,
 
     // Note: inline enums are not fully supported by swagger-codegen
     #[serde(rename = "state")]
@@ -193,10 +201,12 @@ pub struct CreatorEntity {
 }
 
 impl CreatorEntity {
-    pub fn new(full_name: String) -> CreatorEntity {
+    pub fn new(display_name: String) -> CreatorEntity {
         CreatorEntity {
             orcid: None,
-            full_name: full_name,
+            surname: None,
+            given_name: None,
+            display_name: display_name,
             state: None,
             ident: None,
             revision: None,
@@ -343,9 +353,17 @@ pub struct FileEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub releases: Option<Vec<String>>,
 
+    #[serde(rename = "mimetype")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub mimetype: Option<String>,
+
     #[serde(rename = "url")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
+
+    #[serde(rename = "sha256")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sha256: Option<String>,
 
     #[serde(rename = "md5")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -389,7 +407,9 @@ impl FileEntity {
     pub fn new() -> FileEntity {
         FileEntity {
             releases: None,
+            mimetype: None,
             url: None,
+            sha256: None,
             md5: None,
             sha1: None,
             size: None,
@@ -413,9 +433,9 @@ pub struct ReleaseContrib {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub creator_id: Option<String>,
 
-    #[serde(rename = "creator_stub")]
+    #[serde(rename = "raw")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub creator_stub: Option<String>,
+    pub raw: Option<String>,
 
     #[serde(rename = "role")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -427,7 +447,7 @@ impl ReleaseContrib {
         ReleaseContrib {
             index: None,
             creator_id: None,
-            creator_stub: None,
+            raw: None,
             role: None,
         }
     }
@@ -442,6 +462,10 @@ pub struct ReleaseEntity {
     #[serde(rename = "contribs")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub contribs: Option<Vec<models::ReleaseContrib>>,
+
+    #[serde(rename = "language")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub language: Option<String>,
 
     #[serde(rename = "publisher")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -467,9 +491,13 @@ pub struct ReleaseEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub doi: Option<String>,
 
-    #[serde(rename = "date")]
+    #[serde(rename = "release_date")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub date: Option<chrono::DateTime<chrono::Utc>>,
+    pub release_date: Option<chrono::DateTime<chrono::Utc>>,
+
+    #[serde(rename = "release_status")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub release_status: Option<String>,
 
     #[serde(rename = "release_type")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -516,13 +544,15 @@ impl ReleaseEntity {
         ReleaseEntity {
             refs: None,
             contribs: None,
+            language: None,
             publisher: None,
             issue: None,
             pages: None,
             volume: None,
             isbn13: None,
             doi: None,
-            date: None,
+            release_date: None,
+            release_status: None,
             release_type: None,
             container_id: None,
             work_id: work_id,
@@ -547,9 +577,29 @@ pub struct ReleaseRef {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub target_release_id: Option<String>,
 
-    #[serde(rename = "stub")]
+    #[serde(rename = "raw")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub stub: Option<String>,
+    pub raw: Option<String>,
+
+    #[serde(rename = "key")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub key: Option<String>,
+
+    #[serde(rename = "year")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub year: Option<i64>,
+
+    #[serde(rename = "container_title")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub container_title: Option<String>,
+
+    #[serde(rename = "title")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub title: Option<String>,
+
+    #[serde(rename = "locator")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub locator: Option<String>,
 }
 
 impl ReleaseRef {
@@ -557,7 +607,12 @@ impl ReleaseRef {
         ReleaseRef {
             index: None,
             target_release_id: None,
-            stub: None,
+            raw: None,
+            key: None,
+            year: None,
+            container_title: None,
+            title: None,
+            locator: None,
         }
     }
 }

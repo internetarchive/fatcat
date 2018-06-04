@@ -155,7 +155,9 @@ fn creator_row2entity(ident: Option<CreatorIdentRow>, rev: CreatorRevRow) -> Res
         None => (None, None, None),
     };
     Ok(CreatorEntity {
-        full_name: rev.full_name,
+        display_name: rev.display_name,
+        given_name: rev.given_name,
+        surname: rev.surname,
         orcid: rev.orcid,
         state: state,
         ident: ident_id,
@@ -189,9 +191,11 @@ fn file_row2entity(
 
     Ok(FileEntity {
         sha1: rev.sha1,
+        sha256: rev.sha256,
         md5: rev.md5,
         size: rev.size.map(|v| v as i64),
         url: rev.url,
+        mimetype: rev.mimetype,
         releases: Some(releases),
         state: state,
         ident: ident_id,
@@ -223,7 +227,12 @@ fn release_row2entity(
         .iter()
         .map(|r: &ReleaseRefRow| ReleaseRef {
             index: r.index.clone(),
-            stub: r.stub.clone(),
+            key: r.key.clone(),
+            raw: r.raw.clone(),
+            container_title: r.container_title.clone(),
+            year: r.year.clone(),
+            title: r.title.clone(),
+            locator: r.locator.clone(),
             target_release_id: r.target_release_ident_id.map(|v| v.to_string()),
         })
         .collect();
@@ -236,7 +245,7 @@ fn release_row2entity(
         .map(|c: &ReleaseContribRow| ReleaseContrib {
             index: c.index,
             role: c.role.clone(),
-            creator_stub: c.stub.clone(),
+            raw: c.raw.clone(),
             creator_id: c.creator_ident_id.map(|v| v.to_string()),
         })
         .collect();
@@ -244,7 +253,8 @@ fn release_row2entity(
     Ok(ReleaseEntity {
         title: rev.title,
         release_type: rev.release_type,
-        date: rev.date
+        release_status: rev.release_status,
+        release_date: rev.release_date
             .map(|v| chrono::DateTime::from_utc(v.and_hms(0, 0, 0), chrono::Utc)),
         doi: rev.doi,
         isbn13: rev.isbn13,
@@ -253,6 +263,7 @@ fn release_row2entity(
         issue: rev.issue,
         container_id: rev.container_ident_id.map(|u| u.to_string()),
         publisher: rev.publisher,
+        language: rev.language,
         work_id: rev.work_ident_id.to_string(),
         refs: Some(refs),
         contribs: Some(contribs),
@@ -481,16 +492,18 @@ impl Server {
         };
 
         let edit: CreatorEditRow = diesel::sql_query(
-            "WITH rev AS ( INSERT INTO creator_rev (full_name, orcid, extra_json)
-                        VALUES ($1, $2, $3)
+            "WITH rev AS ( INSERT INTO creator_rev (display_name, given_name, surname, orcid, extra_json)
+                        VALUES ($1, $2, $3, $4, $5)
                         RETURNING id ),
                 ident AS ( INSERT INTO creator_ident (rev_id)
                             VALUES ((SELECT rev.id FROM rev))
                             RETURNING id )
             INSERT INTO creator_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($4, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+                ($6, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
-        ).bind::<diesel::sql_types::Text, _>(entity.full_name)
+        ).bind::<diesel::sql_types::Text, _>(entity.display_name)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.given_name)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.surname)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.orcid)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
             .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
@@ -521,19 +534,21 @@ impl Server {
 
         let edit: FileEditRow =
             diesel::sql_query(
-                "WITH rev AS ( INSERT INTO file_rev (size, sha1, md5, url, extra_json)
-                        VALUES ($1, $2, $3, $4, $5)
+                "WITH rev AS ( INSERT INTO file_rev (size, sha1, sha256, md5, url, mimetype, extra_json)
+                        VALUES ($1, $2, $3, $4, $5, $6, $7)
                         RETURNING id ),
                 ident AS ( INSERT INTO file_ident (rev_id)
                             VALUES ((SELECT rev.id FROM rev))
                             RETURNING id )
             INSERT INTO file_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($6, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+                ($8, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
             ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Int8>, _>(entity.size)
                 .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.sha1)
+                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.sha256)
                 .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.md5)
                 .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.url)
+                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.mimetype)
                 .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
                 .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
                 .get_result(conn)?;
@@ -590,19 +605,20 @@ impl Server {
         };
 
         let edit: ReleaseEditRow = diesel::sql_query(
-            "WITH rev AS ( INSERT INTO release_rev (title, release_type, date, doi, isbn13, volume, pages, issue, work_ident_id, container_ident_id, publisher, extra_json)
-                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+            "WITH rev AS ( INSERT INTO release_rev (title, release_type, release_status, release_date, doi, isbn13, volume, pages, issue, work_ident_id, container_ident_id, publisher, language, extra_json)
+                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
                         RETURNING id ),
                 ident AS ( INSERT INTO release_ident (rev_id)
                             VALUES ((SELECT rev.id FROM rev))
                             RETURNING id )
             INSERT INTO release_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($13, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+                ($15, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
         ).bind::<diesel::sql_types::Text, _>(entity.title)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.release_type)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.release_status)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Date>, _>(
-                entity.date.map(|v| v.naive_utc().date()))
+                entity.release_date.map(|v| v.naive_utc().date()))
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.doi)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.isbn13)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.volume)
@@ -611,6 +627,7 @@ impl Server {
             .bind::<diesel::sql_types::Uuid, _>(work_id)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Uuid>, _>(container_id)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.publisher)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.language)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
             .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
             .get_result(conn)?;
@@ -629,7 +646,12 @@ impl Server {
                                 .clone()
                                 .map(|v| uuid::Uuid::parse_str(&v).expect("valid UUID")),
                             index: r.index,
-                            stub: r.stub.clone(),
+                            key: r.key.clone(),
+                            container_title: r.container_title.clone(),
+                            year: r.year,
+                            title: r.title.clone(),
+                            locator: r.locator.clone(),
+                            raw: r.raw.clone(),
                         })
                         .collect();
                     let ref_rows: Vec<ReleaseRefRow> = insert_into(release_ref::table)
@@ -656,7 +678,7 @@ impl Server {
                                 .map(|v| uuid::Uuid::parse_str(&v).expect("valid UUID")),
                             index: c.index,
                             role: c.role.clone(),
-                            stub: c.creator_stub.clone(),
+                            raw: c.raw.clone(),
                         })
                         .collect();
                     let contrib_rows: Vec<ReleaseContribRow> = insert_into(release_contrib::table)
