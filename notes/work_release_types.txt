@@ -1,0 +1,28 @@
+
+see also: <http://docs.citationstyles.org/en/stable/specification.html#appendix-iii-types>
+
+basics:
+- article-journal
+- book
+- chapter
+- dataset
+- manuscript
+- paper-conference
+- blog-post
+- report
+- thesis (aka, dissertation)
+
+- preprint
+- conference proceeding
+- book chapter
+- technical report/memo
+- dissertation/thesis
+- blog post
+- wiki page
+- presentation (slides, recording)
+
+"publication status" instead of pre-print and manuscript types?
+
+abstracts as files?
+
+videos, slides

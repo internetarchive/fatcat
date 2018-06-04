@@ -7,3 +7,16 @@ entity specific:
 - crossref / release
 - orcid / creator
 - issn / container
+
+
+## Dublin Core (original/simple)
+
+Usage guide: <http://www.dublincore.org/documents/usageguide/elements/>
+
+Quick descriptions of the "original 15" fields: <http://mn.gov/bridges/dcore.html>
+
+## Citation Style Language
+
+Human-readable specification: <http://docs.citationstyles.org/en/1.0.1/specification.html>
+
+Specifically, the "variables" and type definitions: <http://docs.citationstyles.org/en/stable/specification.html#appendix-iv-variables>

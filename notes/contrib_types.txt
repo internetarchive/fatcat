@@ -1,0 +1,14 @@
+
+See also: <http://docs.citationstyles.org/en/stable/specification.html#roles>
+
+author
+editor
+translator
+illustrator
+interviewer
+reviewer
+
+
+container-author
+container-editor
+reviewed-author
