@@ -30,6 +30,8 @@ class FatcatOrcidImporter:
         returns a CreatorEntity
         """
         name = obj['person']['name']
+        if name is None:
+            return None
         extra = None
         given = value_or_none(name.get('given-name'))
         sur = value_or_none(name.get('family-name'))
@@ -48,7 +50,8 @@ class FatcatOrcidImporter:
     def process_line(self, line):
         obj = json.loads(line)
         ce = self.parse_orcid_dict(obj)
-        self.api.create_creator(ce)
+        if ce is not None:
+            self.api.create_creator(ce)
 
     def process_source(self, source):
         for line in source:
@@ -59,5 +62,6 @@ class FatcatOrcidImporter:
         for lines in grouper(source, size):
             objects = [self.parse_orcid_dict(json.loads(l))
                        for l in lines if l != None]
+            objects = [o for o in objects if o != None]
             self.api.create_creator_batch(objects)
-            break
+            print("inserted {}".format(len(objects)))
