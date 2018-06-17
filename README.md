@@ -8,8 +8,8 @@
                                         ... catalog all the things!
 
 
-The [RFC](./rfc) is the original design document, and the best place to start
-for background.
+The [RFC](./farcat-rfc.md) is the original design document, and the best place
+to start for background.
 
 There will be three main components:
 
