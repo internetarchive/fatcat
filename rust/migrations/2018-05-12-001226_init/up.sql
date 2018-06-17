@@ -234,8 +234,8 @@ BEGIN;
 
 INSERT INTO editor (username, is_admin) VALUES
     ('admin', true),
-    ('claire', true),
-    ('doug', false);
+    ('demo-user', true),
+    ('claire', false);
 
 INSERT INTO editgroup (editor_id, description) VALUES
     (1, 'first edit ever!'),
@@ -256,8 +256,8 @@ INSERT INTO changelog (editgroup_id) VALUES
     (5);
 
 INSERT INTO container_rev (name, issnl, abbrev, coden) VALUES
-    ('Journal of Trivial Results', '1234-5678', null, null),
-    ('MySpace Blog', null, null, null);
+    ('MySpace Blog', null, null, null),
+    ('Journal of Trivial Results', '1234-5678', null, null);
 
 INSERT INTO container_ident (id, is_live, rev_id, redirect_id) VALUES
     ('00000000-0000-0000-1111-000000000001', true, 1, null),
@@ -269,8 +269,8 @@ INSERT INTO container_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
 
 INSERT INTO creator_rev (display_name, given_name, surname, orcid) VALUES
     ('Grace Hopper', null, null, null),
-    ('Emily Noether', 'Emily', 'Noether', null),
-    ('Christine Moran', 'Christine', 'Moran', '0000-0003-2088-7465');
+    ('Christine Moran', 'Christine', 'Moran', '0000-0003-2088-7465'),
+    ('Emily Noether', 'Emily', 'Noether', null);
 
 INSERT INTO creator_ident (id, is_live, rev_id, redirect_id) VALUES
     ('00000000-0000-0000-2222-000000000001', true, 1, null),

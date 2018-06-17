@@ -52,7 +52,7 @@ fn test_entity_gets() {
             &router,
         ),
         status::Ok,
-        Some("MySpace"),
+        Some("Trivial Results"),
     );
 
     check_response(
