@@ -1,10 +1,45 @@
 {% extends "base.html" %}
 {% block body %}
 
-<h1>File: {{ file.id }}</h1>
+<h1>File {{ file.ident }}</h1>
 
-TODO:
+<p><b>Size:</b> {{ file.size }} (bytes)
+<p><b>SHA-1 checksum:</b> <code>{{ file.sha1 }}</code>
+{% if file.sha256 != None %}
+<p><b>SHA-256 checksum:</b> <code>{{ file.sha256 }}</code>
+{% endif %}
+{% if file.md5 != None %}
+<p><b>MD5 checksum:</b> <code>{{ file.md5 }}</code>
+{% endif %}
+<p><b>fatcat File Identifier:</b> <code>{{ file.ident }}</code> (revision #{{ file.revision }}, {{ file.state }})
+{% if file.extra != None %}
+<p><b>Additional Metadata (raw JSON):</b>
+<pre>{{ file.extra }}</pre>
+{% endif %}
 
-<pre>{{ file }}</pre>
+<!--
+Raw JSON Object:
+{{ file }}
+-->
+
+{% if file.releases != None %}
+<p>Releases associated with this file:
+<ul>
+{% for release_id in file.releases %}
+  <li><a href="/release/{{ release_id }}"><code>{{ release_id }}</code></a>
+{% endfor %}
+</ul>
+{% else %}
+This file is not associated with any fatcat release.
+{% endif %}
+
+{% if file.url != None %}
+<p>Known locations of this file:
+<ul>
+  <li><a href="{{ file.url }}"><code>{{ file.url }}</code></a>
+</ul>
+{% else %}
+No known public URL, mirror, or archive for this file.
+{% endif %}
 
 {% endblock %}

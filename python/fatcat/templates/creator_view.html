@@ -1,10 +1,25 @@
 {% extends "base.html" %}
 {% block body %}
 
-<h1>Creator: {{ creator.id }}</h1>
+<h1>{{ creator.display_name }}</h1>
 
-TODO:
+<p><b>Given ("first") name:</b> {{ creator.given_name}}
+<p><b>Sur ("family"/"last") name:</b> {{ creator.surname }}
+<p><b>ORCID<sup><a href="https://en.wikipedia.org/wiki/Orcid">?</a></sup></b>:
+{% if creator.orcid != None %}
+    <a href="https://orcid.org/{{creator.orcid}}"><code>{{ creator.orcid }}</code></a>
+{% else %}
+    unknown
+{% endif %}
+<p><b>fatcat Creator Identifier:</b> <code>{{ creator.ident }}</code> (revision #{{ creator.revision }}, {{ creator.state }})
+{% if creator.extra != None %}
+<p><b>Additional Metadata (raw JSON):</b>
+<pre>{{ creator.extra }}</pre>
+{% endif %}
 
-<pre>{{ creator }}</pre>
+<!--
+Raw JSON Object:
+{{ creator }}
+-->
 
 {% endblock %}

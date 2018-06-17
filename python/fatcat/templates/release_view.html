@@ -2,30 +2,80 @@
 {% block body %}
 
 <h1>{{ release.title }}</h1>
-
-<p>Release type: {{ release.type }}
-<p><a href="/release/{{ release.id }}/history">History</a>
-<p>Contributors:
-{% for c in release.contributors %} {{ c.name }}; {% endfor %}
-
-<p>Title: {{ release.title }}
-<p>Date: {{ release.date }}
-
-{% if release.container %}
-<p>Container: <a href="/container/{{ release.container.id }}">{{ release.container.title }}</a>
-{% endif %}
-
-{% if release.doi %}
-<p>DOI: <a href="https://dx.doi.org/{{ release.doi }}">{{ release.doi }}</a>
-{% endif %}
-
-{% if releases %}
-<ul>
-{% for r in releases %}
-  <ul><a href="/release/{{ r.id }}">{{ r.title }}</a> ({{ y.date }} - {{ y.release_type }})
+{% for contrib in authors %}
+  {% if contrib.creator_id %}
+    <a href="/creator/{{contrib.creator_id}}">{{ contrib.raw }}</a> 
+  {% else %}
+    {{ contrib.raw }}
+  {% endif %}
 {% endfor %}
+
+<br><br>
+<p><b>fatcat Work:</b> <a href="/work/{{ release.work_id }}"><code>{{ release.work_id }}</code></a>
+{% if release.doi != None %}
+<p><b>DOI:</b> <a href="https://doi.org/{{ release.doi }}"><code>{{ release.doi }}</code></a>
+{% endif %}
+{% if release.isbn13 != None %}
+<p><b>ISBN-13:</b> <code>{{ release.isbn13 }}</code> (<a href="https://openlibrary.org/search?isbn={{ release.isbn13 }}">openlibrary.org</a>)
+{% endif %}
+{% if release.language != None %}
+<p><b>Primary Language:</b> <code>{{ release.language }}</code> (<a href="https://www.loc.gov/standards/iso639-2/php/langcodes_name.php?iso_639_1={{ release.language }}">lookup ISO-639 code</a>)
+{% endif %}
+{% if release.volume != None %}<p><b>Volume:</b> {{ release.volume }}{% endif %}
+{% if release.issue != None %}<p><b>Issue:</b> {{ release.issue }}{% endif %}
+{% if release.pages != None %}<p><b>Pages:</b> {{ release.pages }}{% endif %}
+{% if release.publisher != None %}<p><b>Publisher:</b> {{ release.publisher }}{% endif %}
+{% if release.release_date != None %}<p><b>Date (published):</b> {{ release.release_date }}{% endif %}
+{% if release.release_status != None %}<p><b>Publication Status:</b> {{ release.release_status }}{% endif %}
+{% if release.release_type != None %}<p><b>Publication Type:</b> {{ release.release_type}}{% endif %}
+
+<p><b>fatcat Release Identifier:</b> <code>{{ release.ident }}</code> (revision #{{ release.revision }}, {{ release.state }})
+{% if release.extra != None %}
+<p><b>Additional Metadata (raw JSON):</b>
+<pre>{{ release.extra }}</pre>
+{% endif %}
+
+<!--
+Raw JSON Object:
+<pre>{{ release }}</pre>
+-->
+
+<br>
+{% if release.contribs.size != 0 %}
+<p>Full list of contributors (not just authors):
+<table>
+  <tr><th>Role
+      <th>Attribution Order
+      <th>Name
+  {% for contrib in release.contribs %}
+  <tr><td>{{ contrib.role or '' }}
+      <td>{{ contrib.index }}
+      {% if contrib.creator_id %}
+        <td><a href="/creator/{{contrib.creator_id}}">{{ contrib.raw }}</a> 
+      {% else %}
+        <td>{{ contrib.raw }}
+      {% endif %}
+  {% endfor %}
+</table>
+{% else %}
+<p>Contributors (authors, etc) not known.
+{% endif %}
+
+<br>
+{% if release.refs.size != 0 %}
+<p>References (this work citing other works):
+<ul>
+  {% for ref in release.refs %}
+    <li>{{ ref.raw }}
+    {% if ref.target_release_id != None %}
+    (<a href="/release/{{ ref.target_release_id }}">fatcat release</a>)
+    {% endif %}
+  {% endfor %}
 </ul>
 {% else %}
+<p>No reference list available.
 {% endif %}
+
+
 
 {% endblock %}

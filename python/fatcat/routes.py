@@ -68,7 +68,9 @@ def release_view(ident):
         entity = api.get_release(str(ident))
     except ApiException as ae:
         abort(ae.status)
-    return render_template('release_view.html', release=entity)
+    authors = [c for c in entity.contribs if c.role in ('author', None)]
+    authors = sorted(authors, key=lambda c: c.index)
+    return render_template('release_view.html', release=entity, authors=authors)
 
 @app.route('/release/random', methods=['GET'])
 def release_random():

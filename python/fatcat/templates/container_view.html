@@ -1,14 +1,26 @@
 {% extends "base.html" %}
 {% block body %}
 
-<h1>Container: {{ container.name }}</h1>
+<h1>{{ container.name }}</h1>
 
-<p>ID: {{ container.id }}
-<p>ISSN: {{ container.issn }}
-<p>Publisher: {{ container.publisher }}
+<p><b>Publisher:</b> {{ container.publisher }}
+<p><b>ISSN-L<sup><a href="https://en.wikipedia.org/wiki/International_Standard_Serial_Number#Linking_ISSN">?</a></sup></b>:
+    <code>{{ container.issnl }}</code>
+{% if container.coden != None %}
+<p><b>CODEN<sup><a href="https://en.wikipedia.org/wiki/CODEN">?</a></sup>:</b> <code>{{ container.coden }}</code>
+{% endif %}
+{% if container.abbrev != None %}
+<p><b>Abbreviation:</b> <code>{{ container.abbrev }}</code>
+{% endif %}
+<p><b>fatcat Container Identifier:</b> <code>{{ container.ident }}</code> (revision #{{ container.revision }}, {{ container.state }})
+{% if container.extra != None %}
+<p><b>Additional Metadata (raw JSON):</b>
+<pre>{{ container.extra }}</pre>
+{% endif %}
 
-<p>TODO:
-
-<pre>{{ container }}</pre>
+<!--
+Raw JSON Object:
+{{ container }}
+-->
 
 {% endblock %}
