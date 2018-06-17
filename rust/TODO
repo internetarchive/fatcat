@@ -1,43 +1,9 @@
-x re-generate OpenAPI
-    => using whatever sagger-codegen 2.3.1 (stable?)
-    => take iron example from older generator 2.3.1 (iron)
-    => cargo swagger (docker) seems to only use latest
-x iron-slog
-x integrate API server example into a main.rs
-x get and post for creators
-x cleanup pooled database: https://github.com/diesel-rs/diesel/pull/1466
-x clean up blasse error handling a bit
-x add 404s to gets
-x wow. fix a bunch of api schema names ("FindASingleContainerByExternalIdentifer")
-x refactor handlers to have a proper Result<_,_> error-chain type, so I can use '?'
-x move python to subdirectory
-x rename binary
-x copypasta a bunch of CRUD
-x swagger endpoint
-x helper to calculate 'state' of idents
-x tests for orcid and issn lookups
-x editgroup helper (for POST)
-x creators, releases, works, files
-x editgroup accept
-x edits, groups, etc
-x JSON
-x one-to-many relationship (eg, works)
-x more dummy data (tests the schema)
-x encode the remaining entities in SQL
-x openapi for other entities (heavily templated)
-x testing framework
-x file/release relation
-x refactor tests (response check, setup)
-x better test coverage (all entity types, get and post)
-x editgroup GET API schema arrays
 
-- editor_id vs. editor; can't GET by id, so need to return username?
+- editor_id vs. editor; return editor_id (in addition to name?)
 
 later:
-- generate python client library?
-- web interface?
 - editgroup: state to track review status?
-- all those python tests
+- re-implement old python tests
 - enforce "no editing if editgroup accepted" behavior
 - refactor entity creation/editing (DRY)
 - refactor to allow Result<> in all handlers

@@ -1,10 +1,19 @@
 
+## Schema / Alignment / Scope
+
+- abstracts! as files? separate table? format (latex, html, etc)?
+- work_type, release_type, release_status
+- multiple URLs
+- other identifiers (just in extra?)
+
+name ref: https://www.w3.org/International/questions/qa-personal-names
+
 ## High-Level Priorities
 
 - bulk loading of releases, files, containers, creators
-- manual editing of containers and releases
+- manual editing of containers and releases (web interface)
 - accurate auto-matching matching of containers (eg, via ISSN)
-- full database dump and reload
+- full database dump and reload (import/export)
 
 
 ## Other
