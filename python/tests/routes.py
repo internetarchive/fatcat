@@ -24,9 +24,6 @@ def test_all_views(app):
         rv = app.get('/{}/f1f046a3-45c9-ffff-ffff-ffffffffffff'.format(route))
         assert rv.status_code == 404
 
-        rv = app.get('/{}/random'.format(route))
-        assert rv.status_code == 302
-
     rv = app.get('/container/00000000-0000-0000-1111-000000000002'.format(route))
     assert rv.status_code == 200
 
@@ -42,18 +39,8 @@ def test_all_views(app):
     rv = app.get('/work/00000000-0000-0000-5555-000000000002'.format(route))
     assert rv.status_code == 200
 
-    rv = app.get('/work/random')
-    rv = app.get(rv.location)
-    assert rv.status_code == 200
-
-    rv = app.get('/work/random')
-    assert rv.status_code == 302
-
     rv = app.get('/work/create')
     assert rv.status_code == 200
-
-    rv = app.get('/release/random')
-    assert rv.status_code == 302
 
     #rv = app.get('/release/00000000-0000-0000-4444-000000000002/changelog')
     #assert rv.status_code == 200

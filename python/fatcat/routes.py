@@ -18,11 +18,6 @@ def container_view(ident):
         abort(ae.status)
     return render_template('container_view.html', container=entity)
 
-@app.route('/container/random', methods=['GET'])
-def container_random():
-    """Not actually random, just a dummy example"""
-    return redirect("/container/00000000-0000-0000-1111-000000000002")
-
 @app.route('/container/create', methods=['GET'])
 def container_create_view():
     return render_template('container_add.html')
@@ -44,11 +39,6 @@ def creator_view(ident):
         abort(ae.status)
     return render_template('creator_view.html', creator=entity)
 
-@app.route('/creator/random', methods=['GET'])
-def creator_random():
-    """Not actually random, just a dummy example"""
-    return redirect("/creator/00000000-0000-0000-2222-000000000002")
-
 @app.route('/file/<uuid:ident>', methods=['GET'])
 def file_view(ident):
     try:
@@ -56,11 +46,6 @@ def file_view(ident):
     except ApiException as ae:
         abort(ae.status)
     return render_template('file_view.html', file=entity)
-
-@app.route('/file/random', methods=['GET'])
-def file_random():
-    """Not actually random, just a dummy example"""
-    return redirect("/file/00000000-0000-0000-3333-000000000002")
 
 @app.route('/release/<uuid:ident>', methods=['GET'])
 def release_view(ident):
@@ -71,11 +56,6 @@ def release_view(ident):
     authors = [c for c in entity.contribs if c.role in ('author', None)]
     authors = sorted(authors, key=lambda c: c.index)
     return render_template('release_view.html', release=entity, authors=authors)
-
-@app.route('/release/random', methods=['GET'])
-def release_random():
-    """Not actually random, just a dummy example"""
-    return redirect("/release/00000000-0000-0000-4444-000000000002")
 
 #@app.route('/release/<uuid:ident>/changelog', methods=['GET'])
 #def release_changelog(ident):
@@ -97,11 +77,6 @@ def work_view(ident):
     except ApiException as ae:
         abort(ae.status)
     return render_template('work_view.html', work=entity)
-
-@app.route('/work/random', methods=['GET'])
-def work_random():
-    """Not actually random, just a dummy example"""
-    return redirect("/work/00000000-0000-0000-5555-000000000002")
 
 @app.route('/work/create', methods=['GET'])
 def work_create():
