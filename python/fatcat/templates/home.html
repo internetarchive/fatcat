@@ -1,29 +1,34 @@
 {% extends "base.html" %}
 {% block body %}
 
-<h1>Salutations!</h1>
+<h1>Welcome to fatcat!</h1>
 
-Just mockups for now...
+<p><b>Current Status:</b> Demo/prototype. No authentication, etc. All edits
+will be lost.
 
-<ul>
-  <li><b>Work:</b>
-    <a href="/work/create">Create</a>,
-    <a href="/work/random">Random</a>
-  <li><b>Release:</b>
-    <a href="/release/create">Create</a>,
-    <a href="/release/random">Random</a>
-  <li><b><strike>File:</strike></b>
-    <a href="/file/create">Create</a>,
-    <a href="/file/random">Random</a>
-  <li><b><strike>Contributor:</strike></b>
-    <a href="/contrib/create">Create</a>,
-    <a href="/contrib/random">Random</a>
-  <li><b><strike>Container:</strike></b>
-    <a href="/container/create">Create</a>,
-    <a href="/container/random">Random</a>
-  <li>Edit groups...
-  <li>Changelog...
-  <li>Login/Signup...
-</ul>
+<p>This is versioned, user-editable catalog of research publications: journal
+articles, conference proceedings, pre-prints, etc. Features include archival
+file-level metadata (verified digests and long-term copies, in addition to
+URLs), a <a href="https://api.fatcat.wiki">documented API</a>, and work/release
+indexing (aka, linking together of pre-prints and final copies).
+<a href="/about">Read more...</a>
+
+<table>
+<tr><td><b>Container</b>
+    <td><a href="/container/create">Create</a>
+    <td><a href="/container/00000000-0000-0000-1111-000000000002">Example</a>
+<tr><td><b>Creator</b>
+    <td><a href="/creator/create">Create</a>
+    <td><a href="/creator/00000000-0000-0000-2222-000000000002">Example</a>
+<tr><td><b>File</b>
+    <td><a href="/file/create">Create</a>
+    <td><a href="/file/00000000-0000-0000-3333-000000000002">Example</a>
+<tr><td><b>Release</b>
+    <td><a href="/release/create">Create</a>
+    <td><a href="/release/00000000-0000-0000-4444-000000000002">Example</a>
+<tr><td><b>Work</b>
+    <td><a href="/work/create">Create</a>
+    <td><a href="/work/00000000-0000-0000-5555-000000000002">Example</a>
+</table>
 
 {% endblock %}
