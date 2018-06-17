@@ -138,8 +138,8 @@ CREATE TABLE release_rev (
     doi                 TEXT,
     isbn13              TEXT,
     volume              TEXT,
-    pages               TEXT,
     issue               TEXT,
+    pages               TEXT,
     publisher           TEXT, -- for books, NOT if container exists
     language            TEXT  -- primary language of the work's fulltext
     -- TODO: identifier table?
@@ -229,6 +229,10 @@ CREATE TABLE file_release (
 ---------------------------------------------------------------------------
 
 -- Fake data at the raw SQL level, for early development and testing
+-- Convention:
+--  * first entity is smallest possible (mostly null)
+--  * second entity is rich (all fields/relations designed) but artificial
+--  * third entity (and above) are realistic (real DOI, etc)
 
 BEGIN;
 
@@ -255,22 +259,25 @@ INSERT INTO changelog (editgroup_id) VALUES
     (4),
     (5);
 
-INSERT INTO container_rev (name, issnl, abbrev, coden) VALUES
-    ('MySpace Blog', null, null, null),
-    ('Journal of Trivial Results', '1234-5678', null, null);
+INSERT INTO container_rev (name, publisher, issnl, abbrev, coden) VALUES
+    ('MySpace Blog', null, null, null, null),
+    ('Journal of Trivial Results', 'bogus publishing group', '1234-5678', 'Triv. Res.', 'CDNXYZ'),
+    ('PLOS Medicine', 'Public Library of Science', '1549-1277', 'PLoS med.', null);
 
 INSERT INTO container_ident (id, is_live, rev_id, redirect_id) VALUES
     ('00000000-0000-0000-1111-000000000001', true, 1, null),
-    ('00000000-0000-0000-1111-000000000002', true, 2, null);
+    ('00000000-0000-0000-1111-000000000002', true, 2, null),
+    ('00000000-0000-0000-1111-000000000003', true, 3, null);
 
 INSERT INTO container_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
     ('00000000-0000-0000-1111-000000000001', 1, null, 4),
-    ('00000000-0000-0000-1111-000000000002', 2, null, 5);
+    ('00000000-0000-0000-1111-000000000002', 2, null, 5),
+    ('00000000-0000-0000-1111-000000000002', 3, null, 5);
 
 INSERT INTO creator_rev (display_name, given_name, surname, orcid) VALUES
     ('Grace Hopper', null, null, null),
     ('Christine Moran', 'Christine', 'Moran', '0000-0003-2088-7465'),
-    ('Emily Noether', 'Emily', 'Noether', null);
+    ('John P. A. Ioannidis', 'John', 'Ioannidis', '0000-0003-3118-6859');
 
 INSERT INTO creator_ident (id, is_live, rev_id, redirect_id) VALUES
     ('00000000-0000-0000-2222-000000000001', true, 1, null),
@@ -286,49 +293,66 @@ INSERT INTO creator_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
 
 INSERT INTO file_rev (size, sha1, sha256, md5, url, mimetype) VALUES
     (null, null, null, null, null, null),
-    (4321, '7d97e98f8af710c7e7fe703abc8f639e0ee507c4', null, null, 'http://archive.org/robots.txt', 'text/plain');
+    (4321, '7d97e98f8af710c7e7fe703abc8f639e0ee507c4', null, null, 'http://archive.org/robots.txt', 'text/plain'),
+    (255629, '3f242a192acc258bdfdb151943419437f440c313', 'ffc1005680cb620eec4c913437dfabbf311b535cfe16cbaeb2faec1f92afc362', 'f4de91152c7ab9fdc2a128f962faebff', 'http://journals.plos.org/plosmedicine/article/file?id=10.1371/journal.pmed.0020124&type=printable', 'application/pdf');
 
 INSERT INTO file_ident (id, is_live, rev_id, redirect_id) VALUES
     ('00000000-0000-0000-3333-000000000001', true, 1, null),
-    ('00000000-0000-0000-3333-000000000002', true, 2, null);
+    ('00000000-0000-0000-3333-000000000002', true, 2, null),
+    ('00000000-0000-0000-3333-000000000003', true, 3, null);
 
 INSERT INTO file_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
     ('00000000-0000-0000-3333-000000000001', 1, null, 4),
-    ('00000000-0000-0000-3333-000000000002', 2, null, 5);
+    ('00000000-0000-0000-3333-000000000002', 2, null, 5),
+    ('00000000-0000-0000-3333-000000000003', 3, null, 5);
 
 INSERT INTO work_rev (work_type, primary_release_id) VALUES
     (null, null),
+    ('pre-print', null),
     ('journal-article', null);
 
 INSERT INTO work_ident (id, is_live, rev_id, redirect_id) VALUES
     ('00000000-0000-0000-5555-000000000001', true, 1, null),
-    ('00000000-0000-0000-5555-000000000002', true, 2, null);
+    ('00000000-0000-0000-5555-000000000002', true, 2, null),
+    ('00000000-0000-0000-5555-000000000003', true, 3, null);
 
 INSERT INTO work_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
     ('00000000-0000-0000-5555-000000000001', 1, null, 4),
-    ('00000000-0000-0000-5555-000000000002', 2, null, 5);
+    ('00000000-0000-0000-5555-000000000002', 2, null, 5),
+    ('00000000-0000-0000-5555-000000000002', 3, null, 5);
 
-INSERT INTO release_rev (work_ident_id, container_ident_id, title, release_type, release_date, doi, isbn13, volume, pages, issue, publisher) VALUES
-    ('00000000-0000-0000-5555-000000000001',                                   null,  'example title',              null,         null, null,         null,  null,  null, null, null),
-    ('00000000-0000-0000-5555-000000000002', '00000000-0000-0000-1111-000000000001', 'bigger example', 'journal-article', '2018-01-01', null, '10.123/abc',  '12', '5-9', 'IV', null);
+INSERT INTO release_rev (work_ident_id, container_ident_id, title, release_type, release_status, release_date, doi, isbn13, volume, issue, pages, publisher, language) VALUES
+    ('00000000-0000-0000-5555-000000000001',                                   null,  'example title',              null, null,        null, null,         null,  null,  null, null, null, null),
+    ('00000000-0000-0000-5555-000000000002', '00000000-0000-0000-1111-000000000001', 'bigger example', 'journal-article', null,'2018-01-01', '10.123/abc', '99999-999-9-X',  '12', 'IV', '5-9', 'bogus publishing group', 'cn'),
+    ('00000000-0000-0000-5555-000000000003', '00000000-0000-0000-1111-000000000003', 'Why Most Published Research Findings Are False', 'journal-article', 'published', '2005-08-30', '10.1371/journal.pmed.0020124',  null, '2', '8', 'e124', 'Public Library of Science', 'en');
 
 INSERT INTO release_ident (id, is_live, rev_id, redirect_id) VALUES
     ('00000000-0000-0000-4444-000000000001', true, 1, null),
-    ('00000000-0000-0000-4444-000000000002', true, 2, null);
+    ('00000000-0000-0000-4444-000000000002', true, 2, null),
+    ('00000000-0000-0000-4444-000000000003', true, 3, null);
 
 INSERT INTO release_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
     ('00000000-0000-0000-4444-000000000001', 1, null, 4),
-    ('00000000-0000-0000-4444-000000000002', 2, null, 5);
+    ('00000000-0000-0000-4444-000000000002', 2, null, 5),
+    ('00000000-0000-0000-4444-000000000003', 3, null, 5);
 
 INSERT INTO release_contrib (release_rev, creator_ident_id, raw, role, index) VALUES
     (2, null, null, null, null),
-    (2, '00000000-0000-0000-2222-000000000002', 'some contrib', 'editor', 4);
+    (2, '00000000-0000-0000-2222-000000000002', 'some contrib', 'editor', 4),
+    (3, '00000000-0000-0000-2222-000000000003', 'John P. A. Ioannidis', 'author', 0);
 
 INSERT INTO release_ref (release_rev, target_release_ident_id, index, raw) VALUES
     (2, null, null, null),
-    (2, '00000000-0000-0000-4444-000000000001', 4, 'citation note');
+    (2, '00000000-0000-0000-4444-000000000001', 4, 'citation note'),
+    (3, null, 0, 'Ioannidis JP, Haidich AB, Lau J. Any casualties in the clash of randomised and observational evidence? BMJ. 2001;322:879–880'),
+    (3, null, 1, 'Lawlor DA, Davey Smith G, Kundu D, Bruckdorfer KR, Ebrahim S. Those confounded vitamins: What can we learn from the differences between observational versus randomised trial evidence? Lancet. 2004;363:1724–1727.'),
+    (3, null, 2, 'Vandenbroucke JP. When are observational studies as credible as randomised trials? Lancet. 2004;363:1728–1731.'),
+    (3, null, 3, 'Michiels S, Koscielny S, Hill C. Prediction of cancer outcome with microarrays: A multiple random validation strategy. Lancet. 2005;365:488–492.'),
+    (3, null, 4, 'Ioannidis JPA, Ntzani EE, Trikalinos TA, Contopoulos-Ioannidis DG. Replication validity of genetic association studies. Nat Genet. 2001;29:306–309.'),
+    (3, null, 5, 'Colhoun HM, McKeigue PM, Davey Smith G. Problems of reporting genetic associations with complex outcomes. Lancet. 2003;361:865–872.');
 
 INSERT INTO file_release (file_rev, target_release_ident_id) VALUES
-    (2, '00000000-0000-0000-4444-000000000002');
+    (2, '00000000-0000-0000-4444-000000000002'),
+    (3, '00000000-0000-0000-4444-000000000003');
 
 COMMIT;

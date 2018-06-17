@@ -186,8 +186,8 @@ table! {
         doi -> Nullable<Text>,
         isbn13 -> Nullable<Text>,
         volume -> Nullable<Text>,
-        pages -> Nullable<Text>,
         issue -> Nullable<Text>,
+        pages -> Nullable<Text>,
         publisher -> Nullable<Text>,
         language -> Nullable<Text>,
     }
