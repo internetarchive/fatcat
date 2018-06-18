@@ -147,6 +147,41 @@ fn test_lookups() {
 }
 
 #[test]
+fn test_reverse_lookups() {
+    let (headers, router, _conn) = setup();
+
+    check_response(
+        request::get(
+            "http://localhost:9411/v0/creator/00000000-0000-0000-2222-000000000002/releases",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("bigger example"),
+    );
+
+    check_response(
+        request::get(
+            "http://localhost:9411/v0/release/00000000-0000-0000-4444-000000000002/files",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("7d97e98f8af710c7e7fe703abc8f639e0ee507c4"),
+    );
+
+    check_response(
+        request::get(
+            "http://localhost:9411/v0/work/00000000-0000-0000-5555-000000000002/releases",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("bigger example"),
+    );
+}
+
+#[test]
 fn test_post_container() {
     let (headers, router, _conn) = setup();
 

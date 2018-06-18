@@ -171,7 +171,7 @@ fn creator_row2entity(ident: Option<CreatorIdentRow>, rev: CreatorRevRow) -> Res
 fn file_row2entity(
     ident: Option<FileIdentRow>,
     rev: FileRevRow,
-    conn: DbConn,
+    conn: &DbConn,
 ) -> Result<FileEntity> {
     let (state, ident_id, redirect_id) = match ident {
         Some(i) => (
@@ -184,7 +184,7 @@ fn file_row2entity(
 
     let releases: Vec<String> = file_release::table
         .filter(file_release::file_rev.eq(rev.id))
-        .get_results(&conn)?
+        .get_results(conn)?
         .iter()
         .map(|r: &FileReleaseRow| r.target_release_ident_id.to_string())
         .collect();
@@ -209,7 +209,7 @@ fn file_row2entity(
 fn release_row2entity(
     ident: Option<ReleaseIdentRow>,
     rev: ReleaseRevRow,
-    conn: DbConn,
+    conn: &DbConn,
 ) -> Result<ReleaseEntity> {
     let (state, ident_id, redirect_id) = match ident {
         Some(i) => (
@@ -222,7 +222,7 @@ fn release_row2entity(
 
     let refs: Vec<ReleaseRef> = release_ref::table
         .filter(release_ref::release_rev.eq(rev.id))
-        .get_results(&conn)
+        .get_results(conn)
         .expect("fetch release refs")
         .iter()
         .map(|r: &ReleaseRefRow| ReleaseRef {
@@ -239,7 +239,7 @@ fn release_row2entity(
 
     let contribs: Vec<ReleaseContrib> = release_contrib::table
         .filter(release_contrib::release_rev.eq(rev.id))
-        .get_results(&conn)
+        .get_results(conn)
         .expect("fetch release refs")
         .iter()
         .map(|c: &ReleaseContribRow| ReleaseContrib {
@@ -348,6 +348,23 @@ impl Server {
         creator_row2entity(Some(ident), rev)
     }
 
+    fn get_creator_releases_handler(&self, id: String) -> Result<Vec<ReleaseEntity>> {
+        let conn = self.db_pool.get().expect("db_pool error");
+        let id = uuid::Uuid::parse_str(&id)?;
+
+        // TODO: some kind of unique or group-by?
+        let rows: Vec<(ReleaseRevRow, ReleaseIdentRow, ReleaseContribRow)> = release_rev::table
+            .inner_join(release_ident::table)
+            .inner_join(release_contrib::table)
+            .filter(release_contrib::creator_ident_id.eq(&id))
+            .filter(release_ident::is_live.eq(true))
+            .filter(release_ident::redirect_id.is_null())
+            .load(&conn)?;
+
+        rows.into_iter()
+            .map(|(rev, ident, _)| release_row2entity(Some(ident), rev, &conn)).collect()
+    }
+
     fn get_file_handler(&self, id: String) -> Result<FileEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
         let id = uuid::Uuid::parse_str(&id)?;
@@ -357,7 +374,7 @@ impl Server {
             .inner_join(file_rev::table)
             .first(&conn)?;
 
-        file_row2entity(Some(ident), rev, conn)
+        file_row2entity(Some(ident), rev, &conn)
     }
 
     fn lookup_file_handler(&self, sha1: String) -> Result<FileEntity> {
@@ -370,7 +387,7 @@ impl Server {
             .filter(file_ident::redirect_id.is_null())
             .first(&conn)?;
 
-        file_row2entity(Some(ident), rev, conn)
+        file_row2entity(Some(ident), rev, &conn)
     }
 
     fn get_release_handler(&self, id: String) -> Result<ReleaseEntity> {
@@ -382,7 +399,7 @@ impl Server {
             .inner_join(release_rev::table)
             .first(&conn)?;
 
-        release_row2entity(Some(ident), rev, conn)
+        release_row2entity(Some(ident), rev, &conn)
     }
 
     fn lookup_release_handler(&self, doi: String) -> Result<ReleaseEntity> {
@@ -395,7 +412,23 @@ impl Server {
             .filter(release_ident::redirect_id.is_null())
             .first(&conn)?;
 
-        release_row2entity(Some(ident), rev, conn)
+        release_row2entity(Some(ident), rev, &conn)
+    }
+
+    fn get_release_files_handler(&self, id: String) -> Result<Vec<FileEntity>> {
+        let conn = self.db_pool.get().expect("db_pool error");
+        let id = uuid::Uuid::parse_str(&id)?;
+
+        let rows: Vec<(FileRevRow, FileIdentRow, FileReleaseRow)> = file_rev::table
+            .inner_join(file_ident::table)
+            .inner_join(file_release::table)
+            .filter(file_release::target_release_ident_id.eq(&id))
+            .filter(file_ident::is_live.eq(true))
+            .filter(file_ident::redirect_id.is_null())
+            .load(&conn)?;
+
+        rows.into_iter()
+            .map(|(rev, ident, _)| file_row2entity(Some(ident), rev, &conn)).collect()
     }
 
     fn get_work_handler(&self, id: String) -> Result<WorkEntity> {
@@ -408,6 +441,21 @@ impl Server {
             .first(&conn)?;
 
         work_row2entity(Some(ident), rev)
+    }
+
+    fn get_work_releases_handler(&self, id: String) -> Result<Vec<ReleaseEntity>> {
+        let conn = self.db_pool.get().expect("db_pool error");
+        let id = uuid::Uuid::parse_str(&id)?;
+
+        let rows: Vec<(ReleaseRevRow, ReleaseIdentRow)> = release_rev::table
+            .inner_join(release_ident::table)
+            .filter(release_rev::work_ident_id.eq(&id))
+            .filter(release_ident::is_live.eq(true))
+            .filter(release_ident::redirect_id.is_null())
+            .load(&conn)?;
+
+        rows.into_iter()
+            .map(|(rev, ident)| release_row2entity(Some(ident), rev, &conn)).collect()
     }
 
     fn create_container_handler(
@@ -916,6 +964,29 @@ impl Api for Server {
         lookup_release_handler,
         LookupReleaseResponse,
         doi,
+        String
+    );
+
+    // Rename "wrap_lookup_handler"?
+    wrap_lookup_handler!(
+        get_release_files,
+        get_release_files_handler,
+        GetReleaseFilesResponse,
+        id,
+        String
+    );
+    wrap_lookup_handler!(
+        get_work_releases,
+        get_work_releases_handler,
+        GetWorkReleasesResponse,
+        id,
+        String
+    );
+    wrap_lookup_handler!(
+        get_creator_releases,
+        get_creator_releases_handler,
+        GetCreatorReleasesResponse,
+        id,
         String
     );
 
