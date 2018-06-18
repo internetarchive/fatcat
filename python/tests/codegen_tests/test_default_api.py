@@ -113,6 +113,12 @@ class TestDefaultApi(unittest.TestCase):
         """
         pass
 
+    def test_get_creator_releases(self):
+        """Test case for get_creator_releases
+
+        """
+        pass
+
     def test_get_editgroup(self):
         """Test case for get_editgroup
 
@@ -143,8 +149,20 @@ class TestDefaultApi(unittest.TestCase):
         """
         pass
 
+    def test_get_release_files(self):
+        """Test case for get_release_files
+
+        """
+        pass
+
     def test_get_work(self):
         """Test case for get_work
+
+        """
+        pass
+
+    def test_get_work_releases(self):
+        """Test case for get_work_releases
 
         """
         pass
