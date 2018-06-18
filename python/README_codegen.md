@@ -82,12 +82,15 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**create_work_batch**](docs/DefaultApi.md#create_work_batch) | **POST** /work/batch | 
 *DefaultApi* | [**get_container**](docs/DefaultApi.md#get_container) | **GET** /container/{id} | 
 *DefaultApi* | [**get_creator**](docs/DefaultApi.md#get_creator) | **GET** /creator/{id} | 
+*DefaultApi* | [**get_creator_releases**](docs/DefaultApi.md#get_creator_releases) | **GET** /creator/{id}/releases | 
 *DefaultApi* | [**get_editgroup**](docs/DefaultApi.md#get_editgroup) | **GET** /editgroup/{id} | 
 *DefaultApi* | [**get_editor**](docs/DefaultApi.md#get_editor) | **GET** /editor/{username} | 
 *DefaultApi* | [**get_editor_changelog**](docs/DefaultApi.md#get_editor_changelog) | **GET** /editor/{username}/changelog | 
 *DefaultApi* | [**get_file**](docs/DefaultApi.md#get_file) | **GET** /file/{id} | 
 *DefaultApi* | [**get_release**](docs/DefaultApi.md#get_release) | **GET** /release/{id} | 
+*DefaultApi* | [**get_release_files**](docs/DefaultApi.md#get_release_files) | **GET** /release/{id}/files | 
 *DefaultApi* | [**get_work**](docs/DefaultApi.md#get_work) | **GET** /work/{id} | 
+*DefaultApi* | [**get_work_releases**](docs/DefaultApi.md#get_work_releases) | **GET** /work/{id}/releases | 
 *DefaultApi* | [**lookup_container**](docs/DefaultApi.md#lookup_container) | **GET** /container/lookup | 
 *DefaultApi* | [**lookup_creator**](docs/DefaultApi.md#lookup_creator) | **GET** /creator/lookup | 
 *DefaultApi* | [**lookup_file**](docs/DefaultApi.md#lookup_file) | **GET** /file/lookup | 

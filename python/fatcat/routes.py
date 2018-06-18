@@ -35,9 +35,10 @@ def container_create():
 def creator_view(ident):
     try:
         entity = api.get_creator(str(ident))
+        releases = api.get_creator_releases(str(ident))
     except ApiException as ae:
         abort(ae.status)
-    return render_template('creator_view.html', creator=entity)
+    return render_template('creator_view.html', creator=entity, releases=releases)
 
 @app.route('/file/<uuid:ident>', methods=['GET'])
 def file_view(ident):
@@ -51,11 +52,12 @@ def file_view(ident):
 def release_view(ident):
     try:
         entity = api.get_release(str(ident))
+        files = api.get_release_files(str(ident))
     except ApiException as ae:
         abort(ae.status)
     authors = [c for c in entity.contribs if c.role in ('author', None)]
     authors = sorted(authors, key=lambda c: c.index)
-    return render_template('release_view.html', release=entity, authors=authors)
+    return render_template('release_view.html', release=entity, authors=authors, files=files)
 
 #@app.route('/release/<uuid:ident>/changelog', methods=['GET'])
 #def release_changelog(ident):
@@ -74,9 +76,10 @@ def release_view(ident):
 def work_view(ident):
     try:
         entity = api.get_work(str(ident))
+        releases = api.get_work_releases(str(ident))
     except ApiException as ae:
         abort(ae.status)
-    return render_template('work_view.html', work=entity)
+    return render_template('work_view.html', work=entity, releases=releases)
 
 @app.route('/work/create', methods=['GET'])
 def work_create():

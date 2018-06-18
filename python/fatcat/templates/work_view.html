@@ -20,11 +20,12 @@ still reference the same underlying "work".
 
 <br>
 
-{% if releases %}
+{% if releases != [] %}
 <ul>
-{% for r in releases %}
-  <ul><a href="/release/{{ r.ident }}">{{ r.title }}</a> ({{ y.release_type }} - {{ y.date }})
-{% endfor %}
+  {% for release in releases %}
+  <li>"{{ release.title }}", a {{ release.release_type }} published {{ release.release_date }} as <code>{{ release.release_status }}</code>.
+    <br><a href="/release/{{ release.ident }}"><code>{{ release.ident }}</code></a>
+  {% endfor %}
 </ul>
 {% else %}
 <p>There are no known releases associated with this work.

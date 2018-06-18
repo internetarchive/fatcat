@@ -22,4 +22,16 @@ Raw JSON Object:
 {{ creator }}
 -->
 
+{% if releases != [] %}
+Releases this creator has contributed to:
+<ul>
+  {% for release in releases %}
+  <li>"{{ release.title }}", a {{ release.release_type }} published {{ release.release_date }} as <code>{{ release.release_status }}</code>.
+    <br><a href="/release/{{ release.ident }}"><code>{{ release.ident }}</code></a>
+  {% endfor %}
+</ul>
+{% else %}
+This creator has not contributed to any releases.
+{% endif %}
+
 {% endblock %}

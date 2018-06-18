@@ -41,6 +41,19 @@ Raw JSON Object:
 -->
 
 <br>
+{% if files != [] %}
+<p>Files believed to represent this release:
+<ul>
+  {% for file in files %}
+  <li><a href="/file/{{ file.ident }}">{{ file.sha1}}</a> ({{ file.size }} bytes), at <a href="{{ file.url }}">{{ file.url }}</a>
+  {% endfor %}
+</ul>
+{% else %}
+<p>There are no known files associated with this release (you could try other
+releases for this work?).
+{% endif %}
+
+<br>
 {% if release.contribs.size != 0 %}
 <p>Full list of contributors (not just authors):
 <table>
@@ -75,7 +88,5 @@ Raw JSON Object:
 {% else %}
 <p>No reference list available.
 {% endif %}
-
-
 
 {% endblock %}
