@@ -224,6 +224,22 @@ pub mod responses {
     lazy_static! {
         pub static ref GET_CREATOR_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
+    /// Create Mime objects for the response content types for GetCreatorReleases
+    lazy_static! {
+        pub static ref GET_CREATOR_RELEASES_FOUND_ENTITY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetCreatorReleases
+    lazy_static! {
+        pub static ref GET_CREATOR_RELEASES_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetCreatorReleases
+    lazy_static! {
+        pub static ref GET_CREATOR_RELEASES_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetCreatorReleases
+    lazy_static! {
+        pub static ref GET_CREATOR_RELEASES_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
     /// Create Mime objects for the response content types for GetEditgroup
     lazy_static! {
         pub static ref GET_EDITGROUP_FOUND_ENTITY: Mime = mime!(Application / Json);
@@ -296,6 +312,22 @@ pub mod responses {
     lazy_static! {
         pub static ref GET_RELEASE_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
+    /// Create Mime objects for the response content types for GetReleaseFiles
+    lazy_static! {
+        pub static ref GET_RELEASE_FILES_FOUND_ENTITY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetReleaseFiles
+    lazy_static! {
+        pub static ref GET_RELEASE_FILES_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetReleaseFiles
+    lazy_static! {
+        pub static ref GET_RELEASE_FILES_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetReleaseFiles
+    lazy_static! {
+        pub static ref GET_RELEASE_FILES_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
     /// Create Mime objects for the response content types for GetWork
     lazy_static! {
         pub static ref GET_WORK_FOUND_ENTITY: Mime = mime!(Application / Json);
@@ -311,6 +343,22 @@ pub mod responses {
     /// Create Mime objects for the response content types for GetWork
     lazy_static! {
         pub static ref GET_WORK_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetWorkReleases
+    lazy_static! {
+        pub static ref GET_WORK_RELEASES_FOUND_ENTITY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetWorkReleases
+    lazy_static! {
+        pub static ref GET_WORK_RELEASES_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetWorkReleases
+    lazy_static! {
+        pub static ref GET_WORK_RELEASES_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetWorkReleases
+    lazy_static! {
+        pub static ref GET_WORK_RELEASES_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for LookupContainer
     lazy_static! {

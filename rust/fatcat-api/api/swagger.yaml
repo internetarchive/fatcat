@@ -407,6 +407,60 @@ paths:
       path: "/creator/:id"
       HttpMethod: "Get"
       httpmethod: "get"
+  /creator/{id}/releases:
+    get:
+      operationId: "get_creator_releases"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      responses:
+        200:
+          description: "Found Entity"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/release_entity"
+          x-responseId: "FoundEntity"
+          x-uppercaseResponseId: "FOUND_ENTITY"
+          uppercase_operation_id: "GET_CREATOR_RELEASES"
+          uppercase_data_type: "VEC<RELEASEENTITY>"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_CREATOR_RELEASES"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_CREATOR_RELEASES"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        default:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_CREATOR_RELEASES"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_creator_releases"
+      uppercase_operation_id: "GET_CREATOR_RELEASES"
+      path: "/creator/:id/releases"
+      HttpMethod: "Get"
+      httpmethod: "get"
   /creator/lookup:
     get:
       operationId: "lookup_creator"
@@ -853,6 +907,60 @@ paths:
       path: "/release/:id"
       HttpMethod: "Get"
       httpmethod: "get"
+  /release/{id}/files:
+    get:
+      operationId: "get_release_files"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      responses:
+        200:
+          description: "Found Entity"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/file_entity"
+          x-responseId: "FoundEntity"
+          x-uppercaseResponseId: "FOUND_ENTITY"
+          uppercase_operation_id: "GET_RELEASE_FILES"
+          uppercase_data_type: "VEC<FILEENTITY>"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_RELEASE_FILES"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_RELEASE_FILES"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        default:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_RELEASE_FILES"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_release_files"
+      uppercase_operation_id: "GET_RELEASE_FILES"
+      path: "/release/:id/files"
+      HttpMethod: "Get"
+      httpmethod: "get"
   /release/lookup:
     get:
       operationId: "lookup_release"
@@ -1074,6 +1182,60 @@ paths:
       operation_id: "get_work"
       uppercase_operation_id: "GET_WORK"
       path: "/work/:id"
+      HttpMethod: "Get"
+      httpmethod: "get"
+  /work/{id}/releases:
+    get:
+      operationId: "get_work_releases"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      responses:
+        200:
+          description: "Found Entity"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/release_entity"
+          x-responseId: "FoundEntity"
+          x-uppercaseResponseId: "FOUND_ENTITY"
+          uppercase_operation_id: "GET_WORK_RELEASES"
+          uppercase_data_type: "VEC<RELEASEENTITY>"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_WORK_RELEASES"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_WORK_RELEASES"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        default:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_WORK_RELEASES"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_work_releases"
+      uppercase_operation_id: "GET_WORK_RELEASES"
+      path: "/work/:id/releases"
       HttpMethod: "Get"
       httpmethod: "get"
   /editor/{username}:

@@ -11,9 +11,9 @@ use swagger;
 
 use fatcat::models;
 use fatcat::{AcceptEditgroupResponse, Api, ApiError, Context, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse, CreateEditgroupResponse,
-             CreateFileBatchResponse, CreateFileResponse, CreateReleaseBatchResponse, CreateReleaseResponse, CreateWorkBatchResponse, CreateWorkResponse, GetContainerResponse, GetCreatorResponse,
-             GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileResponse, GetReleaseResponse, GetWorkResponse, LookupContainerResponse, LookupCreatorResponse,
-             LookupFileResponse, LookupReleaseResponse};
+             CreateFileBatchResponse, CreateFileResponse, CreateReleaseBatchResponse, CreateReleaseResponse, CreateWorkBatchResponse, CreateWorkResponse, GetContainerResponse,
+             GetCreatorReleasesResponse, GetCreatorResponse, GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileResponse, GetReleaseFilesResponse, GetReleaseResponse,
+             GetWorkReleasesResponse, GetWorkResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse, LookupReleaseResponse};
 
 #[derive(Copy, Clone)]
 pub struct Server;
@@ -107,6 +107,12 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
+    fn get_creator_releases(&self, id: String, context: &Context) -> Box<Future<Item = GetCreatorReleasesResponse, Error = ApiError> + Send> {
+        let context = context.clone();
+        println!("get_creator_releases(\"{}\") - X-Span-ID: {:?}", id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        Box::new(futures::failed("Generic failure".into()))
+    }
+
     fn get_editgroup(&self, id: i64, context: &Context) -> Box<Future<Item = GetEditgroupResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!("get_editgroup({}) - X-Span-ID: {:?}", id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
@@ -137,9 +143,21 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
+    fn get_release_files(&self, id: String, context: &Context) -> Box<Future<Item = GetReleaseFilesResponse, Error = ApiError> + Send> {
+        let context = context.clone();
+        println!("get_release_files(\"{}\") - X-Span-ID: {:?}", id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        Box::new(futures::failed("Generic failure".into()))
+    }
+
     fn get_work(&self, id: String, context: &Context) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!("get_work(\"{}\") - X-Span-ID: {:?}", id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        Box::new(futures::failed("Generic failure".into()))
+    }
+
+    fn get_work_releases(&self, id: String, context: &Context) -> Box<Future<Item = GetWorkReleasesResponse, Error = ApiError> + Send> {
+        let context = context.clone();
+        println!("get_work_releases(\"{}\") - X-Span-ID: {:?}", id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))
     }
 

@@ -199,6 +199,18 @@ pub enum GetCreatorResponse {
 }
 
 #[derive(Debug, PartialEq)]
+pub enum GetCreatorReleasesResponse {
+    /// Found Entity
+    FoundEntity(Vec<models::ReleaseEntity>),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
 pub enum GetEditgroupResponse {
     /// Found Entity
     FoundEntity(models::Editgroup),
@@ -255,9 +267,33 @@ pub enum GetReleaseResponse {
 }
 
 #[derive(Debug, PartialEq)]
+pub enum GetReleaseFilesResponse {
+    /// Found Entity
+    FoundEntity(Vec<models::FileEntity>),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
 pub enum GetWorkResponse {
     /// Found Entity
     FoundEntity(models::WorkEntity),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum GetWorkReleasesResponse {
+    /// Found Entity
+    FoundEntity(Vec<models::ReleaseEntity>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
     /// Not Found
@@ -344,6 +380,8 @@ pub trait Api {
 
     fn get_creator(&self, id: String, context: &Context) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send>;
 
+    fn get_creator_releases(&self, id: String, context: &Context) -> Box<Future<Item = GetCreatorReleasesResponse, Error = ApiError> + Send>;
+
     fn get_editgroup(&self, id: i64, context: &Context) -> Box<Future<Item = GetEditgroupResponse, Error = ApiError> + Send>;
 
     fn get_editor(&self, username: String, context: &Context) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send>;
@@ -354,7 +392,11 @@ pub trait Api {
 
     fn get_release(&self, id: String, context: &Context) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send>;
 
+    fn get_release_files(&self, id: String, context: &Context) -> Box<Future<Item = GetReleaseFilesResponse, Error = ApiError> + Send>;
+
     fn get_work(&self, id: String, context: &Context) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send>;
+
+    fn get_work_releases(&self, id: String, context: &Context) -> Box<Future<Item = GetWorkReleasesResponse, Error = ApiError> + Send>;
 
     fn lookup_container(&self, issnl: String, context: &Context) -> Box<Future<Item = LookupContainerResponse, Error = ApiError> + Send>;
 
@@ -395,6 +437,8 @@ pub trait ApiNoContext {
 
     fn get_creator(&self, id: String) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send>;
 
+    fn get_creator_releases(&self, id: String) -> Box<Future<Item = GetCreatorReleasesResponse, Error = ApiError> + Send>;
+
     fn get_editgroup(&self, id: i64) -> Box<Future<Item = GetEditgroupResponse, Error = ApiError> + Send>;
 
     fn get_editor(&self, username: String) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send>;
@@ -405,7 +449,11 @@ pub trait ApiNoContext {
 
     fn get_release(&self, id: String) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send>;
 
+    fn get_release_files(&self, id: String) -> Box<Future<Item = GetReleaseFilesResponse, Error = ApiError> + Send>;
+
     fn get_work(&self, id: String) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send>;
+
+    fn get_work_releases(&self, id: String) -> Box<Future<Item = GetWorkReleasesResponse, Error = ApiError> + Send>;
 
     fn lookup_container(&self, issnl: String) -> Box<Future<Item = LookupContainerResponse, Error = ApiError> + Send>;
 
@@ -488,6 +536,10 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().get_creator(id, &self.context())
     }
 
+    fn get_creator_releases(&self, id: String) -> Box<Future<Item = GetCreatorReleasesResponse, Error = ApiError> + Send> {
+        self.api().get_creator_releases(id, &self.context())
+    }
+
     fn get_editgroup(&self, id: i64) -> Box<Future<Item = GetEditgroupResponse, Error = ApiError> + Send> {
         self.api().get_editgroup(id, &self.context())
     }
@@ -508,8 +560,16 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().get_release(id, &self.context())
     }
 
+    fn get_release_files(&self, id: String) -> Box<Future<Item = GetReleaseFilesResponse, Error = ApiError> + Send> {
+        self.api().get_release_files(id, &self.context())
+    }
+
     fn get_work(&self, id: String) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send> {
         self.api().get_work(id, &self.context())
+    }
+
+    fn get_work_releases(&self, id: String) -> Box<Future<Item = GetWorkReleasesResponse, Error = ApiError> + Send> {
+        self.api().get_work_releases(id, &self.context())
     }
 
     fn lookup_container(&self, issnl: String) -> Box<Future<Item = LookupContainerResponse, Error = ApiError> + Send> {

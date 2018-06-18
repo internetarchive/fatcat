@@ -438,6 +438,22 @@ paths:
           schema:
             $ref: "#/definitions/creator_entity"
         <<: *ENTITYRESPONSES
+  /creator/{id}/releases:
+    parameters:
+      - name: id
+        in: path
+        type: string
+        required: true
+    get:
+      operationId: "get_creator_releases"
+      responses:
+        200:
+          description: Found Entity
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/release_entity"
+        <<: *ENTITYRESPONSES
   /creator/lookup:
     get:
       operationId: "lookup_creator"
@@ -562,6 +578,22 @@ paths:
           schema:
             $ref: "#/definitions/release_entity"
         <<: *ENTITYRESPONSES
+  /release/{id}/files:
+    parameters:
+      - name: id
+        in: path
+        type: string
+        required: true
+    get:
+      operationId: "get_release_files"
+      responses:
+        200:
+          description: Found Entity
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/file_entity"
+        <<: *ENTITYRESPONSES
   /release/lookup:
     get:
       operationId: "lookup_release"
@@ -623,6 +655,22 @@ paths:
           description: Found Entity
           schema:
             $ref: "#/definitions/work_entity"
+        <<: *ENTITYRESPONSES
+  /work/{id}/releases:
+    parameters:
+      - name: id
+        in: path
+        type: string
+        required: true
+    get:
+      operationId: "get_work_releases"
+      responses:
+        200:
+          description: Found Entity
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/release_entity"
         <<: *ENTITYRESPONSES
   /editor/{username}:
     parameters:

@@ -13,8 +13,8 @@ use clap::{App, Arg};
 #[allow(unused_imports)]
 use fatcat::{AcceptEditgroupResponse, ApiError, ApiNoContext, ContextWrapperExt, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse,
              CreateEditgroupResponse, CreateFileBatchResponse, CreateFileResponse, CreateReleaseBatchResponse, CreateReleaseResponse, CreateWorkBatchResponse, CreateWorkResponse,
-             GetContainerResponse, GetCreatorResponse, GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileResponse, GetReleaseResponse, GetWorkResponse,
-             LookupContainerResponse, LookupCreatorResponse, LookupFileResponse, LookupReleaseResponse};
+             GetContainerResponse, GetCreatorReleasesResponse, GetCreatorResponse, GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileResponse, GetReleaseFilesResponse,
+             GetReleaseResponse, GetWorkReleasesResponse, GetWorkResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse, LookupReleaseResponse};
 #[allow(unused_imports)]
 use futures::{future, stream, Future, Stream};
 
@@ -32,12 +32,15 @@ fn main() {
                     "CreateWorkBatch",
                     "GetContainer",
                     "GetCreator",
+                    "GetCreatorReleases",
                     "GetEditgroup",
                     "GetEditor",
                     "GetEditorChangelog",
                     "GetFile",
                     "GetRelease",
+                    "GetReleaseFiles",
                     "GetWork",
+                    "GetWorkReleases",
                     "LookupContainer",
                     "LookupCreator",
                     "LookupFile",
@@ -141,6 +144,11 @@ fn main() {
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
+        Some("GetCreatorReleases") => {
+            let result = client.get_creator_releases("id_example".to_string()).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
         Some("GetEditgroup") => {
             let result = client.get_editgroup(789).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
@@ -166,8 +174,18 @@ fn main() {
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
+        Some("GetReleaseFiles") => {
+            let result = client.get_release_files("id_example".to_string()).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
         Some("GetWork") => {
             let result = client.get_work("id_example".to_string()).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("GetWorkReleases") => {
+            let result = client.get_work_releases("id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
