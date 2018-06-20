@@ -141,7 +141,7 @@ CREATE TABLE release_rev (
     issue               TEXT,
     pages               TEXT,
     publisher           TEXT, -- for books, NOT if container exists
-    language            TEXT  -- primary language of the work's fulltext
+    language            TEXT  -- primary language of the work's fulltext; RFC1766/ISO639-1
     -- TODO: identifier table?
 );
 

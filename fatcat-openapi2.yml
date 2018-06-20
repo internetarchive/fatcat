@@ -166,6 +166,7 @@ definitions:
       publisher:
         type: string
       language:
+        description: "Two-letter RFC1766/ISO639-1 language code, with extensions"
         type: string
       contribs:
         type: array
