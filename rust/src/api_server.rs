@@ -81,7 +81,8 @@ macro_rules! wrap_entity_handlers {
 
 macro_rules! entity_batch_handler {
     ($post_handler:ident, $post_batch_handler:ident, $model:ident) => {
-        fn $post_batch_handler(&self, entity_list: &Vec<models::$model>) -> Result<Vec<EntityEdit>> {
+        fn $post_batch_handler(&self, entity_list: &Vec<models::$model>) ->
+                Result<Vec<EntityEdit>> {
             let conn = self.db_pool.get().expect("db_pool error");
             // TODO: start a transaction
             let mut ret: Vec<EntityEdit> = vec![];
