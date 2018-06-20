@@ -12,6 +12,7 @@ extern crate hyper;
 #[macro_use]
 extern crate error_chain;
 extern crate iron;
+#[macro_use]
 extern crate serde_json;
 
 pub mod api_helpers;
@@ -27,6 +28,7 @@ mod errors {
                         R2d2(::diesel::r2d2::Error);
                         Uuid(::uuid::ParseError);
                         Io(::std::io::Error) #[cfg(unix)];
+                        Serde(::serde_json::Error);
         }
     }
 }

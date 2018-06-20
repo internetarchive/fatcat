@@ -618,6 +618,19 @@ impl ReleaseRef {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct StatsResponse {
+    #[serde(rename = "extra")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub extra: Option<serde_json::Value>,
+}
+
+impl StatsResponse {
+    pub fn new() -> StatsResponse {
+        StatsResponse { extra: None }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Success {
     #[serde(rename = "message")]
     pub message: String,

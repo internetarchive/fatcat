@@ -429,3 +429,14 @@ fn test_accept_editgroup() {
         .unwrap();
     assert_eq!(c, 1);
 }
+
+#[test]
+fn test_stats() {
+    let (headers, router, _conn) = setup();
+
+    check_response(
+        request::get("http://localhost:9411/v0/stats", headers, &router),
+        status::Ok,
+        Some("merged_editgroups"),
+    );
+}

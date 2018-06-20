@@ -114,6 +114,17 @@ macro_rules! wrap_lookup_handler {
     }
 }
 
+macro_rules! count_entity {
+    ($table:ident, $conn:expr) => {{
+        let count: i64 = $table::table
+            .filter($table::is_live.eq(true))
+            .filter($table::redirect_id.is_null())
+            .select(diesel::dsl::count($table::id))
+            .first($conn)?;
+        count
+    }};
+}
+
 #[derive(Clone)]
 pub struct Server {
     pub db_pool: ConnectionPool,
@@ -363,7 +374,8 @@ impl Server {
             .load(&conn)?;
 
         rows.into_iter()
-            .map(|(rev, ident, _)| release_row2entity(Some(ident), rev, &conn)).collect()
+            .map(|(rev, ident, _)| release_row2entity(Some(ident), rev, &conn))
+            .collect()
     }
 
     fn get_file_handler(&self, id: String) -> Result<FileEntity> {
@@ -429,7 +441,8 @@ impl Server {
             .load(&conn)?;
 
         rows.into_iter()
-            .map(|(rev, ident, _)| file_row2entity(Some(ident), rev, &conn)).collect()
+            .map(|(rev, ident, _)| file_row2entity(Some(ident), rev, &conn))
+            .collect()
     }
 
     fn get_work_handler(&self, id: String) -> Result<WorkEntity> {
@@ -456,7 +469,8 @@ impl Server {
             .load(&conn)?;
 
         rows.into_iter()
-            .map(|(rev, ident)| release_row2entity(Some(ident), rev, &conn)).collect()
+            .map(|(rev, ident)| release_row2entity(Some(ident), rev, &conn))
+            .collect()
     }
 
     fn create_container_handler(
@@ -875,6 +889,31 @@ impl Server {
             .collect();
         Ok(entries)
     }
+
+    fn get_stats_handler(&self, _more: Option<String>) -> Result<StatsResponse> {
+        let conn = self.db_pool.get().expect("db_pool error");
+
+        let merged_editgroups: i64 = changelog::table
+            .select(diesel::dsl::count(changelog::id))
+            .first(&conn)?;
+
+        let val = json!({
+            "entity_counts": {
+                "container": count_entity!(container_ident, &conn),
+                "creator": count_entity!(creator_ident, &conn),
+                "file": count_entity!(file_ident, &conn),
+                "release": count_entity!(release_ident, &conn),
+                "work": count_entity!(work_ident, &conn),
+            },
+            "merged_editgroups": merged_editgroups,
+            // TODO: "release_with_file": ,
+            // TODO: "release_with_doi": ,
+            // TODO: "creator_with_orcid": ,
+            // TODO: "files_with_release": ,
+            // TODO: "container_with_issnl": ,
+        });
+        Ok(StatsResponse { extra: Some(val) })
+    }
 }
 
 impl Api for Server {
@@ -1086,6 +1125,20 @@ impl Api for Server {
             Err(e) =>
                 // TODO: dig in to error type here
                 GetEditorResponse::GenericError(ErrorResponse { message: e.to_string() }),
+        };
+        Box::new(futures::done(Ok(ret)))
+    }
+
+    fn get_stats(
+        &self,
+        more: Option<String>,
+        _context: &Context,
+    ) -> Box<Future<Item = GetStatsResponse, Error = ApiError> + Send> {
+        let ret = match self.get_stats_handler(more.clone()) {
+            Ok(stats) => GetStatsResponse::Success(stats),
+            Err(e) => GetStatsResponse::GenericError(ErrorResponse {
+                message: e.to_string(),
+            }),
         };
         Box::new(futures::done(Ok(ret)))
     }

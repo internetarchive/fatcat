@@ -279,6 +279,14 @@ pub enum GetReleaseFilesResponse {
 }
 
 #[derive(Debug, PartialEq)]
+pub enum GetStatsResponse {
+    /// Success
+    Success(models::StatsResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
 pub enum GetWorkResponse {
     /// Found Entity
     FoundEntity(models::WorkEntity),
@@ -394,6 +402,8 @@ pub trait Api {
 
     fn get_release_files(&self, id: String, context: &Context) -> Box<Future<Item = GetReleaseFilesResponse, Error = ApiError> + Send>;
 
+    fn get_stats(&self, more: Option<String>, context: &Context) -> Box<Future<Item = GetStatsResponse, Error = ApiError> + Send>;
+
     fn get_work(&self, id: String, context: &Context) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send>;
 
     fn get_work_releases(&self, id: String, context: &Context) -> Box<Future<Item = GetWorkReleasesResponse, Error = ApiError> + Send>;
@@ -450,6 +460,8 @@ pub trait ApiNoContext {
     fn get_release(&self, id: String) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send>;
 
     fn get_release_files(&self, id: String) -> Box<Future<Item = GetReleaseFilesResponse, Error = ApiError> + Send>;
+
+    fn get_stats(&self, more: Option<String>) -> Box<Future<Item = GetStatsResponse, Error = ApiError> + Send>;
 
     fn get_work(&self, id: String) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send>;
 
@@ -562,6 +574,10 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
 
     fn get_release_files(&self, id: String) -> Box<Future<Item = GetReleaseFilesResponse, Error = ApiError> + Send> {
         self.api().get_release_files(id, &self.context())
+    }
+
+    fn get_stats(&self, more: Option<String>) -> Box<Future<Item = GetStatsResponse, Error = ApiError> + Send> {
+        self.api().get_stats(more, &self.context())
     }
 
     fn get_work(&self, id: String) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send> {

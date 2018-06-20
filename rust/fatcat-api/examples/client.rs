@@ -14,7 +14,7 @@ use clap::{App, Arg};
 use fatcat::{AcceptEditgroupResponse, ApiError, ApiNoContext, ContextWrapperExt, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse,
              CreateEditgroupResponse, CreateFileBatchResponse, CreateFileResponse, CreateReleaseBatchResponse, CreateReleaseResponse, CreateWorkBatchResponse, CreateWorkResponse,
              GetContainerResponse, GetCreatorReleasesResponse, GetCreatorResponse, GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileResponse, GetReleaseFilesResponse,
-             GetReleaseResponse, GetWorkReleasesResponse, GetWorkResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse, LookupReleaseResponse};
+             GetReleaseResponse, GetStatsResponse, GetWorkReleasesResponse, GetWorkResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse, LookupReleaseResponse};
 #[allow(unused_imports)]
 use futures::{future, stream, Future, Stream};
 
@@ -39,6 +39,7 @@ fn main() {
                     "GetFile",
                     "GetRelease",
                     "GetReleaseFiles",
+                    "GetStats",
                     "GetWork",
                     "GetWorkReleases",
                     "LookupContainer",
@@ -176,6 +177,11 @@ fn main() {
 
         Some("GetReleaseFiles") => {
             let result = client.get_release_files("id_example".to_string()).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("GetStats") => {
+            let result = client.get_stats(Some("more_example".to_string())).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 

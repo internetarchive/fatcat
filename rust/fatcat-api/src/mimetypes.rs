@@ -328,6 +328,14 @@ pub mod responses {
     lazy_static! {
         pub static ref GET_RELEASE_FILES_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
+    /// Create Mime objects for the response content types for GetStats
+    lazy_static! {
+        pub static ref GET_STATS_SUCCESS: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetStats
+    lazy_static! {
+        pub static ref GET_STATS_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
     /// Create Mime objects for the response content types for GetWork
     lazy_static! {
         pub static ref GET_WORK_FOUND_ENTITY: Mime = mime!(Application / Json);
