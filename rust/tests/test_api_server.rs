@@ -440,3 +440,42 @@ fn test_stats() {
         Some("merged_editgroups"),
     );
 }
+
+#[test]
+fn test_400() {
+    let (headers, router, _conn) = setup();
+
+    check_response(
+        request::post(
+            "http://localhost:9411/v0/release",
+            headers,
+            r#"{"title": "secret paper",
+                "release_type": "journal-article",
+                "doi": "10.1234/abcde.781231231239",
+                "volume": "439",
+                "issue": "IV",
+                "pages": "1-399",
+                "work_id": "00000000-0000-0000-5555-00002",
+                "container_id": "00000000-0000-0000-1111-000000001",
+                "refs": [{
+                        "index": 3,
+                        "raw": "just a string"
+                    },{
+                        "raw": "just a string"
+                    }],
+                "contribs": [{
+                        "index": 1,
+                        "raw": "textual description of contributor (aka, name)",
+                        "creator_id": "00000000-0000-0000-2222-000000000001",
+                        "contrib_type": "author"
+                    },{
+                        "raw": "shorter"
+                    }],
+                "extra": { "source": "speculation" }
+                }"#,
+            &router,
+        ),
+        status::BadRequest,
+        None,
+    );
+}

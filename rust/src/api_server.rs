@@ -57,6 +57,8 @@ macro_rules! wrap_entity_handlers {
                     $post_resp::CreatedEntity(edit),
                 Err(Error(ErrorKind::Diesel(e), _)) =>
                     $post_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::Uuid(e), _)) =>
+                    $post_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => $post_resp::GenericError(ErrorResponse { message: e.to_string() }),
             };
             Box::new(futures::done(Ok(ret)))
@@ -71,6 +73,8 @@ macro_rules! wrap_entity_handlers {
                 Ok(edit) =>
                     $post_batch_resp::CreatedEntities(edit),
                 Err(Error(ErrorKind::Diesel(e), _)) =>
+                    $post_batch_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::Uuid(e), _)) =>
                     $post_batch_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => $post_batch_resp::GenericError(ErrorResponse { message: e.to_string() }),
             };
@@ -661,9 +665,9 @@ impl Server {
             Some(param) => param as i64,
         };
 
-        let work_id = uuid::Uuid::parse_str(&entity.work_id).expect("invalid UUID");
+        let work_id = uuid::Uuid::parse_str(&entity.work_id)?;
         let container_id: Option<uuid::Uuid> = match entity.container_id {
-            Some(id) => Some(uuid::Uuid::parse_str(&id).expect("invalid UUID")),
+            Some(id) => Some(uuid::Uuid::parse_str(&id)?),
             None => None,
         };
 
