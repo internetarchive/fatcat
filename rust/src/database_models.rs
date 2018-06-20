@@ -153,8 +153,8 @@ pub struct ReleaseRevRow {
     pub doi: Option<String>,
     pub isbn13: Option<String>,
     pub volume: Option<String>,
-    pub pages: Option<String>,
     pub issue: Option<String>,
+    pub pages: Option<String>,
     pub publisher: Option<String>,
     pub language: Option<String>,
 }

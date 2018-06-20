@@ -271,8 +271,8 @@ fn release_row2entity(
         doi: rev.doi,
         isbn13: rev.isbn13,
         volume: rev.volume,
-        pages: rev.pages,
         issue: rev.issue,
+        pages: rev.pages,
         container_id: rev.container_ident_id.map(|u| u.to_string()),
         publisher: rev.publisher,
         language: rev.language,
@@ -668,7 +668,7 @@ impl Server {
         };
 
         let edit: ReleaseEditRow = diesel::sql_query(
-            "WITH rev AS ( INSERT INTO release_rev (title, release_type, release_status, release_date, doi, isbn13, volume, pages, issue, work_ident_id, container_ident_id, publisher, language, extra_json)
+            "WITH rev AS ( INSERT INTO release_rev (title, release_type, release_status, release_date, doi, isbn13, volume, issue, pages, work_ident_id, container_ident_id, publisher, language, extra_json)
                         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
                         RETURNING id ),
                 ident AS ( INSERT INTO release_ident (rev_id)
@@ -685,8 +685,8 @@ impl Server {
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.doi)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.isbn13)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.volume)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.pages)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.issue)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.pages)
             .bind::<diesel::sql_types::Uuid, _>(work_id)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Uuid>, _>(container_id)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.publisher)

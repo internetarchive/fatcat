@@ -158,11 +158,11 @@ definitions:
         #format: custom
       volume:
         type: string
-      pages:
-        type: string
       issue:
         type: string
         example: "12"
+      pages:
+        type: string
       publisher:
         type: string
       language:

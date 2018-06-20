@@ -295,8 +295,8 @@ fn test_post_release() {
                 "release_type": "journal-article",
                 "doi": "10.1234/abcde.781231231239",
                 "volume": "439",
-                "pages": "1-399",
                 "issue": "IV",
+                "pages": "1-399",
                 "work_id": "00000000-0000-0000-5555-000000000002",
                 "container_id": "00000000-0000-0000-1111-000000000001",
                 "refs": [{
