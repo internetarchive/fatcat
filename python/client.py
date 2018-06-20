@@ -2,21 +2,21 @@
 
 import sys
 import argparse
-from fatcat.api_client import FatCatApiClient
+from fatcat.raw_api_client import RawFatcatApiClient
 from fatcat.orcid_importer import FatcatOrcidImporter
 
 def run_import_crossref(args):
-    fcc = FatCatApiClient(args.host_url)
-    fcc.import_crossref_file(args.json_file,
-        create_containers=args.create_containers)
+    fcc = FatcatCrossrefClient(args.host_url)
+    fcc.import_crossref_file(args.json_file)
+    # create_containers=args.create_containers
 
 def run_import_orcid(args):
     foi = FatcatOrcidImporter(args.host_url)
     foi.process_batch(args.json_file, size=args.batch_size)
 
 def health(args):
-    fcc = FatCatApiClient(args.host_url)
-    print(fcc.health())
+    rfac = RawFatcatApiClient(args.host_url)
+    print(rfac.health())
 
 def main():
     parser = argparse.ArgumentParser()
@@ -32,9 +32,10 @@ def main():
     sub_import_crossref.set_defaults(func=run_import_crossref)
     sub_import_crossref.add_argument('json_file',
         help="crossref JSON file to import from")
-    sub_import_crossref.add_argument('--create-containers',
-        action='store_true',
-        help="if true, create containers based on ISSN")
+    # TODO:
+    #sub_import_crossref.add_argument('--create-containers',
+    #    action='store_true',
+    #    help="if true, create containers based on ISSN")
 
     sub_import_orcid = subparsers.add_parser('import-orcid')
     sub_import_orcid.set_defaults(func=run_import_orcid)

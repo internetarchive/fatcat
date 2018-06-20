@@ -19,23 +19,12 @@ def app(full_app):
 
 
 @pytest.fixture(scope="function")
-def api_client(full_app):
-
-    # TODO:
-    #pid = os.fork()
-    #if pid == 0:
-    #    full_app.testing = False
-    #    full_app.run(host="localhost", port=8444, debug=False)
-    #    os._exit(0)
-    #
-    #time.sleep(0.2)
-    #yield fatcat.api_client.FatCatApiClient("http://localhost:8444")
-    #os.kill(pid, signal.SIGKILL)
-
-    yield fatcat.api_client.FatCatApiClient("http://localhost:9411")
+def raw_api_client():
+    yield fatcat.raw_api_client.RawFatcatApiClient("http://localhost:9411")
 
 
 ## Helpers ##################################################################
+# TODO: what are these even here for?
 
 def check_entity_fields(e):
     for key in ('rev', 'is_live', 'redirect_id'):
