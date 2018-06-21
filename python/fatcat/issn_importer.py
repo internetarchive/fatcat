@@ -32,7 +32,6 @@ class FatcatIssnImporter(FatcatImporter):
             abbrev=None,
             coden=None,
             extra=extra)
-        print(ce)
         return ce
 
     def create_row(self, row, editgroup_id=None):

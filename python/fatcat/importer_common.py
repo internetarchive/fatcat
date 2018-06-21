@@ -55,7 +55,7 @@ class FatcatImporter:
         """Caches calls to the ISSN-L lookup API endpoint in a local dict"""
         assert len(issnl) == 9 and issnl[4] == '-'
         if issnl in self._issnl_id_map:
-            return self._issnl_id_map[issn]
+            return self._issnl_id_map[issnl]
         container_id = None
         try:
             rv = self.api.lookup_container(issnl=issnl)
@@ -98,6 +98,7 @@ class FatcatImporter:
         return release_id
 
     def read_issn_map_file(self, issn_map_file):
+        print("Loading ISSN map file...")
         self._issn_issnl_map = dict()
         for line in issn_map_file:
             if line.startswith("ISSN") or len(line) == 0:
@@ -106,6 +107,7 @@ class FatcatImporter:
             self._issn_issnl_map[issn] = issnl
             # double mapping makes lookups easy
             self._issn_issnl_map[issnl] = issnl
+        print("Got {} ISSN-L mappings.".format(len(self._issn_issnl_map)))
 
     def issn2issnl(self, issn):
         if issn is None:

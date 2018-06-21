@@ -6,13 +6,12 @@ from fatcat.raw_api_client import RawFatcatApiClient
 from fatcat.crossref_importer import FatcatCrossrefImporter
 from fatcat.orcid_importer import FatcatOrcidImporter
 from fatcat.manifest_importer import FatcatManifestImporter
+from fatcat.issn_importer import FatcatIssnImporter
 
 def run_import_crossref(args):
-    fcc = FatcatCrossrefClient(args.host_url)
-    fcc.import_crossref_file(
-        args.json_file,
-        issn_map_file=args.issn_map_file,
+    fci = FatcatCrossrefImporter(args.host_url, args.issn_map_file,
         create_containers=(not args.no_create_containers))
+    fci.process_batch(args.json_file, size=args.batch_size)
 
 def run_import_orcid(args):
     foi = FatcatOrcidImporter(args.host_url)
@@ -20,7 +19,7 @@ def run_import_orcid(args):
 
 def run_import_issn(args):
     fii = FatcatIssnImporter(args.host_url)
-    fii.process_batch(args.csv_file, size=args.batch_size)
+    fii.process_csv_batch(args.csv_file, size=args.batch_size)
 
 def run_import_manifest(args):
     fmi = FatcatManifestImporter(args.host_url)
@@ -43,12 +42,17 @@ def main():
     sub_import_crossref = subparsers.add_parser('import-crossref')
     sub_import_crossref.set_defaults(func=run_import_crossref)
     sub_import_crossref.add_argument('json_file',
-        help="crossref JSON file to import from")
+        help="crossref JSON file to import from",
+        default=sys.stdin, type=argparse.FileType('r'))
     sub_import_crossref.add_argument('issn_map_file',
-        help="ISSN to ISSN-L mapping file")
+        help="ISSN to ISSN-L mapping file",
+        default=sys.stdin, type=argparse.FileType('r'))
     sub_import_crossref.add_argument('--no-create-containers',
         action='store_true',
         help="skip creation of new container entities based on ISSN")
+    sub_import_crossref.add_argument('--batch-size',
+        help="size of batch to send",
+        default=50, type=int)
 
     sub_import_orcid = subparsers.add_parser('import-orcid')
     sub_import_orcid.set_defaults(func=run_import_orcid)
