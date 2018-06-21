@@ -14,6 +14,7 @@ dotenv = "0.9.0"
 clap = "*"
 error-chain = "0.11"
 uuid = "0.5"
+log = "*"
 
 # API server
 chrono = { version = "0.4", features = ["serde"] }

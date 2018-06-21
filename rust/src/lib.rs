@@ -14,6 +14,8 @@ extern crate error_chain;
 extern crate iron;
 #[macro_use]
 extern crate serde_json;
+#[macro_use]
+extern crate log;
 
 pub mod api_helpers;
 pub mod api_server;

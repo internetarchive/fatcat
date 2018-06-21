@@ -42,7 +42,10 @@ macro_rules! wrap_entity_handlers {
                     $get_resp::NotFound(ErrorResponse { message: format!("No such entity {}: {}", stringify!($model), id) }),
                 Err(Error(ErrorKind::Uuid(e), _)) =>
                     $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
-                Err(e) => $get_resp::GenericError(ErrorResponse { message: e.to_string() }),
+                Err(e) => {
+                    error!("{}", e);
+                    $get_resp::GenericError(ErrorResponse { message: e.to_string() })
+                },
             };
             Box::new(futures::done(Ok(ret)))
         }
@@ -59,7 +62,10 @@ macro_rules! wrap_entity_handlers {
                     $post_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::Uuid(e), _)) =>
                     $post_resp::BadRequest(ErrorResponse { message: e.to_string() }),
-                Err(e) => $post_resp::GenericError(ErrorResponse { message: e.to_string() }),
+                Err(e) => {
+                    error!("{}", e);
+                    $post_resp::GenericError(ErrorResponse { message: e.to_string() })
+                },
             };
             Box::new(futures::done(Ok(ret)))
         }
@@ -76,7 +82,10 @@ macro_rules! wrap_entity_handlers {
                     $post_batch_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::Uuid(e), _)) =>
                     $post_batch_resp::BadRequest(ErrorResponse { message: e.to_string() }),
-                Err(e) => $post_batch_resp::GenericError(ErrorResponse { message: e.to_string() }),
+                Err(e) => {
+                    error!("{}", e);
+                    $post_batch_resp::GenericError(ErrorResponse { message: e.to_string() })
+                },
             };
             Box::new(futures::done(Ok(ret)))
         }
@@ -110,8 +119,10 @@ macro_rules! wrap_lookup_handler {
                     $get_resp::FoundEntity(entity),
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
                     $get_resp::NotFound(ErrorResponse { message: format!("Not found: {}", $idname) }),
-                Err(e) =>
-                    $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(e) => {
+                    error!("{}", e);
+                    $get_resp::BadRequest(ErrorResponse { message: e.to_string() })
+                },
             };
             Box::new(futures::done(Ok(ret)))
         }
@@ -1153,10 +1164,12 @@ impl Api for Server {
             Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
                 GetEditorChangelogResponse::NotFound(
                     ErrorResponse { message: format!("No such editor: {}", username.clone()) }),
-            Err(e) =>
+            Err(e) => {
                 // TODO: dig in to error type here
+                error!("{}", e);
                 GetEditorChangelogResponse::GenericError(
-                    ErrorResponse { message: e.to_string() }),
+                    ErrorResponse { message: e.to_string() })
+            },
         };
         Box::new(futures::done(Ok(ret)))
     }
@@ -1172,9 +1185,11 @@ impl Api for Server {
             Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
                 GetEditorResponse::NotFound(
                     ErrorResponse { message: format!("No such editor: {}", username.clone()) }),
-            Err(e) =>
+            Err(e) => {
                 // TODO: dig in to error type here
-                GetEditorResponse::GenericError(ErrorResponse { message: e.to_string() }),
+                error!("{}", e);
+                GetEditorResponse::GenericError(ErrorResponse { message: e.to_string() })
+            },
         };
         Box::new(futures::done(Ok(ret)))
     }
@@ -1186,9 +1201,12 @@ impl Api for Server {
     ) -> Box<Future<Item = GetStatsResponse, Error = ApiError> + Send> {
         let ret = match self.get_stats_handler(more.clone()) {
             Ok(stats) => GetStatsResponse::Success(stats),
-            Err(e) => GetStatsResponse::GenericError(ErrorResponse {
-                message: e.to_string(),
-            }),
+            Err(e) => {
+                error!("{}", e);
+                GetStatsResponse::GenericError(ErrorResponse {
+                    message: e.to_string(),
+                })
+            },
         };
         Box::new(futures::done(Ok(ret)))
     }
