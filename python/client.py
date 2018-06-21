@@ -3,7 +3,9 @@
 import sys
 import argparse
 from fatcat.raw_api_client import RawFatcatApiClient
+from fatcat.crossref_importer import FatcatCrossrefImporter
 from fatcat.orcid_importer import FatcatOrcidImporter
+from fatcat.manifest_importer import FatcatManifestImporter
 
 def run_import_crossref(args):
     fcc = FatcatCrossrefClient(args.host_url)
@@ -53,12 +55,12 @@ def main():
         help="size of batch to send",
         default=50, type=int)
 
-    sub_import_manifest = subparsers.add_parser('import-orcid')
-    sub_import_manifest.set_defaults(func=run_import_orcid)
+    sub_import_manifest = subparsers.add_parser('import-manifest')
+    sub_import_manifest.set_defaults(func=run_import_manifest)
     sub_import_manifest.add_argument('db_path',
         help="sqlite3 database to import from",
-        type=argparse.FileType('r'))
-    sub_import_orcid.add_argument('--batch-size',
+        type=str)
+    sub_import_manifest.add_argument('--batch-size',
         help="size of batch to send",
         default=50, type=int)
 

@@ -19,6 +19,7 @@ class FatcatImporter:
         self.api = fatcat_client.DefaultApi(fatcat_client.ApiClient(conf))
         self._issnl_id_map = dict()
         self._orcid_id_map = dict()
+        self._doi_id_map = dict()
         self._issn_issnl_map = None
         if issn_map_file:
             self.read_issn_map_file(issn_map_file)
@@ -70,6 +71,22 @@ class FatcatImporter:
             assert ae.status == 404
         self._orcid_id_map[orcid] = creator_id # might be None
         return creator_id
+
+    def lookup_doi(self, doi):
+        """Caches calls to the doi lookup API endpoint in a local dict"""
+        assert doi.startswith('10.')
+        doi = doi.lower()
+        if doi in self._doi_id_map:
+            return self._doi_id_map[doi]
+        release_id = None
+        try:
+            rv = self.api.lookup_release(doi=doi)
+            release_id = rv.ident
+        except ApiException as ae:
+            # If anything other than a 404 (not found), something is wrong
+            assert ae.status == 404
+        self._doi_id_map[doi] = release_id # might be None
+        return release_id
 
     def read_issn_map_file(self, issn_map_file):
         self._issn_issnl_map = dict()
