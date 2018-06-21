@@ -57,7 +57,7 @@ paths:
           uppercase_operation_id: "CREATE_CONTAINER"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-        default:
+        500:
           description: "Generic Error"
           schema:
             $ref: "#/definitions/error_response"
@@ -118,7 +118,7 @@ paths:
           uppercase_operation_id: "CREATE_CONTAINER_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-        default:
+        500:
           description: "Generic Error"
           schema:
             $ref: "#/definitions/error_response"
@@ -170,7 +170,7 @@ paths:
           uppercase_operation_id: "GET_CONTAINER"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-        default:
+        500:
           description: "Generic Error"
           schema:
             $ref: "#/definitions/error_response"
@@ -222,7 +222,7 @@ paths:
           uppercase_operation_id: "LOOKUP_CONTAINER"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-        default:
+        500:
           description: "Generic Error"
           schema:
             $ref: "#/definitions/error_response"
@@ -280,7 +280,7 @@ paths:
           uppercase_operation_id: "CREATE_CREATOR"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-        default:
+        500:
           description: "Generic Error"
           schema:
             $ref: "#/definitions/error_response"
@@ -341,7 +341,7 @@ paths:
           uppercase_operation_id: "CREATE_CREATOR_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-        default:
+        500:
           description: "Generic Error"
           schema:
             $ref: "#/definitions/error_response"
@@ -393,7 +393,7 @@ paths:
           uppercase_operation_id: "GET_CREATOR"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-        default:
+        500:
           description: "Generic Error"
           schema:
             $ref: "#/definitions/error_response"
@@ -447,7 +447,7 @@ paths:
           uppercase_operation_id: "GET_CREATOR_RELEASES"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-        default:
+        500:
           description: "Generic Error"
           schema:
             $ref: "#/definitions/error_response"
@@ -499,7 +499,7 @@ paths:
           uppercase_operation_id: "LOOKUP_CREATOR"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-        default:
+        500:
           description: "Generic Error"
           schema:
             $ref: "#/definitions/error_response"
@@ -557,7 +557,7 @@ paths:
           uppercase_operation_id: "CREATE_FILE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-        default:
+        500:
           description: "Generic Error"
           schema:
             $ref: "#/definitions/error_response"
@@ -618,7 +618,7 @@ paths:
           uppercase_operation_id: "CREATE_FILE_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-        default:
+        500:
           description: "Generic Error"
           schema:
             $ref: "#/definitions/error_response"
@@ -670,7 +670,7 @@ paths:
           uppercase_operation_id: "GET_FILE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-        default:
+        500:
           description: "Generic Error"
           schema:
             $ref: "#/definitions/error_response"
@@ -722,7 +722,7 @@ paths:
           uppercase_operation_id: "LOOKUP_FILE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-        default:
+        500:
           description: "Generic Error"
           schema:
             $ref: "#/definitions/error_response"
@@ -780,7 +780,7 @@ paths:
           uppercase_operation_id: "CREATE_RELEASE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-        default:
+        500:
           description: "Generic Error"
           schema:
             $ref: "#/definitions/error_response"
@@ -841,7 +841,7 @@ paths:
           uppercase_operation_id: "CREATE_RELEASE_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-        default:
+        500:
           description: "Generic Error"
           schema:
             $ref: "#/definitions/error_response"
@@ -893,7 +893,7 @@ paths:
           uppercase_operation_id: "GET_RELEASE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-        default:
+        500:
           description: "Generic Error"
           schema:
             $ref: "#/definitions/error_response"
@@ -947,7 +947,7 @@ paths:
           uppercase_operation_id: "GET_RELEASE_FILES"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-        default:
+        500:
           description: "Generic Error"
           schema:
             $ref: "#/definitions/error_response"
@@ -999,7 +999,7 @@ paths:
           uppercase_operation_id: "LOOKUP_RELEASE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-        default:
+        500:
           description: "Generic Error"
           schema:
             $ref: "#/definitions/error_response"
@@ -1057,7 +1057,7 @@ paths:
           uppercase_operation_id: "CREATE_WORK"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-        default:
+        500:
           description: "Generic Error"
           schema:
             $ref: "#/definitions/error_response"
@@ -1118,7 +1118,7 @@ paths:
           uppercase_operation_id: "CREATE_WORK_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-        default:
+        500:
           description: "Generic Error"
           schema:
             $ref: "#/definitions/error_response"
@@ -1170,7 +1170,7 @@ paths:
           uppercase_operation_id: "GET_WORK"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-        default:
+        500:
           description: "Generic Error"
           schema:
             $ref: "#/definitions/error_response"
@@ -1224,7 +1224,7 @@ paths:
           uppercase_operation_id: "GET_WORK_RELEASES"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-        default:
+        500:
           description: "Generic Error"
           schema:
             $ref: "#/definitions/error_response"
@@ -1267,7 +1267,7 @@ paths:
           uppercase_operation_id: "GET_EDITOR"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-        default:
+        500:
           description: "Generic Error"
           schema:
             $ref: "#/definitions/error_response"
@@ -1310,7 +1310,7 @@ paths:
           uppercase_operation_id: "GET_EDITOR_CHANGELOG"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-        default:
+        500:
           description: "Generic Error"
           schema:
             $ref: "#/definitions/error_response"
@@ -1359,7 +1359,7 @@ paths:
           uppercase_operation_id: "CREATE_EDITGROUP"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-        default:
+        500:
           description: "Generic Error"
           schema:
             $ref: "#/definitions/error_response"
@@ -1413,7 +1413,7 @@ paths:
           uppercase_operation_id: "GET_EDITGROUP"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-        default:
+        500:
           description: "Generic Error"
           schema:
             $ref: "#/definitions/error_response"
@@ -1466,7 +1466,7 @@ paths:
           uppercase_operation_id: "ACCEPT_EDITGROUP"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-        default:
+        500:
           description: "Generic Error"
           schema:
             $ref: "#/definitions/error_response"
@@ -1500,7 +1500,7 @@ paths:
           uppercase_operation_id: "GET_STATS"
           uppercase_data_type: "STATSRESPONSE"
           producesJson: true
-        default:
+        500:
           description: "Generic Error"
           schema:
             $ref: "#/definitions/error_response"
@@ -1722,13 +1722,14 @@ definitions:
           $ref: "#/definitions/release_contrib"
       language:
         type: "string"
+        description: "Two-letter RFC1766/ISO639-1 language code, with extensions"
       publisher:
+        type: "string"
+      pages:
         type: "string"
       issue:
         type: "string"
         example: "12"
-      pages:
-        type: "string"
       volume:
         type: "string"
       isbn13:
@@ -2197,7 +2198,7 @@ x-entity-responses:
     description: "Not Found"
     schema:
       $ref: "#/definitions/error_response"
-  default:
+  500:
     description: "Generic Error"
     schema:
       $ref: "#/definitions/error_response"

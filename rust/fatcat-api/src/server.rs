@@ -150,7 +150,7 @@ where
                         AcceptEditgroupResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
-                            let mut response = Response::with((status::Status::from_u16(0), body_string));
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
                             response.headers.set(ContentType(mimetypes::responses::ACCEPT_EDITGROUP_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
@@ -254,7 +254,7 @@ where
                         CreateContainerResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
-                            let mut response = Response::with((status::Status::from_u16(0), body_string));
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
                             response.headers.set(ContentType(mimetypes::responses::CREATE_CONTAINER_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
@@ -360,7 +360,7 @@ where
                         CreateContainerBatchResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
-                            let mut response = Response::with((status::Status::from_u16(0), body_string));
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
                             response.headers.set(ContentType(mimetypes::responses::CREATE_CONTAINER_BATCH_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
@@ -466,7 +466,7 @@ where
                         CreateCreatorResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
-                            let mut response = Response::with((status::Status::from_u16(0), body_string));
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
                             response.headers.set(ContentType(mimetypes::responses::CREATE_CREATOR_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
@@ -572,7 +572,7 @@ where
                         CreateCreatorBatchResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
-                            let mut response = Response::with((status::Status::from_u16(0), body_string));
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
                             response.headers.set(ContentType(mimetypes::responses::CREATE_CREATOR_BATCH_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
@@ -665,7 +665,7 @@ where
                         CreateEditgroupResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
-                            let mut response = Response::with((status::Status::from_u16(0), body_string));
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
                             response.headers.set(ContentType(mimetypes::responses::CREATE_EDITGROUP_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
@@ -771,7 +771,7 @@ where
                         CreateFileResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
-                            let mut response = Response::with((status::Status::from_u16(0), body_string));
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
                             response.headers.set(ContentType(mimetypes::responses::CREATE_FILE_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
@@ -877,7 +877,7 @@ where
                         CreateFileBatchResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
-                            let mut response = Response::with((status::Status::from_u16(0), body_string));
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
                             response.headers.set(ContentType(mimetypes::responses::CREATE_FILE_BATCH_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
@@ -983,7 +983,7 @@ where
                         CreateReleaseResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
-                            let mut response = Response::with((status::Status::from_u16(0), body_string));
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
                             response.headers.set(ContentType(mimetypes::responses::CREATE_RELEASE_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
@@ -1089,7 +1089,7 @@ where
                         CreateReleaseBatchResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
-                            let mut response = Response::with((status::Status::from_u16(0), body_string));
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
                             response.headers.set(ContentType(mimetypes::responses::CREATE_RELEASE_BATCH_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
@@ -1195,7 +1195,7 @@ where
                         CreateWorkResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
-                            let mut response = Response::with((status::Status::from_u16(0), body_string));
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
                             response.headers.set(ContentType(mimetypes::responses::CREATE_WORK_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
@@ -1301,7 +1301,7 @@ where
                         CreateWorkBatchResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
-                            let mut response = Response::with((status::Status::from_u16(0), body_string));
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
                             response.headers.set(ContentType(mimetypes::responses::CREATE_WORK_BATCH_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
@@ -1391,7 +1391,7 @@ where
                         GetContainerResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
-                            let mut response = Response::with((status::Status::from_u16(0), body_string));
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_CONTAINER_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
@@ -1479,7 +1479,7 @@ where
                         GetCreatorResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
-                            let mut response = Response::with((status::Status::from_u16(0), body_string));
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_CREATOR_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
@@ -1567,7 +1567,7 @@ where
                         GetCreatorReleasesResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
-                            let mut response = Response::with((status::Status::from_u16(0), body_string));
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_CREATOR_RELEASES_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
@@ -1655,7 +1655,7 @@ where
                         GetEditgroupResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
-                            let mut response = Response::with((status::Status::from_u16(0), body_string));
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_EDITGROUP_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
@@ -1733,7 +1733,7 @@ where
                         GetEditorResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
-                            let mut response = Response::with((status::Status::from_u16(0), body_string));
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_EDITOR_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
@@ -1811,7 +1811,7 @@ where
                         GetEditorChangelogResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
-                            let mut response = Response::with((status::Status::from_u16(0), body_string));
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_EDITOR_CHANGELOG_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
@@ -1899,7 +1899,7 @@ where
                         GetFileResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
-                            let mut response = Response::with((status::Status::from_u16(0), body_string));
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_FILE_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
@@ -1987,7 +1987,7 @@ where
                         GetReleaseResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
-                            let mut response = Response::with((status::Status::from_u16(0), body_string));
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_RELEASE_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
@@ -2075,7 +2075,7 @@ where
                         GetReleaseFilesResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
-                            let mut response = Response::with((status::Status::from_u16(0), body_string));
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_RELEASE_FILES_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
@@ -2133,7 +2133,7 @@ where
                         GetStatsResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
-                            let mut response = Response::with((status::Status::from_u16(0), body_string));
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_STATS_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
@@ -2221,7 +2221,7 @@ where
                         GetWorkResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
-                            let mut response = Response::with((status::Status::from_u16(0), body_string));
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_WORK_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
@@ -2309,7 +2309,7 @@ where
                         GetWorkReleasesResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
-                            let mut response = Response::with((status::Status::from_u16(0), body_string));
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_WORK_RELEASES_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
@@ -2393,7 +2393,7 @@ where
                         LookupContainerResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
-                            let mut response = Response::with((status::Status::from_u16(0), body_string));
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
                             response.headers.set(ContentType(mimetypes::responses::LOOKUP_CONTAINER_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
@@ -2477,7 +2477,7 @@ where
                         LookupCreatorResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
-                            let mut response = Response::with((status::Status::from_u16(0), body_string));
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
                             response.headers.set(ContentType(mimetypes::responses::LOOKUP_CREATOR_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
@@ -2561,7 +2561,7 @@ where
                         LookupFileResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
-                            let mut response = Response::with((status::Status::from_u16(0), body_string));
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
                             response.headers.set(ContentType(mimetypes::responses::LOOKUP_FILE_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
@@ -2645,7 +2645,7 @@ where
                         LookupReleaseResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
-                            let mut response = Response::with((status::Status::from_u16(0), body_string));
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
                             response.headers.set(ContentType(mimetypes::responses::LOOKUP_RELEASE_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));

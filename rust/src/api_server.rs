@@ -1159,17 +1159,19 @@ impl Api for Server {
         _context: &Context,
     ) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send> {
         let ret = match self.editor_changelog_get_handler(username.clone()) {
-            Ok(entries) =>
-                GetEditorChangelogResponse::FoundMergedChanges(entries),
-            Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
-                GetEditorChangelogResponse::NotFound(
-                    ErrorResponse { message: format!("No such editor: {}", username.clone()) }),
+            Ok(entries) => GetEditorChangelogResponse::FoundMergedChanges(entries),
+            Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
+                GetEditorChangelogResponse::NotFound(ErrorResponse {
+                    message: format!("No such editor: {}", username.clone()),
+                })
+            }
             Err(e) => {
                 // TODO: dig in to error type here
                 error!("{}", e);
-                GetEditorChangelogResponse::GenericError(
-                    ErrorResponse { message: e.to_string() })
-            },
+                GetEditorChangelogResponse::GenericError(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
         };
         Box::new(futures::done(Ok(ret)))
     }
@@ -1180,16 +1182,19 @@ impl Api for Server {
         _context: &Context,
     ) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send> {
         let ret = match self.get_editor_handler(username.clone()) {
-            Ok(entity) =>
-                GetEditorResponse::FoundEditor(entity),
-            Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
-                GetEditorResponse::NotFound(
-                    ErrorResponse { message: format!("No such editor: {}", username.clone()) }),
+            Ok(entity) => GetEditorResponse::FoundEditor(entity),
+            Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
+                GetEditorResponse::NotFound(ErrorResponse {
+                    message: format!("No such editor: {}", username.clone()),
+                })
+            }
             Err(e) => {
                 // TODO: dig in to error type here
                 error!("{}", e);
-                GetEditorResponse::GenericError(ErrorResponse { message: e.to_string() })
-            },
+                GetEditorResponse::GenericError(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
         };
         Box::new(futures::done(Ok(ret)))
     }
@@ -1206,7 +1211,7 @@ impl Api for Server {
                 GetStatsResponse::GenericError(ErrorResponse {
                     message: e.to_string(),
                 })
-            },
+            }
         };
         Box::new(futures::done(Ok(ret)))
     }

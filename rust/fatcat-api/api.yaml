@@ -158,14 +158,15 @@ definitions:
         #format: custom
       volume:
         type: string
-      pages:
-        type: string
       issue:
         type: string
         example: "12"
+      pages:
+        type: string
       publisher:
         type: string
       language:
+        description: "Two-letter RFC1766/ISO639-1 language code, with extensions"
         type: string
       contribs:
         type: array
@@ -327,7 +328,7 @@ x-entity-responses: &ENTITYRESPONSES
     description: Not Found
     schema:
       $ref: "#/definitions/error_response"
-  default:
+  500:
     description: Generic Error
     schema:
       $ref: "#/definitions/error_response"
@@ -694,7 +695,7 @@ paths:
           description: Not Found
           schema:
             $ref: "#/definitions/error_response"
-        default:
+        500:
           description: Generic Error
           schema:
             $ref: "#/definitions/error_response"
@@ -715,7 +716,7 @@ paths:
           description: Not Found
           schema:
             $ref: "#/definitions/error_response"
-        default:
+        500:
           description: Generic Error
           schema:
             $ref: "#/definitions/error_response"
@@ -737,7 +738,7 @@ paths:
           description: Bad Request
           schema:
             $ref: "#/definitions/error_response"
-        default:
+        500:
           description: Generic Error
           schema:
             $ref: "#/definitions/error_response"
@@ -763,7 +764,7 @@ paths:
           description: Not Found
           schema:
             $ref: "#/definitions/error_response"
-        default:
+        500:
           description: Generic Error
           schema:
             $ref: "#/definitions/error_response"
@@ -789,7 +790,7 @@ paths:
           description: Not Found
           schema:
             $ref: "#/definitions/error_response"
-        default:
+        500:
           description: Generic Error
           schema:
             $ref: "#/definitions/error_response"
@@ -806,7 +807,7 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/stats_response"
-        default:
+        500:
           description: Generic Error
           schema:
             $ref: "#/definitions/error_response"

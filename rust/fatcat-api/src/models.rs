@@ -463,6 +463,7 @@ pub struct ReleaseEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub contribs: Option<Vec<models::ReleaseContrib>>,
 
+    /// Two-letter RFC1766/ISO639-1 language code, with extensions
     #[serde(rename = "language")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub language: Option<String>,
@@ -471,13 +472,13 @@ pub struct ReleaseEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub publisher: Option<String>,
 
-    #[serde(rename = "issue")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub issue: Option<String>,
-
     #[serde(rename = "pages")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pages: Option<String>,
+
+    #[serde(rename = "issue")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub issue: Option<String>,
 
     #[serde(rename = "volume")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -546,8 +547,8 @@ impl ReleaseEntity {
             contribs: None,
             language: None,
             publisher: None,
-            issue: None,
             pages: None,
+            issue: None,
             volume: None,
             isbn13: None,
             doi: None,

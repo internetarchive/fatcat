@@ -71,7 +71,10 @@ fn main() {
     }
 
     let host_port = "localhost:9411";
-    info!(logger, "Starting fatcatd API server on http://{}", &host_port);
+    info!(
+        logger,
+        "Starting fatcatd API server on http://{}", &host_port
+    );
 
     let mut chain = Chain::new(LoggerMiddleware::new(router, logger, formatter));
 

@@ -328,7 +328,7 @@ x-entity-responses: &ENTITYRESPONSES
     description: Not Found
     schema:
       $ref: "#/definitions/error_response"
-  default:
+  500:
     description: Generic Error
     schema:
       $ref: "#/definitions/error_response"
@@ -695,7 +695,7 @@ paths:
           description: Not Found
           schema:
             $ref: "#/definitions/error_response"
-        default:
+        500:
           description: Generic Error
           schema:
             $ref: "#/definitions/error_response"
@@ -716,7 +716,7 @@ paths:
           description: Not Found
           schema:
             $ref: "#/definitions/error_response"
-        default:
+        500:
           description: Generic Error
           schema:
             $ref: "#/definitions/error_response"
@@ -738,7 +738,7 @@ paths:
           description: Bad Request
           schema:
             $ref: "#/definitions/error_response"
-        default:
+        500:
           description: Generic Error
           schema:
             $ref: "#/definitions/error_response"
@@ -764,7 +764,7 @@ paths:
           description: Not Found
           schema:
             $ref: "#/definitions/error_response"
-        default:
+        500:
           description: Generic Error
           schema:
             $ref: "#/definitions/error_response"
@@ -790,7 +790,7 @@ paths:
           description: Not Found
           schema:
             $ref: "#/definitions/error_response"
-        default:
+        500:
           description: Generic Error
           schema:
             $ref: "#/definitions/error_response"
@@ -807,7 +807,7 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/stats_response"
-        default:
+        500:
           description: Generic Error
           schema:
             $ref: "#/definitions/error_response"
