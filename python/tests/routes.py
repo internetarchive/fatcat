@@ -27,6 +27,9 @@ def test_all_views(app):
     rv = app.get('/container/00000000-0000-0000-1111-000000000002'.format(route))
     assert rv.status_code == 200
 
+    rv = app.get('/container/create')
+    assert rv.status_code == 200
+
     rv = app.get('/creator/00000000-0000-0000-2222-000000000002'.format(route))
     assert rv.status_code == 200
 

@@ -84,4 +84,4 @@ class FatcatImporter:
     def issn2issnl(self, issn):
         if issn is None:
             return None
-        self._issn_issnl_map.get(issn)
+        return self._issn_issnl_map.get(issn)

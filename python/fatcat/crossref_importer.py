@@ -106,6 +106,7 @@ class FatcatCrossrefImporter(FatcatImporter):
                 ce.editgroup_id = editgroup_id
                 container = self.api.create_container(ce)
                 re.container_id = container.ident
+                self._issnl_id_map[ce.issnl] = container.ident
             created = self.api.create_work(we)
             re.work_id = created.ident
             self.api.create_release(re)
