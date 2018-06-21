@@ -7,12 +7,18 @@ from fatcat.orcid_importer import FatcatOrcidImporter
 
 def run_import_crossref(args):
     fcc = FatcatCrossrefClient(args.host_url)
-    fcc.import_crossref_file(args.json_file)
-    # create_containers=args.create_containers
+    fcc.import_crossref_file(
+        args.json_file,
+        issn_map_file=args.issn_map_file,
+        create_containers=(not args.no_create_containers))
 
 def run_import_orcid(args):
     foi = FatcatOrcidImporter(args.host_url)
     foi.process_batch(args.json_file, size=args.batch_size)
+
+def run_import_manifest(args):
+    fmi = FatcatManifestImporter(args.host_url)
+    fmi.process_db(args.db_path, size=args.batch_size)
 
 def health(args):
     rfac = RawFatcatApiClient(args.host_url)
@@ -32,16 +38,26 @@ def main():
     sub_import_crossref.set_defaults(func=run_import_crossref)
     sub_import_crossref.add_argument('json_file',
         help="crossref JSON file to import from")
-    # TODO:
-    #sub_import_crossref.add_argument('--create-containers',
-    #    action='store_true',
-    #    help="if true, create containers based on ISSN")
+    sub_import_crossref.add_argument('issn_map_file',
+        help="ISSN to ISSN-L mapping file")
+    sub_import_crossref.add_argument('--no-create-containers',
+        action='store_true',
+        help="skip creation of new container entities based on ISSN")
 
     sub_import_orcid = subparsers.add_parser('import-orcid')
     sub_import_orcid.set_defaults(func=run_import_orcid)
     sub_import_orcid.add_argument('json_file',
         help="orcid JSON file to import from (or stdin)",
         default=sys.stdin, type=argparse.FileType('r'))
+    sub_import_orcid.add_argument('--batch-size',
+        help="size of batch to send",
+        default=50, type=int)
+
+    sub_import_manifest = subparsers.add_parser('import-orcid')
+    sub_import_manifest.set_defaults(func=run_import_orcid)
+    sub_import_manifest.add_argument('db_path',
+        help="sqlite3 database to import from",
+        type=argparse.FileType('r'))
     sub_import_orcid.add_argument('--batch-size',
         help="size of batch to send",
         default=50, type=int)
