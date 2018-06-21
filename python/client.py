@@ -18,6 +18,10 @@ def run_import_orcid(args):
     foi = FatcatOrcidImporter(args.host_url)
     foi.process_batch(args.json_file, size=args.batch_size)
 
+def run_import_issn(args):
+    fii = FatcatIssnImporter(args.host_url)
+    fii.process_batch(args.csv_file, size=args.batch_size)
+
 def run_import_manifest(args):
     fmi = FatcatManifestImporter(args.host_url)
     fmi.process_db(args.db_path, size=args.batch_size)
@@ -52,6 +56,15 @@ def main():
         help="orcid JSON file to import from (or stdin)",
         default=sys.stdin, type=argparse.FileType('r'))
     sub_import_orcid.add_argument('--batch-size',
+        help="size of batch to send",
+        default=50, type=int)
+
+    sub_import_issn = subparsers.add_parser('import-issn')
+    sub_import_issn.set_defaults(func=run_import_issn)
+    sub_import_issn.add_argument('csv_file',
+        help="Journal ISSN CSV metadata file to import from (or stdin)",
+        default=sys.stdin, type=argparse.FileType('r'))
+    sub_import_issn.add_argument('--batch-size',
         help="size of batch to send",
         default=50, type=int)
 

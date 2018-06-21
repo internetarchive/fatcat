@@ -1,5 +1,6 @@
 
 import sys
+import csv
 import json
 import itertools
 import fatcat_client
@@ -25,7 +26,7 @@ class FatcatImporter:
             self.read_issn_map_file(issn_map_file)
 
     def process_source(self, source, group_size=100):
-        """Creates and auto-accepts editgropu every group_size rows"""
+        """Creates and auto-accepts editgroup every group_size rows"""
         eg = self.api.create_editgroup(fatcat_client.Editgroup(editor_id=1))
         for i, row in enumerate(source):
             self.create_row(row, editgroup_id=eg.id)
@@ -41,6 +42,14 @@ class FatcatImporter:
             eg = self.api.create_editgroup(fatcat_client.Editgroup(editor_id=1))
             self.create_batch(rows, eg.id)
             self.api.accept_editgroup(eg.id)
+
+    def process_csv_source(self, source, group_size=100, delimiter=','):
+        reader = csv.DictReader(source, delimiter=delimiter)
+        self.process_source(reader, group_size)
+
+    def process_csv_batch(self, source, size=50, delimiter=','):
+        reader = csv.DictReader(source, delimiter=delimiter)
+        self.process_batch(reader, size)
 
     def lookup_issnl(self, issnl):
         """Caches calls to the ISSN-L lookup API endpoint in a local dict"""
