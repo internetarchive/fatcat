@@ -18,17 +18,28 @@ class FatcatCrossrefImporter(FatcatImporter):
         returns a ReleaseEntity
         """
 
+        # This work is out of scope if it doesn't have authors or a title
+        if (not 'author' in obj) or (not 'title' in obj):
+            return None
+
         # contribs
         contribs = []
         for i, am in enumerate(obj['author']):
             creator_id = None
             if 'ORCID' in am.keys():
                 creator_id = self.lookup_orcid(am['ORCID'].split('/')[-1])
+            # Sorry humans :(
+            if am.get('given') and am.get('family'):
+                raw_name = "{} {}".format(am['given'], am['family'])
+            elif am.get('family'):
+                raw_name = am['family']
+            else:
+                # TODO: defaults back to a pseudo-null value
+                raw_name = am.get('given', '<blank>')
             contribs.append(fatcat_client.ReleaseContrib(
                 creator_id=creator_id,
                 index=i+1,
-                # Sorry humans :(
-                raw="{} {}".format(am['given'], am['family']),
+                raw=raw_name,
                 role="author"))
 
         # container
@@ -45,7 +56,6 @@ class FatcatCrossrefImporter(FatcatImporter):
                 issnl=issnl,
                 publisher=publisher,
                 name=obj['container-title'][0])
-            print("created container: {}".format(issnl))
 
         # references
         refs = []
