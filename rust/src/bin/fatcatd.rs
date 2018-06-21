@@ -70,6 +70,9 @@ fn main() {
         )))
     }
 
+    let host_port = "localhost:9411";
+    info!(logger, "Starting fatcatd API server on http://{}", &host_port);
+
     let mut chain = Chain::new(LoggerMiddleware::new(router, logger, formatter));
 
     // Auth stuff unused for now
@@ -85,7 +88,7 @@ fn main() {
     } else {
         // Using HTTP
         Iron::new(chain)
-            .http("localhost:9411")
+            .http(host_port)
             .expect("Failed to start HTTP server");
     }
 }
