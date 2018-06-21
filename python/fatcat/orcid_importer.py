@@ -11,6 +11,14 @@ def value_or_none(e):
         e = e.get('value')
     if type(e) == str and len(e) == 0:
         e = None
+    # TODO: this is probably bogus; patched in desperation; remove?
+    if e:
+        try:
+            e.encode()
+        except UnicodeEncodeError:
+            # Invalid JSON?
+            print("BAD UNICODE")
+            return None
     return e
 
 class FatcatOrcidImporter(FatcatImporter):
@@ -29,7 +37,15 @@ class FatcatOrcidImporter(FatcatImporter):
         display = value_or_none(name.get('credit-name'))
         if display is None:
             # TODO: sorry human beings
-            display = "{} {}".format(given, sur)
+            if given and sur:
+                display = "{} {}".format(given, sur)
+            elif sur:
+                display = sur
+            elif given:
+                display = given
+            else:
+                # must have *some* name
+                return None
         ce = fatcat_client.CreatorEntity(
             orcid=obj['orcid-identifier']['path'],
             given_name=given,
