@@ -24,22 +24,40 @@ def test_all_views(app):
         rv = app.get('/{}/f1f046a3-45c9-ffff-ffff-ffffffffffff'.format(route))
         assert rv.status_code == 404
 
-    rv = app.get('/container/00000000-0000-0000-1111-000000000002'.format(route))
+    rv = app.get('/container/00000000-0000-0000-1111-000000000002')
     assert rv.status_code == 200
 
     rv = app.get('/container/create')
     assert rv.status_code == 200
 
-    rv = app.get('/creator/00000000-0000-0000-2222-000000000002'.format(route))
+    rv = app.get('/container/lookup')
+    assert rv.status_code == 400
+
+    rv = app.get('/container/lookup?issnl=9999-9999')
+    assert rv.status_code == 404
+
+    rv = app.get('/container/lookup?issnl=1234-5678')
+    assert rv.status_code == 302
+
+    rv = app.get('/creator/00000000-0000-0000-2222-000000000002')
     assert rv.status_code == 200
 
-    rv = app.get('/file/00000000-0000-0000-3333-000000000002'.format(route))
+    rv = app.get('/creator/lookup?orcid=0000-0003-2088-7465')
+    assert rv.status_code == 302
+
+    rv = app.get('/file/00000000-0000-0000-3333-000000000002')
+    assert rv.status_code == 200
+
+    rv = app.get('/file/lookup?sha1=7d97e98f8af710c7e7fe703abc8f639e0ee507c4')
+    assert rv.status_code == 302
+
+    rv = app.get('/release/00000000-0000-0000-4444-000000000002')
     assert rv.status_code == 200
 
     rv = app.get('/release/00000000-0000-0000-4444-000000000002'.format(route))
     assert rv.status_code == 200
 
-    rv = app.get('/work/00000000-0000-0000-5555-000000000002'.format(route))
+    rv = app.get('/work/00000000-0000-0000-5555-000000000002')
     assert rv.status_code == 200
 
     rv = app.get('/work/create')

@@ -31,6 +31,17 @@ def container_create():
     edit = api.create_container(params=params)
     return redirect("/container/{}".format(edit.ident))
 
+@app.route('/container/lookup', methods=['GET'])
+def container_lookup():
+    issnl = request.args.get('issnl')
+    if issnl is None:
+        abort(400)
+    try:
+        resp = api.lookup_container(issnl)
+    except ApiException as ae:
+        abort(ae.status)
+    return redirect('/container/{}'.format(resp.ident))
+
 @app.route('/creator/<uuid:ident>', methods=['GET'])
 def creator_view(ident):
     try:
@@ -40,6 +51,17 @@ def creator_view(ident):
         abort(ae.status)
     return render_template('creator_view.html', creator=entity, releases=releases)
 
+@app.route('/creator/lookup', methods=['GET'])
+def creator_lookup():
+    orcid = request.args.get('orcid')
+    if orcid is None:
+        abort(400)
+    try:
+        resp = api.lookup_creator(orcid)
+    except ApiException as ae:
+        abort(ae.status)
+    return redirect('/creator/{}'.format(resp.ident))
+
 @app.route('/file/<uuid:ident>', methods=['GET'])
 def file_view(ident):
     try:
@@ -47,6 +69,17 @@ def file_view(ident):
     except ApiException as ae:
         abort(ae.status)
     return render_template('file_view.html', file=entity)
+
+@app.route('/file/lookup', methods=['GET'])
+def file_lookup():
+    sha1 = request.args.get('sha1')
+    if sha1 is None:
+        abort(400)
+    try:
+        resp = api.lookup_file(sha1)
+    except ApiException as ae:
+        abort(ae.status)
+    return redirect('/file/{}'.format(resp.ident))
 
 @app.route('/release/<uuid:ident>', methods=['GET'])
 def release_view(ident):
@@ -58,6 +91,17 @@ def release_view(ident):
     authors = [c for c in entity.contribs if c.role in ('author', None)]
     authors = sorted(authors, key=lambda c: c.index)
     return render_template('release_view.html', release=entity, authors=authors, files=files)
+
+@app.route('/release/lookup', methods=['GET'])
+def release_lookup():
+    doi = request.args.get('doi')
+    if doi is None:
+        abort(400)
+    try:
+        resp = api.lookup_release(doi)
+    except ApiException as ae:
+        abort(ae.status)
+    return redirect('/release/{}'.format(resp.ident))
 
 #@app.route('/release/<uuid:ident>/changelog', methods=['GET'])
 #def release_changelog(ident):
