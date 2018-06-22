@@ -25,9 +25,11 @@ From CSV file:
 
     time ./client.py import-issn /srv/datasets/journal_extra_metadata.csv
 
+Pretty quick, a few minutes.
+
 ## ORCID
 
-Directly from compressed tarball:
+Directly from compressed tarball; takes about 2 hours in production:
 
     tar xf /srv/datasets/public_profiles_API-2.0_2017_10_json.tar.gz -O | jq -c . | grep '"person":' | time parallel -j12 --pipe --round-robin ./client.py import-orcid -
 
@@ -65,6 +67,14 @@ for ~9k files:
     sys     0m0.104s
 
     => 203/second
+
+For the full batch, on production machine with 12 threads, around 3.8 million records:
+
+    3550.76 user
+    190.16 system
+    1:40:01 elapsed
+
+    => 644/second
 
 ## Crossref
 
