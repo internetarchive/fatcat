@@ -5,10 +5,10 @@ from flask import Flask, render_template, send_from_directory, request, \
     url_for, abort, g, redirect, jsonify, session
 from fatcat import app, api
 from fatcat_client.rest import ApiException
+from fatcat.search import do_search
 
 
 ### Views ###################################################################
-
 
 @app.route('/container/<uuid:ident>', methods=['GET'])
 def container_view(ident):
@@ -155,6 +155,32 @@ def editor_changelog(username):
     changelog_entries = api.get_editor_changelog(username)
     return render_template('editor_changelog.html', editor=editor,
         changelog_entries=changelog_entries)
+
+### Search ##################################################################
+
+@app.route('/release/search', methods=['GET', 'POST'])
+def search():
+
+    limit = 20
+    query = request.args.get('q')
+
+    # Convert raw DOIs to DOI queries
+    if query is not None:
+        oldquery = query.split()
+        for word in oldquery:
+            if word.startswith("10.") and word.count("/") >= 1:
+                query = query.replace(word, 'doi:"{}"'.format(word))
+
+    # Convert "author:" query to "authors:"
+    if query is not None:
+        query = query.replace("author:", "authors:")
+
+    if 'q' in request.args.keys():
+        # always do files for HTML
+        found = do_search(query, limit=limit)
+        return render_template('release_search.html', found=found)
+    else:
+        return render_template('release_search.html')
 
 
 ### Static Routes ###########################################################

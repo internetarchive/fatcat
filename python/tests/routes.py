@@ -54,7 +54,13 @@ def test_all_views(app):
     rv = app.get('/release/00000000-0000-0000-4444-000000000002')
     assert rv.status_code == 200
 
-    rv = app.get('/release/00000000-0000-0000-4444-000000000002'.format(route))
+    rv = app.get('/release/lookup?doi=10.123/abc')
+    assert rv.status_code == 302
+
+    rv = app.get('/release/lookup?doi=10.123%2Fabc')
+    assert rv.status_code == 302
+
+    rv = app.get('/release/search')
     assert rv.status_code == 200
 
     rv = app.get('/work/00000000-0000-0000-5555-000000000002')
