@@ -8,6 +8,13 @@ from fatcat.importer_common import FatcatImporter
 # CSV format (generated from git.archive.org/webgroup/oa-journal-analysis):
 # ISSN-L,in_doaj,in_road,in_norwegian,in_crossref,title,publisher,url,lang,ISSN-print,ISSN-electronic,doi_count,has_doi,is_oa,is_kept,publisher_size,url_live,url_live_status,url_live_final_status,url_live_final_url,url_live_status_simple,url_live_final_status_simple,url_domain,gwb_pdf_count
 
+def or_none(s):
+    if s is None:
+        return None
+    if len(s) == 0:
+        return None
+    return s
+
 class FatcatIssnImporter(FatcatImporter):
 
     def parse_issn_row(self, row):
@@ -15,20 +22,24 @@ class FatcatIssnImporter(FatcatImporter):
         row is a python dict (parsed from CSV).
         returns a ContainerEntity
         """
+        title = or_none(row['title'])
+        issnl = or_none(row['ISSN-L'])
+        if title is None or issnl is None:
+            return
         extra = dict(
-            in_doaj=row['in_doaj'],
-            in_road=row['in_road'],
-            language=row['lang'],
-            url=row['url'],
-            ISSNp=row['ISSN-print'],
-            ISSNe=row['ISSN-electronic'],
-            is_oa=row['is_oa'],
-            is_kept=row['is_kept'],
+            in_doaj=bool(row['in_doaj']),
+            in_road=bool(row['in_road']),
+            language=or_none(row['lang']),
+            url=or_none(row['url']),
+            ISSNp=or_none(row['ISSN-print']),
+            ISSNe=or_none(row['ISSN-electronic']),
+            is_oa=bool(row['is_oa']),
+            is_kept=bool(row['is_kept']),
         )
         ce = fatcat_client.ContainerEntity(
-            issnl=row['ISSN-L'],
-            name=row['title'],
-            publisher=row['publisher'],
+            issnl=issnl,
+            name=title,
+            publisher=or_none(row['publisher']),
             abbrev=None,
             coden=None,
             extra=extra)
