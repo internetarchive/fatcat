@@ -86,11 +86,15 @@ def release_view(ident):
     try:
         entity = api.get_release(str(ident))
         files = api.get_release_files(str(ident))
+        container = None
+        if entity.container_id is not None:
+            container = api.get_container(entity.container_id)
     except ApiException as ae:
         abort(ae.status)
     authors = [c for c in entity.contribs if c.role in ('author', None)]
     authors = sorted(authors, key=lambda c: c.index)
-    return render_template('release_view.html', release=entity, authors=authors, files=files)
+    return render_template('release_view.html', release=entity,
+        authors=authors, files=files, container=container)
 
 @app.route('/release/lookup', methods=['GET'])
 def release_lookup():

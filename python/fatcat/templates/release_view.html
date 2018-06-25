@@ -1,35 +1,52 @@
 {% extends "base.html" %}
-{% block body %}
+{% block fullbody %}
 
-<h1>{{ release.title }}</h1>
+<div class="ui stackable mobile reversed grid centered">
+<div class="one wide column"></div>
+<div class="ten wide column">
+
+<h1 class="ui header">{{ release.title }}
+<div class="sub header"><code>release {{ release.ident }}</code></div></h1>
 {% for contrib in authors %}
   {% if contrib.creator_id %}
-    <a href="/creator/{{contrib.creator_id}}">{{ contrib.raw }}</a> 
+    <b><a href="/creator/{{contrib.creator_id}}">{{ contrib.raw }}</a></b>
   {% else %}
     {{ contrib.raw }}
   {% endif %}
 {% endfor %}
 
 <br><br>
-<p><b>fatcat Work:</b> <a href="/work/{{ release.work_id }}"><code>{{ release.work_id }}</code></a>
+{% if release.release_date != None %}<p><b>Date (published):</b> {{ release.release_date }}{% endif %}
 {% if release.doi != None %}
-<p><b>DOI:</b> <a href="https://doi.org/{{ release.doi }}"><code>{{ release.doi }}</code></a>
+<br><b>DOI:</b> <a href="https://doi.org/{{ release.doi }}"><code>{{ release.doi }}</code></a>
 {% endif %}
+{% if release.language != None %}
+<br><b>Primary Language:</b> <code>{{ release.language }}</code> (<a href="https://www.loc.gov/standards/iso639-2/php/langcodes_name.php?iso_639_1={{ release.language }}">lookup ISO-639 code</a>)
+{% endif %}
+
+<div class="ui segment">
+{% if container and release.release_status == 'published' %}
+<div class="ui top attached label">
+Published as a <i>{{ release.release_type }}</i> in <a href="/container/{{ container.ident }}">{{ container.name }}</a>
+{% if container.extra.is_oa %} (open access!){% endif %}
+</div>
+{% endif %}
+{% if container.issnl != None %}<br><b>ISSN-L:</b> {{ container.issnl }}{% endif %}
+{% if release.volume != None %}<br><b>Volume:</b> {{ release.volume }}{% endif %}
+{% if release.issue != None %}<br><b>Issue:</b> {{ release.issue }}{% endif %}
+{% if release.pages != None %}<br><b>Page(s):</b> {{ release.pages }}{% endif %}
+{% if release.publisher != None %}<br><b>Publisher:</b> {{ release.publisher }}{% endif %}
+{% if release.release_status != None %}<br><b>Release Status:</b> {{ release.release_status }}{% endif %}
+{% if release.release_type != None %}<br><b>Release Type:</b> {{ release.release_type}}{% endif %}
+</div>
+There may be other versions or releases (pre-prints, publications, etc) linked
+to the same work:
+<a href="/work/{{ release.work_id }}"><code>{{ release.work_id }}</code></a>
+
 {% if release.isbn13 != None %}
 <p><b>ISBN-13:</b> <code>{{ release.isbn13 }}</code> (<a href="https://openlibrary.org/search?isbn={{ release.isbn13 }}">openlibrary.org</a>)
 {% endif %}
-{% if release.language != None %}
-<p><b>Primary Language:</b> <code>{{ release.language }}</code> (<a href="https://www.loc.gov/standards/iso639-2/php/langcodes_name.php?iso_639_1={{ release.language }}">lookup ISO-639 code</a>)
-{% endif %}
-{% if release.volume != None %}<p><b>Volume:</b> {{ release.volume }}{% endif %}
-{% if release.issue != None %}<p><b>Issue:</b> {{ release.issue }}{% endif %}
-{% if release.pages != None %}<p><b>Pages:</b> {{ release.pages }}{% endif %}
-{% if release.publisher != None %}<p><b>Publisher:</b> {{ release.publisher }}{% endif %}
-{% if release.release_date != None %}<p><b>Date (published):</b> {{ release.release_date }}{% endif %}
-{% if release.release_status != None %}<p><b>Publication Status:</b> {{ release.release_status }}{% endif %}
-{% if release.release_type != None %}<p><b>Publication Type:</b> {{ release.release_type}}{% endif %}
 
-<p><b>fatcat Release Identifier:</b> <code>{{ release.ident }}</code> (revision #{{ release.revision }}, {{ release.state }})
 {% if release.extra != None %}
 <p><b>Additional Metadata (raw JSON):</b>
 <pre>{{ release.extra }}</pre>
@@ -41,34 +58,52 @@ Raw JSON Object:
 -->
 
 <br>
+<h3>Files</h3>
 {% if files != [] %}
-<p>Files believed to represent this release:
-<ul>
+Believed to represent this release...
+<table class="ui table">
+  <thead>
+    <tr><th>SHA-1
+        <th>Size (bytes)
+        <th>File Type
+        <th>Links
+  </thead>
+  <tbody>
   {% for file in files %}
-  <li><a href="/file/{{ file.ident }}">{{ file.sha1}}</a> ({{ file.size }} bytes), at <a href="{{ file.url }}">{{ file.url }}</a>
+  <tr><td><a href="/file/{{ file.ident }}">{{ file.sha1}}</a>
+      <td>{{ file.size }}
+      <td>{{ file.mimetype }}
+      <td><a href="{{ file.url }}">{{ file.url.split('/')[2] }}</a>
+          <br><a href="https://web.archive.org/web/2/{{ file.url }}">web.archive.org</a>
   {% endfor %}
+  </tbody>
+</table>
 </ul>
 {% else %}
-<p>There are no known files associated with this release (you could try other
-releases for this work?).
+<p>There are no known files associated with this release (you could try
+<a href="/work/{{ release.work_id }}">other releases for this work?</a>).
 {% endif %}
 
 <br>
+<h3>All Contributors</h3>
 {% if release.contribs.size != 0 %}
-<p>Full list of contributors (not just authors):
-<table>
-  <tr><th>Role
-      <th>Attribution Order
-      <th>Name
+<table class="ui table">
+  <thead>
+    <tr><th>Attribution Order
+        <th>Name
+        <th>Role
+  </thead>
+  <tbody>
   {% for contrib in release.contribs %}
-  <tr><td>{{ contrib.role or '' }}
-      <td>{{ contrib.index }}
+  <tr><td>{{ contrib.index }}
       {% if contrib.creator_id %}
         <td><a href="/creator/{{contrib.creator_id}}">{{ contrib.raw }}</a> 
       {% else %}
         <td>{{ contrib.raw }}
       {% endif %}
+      <td>{{ contrib.role or '' }}
   {% endfor %}
+  </tbody>
 </table>
 {% else %}
 <p>Contributors (authors, etc) not known.
@@ -76,7 +111,8 @@ releases for this work?).
 
 <br>
 {% if release.refs.size != 0 %}
-<p>References (this work citing other works):
+<h3>References</h3>
+This release citing other releases.
 <ul>
   {% for ref in release.refs %}
     <li>{{ ref.raw }}
@@ -89,4 +125,34 @@ releases for this work?).
 <p>No reference list available.
 {% endif %}
 
+</div>
+<div class="five wide column">
+
+<a href="#" class="ui top attached fluid huge green button"><i class="file pdf outline icon"></i>Download Full Text</a>
+<div class="ui segment attached">
+
+A Bunch Of Other Content...
+
+<ul>
+  <li><a>and links!</a>
+  <li><a>and links!</a>
+  <li><a>and links!</a>
+</ul>
+
+Over here
+</div><div class="ui segment attached">
+<b>DOI </b> <a href="https://doi.org/{{ release.doi }}">{{ release.doi }}</a>
+
+</div><div class="ui segment attached">
+<b>Fatcat Bits</b>
+<p>Revision #{{ release.revision }}. State is "{{ release.state }}"
+
+</div>
+<div class="two ui buttons bottom attached">
+  <a href="#" class="ui blue button">Edit Metadata</a>
+  <a href="#" class="ui button">View History</a>
+</div>
+
+</div>
+</div>
 {% endblock %}
