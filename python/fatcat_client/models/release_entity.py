@@ -38,8 +38,8 @@ class ReleaseEntity(object):
         'contribs': 'list[ReleaseContrib]',
         'language': 'str',
         'publisher': 'str',
-        'issue': 'str',
         'pages': 'str',
+        'issue': 'str',
         'volume': 'str',
         'isbn13': 'str',
         'doi': 'str',
@@ -62,8 +62,8 @@ class ReleaseEntity(object):
         'contribs': 'contribs',
         'language': 'language',
         'publisher': 'publisher',
-        'issue': 'issue',
         'pages': 'pages',
+        'issue': 'issue',
         'volume': 'volume',
         'isbn13': 'isbn13',
         'doi': 'doi',
@@ -81,15 +81,15 @@ class ReleaseEntity(object):
         'extra': 'extra'
     }
 
-    def __init__(self, refs=None, contribs=None, language=None, publisher=None, issue=None, pages=None, volume=None, isbn13=None, doi=None, release_date=None, release_status=None, release_type=None, container_id=None, work_id=None, title=None, state=None, ident=None, revision=None, redirect=None, editgroup_id=None, extra=None):  # noqa: E501
+    def __init__(self, refs=None, contribs=None, language=None, publisher=None, pages=None, issue=None, volume=None, isbn13=None, doi=None, release_date=None, release_status=None, release_type=None, container_id=None, work_id=None, title=None, state=None, ident=None, revision=None, redirect=None, editgroup_id=None, extra=None):  # noqa: E501
         """ReleaseEntity - a model defined in Swagger"""  # noqa: E501
 
         self._refs = None
         self._contribs = None
         self._language = None
         self._publisher = None
-        self._issue = None
         self._pages = None
+        self._issue = None
         self._volume = None
         self._isbn13 = None
         self._doi = None
@@ -115,10 +115,10 @@ class ReleaseEntity(object):
             self.language = language
         if publisher is not None:
             self.publisher = publisher
-        if issue is not None:
-            self.issue = issue
         if pages is not None:
             self.pages = pages
+        if issue is not None:
+            self.issue = issue
         if volume is not None:
             self.volume = volume
         if isbn13 is not None:
@@ -194,6 +194,7 @@ class ReleaseEntity(object):
     def language(self):
         """Gets the language of this ReleaseEntity.  # noqa: E501
 
+        Two-letter RFC1766/ISO639-1 language code, with extensions  # noqa: E501
 
         :return: The language of this ReleaseEntity.  # noqa: E501
         :rtype: str
@@ -204,6 +205,7 @@ class ReleaseEntity(object):
     def language(self, language):
         """Sets the language of this ReleaseEntity.
 
+        Two-letter RFC1766/ISO639-1 language code, with extensions  # noqa: E501
 
         :param language: The language of this ReleaseEntity.  # noqa: E501
         :type: str
@@ -233,27 +235,6 @@ class ReleaseEntity(object):
         self._publisher = publisher
 
     @property
-    def issue(self):
-        """Gets the issue of this ReleaseEntity.  # noqa: E501
-
-
-        :return: The issue of this ReleaseEntity.  # noqa: E501
-        :rtype: str
-        """
-        return self._issue
-
-    @issue.setter
-    def issue(self, issue):
-        """Sets the issue of this ReleaseEntity.
-
-
-        :param issue: The issue of this ReleaseEntity.  # noqa: E501
-        :type: str
-        """
-
-        self._issue = issue
-
-    @property
     def pages(self):
         """Gets the pages of this ReleaseEntity.  # noqa: E501
 
@@ -273,6 +254,27 @@ class ReleaseEntity(object):
         """
 
         self._pages = pages
+
+    @property
+    def issue(self):
+        """Gets the issue of this ReleaseEntity.  # noqa: E501
+
+
+        :return: The issue of this ReleaseEntity.  # noqa: E501
+        :rtype: str
+        """
+        return self._issue
+
+    @issue.setter
+    def issue(self, issue):
+        """Sets the issue of this ReleaseEntity.
+
+
+        :param issue: The issue of this ReleaseEntity.  # noqa: E501
+        :type: str
+        """
+
+        self._issue = issue
 
     @property
     def volume(self):

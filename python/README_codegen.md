@@ -89,6 +89,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**get_file**](docs/DefaultApi.md#get_file) | **GET** /file/{id} | 
 *DefaultApi* | [**get_release**](docs/DefaultApi.md#get_release) | **GET** /release/{id} | 
 *DefaultApi* | [**get_release_files**](docs/DefaultApi.md#get_release_files) | **GET** /release/{id}/files | 
+*DefaultApi* | [**get_stats**](docs/DefaultApi.md#get_stats) | **GET** /stats | 
 *DefaultApi* | [**get_work**](docs/DefaultApi.md#get_work) | **GET** /work/{id} | 
 *DefaultApi* | [**get_work_releases**](docs/DefaultApi.md#get_work_releases) | **GET** /work/{id}/releases | 
 *DefaultApi* | [**lookup_container**](docs/DefaultApi.md#lookup_container) | **GET** /container/lookup | 
@@ -112,6 +113,7 @@ Class | Method | HTTP request | Description
  - [ReleaseContrib](docs/ReleaseContrib.md)
  - [ReleaseEntity](docs/ReleaseEntity.md)
  - [ReleaseRef](docs/ReleaseRef.md)
+ - [StatsResponse](docs/StatsResponse.md)
  - [Success](docs/Success.md)
  - [WorkEntity](docs/WorkEntity.md)
 

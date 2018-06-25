@@ -155,6 +155,12 @@ class TestDefaultApi(unittest.TestCase):
         """
         pass
 
+    def test_get_stats(self):
+        """Test case for get_stats
+
+        """
+        pass
+
     def test_get_work(self):
         """Test case for get_work
 
