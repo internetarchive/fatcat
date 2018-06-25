@@ -22,6 +22,11 @@ class FatcatCrossrefImporter(FatcatImporter):
         if (not 'author' in obj) or (not 'title' in obj):
             return None
 
+        # Other ways to be out of scope (provisionally)
+        if ((not 'type' in obj) or (not 'container-title' in obj) or
+                len(obj['container-title']) < 1):
+            return None
+
         # contribs
         contribs = []
         for i, am in enumerate(obj['author']):
@@ -62,6 +67,10 @@ class FatcatCrossrefImporter(FatcatImporter):
         for i, rm in enumerate(obj.get('reference', [])):
             try:
                 year = int(rm.get('year'))
+                if year > 2025 or year < 1000:
+                    # NOTE: will need to update/config in the future!
+                    # NOTE: are there crossref works with year < 1000?
+                    return None
             except:
                 year = None
             refs.append(fatcat_client.ReleaseRef(
