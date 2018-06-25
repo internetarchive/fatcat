@@ -156,6 +156,11 @@ def editor_changelog(username):
     return render_template('editor_changelog.html', editor=editor,
         changelog_entries=changelog_entries)
 
+@app.route('/stats', methods=['GET'])
+def stats_view():
+    stats = api.get_stats()
+    return render_template('stats.html', stats=stats.extra)
+
 ### Search ##################################################################
 
 @app.route('/release/search', methods=['GET', 'POST'])

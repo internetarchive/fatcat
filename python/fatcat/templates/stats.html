@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block body %}
+
+<h1>Entity Statistics</h1>
+
+<div class="ui statistic">
+  <div class="value">
+    {{ stats.entity_counts.work }}
+  </div>
+  <div class="label">
+    Works
+  </div>
+</div>
+
+<br>
+
+<div class="ui statistic">
+  <div class="value">
+    {{ stats.entity_counts.release }}
+  </div>
+  <div class="label">
+    Releases
+  </div>
+</div>
+
+<div class="ui statistic">
+  <div class="value">
+    {{ stats.releases_with_dois }}
+  </div>
+  <div class="label">
+    ... with DOIs
+  </div>
+</div>
+
+<div class="ui statistic">
+  <div class="value">
+    {{ stats.releases_with_dois }}
+  </div>
+  <div class="label">
+    ... with a File
+  </div>
+</div>
+
+<br>
+
+<div class="ui statistic">
+  <div class="value">
+    {{ stats.entity_counts.container }}
+  </div>
+  <div class="label">
+    Containers
+  </div>
+</div>
+
+<div class="ui statistic">
+  <div class="value">
+    {{ stats.containers_with_issnls }}
+  </div>
+  <div class="label">
+    ... with an ISSN-L
+  </div>
+</div>
+
+<br>
+
+<div class="ui statistic">
+  <div class="value">
+    {{ stats.entity_counts.creator }}
+  </div>
+  <div class="label">
+    Creators
+  </div>
+</div>
+
+<div class="ui statistic">
+  <div class="value">
+    {{ stats.creators_with_orcids }}
+  </div>
+  <div class="label">
+    ... with an ORCID
+  </div>
+</div>
+
+<br>
+
+<div class="ui statistic">
+  <div class="value">
+    {{ stats.entity_counts.file }}
+  </div>
+  <div class="label">
+    Files
+  </div>
+</div>
+
+<div class="ui statistic">
+  <div class="value">
+    {{ stats.files_with_releases }}
+  </div>
+  <div class="label">
+    ... with a Release
+  </div>
+</div>
+
+{% endblock %}

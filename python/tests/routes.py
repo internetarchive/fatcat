@@ -88,3 +88,6 @@ def test_all_views(app):
 
     rv = app.get('/editor/admin/changelog')
     assert rv.status_code == 200
+
+    rv = app.get('/stats')
+    assert rv.status_code == 200
