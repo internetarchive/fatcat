@@ -129,7 +129,6 @@ definitions:
     type: object
     required:
       - title
-      - work_id
     properties:
       <<: *ENTITYPROPS
       title:

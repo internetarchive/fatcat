@@ -1710,7 +1710,6 @@ definitions:
     type: "object"
     required:
     - "title"
-    - "work_id"
     properties:
       refs:
         type: "array"
