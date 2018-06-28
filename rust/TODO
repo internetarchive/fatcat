@@ -1,5 +1,5 @@
 
-- editor_id vs. editor; return editor_id (in addition to name?)
+- editor_id vs. editor username; return editor_id (in addition to name?)
 
 later:
 - editgroup: state to track review status?

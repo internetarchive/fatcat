@@ -1,10 +1,13 @@
 
 ## Schema / Alignment / Scope
 
+- switch a bunch more primary keys to UUID: revs, editor ids, edit numbers
 - abstracts! as files? separate table? format (latex, html, etc)?
 - work_type, release_type, release_status
 - multiple URLs
 - other identifiers (just in extra?)
+- make "raw" fields in release_ref/release_contrib JSON?
+- wikidata IDs are first-class identifiers
 
 name ref: https://www.w3.org/International/questions/qa-personal-names
 
@@ -15,6 +18,13 @@ name ref: https://www.w3.org/International/questions/qa-personal-names
 - accurate auto-matching matching of containers (eg, via ISSN)
 - full database dump and reload (import/export)
 
+## Performance
+
+x have release creation auto-create works if one isn't specified
+- write pure-rust "benchmark" scripts that hit, eg, lookups and batch
+  endpoints. run these with auto_explain on, then look in logs on dev machine
+- batch inserts automerge: create editgroup and changelog, mark all edits as
+  accepted, all in a single transaction
 
 ## Other
 
