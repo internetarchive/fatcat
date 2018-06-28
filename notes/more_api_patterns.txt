@@ -1,0 +1,15 @@
+
+If returning a long list (eg, all releases for a container):
+
+  "releases": {
+    "data": [
+        <release>,
+        <release>,
+        ...
+    ],
+    "has_mode": true,
+    "total_count": 100,
+    "url": "/v0/container/asdf/releases"
+  }
+
+This pattern from the Stripe API.
