@@ -133,7 +133,8 @@ class ReleaseEntity(object):
             self.release_type = release_type
         if container_id is not None:
             self.container_id = container_id
-        self.work_id = work_id
+        if work_id is not None:
+            self.work_id = work_id
         self.title = title
         if state is not None:
             self.state = state
@@ -441,8 +442,6 @@ class ReleaseEntity(object):
         :param work_id: The work_id of this ReleaseEntity.  # noqa: E501
         :type: str
         """
-        if work_id is None:
-            raise ValueError("Invalid value for `work_id`, must not be `None`")  # noqa: E501
 
         self._work_id = work_id
 

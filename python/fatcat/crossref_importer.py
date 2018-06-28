@@ -84,11 +84,6 @@ class FatcatCrossrefImporter(FatcatImporter):
                 # TODO: just dump JSON somewhere here?
                 raw=rm.get('unstructured')))
 
-        # work
-        we = fatcat_client.WorkEntity(
-            work_type=obj['type'],
-        )
-
         # release
         extra = dict(crossref={
             'links': obj.get('link', []),
@@ -98,7 +93,7 @@ class FatcatCrossrefImporter(FatcatImporter):
             'alternative-id': obj.get('alternative-id', [])})
 
         re = fatcat_client.ReleaseEntity(
-            work_id='tbd', # gets set later, I promise!
+            work_id=None,
             title=obj['title'][0],
             contribs=contribs,
             refs=refs,
@@ -110,7 +105,7 @@ class FatcatCrossrefImporter(FatcatImporter):
             volume=obj.get('volume'),
             pages=obj.get('page'),
             extra=extra)
-        return (we, re, ce)
+        return (re, ce)
 
     def create_row(self, row, editgroup_id=None):
         if row is None:
@@ -118,20 +113,31 @@ class FatcatCrossrefImporter(FatcatImporter):
         obj = json.loads(row)
         entities = self.parse_crossref_dict(obj)
         if entities is not None:
-            (we, re, ce) = entities
-            we.editgroup_id = editgroup_id
+            (re, ce) = entities
             re.editgroup_id = editgroup_id
             if ce is not None:
                 ce.editgroup_id = editgroup_id
                 container = self.api.create_container(ce)
                 re.container_id = container.ident
                 self._issnl_id_map[ce.issnl] = container.ident
-            created = self.api.create_work(we)
-            re.work_id = created.ident
             self.api.create_release(re)
 
     def create_batch(self, batch, editgroup_id=None):
         """Current work/release pairing disallows batch creation of releases.
         Could do batch work creation and then match against releases, but meh."""
+        release_batch = []
         for row in batch:
-            self.create_row(row, editgroup_id)
+            if row is None:
+                continue
+            obj = json.loads(row)
+            entities = self.parse_crossref_dict(obj)
+            if entities is not None:
+                (re, ce) = entities
+                re.editgroup_id = editgroup_id
+                if ce is not None:
+                    ce.editgroup_id = editgroup_id
+                    container = self.api.create_container(ce)
+                    re.container_id = container.ident
+                    self._issnl_id_map[ce.issnl] = container.ident
+                release_batch.append(re)
+        self.api.create_release_batch(release_batch)
