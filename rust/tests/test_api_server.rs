@@ -286,6 +286,21 @@ fn test_post_release() {
         None,
     ); // TODO: "secret paper"
 
+    // No work_id supplied (auto-created)
+    check_response(
+        request::post(
+            "http://localhost:9411/v0/release",
+            headers.clone(),
+            // TODO: target_release_id
+            r#"{"title": "secret minimal paper the second",
+                "release_type": "journal-article"
+                }"#,
+            &router,
+        ),
+        status::Created,
+        None,
+    );
+
     check_response(
         request::post(
             "http://localhost:9411/v0/release",

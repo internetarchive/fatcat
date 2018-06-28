@@ -291,7 +291,7 @@ fn release_row2entity(
         container_id: rev.container_ident_id.map(|u| u.to_string()),
         publisher: rev.publisher,
         language: rev.language,
-        work_id: rev.work_ident_id.to_string(),
+        work_id: Some(rev.work_ident_id.to_string()),
         refs: Some(refs),
         contribs: Some(contribs),
         state: state,
@@ -676,7 +676,24 @@ impl Server {
             Some(param) => param as i64,
         };
 
-        let work_id = uuid::Uuid::parse_str(&entity.work_id)?;
+        let work_id = match entity.work_id {
+            Some(work_id) => uuid::Uuid::parse_str(&work_id)?,
+            None => {
+                // If a work_id wasn't passed, create a new work under the current editgroup
+                let work_model = models::WorkEntity {
+                    work_type: None,
+                    ident: None,
+                    revision: None,
+                    redirect: None,
+                    state: None,
+                    editgroup_id: Some(editgroup_id),
+                    extra: None,
+                };
+                let new_entity = self.create_work_handler(work_model, Some(&conn))?;
+                uuid::Uuid::parse_str(&new_entity.ident)?
+            }
+        };
+
         let container_id: Option<uuid::Uuid> = match entity.container_id {
             Some(id) => Some(uuid::Uuid::parse_str(&id)?),
             None => None,
