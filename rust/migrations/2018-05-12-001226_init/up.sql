@@ -1,4 +1,5 @@
 -- written for Postgres 9.6 with OSSP extension for UUIDs
+-- ... but actually runs on Postgres 10 in qa/production
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
@@ -32,6 +33,9 @@ CREATE TABLE changelog (
     timestamp           TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL
 );
 
+-- for "is this editgroup merged" queries
+CREATE INDEX changelog_editgroup_idx ON changelog(editgroup_id);
+
 -------------------- Creators -----------------------------------------------
 CREATE TABLE creator_rev (
     id                  BIGSERIAL PRIMARY KEY,
@@ -56,6 +60,8 @@ CREATE TABLE creator_ident (
     redirect_id         UUID REFERENCES creator_ident(id)
 );
 
+CREATE INDEX creator_ident_rev_idx ON creator_ident(rev_id);
+
 CREATE TABLE creator_edit (
     id                  BIGSERIAL PRIMARY KEY,
     editgroup_id        BIGINT REFERENCES editgroup(id) NOT NULL,
@@ -64,6 +70,8 @@ CREATE TABLE creator_edit (
     redirect_id         UUID REFERENCES creator_ident(id),
     extra_json          JSON
 );
+
+CREATE INDEX creator_edit_idx ON creator_edit(editgroup_id);
 
 -------------------- Containers --------------------------------------------
 CREATE TABLE container_rev (
@@ -86,6 +94,8 @@ CREATE TABLE container_ident (
     redirect_id         UUID REFERENCES container_ident(id)
 );
 
+CREATE INDEX container_ident_rev_idx ON container_ident(rev_id);
+
 CREATE TABLE container_edit (
     id                  BIGSERIAL PRIMARY KEY,
     editgroup_id        BIGINT REFERENCES editgroup(id) NOT NULL,
@@ -94,6 +104,8 @@ CREATE TABLE container_edit (
     redirect_id         UUID REFERENCES container_ident(id),
     extra_json          JSON
 );
+
+CREATE INDEX container_edit_idx ON container_edit(editgroup_id);
 
 -------------------- Files -------------------------------------------------
 CREATE TABLE file_rev (
@@ -108,12 +120,18 @@ CREATE TABLE file_rev (
     mimetype            TEXT
 );
 
+CREATE INDEX file_rev_sha1_idx ON file_rev(sha1) WHERE sha1 IS NOT NULL;
+CREATE INDEX file_rev_md5_idx ON file_rev(md5) WHERE md5 IS NOT NULL;
+CREATE INDEX file_rev_sha256_idx ON file_rev(sha256) WHERE sha256 IS NOT NULL;
+
 CREATE TABLE file_ident (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     is_live             BOOL NOT NULL DEFAULT false,
     rev_id              BIGINT REFERENCES file_rev(id),
     redirect_id         UUID REFERENCES file_ident(id)
 );
+
+CREATE INDEX file_ident_rev_idx ON file_ident(rev_id);
 
 CREATE TABLE file_edit (
     id                  BIGSERIAL PRIMARY KEY,
@@ -123,6 +141,8 @@ CREATE TABLE file_edit (
     redirect_id         UUID REFERENCES file_ident(id),
     extra_json          JSON
 );
+
+CREATE INDEX file_edit_idx ON file_edit(editgroup_id);
 
 -------------------- Release -----------------------------------------------
 CREATE TABLE release_rev (
@@ -146,6 +166,8 @@ CREATE TABLE release_rev (
 );
 
 CREATE INDEX release_rev_doi_idx ON release_rev(doi) WHERE doi IS NOT NULL;
+CREATE INDEX release_rev_isbn13_idx ON release_rev(isbn13) WHERE isbn13 IS NOT NULL;
+CREATE INDEX release_rev_work_idx ON release_rev(work_ident_id) WHERE work_ident_id IS NOT NULL;
 
 CREATE TABLE release_ident (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -153,6 +175,8 @@ CREATE TABLE release_ident (
     rev_id              BIGINT REFERENCES release_rev(id),
     redirect_id         UUID REFERENCES release_ident(id)
 );
+
+CREATE INDEX release_ident_rev_idx ON release_ident(rev_id);
 
 CREATE TABLE release_edit (
     id                  BIGSERIAL PRIMARY KEY,
@@ -162,6 +186,8 @@ CREATE TABLE release_edit (
     redirect_id         UUID REFERENCES release_ident(id),
     extra_json          JSON
 );
+
+CREATE INDEX release_edit_idx ON release_edit(editgroup_id);
 
 -------------------- Works --------------------------------------------------
 CREATE TABLE work_rev (
@@ -180,6 +206,8 @@ CREATE TABLE work_ident (
     redirect_id         UUID REFERENCES work_ident(id)
 );
 
+CREATE INDEX work_ident_rev_idx ON work_ident(rev_id);
+
 CREATE TABLE work_edit (
     id                  BIGSERIAL PRIMARY KEY,
     editgroup_id        BIGINT REFERENCES editgroup(id) NOT NULL,
@@ -189,6 +217,7 @@ CREATE TABLE work_edit (
     extra_json          JSON
 );
 
+CREATE INDEX work_edit_idx ON work_edit(editgroup_id);
 
 ALTER TABLE release_rev
     ADD CONSTRAINT release_containeridentid_fkey FOREIGN KEY (work_ident_id)
@@ -205,6 +234,9 @@ CREATE TABLE release_contrib (
     raw                 TEXT
 );
 
+CREATE INDEX release_contrib_rev_idx ON release_contrib(release_rev);
+CREATE INDEX release_contrib_creator_idx ON release_contrib(creator_ident_id);
+
 CREATE TABLE release_ref (
     id                      BIGSERIAL PRIMARY KEY,
     release_rev             BIGSERIAL REFERENCES release_rev(id) NOT NULL,
@@ -218,11 +250,16 @@ CREATE TABLE release_ref (
     locator                 TEXT
 );
 
+CREATE INDEX release_ref_rev_idx ON release_ref(release_rev);
+CREATE INDEX release_ref_target_release_idx ON release_ref(target_release_ident_id);
+
 CREATE TABLE file_release (
     file_rev                BIGSERIAL REFERENCES file_rev(id) NOT NULL,
     target_release_ident_id UUID REFERENCES release_ident(id) NOT NULL,
     PRIMARY KEY (file_rev, target_release_ident_id)
 );
+
+CREATE INDEX file_release_target_release_idx ON file_release(target_release_ident_id);
 
 ---------------------------------------------------------------------------
 ---------------------------------------------------------------------------
