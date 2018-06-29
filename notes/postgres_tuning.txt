@@ -1,8 +1,0 @@
-
-For bulk inserts:
-
-- make write-ahead-log larger (eg, 16MB)
-- transactions of ~1000+ inserts
-- https://www.postgresql.org/docs/current/static/populate.html
-- https://www.depesz.com/2007/07/05/how-to-insert-data-to-database-as-fast-as-possible/
-- https://stackoverflow.com/questions/12206600/how-to-speed-up-insertion-performance-in-postgresql
