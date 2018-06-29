@@ -53,7 +53,7 @@ class FatcatCrossrefImporter(FatcatImporter):
         container_id = None
         if issnl:
             container_id = self.lookup_issnl(issnl)
-        publisher = obj['publisher']
+        publisher = obj.get('publisher')
 
         ce = None
         if container_id is None and self.create_containers and issnl != None:
