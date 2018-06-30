@@ -13,12 +13,6 @@
 <div class="one wide column"></div>
 <div class="ten wide column">
 
-<p><b>Size:</b> {{ file.size }} (bytes)
-
-{% if file.mimetype %}
-<p><b>File Type:</b> <code>{{ file.mimetype }}</code>
-{% endif %}
-
 {% if file.extra != None %}
 <p><b>Additional Metadata (raw JSON):</b>
 <pre>{{ file.extra }}</pre>
@@ -82,6 +76,16 @@ Raw Object:
 {% endif %}
 
 <div class="ui segment attached">
+
+{% if file.size != None %}
+<p><b>Size</b> &nbsp;{{ file.size }} (bytes)
+</div><div class="ui segment attached">
+{% endif %}
+
+{% if file.mimetype != None %}
+<p><b>File Type</b> &nbsp;<code>{{ file.mimetype }}</code>
+</div><div class="ui segment attached">
+{% endif %}
 
 <b>Fatcat Bits</b>
 <p>Revision #{{ file.revision }}. State is "{{ file.state }}"

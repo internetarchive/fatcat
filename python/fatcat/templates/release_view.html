@@ -26,7 +26,7 @@
 <br><b>DOI:</b> <a href="https://doi.org/{{ release.doi }}">&nbsp;<code>{{ release.doi }}</code></a>
 {% endif %}
 {% if release.isbn13 != None %}
-<p><b>ISBN-13:</b> &nbsp;<code>{{ release.isbn13 }}</code>
+<br><b>ISBN-13:</b> &nbsp;<code>{{ release.isbn13 }}</code>
 {% endif %}
 {% if release.language != None %}
 <br><b>Primary Language:</b> &nbsp;<code>{{ release.language }}</code> (<a href="https://www.loc.gov/standards/iso639-2/php/langcodes_name.php?iso_639_1={{ release.language }}">lookup ISO-639 code</a>)
@@ -143,8 +143,17 @@ This release citing other releases.
 {% endif %}
 <div class="ui segment attached">
 
+{% if release.release_type != None %}
+<b>Release Type</b> <code>{{ release.release_type }}</code>
+</div><div class="ui segment attached">
+{% endif %}
+
 {% if release.doi %}
 <b>DOI </b> <a href="https://doi.org/{{ release.doi }}">{{ release.doi }}</a>
+</div><div class="ui segment attached">
+{% endif %}
+{% if release.isbn13 != None %}
+<p><b>ISBN-13 </b> &nbsp;<code>{{ release.isbn13 }}</code>
 </div><div class="ui segment attached">
 {% endif %}
 
@@ -186,7 +195,6 @@ This release citing other releases.
 {% endif %}
 </div><div class="ui segment attached">
 
-<!-- (<a href="https://openlibrary.org/search?isbn={{ release.isbn13 }}">openlibrary.org</a>) -->
 
 <b>Lookup Links</b>
 {% if container != None and container.issnl != None %}
@@ -194,6 +202,12 @@ This release citing other releases.
 {% endif %}
 {% if container.doi != None %}
   <br><a href="https://oadoi.org/{{ release.doi }}">oaDOI/unpaywall</a>
+{% endif %}
+{% if release.isbn13 != None %}
+  <br><a href="https://openlibrary.org/search?isbn={{ release.isbn13 }}">Open Library</a>
+  <br><a href="http://www.worldcat.org/search?q=bn%3A{{ release.isbn13 }}">Worldcat</a>
+{% else %}
+  <br><a href="http://www.worldcat.org/search?qt=worldcat_org_art&q={{ release.title }}">Worldcat</a>
 {% endif %}
 <br><a href="https://www.wikidata.org/w/index.php?search={{ release.title }}">wikidata.org</a>
 <br><a href="https://core.ac.uk/search?q={{ release.title }}">CORE.ac.uk</a>
