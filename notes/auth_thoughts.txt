@@ -1,0 +1,12 @@
+
+For users: use openid connect (oauth2) to sign up and login to web app. From
+web app, can create (and disable?) API tokens
+
+For impl: fatcat-web has private key to create tokens. tokens used both in
+cookies and as API keys. tokens are macaroons (?). fatcatd only verifies
+tokens. optionally, some redis or other fast shared store to verify that tokens
+haven't been revoked.
+
+Could use portier with openid connect as an email-based option. Otherwise,
+orcid, github, google.
+
