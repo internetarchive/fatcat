@@ -296,10 +296,10 @@ INSERT INTO changelog (editgroup_id) VALUES
     (4),
     (5);
 
-INSERT INTO container_rev (name, publisher, issnl, abbrev, coden) VALUES
-    ('MySpace Blog', null, null, null, null),
-    ('Journal of Trivial Results', 'bogus publishing group', '1234-5678', 'Triv. Res.', 'CDNXYZ'),
-    ('PLOS Medicine', 'Public Library of Science', '1549-1277', 'PLoS med.', null);
+INSERT INTO container_rev (name, publisher, issnl, abbrev, coden, extra_json) VALUES
+    ('MySpace Blog', null, null, null, null, null),
+    ('Journal of Trivial Results', 'bogus publishing group', '1234-5678', 'Triv. Res.', 'CDNXYZ', '{"is_oa": false, "in_doaj": false}'),
+    ('PLOS Medicine', 'Public Library of Science', '1549-1277', 'PLoS med.', null, '{"is_oa": true, "in_doaj": true}');
 
 INSERT INTO container_ident (id, is_live, rev_id, redirect_id) VALUES
     ('00000000-0000-0000-1111-000000000001', true, 1, null),
