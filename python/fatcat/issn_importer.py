@@ -15,6 +15,17 @@ def or_none(s):
         return None
     return s
 
+def truthy(s):
+    if s is None:
+        return None
+    s = s.lower()
+    if s in ('true', 't', 'yes', 'y', '1'):
+        return True
+    elif s in ('false', 'f', 'no', 'n', '0'):
+        return False
+    else:
+        return None
+
 class FatcatIssnImporter(FatcatImporter):
 
     def parse_issn_row(self, row):
@@ -27,14 +38,14 @@ class FatcatIssnImporter(FatcatImporter):
         if title is None or issnl is None:
             return
         extra = dict(
-            in_doaj=bool(row['in_doaj']),
-            in_road=bool(row['in_road']),
+            in_doaj=truthy(row['in_doaj']),
+            in_road=truthy(row['in_road']),
             language=or_none(row['lang']),
             url=or_none(row['url']),
             ISSNp=or_none(row['ISSN-print']),
             ISSNe=or_none(row['ISSN-electronic']),
-            is_oa=bool(row['is_oa']),
-            is_kept=bool(row['is_kept']),
+            is_oa=truthy(row['is_oa']),
+            is_kept=truthy(row['is_kept']),
         )
         ce = fatcat_client.ContainerEntity(
             issnl=issnl,
