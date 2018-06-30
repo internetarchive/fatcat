@@ -40,6 +40,7 @@ class FatcatIssnImporter(FatcatImporter):
         extra = dict(
             in_doaj=truthy(row['in_doaj']),
             in_road=truthy(row['in_road']),
+            in_norwegian=truthy(row['in_norwegian']),
             language=or_none(row['lang']),
             url=or_none(row['url']),
             ISSNp=or_none(row['ISSN-print']),
