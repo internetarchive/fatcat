@@ -23,7 +23,12 @@ the others:
 
 From CSV file:
 
+    export LC_ALL=C.UTF-8
     time ./client.py import-issn /srv/datasets/journal_extra_metadata.csv
+
+    real    2m42.148s
+    user    0m11.148s
+    sys     0m0.336s
 
 Pretty quick, a few minutes.
 
@@ -33,7 +38,8 @@ Directly from compressed tarball; takes about 2 hours in production:
 
     tar xf /srv/datasets/public_profiles_API-2.0_2017_10_json.tar.gz -O | jq -c . | grep '"person":' | time parallel -j12 --pipe --round-robin ./client.py import-orcid -
 
-Or, from pre-uncompressed tarball:
+After tuning database, `jq` CPU seems to be bottleneck, so, from pre-extracted
+tarball:
 
     tar xf /srv/datasets/public_profiles_API-2.0_2017_10_json.tar.gz -O | jq -c . | rg '"person":' > /srv/datasets/public_profiles_1_2_json.all.json
     time parallel --bar --pipepart -j8 -a /srv/datasets/public_profiles_1_2_json.all.json ./client.py import-orcid -
@@ -76,11 +82,19 @@ For the full batch, on production machine with 12 threads, around 3.8 million re
 
     => 644/second
 
+After some simple database tuning:
+
+    2177.86 user
+    145.60 system
+    56:41.26 elapsed
+
+    => 1117/second
+
 ## Crossref
 
 From compressed:
 
-    xzcat /srv/datasets/crossref-works.2018-01-21.json.xz | time parallel -j12 --round-robin --pipe ./client.py import-crossref - /srv/datasets/20180216.ISSN-to-ISSN-L.txt
+    xzcat /srv/datasets/crossref-works.2018-01-21.json.xz | time parallel -j20 --round-robin --pipe ./client.py import-crossref - /srv/datasets/20180216.ISSN-to-ISSN-L.txt
 
 ## Manifest 
 
