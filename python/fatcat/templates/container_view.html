@@ -1,26 +1,101 @@
 {% extends "base.html" %}
-{% block body %}
+{% block fullbody %}
 
-<h1>{{ container.name }}</h1>
+<div class="ui stackable mobile reversed grid centered">
+<div class="one wide column"></div>
+<div class="fifteen wide column">
+  <h1 class="ui header">{{ container.name }}
+  <div class="sub header"><code>container {{ container.ident }}</code></div></h1>
+</div>
+</div>
 
-<p><b>Publisher:</b> {{ container.publisher }}
-<p><b>ISSN-L<sup><a href="https://en.wikipedia.org/wiki/International_Standard_Serial_Number#Linking_ISSN">?</a></sup></b>:
-    <code>{{ container.issnl }}</code>
+<div class="ui stackable mobile reversed grid centered">
+<div class="one wide column"></div>
+<div class="ten wide column">
+
+<p><b>Publisher:</b>
+{% if container.publisher != None %}{{ container.publisher }}{% else %}<i>Unknown</i>{% endif %}
 {% if container.coden != None %}
 <p><b>CODEN<sup><a href="https://en.wikipedia.org/wiki/CODEN">?</a></sup>:</b> <code>{{ container.coden }}</code>
 {% endif %}
 {% if container.abbrev != None %}
-<p><b>Abbreviation:</b> <code>{{ container.abbrev }}</code>
+<p><b>Abbrev.:</b> <code>{{ container.abbrev }}</code>
 {% endif %}
-<p><b>fatcat Container Identifier:</b> <code>{{ container.ident }}</code> (revision #{{ container.revision }}, {{ container.state }})
+{% if (container.extra != None) and (container.extra.url != None) %}
+<p><b>Homepage:</b> <a href="{{ container.extra.url }}"><code>{{ container.extra.url }}</code></a>
+{% endif %}
 {% if container.extra != None %}
 <p><b>Additional Metadata (raw JSON):</b>
-<pre>{{ container.extra }}</pre>
+<code>{{ container.extra }}</code>
 {% endif %}
 
 <!--
 Raw JSON Object:
 {{ container }}
 -->
+
+</div>
+<div class="five wide column">
+<div class="ui segment top attached">
+
+{% if container.extra.is_oa == True %}
+<i class="icon unlock huge orange"></i><b>Open Access Publisher</b>
+{% elif container.extra.is_oa == False  %}
+<i class="icon lock huge black"></i><b>Not Open Access</b>
+{% else %}
+<i class="icon question huge grey"></i><b>Unknown OA Status</b>
+{% endif %}
+</div><div class="ui segment attached">
+
+{% if container.issnl != None %}
+  <b>ISSN-L<sup><a href="https://en.wikipedia.org/wiki/International_Standard_Serial_Number#Linking_ISSN">?</a></sup></b> 
+  <code>{{ container.issnl }}</code>
+  {% if container.extra != None and container.extra.ISSNp != None %}
+    <br><i class="icon paperclip"></i>Print: <code>{{ container.extra.ISSNp }}</code>
+  {% endif %}
+  {% if container.extra != None and container.extra.ISSNe != None %}
+    <br><i class="icon plug"></i>Electronic: <code>{{ container.extra.ISSNe }}</code>
+  {% endif %}
+  </div><div class="ui segment attached">
+{% endif %}
+
+
+<b>Directory Listings</b><br>
+{% if (container.extra != None) %}
+  {% if container.extra.in_doaj == True %}
+    <i class="icon check green"></i> In <a href="https://doaj.org/toc/{{ container.issnl }}">DOAJ</a><br>
+  {% elif container.extra.in_doaj == False %}
+    <i class="icon times grey"></i> Not in <a href="https://doaj.org">DOAJ</a><br>
+  {% endif %}
+  {% if container.extra.in_road == True %}
+    <i class="icon check green"></i> In <a href="http://road.issn.org/issn/{{ container.issnl }}">ISSN ROAD</a><br>
+  {% elif container.extra.in_road == False %}
+    <i class="icon times grey"></i> Not in <a href="https://road.issn.org">ISSN ROAD</a><br>
+  {% endif %}
+  {% if container.extra.is_kept == True %}
+    <i class="icon check green"></i> In <a href="https://thekeepers.org/journals?query={{ container.issnl }}">Keepers Registery</a><br>
+  {% elif container.extra.is_kept == False %}
+    <i class="icon times grey"></i> Not in <a href="https://thekeepers.org/journals?query={{ container.issnl }}">Keepers Registry</a><br>
+  {% endif %}
+{% endif %}
+</div><div class="ui segment attached">
+
+<b>Lookup Links</b>
+<br><a href="http://www.sherpa.ac.uk/romeo/issn/{{ container.issnl }}/">SHERPA/RoMEO</a> (access policies)
+<br><a href="https://www.wikidata.org/w/index.php?search=&search={{ container.name }}">wikidata.org</a>
+</div><div class="ui segment attached">
+
+<b>Fatcat Bits</b>
+<p>Revision #{{ container.revision }}. State is "{{ container.state }}"
+<br><a href="https://api.qa.fatcat.wiki/v0/container/{{ container.ident }}">As JSON object via API</a>
+
+</div>
+<div class="two ui buttons bottom attached">
+  <a href="/container/{{ container.ident }}/edit" class="ui blue button">Edit Metadata</a>
+  <a href="/container/{{ container.ident }}/history" class="ui button">View History</a>
+</div>
+
+</div>
+</div>
 
 {% endblock %}
