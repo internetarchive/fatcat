@@ -10,68 +10,7 @@ use std::collections::HashMap;
 use swagger;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct Changelogentries(Vec<ChangelogentriesInner>);
-
-impl ::std::convert::From<Vec<ChangelogentriesInner>> for Changelogentries {
-    fn from(x: Vec<ChangelogentriesInner>) -> Self {
-        Changelogentries(x)
-    }
-}
-
-impl ::std::convert::From<Changelogentries> for Vec<ChangelogentriesInner> {
-    fn from(x: Changelogentries) -> Self {
-        x.0
-    }
-}
-
-impl ::std::iter::FromIterator<ChangelogentriesInner> for Changelogentries {
-    fn from_iter<U: IntoIterator<Item = ChangelogentriesInner>>(u: U) -> Self {
-        Changelogentries(Vec::<ChangelogentriesInner>::from_iter(u))
-    }
-}
-
-impl ::std::iter::IntoIterator for Changelogentries {
-    type Item = ChangelogentriesInner;
-    type IntoIter = ::std::vec::IntoIter<ChangelogentriesInner>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.0.into_iter()
-    }
-}
-
-impl<'a> ::std::iter::IntoIterator for &'a Changelogentries {
-    type Item = &'a ChangelogentriesInner;
-    type IntoIter = ::std::slice::Iter<'a, ChangelogentriesInner>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        (&self.0).into_iter()
-    }
-}
-
-impl<'a> ::std::iter::IntoIterator for &'a mut Changelogentries {
-    type Item = &'a mut ChangelogentriesInner;
-    type IntoIter = ::std::slice::IterMut<'a, ChangelogentriesInner>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        (&mut self.0).into_iter()
-    }
-}
-
-impl ::std::ops::Deref for Changelogentries {
-    type Target = Vec<ChangelogentriesInner>;
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl ::std::ops::DerefMut for Changelogentries {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct ChangelogentriesInner {
+pub struct ChangelogEntry {
     #[serde(rename = "index")]
     pub index: i64,
 
@@ -82,9 +21,9 @@ pub struct ChangelogentriesInner {
     pub timestamp: chrono::DateTime<chrono::Utc>,
 }
 
-impl ChangelogentriesInner {
-    pub fn new(index: i64, editgroup_id: i64, timestamp: chrono::DateTime<chrono::Utc>) -> ChangelogentriesInner {
-        ChangelogentriesInner {
+impl ChangelogEntry {
+    pub fn new(index: i64, editgroup_id: i64, timestamp: chrono::DateTime<chrono::Utc>) -> ChangelogEntry {
+        ChangelogEntry {
             index: index,
             editgroup_id: editgroup_id,
             timestamp: timestamp,
@@ -331,6 +270,89 @@ impl EntityEdit {
             redirect_ident: None,
             editgroup_id: editgroup_id,
             extra: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct EntityHistory(Vec<EntityHistoryInner>);
+
+impl ::std::convert::From<Vec<EntityHistoryInner>> for EntityHistory {
+    fn from(x: Vec<EntityHistoryInner>) -> Self {
+        EntityHistory(x)
+    }
+}
+
+impl ::std::convert::From<EntityHistory> for Vec<EntityHistoryInner> {
+    fn from(x: EntityHistory) -> Self {
+        x.0
+    }
+}
+
+impl ::std::iter::FromIterator<EntityHistoryInner> for EntityHistory {
+    fn from_iter<U: IntoIterator<Item = EntityHistoryInner>>(u: U) -> Self {
+        EntityHistory(Vec::<EntityHistoryInner>::from_iter(u))
+    }
+}
+
+impl ::std::iter::IntoIterator for EntityHistory {
+    type Item = EntityHistoryInner;
+    type IntoIter = ::std::vec::IntoIter<EntityHistoryInner>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.into_iter()
+    }
+}
+
+impl<'a> ::std::iter::IntoIterator for &'a EntityHistory {
+    type Item = &'a EntityHistoryInner;
+    type IntoIter = ::std::slice::Iter<'a, EntityHistoryInner>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        (&self.0).into_iter()
+    }
+}
+
+impl<'a> ::std::iter::IntoIterator for &'a mut EntityHistory {
+    type Item = &'a mut EntityHistoryInner;
+    type IntoIter = ::std::slice::IterMut<'a, EntityHistoryInner>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        (&mut self.0).into_iter()
+    }
+}
+
+impl ::std::ops::Deref for EntityHistory {
+    type Target = Vec<EntityHistoryInner>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl ::std::ops::DerefMut for EntityHistory {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct EntityHistoryInner {
+    #[serde(rename = "edit")]
+    pub edit: models::EntityEdit,
+
+    #[serde(rename = "editgroup")]
+    pub editgroup: models::Editgroup,
+
+    #[serde(rename = "changelog")]
+    pub changelog: models::ChangelogEntry,
+}
+
+impl EntityHistoryInner {
+    pub fn new(edit: models::EntityEdit, editgroup: models::Editgroup, changelog: models::ChangelogEntry) -> EntityHistoryInner {
+        EntityHistoryInner {
+            edit: edit,
+            editgroup: editgroup,
+            changelog: changelog,
         }
     }
 }

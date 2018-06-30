@@ -899,7 +899,7 @@ impl Server {
         Ok(ed)
     }
 
-    fn editor_changelog_get_handler(&self, username: String) -> Result<Changelogentries> {
+    fn editor_changelog_get_handler(&self, username: String) -> Result<Vec<ChangelogEntry>> {
         let conn = self.db_pool.get().expect("db_pool error");
 
         // TODO: single query
@@ -913,7 +913,7 @@ impl Server {
 
         let entries = changes
             .iter()
-            .map(|(row, _)| ChangelogentriesInner {
+            .map(|(row, _)| ChangelogEntry {
                 index: row.id,
                 editgroup_id: row.editgroup_id,
                 timestamp: chrono::DateTime::from_utc(row.timestamp, chrono::Utc),

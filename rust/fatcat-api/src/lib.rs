@@ -235,7 +235,7 @@ pub enum GetEditorResponse {
 #[derive(Debug, PartialEq)]
 pub enum GetEditorChangelogResponse {
     /// Found Merged Changes
-    FoundMergedChanges(models::Changelogentries),
+    FoundMergedChanges(Vec<models::ChangelogEntry>),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error

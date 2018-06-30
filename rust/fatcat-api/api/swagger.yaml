@@ -26,7 +26,7 @@ paths:
         refName: "container_entity"
         formatString: "{:?}"
         example: "???"
-        model_key: "changelogentries_inner"
+        model_key: "editgroup_edits"
         uppercase_operation_id: "CREATE_CONTAINER"
         consumesJson: true
       responses:
@@ -85,7 +85,7 @@ paths:
             $ref: "#/definitions/container_entity"
         formatString: "{:?}"
         example: "&Vec::new()"
-        model_key: "changelogentries_inner"
+        model_key: "editgroup_edits"
         uppercase_operation_id: "CREATE_CONTAINER_BATCH"
         consumesJson: true
       responses:
@@ -249,7 +249,7 @@ paths:
         refName: "creator_entity"
         formatString: "{:?}"
         example: "???"
-        model_key: "changelogentries_inner"
+        model_key: "editgroup_edits"
         uppercase_operation_id: "CREATE_CREATOR"
         consumesJson: true
       responses:
@@ -308,7 +308,7 @@ paths:
             $ref: "#/definitions/creator_entity"
         formatString: "{:?}"
         example: "&Vec::new()"
-        model_key: "changelogentries_inner"
+        model_key: "editgroup_edits"
         uppercase_operation_id: "CREATE_CREATOR_BATCH"
         consumesJson: true
       responses:
@@ -526,7 +526,7 @@ paths:
         refName: "file_entity"
         formatString: "{:?}"
         example: "???"
-        model_key: "changelogentries_inner"
+        model_key: "editgroup_edits"
         uppercase_operation_id: "CREATE_FILE"
         consumesJson: true
       responses:
@@ -585,7 +585,7 @@ paths:
             $ref: "#/definitions/file_entity"
         formatString: "{:?}"
         example: "&Vec::new()"
-        model_key: "changelogentries_inner"
+        model_key: "editgroup_edits"
         uppercase_operation_id: "CREATE_FILE_BATCH"
         consumesJson: true
       responses:
@@ -749,7 +749,7 @@ paths:
         refName: "release_entity"
         formatString: "{:?}"
         example: "???"
-        model_key: "changelogentries_inner"
+        model_key: "editgroup_edits"
         uppercase_operation_id: "CREATE_RELEASE"
         consumesJson: true
       responses:
@@ -808,7 +808,7 @@ paths:
             $ref: "#/definitions/release_entity"
         formatString: "{:?}"
         example: "&Vec::new()"
-        model_key: "changelogentries_inner"
+        model_key: "editgroup_edits"
         uppercase_operation_id: "CREATE_RELEASE_BATCH"
         consumesJson: true
       responses:
@@ -1026,7 +1026,7 @@ paths:
         refName: "work_entity"
         formatString: "{:?}"
         example: "???"
-        model_key: "changelogentries_inner"
+        model_key: "editgroup_edits"
         uppercase_operation_id: "CREATE_WORK"
         consumesJson: true
       responses:
@@ -1085,7 +1085,7 @@ paths:
             $ref: "#/definitions/work_entity"
         formatString: "{:?}"
         example: "&Vec::new()"
-        model_key: "changelogentries_inner"
+        model_key: "editgroup_edits"
         uppercase_operation_id: "CREATE_WORK_BATCH"
         consumesJson: true
       responses:
@@ -1295,11 +1295,13 @@ paths:
         200:
           description: "Found Merged Changes"
           schema:
-            $ref: "#/definitions/changelogentries"
+            type: "array"
+            items:
+              $ref: "#/definitions/changelog_entry"
           x-responseId: "FoundMergedChanges"
           x-uppercaseResponseId: "FOUND_MERGED_CHANGES"
           uppercase_operation_id: "GET_EDITOR_CHANGELOG"
-          uppercase_data_type: "CHANGELOGENTRIES"
+          uppercase_data_type: "VEC<CHANGELOGENTRY>"
           producesJson: true
         404:
           description: "Not Found"
@@ -1337,7 +1339,7 @@ paths:
         refName: "editgroup"
         formatString: "{:?}"
         example: "???"
-        model_key: "changelogentries_inner"
+        model_key: "editgroup_edits"
         uppercase_operation_id: "CREATE_EDITGROUP"
         consumesJson: true
       responses:
@@ -1860,6 +1862,11 @@ definitions:
       state: "wip"
       revision: 42
     upperCaseName: "WORK_ENTITY"
+  entity_history:
+    type: "array"
+    items:
+      $ref: "#/definitions/entity_history_inner"
+    upperCaseName: "ENTITY_HISTORY"
   entity_edit:
     type: "object"
     required:
@@ -1995,11 +2002,27 @@ definitions:
       editor_id: 6
       id: 0
     upperCaseName: "EDITGROUP"
-  changelogentries:
-    type: "array"
-    items:
-      $ref: "#/definitions/changelogentries_inner"
-    upperCaseName: "CHANGELOGENTRIES"
+  changelog_entry:
+    type: "object"
+    required:
+    - "editgroup_id"
+    - "index"
+    - "timestamp"
+    properties:
+      index:
+        type: "integer"
+        format: "int64"
+      editgroup_id:
+        type: "integer"
+        format: "int64"
+      timestamp:
+        type: "string"
+        format: "date-time"
+    example:
+      index: 0
+      editgroup_id: 6
+      timestamp: "2000-01-23T04:56:07.000+00:00"
+    upperCaseName: "CHANGELOG_ENTRY"
   release_ref:
     type: "object"
     properties:
@@ -2058,6 +2081,19 @@ definitions:
     example:
       extra: "{}"
     upperCaseName: "STATS_RESPONSE"
+  entity_history_inner:
+    required:
+    - "changelog"
+    - "edit"
+    - "editgroup"
+    properties:
+      edit:
+        $ref: "#/definitions/entity_edit"
+      editgroup:
+        $ref: "#/definitions/editgroup"
+      changelog:
+        $ref: "#/definitions/changelog_entry"
+    upperCaseName: "ENTITY_HISTORY_INNER"
   editgroup_edits:
     properties:
       containers:
@@ -2147,22 +2183,6 @@ definitions:
         editgroup_id: 16
         revision: 42
     upperCaseName: "EDITGROUP_EDITS"
-  changelogentries_inner:
-    required:
-    - "editgroup_id"
-    - "index"
-    - "timestamp"
-    properties:
-      index:
-        type: "integer"
-        format: "int64"
-      editgroup_id:
-        type: "integer"
-        format: "int64"
-      timestamp:
-        type: "string"
-        format: "date-time"
-    upperCaseName: "CHANGELOGENTRIES_INNER"
 x-entity-props:
   state:
     type: "string"

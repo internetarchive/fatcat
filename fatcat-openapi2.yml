@@ -181,6 +181,21 @@ definitions:
       <<: *ENTITYPROPS
       work_type:
         type: string
+  entity_history:
+    type: array
+    items:
+      type: object
+      required:
+        - edit
+        - editgroup
+        - changelog
+      properties:
+        edit:
+          $ref: "#/definitions/entity_edit"
+        editgroup:
+          $ref: "#/definitions/editgroup"
+        changelog:
+          $ref: "#/definitions/changelog_entry"
   entity_edit:
     type: object
     required:
@@ -257,24 +272,22 @@ definitions:
             type: array
             items:
               $ref: "#/definitions/entity_edit"
-  changelogentries:
-    type: array
-    items:
-      type: object
-      required:
-        - index
-        - editgroup_id
-        - timestamp
-      properties:
-        index:
-          type: integer
-          format: int64
-        editgroup_id:
-          type: integer
-          format: int64
-        timestamp:
-          type: string
-          format: date-time
+  changelog_entry:
+    type: object
+    required:
+      - index
+      - editgroup_id
+      - timestamp
+    properties:
+      index:
+        type: integer
+        format: int64
+      editgroup_id:
+        type: integer
+        format: int64
+      timestamp:
+        type: string
+        format: date-time
   release_ref:
     type: object
     properties:
@@ -710,7 +723,9 @@ paths:
         200:
           description: Found Merged Changes
           schema:
-            $ref: "#/definitions/changelogentries"
+            type: array
+            items:
+              $ref: "#/definitions/changelog_entry"
         404:
           description: Not Found
           schema:
