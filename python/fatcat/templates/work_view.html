@@ -1,17 +1,26 @@
 {% extends "base.html" %}
-{% block body %}
+{% block fullbody %}
 
-<h1>Work {{ work.ident }}</h1>
+<div class="ui stackable mobile reversed grid centered">
+<div class="one wide column"></div>
+<div class="fifteen wide column">
+  <h1 class="ui header">
+  <div class="sub header"><code>work {{ work.ident }}</code></div></h1>
+</div>
+</div>
 
-<p><b>fatcat Work Identifier:</b> <code>{{ work.ident }}</code> (revision #{{ work.revision }}, {{ work.state }})
+<div class="ui stackable mobile reversed grid centered">
+<div class="one wide column"></div>
+<div class="ten wide column">
+
 {% if work.extra != None %}
 <p><b>Additional Metadata (raw JSON):</b>
-<pre>{{ work.extra }}</pre>
+&nbsp;<code>{{ work.extra }}</code>
 {% endif %}
 
 <!--
-Raw JSON Object:
-{{ work }}
+Raw Object:
+{{ work|safe }}
 -->
 
 <p>A "work" is just a linking identifier between a set of releases. For
@@ -30,5 +39,31 @@ still reference the same underlying "work".
 {% else %}
 <p>There are no known releases associated with this work.
 {% endif %}
+
+
+</div>
+<div class="five wide column">
+<div class="ui segment top attached">
+
+<b>Work Type:</b>
+{% if work.work_type != None %}
+&nbsp;<code>{{ work.work_type }}</code>
+{% else %}
+<i>unkonwn</i>
+{% endif %}
+</div><div class="ui segment attached">
+
+<b>Fatcat Bits</b>
+<p>Revision #{{ work.revision }}. State is "{{ work.state }}"
+<br><a href="https://api.qa.fatcat.wiki/v0/work/{{ work.ident }}">As JSON object via API</a>
+
+</div>
+<div class="two ui buttons bottom attached">
+  <a href="/work/{{ work.ident }}/edit" class="ui blue button">Edit Metadata</a>
+  <a href="/work/{{ work.ident }}/history" class="ui button">View History</a>
+</div>
+
+</div>
+</div>
 
 {% endblock %}

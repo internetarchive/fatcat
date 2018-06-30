@@ -16,22 +16,22 @@
 <p><b>Publisher:</b>
 {% if container.publisher != None %}{{ container.publisher }}{% else %}<i>Unknown</i>{% endif %}
 {% if container.coden != None %}
-<p><b>CODEN<sup><a href="https://en.wikipedia.org/wiki/CODEN">?</a></sup>:</b> <code>{{ container.coden }}</code>
+<p><b>CODEN<sup><a href="https://en.wikipedia.org/wiki/CODEN">?</a></sup>:</b> &nbsp;<code>{{ container.coden }}</code>
 {% endif %}
 {% if container.abbrev != None %}
-<p><b>Abbrev.:</b> <code>{{ container.abbrev }}</code>
+<p><b>Abbrev.:</b> &nbsp;<code>{{ container.abbrev }}</code>
 {% endif %}
 {% if (container.extra != None) and (container.extra.url != None) %}
-<p><b>Homepage:</b> <a href="{{ container.extra.url }}"><code>{{ container.extra.url }}</code></a>
+<p><b>Homepage:</b> <a href="{{ container.extra.url }}">&nbsp;<code>{{ container.extra.url }}</code></a>
 {% endif %}
 {% if container.extra != None %}
 <p><b>Additional Metadata (raw JSON):</b>
-<code>{{ container.extra }}</code>
+&nbsp;<code>{{ container.extra }}</code>
 {% endif %}
 
 <!--
-Raw JSON Object:
-{{ container }}
+Raw Object:
+{{ container|safe }}
 -->
 
 </div>
@@ -49,12 +49,12 @@ Raw JSON Object:
 
 {% if container.issnl != None %}
   <b>ISSN-L<sup><a href="https://en.wikipedia.org/wiki/International_Standard_Serial_Number#Linking_ISSN">?</a></sup></b> 
-  <code>{{ container.issnl }}</code>
+  &nbsp;<code>{{ container.issnl }}</code>
   {% if container.extra != None and container.extra.ISSNp != None %}
-    <br><i class="icon paperclip"></i>Print: <code>{{ container.extra.ISSNp }}</code>
+    <br><i class="icon paperclip"></i>Print: &nbsp;<code>{{ container.extra.ISSNp }}</code>
   {% endif %}
   {% if container.extra != None and container.extra.ISSNe != None %}
-    <br><i class="icon plug"></i>Electronic: <code>{{ container.extra.ISSNe }}</code>
+    <br><i class="icon plug"></i>Electronic: &nbsp;<code>{{ container.extra.ISSNe }}</code>
   {% endif %}
   </div><div class="ui segment attached">
 {% endif %}
@@ -82,7 +82,7 @@ Raw JSON Object:
 
 <b>Lookup Links</b>
 <br><a href="http://www.sherpa.ac.uk/romeo/issn/{{ container.issnl }}/">SHERPA/RoMEO</a> (access policies)
-<br><a href="https://www.wikidata.org/w/index.php?search=&search={{ container.name }}">wikidata.org</a>
+<br><a href="https://www.wikidata.org/w/index.php?search={{ container.name }}">wikidata.org</a>
 </div><div class="ui segment attached">
 
 <b>Fatcat Bits</b>

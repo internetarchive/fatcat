@@ -3,49 +3,57 @@
 
 <div class="ui stackable mobile reversed grid centered">
 <div class="one wide column"></div>
+<div class="fifteen wide column">
+  <h1 class="ui header">{{ release.title }}
+  <div class="sub header"><code>release {{ release.ident }}</code></div></h1>
+  {% if authors != [] %} by {% endif %}
+  {% for contrib in authors %}
+    {% if contrib.creator_id %}
+      <b><a href="/creator/{{contrib.creator_id}}">{{ contrib.raw }}</a></b>{% if not loop.last %}, {% endif %}
+    {% else %}
+      {% if contrib.raw != None %}{{ contrib.raw }}{% else %}<i>Unknown</i>{% endif %}{% if not loop.last %}, {% endif %}
+    {% endif %}
+  {% endfor %}
+</div>
+</div>
+
+<div class="ui stackable mobile reversed grid centered">
+<div class="one wide column"></div>
 <div class="ten wide column">
 
-<h1 class="ui header">{{ release.title }}
-<div class="sub header"><code>release {{ release.ident }}</code></div></h1>
-{% for contrib in authors %}
-  {% if contrib.creator_id %}
-    <b><a href="/creator/{{contrib.creator_id}}">{{ contrib.raw }}</a></b>
-  {% else %}
-    {{ contrib.raw }}
-  {% endif %}
-{% endfor %}
-
-<br><br>
 {% if release.release_date != None %}<p><b>Date (published):</b> {{ release.release_date }}{% endif %}
 {% if release.doi != None %}
-<br><b>DOI:</b> <a href="https://doi.org/{{ release.doi }}"><code>{{ release.doi }}</code></a>
+<br><b>DOI:</b> <a href="https://doi.org/{{ release.doi }}">&nbsp;<code>{{ release.doi }}</code></a>
+{% endif %}
+{% if release.isbn13 != None %}
+<p><b>ISBN-13:</b> &nbsp;<code>{{ release.isbn13 }}</code>
 {% endif %}
 {% if release.language != None %}
-<br><b>Primary Language:</b> <code>{{ release.language }}</code> (<a href="https://www.loc.gov/standards/iso639-2/php/langcodes_name.php?iso_639_1={{ release.language }}">lookup ISO-639 code</a>)
+<br><b>Primary Language:</b> &nbsp;<code>{{ release.language }}</code> (<a href="https://www.loc.gov/standards/iso639-2/php/langcodes_name.php?iso_639_1={{ release.language }}">lookup ISO-639 code</a>)
 {% endif %}
+<br><b>Fatcat Work:</b>&nbsp;<a href="/work/{{ release.work_id }}">&nbsp;<code>{{ release.work_id }}</code></a>
+<br>There may be other versions or releases (pre-prints, publications, etc)
+linked to the same work.
 
 <div class="ui segment">
-{% if container and release.release_status == 'published' %}
-<div class="ui top attached label">
-Published as a <i>{{ release.release_type }}</i> in <a href="/container/{{ container.ident }}">{{ container.name }}</a>
-{% if container.extra.is_oa %} (open access!){% endif %}
-</div>
+{% if container != None %}
+  <div class="ui top attached label">
+  {% if release.release_status == 'published' %}
+    Published as a <i>{{ release.release_type }}</i> in <a href="/container/{{ container.ident }}">{{ container.name }}</a>
+  {% else %}
+    A <i>{{ release.release_type }}</i> in <a href="/container/{{ container.ident }}">{{ container.name }}</a>
+  {% endif %}
+  </div><br>
 {% endif %}
-{% if container.issnl != None %}<br><b>ISSN-L:</b> {{ container.issnl }}{% endif %}
-{% if release.volume != None %}<br><b>Volume:</b> {{ release.volume }}{% endif %}
-{% if release.issue != None %}<br><b>Issue:</b> {{ release.issue }}{% endif %}
-{% if release.pages != None %}<br><b>Page(s):</b> {{ release.pages }}{% endif %}
-{% if release.publisher != None %}<br><b>Publisher:</b> {{ release.publisher }}{% endif %}
-{% if release.release_status != None %}<br><b>Release Status:</b> {{ release.release_status }}{% endif %}
-{% if release.release_type != None %}<br><b>Release Type:</b> {{ release.release_type}}{% endif %}
+{% if container != None and container.issnl != None %}<b>ISSN-L:</b> {{ container.issnl }}<br>{% endif %}
+{% if release.volume != None %}<b>Volume:</b> {{ release.volume }}<br>{% endif %}
+{% if release.issue != None %}<b>Issue:</b> {{ release.issue }}<br>{% endif %}
+{% if release.pages != None %}<b>Page(s):</b> {{ release.pages }}<br>{% endif %}
+{% if release.publisher != None %}<b>Publisher:</b> {{ release.publisher }}<br>{% endif %}
+{% if release.release_status != None %}<b>Release Status:</b> {{ release.release_status }}<br>{% endif %}
+{% if release.release_type != None %}<b>Release Type:</b> {{ release.release_type}}<br>{% endif %}
 </div>
-There may be other versions or releases (pre-prints, publications, etc) linked
-to the same work:
-<a href="/work/{{ release.work_id }}"><code>{{ release.work_id }}</code></a>
 
-{% if release.isbn13 != None %}
-<p><b>ISBN-13:</b> <code>{{ release.isbn13 }}</code> (<a href="https://openlibrary.org/search?isbn={{ release.isbn13 }}">openlibrary.org</a>)
-{% endif %}
 
 {% if release.extra != None %}
 <p><b>Additional Metadata (raw JSON):</b>
@@ -53,8 +61,8 @@ to the same work:
 {% endif %}
 
 <!--
-Raw JSON Object:
-<pre>{{ release }}</pre>
+Raw Object:
+{{ release|safe }}
 -->
 
 <br>
@@ -128,29 +136,79 @@ This release citing other releases.
 </div>
 <div class="five wide column">
 
-<a href="#" class="ui top attached fluid huge green button"><i class="file pdf outline icon"></i>Download Full Text</a>
+{% if files != [] and files[0].url != None %}
+<a href="https://web.archive.org/web/2/{{ files[0].url }}" class="ui top attached fluid huge green button"><i class="file pdf outline icon"></i>Download Full Text</a>
+{% else %}
+<span class="ui top attached fluid huge grey button"><i class="file cross icon"></i>No Full Text Available</span>
+{% endif %}
 <div class="ui segment attached">
 
-A Bunch Of Other Content...
-
-<ul>
-  <li><a>and links!</a>
-  <li><a>and links!</a>
-  <li><a>and links!</a>
-</ul>
-
-Over here
-</div><div class="ui segment attached">
+{% if release.doi %}
 <b>DOI </b> <a href="https://doi.org/{{ release.doi }}">{{ release.doi }}</a>
-
 </div><div class="ui segment attached">
+{% endif %}
+
+{% if release.extra.is_oa == True %}
+<b><i class="ui icon unlock alternate green"></i> Open Access</b>
+</div><div class="ui segment attached">
+{% elif release.extra.is_oa == False %}
+<b><i class="ui icon lock red"></i> Not Open Access</b>
+</div><div class="ui segment attached">
+{% endif %}
+
+<b>Container Metadata</b><br>
+{% if container.extra.is_oa == True %}
+<i class="icon unlock orange"></i>Open Access Publication<br>
+{% elif container.extra.is_oa == False  %}
+<i class="icon lock black"></i>Not Open Access<br>
+{% else %}
+<i class="icon question grey"></i>Unknown OA Status<br>
+{% endif %}
+{% if (container.extra != None) %}
+  {% if container.extra.in_doaj == True %}
+    <i class="icon check green"></i> In <a href="https://doaj.org/toc/{{ container.issnl }}">DOAJ</a><br>
+  {% elif container.extra.in_doaj == False %}
+    <i class="icon times grey"></i> Not in <a href="https://doaj.org">DOAJ</a><br>
+  {% endif %}
+  {% if container.extra.in_road == True %}
+    <i class="icon check green"></i> In <a href="http://road.issn.org/issn/{{ container.issnl }}">ISSN ROAD</a><br>
+  {% elif container.extra.in_road == False %}
+    <i class="icon times grey"></i> Not in <a href="https://road.issn.org">ISSN ROAD</a><br>
+  {% endif %}
+  {% if container.extra.is_kept == True %}
+    <i class="icon check green"></i> In <a href="https://thekeepers.org/journals?query={{ container.issnl }}">Keepers Registery</a><br>
+  {% elif container.extra.is_kept == False %}
+    <i class="icon times grey"></i> Not in <a href="https://thekeepers.org/journals?query={{ container.issnl }}">Keepers Registry</a><br>
+  {% endif %}
+{% endif %}
+{% if container.issnl != None %}
+  <i class="icon hashtag"></i>ISSN-L: &nbsp;<code>{{ container.issnl }}</code><br>
+{% endif %}
+</div><div class="ui segment attached">
+
+<!-- (<a href="https://openlibrary.org/search?isbn={{ release.isbn13 }}">openlibrary.org</a>) -->
+
+<b>Lookup Links</b>
+{% if container != None and container.issnl != None %}
+  <br><a href="http://www.sherpa.ac.uk/romeo/issn/{{ container.issnl }}/">SHERPA/RoMEO</a> (journal policies)
+{% endif %}
+{% if container.doi != None %}
+  <br><a href="https://oadoi.org/{{ release.doi }}">oaDOI/unpaywall</a>
+{% endif %}
+<br><a href="https://www.wikidata.org/w/index.php?search={{ release.title }}">wikidata.org</a>
+<br><a href="https://core.ac.uk/search?q={{ release.title }}">CORE.ac.uk</a>
+<br><a href="https://www.semanticscholar.org/search?q={{ release.title }}">Semantic Scholar</a> (CS, neuro)
+<br><a href="https://scholar.google.com/scholar?q={{ release.title }}">Google Scholar</a>
+</div><div class="ui segment attached">
+
 <b>Fatcat Bits</b>
 <p>Revision #{{ release.revision }}. State is "{{ release.state }}"
+<br><a href="https://api.qa.fatcat.wiki/v0/release/{{ release.ident }}">As JSON object via API</a>
 
 </div>
 <div class="two ui buttons bottom attached">
-  <a href="#" class="ui blue button">Edit Metadata</a>
-  <a href="#" class="ui button">View History</a>
+  <a href="/release/{{ release.ident }}/edit" class="ui blue button">Edit Metadata</a>
+  <a href="/release/{{ release.ident }}/history" class="ui button">View History</a>
 </div>
 
 </div>

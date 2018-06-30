@@ -1,37 +1,72 @@
 {% extends "base.html" %}
-{% block body %}
+{% block fullbody %}
 
-<h1>{{ creator.display_name }}</h1>
+<div class="ui stackable mobile reversed grid centered">
+<div class="one wide column"></div>
+<div class="fifteen wide column">
+  <h1 class="ui header">{{ creator.display_name }}
+  <div class="sub header"><code>creator {{ creator.ident }}</code></div></h1>
+</div>
+</div>
+
+<div class="ui stackable mobile reversed grid centered">
+<div class="one wide column"></div>
+<div class="ten wide column">
 
 <p><b>Given ("first") name:</b> {{ creator.given_name}}
 <p><b>Sur ("family"/"last") name:</b> {{ creator.surname }}
-<p><b>ORCID<sup><a href="https://en.wikipedia.org/wiki/Orcid">?</a></sup></b>:
-{% if creator.orcid != None %}
-    <a href="https://orcid.org/{{creator.orcid}}"><code>{{ creator.orcid }}</code></a>
-{% else %}
-    unknown
-{% endif %}
-<p><b>fatcat Creator Identifier:</b> <code>{{ creator.ident }}</code> (revision #{{ creator.revision }}, {{ creator.state }})
 {% if creator.extra != None %}
 <p><b>Additional Metadata (raw JSON):</b>
-<pre>{{ creator.extra }}</pre>
+&nbsp;<code>{{ creator.extra }}</code>
 {% endif %}
 
-<!--
-Raw JSON Object:
-{{ creator }}
--->
-
+<br>
+<h3>Releases</h3>
 {% if releases != [] %}
-Releases this creator has contributed to:
+<p>This creator has contributed to:
 <ul>
   {% for release in releases %}
-  <li>"{{ release.title }}", a {{ release.release_type }} published {{ release.release_date }} as <code>{{ release.release_status }}</code>.
-    <br><a href="/release/{{ release.ident }}"><code>{{ release.ident }}</code></a>
+  <li>"{{ release.title }}", a {{ release.release_type }} published {{ release.release_date }} (status: <code>{{ release.release_status }})</code>.
+    <br>Fatcat ID: <a href="/release/{{ release.ident }}"><code>{{ release.ident }}</code></a>
   {% endfor %}
 </ul>
 {% else %}
 This creator has not contributed to any releases.
 {% endif %}
+
+<!--
+Raw Object:
+{{ creator|safe }}
+-->
+
+</div>
+<div class="five wide column">
+<div class="ui segment top attached">
+
+{% if creator.orcid != None %}
+  <b>ORCID<sup><a href="https://en.wikipedia.org/wiki/Orcid">?</a></sup></b>:
+    &nbsp;<a href="https://orcid.org/{{creator.orcid}}"><code>{{ creator.orcid }}</code></a>
+  </div><div class="ui segment attached">
+{% endif %}
+
+<b>Lookup Links</b>
+<br><a href="https://www.wikidata.org/w/index.php?search=&search={{ creator.display_name }}">wikidata.org</a>
+<br><a href="https://viaf.org/viaf/search?query=local.personalNames%20all%20%22{{ creator.display_name }}">VIAF</a>
+<br><a href="http://dblp.uni-trier.de/search?q={{ creator.display_name }}">dblp</a> (CS)
+<br><a href="https://scholar.google.com/scholar?q={{ creator.display_name }}">Google Scholar</a>
+</div><div class="ui segment attached">
+
+<b>Fatcat Bits</b>
+<p>Revision #{{ creator.revision }}. State is "{{ creator.state }}"
+<br><a href="https://api.qa.fatcat.wiki/v0/creator/{{ creator.ident }}">As JSON object via API</a>
+
+</div>
+<div class="two ui buttons bottom attached">
+  <a href="/creator/{{ creator.ident }}/edit" class="ui blue button">Edit Metadata</a>
+  <a href="/creator/{{ creator.ident }}/history" class="ui button">View History</a>
+</div>
+
+</div>
+</div>
 
 {% endblock %}
