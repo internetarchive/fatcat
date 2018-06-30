@@ -5,12 +5,12 @@ Rust implementation of fatcat API server (`fatcatd`).
 
 - HTTP API
     - [ ] base32 encoding of UUID identifiers
-    - [ ] inverse many-to-many helpers (files-by-release, release-by-creator)
+    - [x] inverse many-to-many helpers (files-by-release, release-by-creator)
 - SQL Schema
     - [x] Basic entities
     - [x] one-to-many and many-to-many entities
     - [x] JSON(B) "extra" metadata fields
-    - [ ] full rev1 schema for all entities
+    - [x] full rev1 schema for all entities
     - [ ] editgroup review: comments? actions?
 - Web Interface
     - [x] Migrate Python codebase
@@ -54,9 +54,9 @@ Tests:
 
 ## Simple Deployment
 
-On a bare server, as root:
+Canonical ansible scripts are in the journal-infra repo. To install manually,
+on a bare server, as root:
 
-    # TODO: ansiblize this
     adduser fatcat
     apt install postgresql-9.6 postgresql-contrib postgresql-client-9.6 \
         nginx build-essential git pkg-config libssl-dev libpq-dev \
