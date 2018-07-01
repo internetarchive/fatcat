@@ -35,8 +35,8 @@
 <br>There may be other versions or releases (pre-prints, publications, etc)
 linked to the same work.
 
-<div class="ui segment">
 {% if container != None %}
+<div class="ui segment">
   <div class="ui top attached label">
   {% if release.release_status == 'published' %}
     Published as a <i>{{ release.release_type }}</i> in <a href="/container/{{ container.ident }}">{{ container.name }}</a>
@@ -44,7 +44,6 @@ linked to the same work.
     A <i>{{ release.release_type }}</i> in <a href="/container/{{ container.ident }}">{{ container.name }}</a>
   {% endif %}
   </div><br>
-{% endif %}
 {% if container != None and container.issnl != None %}<b>ISSN-L:</b> {{ container.issnl }}<br>{% endif %}
 {% if release.volume != None %}<b>Volume:</b> {{ release.volume }}<br>{% endif %}
 {% if release.issue != None %}<b>Issue:</b> {{ release.issue }}<br>{% endif %}
@@ -53,6 +52,7 @@ linked to the same work.
 {% if release.release_status != None %}<b>Release Status:</b> {{ release.release_status }}<br>{% endif %}
 {% if release.release_type != None %}<b>Release Type:</b> {{ release.release_type}}<br>{% endif %}
 </div>
+{% endif %}
 
 
 {% if release.extra != None %}
@@ -121,14 +121,14 @@ Believed to represent this release...
 {% if release.refs.size != 0 %}
 <h3>References</h3>
 This release citing other releases.
-<ul>
+<ol>
   {% for ref in release.refs %}
-    <li>{{ ref.raw }}
+    <li>{% if ref.raw != None %}{{ ref.raw }}{% else %}<i>unknown</i>{% endif %}
     {% if ref.target_release_id != None %}
     (<a href="/release/{{ ref.target_release_id }}">fatcat release</a>)
     {% endif %}
   {% endfor %}
-</ul>
+</ol>
 {% else %}
 <p>No reference list available.
 {% endif %}
@@ -150,6 +150,7 @@ This release citing other releases.
 
 {% if release.doi %}
 <b>DOI </b> <a href="https://doi.org/{{ release.doi }}">{{ release.doi }}</a>
+<br><a href="https://api.crossref.org/v1/works/http://dx.doi.org/{{ release.doi }}">Crossref Metadata</a> (via API)
 </div><div class="ui segment attached">
 {% endif %}
 {% if release.isbn13 != None %}
