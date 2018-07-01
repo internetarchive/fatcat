@@ -1,7 +1,7 @@
 //! API endpoint handlers
 
 use ConnectionPool;
-use api_helpers::*;
+use api_helpers::{get_or_create_editgroup, accept_editgroup};
 use chrono;
 use database_models::*;
 use database_schema::{changelog, container_edit, container_ident, container_rev, creator_edit,
@@ -13,133 +13,13 @@ use diesel::{self, insert_into};
 use errors::*;
 use fatcat_api::models;
 use fatcat_api::models::*;
-use fatcat_api::*;
-use futures::{self, Future};
 use uuid;
 
 type DbConn = diesel::r2d2::PooledConnection<diesel::r2d2::ConnectionManager<diesel::PgConnection>>;
 
-/// Helper for generating wrappers (which return "Box::new(futures::done(Ok(BLAH)))" like the
-/// codegen fatcat-api code wants) that call through to actual helpers (which have simple Result<>
-/// return types)
-macro_rules! wrap_entity_handlers {
-    // Would much rather just have entity ident, then generate the other fields from that, but Rust
-    // stable doesn't have a mechanism to "concat" or generate new identifiers in macros, at least
-    // in the context of defining new functions.
-    // The only stable approach I know of would be: https://github.com/dtolnay/mashup
-    ($get_fn:ident, $get_handler:ident, $get_resp:ident, $post_fn:ident, $post_handler:ident,
-            $post_resp:ident, $post_batch_fn:ident, $post_batch_handler:ident,
-            $post_batch_resp:ident, $get_history_fn:ident, $get_history_handler:ident,
-            $get_history_resp:ident, $model:ident) => {
-
-        fn $get_fn(
-            &self,
-            id: String,
-            _context: &Context,
-        ) -> Box<Future<Item = $get_resp, Error = ApiError> + Send> {
-            let ret = match self.$get_handler(id.clone()) {
-                Ok(entity) =>
-                    $get_resp::FoundEntity(entity),
-                Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
-                    $get_resp::NotFound(ErrorResponse { message: format!("No such entity {}: {}", stringify!($model), id) }),
-                Err(Error(ErrorKind::Uuid(e), _)) =>
-                    $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
-                Err(e) => {
-                    error!("{}", e);
-                    $get_resp::GenericError(ErrorResponse { message: e.to_string() })
-                },
-            };
-            Box::new(futures::done(Ok(ret)))
-        }
-
-        fn $post_fn(
-            &self,
-            entity: models::$model,
-            _context: &Context,
-        ) -> Box<Future<Item = $post_resp, Error = ApiError> + Send> {
-            let ret = match self.$post_handler(entity, None) {
-                Ok(edit) =>
-                    $post_resp::CreatedEntity(edit),
-                Err(Error(ErrorKind::Diesel(e), _)) =>
-                    $post_resp::BadRequest(ErrorResponse { message: e.to_string() }),
-                Err(Error(ErrorKind::Uuid(e), _)) =>
-                    $post_resp::BadRequest(ErrorResponse { message: e.to_string() }),
-                Err(e) => {
-                    error!("{}", e);
-                    $post_resp::GenericError(ErrorResponse { message: e.to_string() })
-                },
-            };
-            Box::new(futures::done(Ok(ret)))
-        }
-
-        fn $post_batch_fn(
-            &self,
-            entity_list: &Vec<models::$model>,
-            _context: &Context,
-        ) -> Box<Future<Item = $post_batch_resp, Error = ApiError> + Send> {
-            let ret = match self.$post_batch_handler(entity_list) {
-                Ok(edit) =>
-                    $post_batch_resp::CreatedEntities(edit),
-                Err(Error(ErrorKind::Diesel(e), _)) =>
-                    $post_batch_resp::BadRequest(ErrorResponse { message: e.to_string() }),
-                Err(Error(ErrorKind::Uuid(e), _)) =>
-                    $post_batch_resp::BadRequest(ErrorResponse { message: e.to_string() }),
-                Err(e) => {
-                    error!("{}", e);
-                    $post_batch_resp::GenericError(ErrorResponse { message: e.to_string() })
-                },
-            };
-            Box::new(futures::done(Ok(ret)))
-        }
-
-        fn $get_history_fn(
-            &self,
-            id: String,
-            limit: Option<i64>,
-            _context: &Context,
-        ) -> Box<Future<Item = $get_history_resp, Error = ApiError> + Send> {
-            let ret = match self.$get_history_handler(id.clone(), limit) {
-                Ok(history) =>
-                    $get_history_resp::FoundEntityHistory(history),
-                Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
-                    $get_history_resp::NotFound(ErrorResponse { message: format!("No such entity {}: {}", stringify!($model), id) }),
-                Err(Error(ErrorKind::Uuid(e), _)) =>
-                    $get_history_resp::BadRequest(ErrorResponse { message: e.to_string() }),
-                Err(e) => {
-                    error!("{}", e);
-                    $get_history_resp::GenericError(ErrorResponse { message: e.to_string() })
-                },
-            };
-            Box::new(futures::done(Ok(ret)))
-        }
-    }
-}
-
-macro_rules! wrap_lookup_handler {
-    ($get_fn:ident, $get_handler:ident, $get_resp:ident, $idname:ident, $idtype:ident) => {
-        fn $get_fn(
-            &self,
-            $idname: $idtype,
-            _context: &Context,
-        ) -> Box<Future<Item = $get_resp, Error = ApiError> + Send> {
-            let ret = match self.$get_handler($idname.clone()) {
-                Ok(entity) =>
-                    $get_resp::FoundEntity(entity),
-                Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
-                    $get_resp::NotFound(ErrorResponse { message: format!("Not found: {}", $idname) }),
-                Err(e) => {
-                    error!("{}", e);
-                    $get_resp::BadRequest(ErrorResponse { message: e.to_string() })
-                },
-            };
-            Box::new(futures::done(Ok(ret)))
-        }
-    }
-}
-
 macro_rules! entity_batch_handler {
     ($post_handler:ident, $post_batch_handler:ident, $model:ident) => {
-        fn $post_batch_handler(&self, entity_list: &Vec<models::$model>) ->
+        pub fn $post_batch_handler(&self, entity_list: &Vec<models::$model>) ->
                 Result<Vec<EntityEdit>> {
             let conn = self.db_pool.get().expect("db_pool error");
             // TODO: start a transaction
@@ -154,7 +34,7 @@ macro_rules! entity_batch_handler {
 
 macro_rules! entity_history_handler {
     ($history_handler:ident, $edit_row_type:ident, $edit_table:ident) => {
-        fn $history_handler(
+        pub fn $history_handler(
             &self,
             id: String,
             limit: Option<i64>,
@@ -380,7 +260,7 @@ fn work_row2entity(ident: Option<WorkIdentRow>, rev: WorkRevRow) -> Result<WorkE
 }
 
 impl Server {
-    fn get_container_handler(&self, id: String) -> Result<ContainerEntity> {
+    pub fn get_container_handler(&self, id: String) -> Result<ContainerEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
         let id = uuid::Uuid::parse_str(&id)?;
 
@@ -393,7 +273,7 @@ impl Server {
         container_row2entity(Some(ident), rev)
     }
 
-    fn lookup_container_handler(&self, issnl: String) -> Result<ContainerEntity> {
+    pub fn lookup_container_handler(&self, issnl: String) -> Result<ContainerEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
 
         let (ident, rev): (ContainerIdentRow, ContainerRevRow) = container_ident::table
@@ -406,7 +286,7 @@ impl Server {
         container_row2entity(Some(ident), rev)
     }
 
-    fn get_creator_handler(&self, id: String) -> Result<CreatorEntity> {
+    pub fn get_creator_handler(&self, id: String) -> Result<CreatorEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
         let id = uuid::Uuid::parse_str(&id)?;
 
@@ -418,7 +298,7 @@ impl Server {
         creator_row2entity(Some(ident), rev)
     }
 
-    fn lookup_creator_handler(&self, orcid: String) -> Result<CreatorEntity> {
+    pub fn lookup_creator_handler(&self, orcid: String) -> Result<CreatorEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
 
         let (ident, rev): (CreatorIdentRow, CreatorRevRow) = creator_ident::table
@@ -431,7 +311,7 @@ impl Server {
         creator_row2entity(Some(ident), rev)
     }
 
-    fn get_creator_releases_handler(&self, id: String) -> Result<Vec<ReleaseEntity>> {
+    pub fn get_creator_releases_handler(&self, id: String) -> Result<Vec<ReleaseEntity>> {
         let conn = self.db_pool.get().expect("db_pool error");
         let id = uuid::Uuid::parse_str(&id)?;
 
@@ -449,7 +329,7 @@ impl Server {
             .collect()
     }
 
-    fn get_file_handler(&self, id: String) -> Result<FileEntity> {
+    pub fn get_file_handler(&self, id: String) -> Result<FileEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
         let id = uuid::Uuid::parse_str(&id)?;
 
@@ -461,7 +341,7 @@ impl Server {
         file_row2entity(Some(ident), rev, &conn)
     }
 
-    fn lookup_file_handler(&self, sha1: String) -> Result<FileEntity> {
+    pub fn lookup_file_handler(&self, sha1: String) -> Result<FileEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
 
         let (ident, rev): (FileIdentRow, FileRevRow) = file_ident::table
@@ -474,7 +354,7 @@ impl Server {
         file_row2entity(Some(ident), rev, &conn)
     }
 
-    fn get_release_handler(&self, id: String) -> Result<ReleaseEntity> {
+    pub fn get_release_handler(&self, id: String) -> Result<ReleaseEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
         let id = uuid::Uuid::parse_str(&id)?;
 
@@ -486,7 +366,7 @@ impl Server {
         release_row2entity(Some(ident), rev, &conn)
     }
 
-    fn lookup_release_handler(&self, doi: String) -> Result<ReleaseEntity> {
+    pub fn lookup_release_handler(&self, doi: String) -> Result<ReleaseEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
 
         let (ident, rev): (ReleaseIdentRow, ReleaseRevRow) = release_ident::table
@@ -499,7 +379,7 @@ impl Server {
         release_row2entity(Some(ident), rev, &conn)
     }
 
-    fn get_release_files_handler(&self, id: String) -> Result<Vec<FileEntity>> {
+    pub fn get_release_files_handler(&self, id: String) -> Result<Vec<FileEntity>> {
         let conn = self.db_pool.get().expect("db_pool error");
         let id = uuid::Uuid::parse_str(&id)?;
 
@@ -516,7 +396,7 @@ impl Server {
             .collect()
     }
 
-    fn get_work_handler(&self, id: String) -> Result<WorkEntity> {
+    pub fn get_work_handler(&self, id: String) -> Result<WorkEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
         let id = uuid::Uuid::parse_str(&id)?;
 
@@ -528,7 +408,7 @@ impl Server {
         work_row2entity(Some(ident), rev)
     }
 
-    fn get_work_releases_handler(&self, id: String) -> Result<Vec<ReleaseEntity>> {
+    pub fn get_work_releases_handler(&self, id: String) -> Result<Vec<ReleaseEntity>> {
         let conn = self.db_pool.get().expect("db_pool error");
         let id = uuid::Uuid::parse_str(&id)?;
 
@@ -544,7 +424,7 @@ impl Server {
             .collect()
     }
 
-    fn create_container_handler(
+    pub fn create_container_handler(
         &self,
         entity: models::ContainerEntity,
         conn: Option<&DbConn>,
@@ -587,7 +467,7 @@ impl Server {
         edit.to_model()
     }
 
-    fn create_creator_handler(
+    pub fn create_creator_handler(
         &self,
         entity: models::CreatorEntity,
         conn: Option<&DbConn>,
@@ -628,7 +508,7 @@ impl Server {
         edit.to_model()
     }
 
-    fn create_file_handler(
+    pub fn create_file_handler(
         &self,
         entity: models::FileEntity,
         conn: Option<&DbConn>,
@@ -694,7 +574,7 @@ impl Server {
         edit.to_model()
     }
 
-    fn create_release_handler(
+    pub fn create_release_handler(
         &self,
         entity: models::ReleaseEntity,
         conn: Option<&DbConn>,
@@ -826,7 +706,7 @@ impl Server {
         edit.to_model()
     }
 
-    fn create_work_handler(
+    pub fn create_work_handler(
         &self,
         entity: models::WorkEntity,
         conn: Option<&DbConn>,
@@ -866,7 +746,34 @@ impl Server {
         edit.to_model()
     }
 
-    fn get_editgroup_handler(&self, id: i64) -> Result<Editgroup> {
+    pub fn accept_editgroup_handler(&self, id: i64) -> Result<()> {
+        let conn = self.db_pool.get().expect("db_pool error");
+        accept_editgroup(id as i64, &conn)?;
+        Ok(())
+    }
+
+    pub fn create_editgroup_handler(&self, entity: models::Editgroup) -> Result<Editgroup> {
+        let conn = self.db_pool.get().expect("db_pool error");
+
+        let row: EditgroupRow = insert_into(editgroup::table)
+            .values((
+                editgroup::editor_id.eq(entity.editor_id as i64),
+                editgroup::description.eq(entity.description),
+                editgroup::extra_json.eq(entity.extra),
+            ))
+            .get_result(&conn)
+            .expect("error creating edit group");
+
+        Ok(Editgroup {
+            id: Some(row.id),
+            editor_id: row.editor_id,
+            description: row.description,
+            edits: None,
+            extra: row.extra_json,
+        })
+    }
+
+    pub fn get_editgroup_handler(&self, id: i64) -> Result<Editgroup> {
         let conn = self.db_pool.get().expect("db_pool error");
 
         let row: EditgroupRow = editgroup::table.find(id as i64).first(&conn)?;
@@ -924,7 +831,7 @@ impl Server {
         Ok(eg)
     }
 
-    fn get_editor_handler(&self, username: String) -> Result<Editor> {
+    pub fn get_editor_handler(&self, username: String) -> Result<Editor> {
         let conn = self.db_pool.get().expect("db_pool error");
 
         let row: EditorRow = editor::table
@@ -937,7 +844,7 @@ impl Server {
         Ok(ed)
     }
 
-    fn editor_changelog_get_handler(&self, username: String) -> Result<Vec<ChangelogEntry>> {
+    pub fn editor_changelog_get_handler(&self, username: String) -> Result<Vec<ChangelogEntry>> {
         let conn = self.db_pool.get().expect("db_pool error");
 
         // TODO: single query
@@ -961,7 +868,7 @@ impl Server {
         Ok(entries)
     }
 
-    fn get_changelog_handler(&self, limit: Option<i64>) -> Result<Vec<ChangelogEntry>> {
+    pub fn get_changelog_handler(&self, limit: Option<i64>) -> Result<Vec<ChangelogEntry>> {
         let conn = self.db_pool.get().expect("db_pool error");
         let limit = limit.unwrap_or(50);
 
@@ -983,7 +890,7 @@ impl Server {
         Ok(entries)
     }
 
-    fn get_changelog_entry_handler(&self, id: i64) -> Result<ChangelogEntry> {
+    pub fn get_changelog_entry_handler(&self, id: i64) -> Result<ChangelogEntry> {
         let conn = self.db_pool.get().expect("db_pool error");
 
         let cl_row: ChangelogRow = changelog::table.find(id).first(&conn)?;
@@ -994,7 +901,7 @@ impl Server {
         Ok(entry)
     }
 
-    fn get_stats_handler(&self, more: Option<String>) -> Result<StatsResponse> {
+    pub fn get_stats_handler(&self, more: Option<String>) -> Result<StatsResponse> {
         let conn = self.db_pool.get().expect("db_pool error");
 
         let merged_editgroups: i64 = changelog::table
@@ -1099,296 +1006,3 @@ impl Server {
     entity_history_handler!(get_work_history_handler, WorkEditRow, work_edit);
 }
 
-impl Api for Server {
-    wrap_entity_handlers!(
-        get_container,
-        get_container_handler,
-        GetContainerResponse,
-        create_container,
-        create_container_handler,
-        CreateContainerResponse,
-        create_container_batch,
-        create_container_batch_handler,
-        CreateContainerBatchResponse,
-        get_container_history,
-        get_container_history_handler,
-        GetContainerHistoryResponse,
-        ContainerEntity
-    );
-
-    wrap_entity_handlers!(
-        get_creator,
-        get_creator_handler,
-        GetCreatorResponse,
-        create_creator,
-        create_creator_handler,
-        CreateCreatorResponse,
-        create_creator_batch,
-        create_creator_batch_handler,
-        CreateCreatorBatchResponse,
-        get_creator_history,
-        get_creator_history_handler,
-        GetCreatorHistoryResponse,
-        CreatorEntity
-    );
-    wrap_entity_handlers!(
-        get_file,
-        get_file_handler,
-        GetFileResponse,
-        create_file,
-        create_file_handler,
-        CreateFileResponse,
-        create_file_batch,
-        create_file_batch_handler,
-        CreateFileBatchResponse,
-        get_file_history,
-        get_file_history_handler,
-        GetFileHistoryResponse,
-        FileEntity
-    );
-    wrap_entity_handlers!(
-        get_release,
-        get_release_handler,
-        GetReleaseResponse,
-        create_release,
-        create_release_handler,
-        CreateReleaseResponse,
-        create_release_batch,
-        create_release_batch_handler,
-        CreateReleaseBatchResponse,
-        get_release_history,
-        get_release_history_handler,
-        GetReleaseHistoryResponse,
-        ReleaseEntity
-    );
-    wrap_entity_handlers!(
-        get_work,
-        get_work_handler,
-        GetWorkResponse,
-        create_work,
-        create_work_handler,
-        CreateWorkResponse,
-        create_work_batch,
-        create_work_batch_handler,
-        CreateWorkBatchResponse,
-        get_work_history,
-        get_work_history_handler,
-        GetWorkHistoryResponse,
-        WorkEntity
-    );
-
-    wrap_lookup_handler!(
-        lookup_container,
-        lookup_container_handler,
-        LookupContainerResponse,
-        issnl,
-        String
-    );
-    wrap_lookup_handler!(
-        lookup_creator,
-        lookup_creator_handler,
-        LookupCreatorResponse,
-        orcid,
-        String
-    );
-    wrap_lookup_handler!(
-        lookup_file,
-        lookup_file_handler,
-        LookupFileResponse,
-        sha1,
-        String
-    );
-    wrap_lookup_handler!(
-        lookup_release,
-        lookup_release_handler,
-        LookupReleaseResponse,
-        doi,
-        String
-    );
-
-    wrap_lookup_handler!(
-        get_release_files,
-        get_release_files_handler,
-        GetReleaseFilesResponse,
-        id,
-        String
-    );
-    wrap_lookup_handler!(
-        get_work_releases,
-        get_work_releases_handler,
-        GetWorkReleasesResponse,
-        id,
-        String
-    );
-    wrap_lookup_handler!(
-        get_creator_releases,
-        get_creator_releases_handler,
-        GetCreatorReleasesResponse,
-        id,
-        String
-    );
-
-    fn accept_editgroup(
-        &self,
-        id: i64,
-        _context: &Context,
-    ) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send> {
-        let conn = self.db_pool.get().expect("db_pool error");
-
-        accept_editgroup(id as i64, &conn).expect("failed to accept editgroup");
-
-        let ret = AcceptEditgroupResponse::MergedSuccessfully(Success {
-            message: "horray!".to_string(),
-        });
-        Box::new(futures::done(Ok(ret)))
-    }
-
-    fn get_editgroup(
-        &self,
-        id: i64,
-        _context: &Context,
-    ) -> Box<Future<Item = GetEditgroupResponse, Error = ApiError> + Send> {
-        let ret = match self.get_editgroup_handler(id) {
-            Ok(entity) =>
-                GetEditgroupResponse::FoundEntity(entity),
-            Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
-                GetEditgroupResponse::NotFound(
-                    ErrorResponse { message: format!("No such editgroup: {}", id) }),
-            Err(e) =>
-                // TODO: dig in to error type here
-                GetEditgroupResponse::GenericError(
-                    ErrorResponse { message: e.to_string() }),
-        };
-        Box::new(futures::done(Ok(ret)))
-    }
-
-    fn create_editgroup(
-        &self,
-        entity: models::Editgroup,
-        _context: &Context,
-    ) -> Box<Future<Item = CreateEditgroupResponse, Error = ApiError> + Send> {
-        let conn = self.db_pool.get().expect("db_pool error");
-
-        let row: EditgroupRow = insert_into(editgroup::table)
-            .values((
-                editgroup::editor_id.eq(entity.editor_id as i64),
-                editgroup::description.eq(entity.description),
-                editgroup::extra_json.eq(entity.extra),
-            ))
-            .get_result(&conn)
-            .expect("error creating edit group");
-
-        let new_eg = Editgroup {
-            id: Some(row.id),
-            editor_id: row.editor_id,
-            description: row.description,
-            edits: None,
-            extra: row.extra_json,
-        };
-        Box::new(futures::done(Ok(
-            CreateEditgroupResponse::SuccessfullyCreated(new_eg),
-        )))
-    }
-
-    fn get_editor_changelog(
-        &self,
-        username: String,
-        _context: &Context,
-    ) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send> {
-        let ret = match self.editor_changelog_get_handler(username.clone()) {
-            Ok(entries) => GetEditorChangelogResponse::FoundMergedChanges(entries),
-            Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
-                GetEditorChangelogResponse::NotFound(ErrorResponse {
-                    message: format!("No such editor: {}", username.clone()),
-                })
-            }
-            Err(e) => {
-                // TODO: dig in to error type here
-                error!("{}", e);
-                GetEditorChangelogResponse::GenericError(ErrorResponse {
-                    message: e.to_string(),
-                })
-            }
-        };
-        Box::new(futures::done(Ok(ret)))
-    }
-
-    fn get_editor(
-        &self,
-        username: String,
-        _context: &Context,
-    ) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send> {
-        let ret = match self.get_editor_handler(username.clone()) {
-            Ok(entity) => GetEditorResponse::FoundEditor(entity),
-            Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
-                GetEditorResponse::NotFound(ErrorResponse {
-                    message: format!("No such editor: {}", username.clone()),
-                })
-            }
-            Err(e) => {
-                // TODO: dig in to error type here
-                error!("{}", e);
-                GetEditorResponse::GenericError(ErrorResponse {
-                    message: e.to_string(),
-                })
-            }
-        };
-        Box::new(futures::done(Ok(ret)))
-    }
-
-    fn get_changelog(
-        &self,
-        limit: Option<i64>,
-        _context: &Context,
-    ) -> Box<Future<Item = GetChangelogResponse, Error = ApiError> + Send> {
-        let ret = match self.get_changelog_handler(limit) {
-            Ok(changelog) => GetChangelogResponse::Success(changelog),
-            Err(e) => {
-                error!("{}", e);
-                GetChangelogResponse::GenericError(ErrorResponse {
-                    message: e.to_string(),
-                })
-            }
-        };
-        Box::new(futures::done(Ok(ret)))
-    }
-
-    fn get_changelog_entry(
-        &self,
-        id: i64,
-        _context: &Context,
-    ) -> Box<Future<Item = GetChangelogEntryResponse, Error = ApiError> + Send> {
-        let ret = match self.get_changelog_entry_handler(id) {
-            Ok(entry) => GetChangelogEntryResponse::FoundChangelogEntry(entry),
-            Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
-                GetChangelogEntryResponse::NotFound(ErrorResponse {
-                    message: format!("No such changelog entry: {}", id),
-                })
-            }
-            Err(e) => {
-                error!("{}", e);
-                GetChangelogEntryResponse::GenericError(ErrorResponse {
-                    message: e.to_string(),
-                })
-            }
-        };
-        Box::new(futures::done(Ok(ret)))
-    }
-
-    fn get_stats(
-        &self,
-        more: Option<String>,
-        _context: &Context,
-    ) -> Box<Future<Item = GetStatsResponse, Error = ApiError> + Send> {
-        let ret = match self.get_stats_handler(more.clone()) {
-            Ok(stats) => GetStatsResponse::Success(stats),
-            Err(e) => {
-                error!("{}", e);
-                GetStatsResponse::GenericError(ErrorResponse {
-                    message: e.to_string(),
-                })
-            }
-        };
-        Box::new(futures::done(Ok(ret)))
-    }
-}
