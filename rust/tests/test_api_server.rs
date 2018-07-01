@@ -509,6 +509,11 @@ fn test_stats() {
         status::Ok,
         Some("merged_editgroups"),
     );
+    check_response(
+        request::get("http://localhost:9411/v0/stats?more=yes", headers, &router),
+        status::Ok,
+        Some("merged_editgroups"),
+    );
 }
 
 #[test]

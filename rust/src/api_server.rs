@@ -962,7 +962,7 @@ impl Server {
 
     /// "more" parameter isn't used, but could be to indicate that "expensive" database queries
     /// should be run
-    fn get_stats_handler(&self, _more: Option<String>) -> Result<StatsResponse> {
+    fn get_stats_handler(&self, more: Option<String>) -> Result<StatsResponse> {
         let conn = self.db_pool.get().expect("db_pool error");
 
         let merged_editgroups: i64 = changelog::table
@@ -990,28 +990,35 @@ impl Server {
             .count()
             .first(&conn)?;
 
-        // these are probably expensive?
-        // this query is slightly inaccurate and over-counts: it includes files that have release
-        // links only to inactive releases
-        let files_with_releases: i64 = file_rev::table
-            .inner_join(file_ident::table)
-            .inner_join(file_release::table)
-            .filter(file_ident::is_live.eq(true))
-            .filter(file_ident::redirect_id.is_null())
-            .select(file_ident::id)
-            .distinct()
-            .count()
-            .first(&conn)?;
-        // this slightly overcounts also: it will include releases which are only linked to from
-        // inactive files
-        let releases_with_files: i64 = release_ident::table
-            .inner_join(file_release::table)
-            .filter(release_ident::is_live.eq(true))
-            .filter(release_ident::redirect_id.is_null())
-            .select(file_release::target_release_ident_id)
-            .distinct()
-            .count()
-            .first(&conn)?;
+        let files_with_releases: Option<i64> = if more.is_some() {
+            // this query is slightly inaccurate and over-counts: it includes files that have release
+            // links only to inactive releases
+            Some(file_rev::table
+                .inner_join(file_ident::table)
+                .inner_join(file_release::table)
+                .filter(file_ident::is_live.eq(true))
+                .filter(file_ident::redirect_id.is_null())
+                .select(file_ident::id)
+                .distinct()
+                .count()
+                .first(&conn)?)
+        } else {
+            None
+        };
+        let releases_with_files: Option<i64> = if more.is_some() {
+            // this slightly overcounts also: it will include releases which are only linked to from
+            // inactive files
+            Some(release_ident::table
+                .inner_join(file_release::table)
+                .filter(release_ident::is_live.eq(true))
+                .filter(release_ident::redirect_id.is_null())
+                .select(file_release::target_release_ident_id)
+                .distinct()
+                .count()
+                .first(&conn)?)
+        } else {
+            None
+        };
 
         let val = json!({
             "entity_counts": {
