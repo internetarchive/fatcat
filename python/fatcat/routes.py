@@ -342,6 +342,12 @@ def robots():
                                'robots.txt',
                                mimetype='text/plain')
 
+@app.route('/static/fatcat.jpg', methods=['GET'])
+def fatcat_photo():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'fatcat.jpg',
+                               mimetype='image/jpeg')
+
 @app.route('/health', methods=['GET'])
 def health():
     return jsonify({'ok': True})
