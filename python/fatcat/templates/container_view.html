@@ -16,13 +16,13 @@
 <p><b>Publisher:</b>
 {% if container.publisher != None %}{{ container.publisher }}{% else %}<i>Unknown</i>{% endif %}
 {% if container.coden != None %}
-<p><b>CODEN<sup><a href="https://en.wikipedia.org/wiki/CODEN">?</a></sup>:</b> &nbsp;<code>{{ container.coden }}</code>
+<br><b>CODEN<sup><a href="https://en.wikipedia.org/wiki/CODEN">?</a></sup>:</b> &nbsp;<code>{{ container.coden }}</code>
 {% endif %}
 {% if container.abbrev != None %}
-<p><b>Abbrev.:</b> &nbsp;<code>{{ container.abbrev }}</code>
+<br><b>Abbrev.:</b> &nbsp;<code>{{ container.abbrev }}</code>
 {% endif %}
-{% if (container.extra != None) and (container.extra.url != None) %}
-<p><b>Homepage:</b> <a href="{{ container.extra.url }}">&nbsp;<code>{{ container.extra.url }}</code></a>
+{% if (container.extra != None) and (container.extra['url'] != None) and (container.extra['url']|length > 0) %}
+<br><b>Homepage:</b> <a href="{{ container.extra['url'] }}">&nbsp;<code>{{ container.extra['url'] }}</code></a>
 {% endif %}
 
 {% if container.extra != None %}
@@ -53,10 +53,10 @@ Raw Object:
 {% if container.issnl != None %}
   <b>ISSN-L<sup><a href="https://en.wikipedia.org/wiki/International_Standard_Serial_Number#Linking_ISSN">?</a></sup></b> 
   &nbsp;<code>{{ container.issnl }}</code>
-  {% if container.extra != None and container.extra.ISSNp != None %}
+  {% if container.extra != None and (container.extra.ISSNp|length > 0) %}
     <br><i class="icon paperclip"></i>Print: &nbsp;<code>{{ container.extra.ISSNp }}</code>
   {% endif %}
-  {% if container.extra != None and container.extra.ISSNe != None %}
+  {% if container.extra != None and (container.extra.ISSNe|length > 0) %}
     <br><i class="icon plug"></i>Electronic: &nbsp;<code>{{ container.extra.ISSNe }}</code>
   {% endif %}
   </div><div class="ui segment attached">
@@ -76,7 +76,7 @@ Raw Object:
     <i class="icon times grey"></i> Not in <a href="https://road.issn.org">ISSN ROAD</a><br>
   {% endif %}
   {% if container.extra.is_kept == True %}
-    <i class="icon check green"></i> In <a href="https://thekeepers.org/journals?query={{ container.issnl }}">Keepers Registery</a><br>
+    <i class="icon check green"></i> In <a href="https://thekeepers.org/purl/issn/{{ container.issnl }}">Keepers Registery</a><br>
   {% elif container.extra.is_kept == False %}
     <i class="icon times grey"></i> Not in <a href="https://thekeepers.org/journals?query={{ container.issnl }}">Keepers Registry</a><br>
   {% endif %}

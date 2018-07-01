@@ -188,7 +188,7 @@ This release citing other releases.
     <i class="icon times grey"></i> Not in <a href="https://road.issn.org">ISSN ROAD</a><br>
   {% endif %}
   {% if container.extra.is_kept == True %}
-    <i class="icon check green"></i> In <a href="https://thekeepers.org/journals?query={{ container.issnl }}">Keepers Registery</a><br>
+    <i class="icon check green"></i> In <a href="https://thekeepers.org/purl/issn/{{ container.issnl }}">Keepers Registery</a><br>
   {% elif container.extra.is_kept == False %}
     <i class="icon times grey"></i> Not in <a href="https://thekeepers.org/journals?query={{ container.issnl }}">Keepers Registry</a><br>
   {% endif %}
@@ -196,6 +196,7 @@ This release citing other releases.
 {% if container.issnl != None %}
   <i class="icon hashtag"></i>ISSN-L: &nbsp;<code>{{ container.issnl }}</code><br>
 {% endif %}
+  <i class="icon linkify"></i>Fatcat: &nbsp;<small><code><a href="/container/{{ container.ident }}">{{ container.ident }}</a></code><small><br>
 </div><div class="ui segment attached">
 {% endif %}
 
