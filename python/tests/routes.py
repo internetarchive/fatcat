@@ -27,6 +27,12 @@ def test_all_views(app):
     rv = app.get('/container/00000000-0000-0000-1111-000000000002')
     assert rv.status_code == 200
 
+    rv = app.get('/container/00000000-0000-0000-1111-000000000002/history')
+    assert rv.status_code == 200
+
+    rv = app.get('/container/00000000-0000-0000-1111-000000000002/edit')
+    assert rv.status_code == 200
+
     rv = app.get('/container/create')
     assert rv.status_code == 200
 
@@ -42,6 +48,12 @@ def test_all_views(app):
     rv = app.get('/creator/00000000-0000-0000-2222-000000000002')
     assert rv.status_code == 200
 
+    rv = app.get('/creator/00000000-0000-0000-2222-000000000002/history')
+    assert rv.status_code == 200
+
+    rv = app.get('/creator/00000000-0000-0000-2222-000000000002/edit')
+    assert rv.status_code == 200
+
     rv = app.get('/creator/lookup?orcid=0000-0003-2088-7465')
     assert rv.status_code == 302
 
@@ -52,6 +64,15 @@ def test_all_views(app):
     assert rv.status_code == 302
 
     rv = app.get('/release/00000000-0000-0000-4444-000000000002')
+    assert rv.status_code == 200
+
+    rv = app.get('/release/00000000-0000-0000-4444-000000000002/history')
+    assert rv.status_code == 200
+
+    rv = app.get('/release/00000000-0000-0000-4444-000000000002/edit')
+    assert rv.status_code == 200
+
+    rv = app.get('/release/create')
     assert rv.status_code == 200
 
     rv = app.get('/release/lookup?doi=10.123/abc')
@@ -66,11 +87,14 @@ def test_all_views(app):
     rv = app.get('/work/00000000-0000-0000-5555-000000000002')
     assert rv.status_code == 200
 
-    rv = app.get('/work/create')
+    rv = app.get('/work/00000000-0000-0000-5555-000000000002/history')
     assert rv.status_code == 200
 
-    #rv = app.get('/release/00000000-0000-0000-4444-000000000002/changelog')
-    #assert rv.status_code == 200
+    rv = app.get('/work/00000000-0000-0000-5555-000000000002/edit')
+    assert rv.status_code == 200
+
+    rv = app.get('/work/create')
+    assert rv.status_code == 404
 
     rv = app.get('/editgroup/1')
     assert rv.status_code == 200

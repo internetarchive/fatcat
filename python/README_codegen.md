@@ -80,17 +80,24 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**create_release_batch**](docs/DefaultApi.md#create_release_batch) | **POST** /release/batch | 
 *DefaultApi* | [**create_work**](docs/DefaultApi.md#create_work) | **POST** /work | 
 *DefaultApi* | [**create_work_batch**](docs/DefaultApi.md#create_work_batch) | **POST** /work/batch | 
+*DefaultApi* | [**get_changelog**](docs/DefaultApi.md#get_changelog) | **GET** /changelog | 
+*DefaultApi* | [**get_changelog_entry**](docs/DefaultApi.md#get_changelog_entry) | **GET** /changelog/{id} | 
 *DefaultApi* | [**get_container**](docs/DefaultApi.md#get_container) | **GET** /container/{id} | 
+*DefaultApi* | [**get_container_history**](docs/DefaultApi.md#get_container_history) | **GET** /container/{id}/history | 
 *DefaultApi* | [**get_creator**](docs/DefaultApi.md#get_creator) | **GET** /creator/{id} | 
+*DefaultApi* | [**get_creator_history**](docs/DefaultApi.md#get_creator_history) | **GET** /creator/{id}/history | 
 *DefaultApi* | [**get_creator_releases**](docs/DefaultApi.md#get_creator_releases) | **GET** /creator/{id}/releases | 
 *DefaultApi* | [**get_editgroup**](docs/DefaultApi.md#get_editgroup) | **GET** /editgroup/{id} | 
 *DefaultApi* | [**get_editor**](docs/DefaultApi.md#get_editor) | **GET** /editor/{username} | 
 *DefaultApi* | [**get_editor_changelog**](docs/DefaultApi.md#get_editor_changelog) | **GET** /editor/{username}/changelog | 
 *DefaultApi* | [**get_file**](docs/DefaultApi.md#get_file) | **GET** /file/{id} | 
+*DefaultApi* | [**get_file_history**](docs/DefaultApi.md#get_file_history) | **GET** /file/{id}/history | 
 *DefaultApi* | [**get_release**](docs/DefaultApi.md#get_release) | **GET** /release/{id} | 
 *DefaultApi* | [**get_release_files**](docs/DefaultApi.md#get_release_files) | **GET** /release/{id}/files | 
+*DefaultApi* | [**get_release_history**](docs/DefaultApi.md#get_release_history) | **GET** /release/{id}/history | 
 *DefaultApi* | [**get_stats**](docs/DefaultApi.md#get_stats) | **GET** /stats | 
 *DefaultApi* | [**get_work**](docs/DefaultApi.md#get_work) | **GET** /work/{id} | 
+*DefaultApi* | [**get_work_history**](docs/DefaultApi.md#get_work_history) | **GET** /work/{id}/history | 
 *DefaultApi* | [**get_work_releases**](docs/DefaultApi.md#get_work_releases) | **GET** /work/{id}/releases | 
 *DefaultApi* | [**lookup_container**](docs/DefaultApi.md#lookup_container) | **GET** /container/lookup | 
 *DefaultApi* | [**lookup_creator**](docs/DefaultApi.md#lookup_creator) | **GET** /creator/lookup | 
@@ -100,14 +107,14 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Models
 
- - [Changelogentries](docs/Changelogentries.md)
- - [ChangelogentriesInner](docs/ChangelogentriesInner.md)
+ - [ChangelogEntry](docs/ChangelogEntry.md)
  - [ContainerEntity](docs/ContainerEntity.md)
  - [CreatorEntity](docs/CreatorEntity.md)
  - [Editgroup](docs/Editgroup.md)
  - [EditgroupEdits](docs/EditgroupEdits.md)
  - [Editor](docs/Editor.md)
  - [EntityEdit](docs/EntityEdit.md)
+ - [EntityHistoryEntry](docs/EntityHistoryEntry.md)
  - [ErrorResponse](docs/ErrorResponse.md)
  - [FileEntity](docs/FileEntity.md)
  - [ReleaseContrib](docs/ReleaseContrib.md)

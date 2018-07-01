@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block body %}
+
+<h1 class="ui header">{% if page_title != None %}{{ page_title }}{% endif %}
+<div class="sub header">
+  <a href="/{{entity_type}}/{{entity.ident}}">
+    <code>{{ entity_type }} {{ entity.ident }}</code>
+  </a>
+</div>
+</h1>
+
+<h3 class="ui header">Fatcat Metadata Edit History</h3>
+
+<table class="ui table">
+  <thead><tr><th>Changelog<br>Index
+             <th>Timestamp (UTC)
+             <th>Editgroup
+             <th>Editor
+             <th>Description
+  <tbody>
+  {% for entry in history %}
+  <tr><td><a href="/changelog/{{ entry.changelog_entry.index }}">{{ entry.changelog_entry.index }}</a>
+      <td>{{ entry.changelog_entry.timestamp }}
+      <td><a href="/editgroup/{{ entry.editgroup.id }}">{{ entry.editgroup.id }}</a>
+      <td><a href="/editor/{{ entry.editgroup.editor_id }}">{{ entry.editgroup.editor_id }}</a>
+      <td>{% if entry.editgroup.description != None %}{{ entry.editgroup.description }}{% endif %}
+  {% endfor %}
+</table>
+
+{% endblock %}

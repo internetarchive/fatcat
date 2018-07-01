@@ -1,0 +1,13 @@
+{% extends "editgroup_view.html" %}
+{% block editgroupheader %}
+
+<h1 class="ui header">Changelog Entry
+<div class="sub header">
+  <code>changelog {{ entry.index }}</code>
+</div>
+</h1>
+
+<br><b>Timestamp:</b> {{ entry.timestamp }}
+<br><b>Editgroup:</b> <a href="/editgroup/{{editgroup.id}}">{{ editgroup.id }}</a>
+
+{% endblock %}

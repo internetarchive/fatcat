@@ -22,14 +22,14 @@ from fatcat_client.api.default_api import DefaultApi
 from fatcat_client.api_client import ApiClient
 from fatcat_client.configuration import Configuration
 # import models into sdk package
-from fatcat_client.models.changelogentries import Changelogentries
-from fatcat_client.models.changelogentries_inner import ChangelogentriesInner
+from fatcat_client.models.changelog_entry import ChangelogEntry
 from fatcat_client.models.container_entity import ContainerEntity
 from fatcat_client.models.creator_entity import CreatorEntity
 from fatcat_client.models.editgroup import Editgroup
 from fatcat_client.models.editgroup_edits import EditgroupEdits
 from fatcat_client.models.editor import Editor
 from fatcat_client.models.entity_edit import EntityEdit
+from fatcat_client.models.entity_history_entry import EntityHistoryEntry
 from fatcat_client.models.error_response import ErrorResponse
 from fatcat_client.models.file_entity import FileEntity
 from fatcat_client.models.release_contrib import ReleaseContrib

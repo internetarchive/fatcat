@@ -18,9 +18,43 @@ def container_view(ident):
         abort(ae.status)
     return render_template('container_view.html', container=entity)
 
+@app.route('/container/<uuid:ident>/history', methods=['GET'])
+def container_history(ident):
+    try:
+        entity = api.get_container(str(ident))
+        history = api.get_container_history(str(ident))
+    except ApiException as ae:
+        abort(ae.status)
+    print(history)
+    return render_template('entity_history.html',
+        page_title=entity.name,
+        entity_type="container",
+        entity=entity,
+        history=history)
+
+@app.route('/container/<uuid:ident>/edit', methods=['GET'])
+def container_edit_view(ident):
+    try:
+        entity = api.get_container(str(ident))
+    except ApiException as ae:
+        abort(ae.status)
+    return render_template('entity_edit.html')
+
+#@app.route('/container/<uuid:ident>/edit', methods=['POST'])
+#def container_edit(ident):
+#    raise NotImplemented()
+#    params = dict()
+#    for k in request.form:
+#        if k.startswith('container_'):
+#            params[k[10:]] = request.form[k]
+#    edit = api.update_container(params=params)
+#    return redirect("/container/{}".format(edit.ident))
+#    # else:
+#    #return render_template('container_edit.html')
+
 @app.route('/container/create', methods=['GET'])
 def container_create_view():
-    return render_template('container_add.html')
+    return render_template('container_create.html')
 
 @app.route('/container/create', methods=['POST'])
 def container_create():
@@ -51,6 +85,27 @@ def creator_view(ident):
         abort(ae.status)
     return render_template('creator_view.html', creator=entity, releases=releases)
 
+@app.route('/creator/<uuid:ident>/history', methods=['GET'])
+def creator_history(ident):
+    try:
+        entity = api.get_creator(str(ident))
+        history = api.get_creator_history(str(ident))
+    except ApiException as ae:
+        abort(ae.status)
+    return render_template('entity_history.html',
+        page_title=entity.display_name,
+        entity_type="creator",
+        entity=entity,
+        history=history)
+
+@app.route('/creator/<uuid:ident>/edit', methods=['GET'])
+def creator_edit_view(ident):
+    try:
+        entity = api.get_creator(str(ident))
+    except ApiException as ae:
+        abort(ae.status)
+    return render_template('entity_edit.html')
+
 @app.route('/creator/lookup', methods=['GET'])
 def creator_lookup():
     orcid = request.args.get('orcid')
@@ -69,6 +124,27 @@ def file_view(ident):
     except ApiException as ae:
         abort(ae.status)
     return render_template('file_view.html', file=entity)
+
+@app.route('/file/<uuid:ident>/history', methods=['GET'])
+def file_history(ident):
+    try:
+        entity = api.get_file(str(ident))
+        history = api.get_file_history(str(ident))
+    except ApiException as ae:
+        abort(ae.status)
+    return render_template('entity_history.html',
+        page_title=None,
+        entity_type="file",
+        entity=entity,
+        history=history)
+
+@app.route('/file/<uuid:ident>/edit', methods=['GET'])
+def file_edit_view(ident):
+    try:
+        entity = api.get_file(str(ident))
+    except ApiException as ae:
+        abort(ae.status)
+    return render_template('entity_edit.html')
 
 @app.route('/file/lookup', methods=['GET'])
 def file_lookup():
@@ -107,18 +183,39 @@ def release_lookup():
         abort(ae.status)
     return redirect('/release/{}'.format(resp.ident))
 
-#@app.route('/release/<uuid:ident>/changelog', methods=['GET'])
-#def release_changelog(ident):
-#    try:
-#        entity = api.get_release(str(ident))
-#    except ApiException as ae:
-#        abort(ae.status)
-#    try:
-#        entries = api.release_changelog(str(ident))
-#    except ApiException as ae:
-#        abort(ae.status)
-#    return render_template('release_changelog.html', release=entity,
-#        changelog_entries=entries)
+@app.route('/release/create', methods=['GET'])
+def release_create_view():
+    return render_template('release_create.html')
+
+@app.route('/release/create', methods=['POST'])
+def release_create():
+    params = dict()
+    for k in request.form:
+        if k.startswith('release_'):
+            params[k[10:]] = request.form[k]
+    edit = api.create_release(params=params)
+    return redirect("/release/{}".format(edit.ident))
+
+@app.route('/release/<uuid:ident>/history', methods=['GET'])
+def release_history(ident):
+    try:
+        entity = api.get_release(str(ident))
+        history = api.get_release_history(str(ident))
+    except ApiException as ae:
+        abort(ae.status)
+    return render_template('entity_history.html',
+        page_title=entity.title,
+        entity_type="release",
+        entity=entity,
+        history=history)
+
+@app.route('/release/<uuid:ident>/edit', methods=['GET'])
+def release_edit_view(ident):
+    try:
+        entity = api.get_release(str(ident))
+    except ApiException as ae:
+        abort(ae.status)
+    return render_template('entity_edit.html')
 
 @app.route('/work/<uuid:ident>', methods=['GET'])
 def work_view(ident):
@@ -129,9 +226,26 @@ def work_view(ident):
         abort(ae.status)
     return render_template('work_view.html', work=entity, releases=releases)
 
-@app.route('/work/create', methods=['GET'])
-def work_create():
-    return render_template('work_add.html')
+@app.route('/work/<uuid:ident>/history', methods=['GET'])
+def work_history(ident):
+    try:
+        entity = api.get_work(str(ident))
+        history = api.get_work_history(str(ident))
+    except ApiException as ae:
+        abort(ae.status)
+    return render_template('entity_history.html',
+        page_title=None,
+        entity_type="work",
+        entity=entity,
+        history=history)
+
+@app.route('/work/<uuid:ident>/edit', methods=['GET'])
+def work_edit_view(ident):
+    try:
+        entity = api.get_work(str(ident))
+    except ApiException as ae:
+        abort(ae.status)
+    return render_template('entity_edit.html')
 
 @app.route('/editgroup/<int:ident>', methods=['GET'])
 def editgroup_view(ident):
@@ -159,6 +273,22 @@ def editor_changelog(username):
     changelog_entries = api.get_editor_changelog(username)
     return render_template('editor_changelog.html', editor=editor,
         changelog_entries=changelog_entries)
+
+@app.route('/changelog', methods=['GET'])
+def changelog_view():
+    try:
+        entries = api.get_changelog(limit=request.args.get('limit'))
+    except ApiException as ae:
+        abort(ae.status)
+    return render_template('changelog.html', entries=entries)
+
+@app.route('/changelog/<int:index>', methods=['GET'])
+def changelog_entry_view(index):
+    try:
+        entry = api.get_changelog_entry(int(index))
+    except ApiException as ae:
+        abort(ae.status)
+    return render_template('changelog_view.html', entry=entry, editgroup=entry.editgroup)
 
 @app.route('/stats', methods=['GET'])
 def stats_view():

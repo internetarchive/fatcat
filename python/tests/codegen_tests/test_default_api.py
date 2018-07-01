@@ -101,14 +101,38 @@ class TestDefaultApi(unittest.TestCase):
         """
         pass
 
+    def test_get_changelog(self):
+        """Test case for get_changelog
+
+        """
+        pass
+
+    def test_get_changelog_entry(self):
+        """Test case for get_changelog_entry
+
+        """
+        pass
+
     def test_get_container(self):
         """Test case for get_container
 
         """
         pass
 
+    def test_get_container_history(self):
+        """Test case for get_container_history
+
+        """
+        pass
+
     def test_get_creator(self):
         """Test case for get_creator
+
+        """
+        pass
+
+    def test_get_creator_history(self):
+        """Test case for get_creator_history
 
         """
         pass
@@ -143,6 +167,12 @@ class TestDefaultApi(unittest.TestCase):
         """
         pass
 
+    def test_get_file_history(self):
+        """Test case for get_file_history
+
+        """
+        pass
+
     def test_get_release(self):
         """Test case for get_release
 
@@ -155,6 +185,12 @@ class TestDefaultApi(unittest.TestCase):
         """
         pass
 
+    def test_get_release_history(self):
+        """Test case for get_release_history
+
+        """
+        pass
+
     def test_get_stats(self):
         """Test case for get_stats
 
@@ -163,6 +199,12 @@ class TestDefaultApi(unittest.TestCase):
 
     def test_get_work(self):
         """Test case for get_work
+
+        """
+        pass
+
+    def test_get_work_history(self):
+        """Test case for get_work_history
 
         """
         pass

@@ -1,9 +1,13 @@
 {% extends "base.html" %}
 {% block body %}
 
-<h1>Editor Changelog: {{ editor.username }}</h1>
-
-<p>Editor: <a href="/editor/{{ editor.username }}">{{ editor.username }}</a>
+<h1 class="ui header">Editor Changelog: {{ editor.username }}
+<div class="sub header">
+  <a href="/editor/{{editor.id}}">
+    <code>editor {{ editor.id }}</code>
+  </a>
+</div>
+</h1>
 
 <p>Changes accepted (aka, merged editgroups):
 <ul>
