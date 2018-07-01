@@ -1,29 +1,6 @@
 
 Rust implementation of fatcat API server (`fatcatd`).
 
-## Status
-
-- HTTP API
-    - [ ] base32 encoding of UUID identifiers
-    - [x] inverse many-to-many helpers (files-by-release, release-by-creator)
-- SQL Schema
-    - [x] Basic entities
-    - [x] one-to-many and many-to-many entities
-    - [x] JSON(B) "extra" metadata fields
-    - [x] full rev1 schema for all entities
-    - [ ] editgroup review: comments? actions?
-- Web Interface
-    - [x] Migrate Python codebase
-    - [ ] Creation and editing of all entities
-- Other
-    - [x] Basic logging
-    - [x] Swagger-UI 
-    - [ ] Sentry (error reporting)
-    - [ ] Metrics
-    - [ ] Authentication (eg, accounts, OAuth2, JWT)
-    - [ ] Authorization (aka, roles)
-    - [ ] bot vs. editor
-
 ## Development
 
 - rust stable, 1.26+ (eg, via "rustup", includes cargo tool)

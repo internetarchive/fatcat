@@ -1,22 +1,22 @@
 
 ## Schema / Alignment / Scope
 
+- wikidata IDs are first-class identifiers (release, container, creator)
 - switch a bunch more primary keys to UUID: revs, editor ids, edit numbers
-- abstracts! as files? separate table? format (latex, html, etc)?
-- work_type, release_type, release_status
 - multiple URLs
-- other identifiers (just in extra?)
 - make "raw" fields in release_ref/release_contrib JSON?
-- wikidata IDs are first-class identifiers
+- abstracts! as files? separate table? format (latex, html, etc)?
+- other identifiers (just in extra?)
+- work_type, release_type, release_status
 
 name ref: https://www.w3.org/International/questions/qa-personal-names
 
 ## High-Level Priorities
 
-- bulk loading of releases, files, containers, creators
-- manual editing of containers and releases (web interface)
-- accurate auto-matching matching of containers (eg, via ISSN)
 - full database dump and reload (import/export)
+- manual editing of containers and releases (web interface)
+x bulk loading of releases, files, containers, creators
+x accurate auto-matching matching of containers (eg, via ISSN)
 
 ## Performance
 
@@ -33,9 +33,6 @@ x have release creation auto-create works if one isn't specified
 - PUT for mid-edit revisions
 - 'parent rev' for revisions (vs. container parent)
 - "submit" status for editgroups?
-
-api:
-- all files for a given release
 
 review
 - what does openlibrary API look like?
