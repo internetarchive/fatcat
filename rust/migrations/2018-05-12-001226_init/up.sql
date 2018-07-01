@@ -307,9 +307,9 @@ INSERT INTO container_ident (id, is_live, rev_id, redirect_id) VALUES
     ('00000000-0000-0000-1111-000000000003', true, 3, null);
 
 INSERT INTO container_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
-    ('00000000-0000-0000-1111-000000000001', 1, null, 4),
-    ('00000000-0000-0000-1111-000000000002', 2, null, 5),
-    ('00000000-0000-0000-1111-000000000002', 3, null, 5);
+    ('00000000-0000-0000-1111-000000000001', 1, null, 3),
+    ('00000000-0000-0000-1111-000000000002', 2, null, 4),
+    ('00000000-0000-0000-1111-000000000003', 3, null, 5);
 
 INSERT INTO creator_rev (display_name, given_name, surname, orcid) VALUES
     ('Grace Hopper', null, null, null),
@@ -339,8 +339,8 @@ INSERT INTO file_ident (id, is_live, rev_id, redirect_id) VALUES
     ('00000000-0000-0000-3333-000000000003', true, 3, null);
 
 INSERT INTO file_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
-    ('00000000-0000-0000-3333-000000000001', 1, null, 4),
-    ('00000000-0000-0000-3333-000000000002', 2, null, 5),
+    ('00000000-0000-0000-3333-000000000001', 1, null, 3),
+    ('00000000-0000-0000-3333-000000000002', 2, null, 4),
     ('00000000-0000-0000-3333-000000000003', 3, null, 5);
 
 INSERT INTO work_rev (work_type, primary_release_id) VALUES
@@ -354,8 +354,8 @@ INSERT INTO work_ident (id, is_live, rev_id, redirect_id) VALUES
     ('00000000-0000-0000-5555-000000000003', true, 3, null);
 
 INSERT INTO work_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
-    ('00000000-0000-0000-5555-000000000001', 1, null, 4),
-    ('00000000-0000-0000-5555-000000000002', 2, null, 5),
+    ('00000000-0000-0000-5555-000000000001', 1, null, 3),
+    ('00000000-0000-0000-5555-000000000002', 2, null, 4),
     ('00000000-0000-0000-5555-000000000002', 3, null, 5);
 
 INSERT INTO release_rev (work_ident_id, container_ident_id, title, release_type, release_status, release_date, doi, isbn13, volume, issue, pages, publisher, language) VALUES
@@ -369,8 +369,8 @@ INSERT INTO release_ident (id, is_live, rev_id, redirect_id) VALUES
     ('00000000-0000-0000-4444-000000000003', true, 3, null);
 
 INSERT INTO release_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
-    ('00000000-0000-0000-4444-000000000001', 1, null, 4),
-    ('00000000-0000-0000-4444-000000000002', 2, null, 5),
+    ('00000000-0000-0000-4444-000000000001', 1, null, 3),
+    ('00000000-0000-0000-4444-000000000002', 2, null, 4),
     ('00000000-0000-0000-4444-000000000003', 3, null, 5);
 
 INSERT INTO release_contrib (release_rev, creator_ident_id, raw, role, index) VALUES
