@@ -303,6 +303,7 @@ fn release_row2entity(
 
     let refs: Vec<ReleaseRef> = release_ref::table
         .filter(release_ref::release_rev.eq(rev.id))
+        .order(release_ref::index.asc())
         .get_results(conn)
         .expect("fetch release refs")
         .iter()
@@ -320,6 +321,7 @@ fn release_row2entity(
 
     let contribs: Vec<ReleaseContrib> = release_contrib::table
         .filter(release_contrib::release_rev.eq(rev.id))
+        .order((release_contrib::role.asc(), release_contrib::index.asc()))
         .get_results(conn)
         .expect("fetch release refs")
         .iter()
