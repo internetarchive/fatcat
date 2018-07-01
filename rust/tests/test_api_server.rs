@@ -501,16 +501,33 @@ fn test_accept_editgroup() {
 }
 
 #[test]
+fn test_changelog() {
+    let (headers, router, _conn) = setup();
+
+    check_response(
+        request::get("http://localhost:9411/v0/changelog", headers.clone(), &router),
+        status::Ok,
+        Some("editgroup_id"),
+    );
+
+    check_response(
+        request::get("http://localhost:9411/v0/changelog/1", headers.clone(), &router),
+        status::Ok,
+        Some("files"),
+    );
+}
+
+#[test]
 fn test_stats() {
     let (headers, router, _conn) = setup();
 
     check_response(
-        request::get("http://localhost:9411/v0/stats", headers, &router),
+        request::get("http://localhost:9411/v0/stats", headers.clone(), &router),
         status::Ok,
         Some("merged_editgroups"),
     );
     check_response(
-        request::get("http://localhost:9411/v0/stats?more=yes", headers, &router),
+        request::get("http://localhost:9411/v0/stats?more=yes", headers.clone(), &router),
         status::Ok,
         Some("merged_editgroups"),
     );

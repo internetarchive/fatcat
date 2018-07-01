@@ -279,6 +279,7 @@ impl ChangelogRow {
         ChangelogEntry {
             index: self.id,
             editgroup_id: self.editgroup_id,
+            editgroup: None,
             timestamp: chrono::DateTime::from_utc(self.timestamp, chrono::Utc),
         }
     }

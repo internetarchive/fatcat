@@ -192,6 +192,26 @@ pub mod responses {
     lazy_static! {
         pub static ref CREATE_WORK_BATCH_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
+    /// Create Mime objects for the response content types for GetChangelog
+    lazy_static! {
+        pub static ref GET_CHANGELOG_SUCCESS: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetChangelog
+    lazy_static! {
+        pub static ref GET_CHANGELOG_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetChangelogEntry
+    lazy_static! {
+        pub static ref GET_CHANGELOG_ENTRY_FOUND_CHANGELOG_ENTRY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetChangelogEntry
+    lazy_static! {
+        pub static ref GET_CHANGELOG_ENTRY_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetChangelogEntry
+    lazy_static! {
+        pub static ref GET_CHANGELOG_ENTRY_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
     /// Create Mime objects for the response content types for GetContainer
     lazy_static! {
         pub static ref GET_CONTAINER_FOUND_ENTITY: Mime = mime!(Application / Json);

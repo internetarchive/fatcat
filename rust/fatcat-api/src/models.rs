@@ -19,6 +19,10 @@ pub struct ChangelogEntry {
 
     #[serde(rename = "timestamp")]
     pub timestamp: chrono::DateTime<chrono::Utc>,
+
+    #[serde(rename = "editgroup")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub editgroup: Option<models::Editgroup>,
 }
 
 impl ChangelogEntry {
@@ -27,6 +31,7 @@ impl ChangelogEntry {
             index: index,
             editgroup_id: editgroup_id,
             timestamp: timestamp,
+            editgroup: None,
         }
     }
 }

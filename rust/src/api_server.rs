@@ -950,18 +950,50 @@ impl Server {
             .load(&conn)?;
 
         let entries = changes
-            .iter()
-            .map(|(row, _)| ChangelogEntry {
-                index: row.id,
-                editgroup_id: row.editgroup_id,
-                timestamp: chrono::DateTime::from_utc(row.timestamp, chrono::Utc),
+            .into_iter()
+            .map(|(cl_row, eg_row)| ChangelogEntry {
+                index: cl_row.id,
+                editgroup: Some(eg_row.to_model_partial()),
+                editgroup_id: cl_row.editgroup_id,
+                timestamp: chrono::DateTime::from_utc(cl_row.timestamp, chrono::Utc),
             })
             .collect();
         Ok(entries)
     }
 
-    /// "more" parameter isn't used, but could be to indicate that "expensive" database queries
-    /// should be run
+    fn get_changelog_handler(&self, limit: Option<i64>) -> Result<Vec<ChangelogEntry>> {
+        let conn = self.db_pool.get().expect("db_pool error");
+        let limit = limit.unwrap_or(50);
+
+        let changes: Vec<(ChangelogRow, EditgroupRow)> = changelog::table
+            .inner_join(editgroup::table)
+            .order(changelog::id.desc())
+            .limit(limit)
+            .load(&conn)?;
+
+        let entries = changes
+            .into_iter()
+            .map(|(cl_row, eg_row)| ChangelogEntry {
+                index: cl_row.id,
+                editgroup: Some(eg_row.to_model_partial()),
+                editgroup_id: cl_row.editgroup_id,
+                timestamp: chrono::DateTime::from_utc(cl_row.timestamp, chrono::Utc),
+            })
+            .collect();
+        Ok(entries)
+    }
+
+    fn get_changelog_entry_handler(&self, id: i64) -> Result<ChangelogEntry> {
+        let conn = self.db_pool.get().expect("db_pool error");
+
+        let cl_row: ChangelogRow = changelog::table.find(id).first(&conn)?;
+        let editgroup = self.get_editgroup_handler(cl_row.editgroup_id)?;
+
+        let mut entry = cl_row.to_model();
+        entry.editgroup = Some(editgroup);
+        Ok(entry)
+    }
+
     fn get_stats_handler(&self, more: Option<String>) -> Result<StatsResponse> {
         let conn = self.db_pool.get().expect("db_pool error");
 
@@ -1297,6 +1329,45 @@ impl Api for Server {
                 // TODO: dig in to error type here
                 error!("{}", e);
                 GetEditorResponse::GenericError(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+        };
+        Box::new(futures::done(Ok(ret)))
+    }
+
+    fn get_changelog(
+        &self,
+        limit: Option<i64>,
+        _context: &Context,
+    ) -> Box<Future<Item = GetChangelogResponse, Error = ApiError> + Send> {
+        let ret = match self.get_changelog_handler(limit) {
+            Ok(changelog) => GetChangelogResponse::Success(changelog),
+            Err(e) => {
+                error!("{}", e);
+                GetChangelogResponse::GenericError(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+        };
+        Box::new(futures::done(Ok(ret)))
+    }
+
+    fn get_changelog_entry(
+        &self,
+        id: i64,
+        _context: &Context,
+    ) -> Box<Future<Item = GetChangelogEntryResponse, Error = ApiError> + Send> {
+        let ret = match self.get_changelog_entry_handler(id) {
+            Ok(entry) => GetChangelogEntryResponse::FoundChangelogEntry(entry),
+            Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
+                GetChangelogEntryResponse::NotFound(ErrorResponse {
+                    message: format!("No such changelog entry: {}", id),
+                })
+            }
+            Err(e) => {
+                error!("{}", e);
+                GetChangelogEntryResponse::GenericError(ErrorResponse {
                     message: e.to_string(),
                 })
             }

@@ -13,9 +13,9 @@ use clap::{App, Arg};
 #[allow(unused_imports)]
 use fatcat::{AcceptEditgroupResponse, ApiError, ApiNoContext, ContextWrapperExt, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse,
              CreateEditgroupResponse, CreateFileBatchResponse, CreateFileResponse, CreateReleaseBatchResponse, CreateReleaseResponse, CreateWorkBatchResponse, CreateWorkResponse,
-             GetContainerHistoryResponse, GetContainerResponse, GetCreatorHistoryResponse, GetCreatorReleasesResponse, GetCreatorResponse, GetEditgroupResponse, GetEditorChangelogResponse,
-             GetEditorResponse, GetFileHistoryResponse, GetFileResponse, GetReleaseFilesResponse, GetReleaseHistoryResponse, GetReleaseResponse, GetStatsResponse, GetWorkHistoryResponse,
-             GetWorkReleasesResponse, GetWorkResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse, LookupReleaseResponse};
+             GetChangelogEntryResponse, GetChangelogResponse, GetContainerHistoryResponse, GetContainerResponse, GetCreatorHistoryResponse, GetCreatorReleasesResponse, GetCreatorResponse,
+             GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileHistoryResponse, GetFileResponse, GetReleaseFilesResponse, GetReleaseHistoryResponse, GetReleaseResponse,
+             GetStatsResponse, GetWorkHistoryResponse, GetWorkReleasesResponse, GetWorkResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse, LookupReleaseResponse};
 #[allow(unused_imports)]
 use futures::{future, stream, Future, Stream};
 
@@ -31,6 +31,8 @@ fn main() {
                     "CreateFileBatch",
                     "CreateReleaseBatch",
                     "CreateWorkBatch",
+                    "GetChangelog",
+                    "GetChangelogEntry",
                     "GetContainer",
                     "GetContainerHistory",
                     "GetCreator",
@@ -138,6 +140,16 @@ fn main() {
         //  },
         Some("CreateWorkBatch") => {
             let result = client.create_work_batch(&Vec::new()).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("GetChangelog") => {
+            let result = client.get_changelog(Some(789)).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("GetChangelogEntry") => {
+            let result = client.get_changelog_entry(789).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 

@@ -286,6 +286,8 @@ definitions:
       timestamp:
         type: string
         format: date-time
+      editgroup:
+        $ref: "#/definitions/editgroup"
   release_ref:
     type: object
     properties:
@@ -903,6 +905,48 @@ paths:
           description: Unmergable
           schema:
             $ref: "#/definitions/error_response"
+        404:
+          description: Not Found
+          schema:
+            $ref: "#/definitions/error_response"
+        500:
+          description: Generic Error
+          schema:
+            $ref: "#/definitions/error_response"
+  /changelog:
+    parameters:
+      - name: limit
+        in: query
+        type: integer
+        format: int64
+        required: false
+    get:
+      operationId: "get_changelog"
+      responses:
+        200:
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/changelog_entry"
+        500:
+          description: Generic Error
+          schema:
+            $ref: "#/definitions/error_response"
+  /changelog/{id}:
+    parameters:
+      - name: id
+        in: path
+        type: integer
+        format: int64
+        required: true
+    get:
+      operationId: "get_changelog_entry"
+      responses:
+        200:
+          description: Found Changelog Entry
+          schema:
+            $ref: "#/definitions/changelog_entry"
         404:
           description: Not Found
           schema:

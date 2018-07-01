@@ -175,6 +175,24 @@ pub enum CreateWorkBatchResponse {
 }
 
 #[derive(Debug, PartialEq)]
+pub enum GetChangelogResponse {
+    /// Success
+    Success(Vec<models::ChangelogEntry>),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum GetChangelogEntryResponse {
+    /// Found Changelog Entry
+    FoundChangelogEntry(models::ChangelogEntry),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
 pub enum GetContainerResponse {
     /// Found Entity
     FoundEntity(models::ContainerEntity),
@@ -444,6 +462,10 @@ pub trait Api {
 
     fn create_work_batch(&self, entity_list: &Vec<models::WorkEntity>, context: &Context) -> Box<Future<Item = CreateWorkBatchResponse, Error = ApiError> + Send>;
 
+    fn get_changelog(&self, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetChangelogResponse, Error = ApiError> + Send>;
+
+    fn get_changelog_entry(&self, id: i64, context: &Context) -> Box<Future<Item = GetChangelogEntryResponse, Error = ApiError> + Send>;
+
     fn get_container(&self, id: String, context: &Context) -> Box<Future<Item = GetContainerResponse, Error = ApiError> + Send>;
 
     fn get_container_history(&self, id: String, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetContainerHistoryResponse, Error = ApiError> + Send>;
@@ -512,6 +534,10 @@ pub trait ApiNoContext {
     fn create_work(&self, entity: models::WorkEntity) -> Box<Future<Item = CreateWorkResponse, Error = ApiError> + Send>;
 
     fn create_work_batch(&self, entity_list: &Vec<models::WorkEntity>) -> Box<Future<Item = CreateWorkBatchResponse, Error = ApiError> + Send>;
+
+    fn get_changelog(&self, limit: Option<i64>) -> Box<Future<Item = GetChangelogResponse, Error = ApiError> + Send>;
+
+    fn get_changelog_entry(&self, id: i64) -> Box<Future<Item = GetChangelogEntryResponse, Error = ApiError> + Send>;
 
     fn get_container(&self, id: String) -> Box<Future<Item = GetContainerResponse, Error = ApiError> + Send>;
 
@@ -618,6 +644,14 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
 
     fn create_work_batch(&self, entity_list: &Vec<models::WorkEntity>) -> Box<Future<Item = CreateWorkBatchResponse, Error = ApiError> + Send> {
         self.api().create_work_batch(entity_list, &self.context())
+    }
+
+    fn get_changelog(&self, limit: Option<i64>) -> Box<Future<Item = GetChangelogResponse, Error = ApiError> + Send> {
+        self.api().get_changelog(limit, &self.context())
+    }
+
+    fn get_changelog_entry(&self, id: i64) -> Box<Future<Item = GetChangelogEntryResponse, Error = ApiError> + Send> {
+        self.api().get_changelog_entry(id, &self.context())
     }
 
     fn get_container(&self, id: String) -> Box<Future<Item = GetContainerResponse, Error = ApiError> + Send> {
