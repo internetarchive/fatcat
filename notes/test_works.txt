@@ -1,7 +1,35 @@
 
+## Found because Famous
+
 Many co-authors (group):
 
     "Precision measurement of the top-quark mass in lepton+jets final states"
     https://arxiv.org/abs/1405.1756
 
+
+## Found in Testing Imports
+
+Two releases, same work (actually same release?):
+
+    Freiheit für Nutzer, nicht für Software
+    10.14361/transcript.9783839420362.366 
+    10.14361/9783839428351-056 
+
+    May also have link via crossref metadata?
+
+Fun ellen examples:
+
+    Just-in-time databases and the World-Wide Web
+    10.1145/288627.288638 
+
+    Two different versions of PDF found, same URL
+
+Actual ORCID match:
+
+    10.1002/cfg.158
+    0000-0002-4447-5978
+
+Fulltext via CORE publisher-connector:
+
+    10.1186/s12889-016-2706-9 
 

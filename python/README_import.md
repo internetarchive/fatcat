@@ -99,3 +99,16 @@ From compressed:
 ## Manifest 
 
     time ./client.py import-manifest /srv/datasets/idents_files_urls.sqlite
+
+    [...]
+    Finished a batch; row 284518671 of 9669646 (2942.39%).  Total inserted: 6606900
+    Finished a batch; row 284518771 of 9669646 (2942.39%).  Total inserted: 6606950
+    Finished a batch; row 284518845 of 9669646 (2942.39%).  Total inserted: 6607000
+    Finished a batch; row 284518923 of 9669646 (2942.39%).  Total inserted: 6607050
+    Done! Inserted 6607075
+
+    real    1590m36.626s
+    user    339m40.928s
+    sys     19m3.576s
+
+Really sped up once not contending with Crossref import, so don't run these two at the same time.
