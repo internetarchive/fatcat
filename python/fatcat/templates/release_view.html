@@ -165,6 +165,7 @@ This release citing other releases.
 </div><div class="ui segment attached">
 {% endif %}
 
+{% if container != None %}
 <b>Container Metadata</b><br>
 {% if container.extra.is_oa == True %}
 <i class="icon unlock orange"></i>Open Access Publication<br>
@@ -194,13 +195,13 @@ This release citing other releases.
   <i class="icon hashtag"></i>ISSN-L: &nbsp;<code>{{ container.issnl }}</code><br>
 {% endif %}
 </div><div class="ui segment attached">
-
+{% endif %}
 
 <b>Lookup Links</b>
 {% if container != None and container.issnl != None %}
   <br><a href="http://www.sherpa.ac.uk/romeo/issn/{{ container.issnl }}/">SHERPA/RoMEO</a> (journal policies)
 {% endif %}
-{% if container.doi != None %}
+{% if container != None and container.doi != None %}
   <br><a href="https://oadoi.org/{{ release.doi }}">oaDOI/unpaywall</a>
 {% endif %}
 {% if release.isbn13 != None %}
