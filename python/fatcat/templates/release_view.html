@@ -82,7 +82,7 @@ Believed to represent this release...
       <td>{{ file.size }}
       <td>{{ file.mimetype }}
       <td><a href="{{ file.url }}">{{ file.url.split('/')[2] }}</a>
-          <br><a href="https://web.archive.org/web/2/{{ file.url }}">web.archive.org</a>
+          <br><a href="https://web.archive.org/web/1/{{ file.url }}">web.archive.org</a>
   {% endfor %}
   </tbody>
 </table>
@@ -137,7 +137,7 @@ This release citing other releases.
 <div class="five wide column">
 
 {% if files != [] and files[0].url != None %}
-<a href="https://web.archive.org/web/2/{{ files[0].url }}" class="ui top attached fluid huge green button"><i class="file pdf outline icon"></i>Download Full Text</a>
+<a href="https://web.archive.org/web/1/{{ files[0].url }}" class="ui top attached fluid huge green button"><i class="file pdf outline icon"></i>Download Full Text</a>
 {% else %}
 <span class="ui top attached fluid huge grey button"><i class="file cross icon"></i>No Full Text Available</span>
 {% endif %}
