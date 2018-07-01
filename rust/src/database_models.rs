@@ -1,7 +1,7 @@
 use chrono;
 use database_schema::*;
 use errors::*;
-use fatcat_api::models::EntityEdit;
+use fatcat_api::models::{ChangelogEntry, Editgroup, EntityEdit};
 use serde_json;
 use uuid::Uuid;
 
@@ -243,6 +243,20 @@ pub struct EditgroupRow {
     pub description: Option<String>,
 }
 
+impl EditgroupRow {
+    /// Returns an Edigroup API model *without* the entity edits actually populated. Useful for,
+    /// eg, entity history queries (where we already have the entity edit we want)
+    pub fn to_model_partial(self) -> Editgroup {
+        Editgroup {
+            id: Some(self.id),
+            editor_id: self.editor_id,
+            description: self.description,
+            extra: self.extra_json,
+            edits: None,
+        }
+    }
+}
+
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
 #[table_name = "editor"]
 pub struct EditorRow {
@@ -258,4 +272,14 @@ pub struct ChangelogRow {
     pub id: i64,
     pub editgroup_id: i64,
     pub timestamp: chrono::NaiveDateTime,
+}
+
+impl ChangelogRow {
+    pub fn to_model(self) -> ChangelogEntry {
+        ChangelogEntry {
+            index: self.id,
+            editgroup_id: self.editgroup_id,
+            timestamp: chrono::DateTime::from_utc(self.timestamp, chrono::Utc),
+        }
+    }
 }

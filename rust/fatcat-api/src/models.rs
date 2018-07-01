@@ -275,68 +275,7 @@ impl EntityEdit {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct EntityHistory(Vec<EntityHistoryInner>);
-
-impl ::std::convert::From<Vec<EntityHistoryInner>> for EntityHistory {
-    fn from(x: Vec<EntityHistoryInner>) -> Self {
-        EntityHistory(x)
-    }
-}
-
-impl ::std::convert::From<EntityHistory> for Vec<EntityHistoryInner> {
-    fn from(x: EntityHistory) -> Self {
-        x.0
-    }
-}
-
-impl ::std::iter::FromIterator<EntityHistoryInner> for EntityHistory {
-    fn from_iter<U: IntoIterator<Item = EntityHistoryInner>>(u: U) -> Self {
-        EntityHistory(Vec::<EntityHistoryInner>::from_iter(u))
-    }
-}
-
-impl ::std::iter::IntoIterator for EntityHistory {
-    type Item = EntityHistoryInner;
-    type IntoIter = ::std::vec::IntoIter<EntityHistoryInner>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.0.into_iter()
-    }
-}
-
-impl<'a> ::std::iter::IntoIterator for &'a EntityHistory {
-    type Item = &'a EntityHistoryInner;
-    type IntoIter = ::std::slice::Iter<'a, EntityHistoryInner>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        (&self.0).into_iter()
-    }
-}
-
-impl<'a> ::std::iter::IntoIterator for &'a mut EntityHistory {
-    type Item = &'a mut EntityHistoryInner;
-    type IntoIter = ::std::slice::IterMut<'a, EntityHistoryInner>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        (&mut self.0).into_iter()
-    }
-}
-
-impl ::std::ops::Deref for EntityHistory {
-    type Target = Vec<EntityHistoryInner>;
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl ::std::ops::DerefMut for EntityHistory {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct EntityHistoryInner {
+pub struct EntityHistoryEntry {
     #[serde(rename = "edit")]
     pub edit: models::EntityEdit,
 
@@ -347,9 +286,9 @@ pub struct EntityHistoryInner {
     pub changelog: models::ChangelogEntry,
 }
 
-impl EntityHistoryInner {
-    pub fn new(edit: models::EntityEdit, editgroup: models::Editgroup, changelog: models::ChangelogEntry) -> EntityHistoryInner {
-        EntityHistoryInner {
+impl EntityHistoryEntry {
+    pub fn new(edit: models::EntityEdit, editgroup: models::Editgroup, changelog: models::ChangelogEntry) -> EntityHistoryEntry {
+        EntityHistoryEntry {
             edit: edit,
             editgroup: editgroup,
             changelog: changelog,

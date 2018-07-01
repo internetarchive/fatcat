@@ -208,6 +208,22 @@ pub mod responses {
     lazy_static! {
         pub static ref GET_CONTAINER_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
+    /// Create Mime objects for the response content types for GetContainerHistory
+    lazy_static! {
+        pub static ref GET_CONTAINER_HISTORY_FOUND_ENTITY_HISTORY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetContainerHistory
+    lazy_static! {
+        pub static ref GET_CONTAINER_HISTORY_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetContainerHistory
+    lazy_static! {
+        pub static ref GET_CONTAINER_HISTORY_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetContainerHistory
+    lazy_static! {
+        pub static ref GET_CONTAINER_HISTORY_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
     /// Create Mime objects for the response content types for GetCreator
     lazy_static! {
         pub static ref GET_CREATOR_FOUND_ENTITY: Mime = mime!(Application / Json);

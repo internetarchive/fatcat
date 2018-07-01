@@ -187,6 +187,18 @@ pub enum GetContainerResponse {
 }
 
 #[derive(Debug, PartialEq)]
+pub enum GetContainerHistoryResponse {
+    /// Found Entity History
+    FoundEntityHistory(Vec<models::EntityHistoryEntry>),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
 pub enum GetCreatorResponse {
     /// Found Entity
     FoundEntity(models::CreatorEntity),
@@ -386,6 +398,8 @@ pub trait Api {
 
     fn get_container(&self, id: String, context: &Context) -> Box<Future<Item = GetContainerResponse, Error = ApiError> + Send>;
 
+    fn get_container_history(&self, id: String, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetContainerHistoryResponse, Error = ApiError> + Send>;
+
     fn get_creator(&self, id: String, context: &Context) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send>;
 
     fn get_creator_releases(&self, id: String, context: &Context) -> Box<Future<Item = GetCreatorReleasesResponse, Error = ApiError> + Send>;
@@ -444,6 +458,8 @@ pub trait ApiNoContext {
     fn create_work_batch(&self, entity_list: &Vec<models::WorkEntity>) -> Box<Future<Item = CreateWorkBatchResponse, Error = ApiError> + Send>;
 
     fn get_container(&self, id: String) -> Box<Future<Item = GetContainerResponse, Error = ApiError> + Send>;
+
+    fn get_container_history(&self, id: String, limit: Option<i64>) -> Box<Future<Item = GetContainerHistoryResponse, Error = ApiError> + Send>;
 
     fn get_creator(&self, id: String) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send>;
 
@@ -542,6 +558,10 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
 
     fn get_container(&self, id: String) -> Box<Future<Item = GetContainerResponse, Error = ApiError> + Send> {
         self.api().get_container(id, &self.context())
+    }
+
+    fn get_container_history(&self, id: String, limit: Option<i64>) -> Box<Future<Item = GetContainerHistoryResponse, Error = ApiError> + Send> {
+        self.api().get_container_history(id, limit, &self.context())
     }
 
     fn get_creator(&self, id: String) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send> {

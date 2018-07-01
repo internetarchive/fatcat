@@ -184,6 +184,67 @@ paths:
       path: "/container/:id"
       HttpMethod: "Get"
       httpmethod: "get"
+  /container/{id}/history:
+    get:
+      operationId: "get_container_history"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      - name: "limit"
+        in: "query"
+        required: false
+        type: "integer"
+        format: "int64"
+        formatString: "{:?}"
+        example: "Some(789)"
+      responses:
+        200:
+          description: "Found Entity History"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/entity_history_entry"
+          x-responseId: "FoundEntityHistory"
+          x-uppercaseResponseId: "FOUND_ENTITY_HISTORY"
+          uppercase_operation_id: "GET_CONTAINER_HISTORY"
+          uppercase_data_type: "VEC<ENTITYHISTORYENTRY>"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_CONTAINER_HISTORY"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_CONTAINER_HISTORY"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_CONTAINER_HISTORY"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_container_history"
+      uppercase_operation_id: "GET_CONTAINER_HISTORY"
+      path: "/container/:id/history"
+      HttpMethod: "Get"
+      httpmethod: "get"
   /container/lookup:
     get:
       operationId: "lookup_container"
@@ -1862,11 +1923,103 @@ definitions:
       state: "wip"
       revision: 42
     upperCaseName: "WORK_ENTITY"
-  entity_history:
-    type: "array"
-    items:
-      $ref: "#/definitions/entity_history_inner"
-    upperCaseName: "ENTITY_HISTORY"
+  entity_history_entry:
+    type: "object"
+    required:
+    - "changelog"
+    - "edit"
+    - "editgroup"
+    properties:
+      edit:
+        $ref: "#/definitions/entity_edit"
+      editgroup:
+        $ref: "#/definitions/editgroup"
+      changelog:
+        $ref: "#/definitions/changelog_entry"
+    example:
+      editgroup:
+        extra: "{}"
+        edits:
+          works:
+          - ident: "00000000-0000-0000-adce-000000000001"
+            edit_id: 847
+            extra: "{}"
+            redirect_ident: "00000000-0000-0000-adce-000000000002"
+            editgroup_id: 16
+            revision: 42
+          - ident: "00000000-0000-0000-adce-000000000001"
+            edit_id: 847
+            extra: "{}"
+            redirect_ident: "00000000-0000-0000-adce-000000000002"
+            editgroup_id: 16
+            revision: 42
+          creators:
+          - ident: "00000000-0000-0000-adce-000000000001"
+            edit_id: 847
+            extra: "{}"
+            redirect_ident: "00000000-0000-0000-adce-000000000002"
+            editgroup_id: 16
+            revision: 42
+          - ident: "00000000-0000-0000-adce-000000000001"
+            edit_id: 847
+            extra: "{}"
+            redirect_ident: "00000000-0000-0000-adce-000000000002"
+            editgroup_id: 16
+            revision: 42
+          files:
+          - ident: "00000000-0000-0000-adce-000000000001"
+            edit_id: 847
+            extra: "{}"
+            redirect_ident: "00000000-0000-0000-adce-000000000002"
+            editgroup_id: 16
+            revision: 42
+          - ident: "00000000-0000-0000-adce-000000000001"
+            edit_id: 847
+            extra: "{}"
+            redirect_ident: "00000000-0000-0000-adce-000000000002"
+            editgroup_id: 16
+            revision: 42
+          containers:
+          - ident: "00000000-0000-0000-adce-000000000001"
+            edit_id: 847
+            extra: "{}"
+            redirect_ident: "00000000-0000-0000-adce-000000000002"
+            editgroup_id: 16
+            revision: 42
+          - ident: "00000000-0000-0000-adce-000000000001"
+            edit_id: 847
+            extra: "{}"
+            redirect_ident: "00000000-0000-0000-adce-000000000002"
+            editgroup_id: 16
+            revision: 42
+          releases:
+          - ident: "00000000-0000-0000-adce-000000000001"
+            edit_id: 847
+            extra: "{}"
+            redirect_ident: "00000000-0000-0000-adce-000000000002"
+            editgroup_id: 16
+            revision: 42
+          - ident: "00000000-0000-0000-adce-000000000001"
+            edit_id: 847
+            extra: "{}"
+            redirect_ident: "00000000-0000-0000-adce-000000000002"
+            editgroup_id: 16
+            revision: 42
+        description: "description"
+        editor_id: 6
+        id: 0
+      edit:
+        ident: "00000000-0000-0000-adce-000000000001"
+        edit_id: 847
+        extra: "{}"
+        redirect_ident: "00000000-0000-0000-adce-000000000002"
+        editgroup_id: 16
+        revision: 42
+      changelog:
+        index: 1
+        editgroup_id: 5
+        timestamp: "2000-01-23T04:56:07.000+00:00"
+    upperCaseName: "ENTITY_HISTORY_ENTRY"
   entity_edit:
     type: "object"
     required:
@@ -2019,8 +2172,8 @@ definitions:
         type: "string"
         format: "date-time"
     example:
-      index: 0
-      editgroup_id: 6
+      index: 1
+      editgroup_id: 5
       timestamp: "2000-01-23T04:56:07.000+00:00"
     upperCaseName: "CHANGELOG_ENTRY"
   release_ref:
@@ -2081,19 +2234,6 @@ definitions:
     example:
       extra: "{}"
     upperCaseName: "STATS_RESPONSE"
-  entity_history_inner:
-    required:
-    - "changelog"
-    - "edit"
-    - "editgroup"
-    properties:
-      edit:
-        $ref: "#/definitions/entity_edit"
-      editgroup:
-        $ref: "#/definitions/editgroup"
-      changelog:
-        $ref: "#/definitions/changelog_entry"
-    upperCaseName: "ENTITY_HISTORY_INNER"
   editgroup_edits:
     properties:
       containers:

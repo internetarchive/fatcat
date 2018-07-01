@@ -112,6 +112,62 @@ fn test_entity_404() {
 }
 
 #[test]
+fn test_entity_history() {
+    let (headers, router, _conn) = setup();
+
+    check_response(
+        request::get(
+            "http://localhost:9411/v0/container/00000000-0000-0000-1111-000000000002/history",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("changelog"),
+    );
+    /*
+    check_response(
+        request::get(
+            "http://localhost:9411/v0/creator/00000000-0000-0000-2222-000000000001/history",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("changelog"),
+    );
+
+    check_response(
+        request::get(
+            "http://localhost:9411/v0/file/00000000-0000-0000-3333-000000000002/history",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("changelog"),
+    );
+
+    check_response(
+        request::get(
+            "http://localhost:9411/v0/release/00000000-0000-0000-4444-000000000002/history",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("changelog"),
+    );
+
+    check_response(
+        request::get(
+            "http://localhost:9411/v0/work/00000000-0000-0000-5555-000000000002/history",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("changelog"),
+    );
+*/
+}
+
+#[test]
 fn test_lookups() {
     let (headers, router, _conn) = setup();
 

@@ -129,6 +129,31 @@ macro_rules! wrap_lookup_handler {
     }
 }
 
+macro_rules! wrap_history_handler {
+    ($get_fn:ident, $get_handler:ident, $get_resp:ident) => {
+        fn $get_fn(
+            &self,
+            id: String,
+            limit: Option<i64>,
+            _context: &Context,
+        ) -> Box<Future<Item = $get_resp, Error = ApiError> + Send> {
+            let ret = match self.$get_handler(id.clone(), limit) {
+                Ok(history) =>
+                    $get_resp::FoundEntityHistory(history),
+                Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
+                    $get_resp::NotFound(ErrorResponse { message: format!("No such entity {}: {}", stringify!($model), id) }),
+                Err(Error(ErrorKind::Uuid(e), _)) =>
+                    $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(e) => {
+                    error!("{}", e);
+                    $get_resp::GenericError(ErrorResponse { message: e.to_string() })
+                },
+            };
+            Box::new(futures::done(Ok(ret)))
+        }
+    }
+}
+
 macro_rules! count_entity {
     ($table:ident, $conn:expr) => {{
         let count: i64 = $table::table
@@ -348,6 +373,32 @@ impl Server {
             .first(&conn)?;
 
         container_row2entity(Some(ident), rev)
+    }
+
+    fn get_container_history_handler(
+        &self,
+        id: String,
+        limit: Option<i64>,
+    ) -> Result<Vec<EntityHistoryEntry>> {
+        let conn = self.db_pool.get().expect("db_pool error");
+        let id = uuid::Uuid::parse_str(&id)?;
+        let limit = limit.unwrap_or(50);
+
+        let rows: Vec<(EditgroupRow, ChangelogRow, ContainerEditRow)> = editgroup::table
+            .inner_join(changelog::table)
+            .inner_join(container_edit::table)
+            .filter(container_edit::ident_id.eq(id))
+            .limit(limit)
+            .get_results(&conn)?;
+
+        let history: Vec<EntityHistoryEntry> = rows.into_iter()
+            .map(|(eg_row, cl_row, ce_row)| EntityHistoryEntry {
+                edit: ce_row.to_model().expect("edit row to model"),
+                editgroup: eg_row.to_model_partial(),
+                changelog_entry: cl_row.to_model(),
+            })
+            .collect();
+        Ok(history)
     }
 
     fn get_creator_handler(&self, id: String) -> Result<CreatorEntity> {
@@ -1083,6 +1134,11 @@ impl Api for Server {
         LookupReleaseResponse,
         doi,
         String
+    );
+    wrap_history_handler!(
+        get_container_history,
+        get_container_history_handler,
+        GetContainerHistoryResponse
     );
 
     // Rename "wrap_lookup_handler"?

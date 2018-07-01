@@ -13,8 +13,9 @@ use clap::{App, Arg};
 #[allow(unused_imports)]
 use fatcat::{AcceptEditgroupResponse, ApiError, ApiNoContext, ContextWrapperExt, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse,
              CreateEditgroupResponse, CreateFileBatchResponse, CreateFileResponse, CreateReleaseBatchResponse, CreateReleaseResponse, CreateWorkBatchResponse, CreateWorkResponse,
-             GetContainerResponse, GetCreatorReleasesResponse, GetCreatorResponse, GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileResponse, GetReleaseFilesResponse,
-             GetReleaseResponse, GetStatsResponse, GetWorkReleasesResponse, GetWorkResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse, LookupReleaseResponse};
+             GetContainerHistoryResponse, GetContainerResponse, GetCreatorReleasesResponse, GetCreatorResponse, GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileResponse,
+             GetReleaseFilesResponse, GetReleaseResponse, GetStatsResponse, GetWorkReleasesResponse, GetWorkResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse,
+             LookupReleaseResponse};
 #[allow(unused_imports)]
 use futures::{future, stream, Future, Stream};
 
@@ -31,6 +32,7 @@ fn main() {
                     "CreateReleaseBatch",
                     "CreateWorkBatch",
                     "GetContainer",
+                    "GetContainerHistory",
                     "GetCreator",
                     "GetCreatorReleases",
                     "GetEditgroup",
@@ -137,6 +139,11 @@ fn main() {
 
         Some("GetContainer") => {
             let result = client.get_container("id_example".to_string()).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("GetContainerHistory") => {
+            let result = client.get_container_history("id_example".to_string(), Some(789)).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 

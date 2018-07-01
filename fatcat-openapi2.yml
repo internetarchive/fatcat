@@ -181,21 +181,19 @@ definitions:
       <<: *ENTITYPROPS
       work_type:
         type: string
-  entity_history:
-    type: array
-    items:
-      type: object
-      required:
-        - edit
-        - editgroup
-        - changelog
-      properties:
-        edit:
-          $ref: "#/definitions/entity_edit"
-        editgroup:
-          $ref: "#/definitions/editgroup"
-        changelog:
-          $ref: "#/definitions/changelog_entry"
+  entity_history_entry:
+    type: object
+    required:
+      - edit
+      - editgroup
+      - changelog
+    properties:
+      edit:
+        $ref: "#/definitions/entity_edit"
+      editgroup:
+        $ref: "#/definitions/editgroup"
+      changelog:
+        $ref: "#/definitions/changelog_entry"
   entity_edit:
     type: object
     required:
@@ -393,6 +391,27 @@ paths:
           description: Found Entity
           schema:
             $ref: "#/definitions/container_entity"
+        <<: *ENTITYRESPONSES
+  /container/{id}/history:
+    parameters:
+      - name: id
+        in: path
+        type: string
+        required: true
+      - name: limit
+        in: query
+        type: integer
+        format: int64
+        required: false
+    get:
+      operationId: "get_container_history"
+      responses:
+        200:
+          description: Found Entity History
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/entity_history_entry"
         <<: *ENTITYRESPONSES
   /container/lookup:
     get:
