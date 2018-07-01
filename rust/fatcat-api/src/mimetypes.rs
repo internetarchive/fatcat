@@ -240,6 +240,22 @@ pub mod responses {
     lazy_static! {
         pub static ref GET_CREATOR_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
+    /// Create Mime objects for the response content types for GetCreatorHistory
+    lazy_static! {
+        pub static ref GET_CREATOR_HISTORY_FOUND_ENTITY_HISTORY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetCreatorHistory
+    lazy_static! {
+        pub static ref GET_CREATOR_HISTORY_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetCreatorHistory
+    lazy_static! {
+        pub static ref GET_CREATOR_HISTORY_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetCreatorHistory
+    lazy_static! {
+        pub static ref GET_CREATOR_HISTORY_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
     /// Create Mime objects for the response content types for GetCreatorReleases
     lazy_static! {
         pub static ref GET_CREATOR_RELEASES_FOUND_ENTITY: Mime = mime!(Application / Json);
@@ -312,6 +328,22 @@ pub mod responses {
     lazy_static! {
         pub static ref GET_FILE_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
+    /// Create Mime objects for the response content types for GetFileHistory
+    lazy_static! {
+        pub static ref GET_FILE_HISTORY_FOUND_ENTITY_HISTORY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetFileHistory
+    lazy_static! {
+        pub static ref GET_FILE_HISTORY_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetFileHistory
+    lazy_static! {
+        pub static ref GET_FILE_HISTORY_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetFileHistory
+    lazy_static! {
+        pub static ref GET_FILE_HISTORY_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
     /// Create Mime objects for the response content types for GetRelease
     lazy_static! {
         pub static ref GET_RELEASE_FOUND_ENTITY: Mime = mime!(Application / Json);
@@ -344,6 +376,22 @@ pub mod responses {
     lazy_static! {
         pub static ref GET_RELEASE_FILES_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
+    /// Create Mime objects for the response content types for GetReleaseHistory
+    lazy_static! {
+        pub static ref GET_RELEASE_HISTORY_FOUND_ENTITY_HISTORY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetReleaseHistory
+    lazy_static! {
+        pub static ref GET_RELEASE_HISTORY_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetReleaseHistory
+    lazy_static! {
+        pub static ref GET_RELEASE_HISTORY_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetReleaseHistory
+    lazy_static! {
+        pub static ref GET_RELEASE_HISTORY_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
     /// Create Mime objects for the response content types for GetStats
     lazy_static! {
         pub static ref GET_STATS_SUCCESS: Mime = mime!(Application / Json);
@@ -367,6 +415,22 @@ pub mod responses {
     /// Create Mime objects for the response content types for GetWork
     lazy_static! {
         pub static ref GET_WORK_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetWorkHistory
+    lazy_static! {
+        pub static ref GET_WORK_HISTORY_FOUND_ENTITY_HISTORY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetWorkHistory
+    lazy_static! {
+        pub static ref GET_WORK_HISTORY_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetWorkHistory
+    lazy_static! {
+        pub static ref GET_WORK_HISTORY_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetWorkHistory
+    lazy_static! {
+        pub static ref GET_WORK_HISTORY_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for GetWorkReleases
     lazy_static! {

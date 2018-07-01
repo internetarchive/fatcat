@@ -211,6 +211,18 @@ pub enum GetCreatorResponse {
 }
 
 #[derive(Debug, PartialEq)]
+pub enum GetCreatorHistoryResponse {
+    /// Found Entity History
+    FoundEntityHistory(Vec<models::EntityHistoryEntry>),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
 pub enum GetCreatorReleasesResponse {
     /// Found Entity
     FoundEntity(Vec<models::ReleaseEntity>),
@@ -267,6 +279,18 @@ pub enum GetFileResponse {
 }
 
 #[derive(Debug, PartialEq)]
+pub enum GetFileHistoryResponse {
+    /// Found Entity History
+    FoundEntityHistory(Vec<models::EntityHistoryEntry>),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
 pub enum GetReleaseResponse {
     /// Found Entity
     FoundEntity(models::ReleaseEntity),
@@ -291,6 +315,18 @@ pub enum GetReleaseFilesResponse {
 }
 
 #[derive(Debug, PartialEq)]
+pub enum GetReleaseHistoryResponse {
+    /// Found Entity History
+    FoundEntityHistory(Vec<models::EntityHistoryEntry>),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
 pub enum GetStatsResponse {
     /// Success
     Success(models::StatsResponse),
@@ -302,6 +338,18 @@ pub enum GetStatsResponse {
 pub enum GetWorkResponse {
     /// Found Entity
     FoundEntity(models::WorkEntity),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum GetWorkHistoryResponse {
+    /// Found Entity History
+    FoundEntityHistory(Vec<models::EntityHistoryEntry>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
     /// Not Found
@@ -402,6 +450,8 @@ pub trait Api {
 
     fn get_creator(&self, id: String, context: &Context) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send>;
 
+    fn get_creator_history(&self, id: String, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetCreatorHistoryResponse, Error = ApiError> + Send>;
+
     fn get_creator_releases(&self, id: String, context: &Context) -> Box<Future<Item = GetCreatorReleasesResponse, Error = ApiError> + Send>;
 
     fn get_editgroup(&self, id: i64, context: &Context) -> Box<Future<Item = GetEditgroupResponse, Error = ApiError> + Send>;
@@ -412,13 +462,19 @@ pub trait Api {
 
     fn get_file(&self, id: String, context: &Context) -> Box<Future<Item = GetFileResponse, Error = ApiError> + Send>;
 
+    fn get_file_history(&self, id: String, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetFileHistoryResponse, Error = ApiError> + Send>;
+
     fn get_release(&self, id: String, context: &Context) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send>;
 
     fn get_release_files(&self, id: String, context: &Context) -> Box<Future<Item = GetReleaseFilesResponse, Error = ApiError> + Send>;
 
+    fn get_release_history(&self, id: String, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetReleaseHistoryResponse, Error = ApiError> + Send>;
+
     fn get_stats(&self, more: Option<String>, context: &Context) -> Box<Future<Item = GetStatsResponse, Error = ApiError> + Send>;
 
     fn get_work(&self, id: String, context: &Context) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send>;
+
+    fn get_work_history(&self, id: String, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetWorkHistoryResponse, Error = ApiError> + Send>;
 
     fn get_work_releases(&self, id: String, context: &Context) -> Box<Future<Item = GetWorkReleasesResponse, Error = ApiError> + Send>;
 
@@ -463,6 +519,8 @@ pub trait ApiNoContext {
 
     fn get_creator(&self, id: String) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send>;
 
+    fn get_creator_history(&self, id: String, limit: Option<i64>) -> Box<Future<Item = GetCreatorHistoryResponse, Error = ApiError> + Send>;
+
     fn get_creator_releases(&self, id: String) -> Box<Future<Item = GetCreatorReleasesResponse, Error = ApiError> + Send>;
 
     fn get_editgroup(&self, id: i64) -> Box<Future<Item = GetEditgroupResponse, Error = ApiError> + Send>;
@@ -473,13 +531,19 @@ pub trait ApiNoContext {
 
     fn get_file(&self, id: String) -> Box<Future<Item = GetFileResponse, Error = ApiError> + Send>;
 
+    fn get_file_history(&self, id: String, limit: Option<i64>) -> Box<Future<Item = GetFileHistoryResponse, Error = ApiError> + Send>;
+
     fn get_release(&self, id: String) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send>;
 
     fn get_release_files(&self, id: String) -> Box<Future<Item = GetReleaseFilesResponse, Error = ApiError> + Send>;
 
+    fn get_release_history(&self, id: String, limit: Option<i64>) -> Box<Future<Item = GetReleaseHistoryResponse, Error = ApiError> + Send>;
+
     fn get_stats(&self, more: Option<String>) -> Box<Future<Item = GetStatsResponse, Error = ApiError> + Send>;
 
     fn get_work(&self, id: String) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send>;
+
+    fn get_work_history(&self, id: String, limit: Option<i64>) -> Box<Future<Item = GetWorkHistoryResponse, Error = ApiError> + Send>;
 
     fn get_work_releases(&self, id: String) -> Box<Future<Item = GetWorkReleasesResponse, Error = ApiError> + Send>;
 
@@ -568,6 +632,10 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().get_creator(id, &self.context())
     }
 
+    fn get_creator_history(&self, id: String, limit: Option<i64>) -> Box<Future<Item = GetCreatorHistoryResponse, Error = ApiError> + Send> {
+        self.api().get_creator_history(id, limit, &self.context())
+    }
+
     fn get_creator_releases(&self, id: String) -> Box<Future<Item = GetCreatorReleasesResponse, Error = ApiError> + Send> {
         self.api().get_creator_releases(id, &self.context())
     }
@@ -588,6 +656,10 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().get_file(id, &self.context())
     }
 
+    fn get_file_history(&self, id: String, limit: Option<i64>) -> Box<Future<Item = GetFileHistoryResponse, Error = ApiError> + Send> {
+        self.api().get_file_history(id, limit, &self.context())
+    }
+
     fn get_release(&self, id: String) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send> {
         self.api().get_release(id, &self.context())
     }
@@ -596,12 +668,20 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().get_release_files(id, &self.context())
     }
 
+    fn get_release_history(&self, id: String, limit: Option<i64>) -> Box<Future<Item = GetReleaseHistoryResponse, Error = ApiError> + Send> {
+        self.api().get_release_history(id, limit, &self.context())
+    }
+
     fn get_stats(&self, more: Option<String>) -> Box<Future<Item = GetStatsResponse, Error = ApiError> + Send> {
         self.api().get_stats(more, &self.context())
     }
 
     fn get_work(&self, id: String) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send> {
         self.api().get_work(id, &self.context())
+    }
+
+    fn get_work_history(&self, id: String, limit: Option<i64>) -> Box<Future<Item = GetWorkHistoryResponse, Error = ApiError> + Send> {
+        self.api().get_work_history(id, limit, &self.context())
     }
 
     fn get_work_releases(&self, id: String) -> Box<Future<Item = GetWorkReleasesResponse, Error = ApiError> + Send> {

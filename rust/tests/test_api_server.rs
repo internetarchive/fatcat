@@ -124,7 +124,7 @@ fn test_entity_history() {
         status::Ok,
         Some("changelog"),
     );
-    /*
+
     check_response(
         request::get(
             "http://localhost:9411/v0/creator/00000000-0000-0000-2222-000000000001/history",
@@ -164,7 +164,6 @@ fn test_entity_history() {
         status::Ok,
         Some("changelog"),
     );
-*/
 }
 
 #[test]

@@ -29,7 +29,9 @@ macro_rules! wrap_entity_handlers {
     // The only stable approach I know of would be: https://github.com/dtolnay/mashup
     ($get_fn:ident, $get_handler:ident, $get_resp:ident, $post_fn:ident, $post_handler:ident,
             $post_resp:ident, $post_batch_fn:ident, $post_batch_handler:ident,
-            $post_batch_resp:ident, $model:ident) => {
+            $post_batch_resp:ident, $get_history_fn:ident, $get_history_handler:ident,
+            $get_history_resp:ident, $model:ident) => {
+
         fn $get_fn(
             &self,
             id: String,
@@ -89,20 +91,26 @@ macro_rules! wrap_entity_handlers {
             };
             Box::new(futures::done(Ok(ret)))
         }
-    }
-}
 
-macro_rules! entity_batch_handler {
-    ($post_handler:ident, $post_batch_handler:ident, $model:ident) => {
-        fn $post_batch_handler(&self, entity_list: &Vec<models::$model>) ->
-                Result<Vec<EntityEdit>> {
-            let conn = self.db_pool.get().expect("db_pool error");
-            // TODO: start a transaction
-            let mut ret: Vec<EntityEdit> = vec![];
-            for entity in entity_list.into_iter() {
-                ret.push(self.$post_handler(entity.clone(), Some(&conn))?);
-            }
-            Ok(ret)
+        fn $get_history_fn(
+            &self,
+            id: String,
+            limit: Option<i64>,
+            _context: &Context,
+        ) -> Box<Future<Item = $get_history_resp, Error = ApiError> + Send> {
+            let ret = match self.$get_history_handler(id.clone(), limit) {
+                Ok(history) =>
+                    $get_history_resp::FoundEntityHistory(history),
+                Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
+                    $get_history_resp::NotFound(ErrorResponse { message: format!("No such entity {}: {}", stringify!($model), id) }),
+                Err(Error(ErrorKind::Uuid(e), _)) =>
+                    $get_history_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(e) => {
+                    error!("{}", e);
+                    $get_history_resp::GenericError(ErrorResponse { message: e.to_string() })
+                },
+            };
+            Box::new(futures::done(Ok(ret)))
         }
     }
 }
@@ -129,27 +137,48 @@ macro_rules! wrap_lookup_handler {
     }
 }
 
-macro_rules! wrap_history_handler {
-    ($get_fn:ident, $get_handler:ident, $get_resp:ident) => {
-        fn $get_fn(
+macro_rules! entity_batch_handler {
+    ($post_handler:ident, $post_batch_handler:ident, $model:ident) => {
+        fn $post_batch_handler(&self, entity_list: &Vec<models::$model>) ->
+                Result<Vec<EntityEdit>> {
+            let conn = self.db_pool.get().expect("db_pool error");
+            // TODO: start a transaction
+            let mut ret: Vec<EntityEdit> = vec![];
+            for entity in entity_list.into_iter() {
+                ret.push(self.$post_handler(entity.clone(), Some(&conn))?);
+            }
+            Ok(ret)
+        }
+    }
+}
+
+macro_rules! entity_history_handler {
+    ($history_handler:ident, $edit_row_type:ident, $edit_table:ident) => {
+        fn $history_handler(
             &self,
             id: String,
             limit: Option<i64>,
-            _context: &Context,
-        ) -> Box<Future<Item = $get_resp, Error = ApiError> + Send> {
-            let ret = match self.$get_handler(id.clone(), limit) {
-                Ok(history) =>
-                    $get_resp::FoundEntityHistory(history),
-                Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
-                    $get_resp::NotFound(ErrorResponse { message: format!("No such entity {}: {}", stringify!($model), id) }),
-                Err(Error(ErrorKind::Uuid(e), _)) =>
-                    $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
-                Err(e) => {
-                    error!("{}", e);
-                    $get_resp::GenericError(ErrorResponse { message: e.to_string() })
-                },
-            };
-            Box::new(futures::done(Ok(ret)))
+        ) -> Result<Vec<EntityHistoryEntry>> {
+            let conn = self.db_pool.get().expect("db_pool error");
+            let id = uuid::Uuid::parse_str(&id)?;
+            let limit = limit.unwrap_or(50);
+
+            let rows: Vec<(EditgroupRow, ChangelogRow, $edit_row_type)> = editgroup::table
+                .inner_join(changelog::table)
+                .inner_join($edit_table::table)
+                .filter($edit_table::ident_id.eq(id))
+                .order(changelog::id.desc())
+                .limit(limit)
+                .get_results(&conn)?;
+
+            let history: Vec<EntityHistoryEntry> = rows.into_iter()
+                .map(|(eg_row, cl_row, e_row)| EntityHistoryEntry {
+                    edit: e_row.to_model().expect("edit row to model"),
+                    editgroup: eg_row.to_model_partial(),
+                    changelog_entry: cl_row.to_model(),
+                })
+                .collect();
+            Ok(history)
         }
     }
 }
@@ -375,32 +404,6 @@ impl Server {
         container_row2entity(Some(ident), rev)
     }
 
-    fn get_container_history_handler(
-        &self,
-        id: String,
-        limit: Option<i64>,
-    ) -> Result<Vec<EntityHistoryEntry>> {
-        let conn = self.db_pool.get().expect("db_pool error");
-        let id = uuid::Uuid::parse_str(&id)?;
-        let limit = limit.unwrap_or(50);
-
-        let rows: Vec<(EditgroupRow, ChangelogRow, ContainerEditRow)> = editgroup::table
-            .inner_join(changelog::table)
-            .inner_join(container_edit::table)
-            .filter(container_edit::ident_id.eq(id))
-            .limit(limit)
-            .get_results(&conn)?;
-
-        let history: Vec<EntityHistoryEntry> = rows.into_iter()
-            .map(|(eg_row, cl_row, ce_row)| EntityHistoryEntry {
-                edit: ce_row.to_model().expect("edit row to model"),
-                editgroup: eg_row.to_model_partial(),
-                changelog_entry: cl_row.to_model(),
-            })
-            .collect();
-        Ok(history)
-    }
-
     fn get_creator_handler(&self, id: String) -> Result<CreatorEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
         let id = uuid::Uuid::parse_str(&id)?;
@@ -581,24 +584,6 @@ impl Server {
 
         edit.to_model()
     }
-
-    entity_batch_handler!(
-        create_container_handler,
-        create_container_batch_handler,
-        ContainerEntity
-    );
-    entity_batch_handler!(
-        create_creator_handler,
-        create_creator_batch_handler,
-        CreatorEntity
-    );
-    entity_batch_handler!(create_file_handler, create_file_batch_handler, FileEntity);
-    entity_batch_handler!(
-        create_release_handler,
-        create_release_batch_handler,
-        ReleaseEntity
-    );
-    entity_batch_handler!(create_work_handler, create_work_batch_handler, WorkEntity);
 
     fn create_creator_handler(
         &self,
@@ -1043,6 +1028,34 @@ impl Server {
         });
         Ok(StatsResponse { extra: Some(val) })
     }
+
+    entity_batch_handler!(
+        create_container_handler,
+        create_container_batch_handler,
+        ContainerEntity
+    );
+    entity_batch_handler!(
+        create_creator_handler,
+        create_creator_batch_handler,
+        CreatorEntity
+    );
+    entity_batch_handler!(create_file_handler, create_file_batch_handler, FileEntity);
+    entity_batch_handler!(
+        create_release_handler,
+        create_release_batch_handler,
+        ReleaseEntity
+    );
+    entity_batch_handler!(create_work_handler, create_work_batch_handler, WorkEntity);
+
+    entity_history_handler!(
+        get_container_history_handler,
+        ContainerEditRow,
+        container_edit
+    );
+    entity_history_handler!(get_creator_history_handler, CreatorEditRow, creator_edit);
+    entity_history_handler!(get_file_history_handler, FileEditRow, file_edit);
+    entity_history_handler!(get_release_history_handler, ReleaseEditRow, release_edit);
+    entity_history_handler!(get_work_history_handler, WorkEditRow, work_edit);
 }
 
 impl Api for Server {
@@ -1056,8 +1069,12 @@ impl Api for Server {
         create_container_batch,
         create_container_batch_handler,
         CreateContainerBatchResponse,
+        get_container_history,
+        get_container_history_handler,
+        GetContainerHistoryResponse,
         ContainerEntity
     );
+
     wrap_entity_handlers!(
         get_creator,
         get_creator_handler,
@@ -1068,6 +1085,9 @@ impl Api for Server {
         create_creator_batch,
         create_creator_batch_handler,
         CreateCreatorBatchResponse,
+        get_creator_history,
+        get_creator_history_handler,
+        GetCreatorHistoryResponse,
         CreatorEntity
     );
     wrap_entity_handlers!(
@@ -1080,6 +1100,9 @@ impl Api for Server {
         create_file_batch,
         create_file_batch_handler,
         CreateFileBatchResponse,
+        get_file_history,
+        get_file_history_handler,
+        GetFileHistoryResponse,
         FileEntity
     );
     wrap_entity_handlers!(
@@ -1092,6 +1115,9 @@ impl Api for Server {
         create_release_batch,
         create_release_batch_handler,
         CreateReleaseBatchResponse,
+        get_release_history,
+        get_release_history_handler,
+        GetReleaseHistoryResponse,
         ReleaseEntity
     );
     wrap_entity_handlers!(
@@ -1104,6 +1130,9 @@ impl Api for Server {
         create_work_batch,
         create_work_batch_handler,
         CreateWorkBatchResponse,
+        get_work_history,
+        get_work_history_handler,
+        GetWorkHistoryResponse,
         WorkEntity
     );
 
@@ -1135,13 +1164,7 @@ impl Api for Server {
         doi,
         String
     );
-    wrap_history_handler!(
-        get_container_history,
-        get_container_history_handler,
-        GetContainerHistoryResponse
-    );
 
-    // Rename "wrap_lookup_handler"?
     wrap_lookup_handler!(
         get_release_files,
         get_release_files_handler,

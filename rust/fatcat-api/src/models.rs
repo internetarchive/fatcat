@@ -282,16 +282,16 @@ pub struct EntityHistoryEntry {
     #[serde(rename = "editgroup")]
     pub editgroup: models::Editgroup,
 
-    #[serde(rename = "changelog")]
-    pub changelog: models::ChangelogEntry,
+    #[serde(rename = "changelog_entry")]
+    pub changelog_entry: models::ChangelogEntry,
 }
 
 impl EntityHistoryEntry {
-    pub fn new(edit: models::EntityEdit, editgroup: models::Editgroup, changelog: models::ChangelogEntry) -> EntityHistoryEntry {
+    pub fn new(edit: models::EntityEdit, editgroup: models::Editgroup, changelog_entry: models::ChangelogEntry) -> EntityHistoryEntry {
         EntityHistoryEntry {
             edit: edit,
             editgroup: editgroup,
-            changelog: changelog,
+            changelog_entry: changelog_entry,
         }
     }
 }

@@ -186,13 +186,13 @@ definitions:
     required:
       - edit
       - editgroup
-      - changelog
+      - changelog_entry
     properties:
       edit:
         $ref: "#/definitions/entity_edit"
       editgroup:
         $ref: "#/definitions/editgroup"
-      changelog:
+      changelog_entry:
         $ref: "#/definitions/changelog_entry"
   entity_edit:
     type: object
@@ -475,6 +475,27 @@ paths:
           schema:
             $ref: "#/definitions/creator_entity"
         <<: *ENTITYRESPONSES
+  /creator/{id}/history:
+    parameters:
+      - name: id
+        in: path
+        type: string
+        required: true
+      - name: limit
+        in: query
+        type: integer
+        format: int64
+        required: false
+    get:
+      operationId: "get_creator_history"
+      responses:
+        200:
+          description: Found Entity History
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/entity_history_entry"
+        <<: *ENTITYRESPONSES
   /creator/{id}/releases:
     parameters:
       - name: id
@@ -553,6 +574,27 @@ paths:
           schema:
             $ref: "#/definitions/file_entity"
         <<: *ENTITYRESPONSES
+  /file/{id}/history:
+    parameters:
+      - name: id
+        in: path
+        type: string
+        required: true
+      - name: limit
+        in: query
+        type: integer
+        format: int64
+        required: false
+    get:
+      operationId: "get_file_history"
+      responses:
+        200:
+          description: Found Entity History
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/entity_history_entry"
+        <<: *ENTITYRESPONSES
   /file/lookup:
     get:
       operationId: "lookup_file"
@@ -614,6 +656,27 @@ paths:
           description: Found Entity
           schema:
             $ref: "#/definitions/release_entity"
+        <<: *ENTITYRESPONSES
+  /release/{id}/history:
+    parameters:
+      - name: id
+        in: path
+        type: string
+        required: true
+      - name: limit
+        in: query
+        type: integer
+        format: int64
+        required: false
+    get:
+      operationId: "get_release_history"
+      responses:
+        200:
+          description: Found Entity History
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/entity_history_entry"
         <<: *ENTITYRESPONSES
   /release/{id}/files:
     parameters:
@@ -692,6 +755,27 @@ paths:
           description: Found Entity
           schema:
             $ref: "#/definitions/work_entity"
+        <<: *ENTITYRESPONSES
+  /work/{id}/history:
+    parameters:
+      - name: id
+        in: path
+        type: string
+        required: true
+      - name: limit
+        in: query
+        type: integer
+        format: int64
+        required: false
+    get:
+      operationId: "get_work_history"
+      responses:
+        200:
+          description: Found Entity History
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/entity_history_entry"
         <<: *ENTITYRESPONSES
   /work/{id}/releases:
     parameters:

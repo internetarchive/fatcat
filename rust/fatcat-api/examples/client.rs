@@ -13,9 +13,9 @@ use clap::{App, Arg};
 #[allow(unused_imports)]
 use fatcat::{AcceptEditgroupResponse, ApiError, ApiNoContext, ContextWrapperExt, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse,
              CreateEditgroupResponse, CreateFileBatchResponse, CreateFileResponse, CreateReleaseBatchResponse, CreateReleaseResponse, CreateWorkBatchResponse, CreateWorkResponse,
-             GetContainerHistoryResponse, GetContainerResponse, GetCreatorReleasesResponse, GetCreatorResponse, GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileResponse,
-             GetReleaseFilesResponse, GetReleaseResponse, GetStatsResponse, GetWorkReleasesResponse, GetWorkResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse,
-             LookupReleaseResponse};
+             GetContainerHistoryResponse, GetContainerResponse, GetCreatorHistoryResponse, GetCreatorReleasesResponse, GetCreatorResponse, GetEditgroupResponse, GetEditorChangelogResponse,
+             GetEditorResponse, GetFileHistoryResponse, GetFileResponse, GetReleaseFilesResponse, GetReleaseHistoryResponse, GetReleaseResponse, GetStatsResponse, GetWorkHistoryResponse,
+             GetWorkReleasesResponse, GetWorkResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse, LookupReleaseResponse};
 #[allow(unused_imports)]
 use futures::{future, stream, Future, Stream};
 
@@ -34,15 +34,19 @@ fn main() {
                     "GetContainer",
                     "GetContainerHistory",
                     "GetCreator",
+                    "GetCreatorHistory",
                     "GetCreatorReleases",
                     "GetEditgroup",
                     "GetEditor",
                     "GetEditorChangelog",
                     "GetFile",
+                    "GetFileHistory",
                     "GetRelease",
                     "GetReleaseFiles",
+                    "GetReleaseHistory",
                     "GetStats",
                     "GetWork",
+                    "GetWorkHistory",
                     "GetWorkReleases",
                     "LookupContainer",
                     "LookupCreator",
@@ -152,6 +156,11 @@ fn main() {
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
+        Some("GetCreatorHistory") => {
+            let result = client.get_creator_history("id_example".to_string(), Some(789)).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
         Some("GetCreatorReleases") => {
             let result = client.get_creator_releases("id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
@@ -177,6 +186,11 @@ fn main() {
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
+        Some("GetFileHistory") => {
+            let result = client.get_file_history("id_example".to_string(), Some(789)).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
         Some("GetRelease") => {
             let result = client.get_release("id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
@@ -187,6 +201,11 @@ fn main() {
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
+        Some("GetReleaseHistory") => {
+            let result = client.get_release_history("id_example".to_string(), Some(789)).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
         Some("GetStats") => {
             let result = client.get_stats(Some("more_example".to_string())).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
@@ -194,6 +213,11 @@ fn main() {
 
         Some("GetWork") => {
             let result = client.get_work("id_example".to_string()).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("GetWorkHistory") => {
+            let result = client.get_work_history("id_example".to_string(), Some(789)).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 

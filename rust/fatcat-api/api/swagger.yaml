@@ -468,6 +468,67 @@ paths:
       path: "/creator/:id"
       HttpMethod: "Get"
       httpmethod: "get"
+  /creator/{id}/history:
+    get:
+      operationId: "get_creator_history"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      - name: "limit"
+        in: "query"
+        required: false
+        type: "integer"
+        format: "int64"
+        formatString: "{:?}"
+        example: "Some(789)"
+      responses:
+        200:
+          description: "Found Entity History"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/entity_history_entry"
+          x-responseId: "FoundEntityHistory"
+          x-uppercaseResponseId: "FOUND_ENTITY_HISTORY"
+          uppercase_operation_id: "GET_CREATOR_HISTORY"
+          uppercase_data_type: "VEC<ENTITYHISTORYENTRY>"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_CREATOR_HISTORY"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_CREATOR_HISTORY"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_CREATOR_HISTORY"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_creator_history"
+      uppercase_operation_id: "GET_CREATOR_HISTORY"
+      path: "/creator/:id/history"
+      HttpMethod: "Get"
+      httpmethod: "get"
   /creator/{id}/releases:
     get:
       operationId: "get_creator_releases"
@@ -745,6 +806,67 @@ paths:
       path: "/file/:id"
       HttpMethod: "Get"
       httpmethod: "get"
+  /file/{id}/history:
+    get:
+      operationId: "get_file_history"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      - name: "limit"
+        in: "query"
+        required: false
+        type: "integer"
+        format: "int64"
+        formatString: "{:?}"
+        example: "Some(789)"
+      responses:
+        200:
+          description: "Found Entity History"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/entity_history_entry"
+          x-responseId: "FoundEntityHistory"
+          x-uppercaseResponseId: "FOUND_ENTITY_HISTORY"
+          uppercase_operation_id: "GET_FILE_HISTORY"
+          uppercase_data_type: "VEC<ENTITYHISTORYENTRY>"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_FILE_HISTORY"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_FILE_HISTORY"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_FILE_HISTORY"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_file_history"
+      uppercase_operation_id: "GET_FILE_HISTORY"
+      path: "/file/:id/history"
+      HttpMethod: "Get"
+      httpmethod: "get"
   /file/lookup:
     get:
       operationId: "lookup_file"
@@ -966,6 +1088,67 @@ paths:
       operation_id: "get_release"
       uppercase_operation_id: "GET_RELEASE"
       path: "/release/:id"
+      HttpMethod: "Get"
+      httpmethod: "get"
+  /release/{id}/history:
+    get:
+      operationId: "get_release_history"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      - name: "limit"
+        in: "query"
+        required: false
+        type: "integer"
+        format: "int64"
+        formatString: "{:?}"
+        example: "Some(789)"
+      responses:
+        200:
+          description: "Found Entity History"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/entity_history_entry"
+          x-responseId: "FoundEntityHistory"
+          x-uppercaseResponseId: "FOUND_ENTITY_HISTORY"
+          uppercase_operation_id: "GET_RELEASE_HISTORY"
+          uppercase_data_type: "VEC<ENTITYHISTORYENTRY>"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_RELEASE_HISTORY"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_RELEASE_HISTORY"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_RELEASE_HISTORY"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_release_history"
+      uppercase_operation_id: "GET_RELEASE_HISTORY"
+      path: "/release/:id/history"
       HttpMethod: "Get"
       httpmethod: "get"
   /release/{id}/files:
@@ -1243,6 +1426,67 @@ paths:
       operation_id: "get_work"
       uppercase_operation_id: "GET_WORK"
       path: "/work/:id"
+      HttpMethod: "Get"
+      httpmethod: "get"
+  /work/{id}/history:
+    get:
+      operationId: "get_work_history"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      - name: "limit"
+        in: "query"
+        required: false
+        type: "integer"
+        format: "int64"
+        formatString: "{:?}"
+        example: "Some(789)"
+      responses:
+        200:
+          description: "Found Entity History"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/entity_history_entry"
+          x-responseId: "FoundEntityHistory"
+          x-uppercaseResponseId: "FOUND_ENTITY_HISTORY"
+          uppercase_operation_id: "GET_WORK_HISTORY"
+          uppercase_data_type: "VEC<ENTITYHISTORYENTRY>"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_WORK_HISTORY"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_WORK_HISTORY"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_WORK_HISTORY"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_work_history"
+      uppercase_operation_id: "GET_WORK_HISTORY"
+      path: "/work/:id/history"
       HttpMethod: "Get"
       httpmethod: "get"
   /work/{id}/releases:
@@ -1926,7 +2170,7 @@ definitions:
   entity_history_entry:
     type: "object"
     required:
-    - "changelog"
+    - "changelog_entry"
     - "edit"
     - "editgroup"
     properties:
@@ -1934,7 +2178,7 @@ definitions:
         $ref: "#/definitions/entity_edit"
       editgroup:
         $ref: "#/definitions/editgroup"
-      changelog:
+      changelog_entry:
         $ref: "#/definitions/changelog_entry"
     example:
       editgroup:
@@ -2015,7 +2259,7 @@ definitions:
         redirect_ident: "00000000-0000-0000-adce-000000000002"
         editgroup_id: 16
         revision: 42
-      changelog:
+      changelog_entry:
         index: 1
         editgroup_id: 5
         timestamp: "2000-01-23T04:56:07.000+00:00"

@@ -12,8 +12,9 @@ use swagger;
 use fatcat::models;
 use fatcat::{AcceptEditgroupResponse, Api, ApiError, Context, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse, CreateEditgroupResponse,
              CreateFileBatchResponse, CreateFileResponse, CreateReleaseBatchResponse, CreateReleaseResponse, CreateWorkBatchResponse, CreateWorkResponse, GetContainerHistoryResponse,
-             GetContainerResponse, GetCreatorReleasesResponse, GetCreatorResponse, GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileResponse, GetReleaseFilesResponse,
-             GetReleaseResponse, GetStatsResponse, GetWorkReleasesResponse, GetWorkResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse, LookupReleaseResponse};
+             GetContainerResponse, GetCreatorHistoryResponse, GetCreatorReleasesResponse, GetCreatorResponse, GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse,
+             GetFileHistoryResponse, GetFileResponse, GetReleaseFilesResponse, GetReleaseHistoryResponse, GetReleaseResponse, GetStatsResponse, GetWorkHistoryResponse, GetWorkReleasesResponse,
+             GetWorkResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse, LookupReleaseResponse};
 
 #[derive(Copy, Clone)]
 pub struct Server;
@@ -118,6 +119,17 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
+    fn get_creator_history(&self, id: String, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetCreatorHistoryResponse, Error = ApiError> + Send> {
+        let context = context.clone();
+        println!(
+            "get_creator_history(\"{}\", {:?}) - X-Span-ID: {:?}",
+            id,
+            limit,
+            context.x_span_id.unwrap_or(String::from("<none>")).clone()
+        );
+        Box::new(futures::failed("Generic failure".into()))
+    }
+
     fn get_creator_releases(&self, id: String, context: &Context) -> Box<Future<Item = GetCreatorReleasesResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!("get_creator_releases(\"{}\") - X-Span-ID: {:?}", id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
@@ -148,6 +160,17 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
+    fn get_file_history(&self, id: String, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetFileHistoryResponse, Error = ApiError> + Send> {
+        let context = context.clone();
+        println!(
+            "get_file_history(\"{}\", {:?}) - X-Span-ID: {:?}",
+            id,
+            limit,
+            context.x_span_id.unwrap_or(String::from("<none>")).clone()
+        );
+        Box::new(futures::failed("Generic failure".into()))
+    }
+
     fn get_release(&self, id: String, context: &Context) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!("get_release(\"{}\") - X-Span-ID: {:?}", id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
@@ -160,6 +183,17 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
+    fn get_release_history(&self, id: String, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetReleaseHistoryResponse, Error = ApiError> + Send> {
+        let context = context.clone();
+        println!(
+            "get_release_history(\"{}\", {:?}) - X-Span-ID: {:?}",
+            id,
+            limit,
+            context.x_span_id.unwrap_or(String::from("<none>")).clone()
+        );
+        Box::new(futures::failed("Generic failure".into()))
+    }
+
     fn get_stats(&self, more: Option<String>, context: &Context) -> Box<Future<Item = GetStatsResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!("get_stats({:?}) - X-Span-ID: {:?}", more, context.x_span_id.unwrap_or(String::from("<none>")).clone());
@@ -169,6 +203,17 @@ impl Api for Server {
     fn get_work(&self, id: String, context: &Context) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!("get_work(\"{}\") - X-Span-ID: {:?}", id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        Box::new(futures::failed("Generic failure".into()))
+    }
+
+    fn get_work_history(&self, id: String, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetWorkHistoryResponse, Error = ApiError> + Send> {
+        let context = context.clone();
+        println!(
+            "get_work_history(\"{}\", {:?}) - X-Span-ID: {:?}",
+            id,
+            limit,
+            context.x_span_id.unwrap_or(String::from("<none>")).clone()
+        );
         Box::new(futures::failed("Generic failure".into()))
     }
 
