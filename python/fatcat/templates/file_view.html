@@ -11,7 +11,7 @@
 
 <div class="ui stackable mobile reversed grid centered">
 <div class="one wide column"></div>
-<div class="ten wide column">
+<div class="ten wide column" style="font-size: 16px;">
 
 {% if file.extra != None %}
 <h3>Extra Metadata (raw JSON)</h3>
@@ -51,15 +51,15 @@ No known public URL, mirror, or archive for this file.
   <tbody>
     {% if file.sha1 != None %}
     <tr><td>SHA-1
-        <td><code>{{ file.sha1 }}
+        <td><small><code>{{ file.sha1 }}</code></small>
     {% endif %}
     {% if file.sha1 != None %}
     <tr><td>SHA-256
-        <td><code>{{ file.sha256 }}
+        <td><small><code>{{ file.sha256 }}</code></small>
     {% endif %}
     {% if file.md5!= None %}
     <tr><td>MD5
-        <td><code>{{ file.md5 }}
+        <td><small><code>{{ file.md5 }}</code></small>
     {% endif %}
 </table>
 

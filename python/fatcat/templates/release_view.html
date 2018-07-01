@@ -6,6 +6,7 @@
 <div class="fifteen wide column">
   <h1 class="ui header">{{ release.title }}
   <div class="sub header"><code>release {{ release.ident }}</code></div></h1>
+  <p style="font-size: larger;">
   {% if authors != [] %} by {% endif %}
   {% for contrib in authors %}
     {% if contrib.creator_id %}
@@ -19,7 +20,7 @@
 
 <div class="ui stackable mobile reversed grid centered">
 <div class="one wide column"></div>
-<div class="ten wide column">
+<div class="ten wide column" style="font-size: 16px;">
 
 {% if release.release_date != None %}<p><b>Date (published):</b> {{ release.release_date }}{% endif %}
 {% if release.doi != None %}
@@ -36,14 +37,16 @@
 linked to the same work.
 
 {% if container != None %}
-<div class="ui segment">
-  <div class="ui top attached label">
-  {% if release.release_status == 'published' %}
-    Published as a <i>{{ release.release_type }}</i> in <a href="/container/{{ container.ident }}">{{ container.name }}</a>
-  {% else %}
-    A <i>{{ release.release_type }}</i> in <a href="/container/{{ container.ident }}">{{ container.name }}</a>
-  {% endif %}
-  </div><br>
+<div class="ui attached message">
+<h4>
+{% if release.release_status == 'published' %}
+  Published in <a href="/container/{{ container.ident }}">{{ container.name }}</a>
+{% else %}
+  In <i>{{ release.release_type }}</i> in <a href="/container/{{ container.ident }}">{{ container.name }}</a>
+{% endif %}
+</h4>
+</div>
+<div class="ui segment attached">
 {% if container != None and container.issnl != None %}<b>ISSN-L:</b> {{ container.issnl }}<br>{% endif %}
 {% if release.volume != None %}<b>Volume:</b> {{ release.volume }}<br>{% endif %}
 {% if release.issue != None %}<b>Issue:</b> {{ release.issue }}<br>{% endif %}
@@ -70,7 +73,7 @@ Raw Object:
 <h3>Files</h3>
 {% if files != [] %}
 Believed to represent this release...
-<table class="ui table">
+<table class="ui compact table">
   <thead>
     <tr><th>SHA-1
         <th>Size (bytes)
@@ -79,7 +82,7 @@ Believed to represent this release...
   </thead>
   <tbody>
   {% for file in files %}
-  <tr><td><a href="/file/{{ file.ident }}">{{ file.sha1}}</a>
+  <tr><td><small><code><a href="/file/{{ file.ident }}">{{ file.sha1}}</a></code></small>
       <td>{{ file.size }}
       <td>{{ file.mimetype }}
       <td><a href="{{ file.url }}">{{ file.url.split('/')[2] }}</a>
@@ -96,7 +99,7 @@ Believed to represent this release...
 <br>
 <h3>All Contributors</h3>
 {% if release.contribs.size != 0 %}
-<table class="ui table">
+<table class="ui compact table">
   <thead>
     <tr><th>Attribution Order
         <th>Name
@@ -196,7 +199,7 @@ This release citing other releases.
 {% if container.issnl != None %}
   <i class="icon hashtag"></i>ISSN-L: &nbsp;<code>{{ container.issnl }}</code><br>
 {% endif %}
-  <i class="icon linkify"></i>Fatcat: &nbsp;<small><code><a href="/container/{{ container.ident }}">{{ container.ident }}</a></code><small><br>
+  <i class="icon linkify"></i>Fatcat: &nbsp;<small><code><a href="/container/{{ container.ident }}">{{ container.ident }}</a></code></small><br>
 </div><div class="ui segment attached">
 {% endif %}
 
