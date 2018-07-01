@@ -15,9 +15,12 @@
 
 <p><b>Given ("first") name:</b> {{ creator.given_name}}
 <p><b>Sur ("family"/"last") name:</b> {{ creator.surname }}
+
 {% if creator.extra != None %}
-<p><b>Additional Metadata (raw JSON):</b>
-&nbsp;<code>{{ creator.extra }}</code>
+<h3>Extra Metadata (raw JSON)</h3>
+{% for (key, value) in creator.extra.items() %}
+<code><b>{{ key }}:</b> {{ value }}</code><br>
+{% endfor %}
 {% endif %}
 
 <br>

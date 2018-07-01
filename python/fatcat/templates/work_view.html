@@ -14,8 +14,10 @@
 <div class="ten wide column">
 
 {% if work.extra != None %}
-<p><b>Additional Metadata (raw JSON):</b>
-&nbsp;<code>{{ work.extra }}</code>
+<h3>Extra Metadata (raw JSON)</h3>
+{% for (key, value) in work.extra.items() %}
+<code><b>{{ key }}:</b> {{ value }}</code><br>
+{% endfor %}
 {% endif %}
 
 <!--

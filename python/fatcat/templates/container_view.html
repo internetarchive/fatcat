@@ -24,9 +24,12 @@
 {% if (container.extra != None) and (container.extra.url != None) %}
 <p><b>Homepage:</b> <a href="{{ container.extra.url }}">&nbsp;<code>{{ container.extra.url }}</code></a>
 {% endif %}
+
 {% if container.extra != None %}
-<p><b>Additional Metadata (raw JSON):</b>
-&nbsp;<code>{{ container.extra }}</code>
+<h3>Extra Metadata (raw JSON)</h3>
+{% for (key, value) in container.extra.items() %}
+<code><b>{{ key }}:</b> {{ value }}</code><br>
+{% endfor %}
 {% endif %}
 
 <!--
