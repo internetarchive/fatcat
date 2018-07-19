@@ -83,8 +83,8 @@ Believed to represent this release...
   <tbody>
   {% for file in files %}
   <tr><td><small><code><a href="/file/{{ file.ident }}">{{ file.sha1}}</a></code></small>
-      <td>{{ file.size }}
-      <td>{{ file.mimetype }}
+      <td>{% if file.size != None %}{{ file.size }}{% endif %}
+      <td>{% if file.mimetype != None %}{{ file.mimetype }}{% endif %}
       <td><a href="{{ file.url }}">{{ file.url.split('/')[2] }}</a>
           <br><a href="https://web.archive.org/web/1/{{ file.url }}">web.archive.org</a>
   {% endfor %}
