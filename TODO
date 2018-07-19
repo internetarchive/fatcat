@@ -1,6 +1,43 @@
 
+## Next Up
+
+bugs:
+- UI: handle file null size field
+- not pulling in orcid given names correctly (?)
+- test: release pointing to a collection that has been deleted/redirected
+  => UI crash?
+- multiple URLs per file
+
+schema:
+- encoding of ident UUIDs (but not other UUIDs) (no schema change)
+- revisions, edits, editgroups, editor_id as UUIDs
+- external idents: citation IDs, medline (PMID), pubmed (PMCID), wikidata, CORE
+    => http://opencitations.net/index/coci
+    => but should just appear in regular dumps? shrug
+
+features:
+- fast database dump command: both changelog-based and entity-based (rust)
+
+importers:
+- citations
+- medline
+- core
+- wikidata (if they have a dump)
+
+other:
+- update RFC
+- basic python hbase/elastic matcher
+  => takes sha1 keys
+  => checks fatcat API + hbase
+  => if not matched yet, tries elastic search
+  => simple ~exact match heuristic
+  => proof-of-concept, no tests
+
+
 ## Schema / Alignment / Scope
 
+- add Open Citation Identifiers... and COCI importer script instead of refs
+  during crossref import?
 - wikidata IDs are first-class identifiers (release, container, creator)
 - switch a bunch more primary keys to UUID: revs, editor ids, edit numbers
 - multiple URLs
@@ -28,8 +65,17 @@ name ref: https://www.w3.org/International/questions/qa-personal-names
 - batch inserts automerge: create editgroup and changelog, mark all edits as
   accepted, all in a single transaction
 
+## API
+
+- hydrate entities in API
+    ? "expand" query param
+    ? "full entity" field
+    ? refactor file_releases to have objects as type
+
 ## Other
 
+- bulk endpoint auto-merge mode (huge postgres speedup on import)
+- elastic pipeline
 - kong or oauth2_proxy for auth, rate-limit, etc
 - "authn" microservice: https://keratin.tech/
 - PUT for mid-edit revisions
