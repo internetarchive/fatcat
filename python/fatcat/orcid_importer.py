@@ -32,7 +32,7 @@ class FatcatOrcidImporter(FatcatImporter):
         if name is None:
             return None
         extra = None
-        given = value_or_none(name.get('given-name'))
+        given = value_or_none(name.get('given-names'))
         sur = value_or_none(name.get('family-name'))
         display = value_or_none(name.get('credit-name'))
         if display is None:
