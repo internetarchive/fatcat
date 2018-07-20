@@ -302,9 +302,9 @@ INSERT INTO container_rev (name, publisher, issnl, abbrev, coden, extra_json) VA
     ('PLOS Medicine', 'Public Library of Science', '1549-1277', 'PLoS med.', null, '{"is_oa": true, "in_doaj": true}');
 
 INSERT INTO container_ident (id, is_live, rev_id, redirect_id) VALUES
-    ('00000000-0000-0000-1111-000000000001', true, 1, null),
-    ('00000000-0000-0000-1111-000000000002', true, 2, null),
-    ('00000000-0000-0000-1111-000000000003', true, 3, null);
+    ('00000000-0000-0000-1111-000000000001', true, 1, null), -- aaaaaaaaaaaaaeiraaaaaaaaae
+    ('00000000-0000-0000-1111-000000000002', true, 2, null), -- aaaaaaaaaaaaaeiraaaaaaaaai
+    ('00000000-0000-0000-1111-000000000003', true, 3, null); -- aaaaaaaaaaaaaeiraaaaaaaaam
 
 INSERT INTO container_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
     ('00000000-0000-0000-1111-000000000001', 1, null, 3),
@@ -317,10 +317,10 @@ INSERT INTO creator_rev (display_name, given_name, surname, orcid) VALUES
     ('John P. A. Ioannidis', 'John', 'Ioannidis', '0000-0003-3118-6859');
 
 INSERT INTO creator_ident (id, is_live, rev_id, redirect_id) VALUES
-    ('00000000-0000-0000-2222-000000000001', true, 1, null),
-    ('00000000-0000-0000-2222-000000000002', true, 2, null),
-    ('00000000-0000-0000-2222-000000000003', true, 3, null),
-    ('00000000-0000-0000-2222-000000000004', false, 2, null);
+    ('00000000-0000-0000-2222-000000000001', true, 1, null),  -- aaaaaaaaaaaaaircaaaaaaaaae
+    ('00000000-0000-0000-2222-000000000002', true, 2, null),  -- aaaaaaaaaaaaaircaaaaaaaaai
+    ('00000000-0000-0000-2222-000000000003', true, 3, null),  -- aaaaaaaaaaaaaircaaaaaaaaam
+    ('00000000-0000-0000-2222-000000000004', false, 2, null); -- aaaaaaaaaaaaaircaaaaaaaaaq
 
 INSERT INTO creator_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
     ('00000000-0000-0000-2222-000000000001', 1, null, 1),
@@ -334,9 +334,9 @@ INSERT INTO file_rev (size, sha1, sha256, md5, url, mimetype) VALUES
     (255629, '3f242a192acc258bdfdb151943419437f440c313', 'ffc1005680cb620eec4c913437dfabbf311b535cfe16cbaeb2faec1f92afc362', 'f4de91152c7ab9fdc2a128f962faebff', 'http://journals.plos.org/plosmedicine/article/file?id=10.1371/journal.pmed.0020124&type=printable', 'application/pdf');
 
 INSERT INTO file_ident (id, is_live, rev_id, redirect_id) VALUES
-    ('00000000-0000-0000-3333-000000000001', true, 1, null),
-    ('00000000-0000-0000-3333-000000000002', true, 2, null),
-    ('00000000-0000-0000-3333-000000000003', true, 3, null);
+    ('00000000-0000-0000-3333-000000000001', true, 1, null), -- aaaaaaaaaaaaamztaaaaaaaaae
+    ('00000000-0000-0000-3333-000000000002', true, 2, null), -- aaaaaaaaaaaaamztaaaaaaaaai
+    ('00000000-0000-0000-3333-000000000003', true, 3, null); -- aaaaaaaaaaaaamztaaaaaaaaam
 
 INSERT INTO file_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
     ('00000000-0000-0000-3333-000000000001', 1, null, 3),
@@ -349,9 +349,9 @@ INSERT INTO work_rev (work_type, primary_release_id) VALUES
     ('journal-article', null);
 
 INSERT INTO work_ident (id, is_live, rev_id, redirect_id) VALUES
-    ('00000000-0000-0000-5555-000000000001', true, 1, null),
-    ('00000000-0000-0000-5555-000000000002', true, 2, null),
-    ('00000000-0000-0000-5555-000000000003', true, 3, null);
+    ('00000000-0000-0000-5555-000000000001', true, 1, null), -- aaaaaaaaaaaaavkvaaaaaaaaae
+    ('00000000-0000-0000-5555-000000000002', true, 2, null), -- aaaaaaaaaaaaavkvaaaaaaaaai
+    ('00000000-0000-0000-5555-000000000003', true, 3, null); -- aaaaaaaaaaaaavkvaaaaaaaaam
 
 INSERT INTO work_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
     ('00000000-0000-0000-5555-000000000001', 1, null, 3),
@@ -364,9 +364,9 @@ INSERT INTO release_rev (work_ident_id, container_ident_id, title, release_type,
     ('00000000-0000-0000-5555-000000000003', '00000000-0000-0000-1111-000000000003', 'Why Most Published Research Findings Are False', 'journal-article', 'published', '2005-08-30', '10.1371/journal.pmed.0020124',  null, '2', '8', 'e124', 'Public Library of Science', 'en');
 
 INSERT INTO release_ident (id, is_live, rev_id, redirect_id) VALUES
-    ('00000000-0000-0000-4444-000000000001', true, 1, null),
-    ('00000000-0000-0000-4444-000000000002', true, 2, null),
-    ('00000000-0000-0000-4444-000000000003', true, 3, null);
+    ('00000000-0000-0000-4444-000000000001', true, 1, null), -- aaaaaaaaaaaaarceaaaaaaaaae
+    ('00000000-0000-0000-4444-000000000002', true, 2, null), -- aaaaaaaaaaaaarceaaaaaaaaai
+    ('00000000-0000-0000-4444-000000000003', true, 3, null); -- aaaaaaaaaaaaarceaaaaaaaaam
 
 INSERT INTO release_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
     ('00000000-0000-0000-4444-000000000001', 1, null, 3),
@@ -392,4 +392,4 @@ INSERT INTO file_release (file_rev, target_release_ident_id) VALUES
     (2, '00000000-0000-0000-4444-000000000002'),
     (3, '00000000-0000-0000-4444-000000000003');
 
-COMMIT;
+commit;

@@ -21,8 +21,8 @@ x-entity-props: &ENTITYPROPS
     enum: ["wip", "active", "redirect", "deleted"]
   ident:
     type: string
-    #format: uuid
-    example: "00000000-0000-0000-adce-000000000001"
+    #format: ident
+    example: "q3nouwy3nnbsvo3h5klxsx4a7y"
   revision:
     type: integer
     example: 42
@@ -30,7 +30,7 @@ x-entity-props: &ENTITYPROPS
   redirect:
     type: string
     #format: uuid
-    example: "00000000-0000-0000-adce-000000000002"
+    example: "q3nouwy3nnbsvo3h5klxsx4a7y"
   editgroup_id:
     type: integer
     example: 16
@@ -135,10 +135,10 @@ definitions:
         type: string
       work_id:
         type: string
-        example: "00000000-0000-0000-adce-000000000001"
+        example: "q3nouwy3nnbsvo3h5klxsx4a7y"
       container_id:
         type: string
-        example: "00000000-0000-0000-adce-000000000001"
+        example: "q3nouwy3nnbsvo3h5klxsx4a7y"
       release_type:
         type: string
         example: "book"
@@ -207,15 +207,15 @@ definitions:
           format: int64
       ident:
           type: string
-          example: "00000000-0000-0000-adce-000000000001"
+          example: "q3nouwy3nnbsvo3h5klxsx4a7y"
       revision:
           type: integer
           example: 42
           format: int64
       redirect_ident:
           type: string
-          example: "00000000-0000-0000-adce-000000000002"
-          #format: uuid
+          example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          #format: ident
       editgroup_id:
           type: integer
           example: 16
@@ -296,7 +296,7 @@ definitions:
         format: int64
       target_release_id:
         type: string
-        #format: uuid
+        #format: ident
       raw:
         type: string
       key:
@@ -319,7 +319,7 @@ definitions:
         format: int64
       creator_id:
         type: string
-        #format: uuid
+        #format: ident
       raw:
         type: string
       role:
