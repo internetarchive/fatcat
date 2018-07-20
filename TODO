@@ -2,26 +2,48 @@
 ## Next Up
 
 bugs:
-- UI: handle file null size field
-- not pulling in orcid given names correctly (?)
 - test: release pointing to a collection that has been deleted/redirected
   => UI crash?
-- multiple URLs per file
 
 schema:
-- encoding of ident UUIDs (but not other UUIDs) (no schema change)
-- revisions, edits, editgroups, editor_id as UUIDs
-- external idents: citation IDs, medline (PMID), pubmed (PMCID), wikidata, CORE
-    => http://opencitations.net/index/coci
-    => but should just appear in regular dumps? shrug
+- primary key types
+    => idents as base32
+    => editor_id and editgroup as idents
+    => revisions as UUID
+- multiple URLs per file
+    => {type, url} table; display code to chose "best"
+    => web, repo, webarchive, shadow (?)
+- external idents (as columns)
+    => pm_id
+    => pmc_id
+    => wikidata_id (creator, release, container)
+    => oclc_id
+    => viaf_id (creator)
+- release_ref
+    => 'raw'/'extra' json column
+        => title
+        => url
+        => doi
+        => etc...
+    => citaion ID (`oci_id`)
+    => release_id
+- release_contrib
+    => add 'raw' json column? or just extra?
+- abstracts
+    => new table; primary key SHA-1
+    => release has multiple: {markup, lang, abstract_sha1}
+- other changes (see notebook)
+    => parent rev in edit table
+    => timestamp columns
+- "container" -> "venue"?
 
 features:
 - fast database dump command: both changelog-based and entity-based (rust)
 
 importers:
-- citations
-- medline
+- pubmed (medline)
 - core
+- semantic scholar (up to 39 million; author de-dupe)
 - wikidata (if they have a dump)
 
 other:
@@ -36,14 +58,8 @@ other:
 
 ## Schema / Alignment / Scope
 
-- add Open Citation Identifiers... and COCI importer script instead of refs
-  during crossref import?
-- wikidata IDs are first-class identifiers (release, container, creator)
-- switch a bunch more primary keys to UUID: revs, editor ids, edit numbers
-- multiple URLs
-- make "raw" fields in release_ref/release_contrib JSON?
 - abstracts! as files? separate table? format (latex, html, etc)?
-- other identifiers (just in extra?)
+    => crossref has ~13% as JATS; plus pubmed, plus arxiv
 - work_type, release_type, release_status
 
 name ref: https://www.w3.org/International/questions/qa-personal-names
@@ -74,6 +90,7 @@ name ref: https://www.w3.org/International/questions/qa-personal-names
 
 ## Other
 
+- schema.org metadata in webface
 - bulk endpoint auto-merge mode (huge postgres speedup on import)
 - elastic pipeline
 - kong or oauth2_proxy for auth, rate-limit, etc
@@ -84,7 +101,7 @@ name ref: https://www.w3.org/International/questions/qa-personal-names
 
 review
 - what does openlibrary API look like?
-- add a 'live' (or 'immutable') flag to revision tables
+x add a 'live' (or 'immutable') flag to revision tables
 
 CSL:
 - https://citationstyles.org/
