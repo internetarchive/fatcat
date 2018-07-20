@@ -47,7 +47,7 @@ fn test_entity_gets() {
 
     check_response(
         request::get(
-            "http://localhost:9411/v0/container/00000000-0000-0000-1111-000000000002",
+            "http://localhost:9411/v0/container/aaaaaaaaaaaaaeiraaaaaaaaai",
             headers.clone(),
             &router,
         ),
@@ -57,7 +57,7 @@ fn test_entity_gets() {
 
     check_response(
         request::get(
-            "http://localhost:9411/v0/creator/00000000-0000-0000-2222-000000000001",
+            "http://localhost:9411/v0/creator/aaaaaaaaaaaaaircaaaaaaaaae",
             headers.clone(),
             &router,
         ),
@@ -67,7 +67,7 @@ fn test_entity_gets() {
 
     check_response(
         request::get(
-            "http://localhost:9411/v0/file/00000000-0000-0000-3333-000000000002",
+            "http://localhost:9411/v0/file/aaaaaaaaaaaaamztaaaaaaaaai",
             headers.clone(),
             &router,
         ),
@@ -77,7 +77,7 @@ fn test_entity_gets() {
 
     check_response(
         request::get(
-            "http://localhost:9411/v0/release/00000000-0000-0000-4444-000000000002",
+            "http://localhost:9411/v0/release/aaaaaaaaaaaaarceaaaaaaaaai",
             headers.clone(),
             &router,
         ),
@@ -87,7 +87,7 @@ fn test_entity_gets() {
 
     check_response(
         request::get(
-            "http://localhost:9411/v0/work/00000000-0000-0000-5555-000000000002",
+            "http://localhost:9411/v0/work/aaaaaaaaaaaaavkvaaaaaaaaai",
             headers.clone(),
             &router,
         ),
@@ -102,7 +102,7 @@ fn test_entity_404() {
 
     check_response(
         request::get(
-            "http://localhost:9411/v0/creator/00000000-0000-0000-2222-999999999999",
+            "http://localhost:9411/v0/creator/aaaaaaaaaaaaairceeeeeeeeee",
             headers.clone(),
             &router,
         ),
@@ -117,7 +117,7 @@ fn test_entity_history() {
 
     check_response(
         request::get(
-            "http://localhost:9411/v0/container/00000000-0000-0000-1111-000000000002/history",
+            "http://localhost:9411/v0/container/aaaaaaaaaaaaaeiraaaaaaaaai/history",
             headers.clone(),
             &router,
         ),
@@ -127,7 +127,7 @@ fn test_entity_history() {
 
     check_response(
         request::get(
-            "http://localhost:9411/v0/creator/00000000-0000-0000-2222-000000000001/history",
+            "http://localhost:9411/v0/creator/aaaaaaaaaaaaaircaaaaaaaaae/history",
             headers.clone(),
             &router,
         ),
@@ -137,7 +137,7 @@ fn test_entity_history() {
 
     check_response(
         request::get(
-            "http://localhost:9411/v0/file/00000000-0000-0000-3333-000000000002/history",
+            "http://localhost:9411/v0/file/aaaaaaaaaaaaamztaaaaaaaaai/history",
             headers.clone(),
             &router,
         ),
@@ -147,7 +147,7 @@ fn test_entity_history() {
 
     check_response(
         request::get(
-            "http://localhost:9411/v0/release/00000000-0000-0000-4444-000000000002/history",
+            "http://localhost:9411/v0/release/aaaaaaaaaaaaarceaaaaaaaaai/history",
             headers.clone(),
             &router,
         ),
@@ -157,7 +157,7 @@ fn test_entity_history() {
 
     check_response(
         request::get(
-            "http://localhost:9411/v0/work/00000000-0000-0000-5555-000000000002/history",
+            "http://localhost:9411/v0/work/aaaaaaaaaaaaavkvaaaaaaaaai/history",
             headers.clone(),
             &router,
         ),
@@ -207,7 +207,7 @@ fn test_reverse_lookups() {
 
     check_response(
         request::get(
-            "http://localhost:9411/v0/creator/00000000-0000-0000-2222-000000000002/releases",
+            "http://localhost:9411/v0/creator/aaaaaaaaaaaaaircaaaaaaaaai/releases",
             headers.clone(),
             &router,
         ),
@@ -217,7 +217,7 @@ fn test_reverse_lookups() {
 
     check_response(
         request::get(
-            "http://localhost:9411/v0/release/00000000-0000-0000-4444-000000000002/files",
+            "http://localhost:9411/v0/release/aaaaaaaaaaaaarceaaaaaaaaai/files",
             headers.clone(),
             &router,
         ),
@@ -227,7 +227,7 @@ fn test_reverse_lookups() {
 
     check_response(
         request::get(
-            "http://localhost:9411/v0/work/00000000-0000-0000-5555-000000000002/releases",
+            "http://localhost:9411/v0/work/aaaaaaaaaaaaavkvaaaaaaaaai/releases",
             headers.clone(),
             &router,
         ),
@@ -310,8 +310,8 @@ fn test_post_file() {
                 "url": "http://archive.org/asdf.txt",
                 "mimetype": "application/pdf",
                 "releases": [
-                    "00000000-0000-0000-4444-000000000001",
-                    "00000000-0000-0000-4444-000000000002"
+                    "aaaaaaaaaaaaarceaaaaaaaaae",
+                    "aaaaaaaaaaaaarceaaaaaaaaai"
                 ],
                 "extra": { "source": "speculation" }
                 }"#,
@@ -333,7 +333,7 @@ fn test_post_release() {
             // TODO: target_release_id
             r#"{"title": "secret minimal paper",
                 "release_type": "journal-article",
-                "work_id": "00000000-0000-0000-5555-000000000001"
+                "work_id": "aaaaaaaaaaaaavkvaaaaaaaaae"
                 }"#,
             &router,
         ),
@@ -367,8 +367,8 @@ fn test_post_release() {
                 "volume": "439",
                 "issue": "IV",
                 "pages": "1-399",
-                "work_id": "00000000-0000-0000-5555-000000000002",
-                "container_id": "00000000-0000-0000-1111-000000000001",
+                "work_id": "aaaaaaaaaaaaavkvaaaaaaaaai",
+                "container_id": "aaaaaaaaaaaaaeiraaaaaaaaae",
                 "refs": [{
                         "index": 3,
                         "raw": "just a string"
@@ -378,7 +378,7 @@ fn test_post_release() {
                 "contribs": [{
                         "index": 1,
                         "raw": "textual description of contributor (aka, name)",
-                        "creator_id": "00000000-0000-0000-2222-000000000001",
+                        "creator_id": "aaaaaaaaaaaaaircaaaaaaaaae",
                         "contrib_type": "author"
                     },{
                         "raw": "shorter"
@@ -505,13 +505,21 @@ fn test_changelog() {
     let (headers, router, _conn) = setup();
 
     check_response(
-        request::get("http://localhost:9411/v0/changelog", headers.clone(), &router),
+        request::get(
+            "http://localhost:9411/v0/changelog",
+            headers.clone(),
+            &router,
+        ),
         status::Ok,
         Some("editgroup_id"),
     );
 
     check_response(
-        request::get("http://localhost:9411/v0/changelog/1", headers.clone(), &router),
+        request::get(
+            "http://localhost:9411/v0/changelog/1",
+            headers.clone(),
+            &router,
+        ),
         status::Ok,
         Some("files"),
     );
@@ -527,7 +535,11 @@ fn test_stats() {
         Some("merged_editgroups"),
     );
     check_response(
-        request::get("http://localhost:9411/v0/stats?more=yes", headers.clone(), &router),
+        request::get(
+            "http://localhost:9411/v0/stats?more=yes",
+            headers.clone(),
+            &router,
+        ),
         status::Ok,
         Some("merged_editgroups"),
     );
@@ -547,8 +559,8 @@ fn test_400() {
                 "volume": "439",
                 "issue": "IV",
                 "pages": "1-399",
-                "work_id": "00000000-0000-0000-5555-00002",
-                "container_id": "00000000-0000-0000-1111-000000001",
+                "work_id": "aaaaaaaaaaaaavkvaaaaaaaaae",
+                "container_id": "aaaaaaaaaaaaaeiraaaaaae",
                 "refs": [{
                         "index": 3,
                         "raw": "just a string"
@@ -558,7 +570,7 @@ fn test_400() {
                 "contribs": [{
                         "index": 1,
                         "raw": "textual description of contributor (aka, name)",
-                        "creator_id": "00000000-0000-0000-2222-000000000001",
+                        "creator_id": "aaaaaaaaaaaaaircaaaaaaaaae",
                         "contrib_type": "author"
                     },{
                         "raw": "shorter"

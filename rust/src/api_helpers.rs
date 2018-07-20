@@ -1,8 +1,10 @@
+use data_encoding::BASE32_NOPAD;
 use database_models::*;
 use database_schema::*;
 use diesel;
 use diesel::prelude::*;
 use errors::*;
+use uuid::Uuid;
 
 pub fn get_or_create_editgroup(editor_id: i64, conn: &PgConnection) -> Result<i64> {
     // check for current active
@@ -84,4 +86,23 @@ pub fn accept_editgroup(editgroup_id: i64, conn: &PgConnection) -> Result<Change
             .execute(conn)?;
         Ok(entry)
     })
+}
+
+/// Convert fatcat IDs (base32 strings) to UUID
+pub fn fcid2uuid(fcid: &str) -> Result<Uuid> {
+    if fcid.len() != 26 {
+        return Err(ErrorKind::InvalidFatcatId(fcid.to_string()).into());
+    }
+    let mut raw = vec![0; 16];
+    BASE32_NOPAD
+        .decode_mut(fcid.to_uppercase().as_bytes(), &mut raw)
+        .map_err(|_dp| ErrorKind::InvalidFatcatId(fcid.to_string()))?;
+    // unwrap() is safe here, because we know raw is always 16 bytes
+    Ok(Uuid::from_bytes(&raw).unwrap())
+}
+
+/// Convert UUID to fatcat ID string (base32 encoded)
+pub fn uuid2fcid(id: &Uuid) -> String {
+    let raw = id.as_bytes();
+    BASE32_NOPAD.encode(raw).to_lowercase()
 }

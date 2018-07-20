@@ -33,7 +33,12 @@ mod errors {
                         Uuid(::uuid::ParseError);
                         Io(::std::io::Error) #[cfg(unix)];
                         Serde(::serde_json::Error);
-                        Base32(::data_encoding::DecodeError);
+        }
+        errors {
+            InvalidFatcatId(id: String) {
+                description("invalid fatcat identifier syntax")
+                display("invalid fatcat identifier (expect 26-char base32 encoded): {}", id)
+            }
         }
     }
 }
@@ -49,7 +54,6 @@ use dotenv::dotenv;
 use iron::middleware::AfterMiddleware;
 use iron::{Request, Response};
 use std::env;
-use data_encoding::BASE32_NOPAD;
 
 #[cfg(feature = "postgres")]
 embed_migrations!("../migrations/");
@@ -102,22 +106,4 @@ impl AfterMiddleware for XClacksOverheadMiddleware {
             .set(XClacksOverhead("GNU aaronsw, jpb".to_owned()));
         Ok(res)
     }
-}
-
-/// Convert fatcat IDs (base32 strings) to UUID
-pub fn fcid2uuid(fcid: &str) -> Result<uuid::Uuid> {
-    if fcid.len() != 20 {
-        bail!("invalid fatcat ID (expecting 20-chars of base32");
-    }
-    let mut raw = vec![0; 16];
-    BASE32_NOPAD.decode_mut(fcid.to_uppercase().as_bytes(), &mut raw)
-        .map_err(|dp| dp.error)?;
-    // unwrap() is safe here, because we know raw is always 16 bytes
-    Ok(uuid::Uuid::from_bytes(&raw).unwrap())
-}
-
-/// Convert UUID to fatcat ID string (base32 encoded)
-pub fn uuid2fcid(id: &uuid::Uuid) -> String {
-    let raw = id.as_bytes();
-    BASE32_NOPAD.encode(raw).to_lowercase()
 }

@@ -1,7 +1,7 @@
 //! API endpoint handlers
 
 use ConnectionPool;
-use api_helpers::{get_or_create_editgroup, accept_editgroup};
+use api_helpers::{accept_editgroup, get_or_create_editgroup, fcid2uuid, uuid2fcid};
 use chrono;
 use database_models::*;
 use database_schema::{changelog, container_edit, container_ident, container_rev, creator_edit,
@@ -40,7 +40,7 @@ macro_rules! entity_history_handler {
             limit: Option<i64>,
         ) -> Result<Vec<EntityHistoryEntry>> {
             let conn = self.db_pool.get().expect("db_pool error");
-            let id = uuid::Uuid::parse_str(&id)?;
+            let id = fcid2uuid(&id)?;
             let limit = limit.unwrap_or(50);
 
             let rows: Vec<(EditgroupRow, ChangelogRow, $edit_row_type)> = editgroup::table
@@ -86,8 +86,8 @@ fn container_row2entity(
     let (state, ident_id, redirect_id) = match ident {
         Some(i) => (
             Some(i.state().unwrap().shortname()),
-            Some(i.id.to_string()),
-            i.redirect_id.map(|u| u.to_string()),
+            Some(uuid2fcid(&i.id)),
+            i.redirect_id.map(|u| uuid2fcid(&u)),
         ),
         None => (None, None, None),
     };
@@ -110,8 +110,8 @@ fn creator_row2entity(ident: Option<CreatorIdentRow>, rev: CreatorRevRow) -> Res
     let (state, ident_id, redirect_id) = match ident {
         Some(i) => (
             Some(i.state().unwrap().shortname()),
-            Some(i.id.to_string()),
-            i.redirect_id.map(|u| u.to_string()),
+            Some(uuid2fcid(&i.id)),
+            i.redirect_id.map(|u| uuid2fcid(&u)),
         ),
         None => (None, None, None),
     };
@@ -137,8 +137,8 @@ fn file_row2entity(
     let (state, ident_id, redirect_id) = match ident {
         Some(i) => (
             Some(i.state().unwrap().shortname()),
-            Some(i.id.to_string()),
-            i.redirect_id.map(|u| u.to_string()),
+            Some(uuid2fcid(&i.id)),
+            i.redirect_id.map(|u| uuid2fcid(&u)),
         ),
         None => (None, None, None),
     };
@@ -147,7 +147,7 @@ fn file_row2entity(
         .filter(file_release::file_rev.eq(rev.id))
         .get_results(conn)?
         .iter()
-        .map(|r: &FileReleaseRow| r.target_release_ident_id.to_string())
+        .map(|r: &FileReleaseRow| uuid2fcid(&r.target_release_ident_id))
         .collect();
 
     Ok(FileEntity {
@@ -175,8 +175,8 @@ fn release_row2entity(
     let (state, ident_id, redirect_id) = match ident {
         Some(i) => (
             Some(i.state().unwrap().shortname()),
-            Some(i.id.to_string()),
-            i.redirect_id.map(|u| u.to_string()),
+            Some(uuid2fcid(&i.id)),
+            i.redirect_id.map(|u| uuid2fcid(&u)),
         ),
         None => (None, None, None),
     };
@@ -195,7 +195,7 @@ fn release_row2entity(
             year: r.year.clone(),
             title: r.title.clone(),
             locator: r.locator.clone(),
-            target_release_id: r.target_release_ident_id.map(|v| v.to_string()),
+            target_release_id: r.target_release_ident_id.map(|v| uuid2fcid(&v)),
         })
         .collect();
 
@@ -209,7 +209,7 @@ fn release_row2entity(
             index: c.index,
             role: c.role.clone(),
             raw: c.raw.clone(),
-            creator_id: c.creator_ident_id.map(|v| v.to_string()),
+            creator_id: c.creator_ident_id.map(|v| uuid2fcid(&v)),
         })
         .collect();
 
@@ -224,10 +224,10 @@ fn release_row2entity(
         volume: rev.volume,
         issue: rev.issue,
         pages: rev.pages,
-        container_id: rev.container_ident_id.map(|u| u.to_string()),
+        container_id: rev.container_ident_id.map(|u| uuid2fcid(&u)),
         publisher: rev.publisher,
         language: rev.language,
-        work_id: Some(rev.work_ident_id.to_string()),
+        work_id: Some(uuid2fcid(&rev.work_ident_id)),
         refs: Some(refs),
         contribs: Some(contribs),
         state: state,
@@ -243,8 +243,8 @@ fn work_row2entity(ident: Option<WorkIdentRow>, rev: WorkRevRow) -> Result<WorkE
     let (state, ident_id, redirect_id) = match ident {
         Some(i) => (
             Some(i.state().unwrap().shortname()),
-            Some(i.id.to_string()),
-            i.redirect_id.map(|u| u.to_string()),
+            Some(uuid2fcid(&i.id)),
+            i.redirect_id.map(|u| uuid2fcid(&u)),
         ),
         None => (None, None, None),
     };
@@ -262,7 +262,7 @@ fn work_row2entity(ident: Option<WorkIdentRow>, rev: WorkRevRow) -> Result<WorkE
 impl Server {
     pub fn get_container_handler(&self, id: String) -> Result<ContainerEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let id = uuid::Uuid::parse_str(&id)?;
+        let id = fcid2uuid(&id)?;
 
         // TODO: handle Deletions
         let (ident, rev): (ContainerIdentRow, ContainerRevRow) = container_ident::table
@@ -288,7 +288,7 @@ impl Server {
 
     pub fn get_creator_handler(&self, id: String) -> Result<CreatorEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let id = uuid::Uuid::parse_str(&id)?;
+        let id = fcid2uuid(&id)?;
 
         let (ident, rev): (CreatorIdentRow, CreatorRevRow) = creator_ident::table
             .find(id)
@@ -313,7 +313,7 @@ impl Server {
 
     pub fn get_creator_releases_handler(&self, id: String) -> Result<Vec<ReleaseEntity>> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let id = uuid::Uuid::parse_str(&id)?;
+        let id = fcid2uuid(&id)?;
 
         // TODO: some kind of unique or group-by?
         let rows: Vec<(ReleaseRevRow, ReleaseIdentRow, ReleaseContribRow)> = release_rev::table
@@ -331,7 +331,7 @@ impl Server {
 
     pub fn get_file_handler(&self, id: String) -> Result<FileEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let id = uuid::Uuid::parse_str(&id)?;
+        let id = fcid2uuid(&id)?;
 
         let (ident, rev): (FileIdentRow, FileRevRow) = file_ident::table
             .find(id)
@@ -356,7 +356,7 @@ impl Server {
 
     pub fn get_release_handler(&self, id: String) -> Result<ReleaseEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let id = uuid::Uuid::parse_str(&id)?;
+        let id = fcid2uuid(&id)?;
 
         let (ident, rev): (ReleaseIdentRow, ReleaseRevRow) = release_ident::table
             .find(id)
@@ -381,7 +381,7 @@ impl Server {
 
     pub fn get_release_files_handler(&self, id: String) -> Result<Vec<FileEntity>> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let id = uuid::Uuid::parse_str(&id)?;
+        let id = fcid2uuid(&id)?;
 
         let rows: Vec<(FileRevRow, FileIdentRow, FileReleaseRow)> = file_rev::table
             .inner_join(file_ident::table)
@@ -398,7 +398,7 @@ impl Server {
 
     pub fn get_work_handler(&self, id: String) -> Result<WorkEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let id = uuid::Uuid::parse_str(&id)?;
+        let id = fcid2uuid(&id)?;
 
         let (ident, rev): (WorkIdentRow, WorkRevRow) = work_ident::table
             .find(id)
@@ -410,7 +410,7 @@ impl Server {
 
     pub fn get_work_releases_handler(&self, id: String) -> Result<Vec<ReleaseEntity>> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let id = uuid::Uuid::parse_str(&id)?;
+        let id = fcid2uuid(&id)?;
 
         let rows: Vec<(ReleaseRevRow, ReleaseIdentRow)> = release_rev::table
             .inner_join(release_ident::table)
@@ -559,7 +559,8 @@ impl Server {
                         .iter()
                         .map(|r| FileReleaseRow {
                             file_rev: edit.rev_id.unwrap(),
-                            target_release_ident_id: uuid::Uuid::parse_str(r).expect("valid UUID"),
+                            target_release_ident_id: fcid2uuid(r)
+                                .expect("invalid fatcat identifier"),
                         })
                         .collect();
                     let release_rows: Vec<FileReleaseRow> = insert_into(file_release::table)
@@ -595,7 +596,7 @@ impl Server {
         };
 
         let work_id = match entity.work_id {
-            Some(work_id) => uuid::Uuid::parse_str(&work_id)?,
+            Some(work_id) => fcid2uuid(&work_id)?,
             None => {
                 // If a work_id wasn't passed, create a new work under the current editgroup
                 let work_model = models::WorkEntity {
@@ -608,12 +609,12 @@ impl Server {
                     extra: None,
                 };
                 let new_entity = self.create_work_handler(work_model, Some(&conn))?;
-                uuid::Uuid::parse_str(&new_entity.ident)?
+                fcid2uuid(&new_entity.ident)?
             }
         };
 
         let container_id: Option<uuid::Uuid> = match entity.container_id {
-            Some(id) => Some(uuid::Uuid::parse_str(&id)?),
+            Some(id) => Some(fcid2uuid(&id)?),
             None => None,
         };
 
@@ -657,7 +658,7 @@ impl Server {
                             release_rev: edit.rev_id.unwrap(),
                             target_release_ident_id: r.target_release_id
                                 .clone()
-                                .map(|v| uuid::Uuid::parse_str(&v).expect("valid UUID")),
+                                .map(|v| fcid2uuid(&v).expect("valid fatcat identifier")),
                             index: r.index,
                             key: r.key.clone(),
                             container_title: r.container_title.clone(),
@@ -688,7 +689,7 @@ impl Server {
                             release_rev: edit.rev_id.unwrap(),
                             creator_ident_id: c.creator_id
                                 .clone()
-                                .map(|v| uuid::Uuid::parse_str(&v).expect("valid UUID")),
+                                .map(|v| fcid2uuid(&v).expect("valid fatcat identifier")),
                             index: c.index,
                             role: c.role.clone(),
                             raw: c.raw.clone(),
@@ -1005,4 +1006,3 @@ impl Server {
     entity_history_handler!(get_release_history_handler, ReleaseEditRow, release_edit);
     entity_history_handler!(get_work_history_handler, WorkEditRow, work_edit);
 }
-

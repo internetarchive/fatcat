@@ -1,3 +1,4 @@
+use api_helpers::uuid2fcid;
 use chrono;
 use database_schema::*;
 use errors::*;
@@ -54,8 +55,8 @@ macro_rules! entity_structs {
                 Ok(EntityEdit {
                     editgroup_id: self.editgroup_id,
                     revision: self.rev_id,
-                    redirect_ident: self.redirect_id.map(|v| v.to_string()),
-                    ident: self.ident_id.to_string(),
+                    redirect_ident: self.redirect_id.map(|v| uuid2fcid(&v)),
+                    ident: uuid2fcid(&self.ident_id),
                     edit_id: self.id,
                     extra: self.extra_json,
                 })

@@ -1,7 +1,7 @@
 //! API endpoint handlers
 
-use errors::*;
 use api_server::Server;
+use errors::*;
 use fatcat_api::models;
 use fatcat_api::models::*;
 use fatcat_api::*;
@@ -32,6 +32,8 @@ macro_rules! wrap_entity_handlers {
                     $get_resp::NotFound(ErrorResponse { message: format!("No such entity {}: {}", stringify!($model), id) }),
                 Err(Error(ErrorKind::Uuid(e), _)) =>
                     $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::InvalidFatcatId(e), _)) =>
+                    $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
                     $get_resp::GenericError(ErrorResponse { message: e.to_string() })
@@ -51,6 +53,8 @@ macro_rules! wrap_entity_handlers {
                 Err(Error(ErrorKind::Diesel(e), _)) =>
                     $post_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::Uuid(e), _)) =>
+                    $post_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::InvalidFatcatId(e), _)) =>
                     $post_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
@@ -72,6 +76,8 @@ macro_rules! wrap_entity_handlers {
                     $post_batch_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::Uuid(e), _)) =>
                     $post_batch_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::InvalidFatcatId(e), _)) =>
+                    $post_batch_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
                     $post_batch_resp::GenericError(ErrorResponse { message: e.to_string() })
@@ -92,6 +98,8 @@ macro_rules! wrap_entity_handlers {
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
                     $get_history_resp::NotFound(ErrorResponse { message: format!("No such entity {}: {}", stringify!($model), id) }),
                 Err(Error(ErrorKind::Uuid(e), _)) =>
+                    $get_history_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::InvalidFatcatId(e), _)) =>
                     $get_history_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
@@ -259,17 +267,18 @@ impl Api for Server {
         id: i64,
         _context: &Context,
     ) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send> {
-
         let ret = match self.accept_editgroup_handler(id) {
             Ok(()) => AcceptEditgroupResponse::MergedSuccessfully(Success {
                 message: "horray!".to_string(),
             }),
-            Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
-                AcceptEditgroupResponse::NotFound(
-                    ErrorResponse { message: format!("No such editgroup: {}", id) }),
-            Err(e) =>
-                AcceptEditgroupResponse::GenericError(
-                    ErrorResponse { message: e.to_string() }),
+            Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
+                AcceptEditgroupResponse::NotFound(ErrorResponse {
+                    message: format!("No such editgroup: {}", id),
+                })
+            }
+            Err(e) => AcceptEditgroupResponse::GenericError(ErrorResponse {
+                message: e.to_string(),
+            }),
         };
         Box::new(futures::done(Ok(ret)))
     }
@@ -298,7 +307,6 @@ impl Api for Server {
         entity: models::Editgroup,
         _context: &Context,
     ) -> Box<Future<Item = CreateEditgroupResponse, Error = ApiError> + Send> {
-
         let ret = match self.create_editgroup_handler(entity) {
             Ok(eg) =>
                 CreateEditgroupResponse::SuccessfullyCreated(eg),
