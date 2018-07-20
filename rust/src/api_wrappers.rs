@@ -33,7 +33,8 @@ macro_rules! wrap_entity_handlers {
                 Err(Error(ErrorKind::Uuid(e), _)) =>
                     $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::InvalidFatcatId(e), _)) =>
-                    $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                    $get_resp::BadRequest(ErrorResponse {
+                        message: ErrorKind::InvalidFatcatId(e).to_string() }),
                 Err(e) => {
                     error!("{}", e);
                     $get_resp::GenericError(ErrorResponse { message: e.to_string() })
@@ -55,7 +56,8 @@ macro_rules! wrap_entity_handlers {
                 Err(Error(ErrorKind::Uuid(e), _)) =>
                     $post_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::InvalidFatcatId(e), _)) =>
-                    $post_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                    $post_resp::BadRequest(ErrorResponse {
+                        message: ErrorKind::InvalidFatcatId(e).to_string() }),
                 Err(e) => {
                     error!("{}", e);
                     $post_resp::GenericError(ErrorResponse { message: e.to_string() })
@@ -77,7 +79,8 @@ macro_rules! wrap_entity_handlers {
                 Err(Error(ErrorKind::Uuid(e), _)) =>
                     $post_batch_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::InvalidFatcatId(e), _)) =>
-                    $post_batch_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                    $post_batch_resp::BadRequest(ErrorResponse {
+                        message: ErrorKind::InvalidFatcatId(e).to_string() }),
                 Err(e) => {
                     error!("{}", e);
                     $post_batch_resp::GenericError(ErrorResponse { message: e.to_string() })
@@ -100,7 +103,8 @@ macro_rules! wrap_entity_handlers {
                 Err(Error(ErrorKind::Uuid(e), _)) =>
                     $get_history_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::InvalidFatcatId(e), _)) =>
-                    $get_history_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                    $get_history_resp::BadRequest(ErrorResponse {
+                        message: ErrorKind::InvalidFatcatId(e).to_string() }),
                 Err(e) => {
                     error!("{}", e);
                     $get_history_resp::GenericError(ErrorResponse { message: e.to_string() })
