@@ -268,10 +268,10 @@ impl Api for Server {
 
     fn accept_editgroup(
         &self,
-        id: i64,
+        id: String,
         _context: &Context,
     ) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send> {
-        let ret = match self.accept_editgroup_handler(id) {
+        let ret = match self.accept_editgroup_handler(id.clone()) {
             Ok(()) => AcceptEditgroupResponse::MergedSuccessfully(Success {
                 message: "horray!".to_string(),
             }),
@@ -289,10 +289,10 @@ impl Api for Server {
 
     fn get_editgroup(
         &self,
-        id: i64,
+        id: String,
         _context: &Context,
     ) -> Box<Future<Item = GetEditgroupResponse, Error = ApiError> + Send> {
-        let ret = match self.get_editgroup_handler(id) {
+        let ret = match self.get_editgroup_handler(id.clone()) {
             Ok(entity) =>
                 GetEditgroupResponse::FoundEntity(entity),
             Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>

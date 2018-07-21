@@ -11,8 +11,8 @@ use uuid::Uuid;
 
 pub enum EntityState {
     WorkInProgress,
-    Active(i64),
-    Redirect(Uuid, i64),
+    Active(Uuid),
+    Redirect(Uuid, Uuid),
     Deleted,
 }
 
@@ -42,9 +42,9 @@ macro_rules! entity_structs {
         #[table_name = $edit_table]
         pub struct $edit_struct {
             pub id: i64,
-            pub editgroup_id: i64,
+            pub editgroup_id: Uuid,
             pub ident_id: Uuid,
-            pub rev_id: Option<i64>,
+            pub rev_id: Option<Uuid>,
             pub redirect_id: Option<Uuid>,
             pub extra_json: Option<serde_json::Value>,
         }
@@ -53,8 +53,8 @@ macro_rules! entity_structs {
             /// Go from a row (SQL model) to an API model
             fn to_model(self) -> Result<EntityEdit> {
                 Ok(EntityEdit {
-                    editgroup_id: self.editgroup_id,
-                    revision: self.rev_id,
+                    editgroup_id: uuid2fcid(&self.editgroup_id),
+                    revision: self.rev_id.map(|v| uuid2fcid(&v)),
                     redirect_ident: self.redirect_id.map(|v| uuid2fcid(&v)),
                     ident: uuid2fcid(&self.ident_id),
                     edit_id: self.id,
@@ -68,7 +68,7 @@ macro_rules! entity_structs {
         pub struct $ident_struct {
             pub id: Uuid,
             pub is_live: bool,
-            pub rev_id: Option<i64>,
+            pub rev_id: Option<Uuid>,
             pub redirect_id: Option<Uuid>,
         }
 
@@ -91,7 +91,7 @@ macro_rules! entity_structs {
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
 #[table_name = "container_rev"]
 pub struct ContainerRevRow {
-    pub id: i64,
+    pub id: Uuid,
     pub extra_json: Option<serde_json::Value>,
     pub name: String,
     pub publisher: Option<String>,
@@ -110,7 +110,7 @@ entity_structs!(
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
 #[table_name = "creator_rev"]
 pub struct CreatorRevRow {
-    pub id: i64,
+    pub id: Uuid,
     pub extra_json: Option<serde_json::Value>,
     pub display_name: String,
     pub given_name: Option<String>,
@@ -128,7 +128,7 @@ entity_structs!(
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
 #[table_name = "file_rev"]
 pub struct FileRevRow {
-    pub id: i64,
+    pub id: Uuid,
     pub extra_json: Option<serde_json::Value>,
     pub size: Option<i64>,
     pub sha1: Option<String>,
@@ -143,7 +143,7 @@ entity_structs!("file_edit", FileEditRow, "file_ident", FileIdentRow);
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
 #[table_name = "release_rev"]
 pub struct ReleaseRevRow {
-    pub id: i64,
+    pub id: Uuid,
     pub extra_json: Option<serde_json::Value>,
     pub work_ident_id: Uuid,
     pub container_ident_id: Option<Uuid>,
@@ -170,7 +170,7 @@ entity_structs!(
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
 #[table_name = "work_rev"]
 pub struct WorkRevRow {
-    pub id: i64,
+    pub id: Uuid,
     pub extra_json: Option<serde_json::Value>,
     pub work_type: Option<String>,
     pub primary_release_id: Option<Uuid>,
@@ -182,7 +182,7 @@ entity_structs!("work_edit", WorkEditRow, "work_ident", WorkIdentRow);
 #[table_name = "release_contrib"]
 pub struct ReleaseContribRow {
     pub id: i64,
-    pub release_rev: i64,
+    pub release_rev: Uuid,
     pub creator_ident_id: Option<Uuid>,
     pub role: Option<String>,
     pub index: Option<i64>,
@@ -192,7 +192,7 @@ pub struct ReleaseContribRow {
 #[derive(Debug, Insertable)]
 #[table_name = "release_contrib"]
 pub struct ReleaseContribNewRow {
-    pub release_rev: i64,
+    pub release_rev: Uuid,
     pub creator_ident_id: Option<Uuid>,
     pub role: Option<String>,
     pub index: Option<i64>,
@@ -203,7 +203,7 @@ pub struct ReleaseContribNewRow {
 #[table_name = "release_ref"]
 pub struct ReleaseRefRow {
     pub id: i64,
-    pub release_rev: i64,
+    pub release_rev: Uuid,
     pub target_release_ident_id: Option<Uuid>,
     pub index: Option<i64>,
     pub key: Option<String>,
@@ -217,7 +217,7 @@ pub struct ReleaseRefRow {
 #[derive(Debug, Insertable, AsChangeset)]
 #[table_name = "release_ref"]
 pub struct ReleaseRefNewRow {
-    pub release_rev: i64,
+    pub release_rev: Uuid,
     pub target_release_ident_id: Option<Uuid>,
     pub index: Option<i64>,
     pub key: Option<String>,
@@ -231,16 +231,16 @@ pub struct ReleaseRefNewRow {
 #[derive(Debug, Queryable, Insertable, Associations, AsChangeset)]
 #[table_name = "file_release"]
 pub struct FileReleaseRow {
-    pub file_rev: i64,
+    pub file_rev: Uuid,
     pub target_release_ident_id: Uuid,
 }
 
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
 #[table_name = "editgroup"]
 pub struct EditgroupRow {
-    pub id: i64,
+    pub id: Uuid,
     pub extra_json: Option<serde_json::Value>,
-    pub editor_id: i64,
+    pub editor_id: Uuid,
     pub description: Option<String>,
 }
 
@@ -249,8 +249,8 @@ impl EditgroupRow {
     /// eg, entity history queries (where we already have the entity edit we want)
     pub fn to_model_partial(self) -> Editgroup {
         Editgroup {
-            id: Some(self.id),
-            editor_id: self.editor_id,
+            id: Some(uuid2fcid(&self.id)),
+            editor_id: uuid2fcid(&self.editor_id),
             description: self.description,
             extra: self.extra_json,
             edits: None,
@@ -261,17 +261,17 @@ impl EditgroupRow {
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
 #[table_name = "editor"]
 pub struct EditorRow {
-    pub id: i64,
+    pub id: Uuid,
     pub username: String,
     pub is_admin: bool,
-    pub active_editgroup_id: Option<i64>,
+    pub active_editgroup_id: Option<Uuid>,
 }
 
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
 #[table_name = "changelog"]
 pub struct ChangelogRow {
     pub id: i64,
-    pub editgroup_id: i64,
+    pub editgroup_id: Uuid,
     pub timestamp: chrono::NaiveDateTime,
 }
 
@@ -279,7 +279,7 @@ impl ChangelogRow {
     pub fn to_model(self) -> ChangelogEntry {
         ChangelogEntry {
             index: self.id,
-            editgroup_id: self.editgroup_id,
+            editgroup_id: uuid2fcid(&self.editgroup_id),
             editgroup: None,
             timestamp: chrono::DateTime::from_utc(self.timestamp, chrono::Utc),
         }

@@ -13,7 +13,7 @@ use diesel::{self, insert_into};
 use errors::*;
 use fatcat_api::models;
 use fatcat_api::models::*;
-use uuid;
+use uuid::Uuid;
 
 type DbConn = diesel::r2d2::PooledConnection<diesel::r2d2::ConnectionManager<diesel::PgConnection>>;
 
@@ -99,7 +99,7 @@ fn container_row2entity(
         coden: rev.coden,
         state: state,
         ident: ident_id,
-        revision: Some(rev.id),
+        revision: Some(uuid2fcid(&rev.id)),
         redirect: redirect_id,
         extra: rev.extra_json,
         editgroup_id: None,
@@ -122,7 +122,7 @@ fn creator_row2entity(ident: Option<CreatorIdentRow>, rev: CreatorRevRow) -> Res
         orcid: rev.orcid,
         state: state,
         ident: ident_id,
-        revision: Some(rev.id),
+        revision: Some(uuid2fcid(&rev.id)),
         redirect: redirect_id,
         editgroup_id: None,
         extra: rev.extra_json,
@@ -160,7 +160,7 @@ fn file_row2entity(
         releases: Some(releases),
         state: state,
         ident: ident_id,
-        revision: Some(rev.id),
+        revision: Some(uuid2fcid(&rev.id)),
         redirect: redirect_id,
         editgroup_id: None,
         extra: rev.extra_json,
@@ -232,7 +232,7 @@ fn release_row2entity(
         contribs: Some(contribs),
         state: state,
         ident: ident_id,
-        revision: Some(rev.id),
+        revision: Some(uuid2fcid(&rev.id)),
         redirect: redirect_id,
         editgroup_id: None,
         extra: rev.extra_json,
@@ -252,7 +252,7 @@ fn work_row2entity(ident: Option<WorkIdentRow>, rev: WorkRevRow) -> Result<WorkE
         work_type: rev.work_type,
         state: state,
         ident: ident_id,
-        revision: Some(rev.id),
+        revision: Some(uuid2fcid(&rev.id)),
         redirect: redirect_id,
         editgroup_id: None,
         extra: rev.extra_json,
@@ -439,10 +439,10 @@ impl Server {
             Some(ref c) => c,
             None => conn.unwrap(),
         };
-        let editor_id = 1; // TODO: auth
-        let editgroup_id = match entity.editgroup_id {
+        let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001")?; // TODO: auth
+        let editgroup_id: Uuid = match entity.editgroup_id {
             None => get_or_create_editgroup(editor_id, &conn)?,
-            Some(param) => param as i64,
+            Some(param) => fcid2uuid(&param)?,
         };
 
         let edit: ContainerEditRow = diesel::sql_query(
@@ -461,7 +461,7 @@ impl Server {
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.abbrev)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.coden)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
-            .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
+            .bind::<diesel::sql_types::Uuid, _>(editgroup_id)
             .get_result(conn)?;
 
         edit.to_model()
@@ -481,10 +481,10 @@ impl Server {
             Some(ref c) => c,
             None => conn.unwrap(),
         };
-        let editor_id = 1; // TODO: auth
+        let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001")?; // TODO: auth
         let editgroup_id = match entity.editgroup_id {
             None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
-            Some(param) => param as i64,
+            Some(param) => fcid2uuid(&param)?,
         };
 
         let edit: CreatorEditRow = diesel::sql_query(
@@ -502,7 +502,7 @@ impl Server {
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.surname)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.orcid)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
-            .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
+            .bind::<diesel::sql_types::Uuid, _>(editgroup_id)
             .get_result(conn)?;
 
         edit.to_model()
@@ -522,10 +522,10 @@ impl Server {
             Some(ref c) => c,
             None => conn.unwrap(),
         };
-        let editor_id = 1; // TODO: auth
+        let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001")?; // TODO: auth
         let editgroup_id = match entity.editgroup_id {
             None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
-            Some(param) => param as i64,
+            Some(param) => fcid2uuid(&param)?,
         };
 
         let edit: FileEditRow =
@@ -546,7 +546,7 @@ impl Server {
                 .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.url)
                 .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.mimetype)
                 .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
-                .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
+                .bind::<diesel::sql_types::Uuid, _>(editgroup_id)
                 .get_result(conn)?;
 
         let _releases: Option<Vec<FileReleaseRow>> = match entity.releases {
@@ -589,10 +589,10 @@ impl Server {
             Some(ref c) => c,
             None => conn.unwrap(),
         };
-        let editor_id = 1; // TODO: auth
+        let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001")?; // TODO: auth
         let editgroup_id = match entity.editgroup_id {
             None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
-            Some(param) => param as i64,
+            Some(param) => fcid2uuid(&param)?,
         };
 
         let work_id = match entity.work_id {
@@ -605,7 +605,7 @@ impl Server {
                     revision: None,
                     redirect: None,
                     state: None,
-                    editgroup_id: Some(editgroup_id),
+                    editgroup_id: Some(uuid2fcid(&editgroup_id)),
                     extra: None,
                 };
                 let new_entity = self.create_work_handler(work_model, Some(&conn))?;
@@ -613,7 +613,7 @@ impl Server {
             }
         };
 
-        let container_id: Option<uuid::Uuid> = match entity.container_id {
+        let container_id: Option<Uuid> = match entity.container_id {
             Some(id) => Some(fcid2uuid(&id)?),
             None => None,
         };
@@ -643,7 +643,7 @@ impl Server {
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.publisher)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.language)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
-            .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
+            .bind::<diesel::sql_types::Uuid, _>(editgroup_id)
             .get_result(conn)?;
 
         let _refs: Option<Vec<ReleaseRefRow>> = match entity.refs {
@@ -722,10 +722,10 @@ impl Server {
             None => conn.unwrap(),
         };
 
-        let editor_id = 1; // TODO: auth
+        let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001")?; // TODO: auth
         let editgroup_id = match entity.editgroup_id {
             None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
-            Some(param) => param as i64,
+            Some(param) => fcid2uuid(&param)?,
         };
 
         let edit: WorkEditRow =
@@ -741,15 +741,15 @@ impl Server {
             RETURNING *",
             ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.work_type)
                 .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
-                .bind::<diesel::sql_types::BigInt, _>(editgroup_id)
+                .bind::<diesel::sql_types::Uuid, _>(editgroup_id)
                 .get_result(conn)?;
 
         edit.to_model()
     }
 
-    pub fn accept_editgroup_handler(&self, id: i64) -> Result<()> {
+    pub fn accept_editgroup_handler(&self, id: String) -> Result<()> {
         let conn = self.db_pool.get().expect("db_pool error");
-        accept_editgroup(id as i64, &conn)?;
+        accept_editgroup(fcid2uuid(&id)?, &conn)?;
         Ok(())
     }
 
@@ -758,7 +758,7 @@ impl Server {
 
         let row: EditgroupRow = insert_into(editgroup::table)
             .values((
-                editgroup::editor_id.eq(entity.editor_id as i64),
+                editgroup::editor_id.eq(fcid2uuid(&entity.editor_id)?),
                 editgroup::description.eq(entity.description),
                 editgroup::extra_json.eq(entity.extra),
             ))
@@ -766,18 +766,19 @@ impl Server {
             .expect("error creating edit group");
 
         Ok(Editgroup {
-            id: Some(row.id),
-            editor_id: row.editor_id,
+            id: Some(uuid2fcid(&row.id)),
+            editor_id: uuid2fcid(&row.editor_id),
             description: row.description,
             edits: None,
             extra: row.extra_json,
         })
     }
 
-    pub fn get_editgroup_handler(&self, id: i64) -> Result<Editgroup> {
+    pub fn get_editgroup_handler(&self, id: String) -> Result<Editgroup> {
         let conn = self.db_pool.get().expect("db_pool error");
 
-        let row: EditgroupRow = editgroup::table.find(id as i64).first(&conn)?;
+        let id = fcid2uuid(&id)?;
+        let row: EditgroupRow = editgroup::table.find(id).first(&conn)?;
 
         let edits = EditgroupEdits {
             containers: Some(
@@ -823,8 +824,8 @@ impl Server {
         };
 
         let eg = Editgroup {
-            id: Some(row.id),
-            editor_id: row.editor_id,
+            id: Some(uuid2fcid(&row.id)),
+            editor_id: uuid2fcid(&row.editor_id),
             description: row.description,
             edits: Some(edits),
             extra: row.extra_json,
@@ -832,26 +833,25 @@ impl Server {
         Ok(eg)
     }
 
-    pub fn get_editor_handler(&self, username: String) -> Result<Editor> {
+    pub fn get_editor_handler(&self, id: String) -> Result<Editor> {
         let conn = self.db_pool.get().expect("db_pool error");
 
-        let row: EditorRow = editor::table
-            .filter(editor::username.eq(&username))
-            .first(&conn)?;
+        let id = fcid2uuid(&id)?;
+        let row: EditorRow = editor::table.find(id).first(&conn)?;
 
         let ed = Editor {
+            id: Some(uuid2fcid(&row.id)),
             username: row.username,
         };
         Ok(ed)
     }
 
-    pub fn editor_changelog_get_handler(&self, username: String) -> Result<Vec<ChangelogEntry>> {
+    pub fn editor_changelog_get_handler(&self, id: String) -> Result<Vec<ChangelogEntry>> {
         let conn = self.db_pool.get().expect("db_pool error");
 
+        let id = fcid2uuid(&id)?;
         // TODO: single query
-        let editor: EditorRow = editor::table
-            .filter(editor::username.eq(username))
-            .first(&conn)?;
+        let editor: EditorRow = editor::table.find(id).first(&conn)?;
         let changes: Vec<(ChangelogRow, EditgroupRow)> = changelog::table
             .inner_join(editgroup::table)
             .filter(editgroup::editor_id.eq(editor.id))
@@ -862,7 +862,7 @@ impl Server {
             .map(|(cl_row, eg_row)| ChangelogEntry {
                 index: cl_row.id,
                 editgroup: Some(eg_row.to_model_partial()),
-                editgroup_id: cl_row.editgroup_id,
+                editgroup_id: uuid2fcid(&cl_row.editgroup_id),
                 timestamp: chrono::DateTime::from_utc(cl_row.timestamp, chrono::Utc),
             })
             .collect();
@@ -884,7 +884,7 @@ impl Server {
             .map(|(cl_row, eg_row)| ChangelogEntry {
                 index: cl_row.id,
                 editgroup: Some(eg_row.to_model_partial()),
-                editgroup_id: cl_row.editgroup_id,
+                editgroup_id: uuid2fcid(&cl_row.editgroup_id),
                 timestamp: chrono::DateTime::from_utc(cl_row.timestamp, chrono::Utc),
             })
             .collect();
@@ -895,7 +895,7 @@ impl Server {
         let conn = self.db_pool.get().expect("db_pool error");
 
         let cl_row: ChangelogRow = changelog::table.find(id).first(&conn)?;
-        let editgroup = self.get_editgroup_handler(cl_row.editgroup_id)?;
+        let editgroup = self.get_editgroup_handler(uuid2fcid(&cl_row.editgroup_id))?;
 
         let mut entry = cl_row.to_model();
         entry.editgroup = Some(editgroup);

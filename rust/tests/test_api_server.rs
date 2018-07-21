@@ -3,6 +3,7 @@ extern crate fatcat;
 extern crate fatcat_api;
 extern crate iron;
 extern crate iron_test;
+extern crate uuid;
 
 use diesel::prelude::*;
 use fatcat::api_helpers::*;
@@ -11,6 +12,7 @@ use iron::headers::ContentType;
 use iron::mime::Mime;
 use iron::{status, Headers};
 use iron_test::{request, response};
+use uuid::Uuid;
 
 fn setup() -> (
     Headers,
@@ -416,7 +418,8 @@ fn test_post_work() {
 fn test_accept_editgroup() {
     let (headers, router, conn) = setup();
 
-    let editgroup_id = get_or_create_editgroup(1, &conn).unwrap();
+    let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
+    let editgroup_id = get_or_create_editgroup(editor_id, &conn).unwrap();
 
     let c: i64 = container_ident::table
         .filter(container_ident::is_live.eq(false))
@@ -436,8 +439,8 @@ fn test_accept_editgroup() {
             "http://localhost:9411/v0/container",
             headers.clone(),
             &format!(
-                "{{\"name\": \"test journal 1\", \"editgroup_id\": {}}}",
-                editgroup_id
+                "{{\"name\": \"test journal 1\", \"editgroup_id\": \"{}\"}}",
+                uuid2fcid(&editgroup_id)
             ),
             &router,
         ),
@@ -449,8 +452,8 @@ fn test_accept_editgroup() {
             "http://localhost:9411/v0/container",
             headers.clone(),
             &format!(
-                "{{\"name\": \"test journal 2\", \"editgroup_id\": {}}}",
-                editgroup_id
+                "{{\"name\": \"test journal 2\", \"editgroup_id\": \"{}\"}}",
+                uuid2fcid(&editgroup_id)
             ),
             &router,
         ),
@@ -467,7 +470,10 @@ fn test_accept_editgroup() {
 
     check_response(
         request::get(
-            &format!("http://localhost:9411/v0/editgroup/{}", editgroup_id),
+            &format!(
+                "http://localhost:9411/v0/editgroup/{}",
+                uuid2fcid(&editgroup_id)
+            ),
             headers.clone(),
             &router,
         ),
@@ -477,7 +483,10 @@ fn test_accept_editgroup() {
 
     check_response(
         request::post(
-            &format!("http://localhost:9411/v0/editgroup/{}/accept", editgroup_id),
+            &format!(
+                "http://localhost:9411/v0/editgroup/{}/accept",
+                uuid2fcid(&editgroup_id)
+            ),
             headers.clone(),
             "",
             &router,

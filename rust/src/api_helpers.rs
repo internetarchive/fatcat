@@ -6,7 +6,7 @@ use diesel::prelude::*;
 use errors::*;
 use uuid::Uuid;
 
-pub fn get_or_create_editgroup(editor_id: i64, conn: &PgConnection) -> Result<i64> {
+pub fn get_or_create_editgroup(editor_id: Uuid, conn: &PgConnection) -> Result<Uuid> {
     // check for current active
     let ed_row: EditorRow = editor::table.find(editor_id).first(conn)?;
     if let Some(current) = ed_row.active_editgroup_id {
@@ -25,7 +25,7 @@ pub fn get_or_create_editgroup(editor_id: i64, conn: &PgConnection) -> Result<i6
     })
 }
 
-pub fn accept_editgroup(editgroup_id: i64, conn: &PgConnection) -> Result<ChangelogRow> {
+pub fn accept_editgroup(editgroup_id: Uuid, conn: &PgConnection) -> Result<ChangelogRow> {
     conn.build_transaction().run(|| {
         // check that we haven't accepted already (in changelog)
         // NB: could leave this to a UNIQUE constraint
@@ -34,7 +34,10 @@ pub fn accept_editgroup(editgroup_id: i64, conn: &PgConnection) -> Result<Change
             .count()
             .get_result(conn)?;
         if count > 0 {
-            bail!("editgroup {} has already been accepted", editgroup_id);
+            bail!(
+                "editgroup {} has already been accepted",
+                editgroup_id.to_string()
+            );
         }
 
         // for each entity type...
@@ -69,7 +72,7 @@ pub fn accept_editgroup(editgroup_id: i64, conn: &PgConnection) -> Result<Change
                         {entity}_ident.id = {entity}_edit.ident_id
                         AND {entity}_edit.editgroup_id = $1",
                 entity = entity
-            )).bind::<diesel::sql_types::BigInt, _>(editgroup_id)
+            )).bind::<diesel::sql_types::Uuid, _>(editgroup_id)
                 .execute(conn)?;
         }
 
@@ -79,7 +82,7 @@ pub fn accept_editgroup(editgroup_id: i64, conn: &PgConnection) -> Result<Change
             .get_result(conn)?;
 
         // update any editor's active editgroup
-        let no_active: Option<i64> = None;
+        let no_active: Option<Uuid> = None;
         diesel::update(editor::table)
             .filter(editor::active_editgroup_id.eq(editgroup_id))
             .set(editor::active_editgroup_id.eq(no_active))

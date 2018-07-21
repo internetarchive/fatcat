@@ -1,7 +1,7 @@
 table! {
     changelog (id) {
         id -> Int8,
-        editgroup_id -> Int8,
+        editgroup_id -> Uuid,
         timestamp -> Timestamp,
     }
 }
@@ -9,9 +9,9 @@ table! {
 table! {
     container_edit (id) {
         id -> Int8,
-        editgroup_id -> Int8,
+        editgroup_id -> Uuid,
         ident_id -> Uuid,
-        rev_id -> Nullable<Int8>,
+        rev_id -> Nullable<Uuid>,
         redirect_id -> Nullable<Uuid>,
         extra_json -> Nullable<Json>,
     }
@@ -21,14 +21,14 @@ table! {
     container_ident (id) {
         id -> Uuid,
         is_live -> Bool,
-        rev_id -> Nullable<Int8>,
+        rev_id -> Nullable<Uuid>,
         redirect_id -> Nullable<Uuid>,
     }
 }
 
 table! {
     container_rev (id) {
-        id -> Int8,
+        id -> Uuid,
         extra_json -> Nullable<Json>,
         name -> Text,
         publisher -> Nullable<Text>,
@@ -41,9 +41,9 @@ table! {
 table! {
     creator_edit (id) {
         id -> Int8,
-        editgroup_id -> Int8,
+        editgroup_id -> Uuid,
         ident_id -> Uuid,
-        rev_id -> Nullable<Int8>,
+        rev_id -> Nullable<Uuid>,
         redirect_id -> Nullable<Uuid>,
         extra_json -> Nullable<Json>,
     }
@@ -53,14 +53,14 @@ table! {
     creator_ident (id) {
         id -> Uuid,
         is_live -> Bool,
-        rev_id -> Nullable<Int8>,
+        rev_id -> Nullable<Uuid>,
         redirect_id -> Nullable<Uuid>,
     }
 }
 
 table! {
     creator_rev (id) {
-        id -> Int8,
+        id -> Uuid,
         extra_json -> Nullable<Json>,
         display_name -> Text,
         given_name -> Nullable<Text>,
@@ -71,28 +71,28 @@ table! {
 
 table! {
     editgroup (id) {
-        id -> Int8,
+        id -> Uuid,
         extra_json -> Nullable<Json>,
-        editor_id -> Int8,
+        editor_id -> Uuid,
         description -> Nullable<Text>,
     }
 }
 
 table! {
     editor (id) {
-        id -> Int8,
+        id -> Uuid,
         username -> Text,
         is_admin -> Bool,
-        active_editgroup_id -> Nullable<Int8>,
+        active_editgroup_id -> Nullable<Uuid>,
     }
 }
 
 table! {
     file_edit (id) {
         id -> Int8,
-        editgroup_id -> Int8,
+        editgroup_id -> Uuid,
         ident_id -> Uuid,
-        rev_id -> Nullable<Int8>,
+        rev_id -> Nullable<Uuid>,
         redirect_id -> Nullable<Uuid>,
         extra_json -> Nullable<Json>,
     }
@@ -102,21 +102,21 @@ table! {
     file_ident (id) {
         id -> Uuid,
         is_live -> Bool,
-        rev_id -> Nullable<Int8>,
+        rev_id -> Nullable<Uuid>,
         redirect_id -> Nullable<Uuid>,
     }
 }
 
 table! {
     file_release (file_rev, target_release_ident_id) {
-        file_rev -> Int8,
+        file_rev -> Uuid,
         target_release_ident_id -> Uuid,
     }
 }
 
 table! {
     file_rev (id) {
-        id -> Int8,
+        id -> Uuid,
         extra_json -> Nullable<Json>,
         size -> Nullable<Int8>,
         sha1 -> Nullable<Text>,
@@ -130,7 +130,7 @@ table! {
 table! {
     release_contrib (id) {
         id -> Int8,
-        release_rev -> Int8,
+        release_rev -> Uuid,
         creator_ident_id -> Nullable<Uuid>,
         role -> Nullable<Text>,
         index -> Nullable<Int8>,
@@ -141,9 +141,9 @@ table! {
 table! {
     release_edit (id) {
         id -> Int8,
-        editgroup_id -> Int8,
+        editgroup_id -> Uuid,
         ident_id -> Uuid,
-        rev_id -> Nullable<Int8>,
+        rev_id -> Nullable<Uuid>,
         redirect_id -> Nullable<Uuid>,
         extra_json -> Nullable<Json>,
     }
@@ -153,7 +153,7 @@ table! {
     release_ident (id) {
         id -> Uuid,
         is_live -> Bool,
-        rev_id -> Nullable<Int8>,
+        rev_id -> Nullable<Uuid>,
         redirect_id -> Nullable<Uuid>,
     }
 }
@@ -161,7 +161,7 @@ table! {
 table! {
     release_ref (id) {
         id -> Int8,
-        release_rev -> Int8,
+        release_rev -> Uuid,
         target_release_ident_id -> Nullable<Uuid>,
         index -> Nullable<Int8>,
         key -> Nullable<Text>,
@@ -175,7 +175,7 @@ table! {
 
 table! {
     release_rev (id) {
-        id -> Int8,
+        id -> Uuid,
         extra_json -> Nullable<Json>,
         work_ident_id -> Uuid,
         container_ident_id -> Nullable<Uuid>,
@@ -196,9 +196,9 @@ table! {
 table! {
     work_edit (id) {
         id -> Int8,
-        editgroup_id -> Int8,
+        editgroup_id -> Uuid,
         ident_id -> Uuid,
-        rev_id -> Nullable<Int8>,
+        rev_id -> Nullable<Uuid>,
         redirect_id -> Nullable<Uuid>,
         extra_json -> Nullable<Json>,
     }
@@ -208,14 +208,14 @@ table! {
     work_ident (id) {
         id -> Uuid,
         is_live -> Bool,
-        rev_id -> Nullable<Int8>,
+        rev_id -> Nullable<Uuid>,
         redirect_id -> Nullable<Uuid>,
     }
 }
 
 table! {
     work_rev (id) {
-        id -> Int8,
+        id -> Uuid,
         extra_json -> Nullable<Json>,
         work_type -> Nullable<Text>,
         primary_release_id -> Nullable<Uuid>,
