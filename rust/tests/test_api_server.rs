@@ -592,3 +592,38 @@ fn test_400() {
         None,
     );
 }
+
+#[test]
+fn test_edit_gets() {
+    let (headers, router, _conn) = setup();
+
+    check_response(
+        request::get(
+            "http://localhost:9411/v0/editor/aaaaaaaaaaaabkvkaaaaaaaaae",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("admin"),
+    );
+
+    check_response(
+        request::get(
+            "http://localhost:9411/v0/editor/aaaaaaaaaaaabkvkaaaaaaaaae/changelog",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        None,
+    );
+
+    check_response(
+        request::get(
+            "http://localhost:9411/v0/editgroup/aaaaaaaaaaaabo53aaaaaaaaae",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        None,
+    );
+}
