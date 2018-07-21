@@ -33,9 +33,9 @@ class WorkEntity(object):
     swagger_types = {
         'work_type': 'str',
         'extra': 'object',
-        'editgroup_id': 'int',
+        'editgroup_id': 'str',
         'redirect': 'str',
-        'revision': 'int',
+        'revision': 'str',
         'ident': 'str',
         'state': 'str'
     }
@@ -125,7 +125,7 @@ class WorkEntity(object):
 
 
         :return: The editgroup_id of this WorkEntity.  # noqa: E501
-        :rtype: int
+        :rtype: str
         """
         return self._editgroup_id
 
@@ -135,7 +135,7 @@ class WorkEntity(object):
 
 
         :param editgroup_id: The editgroup_id of this WorkEntity.  # noqa: E501
-        :type: int
+        :type: str
         """
 
         self._editgroup_id = editgroup_id
@@ -167,7 +167,7 @@ class WorkEntity(object):
 
 
         :return: The revision of this WorkEntity.  # noqa: E501
-        :rtype: int
+        :rtype: str
         """
         return self._revision
 
@@ -177,7 +177,7 @@ class WorkEntity(object):
 
 
         :param revision: The revision of this WorkEntity.  # noqa: E501
-        :type: int
+        :type: str
         """
 
         self._revision = revision

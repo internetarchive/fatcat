@@ -39,9 +39,9 @@ class FileEntity(object):
         'sha1': 'str',
         'size': 'int',
         'extra': 'object',
-        'editgroup_id': 'int',
+        'editgroup_id': 'str',
         'redirect': 'str',
-        'revision': 'int',
+        'revision': 'str',
         'ident': 'str',
         'state': 'str'
     }
@@ -281,7 +281,7 @@ class FileEntity(object):
 
 
         :return: The editgroup_id of this FileEntity.  # noqa: E501
-        :rtype: int
+        :rtype: str
         """
         return self._editgroup_id
 
@@ -291,7 +291,7 @@ class FileEntity(object):
 
 
         :param editgroup_id: The editgroup_id of this FileEntity.  # noqa: E501
-        :type: int
+        :type: str
         """
 
         self._editgroup_id = editgroup_id
@@ -323,7 +323,7 @@ class FileEntity(object):
 
 
         :return: The revision of this FileEntity.  # noqa: E501
-        :rtype: int
+        :rtype: str
         """
         return self._revision
 
@@ -333,7 +333,7 @@ class FileEntity(object):
 
 
         :param revision: The revision of this FileEntity.  # noqa: E501
-        :type: int
+        :type: str
         """
 
         self._revision = revision

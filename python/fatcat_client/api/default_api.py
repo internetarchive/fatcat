@@ -42,7 +42,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int id: (required)
+        :param str id: (required)
         :return: Success
                  If the method is called asynchronously,
                  returns the request thread.
@@ -63,7 +63,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int id: (required)
+        :param str id: (required)
         :return: Success
                  If the method is called asynchronously,
                  returns the request thread.
@@ -1889,7 +1889,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int id: (required)
+        :param str id: (required)
         :return: Editgroup
                  If the method is called asynchronously,
                  returns the request thread.
@@ -1910,7 +1910,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int id: (required)
+        :param str id: (required)
         :return: Editgroup
                  If the method is called asynchronously,
                  returns the request thread.
@@ -1977,43 +1977,43 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def get_editor(self, username, **kwargs):  # noqa: E501
+    def get_editor(self, id, **kwargs):  # noqa: E501
         """get_editor  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.get_editor(username, async=True)
+        >>> thread = api.get_editor(id, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str username: (required)
+        :param str id: (required)
         :return: Editor
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.get_editor_with_http_info(username, **kwargs)  # noqa: E501
+            return self.get_editor_with_http_info(id, **kwargs)  # noqa: E501
         else:
-            (data) = self.get_editor_with_http_info(username, **kwargs)  # noqa: E501
+            (data) = self.get_editor_with_http_info(id, **kwargs)  # noqa: E501
             return data
 
-    def get_editor_with_http_info(self, username, **kwargs):  # noqa: E501
+    def get_editor_with_http_info(self, id, **kwargs):  # noqa: E501
         """get_editor  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.get_editor_with_http_info(username, async=True)
+        >>> thread = api.get_editor_with_http_info(id, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str username: (required)
+        :param str id: (required)
         :return: Editor
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['username']  # noqa: E501
+        all_params = ['id']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -2028,16 +2028,16 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
-        # verify the required parameter 'username' is set
-        if ('username' not in params or
-                params['username'] is None):
-            raise ValueError("Missing the required parameter `username` when calling `get_editor`")  # noqa: E501
+        # verify the required parameter 'id' is set
+        if ('id' not in params or
+                params['id'] is None):
+            raise ValueError("Missing the required parameter `id` when calling `get_editor`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
-        if 'username' in params:
-            path_params['username'] = params['username']  # noqa: E501
+        if 'id' in params:
+            path_params['id'] = params['id']  # noqa: E501
 
         query_params = []
 
@@ -2059,7 +2059,7 @@ class DefaultApi(object):
         auth_settings = []  # noqa: E501
 
         return self.api_client.call_api(
-            '/editor/{username}', 'GET',
+            '/editor/{id}', 'GET',
             path_params,
             query_params,
             header_params,
@@ -2074,43 +2074,43 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def get_editor_changelog(self, username, **kwargs):  # noqa: E501
+    def get_editor_changelog(self, id, **kwargs):  # noqa: E501
         """get_editor_changelog  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.get_editor_changelog(username, async=True)
+        >>> thread = api.get_editor_changelog(id, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str username: (required)
+        :param str id: (required)
         :return: list[ChangelogEntry]
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.get_editor_changelog_with_http_info(username, **kwargs)  # noqa: E501
+            return self.get_editor_changelog_with_http_info(id, **kwargs)  # noqa: E501
         else:
-            (data) = self.get_editor_changelog_with_http_info(username, **kwargs)  # noqa: E501
+            (data) = self.get_editor_changelog_with_http_info(id, **kwargs)  # noqa: E501
             return data
 
-    def get_editor_changelog_with_http_info(self, username, **kwargs):  # noqa: E501
+    def get_editor_changelog_with_http_info(self, id, **kwargs):  # noqa: E501
         """get_editor_changelog  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.get_editor_changelog_with_http_info(username, async=True)
+        >>> thread = api.get_editor_changelog_with_http_info(id, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str username: (required)
+        :param str id: (required)
         :return: list[ChangelogEntry]
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['username']  # noqa: E501
+        all_params = ['id']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -2125,16 +2125,16 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
-        # verify the required parameter 'username' is set
-        if ('username' not in params or
-                params['username'] is None):
-            raise ValueError("Missing the required parameter `username` when calling `get_editor_changelog`")  # noqa: E501
+        # verify the required parameter 'id' is set
+        if ('id' not in params or
+                params['id'] is None):
+            raise ValueError("Missing the required parameter `id` when calling `get_editor_changelog`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
-        if 'username' in params:
-            path_params['username'] = params['username']  # noqa: E501
+        if 'id' in params:
+            path_params['id'] = params['id']  # noqa: E501
 
         query_params = []
 
@@ -2156,7 +2156,7 @@ class DefaultApi(object):
         auth_settings = []  # noqa: E501
 
         return self.api_client.call_api(
-            '/editor/{username}/changelog', 'GET',
+            '/editor/{id}/changelog', 'GET',
             path_params,
             query_params,
             header_params,

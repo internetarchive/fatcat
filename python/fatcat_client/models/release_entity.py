@@ -51,9 +51,9 @@ class ReleaseEntity(object):
         'title': 'str',
         'state': 'str',
         'ident': 'str',
-        'revision': 'int',
+        'revision': 'str',
         'redirect': 'str',
-        'editgroup_id': 'int',
+        'editgroup_id': 'str',
         'extra': 'object'
     }
 
@@ -522,7 +522,7 @@ class ReleaseEntity(object):
 
 
         :return: The revision of this ReleaseEntity.  # noqa: E501
-        :rtype: int
+        :rtype: str
         """
         return self._revision
 
@@ -532,7 +532,7 @@ class ReleaseEntity(object):
 
 
         :param revision: The revision of this ReleaseEntity.  # noqa: E501
-        :type: int
+        :type: str
         """
 
         self._revision = revision
@@ -564,7 +564,7 @@ class ReleaseEntity(object):
 
 
         :return: The editgroup_id of this ReleaseEntity.  # noqa: E501
-        :rtype: int
+        :rtype: str
         """
         return self._editgroup_id
 
@@ -574,7 +574,7 @@ class ReleaseEntity(object):
 
 
         :param editgroup_id: The editgroup_id of this ReleaseEntity.  # noqa: E501
-        :type: int
+        :type: str
         """
 
         self._editgroup_id = editgroup_id

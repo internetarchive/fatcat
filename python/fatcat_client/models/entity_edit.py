@@ -33,9 +33,9 @@ class EntityEdit(object):
     swagger_types = {
         'edit_id': 'int',
         'ident': 'str',
-        'revision': 'int',
+        'revision': 'str',
         'redirect_ident': 'str',
-        'editgroup_id': 'int',
+        'editgroup_id': 'str',
         'extra': 'object'
     }
 
@@ -121,7 +121,7 @@ class EntityEdit(object):
 
 
         :return: The revision of this EntityEdit.  # noqa: E501
-        :rtype: int
+        :rtype: str
         """
         return self._revision
 
@@ -131,7 +131,7 @@ class EntityEdit(object):
 
 
         :param revision: The revision of this EntityEdit.  # noqa: E501
-        :type: int
+        :type: str
         """
 
         self._revision = revision
@@ -163,7 +163,7 @@ class EntityEdit(object):
 
 
         :return: The editgroup_id of this EntityEdit.  # noqa: E501
-        :rtype: int
+        :rtype: str
         """
         return self._editgroup_id
 
@@ -173,7 +173,7 @@ class EntityEdit(object):
 
 
         :param editgroup_id: The editgroup_id of this EntityEdit.  # noqa: E501
-        :type: int
+        :type: str
         """
         if editgroup_id is None:
             raise ValueError("Invalid value for `editgroup_id`, must not be `None`")  # noqa: E501

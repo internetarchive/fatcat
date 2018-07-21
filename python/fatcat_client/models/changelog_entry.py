@@ -34,7 +34,7 @@ class ChangelogEntry(object):
     """
     swagger_types = {
         'index': 'int',
-        'editgroup_id': 'int',
+        'editgroup_id': 'str',
         'timestamp': 'datetime',
         'editgroup': 'Editgroup'
     }
@@ -90,7 +90,7 @@ class ChangelogEntry(object):
 
 
         :return: The editgroup_id of this ChangelogEntry.  # noqa: E501
-        :rtype: int
+        :rtype: str
         """
         return self._editgroup_id
 
@@ -100,7 +100,7 @@ class ChangelogEntry(object):
 
 
         :param editgroup_id: The editgroup_id of this ChangelogEntry.  # noqa: E501
-        :type: int
+        :type: str
         """
         if editgroup_id is None:
             raise ValueError("Invalid value for `editgroup_id`, must not be `None`")  # noqa: E501

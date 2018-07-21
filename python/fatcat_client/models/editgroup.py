@@ -33,8 +33,8 @@ class Editgroup(object):
                             and the value is json key in definition.
     """
     swagger_types = {
-        'id': 'int',
-        'editor_id': 'int',
+        'id': 'str',
+        'editor_id': 'str',
         'description': 'str',
         'extra': 'object',
         'edits': 'EditgroupEdits'
@@ -74,7 +74,7 @@ class Editgroup(object):
 
 
         :return: The id of this Editgroup.  # noqa: E501
-        :rtype: int
+        :rtype: str
         """
         return self._id
 
@@ -84,7 +84,7 @@ class Editgroup(object):
 
 
         :param id: The id of this Editgroup.  # noqa: E501
-        :type: int
+        :type: str
         """
 
         self._id = id
@@ -95,7 +95,7 @@ class Editgroup(object):
 
 
         :return: The editor_id of this Editgroup.  # noqa: E501
-        :rtype: int
+        :rtype: str
         """
         return self._editor_id
 
@@ -105,7 +105,7 @@ class Editgroup(object):
 
 
         :param editor_id: The editor_id of this Editgroup.  # noqa: E501
-        :type: int
+        :type: str
         """
         if editor_id is None:
             raise ValueError("Invalid value for `editor_id`, must not be `None`")  # noqa: E501
