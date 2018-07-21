@@ -192,10 +192,6 @@ CREATE INDEX release_edit_idx ON release_edit(editgroup_id);
 CREATE TABLE work_rev (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     extra_json          JSON,
-
-    -- not even a work, for now
-    work_type           TEXT, -- TODO: enum?
-    primary_release_id  UUID REFERENCES release_ident(id)
 );
 
 CREATE TABLE work_ident (
@@ -342,10 +338,10 @@ INSERT INTO file_edit (ident_id, rev_id, redirect_id, editgroup_id) VALUES
     ('00000000-0000-0000-3333-000000000002', '00000000-0000-0000-3333-FFF000000002', null, '00000000-0000-0000-BBBB-000000000004'),
     ('00000000-0000-0000-3333-000000000003', '00000000-0000-0000-3333-FFF000000003', null, '00000000-0000-0000-BBBB-000000000005');
 
-INSERT INTO work_rev (id, work_type, primary_release_id) VALUES
-    ('00000000-0000-0000-5555-FFF000000001', null, null),
-    ('00000000-0000-0000-5555-FFF000000002', 'pre-print', null),
-    ('00000000-0000-0000-5555-FFF000000003', 'journal-article', null);
+INSERT INTO work_rev (id) VALUES
+    ('00000000-0000-0000-5555-FFF000000001'),
+    ('00000000-0000-0000-5555-FFF000000002'),
+    ('00000000-0000-0000-5555-FFF000000003');
 
 INSERT INTO work_ident (id, is_live, rev_id, redirect_id) VALUES
     ('00000000-0000-0000-5555-000000000001', true, '00000000-0000-0000-5555-FFF000000001', null), -- aaaaaaaaaaaaavkvaaaaaaaaae
