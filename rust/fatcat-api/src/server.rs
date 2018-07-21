@@ -2002,7 +2002,7 @@ where
 
     let api_clone = api.clone();
     router.get(
-        "/v0/editor/:username",
+        "/v0/editor/:id",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -2016,20 +2016,20 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_username = {
+                let param_id = {
                     let param = req.extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("username")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter username".to_string())))?;
+                        .find("id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter username: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
                 };
 
-                match api.get_editor(param_username, context).wait() {
+                match api.get_editor(param_id, context).wait() {
                     Ok(rsp) => match rsp {
                         GetEditorResponse::FoundEditor(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -2080,7 +2080,7 @@ where
 
     let api_clone = api.clone();
     router.get(
-        "/v0/editor/:username/changelog",
+        "/v0/editor/:id/changelog",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -2094,20 +2094,20 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_username = {
+                let param_id = {
                     let param = req.extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("username")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter username".to_string())))?;
+                        .find("id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter username: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
                 };
 
-                match api.get_editor_changelog(param_username, context).wait() {
+                match api.get_editor_changelog(param_id, context).wait() {
                     Ok(rsp) => match rsp {
                         GetEditorChangelogResponse::FoundMergedChanges(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");

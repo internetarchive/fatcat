@@ -83,7 +83,7 @@ fn main() {
 
     match matches.value_of("operation") {
         Some("AcceptEditgroup") => {
-            let result = client.accept_editgroup(789).wait();
+            let result = client.accept_editgroup("id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -179,17 +179,17 @@ fn main() {
         }
 
         Some("GetEditgroup") => {
-            let result = client.get_editgroup(789).wait();
+            let result = client.get_editgroup("id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
         Some("GetEditor") => {
-            let result = client.get_editor("username_example".to_string()).wait();
+            let result = client.get_editor("id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
         Some("GetEditorChangelog") => {
-            let result = client.get_editor_changelog("username_example".to_string()).wait();
+            let result = client.get_editor_changelog("id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 

@@ -163,7 +163,7 @@ impl Client {
 }
 
 impl Api for Client {
-    fn accept_editgroup(&self, param_id: i64, context: &Context) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send> {
+    fn accept_editgroup(&self, param_id: String, context: &Context) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send> {
         let url = format!("{}/v0/editgroup/{id}/accept", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
 
         let hyper_client = (self.hyper_client)();
@@ -1349,7 +1349,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_editgroup(&self, param_id: i64, context: &Context) -> Box<Future<Item = GetEditgroupResponse, Error = ApiError> + Send> {
+    fn get_editgroup(&self, param_id: String, context: &Context) -> Box<Future<Item = GetEditgroupResponse, Error = ApiError> + Send> {
         let url = format!("{}/v0/editgroup/{id}", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
 
         let hyper_client = (self.hyper_client)();
@@ -1409,12 +1409,8 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_editor(&self, param_username: String, context: &Context) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send> {
-        let url = format!(
-            "{}/v0/editor/{username}",
-            self.base_path,
-            username = utf8_percent_encode(&param_username.to_string(), PATH_SEGMENT_ENCODE_SET)
-        );
+    fn get_editor(&self, param_id: String, context: &Context) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send> {
+        let url = format!("{}/v0/editor/{id}", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Get, &url);
@@ -1466,12 +1462,8 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_editor_changelog(&self, param_username: String, context: &Context) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send> {
-        let url = format!(
-            "{}/v0/editor/{username}/changelog",
-            self.base_path,
-            username = utf8_percent_encode(&param_username.to_string(), PATH_SEGMENT_ENCODE_SET)
-        );
+    fn get_editor_changelog(&self, param_id: String, context: &Context) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send> {
+        let url = format!("{}/v0/editor/{id}/changelog", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Get, &url);

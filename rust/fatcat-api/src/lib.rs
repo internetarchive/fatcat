@@ -438,7 +438,7 @@ pub enum LookupReleaseResponse {
 
 /// API
 pub trait Api {
-    fn accept_editgroup(&self, id: i64, context: &Context) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send>;
+    fn accept_editgroup(&self, id: String, context: &Context) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send>;
 
     fn create_container(&self, entity: models::ContainerEntity, context: &Context) -> Box<Future<Item = CreateContainerResponse, Error = ApiError> + Send>;
 
@@ -476,11 +476,11 @@ pub trait Api {
 
     fn get_creator_releases(&self, id: String, context: &Context) -> Box<Future<Item = GetCreatorReleasesResponse, Error = ApiError> + Send>;
 
-    fn get_editgroup(&self, id: i64, context: &Context) -> Box<Future<Item = GetEditgroupResponse, Error = ApiError> + Send>;
+    fn get_editgroup(&self, id: String, context: &Context) -> Box<Future<Item = GetEditgroupResponse, Error = ApiError> + Send>;
 
-    fn get_editor(&self, username: String, context: &Context) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send>;
+    fn get_editor(&self, id: String, context: &Context) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send>;
 
-    fn get_editor_changelog(&self, username: String, context: &Context) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send>;
+    fn get_editor_changelog(&self, id: String, context: &Context) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send>;
 
     fn get_file(&self, id: String, context: &Context) -> Box<Future<Item = GetFileResponse, Error = ApiError> + Send>;
 
@@ -511,7 +511,7 @@ pub trait Api {
 
 /// API without a `Context`
 pub trait ApiNoContext {
-    fn accept_editgroup(&self, id: i64) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send>;
+    fn accept_editgroup(&self, id: String) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send>;
 
     fn create_container(&self, entity: models::ContainerEntity) -> Box<Future<Item = CreateContainerResponse, Error = ApiError> + Send>;
 
@@ -549,11 +549,11 @@ pub trait ApiNoContext {
 
     fn get_creator_releases(&self, id: String) -> Box<Future<Item = GetCreatorReleasesResponse, Error = ApiError> + Send>;
 
-    fn get_editgroup(&self, id: i64) -> Box<Future<Item = GetEditgroupResponse, Error = ApiError> + Send>;
+    fn get_editgroup(&self, id: String) -> Box<Future<Item = GetEditgroupResponse, Error = ApiError> + Send>;
 
-    fn get_editor(&self, username: String) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send>;
+    fn get_editor(&self, id: String) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send>;
 
-    fn get_editor_changelog(&self, username: String) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send>;
+    fn get_editor_changelog(&self, id: String) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send>;
 
     fn get_file(&self, id: String) -> Box<Future<Item = GetFileResponse, Error = ApiError> + Send>;
 
@@ -598,7 +598,7 @@ impl<'a, T: Api + Sized> ContextWrapperExt<'a> for T {
 }
 
 impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
-    fn accept_editgroup(&self, id: i64) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send> {
+    fn accept_editgroup(&self, id: String) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send> {
         self.api().accept_editgroup(id, &self.context())
     }
 
@@ -674,16 +674,16 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().get_creator_releases(id, &self.context())
     }
 
-    fn get_editgroup(&self, id: i64) -> Box<Future<Item = GetEditgroupResponse, Error = ApiError> + Send> {
+    fn get_editgroup(&self, id: String) -> Box<Future<Item = GetEditgroupResponse, Error = ApiError> + Send> {
         self.api().get_editgroup(id, &self.context())
     }
 
-    fn get_editor(&self, username: String) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send> {
-        self.api().get_editor(username, &self.context())
+    fn get_editor(&self, id: String) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send> {
+        self.api().get_editor(id, &self.context())
     }
 
-    fn get_editor_changelog(&self, username: String) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send> {
-        self.api().get_editor_changelog(username, &self.context())
+    fn get_editor_changelog(&self, id: String) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send> {
+        self.api().get_editor_changelog(id, &self.context())
     }
 
     fn get_file(&self, id: String) -> Box<Future<Item = GetFileResponse, Error = ApiError> + Send> {
