@@ -52,7 +52,7 @@ from fatcat_client.rest import ApiException
 from pprint import pprint
 # create an instance of the API class
 api_instance = fatcat_client.DefaultApi()
-id = 789 # int | 
+id = 'id_example' # str | 
 
 try:
     api_response = api_instance.accept_editgroup(id)
@@ -88,8 +88,8 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**get_creator_history**](docs/DefaultApi.md#get_creator_history) | **GET** /creator/{id}/history | 
 *DefaultApi* | [**get_creator_releases**](docs/DefaultApi.md#get_creator_releases) | **GET** /creator/{id}/releases | 
 *DefaultApi* | [**get_editgroup**](docs/DefaultApi.md#get_editgroup) | **GET** /editgroup/{id} | 
-*DefaultApi* | [**get_editor**](docs/DefaultApi.md#get_editor) | **GET** /editor/{username} | 
-*DefaultApi* | [**get_editor_changelog**](docs/DefaultApi.md#get_editor_changelog) | **GET** /editor/{username}/changelog | 
+*DefaultApi* | [**get_editor**](docs/DefaultApi.md#get_editor) | **GET** /editor/{id} | 
+*DefaultApi* | [**get_editor_changelog**](docs/DefaultApi.md#get_editor_changelog) | **GET** /editor/{id}/changelog | 
 *DefaultApi* | [**get_file**](docs/DefaultApi.md#get_file) | **GET** /file/{id} | 
 *DefaultApi* | [**get_file_history**](docs/DefaultApi.md#get_file_history) | **GET** /file/{id}/history | 
 *DefaultApi* | [**get_release**](docs/DefaultApi.md#get_release) | **GET** /release/{id} | 

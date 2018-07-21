@@ -27,19 +27,22 @@ class FatcatImporter:
 
     def process_source(self, source, group_size=100):
         """Creates and auto-accepts editgroup every group_size rows"""
-        eg = self.api.create_editgroup(fatcat_client.Editgroup(editor_id=1))
+        eg = self.api.create_editgroup(
+            fatcat_client.Editgroup(editor_id='aaaaaaaaaaaabkvkaaaaaaaaae'))
         for i, row in enumerate(source):
             self.create_row(row, editgroup_id=eg.id)
             if i > 0 and (i % group_size) == 0:
                 self.api.accept_editgroup(eg)
-                eg = self.api.create_editgroup(fatcat_client.Editgroup(editor_id=1))
+                eg = self.api.create_editgroup(
+                    fatcat_client.Editgroup(editor_id='aaaaaaaaaaaabkvkaaaaaaaaae'))
         if i == 0 or (i % group_size) != 0:
             self.api.accept_editgroup(eg.id)
 
     def process_batch(self, source, size=50):
         """Reads and processes in batches (not API-call-per-)"""
         for rows in grouper(source, size):
-            eg = self.api.create_editgroup(fatcat_client.Editgroup(editor_id=1))
+            eg = self.api.create_editgroup(
+                fatcat_client.Editgroup(editor_id='aaaaaaaaaaaabkvkaaaaaaaaae'))
             self.create_batch(rows, eg.id)
             self.api.accept_editgroup(eg.id)
 

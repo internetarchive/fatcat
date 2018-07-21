@@ -90,7 +90,8 @@ Raw Object:
 {% endif %}
 
 <b>Fatcat Bits</b>
-<p>Revision #{{ file.revision }}. State is "{{ file.state }}"
+<p>State is "{{ file.state }}". Revision:
+<br><small><code>{{ file.revision }}</code></small>
 <br><a href="https://api.qa.fatcat.wiki/v0/file/{{ file.ident }}">As JSON object via API</a>
 
 </div>

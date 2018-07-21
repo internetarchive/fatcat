@@ -257,7 +257,7 @@ def editgroup_current():
     #eg = api.get_or_create_editgroup()
     #return redirect('/editgroup/{}'.format(eg.id))
 
-@app.route('/editgroup/<int:ident>', methods=['GET'])
+@app.route('/editgroup/<ident>', methods=['GET'])
 def editgroup_view(ident):
     try:
         entity = api.get_editgroup(str(ident))
@@ -266,15 +266,15 @@ def editgroup_view(ident):
         abort(ae.status)
     return render_template('editgroup_view.html', editgroup=entity)
 
-@app.route('/editor/<username>', methods=['GET'])
-def editor_view(username):
-    entity = api.get_editor(username)
+@app.route('/editor/<ident>', methods=['GET'])
+def editor_view(ident):
+    entity = api.get_editor(ident)
     return render_template('editor_view.html', editor=entity)
 
-@app.route('/editor/<username>/changelog', methods=['GET'])
-def editor_changelog(username):
-    editor = api.get_editor(username)
-    changelog_entries = api.get_editor_changelog(username)
+@app.route('/editor/<ident>/changelog', methods=['GET'])
+def editor_changelog(ident):
+    editor = api.get_editor(ident)
+    changelog_entries = api.get_editor_changelog(ident)
     return render_template('editor_changelog.html', editor=editor,
         changelog_entries=changelog_entries)
 
