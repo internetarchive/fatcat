@@ -54,7 +54,7 @@ macro_rules! entity_structs {
             fn to_model(self) -> Result<EntityEdit> {
                 Ok(EntityEdit {
                     editgroup_id: uuid2fcid(&self.editgroup_id),
-                    revision: self.rev_id.map(|v| uuid2fcid(&v)),
+                    revision: self.rev_id.map(|v| v.to_string()),
                     redirect_ident: self.redirect_id.map(|v| uuid2fcid(&v)),
                     ident: uuid2fcid(&self.ident_id),
                     edit_id: self.id,

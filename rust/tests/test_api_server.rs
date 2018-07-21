@@ -57,6 +57,17 @@ fn test_entity_gets() {
         Some("Trivial Results"),
     );
 
+    // Check revision encoding
+    check_response(
+        request::get(
+            "http://localhost:9411/v0/container/aaaaaaaaaaaaaeiraaaaaaaaai",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("00000000-0000-0000-1111-fff000000002"),
+    );
+
     check_response(
         request::get(
             "http://localhost:9411/v0/creator/aaaaaaaaaaaaaircaaaaaaaaae",
