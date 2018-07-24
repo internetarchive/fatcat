@@ -78,7 +78,7 @@ Regenerate SQL schema:
 
 Debugging SQL schema errors:
 
-    psql fatcat_rs < migrations/2018-05-12-001226_init/up.sql
+    psql fatcat_test < migrations/2018-05-12-001226_init/up.sql
 
 Creating entities via API:
 
