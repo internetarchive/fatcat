@@ -113,10 +113,18 @@ definitions:
         type: string
         #format: custom
         example: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
-      url:
-        type: string
-        format: url
-        example: "https://example.edu/~frau/prcding.pdf"
+      urls:
+        type: array
+        items:
+          type: object
+          properties:
+            url:
+              type: string
+              format: url
+              example: "https://example.edu/~frau/prcding.pdf"
+            rel:
+              type: string
+              example: "webarchive"
       mimetype:
         type: string
         example: "application/pdf"
@@ -155,6 +163,10 @@ definitions:
       isbn13:
         type: string
         #format: custom
+      pmid:
+        type: string
+      pmcid:
+        type: string
       volume:
         type: string
       issue:
@@ -175,6 +187,23 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/release_ref"
+      abstracts:
+        type: array
+        items:
+          type: object
+          properties:
+            sha1:
+              type: string
+              example: "3f242a192acc258bdfdb151943419437f440c313"
+            content:
+              type: string
+              example: "<jats:p>Some abstract thing goes here</jats:p>"
+            mimetype:
+              type: string
+              example: "application/xml+jats"
+            lang:
+              type: string
+              example: "en"
   work_entity:
     type: object
     properties:
@@ -209,6 +238,10 @@ definitions:
           type: string
           example: "q3nouwy3nnbsvo3h5klxsx4a7y"
       revision:
+          type: string
+          #format: uuid
+          example: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+      prev_revision:
           type: string
           #format: uuid
           example: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
@@ -301,7 +334,7 @@ definitions:
       target_release_id:
         type: string
         #format: ident
-      raw:
+      extra:
         type: string
       key:
         type: string
@@ -324,7 +357,7 @@ definitions:
       creator_id:
         type: string
         #format: ident
-      raw:
+      extra_json:
         type: string
       role:
         type: string
