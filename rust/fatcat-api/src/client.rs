@@ -6,14 +6,14 @@ extern crate url;
 use self::hyper_openssl::openssl;
 use self::url::percent_encoding::{utf8_percent_encode, PATH_SEGMENT_ENCODE_SET, QUERY_ENCODE_SET};
 use futures;
-use futures::{Future, Stream};
 use futures::{future, stream};
+use futures::{Future, Stream};
 use hyper;
-use hyper::Url;
 use hyper::client::IntoUrl;
 use hyper::header::{ContentType, Headers};
 use hyper::mime;
 use hyper::mime::{Attr, Mime, SubLevel, TopLevel, Value};
+use hyper::Url;
 use std::borrow::Cow;
 use std::error;
 use std::fmt;
@@ -34,11 +34,13 @@ use swagger;
 use swagger::{ApiError, Context, XSpanId};
 
 use models;
-use {AcceptEditgroupResponse, Api, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse, CreateEditgroupResponse, CreateFileBatchResponse,
-     CreateFileResponse, CreateReleaseBatchResponse, CreateReleaseResponse, CreateWorkBatchResponse, CreateWorkResponse, GetChangelogEntryResponse, GetChangelogResponse, GetContainerHistoryResponse,
-     GetContainerResponse, GetCreatorHistoryResponse, GetCreatorReleasesResponse, GetCreatorResponse, GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileHistoryResponse,
-     GetFileResponse, GetReleaseFilesResponse, GetReleaseHistoryResponse, GetReleaseResponse, GetStatsResponse, GetWorkHistoryResponse, GetWorkReleasesResponse, GetWorkResponse,
-     LookupContainerResponse, LookupCreatorResponse, LookupFileResponse, LookupReleaseResponse};
+use {
+    AcceptEditgroupResponse, Api, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse, CreateEditgroupResponse, CreateFileBatchResponse,
+    CreateFileResponse, CreateReleaseBatchResponse, CreateReleaseResponse, CreateWorkBatchResponse, CreateWorkResponse, GetChangelogEntryResponse, GetChangelogResponse, GetContainerHistoryResponse,
+    GetContainerResponse, GetCreatorHistoryResponse, GetCreatorReleasesResponse, GetCreatorResponse, GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileHistoryResponse,
+    GetFileResponse, GetReleaseFilesResponse, GetReleaseHistoryResponse, GetReleaseResponse, GetStatsResponse, GetWorkHistoryResponse, GetWorkReleasesResponse, GetWorkResponse,
+    LookupContainerResponse, LookupCreatorResponse, LookupFileResponse, LookupReleaseResponse,
+};
 
 /// Convert input into a base path, e.g. "http://example:123". Also checks the scheme as it goes.
 fn into_base_path<T: IntoUrl>(input: T, correct_scheme: Option<&'static str>) -> Result<String, ClientInitError> {

@@ -1,19 +1,21 @@
 //! API endpoint handlers
 
-use ConnectionPool;
-use api_helpers::{accept_editgroup, get_or_create_editgroup, fcid2uuid, uuid2fcid};
+use api_helpers::{accept_editgroup, fcid2uuid, get_or_create_editgroup, uuid2fcid};
 use chrono;
 use database_models::*;
-use database_schema::{changelog, container_edit, container_ident, container_rev, creator_edit,
-                      creator_ident, creator_rev, editgroup, editor, file_edit, file_ident,
-                      file_release, file_rev, release_contrib, release_edit, release_ident,
-                      release_ref, release_rev, work_edit, work_ident, work_rev};
+use database_schema::{
+    changelog, container_edit, container_ident, container_rev, creator_edit, creator_ident,
+    creator_rev, editgroup, editor, file_edit, file_ident, file_release, file_rev, file_rev_url,
+    release_contrib, release_edit, release_ident, release_ref, release_rev, release_rev_abstract,
+    work_edit, work_ident, work_rev,
+};
 use diesel::prelude::*;
 use diesel::{self, insert_into};
 use errors::*;
 use fatcat_api::models;
 use fatcat_api::models::*;
 use uuid::Uuid;
+use ConnectionPool;
 
 type DbConn = diesel::r2d2::PooledConnection<diesel::r2d2::ConnectionManager<diesel::PgConnection>>;
 
@@ -146,8 +148,18 @@ fn file_row2entity(
     let releases: Vec<String> = file_release::table
         .filter(file_release::file_rev.eq(rev.id))
         .get_results(conn)?
-        .iter()
-        .map(|r: &FileReleaseRow| uuid2fcid(&r.target_release_ident_id))
+        .into_iter()
+        .map(|r: FileReleaseRow| uuid2fcid(&r.target_release_ident_id))
+        .collect();
+
+    let urls: Vec<FileEntityUrls> = file_rev_url::table
+        .filter(file_rev_url::file_rev.eq(rev.id))
+        .get_results(conn)?
+        .into_iter()
+        .map(|r: FileRevUrlRow| FileEntityUrls {
+            rel: r.rel,
+            url: r.url,
+        })
         .collect();
 
     Ok(FileEntity {
@@ -155,7 +167,7 @@ fn file_row2entity(
         sha256: rev.sha256,
         md5: rev.md5,
         size: rev.size.map(|v| v as i64),
-        url: rev.url,
+        urls: Some(urls),
         mimetype: rev.mimetype,
         releases: Some(releases),
         state: state,
@@ -186,15 +198,15 @@ fn release_row2entity(
         .order(release_ref::index.asc())
         .get_results(conn)
         .expect("fetch release refs")
-        .iter()
-        .map(|r: &ReleaseRefRow| ReleaseRef {
-            index: r.index.clone(),
-            key: r.key.clone(),
-            raw: r.raw.clone(),
-            container_title: r.container_title.clone(),
-            year: r.year.clone(),
-            title: r.title.clone(),
-            locator: r.locator.clone(),
+        .into_iter()
+        .map(|r: ReleaseRefRow| ReleaseRef {
+            index: r.index,
+            key: r.key,
+            extra: r.extra_json,
+            container_title: r.container_title,
+            year: r.year,
+            title: r.title,
+            locator: r.locator,
             target_release_id: r.target_release_ident_id.map(|v| uuid2fcid(&v)),
         })
         .collect();
@@ -204,12 +216,26 @@ fn release_row2entity(
         .order((release_contrib::role.asc(), release_contrib::index.asc()))
         .get_results(conn)
         .expect("fetch release refs")
-        .iter()
-        .map(|c: &ReleaseContribRow| ReleaseContrib {
+        .into_iter()
+        .map(|c: ReleaseContribRow| ReleaseContrib {
             index: c.index,
-            role: c.role.clone(),
-            raw: c.raw.clone(),
+            raw: c.raw,
+            role: c.role,
+            extra: c.extra_json,
             creator_id: c.creator_ident_id.map(|v| uuid2fcid(&v)),
+        })
+        .collect();
+
+    // XXX: join abstracts table
+    let abstracts: Vec<ReleaseEntityAbstracts> = release_rev_abstract::table
+        .filter(release_rev_abstract::release_rev.eq(rev.id))
+        .get_results(conn)?
+        .into_iter()
+        .map(|r: ReleaseRevAbstractRow| ReleaseEntityAbstracts {
+            sha1: Some(r.abstract_sha1),
+            mimetype: r.mimetype,
+            lang: r.lang,
+            content: None,
         })
         .collect();
 
@@ -220,6 +246,8 @@ fn release_row2entity(
         release_date: rev.release_date
             .map(|v| chrono::DateTime::from_utc(v.and_hms(0, 0, 0), chrono::Utc)),
         doi: rev.doi,
+        pmid: rev.pmid,
+        pmcid: rev.pmcid,
         isbn13: rev.isbn13,
         volume: rev.volume,
         issue: rev.issue,
@@ -230,6 +258,7 @@ fn release_row2entity(
         work_id: Some(uuid2fcid(&rev.work_ident_id)),
         refs: Some(refs),
         contribs: Some(contribs),
+        abstracts: Some(abstracts),
         state: state,
         ident: ident_id,
         revision: Some(rev.id.to_string()),
@@ -249,7 +278,6 @@ fn work_row2entity(ident: Option<WorkIdentRow>, rev: WorkRevRow) -> Result<WorkE
         None => (None, None, None),
     };
     Ok(WorkEntity {
-        work_type: rev.work_type,
         state: state,
         ident: ident_id,
         revision: Some(rev.id.to_string()),
@@ -530,20 +558,19 @@ impl Server {
 
         let edit: FileEditRow =
             diesel::sql_query(
-                "WITH rev AS ( INSERT INTO file_rev (size, sha1, sha256, md5, url, mimetype, extra_json)
-                        VALUES ($1, $2, $3, $4, $5, $6, $7)
+                "WITH rev AS ( INSERT INTO file_rev (size, sha1, sha256, md5, mimetype, extra_json)
+                        VALUES ($1, $2, $3, $4, $5, $6)
                         RETURNING id ),
                 ident AS ( INSERT INTO file_ident (rev_id)
                             VALUES ((SELECT rev.id FROM rev))
                             RETURNING id )
             INSERT INTO file_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($8, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+                ($7, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
             ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Int8>, _>(entity.size)
                 .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.sha1)
                 .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.sha256)
                 .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.md5)
-                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.url)
                 .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.mimetype)
                 .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
                 .bind::<diesel::sql_types::Uuid, _>(editgroup_id)
@@ -568,6 +595,29 @@ impl Server {
                         .get_results(conn)
                         .expect("error inserting file_releases");
                     Some(release_rows)
+                }
+            }
+        };
+
+        let _urls: Option<Vec<FileRevUrlRow>> = match entity.urls {
+            None => None,
+            Some(url_list) => {
+                if url_list.len() == 0 {
+                    Some(vec![])
+                } else {
+                    let url_rows: Vec<FileRevUrlNewRow> = url_list
+                        .into_iter()
+                        .map(|u| FileRevUrlNewRow {
+                            file_rev: edit.rev_id.unwrap(),
+                            rel: u.rel,
+                            url: u.url,
+                        })
+                        .collect();
+                    let url_rows: Vec<FileRevUrlRow> = insert_into(file_rev_url::table)
+                        .values(url_rows)
+                        .get_results(conn)
+                        .expect("error inserting file_rev_url");
+                    Some(url_rows)
                 }
             }
         };
@@ -600,7 +650,6 @@ impl Server {
             None => {
                 // If a work_id wasn't passed, create a new work under the current editgroup
                 let work_model = models::WorkEntity {
-                    work_type: None,
                     ident: None,
                     revision: None,
                     redirect: None,
@@ -665,7 +714,7 @@ impl Server {
                             year: r.year,
                             title: r.title.clone(),
                             locator: r.locator.clone(),
-                            raw: r.raw.clone(),
+                            extra_json: r.extra.clone(),
                         })
                         .collect();
                     let ref_rows: Vec<ReleaseRefRow> = insert_into(release_ref::table)
@@ -690,9 +739,10 @@ impl Server {
                             creator_ident_id: c.creator_id
                                 .clone()
                                 .map(|v| fcid2uuid(&v).expect("valid fatcat identifier")),
+                            raw: c.raw.clone(),
                             index: c.index,
                             role: c.role.clone(),
-                            raw: c.raw.clone(),
+                            extra_json: c.extra.clone(),
                         })
                         .collect();
                     let contrib_rows: Vec<ReleaseContribRow> = insert_into(release_contrib::table)
@@ -730,17 +780,16 @@ impl Server {
 
         let edit: WorkEditRow =
             diesel::sql_query(
-                "WITH rev AS ( INSERT INTO work_rev (work_type, extra_json)
-                        VALUES ($1, $2)
+                "WITH rev AS ( INSERT INTO work_rev (extra_json)
+                        VALUES ($1)
                         RETURNING id ),
                 ident AS ( INSERT INTO work_ident (rev_id)
                             VALUES ((SELECT rev.id FROM rev))
                             RETURNING id )
             INSERT INTO work_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($3, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+                ($2, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
-            ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.work_type)
-                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
+            ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
                 .bind::<diesel::sql_types::Uuid, _>(editgroup_id)
                 .get_result(conn)?;
 

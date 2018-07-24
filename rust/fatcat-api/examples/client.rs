@@ -11,11 +11,13 @@ extern crate uuid;
 
 use clap::{App, Arg};
 #[allow(unused_imports)]
-use fatcat::{AcceptEditgroupResponse, ApiError, ApiNoContext, ContextWrapperExt, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse,
-             CreateEditgroupResponse, CreateFileBatchResponse, CreateFileResponse, CreateReleaseBatchResponse, CreateReleaseResponse, CreateWorkBatchResponse, CreateWorkResponse,
-             GetChangelogEntryResponse, GetChangelogResponse, GetContainerHistoryResponse, GetContainerResponse, GetCreatorHistoryResponse, GetCreatorReleasesResponse, GetCreatorResponse,
-             GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileHistoryResponse, GetFileResponse, GetReleaseFilesResponse, GetReleaseHistoryResponse, GetReleaseResponse,
-             GetStatsResponse, GetWorkHistoryResponse, GetWorkReleasesResponse, GetWorkResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse, LookupReleaseResponse};
+use fatcat::{
+    AcceptEditgroupResponse, ApiError, ApiNoContext, ContextWrapperExt, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse,
+    CreateEditgroupResponse, CreateFileBatchResponse, CreateFileResponse, CreateReleaseBatchResponse, CreateReleaseResponse, CreateWorkBatchResponse, CreateWorkResponse, GetChangelogEntryResponse,
+    GetChangelogResponse, GetContainerHistoryResponse, GetContainerResponse, GetCreatorHistoryResponse, GetCreatorReleasesResponse, GetCreatorResponse, GetEditgroupResponse,
+    GetEditorChangelogResponse, GetEditorResponse, GetFileHistoryResponse, GetFileResponse, GetReleaseFilesResponse, GetReleaseHistoryResponse, GetReleaseResponse, GetStatsResponse,
+    GetWorkHistoryResponse, GetWorkReleasesResponse, GetWorkResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse, LookupReleaseResponse,
+};
 #[allow(unused_imports)]
 use futures::{future, stream, Future, Stream};
 

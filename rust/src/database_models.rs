@@ -43,9 +43,11 @@ macro_rules! entity_structs {
         pub struct $edit_struct {
             pub id: i64,
             pub editgroup_id: Uuid,
+            pub updated: chrono::NaiveDateTime,
             pub ident_id: Uuid,
             pub rev_id: Option<Uuid>,
             pub redirect_id: Option<Uuid>,
+            pub prev_rev: Option<Uuid>,
             pub extra_json: Option<serde_json::Value>,
         }
 
@@ -56,6 +58,7 @@ macro_rules! entity_structs {
                     editgroup_id: uuid2fcid(&self.editgroup_id),
                     revision: self.rev_id.map(|v| v.to_string()),
                     redirect_ident: self.redirect_id.map(|v| uuid2fcid(&v)),
+                    prev_revision: self.prev_rev.map(|v| v.to_string()),
                     ident: uuid2fcid(&self.ident_id),
                     edit_id: self.id,
                     extra: self.extra_json,
@@ -96,6 +99,7 @@ pub struct ContainerRevRow {
     pub name: String,
     pub publisher: Option<String>,
     pub issnl: Option<String>,
+    pub wikidata_qid: Option<String>,
     pub abbrev: Option<String>,
     pub coden: Option<String>,
 }
@@ -116,6 +120,7 @@ pub struct CreatorRevRow {
     pub given_name: Option<String>,
     pub surname: Option<String>,
     pub orcid: Option<String>,
+    pub wikidata_qid: Option<String>,
 }
 
 entity_structs!(
@@ -126,6 +131,23 @@ entity_structs!(
 );
 
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
+#[table_name = "file_rev_url"]
+pub struct FileRevUrlRow {
+    pub id: i64,
+    pub file_rev: Uuid,
+    pub rel: String,
+    pub url: String,
+}
+
+#[derive(Debug, Queryable, Associations, AsChangeset, Insertable)]
+#[table_name = "file_rev_url"]
+pub struct FileRevUrlNewRow {
+    pub file_rev: Uuid,
+    pub rel: String,
+    pub url: String,
+}
+
+#[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
 #[table_name = "file_rev"]
 pub struct FileRevRow {
     pub id: Uuid,
@@ -134,7 +156,6 @@ pub struct FileRevRow {
     pub sha1: Option<String>,
     pub sha256: Option<String>,
     pub md5: Option<String>,
-    pub url: Option<String>,
     pub mimetype: Option<String>,
 }
 
@@ -152,6 +173,9 @@ pub struct ReleaseRevRow {
     pub release_status: Option<String>,
     pub release_date: Option<chrono::NaiveDate>,
     pub doi: Option<String>,
+    pub pmid: Option<String>,
+    pub pmcid: Option<String>,
+    pub wikidata_qid: Option<String>,
     pub isbn13: Option<String>,
     pub volume: Option<String>,
     pub issue: Option<String>,
@@ -172,11 +196,28 @@ entity_structs!(
 pub struct WorkRevRow {
     pub id: Uuid,
     pub extra_json: Option<serde_json::Value>,
-    pub work_type: Option<String>,
-    pub primary_release_id: Option<Uuid>,
 }
 
 entity_structs!("work_edit", WorkEditRow, "work_ident", WorkIdentRow);
+
+#[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
+#[table_name = "release_rev_abstract"]
+pub struct ReleaseRevAbstractRow {
+    pub id: i64,
+    pub release_rev: Uuid,
+    pub abstract_sha1: String,
+    pub mimetype: Option<String>,
+    pub lang: Option<String>,
+}
+
+#[derive(Debug, Queryable, Associations, AsChangeset, Insertable)]
+#[table_name = "release_rev_abstract"]
+pub struct ReleaseRevAbstractNewRow {
+    pub release_rev: Uuid,
+    pub abstract_sha1: String,
+    pub mimetype: Option<String>,
+    pub lang: Option<String>,
+}
 
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
 #[table_name = "release_contrib"]
@@ -184,9 +225,10 @@ pub struct ReleaseContribRow {
     pub id: i64,
     pub release_rev: Uuid,
     pub creator_ident_id: Option<Uuid>,
+    pub raw: Option<String>,
     pub role: Option<String>,
     pub index: Option<i64>,
-    pub raw: Option<String>,
+    pub extra_json: Option<serde_json::Value>,
 }
 
 #[derive(Debug, Insertable)]
@@ -194,9 +236,10 @@ pub struct ReleaseContribRow {
 pub struct ReleaseContribNewRow {
     pub release_rev: Uuid,
     pub creator_ident_id: Option<Uuid>,
+    pub raw: Option<String>,
     pub role: Option<String>,
     pub index: Option<i64>,
-    pub raw: Option<String>,
+    pub extra_json: Option<serde_json::Value>,
 }
 
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
@@ -207,7 +250,7 @@ pub struct ReleaseRefRow {
     pub target_release_ident_id: Option<Uuid>,
     pub index: Option<i64>,
     pub key: Option<String>,
-    pub raw: Option<String>,
+    pub extra_json: Option<serde_json::Value>,
     pub container_title: Option<String>,
     pub year: Option<i64>,
     pub title: Option<String>,
@@ -221,7 +264,7 @@ pub struct ReleaseRefNewRow {
     pub target_release_ident_id: Option<Uuid>,
     pub index: Option<i64>,
     pub key: Option<String>,
-    pub raw: Option<String>,
+    pub extra_json: Option<serde_json::Value>,
     pub container_title: Option<String>,
     pub year: Option<i64>,
     pub title: Option<String>,
@@ -239,8 +282,9 @@ pub struct FileReleaseRow {
 #[table_name = "editgroup"]
 pub struct EditgroupRow {
     pub id: Uuid,
-    pub extra_json: Option<serde_json::Value>,
     pub editor_id: Uuid,
+    pub created: chrono::NaiveDateTime,
+    pub extra_json: Option<serde_json::Value>,
     pub description: Option<String>,
 }
 
@@ -264,6 +308,7 @@ pub struct EditorRow {
     pub id: Uuid,
     pub username: String,
     pub is_admin: bool,
+    pub registered: chrono::NaiveDateTime,
     pub active_editgroup_id: Option<Uuid>,
 }
 

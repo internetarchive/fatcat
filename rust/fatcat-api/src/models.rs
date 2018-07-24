@@ -258,6 +258,10 @@ pub struct EntityEdit {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub revision: Option<String>,
 
+    #[serde(rename = "prev_revision")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub prev_revision: Option<String>,
+
     #[serde(rename = "redirect_ident")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub redirect_ident: Option<String>,
@@ -276,6 +280,7 @@ impl EntityEdit {
             edit_id: edit_id,
             ident: ident,
             revision: None,
+            prev_revision: None,
             redirect_ident: None,
             editgroup_id: editgroup_id,
             extra: None,
@@ -327,9 +332,9 @@ pub struct FileEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub mimetype: Option<String>,
 
-    #[serde(rename = "url")]
+    #[serde(rename = "urls")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub url: Option<String>,
+    pub urls: Option<Vec<models::FileEntityUrls>>,
 
     #[serde(rename = "sha256")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -378,7 +383,7 @@ impl FileEntity {
         FileEntity {
             releases: None,
             mimetype: None,
-            url: None,
+            urls: None,
             sha256: None,
             md5: None,
             sha1: None,
@@ -390,6 +395,21 @@ impl FileEntity {
             ident: None,
             state: None,
         }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct FileEntityUrls {
+    #[serde(rename = "url")]
+    pub url: String,
+
+    #[serde(rename = "rel")]
+    pub rel: String,
+}
+
+impl FileEntityUrls {
+    pub fn new(url: String, rel: String) -> FileEntityUrls {
+        FileEntityUrls { url: url, rel: rel }
     }
 }
 
@@ -407,6 +427,10 @@ pub struct ReleaseContrib {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub raw: Option<String>,
 
+    #[serde(rename = "extra")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub extra: Option<serde_json::Value>,
+
     #[serde(rename = "role")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub role: Option<String>,
@@ -418,6 +442,7 @@ impl ReleaseContrib {
             index: None,
             creator_id: None,
             raw: None,
+            extra: None,
             role: None,
         }
     }
@@ -425,6 +450,10 @@ impl ReleaseContrib {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReleaseEntity {
+    #[serde(rename = "abstracts")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub abstracts: Option<Vec<models::ReleaseEntityAbstracts>>,
+
     #[serde(rename = "refs")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub refs: Option<Vec<models::ReleaseRef>>,
@@ -453,6 +482,14 @@ pub struct ReleaseEntity {
     #[serde(rename = "volume")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub volume: Option<String>,
+
+    #[serde(rename = "pmcid")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pmcid: Option<String>,
+
+    #[serde(rename = "pmid")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pmid: Option<String>,
 
     #[serde(rename = "isbn13")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -514,6 +551,7 @@ pub struct ReleaseEntity {
 impl ReleaseEntity {
     pub fn new(title: String) -> ReleaseEntity {
         ReleaseEntity {
+            abstracts: None,
             refs: None,
             contribs: None,
             language: None,
@@ -521,6 +559,8 @@ impl ReleaseEntity {
             pages: None,
             issue: None,
             volume: None,
+            pmcid: None,
+            pmid: None,
             isbn13: None,
             doi: None,
             release_date: None,
@@ -540,6 +580,36 @@ impl ReleaseEntity {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ReleaseEntityAbstracts {
+    #[serde(rename = "sha1")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sha1: Option<String>,
+
+    #[serde(rename = "content")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub content: Option<String>,
+
+    #[serde(rename = "mimetype")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub mimetype: Option<String>,
+
+    #[serde(rename = "lang")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub lang: Option<String>,
+}
+
+impl ReleaseEntityAbstracts {
+    pub fn new() -> ReleaseEntityAbstracts {
+        ReleaseEntityAbstracts {
+            sha1: None,
+            content: None,
+            mimetype: None,
+            lang: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ReleaseRef {
     #[serde(rename = "index")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -549,9 +619,9 @@ pub struct ReleaseRef {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub target_release_id: Option<String>,
 
-    #[serde(rename = "raw")]
+    #[serde(rename = "extra")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub raw: Option<String>,
+    pub extra: Option<serde_json::Value>,
 
     #[serde(rename = "key")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -579,7 +649,7 @@ impl ReleaseRef {
         ReleaseRef {
             index: None,
             target_release_id: None,
-            raw: None,
+            extra: None,
             key: None,
             year: None,
             container_title: None,
@@ -616,10 +686,6 @@ impl Success {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct WorkEntity {
-    #[serde(rename = "work_type")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub work_type: Option<String>,
-
     #[serde(rename = "extra")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub extra: Option<serde_json::Value>,
@@ -649,7 +715,6 @@ pub struct WorkEntity {
 impl WorkEntity {
     pub fn new() -> WorkEntity {
         WorkEntity {
-            work_type: None,
             extra: None,
             editgroup_id: None,
             redirect: None,

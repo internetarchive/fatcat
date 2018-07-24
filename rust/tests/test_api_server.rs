@@ -318,8 +318,8 @@ fn test_post_file() {
             headers,
             r#"{"size": 76543,
                 "sha1": "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8",
-                "md5": "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8",
-                "sha256": "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8",
+                "md5": "0b6d347b01d437a092be84c2edfce72c",
+                "sha256": "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832",
                 "url": "http://archive.org/asdf.txt",
                 "mimetype": "application/pdf",
                 "releases": [
@@ -415,7 +415,6 @@ fn test_post_work() {
             headers.clone(),
             // TODO: target_work_id
             r#"{
-                "work_type": "journal-article",
                 "extra": { "source": "speculation" }
             }"#,
             &router,

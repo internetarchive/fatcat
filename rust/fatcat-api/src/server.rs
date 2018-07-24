@@ -12,8 +12,8 @@ use self::iron::url::percent_encoding::percent_decode;
 use self::iron::{modifiers, status, BeforeMiddleware};
 use self::router::Router;
 use self::urlencoded::UrlEncodedQuery;
-use futures::Future;
 use futures::future;
+use futures::Future;
 use futures::{stream, Stream};
 use hyper;
 use hyper::header::{ContentType, Headers};
@@ -36,11 +36,13 @@ use swagger::{ApiError, Context, XSpanId};
 
 #[allow(unused_imports)]
 use models;
-use {AcceptEditgroupResponse, Api, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse, CreateEditgroupResponse, CreateFileBatchResponse,
-     CreateFileResponse, CreateReleaseBatchResponse, CreateReleaseResponse, CreateWorkBatchResponse, CreateWorkResponse, GetChangelogEntryResponse, GetChangelogResponse, GetContainerHistoryResponse,
-     GetContainerResponse, GetCreatorHistoryResponse, GetCreatorReleasesResponse, GetCreatorResponse, GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileHistoryResponse,
-     GetFileResponse, GetReleaseFilesResponse, GetReleaseHistoryResponse, GetReleaseResponse, GetStatsResponse, GetWorkHistoryResponse, GetWorkReleasesResponse, GetWorkResponse,
-     LookupContainerResponse, LookupCreatorResponse, LookupFileResponse, LookupReleaseResponse};
+use {
+    AcceptEditgroupResponse, Api, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse, CreateEditgroupResponse, CreateFileBatchResponse,
+    CreateFileResponse, CreateReleaseBatchResponse, CreateReleaseResponse, CreateWorkBatchResponse, CreateWorkResponse, GetChangelogEntryResponse, GetChangelogResponse, GetContainerHistoryResponse,
+    GetContainerResponse, GetCreatorHistoryResponse, GetCreatorReleasesResponse, GetCreatorResponse, GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileHistoryResponse,
+    GetFileResponse, GetReleaseFilesResponse, GetReleaseHistoryResponse, GetReleaseResponse, GetStatsResponse, GetWorkHistoryResponse, GetWorkReleasesResponse, GetWorkResponse,
+    LookupContainerResponse, LookupCreatorResponse, LookupFileResponse, LookupReleaseResponse,
+};
 
 header! { (Warning, "Warning") => [String] }
 

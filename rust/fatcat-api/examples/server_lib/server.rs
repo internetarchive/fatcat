@@ -10,11 +10,13 @@ use std::collections::HashMap;
 use swagger;
 
 use fatcat::models;
-use fatcat::{AcceptEditgroupResponse, Api, ApiError, Context, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse, CreateEditgroupResponse,
-             CreateFileBatchResponse, CreateFileResponse, CreateReleaseBatchResponse, CreateReleaseResponse, CreateWorkBatchResponse, CreateWorkResponse, GetChangelogEntryResponse,
-             GetChangelogResponse, GetContainerHistoryResponse, GetContainerResponse, GetCreatorHistoryResponse, GetCreatorReleasesResponse, GetCreatorResponse, GetEditgroupResponse,
-             GetEditorChangelogResponse, GetEditorResponse, GetFileHistoryResponse, GetFileResponse, GetReleaseFilesResponse, GetReleaseHistoryResponse, GetReleaseResponse, GetStatsResponse,
-             GetWorkHistoryResponse, GetWorkReleasesResponse, GetWorkResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse, LookupReleaseResponse};
+use fatcat::{
+    AcceptEditgroupResponse, Api, ApiError, Context, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse, CreateEditgroupResponse,
+    CreateFileBatchResponse, CreateFileResponse, CreateReleaseBatchResponse, CreateReleaseResponse, CreateWorkBatchResponse, CreateWorkResponse, GetChangelogEntryResponse, GetChangelogResponse,
+    GetContainerHistoryResponse, GetContainerResponse, GetCreatorHistoryResponse, GetCreatorReleasesResponse, GetCreatorResponse, GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse,
+    GetFileHistoryResponse, GetFileResponse, GetReleaseFilesResponse, GetReleaseHistoryResponse, GetReleaseResponse, GetStatsResponse, GetWorkHistoryResponse, GetWorkReleasesResponse,
+    GetWorkResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse, LookupReleaseResponse,
+};
 
 #[derive(Copy, Clone)]
 pub struct Server;

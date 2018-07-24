@@ -19,10 +19,10 @@ extern crate futures;
 extern crate error_chain;
 
 use clap::{App, Arg};
-use hyper_openssl::OpensslServer;
 use hyper_openssl::openssl::error::ErrorStack;
 use hyper_openssl::openssl::ssl::{SslAcceptorBuilder, SslMethod};
 use hyper_openssl::openssl::x509::X509_FILETYPE_PEM;
+use hyper_openssl::OpensslServer;
 use iron::{Chain, Iron};
 use swagger::auth::AllowAllMiddleware;
 
