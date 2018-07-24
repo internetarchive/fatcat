@@ -111,8 +111,8 @@ CREATE INDEX container_ident_rev_idx ON container_ident(rev_id);
 
 CREATE TABLE container_edit (
     id                  BIGSERIAL PRIMARY KEY,
-    created             TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL,
     editgroup_id        UUID REFERENCES editgroup(id) NOT NULL,
+    updated             TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL,
     ident_id            UUID REFERENCES container_ident(id) NOT NULL,
     rev_id              UUID REFERENCES container_rev(id),
     redirect_id         UUID REFERENCES container_ident(id),
@@ -141,7 +141,7 @@ CREATE INDEX file_rev_sha256_idx ON file_rev(sha256) WHERE sha256 IS NOT NULL;
 CREATE TABLE file_rev_url (
     id                  BIGSERIAL PRIMARY KEY,
     file_rev            UUID REFERENCES file_rev(id) NOT NULL,
-    rel                 TEXT NOT NULL, -- TODO: enum? web, webarchive, repo, etc
+    rel                 TEXT NOT NULL, -- TODO: enum? web, webarchive, repo, etc TODO: default web?
     url                 TEXT NOT NULL
 );
 
@@ -156,8 +156,8 @@ CREATE INDEX file_ident_rev_idx ON file_ident(rev_id);
 
 CREATE TABLE file_edit (
     id                  BIGSERIAL PRIMARY KEY,
-    updated             TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL,
     editgroup_id        UUID REFERENCES editgroup(id) NOT NULL,
+    updated             TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL,
     ident_id            UUID REFERENCES file_ident(id) NOT NULL,
     rev_id              UUID REFERENCES file_rev(id),
     redirect_id         UUID REFERENCES file_ident(id),
@@ -199,7 +199,7 @@ CREATE INDEX release_rev_wikidata_idx ON release_rev(wikidata_qid) WHERE wikidat
 CREATE INDEX release_rev_isbn13_idx ON release_rev(isbn13) WHERE isbn13 IS NOT NULL;
 CREATE INDEX release_rev_work_idx ON release_rev(work_ident_id) WHERE work_ident_id IS NOT NULL;
 
-CREATE TABLE release_rev_abstracts (
+CREATE TABLE release_rev_abstract (
     id              BIGSERIAL PRIMARY KEY,
     release_rev     UUID REFERENCES release_rev(id) NOT NULL,
     abstract_sha1   CHAR(40) REFERENCES abstracts(sha1) NOT NULL,
@@ -218,8 +218,8 @@ CREATE INDEX release_ident_rev_idx ON release_ident(rev_id);
 
 CREATE TABLE release_edit (
     id                  BIGSERIAL PRIMARY KEY,
-    updated             TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL,
     editgroup_id        UUID REFERENCES editgroup(id) NOT NULL,
+    updated             TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL,
     ident_id            UUID REFERENCES release_ident(id) NOT NULL,
     rev_id              UUID REFERENCES release_rev(id),
     redirect_id         UUID REFERENCES release_ident(id),
@@ -246,8 +246,8 @@ CREATE INDEX work_ident_rev_idx ON work_ident(rev_id);
 
 CREATE TABLE work_edit (
     id                  BIGSERIAL PRIMARY KEY,
-    updated             TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL,
     editgroup_id        UUID REFERENCES editgroup(id) NOT NULL,
+    updated             TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL,
     ident_id            UUID REFERENCES work_ident(id) NOT NULL,
     rev_id              UUID REFERENCES work_rev(id),
     redirect_id         UUID REFERENCES work_ident(id),
@@ -421,7 +421,7 @@ INSERT INTO release_edit (ident_id, rev_id, redirect_id, editgroup_id, prev_rev)
     ('00000000-0000-0000-4444-000000000002', '00000000-0000-0000-4444-FFF000000002', null, '00000000-0000-0000-BBBB-000000000004', null),
     ('00000000-0000-0000-4444-000000000003', '00000000-0000-0000-4444-FFF000000003', null, '00000000-0000-0000-BBBB-000000000005', '00000000-0000-0000-4444-FFF000000002');
 
-INSERT INTO release_rev_abstracts (release_rev, abstract_sha1, mimetype, lang) VALUES
+INSERT INTO release_rev_abstract (release_rev, abstract_sha1, mimetype, lang) VALUES
     ('00000000-0000-0000-4444-FFF000000001', '1ba86bf8c2979a62d29b18b537e50b2b093be27e', 'text/plain', 'en'),
     ('00000000-0000-0000-4444-FFF000000002', '0da908ab584b5e445a06beb172e3fab8cb5169e3', 'application/xml+jats', 'en');
 
