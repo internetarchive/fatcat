@@ -4,9 +4,8 @@ use database_schema::*;
 use diesel;
 use diesel::prelude::*;
 use errors::*;
-use uuid::Uuid;
 use regex::Regex;
-
+use uuid::Uuid;
 
 pub fn get_or_create_editgroup(editor_id: Uuid, conn: &PgConnection) -> Result<Uuid> {
     // check for current active
@@ -119,74 +118,80 @@ pub fn check_pmcid(raw: &str) -> Result<()> {
     if RE.is_match(raw) {
         Ok(())
     } else {
-        Err(ErrorKind::MalformedExternalId(
-            format!("not a valid PubMed Central ID (PMCID): '{}' (expected, eg, 'PMC12345')", raw)
-        ).into())
+        Err(ErrorKind::MalformedExternalId(format!(
+            "not a valid PubMed Central ID (PMCID): '{}' (expected, eg, 'PMC12345')",
+            raw
+        )).into())
     }
 }
 
 pub fn check_pmid(raw: &str) -> Result<()> {
     lazy_static! {
-        static ref RE: Regex  = Regex::new(r"^\d+$").unwrap();
+        static ref RE: Regex = Regex::new(r"^\d+$").unwrap();
     }
     if RE.is_match(raw) {
         Ok(())
     } else {
-        Err(ErrorKind::MalformedExternalId(
-            format!("not a valid PubMed ID (PMID): '{}' (expected, eg, '1234')", raw)
-        ).into())
+        Err(ErrorKind::MalformedExternalId(format!(
+            "not a valid PubMed ID (PMID): '{}' (expected, eg, '1234')",
+            raw
+        )).into())
     }
 }
 
 pub fn check_wikidata_qid(raw: &str) -> Result<()> {
     lazy_static! {
-        static ref RE: Regex  = Regex::new(r"^Q\d+$").unwrap();
+        static ref RE: Regex = Regex::new(r"^Q\d+$").unwrap();
     }
     if RE.is_match(raw) {
         Ok(())
     } else {
-        Err(ErrorKind::MalformedExternalId(
-            format!("not a valid Wikidata QID: '{}' (expected, eg, 'Q1234')", raw)
-        ).into())
+        Err(ErrorKind::MalformedExternalId(format!(
+            "not a valid Wikidata QID: '{}' (expected, eg, 'Q1234')",
+            raw
+        )).into())
     }
 }
 
 pub fn check_doi(raw: &str) -> Result<()> {
     lazy_static! {
-        static ref RE: Regex  = Regex::new(r"^10.\d{3,6}/.+$").unwrap();
+        static ref RE: Regex = Regex::new(r"^10.\d{3,6}/.+$").unwrap();
     }
     if RE.is_match(raw) {
         Ok(())
     } else {
-        Err(ErrorKind::MalformedExternalId(
-            format!("not a valid DOI: '{}' (expected, eg, '10.1234/aksjdfh')", raw)
-        ).into())
+        Err(ErrorKind::MalformedExternalId(format!(
+            "not a valid DOI: '{}' (expected, eg, '10.1234/aksjdfh')",
+            raw
+        )).into())
     }
 }
 
 pub fn check_issn(raw: &str) -> Result<()> {
     lazy_static! {
-        static ref RE: Regex  = Regex::new(r"^\d{4}-\d{3}[0-9X]$").unwrap();
+        static ref RE: Regex = Regex::new(r"^\d{4}-\d{3}[0-9X]$").unwrap();
     }
     if RE.is_match(raw) {
         Ok(())
     } else {
-        Err(ErrorKind::MalformedExternalId(
-            format!("not a valid ISSN: '{}' (expected, eg, '1234-5678')", raw)
-        ).into())
+        Err(ErrorKind::MalformedExternalId(format!(
+            "not a valid ISSN: '{}' (expected, eg, '1234-5678')",
+            raw
+        )).into())
     }
 }
 
 pub fn check_orcid(raw: &str) -> Result<()> {
     lazy_static! {
-        static ref RE: Regex  = Regex::new(r"^\d{4}-\d{4}-\d{4}-\d{4}$").unwrap();
+        static ref RE: Regex = Regex::new(r"^\d{4}-\d{4}-\d{4}-\d{4}$").unwrap();
     }
     if RE.is_match(raw) {
         Ok(())
     } else {
-        Err(ErrorKind::MalformedExternalId(
-            format!("not a valid ORCID: '{}' (expected, eg, '0123-4567-3456-6789')", raw)
-        ).into())
+        Err(ErrorKind::MalformedExternalId(format!(
+            "not a valid ORCID: '{}' (expected, eg, '0123-4567-3456-6789')",
+            raw
+        )).into())
     }
 }
 

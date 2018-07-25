@@ -4,16 +4,17 @@ use api_helpers::*;
 use chrono;
 use database_models::*;
 use database_schema::{
-    changelog, container_edit, container_ident, container_rev, creator_edit, creator_ident,
-    creator_rev, editgroup, editor, file_edit, file_ident, file_release, file_rev, file_rev_url,
-    release_contrib, release_edit, release_ident, release_ref, release_rev, release_rev_abstract,
-    work_edit, work_ident, work_rev,
+    abstracts, changelog, container_edit, container_ident, container_rev, creator_edit,
+    creator_ident, creator_rev, editgroup, editor, file_edit, file_ident, file_release, file_rev,
+    file_rev_url, release_contrib, release_edit, release_ident, release_ref, release_rev,
+    release_rev_abstract, work_edit, work_ident, work_rev,
 };
 use diesel::prelude::*;
 use diesel::{self, insert_into};
 use errors::*;
 use fatcat_api::models;
 use fatcat_api::models::*;
+use sha1::Sha1;
 use uuid::Uuid;
 use ConnectionPool;
 
@@ -221,24 +222,26 @@ fn release_row2entity(
         .into_iter()
         .map(|c: ReleaseContribRow| ReleaseContrib {
             index: c.index,
-            raw: c.raw,
+            raw_name: c.raw_name,
             role: c.role,
             extra: c.extra_json,
             creator_id: c.creator_ident_id.map(|v| uuid2fcid(&v)),
         })
         .collect();
 
-    // XXX: join abstracts table
     let abstracts: Vec<ReleaseEntityAbstracts> = release_rev_abstract::table
+        .inner_join(abstracts::table)
         .filter(release_rev_abstract::release_rev.eq(rev.id))
         .get_results(conn)?
         .into_iter()
-        .map(|r: ReleaseRevAbstractRow| ReleaseEntityAbstracts {
-            sha1: Some(r.abstract_sha1),
-            mimetype: r.mimetype,
-            lang: r.lang,
-            content: None,
-        })
+        .map(
+            |r: (ReleaseRevAbstractRow, AbstractsRow)| ReleaseEntityAbstracts {
+                sha1: Some(r.0.abstract_sha1),
+                mimetype: r.0.mimetype,
+                lang: r.0.lang,
+                content: Some(r.1.content),
+            },
+        )
         .collect();
 
     Ok(ReleaseEntity {
@@ -767,6 +770,7 @@ impl Server {
                 if contrib_list.is_empty() {
                     Some(vec![])
                 } else {
+                    println!("{:#?}", contrib_list);
                     let contrib_rows: Vec<ReleaseContribNewRow> = contrib_list
                         .iter()
                         .map(|c| ReleaseContribNewRow {
@@ -774,7 +778,7 @@ impl Server {
                             creator_ident_id: c.creator_id
                                 .clone()
                                 .map(|v| fcid2uuid(&v).expect("valid fatcat identifier")),
-                            raw: c.raw.clone(),
+                            raw_name: c.raw_name.clone(),
                             index: c.index,
                             role: c.role.clone(),
                             extra_json: c.extra.clone(),
@@ -788,6 +792,42 @@ impl Server {
                 }
             }
         };
+
+        if let Some(abstract_list) = entity.abstracts {
+            // For rows that specify content, we need to insert the abstract if it doesn't exist
+            // already
+            let new_abstracts: Vec<AbstractsRow> = abstract_list
+                .iter()
+                .filter(|ea| ea.content.is_some())
+                .map(|c| AbstractsRow {
+                    sha1: Sha1::from(c.content.clone().unwrap()).hexdigest(),
+                    content: c.content.clone().unwrap(),
+                })
+                .collect();
+            if !new_abstracts.is_empty() {
+                // Sort of an "upsert"; only inserts new abstract rows if they don't already exist
+                insert_into(abstracts::table)
+                    .values(new_abstracts)
+                    //.on_conflict(abstracts::sha1)
+                    //.do_nothing()
+                    .execute(conn)?;
+            }
+            let release_abstract_rows: Vec<ReleaseRevAbstractNewRow> = abstract_list
+                .into_iter()
+                .map(|c| ReleaseRevAbstractNewRow {
+                    release_rev: edit.rev_id.unwrap(),
+                    abstract_sha1: match c.content {
+                        Some(ref content) => Sha1::from(content).hexdigest(),
+                        None => c.sha1.expect("either abstract_sha1 or content is required"),
+                    },
+                    lang: c.lang,
+                    mimetype: c.mimetype,
+                })
+                .collect();
+            insert_into(release_rev_abstract::table)
+                .values(release_abstract_rows)
+                .execute(conn)?;
+        }
 
         edit.into_model()
     }

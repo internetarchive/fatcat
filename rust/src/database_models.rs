@@ -225,7 +225,7 @@ pub struct ReleaseContribRow {
     pub id: i64,
     pub release_rev: Uuid,
     pub creator_ident_id: Option<Uuid>,
-    pub raw: Option<String>,
+    pub raw_name: Option<String>,
     pub role: Option<String>,
     pub index: Option<i64>,
     pub extra_json: Option<serde_json::Value>,
@@ -236,7 +236,7 @@ pub struct ReleaseContribRow {
 pub struct ReleaseContribNewRow {
     pub release_rev: Uuid,
     pub creator_ident_id: Option<Uuid>,
-    pub raw: Option<String>,
+    pub raw_name: Option<String>,
     pub role: Option<String>,
     pub index: Option<i64>,
     pub extra_json: Option<serde_json::Value>,
@@ -276,6 +276,13 @@ pub struct ReleaseRefNewRow {
 pub struct FileReleaseRow {
     pub file_rev: Uuid,
     pub target_release_ident_id: Uuid,
+}
+
+#[derive(Debug, Queryable, Insertable, Associations, AsChangeset)]
+#[table_name = "abstracts"]
+pub struct AbstractsRow {
+    pub sha1: String,
+    pub content: String,
 }
 
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]

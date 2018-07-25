@@ -422,11 +422,11 @@ fn test_post_release() {
                     }],
                 "contribs": [{
                         "index": 1,
-                        "raw": "textual description of contributor (aka, name)",
+                        "raw_name": "textual description of contributor (aka, name)",
                         "creator_id": "aaaaaaaaaaaaaircaaaaaaaaae",
                         "contrib_type": "author"
                     },{
-                        "raw": "shorter"
+                        "raw_name": "shorter"
                     }],
                 "extra": { "source": "speculation" }
                 }"#,
@@ -620,11 +620,11 @@ fn test_400() {
                     }],
                 "contribs": [{
                         "index": 1,
-                        "raw": "textual description of contributor (aka, name)",
+                        "raw_name": "textual description of contributor (aka, name)",
                         "creator_id": "aaaaaaaaaaaaaircaaaaaaaaae",
                         "contrib_type": "author"
                     },{
-                        "raw": "shorter"
+                        "raw_name": "shorter"
                     }],
                 "extra": { "source": "speculation" }
                 }"#,
@@ -820,8 +820,8 @@ fn test_abstracts() {
             &router,
         ),
         status::Ok,
-        // SHA-1 of first abstract string
-        Some("4e30ded694c6a7775b9e7b019dfda6be0dd60944"),
+        // SHA-1 of first abstract string (with no trailing newline)
+        Some("65c171bd8c968e12ede25ad95f02cd4b2ce9db52"),
     );
     check_response(
         request::get(
@@ -840,5 +840,48 @@ fn test_abstracts() {
         ),
         status::Ok,
         Some("24iu3i25u2"),
+    );
+}
+
+#[test]
+fn test_contribs() {
+    let (headers, router, conn) = setup();
+
+    check_response(
+        request::post(
+            "http://localhost:9411/v0/release",
+            headers.clone(),
+            r#"{"title": "some paper",
+                "doi": "10.1234/iiiiiii",
+                "contribs": [{
+                        "index": 1,
+                        "raw_name": "textual description of contributor (aka, name)",
+                        "creator_id": "aaaaaaaaaaaaaircaaaaaaaaae",
+                        "contrib_type": "author",
+                        "extra": {"key": "value 28328424942"}
+                    },{
+                        "raw_name": "shorter"
+                    }]
+                }"#,
+            &router,
+        ),
+        status::Created,
+        None,
+    );
+
+    let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
+    let editgroup_id = get_or_create_editgroup(editor_id, &conn).unwrap();
+    check_response(
+        request::post(
+            &format!(
+                "http://localhost:9411/v0/editgroup/{}/accept",
+                uuid2fcid(&editgroup_id)
+            ),
+            headers.clone(),
+            "",
+            &router,
+        ),
+        status::Ok,
+        None,
     );
 }
