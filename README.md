@@ -24,6 +24,10 @@ library, web interface, and data ingesters exist in python. Elasticsearch index
 is currently just a Crossref metadata dump and doesn't match entities in the
 database/API (but is useful for paper lookups).
 
+See the LICENSE file for details permissions and licensing of both python and
+rust code. In short, the auto-generated client libraries are permissively
+released, while the API server and web interface are strong copyleft (AGPLv3).
+
 ## Status
 
 - HTTP API
