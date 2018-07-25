@@ -33,23 +33,26 @@ class ReleaseContrib(object):
     swagger_types = {
         'index': 'int',
         'creator_id': 'str',
-        'raw': 'str',
+        'raw_name': 'str',
+        'extra': 'object',
         'role': 'str'
     }
 
     attribute_map = {
         'index': 'index',
         'creator_id': 'creator_id',
-        'raw': 'raw',
+        'raw_name': 'raw_name',
+        'extra': 'extra',
         'role': 'role'
     }
 
-    def __init__(self, index=None, creator_id=None, raw=None, role=None):  # noqa: E501
+    def __init__(self, index=None, creator_id=None, raw_name=None, extra=None, role=None):  # noqa: E501
         """ReleaseContrib - a model defined in Swagger"""  # noqa: E501
 
         self._index = None
         self._creator_id = None
-        self._raw = None
+        self._raw_name = None
+        self._extra = None
         self._role = None
         self.discriminator = None
 
@@ -57,8 +60,10 @@ class ReleaseContrib(object):
             self.index = index
         if creator_id is not None:
             self.creator_id = creator_id
-        if raw is not None:
-            self.raw = raw
+        if raw_name is not None:
+            self.raw_name = raw_name
+        if extra is not None:
+            self.extra = extra
         if role is not None:
             self.role = role
 
@@ -105,25 +110,46 @@ class ReleaseContrib(object):
         self._creator_id = creator_id
 
     @property
-    def raw(self):
-        """Gets the raw of this ReleaseContrib.  # noqa: E501
+    def raw_name(self):
+        """Gets the raw_name of this ReleaseContrib.  # noqa: E501
 
 
-        :return: The raw of this ReleaseContrib.  # noqa: E501
+        :return: The raw_name of this ReleaseContrib.  # noqa: E501
         :rtype: str
         """
-        return self._raw
+        return self._raw_name
 
-    @raw.setter
-    def raw(self, raw):
-        """Sets the raw of this ReleaseContrib.
+    @raw_name.setter
+    def raw_name(self, raw_name):
+        """Sets the raw_name of this ReleaseContrib.
 
 
-        :param raw: The raw of this ReleaseContrib.  # noqa: E501
+        :param raw_name: The raw_name of this ReleaseContrib.  # noqa: E501
         :type: str
         """
 
-        self._raw = raw
+        self._raw_name = raw_name
+
+    @property
+    def extra(self):
+        """Gets the extra of this ReleaseContrib.  # noqa: E501
+
+
+        :return: The extra of this ReleaseContrib.  # noqa: E501
+        :rtype: object
+        """
+        return self._extra
+
+    @extra.setter
+    def extra(self, extra):
+        """Sets the extra of this ReleaseContrib.
+
+
+        :param extra: The extra of this ReleaseContrib.  # noqa: E501
+        :type: object
+        """
+
+        self._extra = extra
 
     @property
     def role(self):

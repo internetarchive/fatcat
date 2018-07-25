@@ -33,7 +33,7 @@ class ReleaseRef(object):
     swagger_types = {
         'index': 'int',
         'target_release_id': 'str',
-        'raw': 'str',
+        'extra': 'object',
         'key': 'str',
         'year': 'int',
         'container_title': 'str',
@@ -44,7 +44,7 @@ class ReleaseRef(object):
     attribute_map = {
         'index': 'index',
         'target_release_id': 'target_release_id',
-        'raw': 'raw',
+        'extra': 'extra',
         'key': 'key',
         'year': 'year',
         'container_title': 'container_title',
@@ -52,12 +52,12 @@ class ReleaseRef(object):
         'locator': 'locator'
     }
 
-    def __init__(self, index=None, target_release_id=None, raw=None, key=None, year=None, container_title=None, title=None, locator=None):  # noqa: E501
+    def __init__(self, index=None, target_release_id=None, extra=None, key=None, year=None, container_title=None, title=None, locator=None):  # noqa: E501
         """ReleaseRef - a model defined in Swagger"""  # noqa: E501
 
         self._index = None
         self._target_release_id = None
-        self._raw = None
+        self._extra = None
         self._key = None
         self._year = None
         self._container_title = None
@@ -69,8 +69,8 @@ class ReleaseRef(object):
             self.index = index
         if target_release_id is not None:
             self.target_release_id = target_release_id
-        if raw is not None:
-            self.raw = raw
+        if extra is not None:
+            self.extra = extra
         if key is not None:
             self.key = key
         if year is not None:
@@ -125,25 +125,25 @@ class ReleaseRef(object):
         self._target_release_id = target_release_id
 
     @property
-    def raw(self):
-        """Gets the raw of this ReleaseRef.  # noqa: E501
+    def extra(self):
+        """Gets the extra of this ReleaseRef.  # noqa: E501
 
 
-        :return: The raw of this ReleaseRef.  # noqa: E501
-        :rtype: str
+        :return: The extra of this ReleaseRef.  # noqa: E501
+        :rtype: object
         """
-        return self._raw
+        return self._extra
 
-    @raw.setter
-    def raw(self, raw):
-        """Sets the raw of this ReleaseRef.
+    @extra.setter
+    def extra(self, extra):
+        """Sets the extra of this ReleaseRef.
 
 
-        :param raw: The raw of this ReleaseRef.  # noqa: E501
-        :type: str
+        :param extra: The extra of this ReleaseRef.  # noqa: E501
+        :type: object
         """
 
-        self._raw = raw
+        self._extra = extra
 
     @property
     def key(self):

@@ -34,6 +34,7 @@ class EntityEdit(object):
         'edit_id': 'int',
         'ident': 'str',
         'revision': 'str',
+        'prev_revision': 'str',
         'redirect_ident': 'str',
         'editgroup_id': 'str',
         'extra': 'object'
@@ -43,17 +44,19 @@ class EntityEdit(object):
         'edit_id': 'edit_id',
         'ident': 'ident',
         'revision': 'revision',
+        'prev_revision': 'prev_revision',
         'redirect_ident': 'redirect_ident',
         'editgroup_id': 'editgroup_id',
         'extra': 'extra'
     }
 
-    def __init__(self, edit_id=None, ident=None, revision=None, redirect_ident=None, editgroup_id=None, extra=None):  # noqa: E501
+    def __init__(self, edit_id=None, ident=None, revision=None, prev_revision=None, redirect_ident=None, editgroup_id=None, extra=None):  # noqa: E501
         """EntityEdit - a model defined in Swagger"""  # noqa: E501
 
         self._edit_id = None
         self._ident = None
         self._revision = None
+        self._prev_revision = None
         self._redirect_ident = None
         self._editgroup_id = None
         self._extra = None
@@ -63,6 +66,8 @@ class EntityEdit(object):
         self.ident = ident
         if revision is not None:
             self.revision = revision
+        if prev_revision is not None:
+            self.prev_revision = prev_revision
         if redirect_ident is not None:
             self.redirect_ident = redirect_ident
         self.editgroup_id = editgroup_id
@@ -135,6 +140,27 @@ class EntityEdit(object):
         """
 
         self._revision = revision
+
+    @property
+    def prev_revision(self):
+        """Gets the prev_revision of this EntityEdit.  # noqa: E501
+
+
+        :return: The prev_revision of this EntityEdit.  # noqa: E501
+        :rtype: str
+        """
+        return self._prev_revision
+
+    @prev_revision.setter
+    def prev_revision(self, prev_revision):
+        """Sets the prev_revision of this EntityEdit.
+
+
+        :param prev_revision: The prev_revision of this EntityEdit.  # noqa: E501
+        :type: str
+        """
+
+        self._prev_revision = prev_revision
 
     @property
     def redirect_ident(self):

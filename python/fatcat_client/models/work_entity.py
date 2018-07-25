@@ -31,7 +31,6 @@ class WorkEntity(object):
                             and the value is json key in definition.
     """
     swagger_types = {
-        'work_type': 'str',
         'extra': 'object',
         'editgroup_id': 'str',
         'redirect': 'str',
@@ -41,7 +40,6 @@ class WorkEntity(object):
     }
 
     attribute_map = {
-        'work_type': 'work_type',
         'extra': 'extra',
         'editgroup_id': 'editgroup_id',
         'redirect': 'redirect',
@@ -50,10 +48,9 @@ class WorkEntity(object):
         'state': 'state'
     }
 
-    def __init__(self, work_type=None, extra=None, editgroup_id=None, redirect=None, revision=None, ident=None, state=None):  # noqa: E501
+    def __init__(self, extra=None, editgroup_id=None, redirect=None, revision=None, ident=None, state=None):  # noqa: E501
         """WorkEntity - a model defined in Swagger"""  # noqa: E501
 
-        self._work_type = None
         self._extra = None
         self._editgroup_id = None
         self._redirect = None
@@ -62,8 +59,6 @@ class WorkEntity(object):
         self._state = None
         self.discriminator = None
 
-        if work_type is not None:
-            self.work_type = work_type
         if extra is not None:
             self.extra = extra
         if editgroup_id is not None:
@@ -76,27 +71,6 @@ class WorkEntity(object):
             self.ident = ident
         if state is not None:
             self.state = state
-
-    @property
-    def work_type(self):
-        """Gets the work_type of this WorkEntity.  # noqa: E501
-
-
-        :return: The work_type of this WorkEntity.  # noqa: E501
-        :rtype: str
-        """
-        return self._work_type
-
-    @work_type.setter
-    def work_type(self, work_type):
-        """Sets the work_type of this WorkEntity.
-
-
-        :param work_type: The work_type of this WorkEntity.  # noqa: E501
-        :type: str
-        """
-
-        self._work_type = work_type
 
     @property
     def extra(self):

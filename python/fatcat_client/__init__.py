@@ -32,8 +32,10 @@ from fatcat_client.models.entity_edit import EntityEdit
 from fatcat_client.models.entity_history_entry import EntityHistoryEntry
 from fatcat_client.models.error_response import ErrorResponse
 from fatcat_client.models.file_entity import FileEntity
+from fatcat_client.models.file_entity_urls import FileEntityUrls
 from fatcat_client.models.release_contrib import ReleaseContrib
 from fatcat_client.models.release_entity import ReleaseEntity
+from fatcat_client.models.release_entity_abstracts import ReleaseEntityAbstracts
 from fatcat_client.models.release_ref import ReleaseRef
 from fatcat_client.models.stats_response import StatsResponse
 from fatcat_client.models.success import Success

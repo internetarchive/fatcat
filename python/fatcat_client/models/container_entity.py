@@ -33,6 +33,7 @@ class ContainerEntity(object):
     swagger_types = {
         'coden': 'str',
         'abbrev': 'str',
+        'wikidata_qid': 'str',
         'issnl': 'str',
         'publisher': 'str',
         'name': 'str',
@@ -47,6 +48,7 @@ class ContainerEntity(object):
     attribute_map = {
         'coden': 'coden',
         'abbrev': 'abbrev',
+        'wikidata_qid': 'wikidata_qid',
         'issnl': 'issnl',
         'publisher': 'publisher',
         'name': 'name',
@@ -58,11 +60,12 @@ class ContainerEntity(object):
         'state': 'state'
     }
 
-    def __init__(self, coden=None, abbrev=None, issnl=None, publisher=None, name=None, extra=None, editgroup_id=None, redirect=None, revision=None, ident=None, state=None):  # noqa: E501
+    def __init__(self, coden=None, abbrev=None, wikidata_qid=None, issnl=None, publisher=None, name=None, extra=None, editgroup_id=None, redirect=None, revision=None, ident=None, state=None):  # noqa: E501
         """ContainerEntity - a model defined in Swagger"""  # noqa: E501
 
         self._coden = None
         self._abbrev = None
+        self._wikidata_qid = None
         self._issnl = None
         self._publisher = None
         self._name = None
@@ -78,6 +81,8 @@ class ContainerEntity(object):
             self.coden = coden
         if abbrev is not None:
             self.abbrev = abbrev
+        if wikidata_qid is not None:
+            self.wikidata_qid = wikidata_qid
         if issnl is not None:
             self.issnl = issnl
         if publisher is not None:
@@ -137,6 +142,27 @@ class ContainerEntity(object):
         """
 
         self._abbrev = abbrev
+
+    @property
+    def wikidata_qid(self):
+        """Gets the wikidata_qid of this ContainerEntity.  # noqa: E501
+
+
+        :return: The wikidata_qid of this ContainerEntity.  # noqa: E501
+        :rtype: str
+        """
+        return self._wikidata_qid
+
+    @wikidata_qid.setter
+    def wikidata_qid(self, wikidata_qid):
+        """Sets the wikidata_qid of this ContainerEntity.
+
+
+        :param wikidata_qid: The wikidata_qid of this ContainerEntity.  # noqa: E501
+        :type: str
+        """
+
+        self._wikidata_qid = wikidata_qid
 
     @property
     def issnl(self):

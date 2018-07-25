@@ -31,6 +31,7 @@ class CreatorEntity(object):
                             and the value is json key in definition.
     """
     swagger_types = {
+        'wikidata_qid': 'str',
         'orcid': 'str',
         'surname': 'str',
         'given_name': 'str',
@@ -44,6 +45,7 @@ class CreatorEntity(object):
     }
 
     attribute_map = {
+        'wikidata_qid': 'wikidata_qid',
         'orcid': 'orcid',
         'surname': 'surname',
         'given_name': 'given_name',
@@ -56,9 +58,10 @@ class CreatorEntity(object):
         'extra': 'extra'
     }
 
-    def __init__(self, orcid=None, surname=None, given_name=None, display_name=None, state=None, ident=None, revision=None, redirect=None, editgroup_id=None, extra=None):  # noqa: E501
+    def __init__(self, wikidata_qid=None, orcid=None, surname=None, given_name=None, display_name=None, state=None, ident=None, revision=None, redirect=None, editgroup_id=None, extra=None):  # noqa: E501
         """CreatorEntity - a model defined in Swagger"""  # noqa: E501
 
+        self._wikidata_qid = None
         self._orcid = None
         self._surname = None
         self._given_name = None
@@ -71,6 +74,8 @@ class CreatorEntity(object):
         self._extra = None
         self.discriminator = None
 
+        if wikidata_qid is not None:
+            self.wikidata_qid = wikidata_qid
         if orcid is not None:
             self.orcid = orcid
         if surname is not None:
@@ -90,6 +95,27 @@ class CreatorEntity(object):
             self.editgroup_id = editgroup_id
         if extra is not None:
             self.extra = extra
+
+    @property
+    def wikidata_qid(self):
+        """Gets the wikidata_qid of this CreatorEntity.  # noqa: E501
+
+
+        :return: The wikidata_qid of this CreatorEntity.  # noqa: E501
+        :rtype: str
+        """
+        return self._wikidata_qid
+
+    @wikidata_qid.setter
+    def wikidata_qid(self, wikidata_qid):
+        """Sets the wikidata_qid of this CreatorEntity.
+
+
+        :param wikidata_qid: The wikidata_qid of this CreatorEntity.  # noqa: E501
+        :type: str
+        """
+
+        self._wikidata_qid = wikidata_qid
 
     @property
     def orcid(self):

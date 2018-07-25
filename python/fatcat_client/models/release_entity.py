@@ -17,6 +17,7 @@ import re  # noqa: F401
 import six
 
 from fatcat_client.models.release_contrib import ReleaseContrib  # noqa: F401,E501
+from fatcat_client.models.release_entity_abstracts import ReleaseEntityAbstracts  # noqa: F401,E501
 from fatcat_client.models.release_ref import ReleaseRef  # noqa: F401,E501
 
 
@@ -34,6 +35,7 @@ class ReleaseEntity(object):
                             and the value is json key in definition.
     """
     swagger_types = {
+        'abstracts': 'list[ReleaseEntityAbstracts]',
         'refs': 'list[ReleaseRef]',
         'contribs': 'list[ReleaseContrib]',
         'language': 'str',
@@ -41,6 +43,9 @@ class ReleaseEntity(object):
         'pages': 'str',
         'issue': 'str',
         'volume': 'str',
+        'wikidata_qid': 'str',
+        'pmcid': 'str',
+        'pmid': 'str',
         'isbn13': 'str',
         'doi': 'str',
         'release_date': 'date',
@@ -58,6 +63,7 @@ class ReleaseEntity(object):
     }
 
     attribute_map = {
+        'abstracts': 'abstracts',
         'refs': 'refs',
         'contribs': 'contribs',
         'language': 'language',
@@ -65,6 +71,9 @@ class ReleaseEntity(object):
         'pages': 'pages',
         'issue': 'issue',
         'volume': 'volume',
+        'wikidata_qid': 'wikidata_qid',
+        'pmcid': 'pmcid',
+        'pmid': 'pmid',
         'isbn13': 'isbn13',
         'doi': 'doi',
         'release_date': 'release_date',
@@ -81,9 +90,10 @@ class ReleaseEntity(object):
         'extra': 'extra'
     }
 
-    def __init__(self, refs=None, contribs=None, language=None, publisher=None, pages=None, issue=None, volume=None, isbn13=None, doi=None, release_date=None, release_status=None, release_type=None, container_id=None, work_id=None, title=None, state=None, ident=None, revision=None, redirect=None, editgroup_id=None, extra=None):  # noqa: E501
+    def __init__(self, abstracts=None, refs=None, contribs=None, language=None, publisher=None, pages=None, issue=None, volume=None, wikidata_qid=None, pmcid=None, pmid=None, isbn13=None, doi=None, release_date=None, release_status=None, release_type=None, container_id=None, work_id=None, title=None, state=None, ident=None, revision=None, redirect=None, editgroup_id=None, extra=None):  # noqa: E501
         """ReleaseEntity - a model defined in Swagger"""  # noqa: E501
 
+        self._abstracts = None
         self._refs = None
         self._contribs = None
         self._language = None
@@ -91,6 +101,9 @@ class ReleaseEntity(object):
         self._pages = None
         self._issue = None
         self._volume = None
+        self._wikidata_qid = None
+        self._pmcid = None
+        self._pmid = None
         self._isbn13 = None
         self._doi = None
         self._release_date = None
@@ -107,6 +120,8 @@ class ReleaseEntity(object):
         self._extra = None
         self.discriminator = None
 
+        if abstracts is not None:
+            self.abstracts = abstracts
         if refs is not None:
             self.refs = refs
         if contribs is not None:
@@ -121,6 +136,12 @@ class ReleaseEntity(object):
             self.issue = issue
         if volume is not None:
             self.volume = volume
+        if wikidata_qid is not None:
+            self.wikidata_qid = wikidata_qid
+        if pmcid is not None:
+            self.pmcid = pmcid
+        if pmid is not None:
+            self.pmid = pmid
         if isbn13 is not None:
             self.isbn13 = isbn13
         if doi is not None:
@@ -148,6 +169,27 @@ class ReleaseEntity(object):
             self.editgroup_id = editgroup_id
         if extra is not None:
             self.extra = extra
+
+    @property
+    def abstracts(self):
+        """Gets the abstracts of this ReleaseEntity.  # noqa: E501
+
+
+        :return: The abstracts of this ReleaseEntity.  # noqa: E501
+        :rtype: list[ReleaseEntityAbstracts]
+        """
+        return self._abstracts
+
+    @abstracts.setter
+    def abstracts(self, abstracts):
+        """Sets the abstracts of this ReleaseEntity.
+
+
+        :param abstracts: The abstracts of this ReleaseEntity.  # noqa: E501
+        :type: list[ReleaseEntityAbstracts]
+        """
+
+        self._abstracts = abstracts
 
     @property
     def refs(self):
@@ -297,6 +339,69 @@ class ReleaseEntity(object):
         """
 
         self._volume = volume
+
+    @property
+    def wikidata_qid(self):
+        """Gets the wikidata_qid of this ReleaseEntity.  # noqa: E501
+
+
+        :return: The wikidata_qid of this ReleaseEntity.  # noqa: E501
+        :rtype: str
+        """
+        return self._wikidata_qid
+
+    @wikidata_qid.setter
+    def wikidata_qid(self, wikidata_qid):
+        """Sets the wikidata_qid of this ReleaseEntity.
+
+
+        :param wikidata_qid: The wikidata_qid of this ReleaseEntity.  # noqa: E501
+        :type: str
+        """
+
+        self._wikidata_qid = wikidata_qid
+
+    @property
+    def pmcid(self):
+        """Gets the pmcid of this ReleaseEntity.  # noqa: E501
+
+
+        :return: The pmcid of this ReleaseEntity.  # noqa: E501
+        :rtype: str
+        """
+        return self._pmcid
+
+    @pmcid.setter
+    def pmcid(self, pmcid):
+        """Sets the pmcid of this ReleaseEntity.
+
+
+        :param pmcid: The pmcid of this ReleaseEntity.  # noqa: E501
+        :type: str
+        """
+
+        self._pmcid = pmcid
+
+    @property
+    def pmid(self):
+        """Gets the pmid of this ReleaseEntity.  # noqa: E501
+
+
+        :return: The pmid of this ReleaseEntity.  # noqa: E501
+        :rtype: str
+        """
+        return self._pmid
+
+    @pmid.setter
+    def pmid(self, pmid):
+        """Sets the pmid of this ReleaseEntity.
+
+
+        :param pmid: The pmid of this ReleaseEntity.  # noqa: E501
+        :type: str
+        """
+
+        self._pmid = pmid
 
     @property
     def isbn13(self):
