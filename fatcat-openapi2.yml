@@ -365,7 +365,7 @@ definitions:
       creator_id:
         type: string
         #format: ident
-      raw:
+      raw_name:
         type: string
       extra:
         type: object

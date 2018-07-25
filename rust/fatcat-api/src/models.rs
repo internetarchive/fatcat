@@ -433,9 +433,9 @@ pub struct ReleaseContrib {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub creator_id: Option<String>,
 
-    #[serde(rename = "raw")]
+    #[serde(rename = "raw_name")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub raw: Option<String>,
+    pub raw_name: Option<String>,
 
     #[serde(rename = "extra")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -451,7 +451,7 @@ impl ReleaseContrib {
         ReleaseContrib {
             index: None,
             creator_id: None,
-            raw: None,
+            raw_name: None,
             extra: None,
             role: None,
         }

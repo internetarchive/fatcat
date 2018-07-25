@@ -2179,16 +2179,16 @@ definitions:
       language: "language"
       title: "title"
       contribs:
-      - role: "role"
+      - raw_name: "raw_name"
+        role: "role"
         extra: "{}"
         creator_id: "creator_id"
         index: 1
-        raw: "raw"
-      - role: "role"
+      - raw_name: "raw_name"
+        role: "role"
         extra: "{}"
         creator_id: "creator_id"
         index: 1
-        raw: "raw"
       pages: "pages"
       extra: "{}"
       editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -2751,18 +2751,18 @@ definitions:
         format: "int64"
       creator_id:
         type: "string"
-      raw:
+      raw_name:
         type: "string"
       extra:
         type: "object"
       role:
         type: "string"
     example:
+      raw_name: "raw_name"
       role: "role"
       extra: "{}"
       creator_id: "creator_id"
       index: 1
-      raw: "raw"
     upperCaseName: "RELEASE_CONTRIB"
   stats_response:
     type: "object"
