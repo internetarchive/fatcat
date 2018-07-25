@@ -25,7 +25,7 @@ macro_rules! wrap_entity_handlers {
             id: String,
             _context: &Context,
         ) -> Box<Future<Item = $get_resp, Error = ApiError> + Send> {
-            let ret = match self.$get_handler(id.clone()) {
+            let ret = match self.$get_handler(&id) {
                 Ok(entity) =>
                     $get_resp::FoundEntity(entity),
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
@@ -95,7 +95,7 @@ macro_rules! wrap_entity_handlers {
             limit: Option<i64>,
             _context: &Context,
         ) -> Box<Future<Item = $get_history_resp, Error = ApiError> + Send> {
-            let ret = match self.$get_history_handler(id.clone(), limit) {
+            let ret = match self.$get_history_handler(&id, limit) {
                 Ok(history) =>
                     $get_history_resp::FoundEntityHistory(history),
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
@@ -122,7 +122,7 @@ macro_rules! wrap_lookup_handler {
             $idname: $idtype,
             _context: &Context,
         ) -> Box<Future<Item = $get_resp, Error = ApiError> + Send> {
-            let ret = match self.$get_handler($idname.clone()) {
+            let ret = match self.$get_handler(&$idname) {
                 Ok(entity) =>
                     $get_resp::FoundEntity(entity),
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
@@ -271,7 +271,7 @@ impl Api for Server {
         id: String,
         _context: &Context,
     ) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send> {
-        let ret = match self.accept_editgroup_handler(id.clone()) {
+        let ret = match self.accept_editgroup_handler(&id) {
             Ok(()) => AcceptEditgroupResponse::MergedSuccessfully(Success {
                 message: "horray!".to_string(),
             }),
@@ -292,7 +292,7 @@ impl Api for Server {
         id: String,
         _context: &Context,
     ) -> Box<Future<Item = GetEditgroupResponse, Error = ApiError> + Send> {
-        let ret = match self.get_editgroup_handler(id.clone()) {
+        let ret = match self.get_editgroup_handler(&id) {
             Ok(entity) =>
                 GetEditgroupResponse::FoundEntity(entity),
             Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
@@ -327,7 +327,7 @@ impl Api for Server {
         username: String,
         _context: &Context,
     ) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send> {
-        let ret = match self.editor_changelog_get_handler(username.clone()) {
+        let ret = match self.editor_changelog_get_handler(&username) {
             Ok(entries) => GetEditorChangelogResponse::FoundMergedChanges(entries),
             Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
                 GetEditorChangelogResponse::NotFound(ErrorResponse {
@@ -350,7 +350,7 @@ impl Api for Server {
         username: String,
         _context: &Context,
     ) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send> {
-        let ret = match self.get_editor_handler(username.clone()) {
+        let ret = match self.get_editor_handler(&username) {
             Ok(entity) => GetEditorResponse::FoundEditor(entity),
             Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
                 GetEditorResponse::NotFound(ErrorResponse {
@@ -412,7 +412,7 @@ impl Api for Server {
         more: Option<String>,
         _context: &Context,
     ) -> Box<Future<Item = GetStatsResponse, Error = ApiError> + Send> {
-        let ret = match self.get_stats_handler(more.clone()) {
+        let ret = match self.get_stats_handler(&more) {
             Ok(stats) => GetStatsResponse::Success(stats),
             Err(e) => {
                 error!("{}", e);

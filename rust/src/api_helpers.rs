@@ -59,7 +59,7 @@ pub fn accept_editgroup(editgroup_id: Uuid, conn: &PgConnection) -> Result<Chang
             */
 
         // Sketchy... but fast? Only a few queries per accept.
-        for entity in ["container", "creator", "file", "work", "release"].iter() {
+        for entity in &["container", "creator", "file", "work", "release"] {
             diesel::sql_query(format!(
                 "
                     UPDATE {entity}_ident

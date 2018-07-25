@@ -32,7 +32,7 @@ pub trait EntityIdentRow {
 }
 
 pub trait EntityEditRow {
-    fn to_model(self) -> Result<EntityEdit>;
+    fn into_model(self) -> Result<EntityEdit>;
 }
 
 // Helper for constructing tables
@@ -53,7 +53,7 @@ macro_rules! entity_structs {
 
         impl EntityEditRow for $edit_struct {
             /// Go from a row (SQL model) to an API model
-            fn to_model(self) -> Result<EntityEdit> {
+            fn into_model(self) -> Result<EntityEdit> {
                 Ok(EntityEdit {
                     editgroup_id: uuid2fcid(&self.editgroup_id),
                     revision: self.rev_id.map(|v| v.to_string()),
@@ -291,7 +291,7 @@ pub struct EditgroupRow {
 impl EditgroupRow {
     /// Returns an Edigroup API model *without* the entity edits actually populated. Useful for,
     /// eg, entity history queries (where we already have the entity edit we want)
-    pub fn to_model_partial(self) -> Editgroup {
+    pub fn into_model_partial(self) -> Editgroup {
         Editgroup {
             id: Some(uuid2fcid(&self.id)),
             editor_id: uuid2fcid(&self.editor_id),
@@ -321,7 +321,7 @@ pub struct ChangelogRow {
 }
 
 impl ChangelogRow {
-    pub fn to_model(self) -> ChangelogEntry {
+    pub fn into_model(self) -> ChangelogEntry {
         ChangelogEntry {
             index: self.id,
             editgroup_id: uuid2fcid(&self.editgroup_id),

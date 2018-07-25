@@ -21,12 +21,12 @@ type DbConn = diesel::r2d2::PooledConnection<diesel::r2d2::ConnectionManager<die
 
 macro_rules! entity_batch_handler {
     ($post_handler:ident, $post_batch_handler:ident, $model:ident) => {
-        pub fn $post_batch_handler(&self, entity_list: &Vec<models::$model>) ->
+        pub fn $post_batch_handler(&self, entity_list: &[models::$model]) ->
                 Result<Vec<EntityEdit>> {
             let conn = self.db_pool.get().expect("db_pool error");
             // TODO: start a transaction
             let mut ret: Vec<EntityEdit> = vec![];
-            for entity in entity_list.into_iter() {
+            for entity in entity_list {
                 ret.push(self.$post_handler(entity.clone(), Some(&conn))?);
             }
             Ok(ret)
@@ -38,11 +38,11 @@ macro_rules! entity_history_handler {
     ($history_handler:ident, $edit_row_type:ident, $edit_table:ident) => {
         pub fn $history_handler(
             &self,
-            id: String,
+            id: &str,
             limit: Option<i64>,
         ) -> Result<Vec<EntityHistoryEntry>> {
             let conn = self.db_pool.get().expect("db_pool error");
-            let id = fcid2uuid(&id)?;
+            let id = fcid2uuid(id)?;
             let limit = limit.unwrap_or(50);
 
             let rows: Vec<(EditgroupRow, ChangelogRow, $edit_row_type)> = editgroup::table
@@ -55,9 +55,9 @@ macro_rules! entity_history_handler {
 
             let history: Vec<EntityHistoryEntry> = rows.into_iter()
                 .map(|(eg_row, cl_row, e_row)| EntityHistoryEntry {
-                    edit: e_row.to_model().expect("edit row to model"),
-                    editgroup: eg_row.to_model_partial(),
-                    changelog_entry: cl_row.to_model(),
+                    edit: e_row.into_model().expect("edit row to model"),
+                    editgroup: eg_row.into_model_partial(),
+                    changelog_entry: cl_row.into_model(),
                 })
                 .collect();
             Ok(history)
@@ -288,9 +288,9 @@ fn work_row2entity(ident: Option<WorkIdentRow>, rev: WorkRevRow) -> Result<WorkE
 }
 
 impl Server {
-    pub fn get_container_handler(&self, id: String) -> Result<ContainerEntity> {
+    pub fn get_container_handler(&self, id: &str) -> Result<ContainerEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let id = fcid2uuid(&id)?;
+        let id = fcid2uuid(id)?;
 
         // TODO: handle Deletions
         let (ident, rev): (ContainerIdentRow, ContainerRevRow) = container_ident::table
@@ -301,12 +301,12 @@ impl Server {
         container_row2entity(Some(ident), rev)
     }
 
-    pub fn lookup_container_handler(&self, issnl: String) -> Result<ContainerEntity> {
+    pub fn lookup_container_handler(&self, issnl: &str) -> Result<ContainerEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
 
         let (ident, rev): (ContainerIdentRow, ContainerRevRow) = container_ident::table
             .inner_join(container_rev::table)
-            .filter(container_rev::issnl.eq(&issnl))
+            .filter(container_rev::issnl.eq(issnl))
             .filter(container_ident::is_live.eq(true))
             .filter(container_ident::redirect_id.is_null())
             .first(&conn)?;
@@ -314,9 +314,9 @@ impl Server {
         container_row2entity(Some(ident), rev)
     }
 
-    pub fn get_creator_handler(&self, id: String) -> Result<CreatorEntity> {
+    pub fn get_creator_handler(&self, id: &str) -> Result<CreatorEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let id = fcid2uuid(&id)?;
+        let id = fcid2uuid(id)?;
 
         let (ident, rev): (CreatorIdentRow, CreatorRevRow) = creator_ident::table
             .find(id)
@@ -326,12 +326,12 @@ impl Server {
         creator_row2entity(Some(ident), rev)
     }
 
-    pub fn lookup_creator_handler(&self, orcid: String) -> Result<CreatorEntity> {
+    pub fn lookup_creator_handler(&self, orcid: &str) -> Result<CreatorEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
 
         let (ident, rev): (CreatorIdentRow, CreatorRevRow) = creator_ident::table
             .inner_join(creator_rev::table)
-            .filter(creator_rev::orcid.eq(&orcid))
+            .filter(creator_rev::orcid.eq(orcid))
             .filter(creator_ident::is_live.eq(true))
             .filter(creator_ident::redirect_id.is_null())
             .first(&conn)?;
@@ -339,9 +339,9 @@ impl Server {
         creator_row2entity(Some(ident), rev)
     }
 
-    pub fn get_creator_releases_handler(&self, id: String) -> Result<Vec<ReleaseEntity>> {
+    pub fn get_creator_releases_handler(&self, id: &str) -> Result<Vec<ReleaseEntity>> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let id = fcid2uuid(&id)?;
+        let id = fcid2uuid(id)?;
 
         // TODO: some kind of unique or group-by?
         let rows: Vec<(ReleaseRevRow, ReleaseIdentRow, ReleaseContribRow)> = release_rev::table
@@ -357,9 +357,9 @@ impl Server {
             .collect()
     }
 
-    pub fn get_file_handler(&self, id: String) -> Result<FileEntity> {
+    pub fn get_file_handler(&self, id: &str) -> Result<FileEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let id = fcid2uuid(&id)?;
+        let id = fcid2uuid(id)?;
 
         let (ident, rev): (FileIdentRow, FileRevRow) = file_ident::table
             .find(id)
@@ -369,12 +369,12 @@ impl Server {
         file_row2entity(Some(ident), rev, &conn)
     }
 
-    pub fn lookup_file_handler(&self, sha1: String) -> Result<FileEntity> {
+    pub fn lookup_file_handler(&self, sha1: &str) -> Result<FileEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
 
         let (ident, rev): (FileIdentRow, FileRevRow) = file_ident::table
             .inner_join(file_rev::table)
-            .filter(file_rev::sha1.eq(&sha1))
+            .filter(file_rev::sha1.eq(sha1))
             .filter(file_ident::is_live.eq(true))
             .filter(file_ident::redirect_id.is_null())
             .first(&conn)?;
@@ -382,9 +382,9 @@ impl Server {
         file_row2entity(Some(ident), rev, &conn)
     }
 
-    pub fn get_release_handler(&self, id: String) -> Result<ReleaseEntity> {
+    pub fn get_release_handler(&self, id: &str) -> Result<ReleaseEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let id = fcid2uuid(&id)?;
+        let id = fcid2uuid(id)?;
 
         let (ident, rev): (ReleaseIdentRow, ReleaseRevRow) = release_ident::table
             .find(id)
@@ -394,12 +394,12 @@ impl Server {
         release_row2entity(Some(ident), rev, &conn)
     }
 
-    pub fn lookup_release_handler(&self, doi: String) -> Result<ReleaseEntity> {
+    pub fn lookup_release_handler(&self, doi: &str) -> Result<ReleaseEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
 
         let (ident, rev): (ReleaseIdentRow, ReleaseRevRow) = release_ident::table
             .inner_join(release_rev::table)
-            .filter(release_rev::doi.eq(&doi))
+            .filter(release_rev::doi.eq(doi))
             .filter(release_ident::is_live.eq(true))
             .filter(release_ident::redirect_id.is_null())
             .first(&conn)?;
@@ -407,9 +407,9 @@ impl Server {
         release_row2entity(Some(ident), rev, &conn)
     }
 
-    pub fn get_release_files_handler(&self, id: String) -> Result<Vec<FileEntity>> {
+    pub fn get_release_files_handler(&self, id: &str) -> Result<Vec<FileEntity>> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let id = fcid2uuid(&id)?;
+        let id = fcid2uuid(id)?;
 
         let rows: Vec<(FileRevRow, FileIdentRow, FileReleaseRow)> = file_rev::table
             .inner_join(file_ident::table)
@@ -424,9 +424,9 @@ impl Server {
             .collect()
     }
 
-    pub fn get_work_handler(&self, id: String) -> Result<WorkEntity> {
+    pub fn get_work_handler(&self, id: &str) -> Result<WorkEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let id = fcid2uuid(&id)?;
+        let id = fcid2uuid(id)?;
 
         let (ident, rev): (WorkIdentRow, WorkRevRow) = work_ident::table
             .find(id)
@@ -436,9 +436,9 @@ impl Server {
         work_row2entity(Some(ident), rev)
     }
 
-    pub fn get_work_releases_handler(&self, id: String) -> Result<Vec<ReleaseEntity>> {
+    pub fn get_work_releases_handler(&self, id: &str) -> Result<Vec<ReleaseEntity>> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let id = fcid2uuid(&id)?;
+        let id = fcid2uuid(id)?;
 
         let rows: Vec<(ReleaseRevRow, ReleaseIdentRow)> = release_rev::table
             .inner_join(release_ident::table)
@@ -492,7 +492,7 @@ impl Server {
             .bind::<diesel::sql_types::Uuid, _>(editgroup_id)
             .get_result(conn)?;
 
-        edit.to_model()
+        edit.into_model()
     }
 
     pub fn create_creator_handler(
@@ -533,7 +533,7 @@ impl Server {
             .bind::<diesel::sql_types::Uuid, _>(editgroup_id)
             .get_result(conn)?;
 
-        edit.to_model()
+        edit.into_model()
     }
 
     pub fn create_file_handler(
@@ -579,7 +579,7 @@ impl Server {
         let _releases: Option<Vec<FileReleaseRow>> = match entity.releases {
             None => None,
             Some(release_list) => {
-                if release_list.len() == 0 {
+                if release_list.is_empty() {
                     Some(vec![])
                 } else {
                     let release_rows: Vec<FileReleaseRow> = release_list
@@ -602,7 +602,7 @@ impl Server {
         let _urls: Option<Vec<FileRevUrlRow>> = match entity.urls {
             None => None,
             Some(url_list) => {
-                if url_list.len() == 0 {
+                if url_list.is_empty() {
                     Some(vec![])
                 } else {
                     let url_rows: Vec<FileRevUrlNewRow> = url_list
@@ -622,7 +622,7 @@ impl Server {
             }
         };
 
-        edit.to_model()
+        edit.into_model()
     }
 
     pub fn create_release_handler(
@@ -698,7 +698,7 @@ impl Server {
         let _refs: Option<Vec<ReleaseRefRow>> = match entity.refs {
             None => None,
             Some(ref_list) => {
-                if ref_list.len() == 0 {
+                if ref_list.is_empty() {
                     Some(vec![])
                 } else {
                     let ref_rows: Vec<ReleaseRefNewRow> = ref_list
@@ -729,7 +729,7 @@ impl Server {
         let _contribs: Option<Vec<ReleaseContribRow>> = match entity.contribs {
             None => None,
             Some(contrib_list) => {
-                if contrib_list.len() == 0 {
+                if contrib_list.is_empty() {
                     Some(vec![])
                 } else {
                     let contrib_rows: Vec<ReleaseContribNewRow> = contrib_list
@@ -754,7 +754,7 @@ impl Server {
             }
         };
 
-        edit.to_model()
+        edit.into_model()
     }
 
     pub fn create_work_handler(
@@ -793,12 +793,12 @@ impl Server {
                 .bind::<diesel::sql_types::Uuid, _>(editgroup_id)
                 .get_result(conn)?;
 
-        edit.to_model()
+        edit.into_model()
     }
 
-    pub fn accept_editgroup_handler(&self, id: String) -> Result<()> {
+    pub fn accept_editgroup_handler(&self, id: &str) -> Result<()> {
         let conn = self.db_pool.get().expect("db_pool error");
-        accept_editgroup(fcid2uuid(&id)?, &conn)?;
+        accept_editgroup(fcid2uuid(id)?, &conn)?;
         Ok(())
     }
 
@@ -823,10 +823,10 @@ impl Server {
         })
     }
 
-    pub fn get_editgroup_handler(&self, id: String) -> Result<Editgroup> {
+    pub fn get_editgroup_handler(&self, id: &str) -> Result<Editgroup> {
         let conn = self.db_pool.get().expect("db_pool error");
 
-        let id = fcid2uuid(&id)?;
+        let id = fcid2uuid(id)?;
         let row: EditgroupRow = editgroup::table.find(id).first(&conn)?;
 
         let edits = EditgroupEdits {
@@ -835,7 +835,7 @@ impl Server {
                     .filter(container_edit::editgroup_id.eq(id))
                     .get_results(&conn)?
                     .into_iter()
-                    .map(|e: ContainerEditRow| e.to_model().unwrap())
+                    .map(|e: ContainerEditRow| e.into_model().unwrap())
                     .collect(),
             ),
             creators: Some(
@@ -843,7 +843,7 @@ impl Server {
                     .filter(creator_edit::editgroup_id.eq(id))
                     .get_results(&conn)?
                     .into_iter()
-                    .map(|e: CreatorEditRow| e.to_model().unwrap())
+                    .map(|e: CreatorEditRow| e.into_model().unwrap())
                     .collect(),
             ),
             files: Some(
@@ -851,7 +851,7 @@ impl Server {
                     .filter(file_edit::editgroup_id.eq(id))
                     .get_results(&conn)?
                     .into_iter()
-                    .map(|e: FileEditRow| e.to_model().unwrap())
+                    .map(|e: FileEditRow| e.into_model().unwrap())
                     .collect(),
             ),
             releases: Some(
@@ -859,7 +859,7 @@ impl Server {
                     .filter(release_edit::editgroup_id.eq(id))
                     .get_results(&conn)?
                     .into_iter()
-                    .map(|e: ReleaseEditRow| e.to_model().unwrap())
+                    .map(|e: ReleaseEditRow| e.into_model().unwrap())
                     .collect(),
             ),
             works: Some(
@@ -867,7 +867,7 @@ impl Server {
                     .filter(work_edit::editgroup_id.eq(id))
                     .get_results(&conn)?
                     .into_iter()
-                    .map(|e: WorkEditRow| e.to_model().unwrap())
+                    .map(|e: WorkEditRow| e.into_model().unwrap())
                     .collect(),
             ),
         };
@@ -882,10 +882,10 @@ impl Server {
         Ok(eg)
     }
 
-    pub fn get_editor_handler(&self, id: String) -> Result<Editor> {
+    pub fn get_editor_handler(&self, id: &str) -> Result<Editor> {
         let conn = self.db_pool.get().expect("db_pool error");
 
-        let id = fcid2uuid(&id)?;
+        let id = fcid2uuid(id)?;
         let row: EditorRow = editor::table.find(id).first(&conn)?;
 
         let ed = Editor {
@@ -895,10 +895,10 @@ impl Server {
         Ok(ed)
     }
 
-    pub fn editor_changelog_get_handler(&self, id: String) -> Result<Vec<ChangelogEntry>> {
+    pub fn editor_changelog_get_handler(&self, id: &str) -> Result<Vec<ChangelogEntry>> {
         let conn = self.db_pool.get().expect("db_pool error");
 
-        let id = fcid2uuid(&id)?;
+        let id = fcid2uuid(id)?;
         // TODO: single query
         let editor: EditorRow = editor::table.find(id).first(&conn)?;
         let changes: Vec<(ChangelogRow, EditgroupRow)> = changelog::table
@@ -910,7 +910,7 @@ impl Server {
             .into_iter()
             .map(|(cl_row, eg_row)| ChangelogEntry {
                 index: cl_row.id,
-                editgroup: Some(eg_row.to_model_partial()),
+                editgroup: Some(eg_row.into_model_partial()),
                 editgroup_id: uuid2fcid(&cl_row.editgroup_id),
                 timestamp: chrono::DateTime::from_utc(cl_row.timestamp, chrono::Utc),
             })
@@ -932,7 +932,7 @@ impl Server {
             .into_iter()
             .map(|(cl_row, eg_row)| ChangelogEntry {
                 index: cl_row.id,
-                editgroup: Some(eg_row.to_model_partial()),
+                editgroup: Some(eg_row.into_model_partial()),
                 editgroup_id: uuid2fcid(&cl_row.editgroup_id),
                 timestamp: chrono::DateTime::from_utc(cl_row.timestamp, chrono::Utc),
             })
@@ -944,14 +944,14 @@ impl Server {
         let conn = self.db_pool.get().expect("db_pool error");
 
         let cl_row: ChangelogRow = changelog::table.find(id).first(&conn)?;
-        let editgroup = self.get_editgroup_handler(uuid2fcid(&cl_row.editgroup_id))?;
+        let editgroup = self.get_editgroup_handler(&uuid2fcid(&cl_row.editgroup_id))?;
 
-        let mut entry = cl_row.to_model();
+        let mut entry = cl_row.into_model();
         entry.editgroup = Some(editgroup);
         Ok(entry)
     }
 
-    pub fn get_stats_handler(&self, more: Option<String>) -> Result<StatsResponse> {
+    pub fn get_stats_handler(&self, more: &Option<String>) -> Result<StatsResponse> {
         let conn = self.db_pool.get().expect("db_pool error");
 
         let merged_editgroups: i64 = changelog::table
