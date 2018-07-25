@@ -1930,6 +1930,8 @@ definitions:
         type: "string"
       abbrev:
         type: "string"
+      wikidata_qid:
+        type: "string"
       issnl:
         type: "string"
         example: "1234-5678"
@@ -1970,6 +1972,7 @@ definitions:
       editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
       issnl: "1234-5678"
       abbrev: "abbrev"
+      wikidata_qid: "wikidata_qid"
       state: "wip"
       revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
     upperCaseName: "CONTAINER_ENTITY"
@@ -1978,6 +1981,8 @@ definitions:
     required:
     - "display_name"
     properties:
+      wikidata_qid:
+        type: "string"
       orcid:
         type: "string"
         example: "0000-0002-1825-0097"
@@ -2016,6 +2021,7 @@ definitions:
       extra: "{}"
       editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
       orcid: "0000-0002-1825-0097"
+      wikidata_qid: "wikidata_qid"
       state: "wip"
       given_name: "given_name"
       display_name: "Grace Hopper"
@@ -2119,6 +2125,8 @@ definitions:
         example: "12"
       volume:
         type: "string"
+      wikidata_qid:
+        type: "string"
       pmcid:
         type: "string"
       pmid:
@@ -2167,6 +2175,24 @@ definitions:
       extra:
         type: "object"
     example:
+      ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+      language: "language"
+      title: "title"
+      contribs:
+      - role: "role"
+        extra: "{}"
+        creator_id: "creator_id"
+        index: 1
+        raw: "raw"
+      - role: "role"
+        extra: "{}"
+        creator_id: "creator_id"
+        index: 1
+        raw: "raw"
+      pages: "pages"
+      extra: "{}"
+      editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+      state: "wip"
       redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
       work_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
       issue: "12"
@@ -2179,26 +2205,12 @@ definitions:
         mimetype: "application/xml+jats"
         lang: "en"
         content: "<jats:p>Some abstract thing goes here</jats:p>"
-      ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
       release_type: "book"
-      language: "language"
+      wikidata_qid: "wikidata_qid"
       pmid: "pmid"
-      title: "title"
       release_status: "preprint"
-      contribs:
-      - role: "role"
-        extra: "{}"
-        creator_id: "creator_id"
-        index: 1
-        raw: "raw"
-      - role: "role"
-        extra: "{}"
-        creator_id: "creator_id"
-        index: 1
-        raw: "raw"
       revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       volume: "volume"
-      pages: "pages"
       refs:
       - target_release_id: "target_release_id"
         year: 6
@@ -2218,10 +2230,7 @@ definitions:
         key: "key"
       release_date: "2000-01-23"
       isbn13: "isbn13"
-      extra: "{}"
       publisher: "publisher"
-      editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
-      state: "wip"
       pmcid: "pmcid"
       container_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
       doi: "10.1234/abcde.789"

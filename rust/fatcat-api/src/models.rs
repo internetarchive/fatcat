@@ -46,6 +46,10 @@ pub struct ContainerEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub abbrev: Option<String>,
 
+    #[serde(rename = "wikidata_qid")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub wikidata_qid: Option<String>,
+
     #[serde(rename = "issnl")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub issnl: Option<String>,
@@ -88,6 +92,7 @@ impl ContainerEntity {
         ContainerEntity {
             coden: None,
             abbrev: None,
+            wikidata_qid: None,
             issnl: None,
             publisher: None,
             name: name,
@@ -103,6 +108,10 @@ impl ContainerEntity {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CreatorEntity {
+    #[serde(rename = "wikidata_qid")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub wikidata_qid: Option<String>,
+
     #[serde(rename = "orcid")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub orcid: Option<String>,
@@ -147,6 +156,7 @@ pub struct CreatorEntity {
 impl CreatorEntity {
     pub fn new(display_name: String) -> CreatorEntity {
         CreatorEntity {
+            wikidata_qid: None,
             orcid: None,
             surname: None,
             given_name: None,
@@ -483,6 +493,10 @@ pub struct ReleaseEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub volume: Option<String>,
 
+    #[serde(rename = "wikidata_qid")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub wikidata_qid: Option<String>,
+
     #[serde(rename = "pmcid")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pmcid: Option<String>,
@@ -559,6 +573,7 @@ impl ReleaseEntity {
             pages: None,
             issue: None,
             volume: None,
+            wikidata_qid: None,
             pmcid: None,
             pmid: None,
             isbn13: None,

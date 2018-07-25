@@ -72,6 +72,8 @@ definitions:
         type: string
         #format: custom
         example: "1234-5678"
+      wikidata_qid:
+        type: string
       abbrev:
         type: string
       coden:
@@ -93,6 +95,8 @@ definitions:
         type: string
         #format: custom
         example: "0000-0002-1825-0097"
+      wikidata_qid:
+        type: string
   file_entity:
     type: object
     properties:
@@ -169,6 +173,8 @@ definitions:
       pmid:
         type: string
       pmcid:
+        type: string
+      wikidata_qid:
         type: string
       volume:
         type: string
