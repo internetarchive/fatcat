@@ -20,6 +20,7 @@ extern crate data_encoding;
 extern crate regex;
 #[macro_use]
 extern crate lazy_static;
+extern crate sha1;
 
 pub mod api_helpers;
 pub mod api_server;
