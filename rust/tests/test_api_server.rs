@@ -299,7 +299,7 @@ fn test_post_creator() {
 
 #[test]
 fn test_post_file() {
-    let (headers, router, _conn) = setup();
+    let (headers, router, conn) = setup();
 
     check_response(
         request::post(
@@ -315,12 +315,15 @@ fn test_post_file() {
     check_response(
         request::post(
             "http://localhost:9411/v0/file",
-            headers,
+            headers.clone(),
             r#"{"size": 76543,
-                "sha1": "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8",
+                "sha1": "f0000000000000008b7eb2a93e6d0440c1f3e7f8",
                 "md5": "0b6d347b01d437a092be84c2edfce72c",
                 "sha256": "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832",
-                "url": "http://archive.org/asdf.txt",
+                "urls": [
+                    {"url": "http://archive.org/asdf.txt", "rel": "web" },
+                    {"url": "http://web.archive.org/2/http://archive.org/asdf.txt", "rel": "webarchive" }
+                ],
                 "mimetype": "application/pdf",
                 "releases": [
                     "aaaaaaaaaaaaarceaaaaaaaaae",
@@ -332,7 +335,33 @@ fn test_post_file() {
         ),
         status::Created,
         None,
-    ); // TODO: "secret paper"
+    );
+
+    let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
+    let editgroup_id = get_or_create_editgroup(editor_id, &conn).unwrap();
+    check_response(
+        request::post(
+            &format!(
+                "http://localhost:9411/v0/editgroup/{}/accept",
+                uuid2fcid(&editgroup_id)
+            ),
+            headers.clone(),
+            "",
+            &router,
+        ),
+        status::Ok,
+        None,
+    );
+
+    check_response(
+        request::get(
+            "http://localhost:9411/v0/file/lookup?sha1=f0000000000000008b7eb2a93e6d0440c1f3e7f8",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("web.archive.org/2/http"),
+    );
 }
 
 #[test]
@@ -377,6 +406,9 @@ fn test_post_release() {
             r#"{"title": "secret paper",
                 "release_type": "journal-article",
                 "doi": "10.1234/abcde.781231231239",
+                "pmid": "54321",
+                "pmcid": "PMC12345",
+                "wikidata_qid": "Q12345",
                 "volume": "439",
                 "issue": "IV",
                 "pages": "1-399",
@@ -635,5 +667,178 @@ fn test_edit_gets() {
         ),
         status::Ok,
         None,
+    );
+}
+
+#[test]
+fn test_bad_external_idents() {
+    let (headers, router, _conn) = setup();
+
+    // Bad wikidata QID
+    check_response(
+        request::post(
+            "http://localhost:9411/v0/release",
+            headers.clone(),
+            r#"{"title": "secret paper",
+                "wikidata_qid": "P12345"
+                }"#,
+            &router,
+        ),
+        status::BadRequest,
+        Some("Wikidata QID"),
+    );
+    check_response(
+        request::post(
+            "http://localhost:9411/v0/container",
+            headers.clone(),
+            r#"{"name": "my journal",
+                "wikidata_qid": "P12345"
+                }"#,
+            &router,
+        ),
+        status::BadRequest,
+        Some("Wikidata QID"),
+    );
+    check_response(
+        request::post(
+            "http://localhost:9411/v0/creator",
+            headers.clone(),
+            r#"{"display_name": "some body",
+                "wikidata_qid": "P12345"
+                }"#,
+            &router,
+        ),
+        status::BadRequest,
+        Some("Wikidata QID"),
+    );
+
+    // Bad PMCID
+    check_response(
+        request::post(
+            "http://localhost:9411/v0/release",
+            headers.clone(),
+            r#"{"title": "secret paper",
+                "pmcid": "12345"
+                }"#,
+            &router,
+        ),
+        status::BadRequest,
+        Some("PMCID"),
+    );
+
+    // Bad PMID
+    check_response(
+        request::post(
+            "http://localhost:9411/v0/release",
+            headers.clone(),
+            r#"{"title": "secret paper",
+                "pmid": "not-a-number"
+                }"#,
+            &router,
+        ),
+        status::BadRequest,
+        Some("PMID"),
+    );
+
+    // Bad DOI
+    check_response(
+        request::post(
+            "http://localhost:9411/v0/release",
+            headers.clone(),
+            r#"{"title": "secret paper",
+                "doi": "asdf"
+                }"#,
+            &router,
+        ),
+        status::BadRequest,
+        Some("DOI"),
+    );
+
+    // Good identifiers
+    check_response(
+        request::post(
+            "http://localhost:9411/v0/release",
+            headers.clone(),
+            r#"{"title": "secret paper",
+                "doi": "10.1234/abcde.781231231239",
+                "pmid": "54321",
+                "pmcid": "PMC12345",
+                "wikidata_qid": "Q12345"
+                }"#,
+            &router,
+        ),
+        status::Created,
+        None,
+    );
+}
+
+#[test]
+fn test_abstracts() {
+    let (headers, router, conn) = setup();
+
+    check_response(
+        request::post(
+            "http://localhost:9411/v0/release",
+            headers.clone(),
+            r#"{"title": "some paper",
+                "doi": "10.1234/iiiiiii",
+                "abstracts": [
+                  {"lang": "zh",
+                   "mimetype": "text/plain",
+                   "content": "some rando abstract 24iu3i25u2" },
+                  {"lang": "en",
+                   "mimetype": "application/xml+jats",
+                   "content": "some other abstract 99139405" }
+                ]
+                }"#,
+            &router,
+        ),
+        status::Created,
+        None,
+    );
+
+    let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
+    let editgroup_id = get_or_create_editgroup(editor_id, &conn).unwrap();
+    check_response(
+        request::post(
+            &format!(
+                "http://localhost:9411/v0/editgroup/{}/accept",
+                uuid2fcid(&editgroup_id)
+            ),
+            headers.clone(),
+            "",
+            &router,
+        ),
+        status::Ok,
+        None,
+    );
+
+    check_response(
+        request::get(
+            "http://localhost:9411/v0/release/lookup?doi=10.1234/iiiiiii",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        // SHA-1 of first abstract string
+        Some("4e30ded694c6a7775b9e7b019dfda6be0dd60944"),
+    );
+    check_response(
+        request::get(
+            "http://localhost:9411/v0/release/lookup?doi=10.1234/iiiiiii",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("99139405"),
+    );
+    check_response(
+        request::get(
+            "http://localhost:9411/v0/release/lookup?doi=10.1234/iiiiiii",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("24iu3i25u2"),
     );
 }

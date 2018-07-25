@@ -17,6 +17,9 @@ extern crate serde_json;
 #[macro_use]
 extern crate log;
 extern crate data_encoding;
+extern crate regex;
+#[macro_use]
+extern crate lazy_static;
 
 pub mod api_helpers;
 pub mod api_server;
@@ -38,6 +41,10 @@ mod errors {
             InvalidFatcatId(id: String) {
                 description("invalid fatcat identifier syntax")
                 display("invalid fatcat identifier (expect 26-char base32 encoded): {}", id)
+            }
+            MalformedExternalId(id: String) {
+                description("external identifier doesn't match required pattern")
+                display("external identifier doesn't match required pattern")
             }
         }
     }

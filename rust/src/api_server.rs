@@ -1,6 +1,6 @@
 //! API endpoint handlers
 
-use api_helpers::{accept_editgroup, fcid2uuid, get_or_create_editgroup, uuid2fcid};
+use api_helpers::*;
 use chrono;
 use database_models::*;
 use database_schema::{
@@ -95,6 +95,7 @@ fn container_row2entity(
     };
     Ok(ContainerEntity {
         issnl: rev.issnl,
+        wikidata_qid: rev.wikidata_qid,
         publisher: rev.publisher,
         name: rev.name,
         abbrev: rev.abbrev,
@@ -122,6 +123,7 @@ fn creator_row2entity(ident: Option<CreatorIdentRow>, rev: CreatorRevRow) -> Res
         given_name: rev.given_name,
         surname: rev.surname,
         orcid: rev.orcid,
+        wikidata_qid: rev.wikidata_qid,
         state: state,
         ident: ident_id,
         revision: Some(rev.id.to_string()),
@@ -249,6 +251,7 @@ fn release_row2entity(
         pmid: rev.pmid,
         pmcid: rev.pmcid,
         isbn13: rev.isbn13,
+        wikidata_qid: rev.wikidata_qid,
         volume: rev.volume,
         issue: rev.issue,
         pages: rev.pages,
@@ -304,6 +307,7 @@ impl Server {
     pub fn lookup_container_handler(&self, issnl: &str) -> Result<ContainerEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
 
+        check_issn(issnl)?;
         let (ident, rev): (ContainerIdentRow, ContainerRevRow) = container_ident::table
             .inner_join(container_rev::table)
             .filter(container_rev::issnl.eq(issnl))
@@ -329,6 +333,7 @@ impl Server {
     pub fn lookup_creator_handler(&self, orcid: &str) -> Result<CreatorEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
 
+        check_orcid(orcid)?;
         let (ident, rev): (CreatorIdentRow, CreatorRevRow) = creator_ident::table
             .inner_join(creator_rev::table)
             .filter(creator_rev::orcid.eq(orcid))
@@ -397,6 +402,7 @@ impl Server {
     pub fn lookup_release_handler(&self, doi: &str) -> Result<ReleaseEntity> {
         let conn = self.db_pool.get().expect("db_pool error");
 
+        check_doi(doi)?;
         let (ident, rev): (ReleaseIdentRow, ReleaseRevRow) = release_ident::table
             .inner_join(release_rev::table)
             .filter(release_rev::doi.eq(doi))
@@ -472,20 +478,27 @@ impl Server {
             None => get_or_create_editgroup(editor_id, &conn)?,
             Some(param) => fcid2uuid(&param)?,
         };
+        if let Some(ref extid) = entity.wikidata_qid {
+            check_wikidata_qid(extid)?;
+        }
+        if let Some(ref extid) = entity.issnl {
+            check_issn(extid)?;
+        }
 
         let edit: ContainerEditRow = diesel::sql_query(
-            "WITH rev AS ( INSERT INTO container_rev (name, publisher, issnl, abbrev, coden, extra_json)
-                        VALUES ($1, $2, $3, $4, $5, $6)
+            "WITH rev AS ( INSERT INTO container_rev (name, publisher, issnl, wikidata_qid, abbrev, coden, extra_json)
+                        VALUES ($1, $2, $3, $4, $5, $6, $7)
                         RETURNING id ),
                 ident AS ( INSERT INTO container_ident (rev_id)
                             VALUES ((SELECT rev.id FROM rev))
                             RETURNING id )
             INSERT INTO container_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($7, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+                ($8, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
         ).bind::<diesel::sql_types::Text, _>(entity.name)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.publisher)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.issnl)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.wikidata_qid)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.abbrev)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.coden)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
@@ -514,21 +527,28 @@ impl Server {
             None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
             Some(param) => fcid2uuid(&param)?,
         };
+        if let Some(ref extid) = entity.orcid {
+            check_orcid(extid)?;
+        }
+        if let Some(ref extid) = entity.wikidata_qid {
+            check_wikidata_qid(extid)?;
+        }
 
         let edit: CreatorEditRow = diesel::sql_query(
-            "WITH rev AS ( INSERT INTO creator_rev (display_name, given_name, surname, orcid, extra_json)
-                        VALUES ($1, $2, $3, $4, $5)
+            "WITH rev AS ( INSERT INTO creator_rev (display_name, given_name, surname, orcid, wikidata_qid, extra_json)
+                        VALUES ($1, $2, $3, $4, $5, $6)
                         RETURNING id ),
                 ident AS ( INSERT INTO creator_ident (rev_id)
                             VALUES ((SELECT rev.id FROM rev))
                             RETURNING id )
             INSERT INTO creator_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($6, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+                ($7, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
         ).bind::<diesel::sql_types::Text, _>(entity.display_name)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.given_name)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.surname)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.orcid)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.wikidata_qid)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
             .bind::<diesel::sql_types::Uuid, _>(editgroup_id)
             .get_result(conn)?;
@@ -644,6 +664,18 @@ impl Server {
             None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
             Some(param) => fcid2uuid(&param)?,
         };
+        if let Some(ref extid) = entity.doi {
+            check_doi(extid)?;
+        }
+        if let Some(ref extid) = entity.pmid {
+            check_pmid(extid)?;
+        }
+        if let Some(ref extid) = entity.pmcid {
+            check_pmcid(extid)?;
+        }
+        if let Some(ref extid) = entity.wikidata_qid {
+            check_wikidata_qid(extid)?;
+        }
 
         let work_id = match entity.work_id {
             Some(work_id) => fcid2uuid(&work_id)?,
@@ -668,14 +700,14 @@ impl Server {
         };
 
         let edit: ReleaseEditRow = diesel::sql_query(
-            "WITH rev AS ( INSERT INTO release_rev (title, release_type, release_status, release_date, doi, isbn13, volume, issue, pages, work_ident_id, container_ident_id, publisher, language, extra_json)
-                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+            "WITH rev AS ( INSERT INTO release_rev (title, release_type, release_status, release_date, doi, pmid, pmcid, wikidata_qid, isbn13, volume, issue, pages, work_ident_id, container_ident_id, publisher, language, extra_json)
+                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
                         RETURNING id ),
                 ident AS ( INSERT INTO release_ident (rev_id)
                             VALUES ((SELECT rev.id FROM rev))
                             RETURNING id )
             INSERT INTO release_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($15, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+                ($18, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
         ).bind::<diesel::sql_types::Text, _>(entity.title)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.release_type)
@@ -683,6 +715,9 @@ impl Server {
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Date>, _>(
                 entity.release_date.map(|v| v.naive_utc().date()))
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.doi)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.pmid)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.pmcid)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.wikidata_qid)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.isbn13)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.volume)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.issue)

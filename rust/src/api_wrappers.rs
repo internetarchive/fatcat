@@ -35,6 +35,8 @@ macro_rules! wrap_entity_handlers {
                 Err(Error(ErrorKind::InvalidFatcatId(e), _)) =>
                     $get_resp::BadRequest(ErrorResponse {
                         message: ErrorKind::InvalidFatcatId(e).to_string() }),
+                Err(Error(ErrorKind::MalformedExternalId(e), _)) =>
+                    $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
                     $get_resp::GenericError(ErrorResponse { message: e.to_string() })
@@ -58,6 +60,8 @@ macro_rules! wrap_entity_handlers {
                 Err(Error(ErrorKind::InvalidFatcatId(e), _)) =>
                     $post_resp::BadRequest(ErrorResponse {
                         message: ErrorKind::InvalidFatcatId(e).to_string() }),
+                Err(Error(ErrorKind::MalformedExternalId(e), _)) =>
+                    $post_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
                     $post_resp::GenericError(ErrorResponse { message: e.to_string() })
@@ -81,6 +85,8 @@ macro_rules! wrap_entity_handlers {
                 Err(Error(ErrorKind::InvalidFatcatId(e), _)) =>
                     $post_batch_resp::BadRequest(ErrorResponse {
                         message: ErrorKind::InvalidFatcatId(e).to_string() }),
+                Err(Error(ErrorKind::MalformedExternalId(e), _)) =>
+                    $post_batch_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
                     $post_batch_resp::GenericError(ErrorResponse { message: e.to_string() })
@@ -127,6 +133,8 @@ macro_rules! wrap_lookup_handler {
                     $get_resp::FoundEntity(entity),
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
                     $get_resp::NotFound(ErrorResponse { message: format!("Not found: {}", $idname) }),
+                Err(Error(ErrorKind::MalformedExternalId(e), _)) =>
+                    $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
                     $get_resp::BadRequest(ErrorResponse { message: e.to_string() })
