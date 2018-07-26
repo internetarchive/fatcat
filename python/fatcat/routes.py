@@ -17,7 +17,7 @@ def container_history(ident):
         history = api.get_container_history(ident)
     except ApiException as ae:
         abort(ae.status)
-    print(history)
+    #print(history)
     return render_template('entity_history.html',
         page_title=entity.name,
         entity_type="container",
@@ -262,7 +262,6 @@ def editgroup_view(ident):
     try:
         entity = api.get_editgroup(str(ident))
     except ApiException as ae:
-        print(ae.body)
         abort(ae.status)
     return render_template('editgroup_view.html', editgroup=entity)
 

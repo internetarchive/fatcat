@@ -73,16 +73,27 @@ class FatcatCrossrefImporter(FatcatImporter):
                     return None
             except:
                 year = None
+            extra = dict(crossref=rm)
+            if rm.get('DOI') != None:
+                extra['doi'] = rm.get('DOI').lower()
             refs.append(fatcat_client.ReleaseRef(
                 index=i+1,
-                target_release_id=None, # TODO: DOI lookup: rm.get("DOI", None),
+                # doing lookups would be a second import pass
+                target_release_id=None,
                 # unreliable for crossref: key=rm['key'].split('|')[-1],
                 year=year,
                 container_title=rm.get('volume-title'),
                 title=rm.get('title'),
                 locator=rm.get('first-page'),
                 # TODO: just dump JSON somewhere here?
-                extra=rm.get('unstructured')))
+                extra=dict(crossref=rm)))
+
+        # abstracts
+        abstracts = []
+        if obj.get('abstract') != None:
+            abstracts.append(fatcat_client.ReleaseEntityAbstracts(
+                mimetype="application/xml+jats",
+                content=obj.get('abstract')))
 
         # release
         extra = dict(crossref={
@@ -104,6 +115,7 @@ class FatcatCrossrefImporter(FatcatImporter):
             issue=obj.get('issue'),
             volume=obj.get('volume'),
             pages=obj.get('page'),
+            abstracts=abstracts,
             extra=extra)
         return (re, ce)
 
