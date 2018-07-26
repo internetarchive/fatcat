@@ -65,18 +65,22 @@ pub struct ContainerEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub extra: Option<serde_json::Value>,
 
+    /// base32-encoded unique identifier
     #[serde(rename = "editgroup_id")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub editgroup_id: Option<String>,
 
+    /// base32-encoded unique identifier
     #[serde(rename = "redirect")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub redirect: Option<String>,
 
+    /// UUID (lower-case, dash-separated, hex-encoded 128-bit)
     #[serde(rename = "revision")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub revision: Option<String>,
 
+    /// base32-encoded unique identifier
     #[serde(rename = "ident")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ident: Option<String>,
@@ -132,18 +136,22 @@ pub struct CreatorEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub state: Option<String>,
 
+    /// base32-encoded unique identifier
     #[serde(rename = "ident")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ident: Option<String>,
 
+    /// UUID (lower-case, dash-separated, hex-encoded 128-bit)
     #[serde(rename = "revision")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub revision: Option<String>,
 
+    /// base32-encoded unique identifier
     #[serde(rename = "redirect")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub redirect: Option<String>,
 
+    /// base32-encoded unique identifier
     #[serde(rename = "editgroup_id")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub editgroup_id: Option<String>,
@@ -173,10 +181,12 @@ impl CreatorEntity {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Editgroup {
+    /// base32-encoded unique identifier
     #[serde(rename = "id")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub id: Option<String>,
 
+    /// base32-encoded unique identifier
     #[serde(rename = "editor_id")]
     pub editor_id: String,
 
@@ -366,18 +376,22 @@ pub struct FileEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub extra: Option<serde_json::Value>,
 
+    /// base32-encoded unique identifier
     #[serde(rename = "editgroup_id")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub editgroup_id: Option<String>,
 
+    /// base32-encoded unique identifier
     #[serde(rename = "redirect")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub redirect: Option<String>,
 
+    /// UUID (lower-case, dash-separated, hex-encoded 128-bit)
     #[serde(rename = "revision")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub revision: Option<String>,
 
+    /// base32-encoded unique identifier
     #[serde(rename = "ident")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ident: Option<String>,
@@ -433,6 +447,11 @@ pub struct ReleaseContrib {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub creator_id: Option<String>,
 
+    /// Optional; GET-only
+    #[serde(rename = "creator")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub creator: Option<models::CreatorEntity>,
+
     #[serde(rename = "raw_name")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub raw_name: Option<String>,
@@ -451,6 +470,7 @@ impl ReleaseContrib {
         ReleaseContrib {
             index: None,
             creator_id: None,
+            creator: None,
             raw_name: None,
             extra: None,
             role: None,
@@ -529,6 +549,16 @@ pub struct ReleaseEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub container_id: Option<String>,
 
+    /// Optional; GET-only
+    #[serde(rename = "files")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub files: Option<Vec<models::FileEntity>>,
+
+    /// Optional; GET-only
+    #[serde(rename = "container")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub container: Option<models::ContainerEntity>,
+
     #[serde(rename = "work_id")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub work_id: Option<String>,
@@ -541,18 +571,22 @@ pub struct ReleaseEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub state: Option<String>,
 
+    /// base32-encoded unique identifier
     #[serde(rename = "ident")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ident: Option<String>,
 
+    /// UUID (lower-case, dash-separated, hex-encoded 128-bit)
     #[serde(rename = "revision")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub revision: Option<String>,
 
+    /// base32-encoded unique identifier
     #[serde(rename = "redirect")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub redirect: Option<String>,
 
+    /// base32-encoded unique identifier
     #[serde(rename = "editgroup_id")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub editgroup_id: Option<String>,
@@ -582,6 +616,8 @@ impl ReleaseEntity {
             release_status: None,
             release_type: None,
             container_id: None,
+            files: None,
+            container: None,
             work_id: None,
             title: title,
             state: None,
@@ -705,18 +741,22 @@ pub struct WorkEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub extra: Option<serde_json::Value>,
 
+    /// base32-encoded unique identifier
     #[serde(rename = "editgroup_id")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub editgroup_id: Option<String>,
 
+    /// base32-encoded unique identifier
     #[serde(rename = "redirect")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub redirect: Option<String>,
 
+    /// UUID (lower-case, dash-separated, hex-encoded 128-bit)
     #[serde(rename = "revision")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub revision: Option<String>,
 
+    /// base32-encoded unique identifier
     #[serde(rename = "ident")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ident: Option<String>,

@@ -13,6 +13,33 @@ consumes:
 produces:
   - application/json
 
+# don't want these to be rust types (at least for now)
+x-fatcat-ident: &FATCATIDENT
+  type: string
+  example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+  pattern: "[a-zA-Z2-7]{26}"
+  minLength: 26
+  maxLength: 26
+  description: "base32-encoded unique identifier"
+x-fatcat-uuid: &FATCATUUID
+  type: string
+  example: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+  pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+  minLength: 36
+  maxLength: 36
+  description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
+x-issn: &FATCATISSN
+  type: string
+  example: "1234-5678"
+  pattern: "\\d{4}-\\d{3}[0-9X]"
+  minLength: 9
+  maxLength: 9
+x-orcid: &FATCATORCID
+  type: string
+  example: "0000-0002-1825-0097"
+  pattern: "\\d{4}-\\d{4}-\\d{4}-\\d{4}"
+  minLength: 19
+  maxLength: 19
 
 # Common properties across entities
 x-entity-props: &ENTITYPROPS
@@ -20,21 +47,13 @@ x-entity-props: &ENTITYPROPS
     type: string
     enum: ["wip", "active", "redirect", "deleted"]
   ident:
-    type: string
-    #format: custom
-    example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+    <<: *FATCATIDENT
   revision:
-    type: string
-    #format: uuid
-    example: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+    <<: *FATCATUUID
   redirect:
-    type: string
-    #format: custom
-    example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+    <<: *FATCATIDENT
   editgroup_id:
-    type: string
-    #format: custom
-    example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+    <<: *FATCATIDENT
   extra:
     type: object
     additionalProperties: {}
@@ -69,9 +88,7 @@ definitions:
         type: string
         example: "Society of Curious Students"
       issnl:
-        type: string
-        #format: custom
-        example: "1234-5678"
+        <<: *FATCATISSN
       wikidata_qid:
         type: string
       abbrev:
@@ -92,9 +109,7 @@ definitions:
       surname:
         type: string
       orcid:
-        type: string
-        #format: custom
-        example: "0000-0002-1825-0097"
+        <<: *FATCATORCID
       wikidata_qid:
         type: string
   file_entity:
@@ -151,6 +166,14 @@ definitions:
       work_id:
         type: string
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+      container:
+        $ref: "#/definitions/container_entity"
+        description: "Optional; GET-only"
+      files:
+        description: "Optional; GET-only"
+        type: array
+        items:
+          $ref: "#/definitions/file_entity"
       container_id:
         type: string
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -279,13 +302,9 @@ definitions:
       - editor_id
     properties:
       id:
-        type: string
-        #format: custom
-        example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        <<: *FATCATIDENT
       editor_id:
-        type: string
-        #format: custon
-        example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        <<: *FATCATIDENT
       description:
         type: string
       extra:
@@ -365,6 +384,9 @@ definitions:
       creator_id:
         type: string
         #format: ident
+      creator:
+        $ref: "#/definitions/creator_entity"
+        description: "Optional; GET-only"
       raw_name:
         type: string
       extra:
@@ -434,6 +456,11 @@ paths:
         in: path
         type: string
         required: true
+      - name: expend
+        in: query
+        type: string
+        required: false
+        description: "List of sub-entities to expand in response. For now, only 'all' accepted."
     get:
       operationId: "get_container"
       responses:
@@ -469,8 +496,8 @@ paths:
       parameters:
         - name: issnl
           in: query
-          type: string
           required: true
+          <<: *FATCATISSN
       responses:
         200:
           description: Found Entity
@@ -517,6 +544,11 @@ paths:
         in: path
         type: string
         required: true
+      - name: expend
+        in: query
+        type: string
+        required: false
+        description: "List of sub-entities to expand in response. For now, only 'all' accepted."
     get:
       operationId: "get_creator"
       responses:
@@ -568,8 +600,8 @@ paths:
       parameters:
         - name: orcid
           in: query
-          type: string
           required: true
+          <<: *FATCATORCID
       responses:
         200:
           description: Found Entity
@@ -616,6 +648,11 @@ paths:
         in: path
         type: string
         required: true
+      - name: expend
+        in: query
+        type: string
+        required: false
+        description: "List of sub-entities to expand in response. For now, only 'all' accepted."
     get:
       operationId: "get_file"
       responses:
@@ -699,6 +736,11 @@ paths:
         in: path
         type: string
         required: true
+      - name: expend
+        in: query
+        type: string
+        required: false
+        description: "List of sub-entities to expand in response. For now, only 'all' accepted."
     get:
       operationId: "get_release"
       responses:
@@ -798,6 +840,11 @@ paths:
         in: path
         type: string
         required: true
+      - name: expend
+        in: query
+        type: string
+        required: false
+        description: "List of sub-entities to expand in response. For now, only 'all' accepted."
     get:
       operationId: "get_work"
       responses:
@@ -913,9 +960,8 @@ paths:
     parameters:
       - name: id
         in: path
-        type: string
-        #format: custom 
         required: true
+        <<: *FATCATIDENT
     get:
       operationId: "get_editgroup"
       responses:
@@ -939,9 +985,8 @@ paths:
     parameters:
       - name: id
         in: path
-        type: string
-        #format: custom
         required: true
+        <<: *FATCATIDENT
     post:
       operationId: "accept_editgroup"
       responses:

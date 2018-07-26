@@ -1035,8 +1035,16 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_container(&self, param_id: String, context: &Context) -> Box<Future<Item = GetContainerResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/container/{id}", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
+    fn get_container(&self, param_id: String, param_expend: Option<String>, context: &Context) -> Box<Future<Item = GetContainerResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_expend = param_expend.map_or_else(String::new, |query| format!("expend={expend}&", expend = query.to_string()));
+
+        let url = format!(
+            "{}/v0/container/{id}?{expend}",
+            self.base_path,
+            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            expend = utf8_percent_encode(&query_expend, QUERY_ENCODE_SET)
+        );
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Get, &url);
@@ -1163,8 +1171,16 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_creator(&self, param_id: String, context: &Context) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/creator/{id}", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
+    fn get_creator(&self, param_id: String, param_expend: Option<String>, context: &Context) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_expend = param_expend.map_or_else(String::new, |query| format!("expend={expend}&", expend = query.to_string()));
+
+        let url = format!(
+            "{}/v0/creator/{id}?{expend}",
+            self.base_path,
+            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            expend = utf8_percent_encode(&query_expend, QUERY_ENCODE_SET)
+        );
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Get, &url);
@@ -1517,8 +1533,16 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_file(&self, param_id: String, context: &Context) -> Box<Future<Item = GetFileResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/file/{id}", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
+    fn get_file(&self, param_id: String, param_expend: Option<String>, context: &Context) -> Box<Future<Item = GetFileResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_expend = param_expend.map_or_else(String::new, |query| format!("expend={expend}&", expend = query.to_string()));
+
+        let url = format!(
+            "{}/v0/file/{id}?{expend}",
+            self.base_path,
+            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            expend = utf8_percent_encode(&query_expend, QUERY_ENCODE_SET)
+        );
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Get, &url);
@@ -1645,8 +1669,16 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_release(&self, param_id: String, context: &Context) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/release/{id}", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
+    fn get_release(&self, param_id: String, param_expend: Option<String>, context: &Context) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_expend = param_expend.map_or_else(String::new, |query| format!("expend={expend}&", expend = query.to_string()));
+
+        let url = format!(
+            "{}/v0/release/{id}?{expend}",
+            self.base_path,
+            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            expend = utf8_percent_encode(&query_expend, QUERY_ENCODE_SET)
+        );
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Get, &url);
@@ -1882,8 +1914,16 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_work(&self, param_id: String, context: &Context) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/work/{id}", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
+    fn get_work(&self, param_id: String, param_expend: Option<String>, context: &Context) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_expend = param_expend.map_or_else(String::new, |query| format!("expend={expend}&", expend = query.to_string()));
+
+        let url = format!(
+            "{}/v0/work/{id}?{expend}",
+            self.base_path,
+            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            expend = utf8_percent_encode(&query_expend, QUERY_ENCODE_SET)
+        );
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Get, &url);

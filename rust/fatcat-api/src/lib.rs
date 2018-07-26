@@ -466,11 +466,11 @@ pub trait Api {
 
     fn get_changelog_entry(&self, id: i64, context: &Context) -> Box<Future<Item = GetChangelogEntryResponse, Error = ApiError> + Send>;
 
-    fn get_container(&self, id: String, context: &Context) -> Box<Future<Item = GetContainerResponse, Error = ApiError> + Send>;
+    fn get_container(&self, id: String, expend: Option<String>, context: &Context) -> Box<Future<Item = GetContainerResponse, Error = ApiError> + Send>;
 
     fn get_container_history(&self, id: String, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetContainerHistoryResponse, Error = ApiError> + Send>;
 
-    fn get_creator(&self, id: String, context: &Context) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send>;
+    fn get_creator(&self, id: String, expend: Option<String>, context: &Context) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send>;
 
     fn get_creator_history(&self, id: String, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetCreatorHistoryResponse, Error = ApiError> + Send>;
 
@@ -482,11 +482,11 @@ pub trait Api {
 
     fn get_editor_changelog(&self, id: String, context: &Context) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send>;
 
-    fn get_file(&self, id: String, context: &Context) -> Box<Future<Item = GetFileResponse, Error = ApiError> + Send>;
+    fn get_file(&self, id: String, expend: Option<String>, context: &Context) -> Box<Future<Item = GetFileResponse, Error = ApiError> + Send>;
 
     fn get_file_history(&self, id: String, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetFileHistoryResponse, Error = ApiError> + Send>;
 
-    fn get_release(&self, id: String, context: &Context) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send>;
+    fn get_release(&self, id: String, expend: Option<String>, context: &Context) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send>;
 
     fn get_release_files(&self, id: String, context: &Context) -> Box<Future<Item = GetReleaseFilesResponse, Error = ApiError> + Send>;
 
@@ -494,7 +494,7 @@ pub trait Api {
 
     fn get_stats(&self, more: Option<String>, context: &Context) -> Box<Future<Item = GetStatsResponse, Error = ApiError> + Send>;
 
-    fn get_work(&self, id: String, context: &Context) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send>;
+    fn get_work(&self, id: String, expend: Option<String>, context: &Context) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send>;
 
     fn get_work_history(&self, id: String, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetWorkHistoryResponse, Error = ApiError> + Send>;
 
@@ -539,11 +539,11 @@ pub trait ApiNoContext {
 
     fn get_changelog_entry(&self, id: i64) -> Box<Future<Item = GetChangelogEntryResponse, Error = ApiError> + Send>;
 
-    fn get_container(&self, id: String) -> Box<Future<Item = GetContainerResponse, Error = ApiError> + Send>;
+    fn get_container(&self, id: String, expend: Option<String>) -> Box<Future<Item = GetContainerResponse, Error = ApiError> + Send>;
 
     fn get_container_history(&self, id: String, limit: Option<i64>) -> Box<Future<Item = GetContainerHistoryResponse, Error = ApiError> + Send>;
 
-    fn get_creator(&self, id: String) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send>;
+    fn get_creator(&self, id: String, expend: Option<String>) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send>;
 
     fn get_creator_history(&self, id: String, limit: Option<i64>) -> Box<Future<Item = GetCreatorHistoryResponse, Error = ApiError> + Send>;
 
@@ -555,11 +555,11 @@ pub trait ApiNoContext {
 
     fn get_editor_changelog(&self, id: String) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send>;
 
-    fn get_file(&self, id: String) -> Box<Future<Item = GetFileResponse, Error = ApiError> + Send>;
+    fn get_file(&self, id: String, expend: Option<String>) -> Box<Future<Item = GetFileResponse, Error = ApiError> + Send>;
 
     fn get_file_history(&self, id: String, limit: Option<i64>) -> Box<Future<Item = GetFileHistoryResponse, Error = ApiError> + Send>;
 
-    fn get_release(&self, id: String) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send>;
+    fn get_release(&self, id: String, expend: Option<String>) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send>;
 
     fn get_release_files(&self, id: String) -> Box<Future<Item = GetReleaseFilesResponse, Error = ApiError> + Send>;
 
@@ -567,7 +567,7 @@ pub trait ApiNoContext {
 
     fn get_stats(&self, more: Option<String>) -> Box<Future<Item = GetStatsResponse, Error = ApiError> + Send>;
 
-    fn get_work(&self, id: String) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send>;
+    fn get_work(&self, id: String, expend: Option<String>) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send>;
 
     fn get_work_history(&self, id: String, limit: Option<i64>) -> Box<Future<Item = GetWorkHistoryResponse, Error = ApiError> + Send>;
 
@@ -654,16 +654,16 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().get_changelog_entry(id, &self.context())
     }
 
-    fn get_container(&self, id: String) -> Box<Future<Item = GetContainerResponse, Error = ApiError> + Send> {
-        self.api().get_container(id, &self.context())
+    fn get_container(&self, id: String, expend: Option<String>) -> Box<Future<Item = GetContainerResponse, Error = ApiError> + Send> {
+        self.api().get_container(id, expend, &self.context())
     }
 
     fn get_container_history(&self, id: String, limit: Option<i64>) -> Box<Future<Item = GetContainerHistoryResponse, Error = ApiError> + Send> {
         self.api().get_container_history(id, limit, &self.context())
     }
 
-    fn get_creator(&self, id: String) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send> {
-        self.api().get_creator(id, &self.context())
+    fn get_creator(&self, id: String, expend: Option<String>) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send> {
+        self.api().get_creator(id, expend, &self.context())
     }
 
     fn get_creator_history(&self, id: String, limit: Option<i64>) -> Box<Future<Item = GetCreatorHistoryResponse, Error = ApiError> + Send> {
@@ -686,16 +686,16 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().get_editor_changelog(id, &self.context())
     }
 
-    fn get_file(&self, id: String) -> Box<Future<Item = GetFileResponse, Error = ApiError> + Send> {
-        self.api().get_file(id, &self.context())
+    fn get_file(&self, id: String, expend: Option<String>) -> Box<Future<Item = GetFileResponse, Error = ApiError> + Send> {
+        self.api().get_file(id, expend, &self.context())
     }
 
     fn get_file_history(&self, id: String, limit: Option<i64>) -> Box<Future<Item = GetFileHistoryResponse, Error = ApiError> + Send> {
         self.api().get_file_history(id, limit, &self.context())
     }
 
-    fn get_release(&self, id: String) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send> {
-        self.api().get_release(id, &self.context())
+    fn get_release(&self, id: String, expend: Option<String>) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send> {
+        self.api().get_release(id, expend, &self.context())
     }
 
     fn get_release_files(&self, id: String) -> Box<Future<Item = GetReleaseFilesResponse, Error = ApiError> + Send> {
@@ -710,8 +710,8 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().get_stats(more, &self.context())
     }
 
-    fn get_work(&self, id: String) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send> {
-        self.api().get_work(id, &self.context())
+    fn get_work(&self, id: String, expend: Option<String>) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send> {
+        self.api().get_work(id, expend, &self.context())
     }
 
     fn get_work_history(&self, id: String, limit: Option<i64>) -> Box<Future<Item = GetWorkHistoryResponse, Error = ApiError> + Send> {

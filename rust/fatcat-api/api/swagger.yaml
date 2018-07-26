@@ -142,6 +142,14 @@ paths:
         type: "string"
         formatString: "\\\"{}\\\""
         example: "\"id_example\".to_string()"
+      - name: "expend"
+        in: "query"
+        description: "List of sub-entities to expand in response. For now, only 'all'\
+          \ accepted."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"expend_example\".to_string())"
       responses:
         200:
           description: "Found Entity"
@@ -253,6 +261,9 @@ paths:
         in: "query"
         required: true
         type: "string"
+        maxLength: 9
+        minLength: 9
+        pattern: "\\d{4}-\\d{3}[0-9X]"
         formatString: "\\\"{}\\\""
         example: "\"issnl_example\".to_string()"
       responses:
@@ -426,6 +437,14 @@ paths:
         type: "string"
         formatString: "\\\"{}\\\""
         example: "\"id_example\".to_string()"
+      - name: "expend"
+        in: "query"
+        description: "List of sub-entities to expand in response. For now, only 'all'\
+          \ accepted."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"expend_example\".to_string())"
       responses:
         200:
           description: "Found Entity"
@@ -591,6 +610,9 @@ paths:
         in: "query"
         required: true
         type: "string"
+        maxLength: 19
+        minLength: 19
+        pattern: "\\d{4}-\\d{4}-\\d{4}-\\d{4}"
         formatString: "\\\"{}\\\""
         example: "\"orcid_example\".to_string()"
       responses:
@@ -764,6 +786,14 @@ paths:
         type: "string"
         formatString: "\\\"{}\\\""
         example: "\"id_example\".to_string()"
+      - name: "expend"
+        in: "query"
+        description: "List of sub-entities to expand in response. For now, only 'all'\
+          \ accepted."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"expend_example\".to_string())"
       responses:
         200:
           description: "Found Entity"
@@ -1048,6 +1078,14 @@ paths:
         type: "string"
         formatString: "\\\"{}\\\""
         example: "\"id_example\".to_string()"
+      - name: "expend"
+        in: "query"
+        description: "List of sub-entities to expand in response. For now, only 'all'\
+          \ accepted."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"expend_example\".to_string())"
       responses:
         200:
           description: "Found Entity"
@@ -1386,6 +1424,14 @@ paths:
         type: "string"
         formatString: "\\\"{}\\\""
         example: "\"id_example\".to_string()"
+      - name: "expend"
+        in: "query"
+        description: "List of sub-entities to expand in response. For now, only 'all'\
+          \ accepted."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"expend_example\".to_string())"
       responses:
         200:
           description: "Found Entity"
@@ -1687,8 +1733,12 @@ paths:
       parameters:
       - name: "id"
         in: "path"
+        description: "base32-encoded unique identifier"
         required: true
         type: "string"
+        maxLength: 26
+        minLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
         formatString: "\\\"{}\\\""
         example: "\"id_example\".to_string()"
       responses:
@@ -1739,8 +1789,12 @@ paths:
       parameters:
       - name: "id"
         in: "path"
+        description: "base32-encoded unique identifier"
         required: true
         type: "string"
+        maxLength: 26
+        minLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
         formatString: "\\\"{}\\\""
         example: "\"id_example\".to_string()"
       responses:
@@ -1935,6 +1989,9 @@ definitions:
       issnl:
         type: "string"
         example: "1234-5678"
+        minLength: 9
+        maxLength: 9
+        pattern: "\\d{4}-\\d{3}[0-9X]"
       publisher:
         type: "string"
         example: "Society of Curious Students"
@@ -1946,15 +2003,31 @@ definitions:
       editgroup_id:
         type: "string"
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        description: "base32-encoded unique identifier"
+        minLength: 26
+        maxLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
       redirect:
         type: "string"
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        description: "base32-encoded unique identifier"
+        minLength: 26
+        maxLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
       revision:
         type: "string"
         example: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+        description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
+        minLength: 36
+        maxLength: 36
+        pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
       ident:
         type: "string"
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        description: "base32-encoded unique identifier"
+        minLength: 26
+        maxLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
       state:
         type: "string"
         enum:
@@ -1986,6 +2059,9 @@ definitions:
       orcid:
         type: "string"
         example: "0000-0002-1825-0097"
+        minLength: 19
+        maxLength: 19
+        pattern: "\\d{4}-\\d{4}-\\d{4}-\\d{4}"
       surname:
         type: "string"
       given_name:
@@ -2003,15 +2079,31 @@ definitions:
       ident:
         type: "string"
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        description: "base32-encoded unique identifier"
+        minLength: 26
+        maxLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
       revision:
         type: "string"
         example: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+        description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
+        minLength: 36
+        maxLength: 36
+        pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
       redirect:
         type: "string"
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        description: "base32-encoded unique identifier"
+        minLength: 26
+        maxLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
       editgroup_id:
         type: "string"
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        description: "base32-encoded unique identifier"
+        minLength: 26
+        maxLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
       extra:
         type: "object"
     example:
@@ -2059,15 +2151,31 @@ definitions:
       editgroup_id:
         type: "string"
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        description: "base32-encoded unique identifier"
+        minLength: 26
+        maxLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
       redirect:
         type: "string"
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        description: "base32-encoded unique identifier"
+        minLength: 26
+        maxLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
       revision:
         type: "string"
         example: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+        description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
+        minLength: 36
+        maxLength: 36
+        pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
       ident:
         type: "string"
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        description: "base32-encoded unique identifier"
+        minLength: 26
+        maxLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
       state:
         type: "string"
         enum:
@@ -2148,6 +2256,14 @@ definitions:
       container_id:
         type: "string"
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+      files:
+        type: "array"
+        description: "Optional; GET-only"
+        items:
+          $ref: "#/definitions/file_entity"
+      container:
+        description: "Optional; GET-only"
+        $ref: "#/definitions/container_entity"
       work_id:
         type: "string"
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -2163,28 +2279,81 @@ definitions:
       ident:
         type: "string"
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        description: "base32-encoded unique identifier"
+        minLength: 26
+        maxLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
       revision:
         type: "string"
         example: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+        description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
+        minLength: 36
+        maxLength: 36
+        pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
       redirect:
         type: "string"
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        description: "base32-encoded unique identifier"
+        minLength: 26
+        maxLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
       editgroup_id:
         type: "string"
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        description: "base32-encoded unique identifier"
+        minLength: 26
+        maxLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
       extra:
         type: "object"
     example:
+      container:
+        redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        coden: "coden"
+        ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        extra: "{}"
+        name: "Journal of Important Results"
+        publisher: "Society of Curious Students"
+        editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        issnl: "1234-5678"
+        abbrev: "abbrev"
+        wikidata_qid: "wikidata_qid"
+        state: "wip"
+        revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
       language: "language"
       title: "title"
       contribs:
-      - raw_name: "raw_name"
+      - creator:
+          redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          surname: "surname"
+          ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          extra: "{}"
+          editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          orcid: "0000-0002-1825-0097"
+          wikidata_qid: "wikidata_qid"
+          state: "wip"
+          given_name: "given_name"
+          display_name: "Grace Hopper"
+          revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+        raw_name: "raw_name"
         role: "role"
         extra: "{}"
         creator_id: "creator_id"
         index: 1
-      - raw_name: "raw_name"
+      - creator:
+          redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          surname: "surname"
+          ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          extra: "{}"
+          editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          orcid: "0000-0002-1825-0097"
+          wikidata_qid: "wikidata_qid"
+          state: "wip"
+          given_name: "given_name"
+          display_name: "Grace Hopper"
+          revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+        raw_name: "raw_name"
         role: "role"
         extra: "{}"
         creator_id: "creator_id"
@@ -2231,6 +2400,45 @@ definitions:
       release_date: "2000-01-23"
       isbn13: "isbn13"
       publisher: "publisher"
+      files:
+      - redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+        ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        releases:
+        - "releases"
+        - "releases"
+        revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+        sha1: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
+        urls:
+        - rel: "webarchive"
+          url: "https://example.edu/~frau/prcding.pdf"
+        - rel: "webarchive"
+          url: "https://example.edu/~frau/prcding.pdf"
+        size: 1048576
+        extra: "{}"
+        editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        mimetype: "application/pdf"
+        state: "wip"
+        md5: "d41efcc592d1e40ac13905377399eb9b"
+      - redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+        ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        releases:
+        - "releases"
+        - "releases"
+        revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+        sha1: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
+        urls:
+        - rel: "webarchive"
+          url: "https://example.edu/~frau/prcding.pdf"
+        - rel: "webarchive"
+          url: "https://example.edu/~frau/prcding.pdf"
+        size: 1048576
+        extra: "{}"
+        editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        mimetype: "application/pdf"
+        state: "wip"
+        md5: "d41efcc592d1e40ac13905377399eb9b"
       pmcid: "pmcid"
       container_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
       doi: "10.1234/abcde.789"
@@ -2243,15 +2451,31 @@ definitions:
       editgroup_id:
         type: "string"
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        description: "base32-encoded unique identifier"
+        minLength: 26
+        maxLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
       redirect:
         type: "string"
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        description: "base32-encoded unique identifier"
+        minLength: 26
+        maxLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
       revision:
         type: "string"
         example: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+        description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
+        minLength: 36
+        maxLength: 36
+        pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
       ident:
         type: "string"
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        description: "base32-encoded unique identifier"
+        minLength: 26
+        maxLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
       state:
         type: "string"
         enum:
@@ -2516,9 +2740,17 @@ definitions:
       id:
         type: "string"
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        description: "base32-encoded unique identifier"
+        minLength: 26
+        maxLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
       editor_id:
         type: "string"
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        description: "base32-encoded unique identifier"
+        minLength: 26
+        maxLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
       description:
         type: "string"
       extra:
@@ -2751,6 +2983,9 @@ definitions:
         format: "int64"
       creator_id:
         type: "string"
+      creator:
+        description: "Optional; GET-only"
+        $ref: "#/definitions/creator_entity"
       raw_name:
         type: "string"
       extra:
@@ -2758,6 +2993,18 @@ definitions:
       role:
         type: "string"
     example:
+      creator:
+        redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        surname: "surname"
+        ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        extra: "{}"
+        editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        orcid: "0000-0002-1825-0097"
+        wikidata_qid: "wikidata_qid"
+        state: "wip"
+        given_name: "given_name"
+        display_name: "Grace Hopper"
+        revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       raw_name: "raw_name"
       role: "role"
       extra: "{}"
@@ -2907,6 +3154,32 @@ definitions:
         prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
     upperCaseName: "EDITGROUP_EDITS"
+x-fatcat-ident:
+  type: "string"
+  example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+  pattern: "[a-zA-Z2-7]{26}"
+  minLength: 26
+  maxLength: 26
+  description: "base32-encoded unique identifier"
+x-fatcat-uuid:
+  type: "string"
+  example: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+  pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+  minLength: 36
+  maxLength: 36
+  description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
+x-issn:
+  type: "string"
+  example: "1234-5678"
+  pattern: "\\d{4}-\\d{3}[0-9X]"
+  minLength: 9
+  maxLength: 9
+x-orcid:
+  type: "string"
+  example: "0000-0002-1825-0097"
+  pattern: "\\d{4}-\\d{4}-\\d{4}-\\d{4}"
+  minLength: 19
+  maxLength: 19
 x-entity-props:
   state:
     type: "string"
@@ -2916,17 +3189,33 @@ x-entity-props:
     - "redirect"
     - "deleted"
   ident:
-    type: "string"
+    description: "base32-encoded unique identifier"
+    maxLength: 26
+    minLength: 26
+    pattern: "[a-zA-Z2-7]{26}"
     example: "q3nouwy3nnbsvo3h5klxsx4a7y"
-  revision:
     type: "string"
+  revision:
+    description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
+    maxLength: 36
+    minLength: 36
+    pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
     example: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+    type: "string"
   redirect:
     type: "string"
     example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+    pattern: "[a-zA-Z2-7]{26}"
+    minLength: 26
+    maxLength: 26
+    description: "base32-encoded unique identifier"
   editgroup_id:
-    type: "string"
+    description: "base32-encoded unique identifier"
+    maxLength: 26
+    minLength: 26
+    pattern: "[a-zA-Z2-7]{26}"
     example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+    type: "string"
   extra:
     type: "object"
     additionalProperties: {}
