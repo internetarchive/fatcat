@@ -300,7 +300,7 @@ impl Api for Server {
         id: String,
         _context: &Context,
     ) -> Box<Future<Item = GetEditgroupResponse, Error = ApiError> + Send> {
-        let ret = match self.get_editgroup_handler(&id) {
+        let ret = match self.get_editgroup_handler(&id, None) {
             Ok(entity) =>
                 GetEditgroupResponse::FoundEntity(entity),
             Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>

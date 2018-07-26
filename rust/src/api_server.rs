@@ -898,17 +898,26 @@ impl Server {
         })
     }
 
-    pub fn get_editgroup_handler(&self, id: &str) -> Result<Editgroup> {
-        let conn = self.db_pool.get().expect("db_pool error");
+    pub fn get_editgroup_handler(&self, id: &str, conn: Option<&DbConn>) -> Result<Editgroup> {
+        // TODO: still can't cast for some reason
+        // There mut be a cleaner way to manage the lifetime here
+        let real_conn = match conn {
+            Some(_) => None,
+            None => Some(self.db_pool.get().expect("database pool")),
+        };
+        let conn = match real_conn {
+            Some(ref c) => c,
+            None => conn.unwrap(),
+        };
 
         let id = fcid2uuid(id)?;
-        let row: EditgroupRow = editgroup::table.find(id).first(&conn)?;
+        let row: EditgroupRow = editgroup::table.find(id).first(conn)?;
 
         let edits = EditgroupEdits {
             containers: Some(
                 container_edit::table
                     .filter(container_edit::editgroup_id.eq(id))
-                    .get_results(&conn)?
+                    .get_results(conn)?
                     .into_iter()
                     .map(|e: ContainerEditRow| e.into_model().unwrap())
                     .collect(),
@@ -916,7 +925,7 @@ impl Server {
             creators: Some(
                 creator_edit::table
                     .filter(creator_edit::editgroup_id.eq(id))
-                    .get_results(&conn)?
+                    .get_results(conn)?
                     .into_iter()
                     .map(|e: CreatorEditRow| e.into_model().unwrap())
                     .collect(),
@@ -924,7 +933,7 @@ impl Server {
             files: Some(
                 file_edit::table
                     .filter(file_edit::editgroup_id.eq(id))
-                    .get_results(&conn)?
+                    .get_results(conn)?
                     .into_iter()
                     .map(|e: FileEditRow| e.into_model().unwrap())
                     .collect(),
@@ -932,7 +941,7 @@ impl Server {
             releases: Some(
                 release_edit::table
                     .filter(release_edit::editgroup_id.eq(id))
-                    .get_results(&conn)?
+                    .get_results(conn)?
                     .into_iter()
                     .map(|e: ReleaseEditRow| e.into_model().unwrap())
                     .collect(),
@@ -940,7 +949,7 @@ impl Server {
             works: Some(
                 work_edit::table
                     .filter(work_edit::editgroup_id.eq(id))
-                    .get_results(&conn)?
+                    .get_results(conn)?
                     .into_iter()
                     .map(|e: WorkEditRow| e.into_model().unwrap())
                     .collect(),
@@ -1019,7 +1028,7 @@ impl Server {
         let conn = self.db_pool.get().expect("db_pool error");
 
         let cl_row: ChangelogRow = changelog::table.find(id).first(&conn)?;
-        let editgroup = self.get_editgroup_handler(&uuid2fcid(&cl_row.editgroup_id))?;
+        let editgroup = self.get_editgroup_handler(&uuid2fcid(&cl_row.editgroup_id), Some(&conn))?;
 
         let mut entry = cl_row.into_model();
         entry.editgroup = Some(editgroup);
