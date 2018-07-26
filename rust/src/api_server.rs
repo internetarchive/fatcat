@@ -40,11 +40,10 @@ macro_rules! entity_history_handler {
     ($history_handler:ident, $edit_row_type:ident, $edit_table:ident) => {
         pub fn $history_handler(
             &self,
-            id: &str,
+            id: &Uuid,
             limit: Option<i64>,
             conn: &DbConn,
         ) -> Result<Vec<EntityHistoryEntry>> {
-            let id = fcid2uuid(id)?;
             let limit = limit.unwrap_or(50);
 
             let rows: Vec<(EditgroupRow, ChangelogRow, $edit_row_type)> = editgroup::table
@@ -227,6 +226,7 @@ fn release_row2entity(
             role: c.role,
             extra: c.extra_json,
             creator_id: c.creator_ident_id.map(|v| uuid2fcid(&v)),
+            creator: None,
         })
         .collect();
 
@@ -259,6 +259,8 @@ fn release_row2entity(
         volume: rev.volume,
         issue: rev.issue,
         pages: rev.pages,
+        files: None,
+        container: None,
         container_id: rev.container_ident_id.map(|u| uuid2fcid(&u)),
         publisher: rev.publisher,
         language: rev.language,
@@ -295,9 +297,12 @@ fn work_row2entity(ident: Option<WorkIdentRow>, rev: WorkRevRow) -> Result<WorkE
 }
 
 impl Server {
-    pub fn get_container_handler(&self, id: &str, conn: &DbConn) -> Result<ContainerEntity> {
-        let id = fcid2uuid(id)?;
-
+    pub fn get_container_handler(
+        &self,
+        id: &Uuid,
+        _expand: Option<String>,
+        conn: &DbConn,
+    ) -> Result<ContainerEntity> {
         // TODO: handle Deletions
         let (ident, rev): (ContainerIdentRow, ContainerRevRow) = container_ident::table
             .find(id)
@@ -308,7 +313,6 @@ impl Server {
     }
 
     pub fn lookup_container_handler(&self, issnl: &str, conn: &DbConn) -> Result<ContainerEntity> {
-
         check_issn(issnl)?;
         let (ident, rev): (ContainerIdentRow, ContainerRevRow) = container_ident::table
             .inner_join(container_rev::table)
@@ -320,9 +324,12 @@ impl Server {
         container_row2entity(Some(ident), rev)
     }
 
-    pub fn get_creator_handler(&self, id: &str, conn: &DbConn) -> Result<CreatorEntity> {
-        let id = fcid2uuid(id)?;
-
+    pub fn get_creator_handler(
+        &self,
+        id: &Uuid,
+        _expand: Option<String>,
+        conn: &DbConn,
+    ) -> Result<CreatorEntity> {
         let (ident, rev): (CreatorIdentRow, CreatorRevRow) = creator_ident::table
             .find(id)
             .inner_join(creator_rev::table)
@@ -332,7 +339,6 @@ impl Server {
     }
 
     pub fn lookup_creator_handler(&self, orcid: &str, conn: &DbConn) -> Result<CreatorEntity> {
-
         check_orcid(orcid)?;
         let (ident, rev): (CreatorIdentRow, CreatorRevRow) = creator_ident::table
             .inner_join(creator_rev::table)
@@ -344,9 +350,12 @@ impl Server {
         creator_row2entity(Some(ident), rev)
     }
 
-    pub fn get_creator_releases_handler(&self, id: &str, conn: &DbConn) -> Result<Vec<ReleaseEntity>> {
-
-        let id = fcid2uuid(id)?;
+    pub fn get_creator_releases_handler(
+        &self,
+        id: &str,
+        conn: &DbConn,
+    ) -> Result<Vec<ReleaseEntity>> {
+        let id = fcid2uuid(&id)?;
 
         // TODO: some kind of unique or group-by?
         let rows: Vec<(ReleaseRevRow, ReleaseIdentRow, ReleaseContribRow)> = release_rev::table
@@ -362,10 +371,12 @@ impl Server {
             .collect()
     }
 
-    pub fn get_file_handler(&self, id: &str, conn: &DbConn) -> Result<FileEntity> {
-
-        let id = fcid2uuid(id)?;
-
+    pub fn get_file_handler(
+        &self,
+        id: &Uuid,
+        _expand: Option<String>,
+        conn: &DbConn,
+    ) -> Result<FileEntity> {
         let (ident, rev): (FileIdentRow, FileRevRow) = file_ident::table
             .find(id)
             .inner_join(file_rev::table)
@@ -375,8 +386,6 @@ impl Server {
     }
 
     pub fn lookup_file_handler(&self, sha1: &str, conn: &DbConn) -> Result<FileEntity> {
-
-
         let (ident, rev): (FileIdentRow, FileRevRow) = file_ident::table
             .inner_join(file_rev::table)
             .filter(file_rev::sha1.eq(sha1))
@@ -387,20 +396,33 @@ impl Server {
         file_row2entity(Some(ident), rev, conn)
     }
 
-    pub fn get_release_handler(&self, id: &str, conn: &DbConn) -> Result<ReleaseEntity> {
-
-        let id = fcid2uuid(id)?;
-
+    pub fn get_release_handler(
+        &self,
+        id: &Uuid,
+        expand: Option<String>,
+        conn: &DbConn,
+    ) -> Result<ReleaseEntity> {
         let (ident, rev): (ReleaseIdentRow, ReleaseRevRow) = release_ident::table
             .find(id)
             .inner_join(release_rev::table)
             .first(conn)?;
 
-        release_row2entity(Some(ident), rev, conn)
+        let mut release = release_row2entity(Some(ident), rev, conn)?;
+
+        // For now, if there is any expand param we do them all
+        if expand.is_some() {
+            release.files =
+                Some(self.get_release_files_handler(&release.ident.clone().unwrap(), conn)?);
+            if let Some(ref cid) = release.container_id {
+                release.container =
+                    Some(self.get_container_handler(&fcid2uuid(&cid)?, None, conn)?);
+            }
+        }
+
+        Ok(release)
     }
 
     pub fn lookup_release_handler(&self, doi: &str, conn: &DbConn) -> Result<ReleaseEntity> {
-
         check_doi(doi)?;
         let (ident, rev): (ReleaseIdentRow, ReleaseRevRow) = release_ident::table
             .inner_join(release_rev::table)
@@ -413,8 +435,7 @@ impl Server {
     }
 
     pub fn get_release_files_handler(&self, id: &str, conn: &DbConn) -> Result<Vec<FileEntity>> {
-
-        let id = fcid2uuid(id)?;
+        let id = fcid2uuid(&id)?;
 
         let rows: Vec<(FileRevRow, FileIdentRow, FileReleaseRow)> = file_rev::table
             .inner_join(file_ident::table)
@@ -429,10 +450,12 @@ impl Server {
             .collect()
     }
 
-    pub fn get_work_handler(&self, id: &str, conn: &DbConn) -> Result<WorkEntity> {
-
-        let id = fcid2uuid(id)?;
-
+    pub fn get_work_handler(
+        &self,
+        id: &Uuid,
+        _expand: Option<String>,
+        conn: &DbConn,
+    ) -> Result<WorkEntity> {
         let (ident, rev): (WorkIdentRow, WorkRevRow) = work_ident::table
             .find(id)
             .inner_join(work_rev::table)
@@ -442,8 +465,7 @@ impl Server {
     }
 
     pub fn get_work_releases_handler(&self, id: &str, conn: &DbConn) -> Result<Vec<ReleaseEntity>> {
-
-        let id = fcid2uuid(id)?;
+        let id = fcid2uuid(&id)?;
 
         let rows: Vec<(ReleaseRevRow, ReleaseIdentRow)> = release_rev::table
             .inner_join(release_ident::table)
@@ -796,7 +818,6 @@ impl Server {
         entity: models::WorkEntity,
         conn: &DbConn,
     ) -> Result<EntityEdit> {
-
         let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001")?; // TODO: auth
         let editgroup_id = match entity.editgroup_id {
             None => get_or_create_editgroup(editor_id, conn).expect("current editgroup"),
@@ -826,7 +847,11 @@ impl Server {
         Ok(())
     }
 
-    pub fn create_editgroup_handler(&self, entity: models::Editgroup, conn: &DbConn) -> Result<Editgroup> {
+    pub fn create_editgroup_handler(
+        &self,
+        entity: models::Editgroup,
+        conn: &DbConn,
+    ) -> Result<Editgroup> {
         let row: EditgroupRow = insert_into(editgroup::table)
             .values((
                 editgroup::editor_id.eq(fcid2uuid(&entity.editor_id)?),
@@ -846,7 +871,6 @@ impl Server {
     }
 
     pub fn get_editgroup_handler(&self, id: &str, conn: &DbConn) -> Result<Editgroup> {
-
         let id = fcid2uuid(id)?;
         let row: EditgroupRow = editgroup::table.find(id).first(conn)?;
 
@@ -904,7 +928,6 @@ impl Server {
     }
 
     pub fn get_editor_handler(&self, id: &str, conn: &DbConn) -> Result<Editor> {
-
         let id = fcid2uuid(id)?;
         let row: EditorRow = editor::table.find(id).first(conn)?;
 
@@ -915,8 +938,11 @@ impl Server {
         Ok(ed)
     }
 
-    pub fn editor_changelog_get_handler(&self, id: &str, conn: &DbConn) -> Result<Vec<ChangelogEntry>> {
-
+    pub fn editor_changelog_get_handler(
+        &self,
+        id: &str,
+        conn: &DbConn,
+    ) -> Result<Vec<ChangelogEntry>> {
         let id = fcid2uuid(id)?;
         // TODO: single query
         let editor: EditorRow = editor::table.find(id).first(conn)?;
@@ -937,8 +963,11 @@ impl Server {
         Ok(entries)
     }
 
-    pub fn get_changelog_handler(&self, limit: Option<i64>, conn: &DbConn) -> Result<Vec<ChangelogEntry>> {
-
+    pub fn get_changelog_handler(
+        &self,
+        limit: Option<i64>,
+        conn: &DbConn,
+    ) -> Result<Vec<ChangelogEntry>> {
         let limit = limit.unwrap_or(50);
 
         let changes: Vec<(ChangelogRow, EditgroupRow)> = changelog::table
@@ -960,7 +989,6 @@ impl Server {
     }
 
     pub fn get_changelog_entry_handler(&self, id: i64, conn: &DbConn) -> Result<ChangelogEntry> {
-
         let cl_row: ChangelogRow = changelog::table.find(id).first(conn)?;
         let editgroup = self.get_editgroup_handler(&uuid2fcid(&cl_row.editgroup_id), conn)?;
 
@@ -970,7 +998,6 @@ impl Server {
     }
 
     pub fn get_stats_handler(&self, more: &Option<String>, conn: &DbConn) -> Result<StatsResponse> {
-
         let merged_editgroups: i64 = changelog::table
             .select(diesel::dsl::count_star())
             .first(conn)?;

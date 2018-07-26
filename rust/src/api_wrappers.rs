@@ -1,12 +1,13 @@
 //! API endpoint handlers
 
+use api_helpers::fcid2uuid;
 use api_server::Server;
+use diesel::Connection;
 use errors::*;
 use fatcat_api::models;
 use fatcat_api::models::*;
 use fatcat_api::*;
 use futures::{self, Future};
-use diesel::Connection;
 
 /// Helper for generating wrappers (which return "Box::new(futures::done(Ok(BLAH)))" like the
 /// codegen fatcat-api code wants) that call through to actual helpers (which have simple Result<>
@@ -24,11 +25,16 @@ macro_rules! wrap_entity_handlers {
         fn $get_fn(
             &self,
             id: String,
+            expand: Option<String>,
             _context: &Context,
         ) -> Box<Future<Item = $get_resp, Error = ApiError> + Send> {
+            let id = if let Ok(parsed) = fcid2uuid(&id) { parsed } else {
+                return Box::new(futures::done(Ok($get_resp::BadRequest(ErrorResponse {
+                    message: ErrorKind::InvalidFatcatId(id).to_string() }))));
+            };
             let conn = self.db_pool.get().expect("db_pool error");
             // No transaction for GET
-            let ret = match self.$get_handler(&id, &conn) {
+            let ret = match self.$get_handler(&id, expand, &conn) {
                 Ok(entity) =>
                     $get_resp::FoundEntity(entity),
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
@@ -106,6 +112,10 @@ macro_rules! wrap_entity_handlers {
             limit: Option<i64>,
             _context: &Context,
         ) -> Box<Future<Item = $get_history_resp, Error = ApiError> + Send> {
+            let id = if let Ok(parsed) = fcid2uuid(&id) { parsed } else {
+                return Box::new(futures::done(Ok($get_history_resp::BadRequest(ErrorResponse {
+                    message: ErrorKind::InvalidFatcatId(id).to_string() }))));
+            };
             let conn = self.db_pool.get().expect("db_pool error");
             // No transaction for GET
             let ret = match self.$get_history_handler(&id, limit, &conn) {
