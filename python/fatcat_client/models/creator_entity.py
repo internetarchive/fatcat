@@ -135,6 +135,12 @@ class CreatorEntity(object):
         :param orcid: The orcid of this CreatorEntity.  # noqa: E501
         :type: str
         """
+        if orcid is not None and len(orcid) > 19:
+            raise ValueError("Invalid value for `orcid`, length must be less than or equal to `19`")  # noqa: E501
+        if orcid is not None and len(orcid) < 19:
+            raise ValueError("Invalid value for `orcid`, length must be greater than or equal to `19`")  # noqa: E501
+        if orcid is not None and not re.search('\\d{4}-\\d{4}-\\d{4}-\\d{4}', orcid):  # noqa: E501
+            raise ValueError("Invalid value for `orcid`, must be a follow pattern or equal to `/\\d{4}-\\d{4}-\\d{4}-\\d{4}/`")  # noqa: E501
 
         self._orcid = orcid
 
@@ -234,6 +240,7 @@ class CreatorEntity(object):
     def ident(self):
         """Gets the ident of this CreatorEntity.  # noqa: E501
 
+        base32-encoded unique identifier  # noqa: E501
 
         :return: The ident of this CreatorEntity.  # noqa: E501
         :rtype: str
@@ -244,10 +251,17 @@ class CreatorEntity(object):
     def ident(self, ident):
         """Sets the ident of this CreatorEntity.
 
+        base32-encoded unique identifier  # noqa: E501
 
         :param ident: The ident of this CreatorEntity.  # noqa: E501
         :type: str
         """
+        if ident is not None and len(ident) > 26:
+            raise ValueError("Invalid value for `ident`, length must be less than or equal to `26`")  # noqa: E501
+        if ident is not None and len(ident) < 26:
+            raise ValueError("Invalid value for `ident`, length must be greater than or equal to `26`")  # noqa: E501
+        if ident is not None and not re.search('[a-zA-Z2-7]{26}', ident):  # noqa: E501
+            raise ValueError("Invalid value for `ident`, must be a follow pattern or equal to `/[a-zA-Z2-7]{26}/`")  # noqa: E501
 
         self._ident = ident
 
@@ -255,6 +269,7 @@ class CreatorEntity(object):
     def revision(self):
         """Gets the revision of this CreatorEntity.  # noqa: E501
 
+        UUID (lower-case, dash-separated, hex-encoded 128-bit)  # noqa: E501
 
         :return: The revision of this CreatorEntity.  # noqa: E501
         :rtype: str
@@ -265,10 +280,17 @@ class CreatorEntity(object):
     def revision(self, revision):
         """Sets the revision of this CreatorEntity.
 
+        UUID (lower-case, dash-separated, hex-encoded 128-bit)  # noqa: E501
 
         :param revision: The revision of this CreatorEntity.  # noqa: E501
         :type: str
         """
+        if revision is not None and len(revision) > 36:
+            raise ValueError("Invalid value for `revision`, length must be less than or equal to `36`")  # noqa: E501
+        if revision is not None and len(revision) < 36:
+            raise ValueError("Invalid value for `revision`, length must be greater than or equal to `36`")  # noqa: E501
+        if revision is not None and not re.search('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', revision):  # noqa: E501
+            raise ValueError("Invalid value for `revision`, must be a follow pattern or equal to `/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/`")  # noqa: E501
 
         self._revision = revision
 
@@ -276,6 +298,7 @@ class CreatorEntity(object):
     def redirect(self):
         """Gets the redirect of this CreatorEntity.  # noqa: E501
 
+        base32-encoded unique identifier  # noqa: E501
 
         :return: The redirect of this CreatorEntity.  # noqa: E501
         :rtype: str
@@ -286,10 +309,17 @@ class CreatorEntity(object):
     def redirect(self, redirect):
         """Sets the redirect of this CreatorEntity.
 
+        base32-encoded unique identifier  # noqa: E501
 
         :param redirect: The redirect of this CreatorEntity.  # noqa: E501
         :type: str
         """
+        if redirect is not None and len(redirect) > 26:
+            raise ValueError("Invalid value for `redirect`, length must be less than or equal to `26`")  # noqa: E501
+        if redirect is not None and len(redirect) < 26:
+            raise ValueError("Invalid value for `redirect`, length must be greater than or equal to `26`")  # noqa: E501
+        if redirect is not None and not re.search('[a-zA-Z2-7]{26}', redirect):  # noqa: E501
+            raise ValueError("Invalid value for `redirect`, must be a follow pattern or equal to `/[a-zA-Z2-7]{26}/`")  # noqa: E501
 
         self._redirect = redirect
 
@@ -297,6 +327,7 @@ class CreatorEntity(object):
     def editgroup_id(self):
         """Gets the editgroup_id of this CreatorEntity.  # noqa: E501
 
+        base32-encoded unique identifier  # noqa: E501
 
         :return: The editgroup_id of this CreatorEntity.  # noqa: E501
         :rtype: str
@@ -307,10 +338,17 @@ class CreatorEntity(object):
     def editgroup_id(self, editgroup_id):
         """Sets the editgroup_id of this CreatorEntity.
 
+        base32-encoded unique identifier  # noqa: E501
 
         :param editgroup_id: The editgroup_id of this CreatorEntity.  # noqa: E501
         :type: str
         """
+        if editgroup_id is not None and len(editgroup_id) > 26:
+            raise ValueError("Invalid value for `editgroup_id`, length must be less than or equal to `26`")  # noqa: E501
+        if editgroup_id is not None and len(editgroup_id) < 26:
+            raise ValueError("Invalid value for `editgroup_id`, length must be greater than or equal to `26`")  # noqa: E501
+        if editgroup_id is not None and not re.search('[a-zA-Z2-7]{26}', editgroup_id):  # noqa: E501
+            raise ValueError("Invalid value for `editgroup_id`, must be a follow pattern or equal to `/[a-zA-Z2-7]{26}/`")  # noqa: E501
 
         self._editgroup_id = editgroup_id
 

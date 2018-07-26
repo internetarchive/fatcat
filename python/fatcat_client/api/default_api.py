@@ -42,7 +42,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param str id: (required)
+        :param str id: base32-encoded unique identifier (required)
         :return: Success
                  If the method is called asynchronously,
                  returns the request thread.
@@ -63,7 +63,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param str id: (required)
+        :param str id: base32-encoded unique identifier (required)
         :return: Success
                  If the method is called asynchronously,
                  returns the request thread.
@@ -89,6 +89,14 @@ class DefaultApi(object):
                 params['id'] is None):
             raise ValueError("Missing the required parameter `id` when calling `accept_editgroup`")  # noqa: E501
 
+        if ('id' in params and
+                len(params['id']) > 26):
+            raise ValueError("Invalid value for parameter `id` when calling `accept_editgroup`, length must be less than or equal to `26`")  # noqa: E501
+        if ('id' in params and
+                len(params['id']) < 26):
+            raise ValueError("Invalid value for parameter `id` when calling `accept_editgroup`, length must be greater than or equal to `26`")  # noqa: E501
+        if 'id' in params and not re.search('[a-zA-Z2-7]{26}', params['id']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `id` when calling `accept_editgroup`, must conform to the pattern `/[a-zA-Z2-7]{26}/`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -1397,6 +1405,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
+        :param str expand: List of sub-entities to expand in response. For now, only 'all' accepted.
         :return: ContainerEntity
                  If the method is called asynchronously,
                  returns the request thread.
@@ -1418,12 +1427,13 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
+        :param str expand: List of sub-entities to expand in response. For now, only 'all' accepted.
         :return: ContainerEntity
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['id']  # noqa: E501
+        all_params = ['id', 'expand']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -1450,6 +1460,8 @@ class DefaultApi(object):
             path_params['id'] = params['id']  # noqa: E501
 
         query_params = []
+        if 'expand' in params:
+            query_params.append(('expand', params['expand']))  # noqa: E501
 
         header_params = {}
 
@@ -1595,6 +1607,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
+        :param str expand: List of sub-entities to expand in response. For now, only 'all' accepted.
         :return: CreatorEntity
                  If the method is called asynchronously,
                  returns the request thread.
@@ -1616,12 +1629,13 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
+        :param str expand: List of sub-entities to expand in response. For now, only 'all' accepted.
         :return: CreatorEntity
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['id']  # noqa: E501
+        all_params = ['id', 'expand']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -1648,6 +1662,8 @@ class DefaultApi(object):
             path_params['id'] = params['id']  # noqa: E501
 
         query_params = []
+        if 'expand' in params:
+            query_params.append(('expand', params['expand']))  # noqa: E501
 
         header_params = {}
 
@@ -1889,7 +1905,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param str id: (required)
+        :param str id: base32-encoded unique identifier (required)
         :return: Editgroup
                  If the method is called asynchronously,
                  returns the request thread.
@@ -1910,7 +1926,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param str id: (required)
+        :param str id: base32-encoded unique identifier (required)
         :return: Editgroup
                  If the method is called asynchronously,
                  returns the request thread.
@@ -1936,6 +1952,14 @@ class DefaultApi(object):
                 params['id'] is None):
             raise ValueError("Missing the required parameter `id` when calling `get_editgroup`")  # noqa: E501
 
+        if ('id' in params and
+                len(params['id']) > 26):
+            raise ValueError("Invalid value for parameter `id` when calling `get_editgroup`, length must be less than or equal to `26`")  # noqa: E501
+        if ('id' in params and
+                len(params['id']) < 26):
+            raise ValueError("Invalid value for parameter `id` when calling `get_editgroup`, length must be greater than or equal to `26`")  # noqa: E501
+        if 'id' in params and not re.search('[a-zA-Z2-7]{26}', params['id']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `id` when calling `get_editgroup`, must conform to the pattern `/[a-zA-Z2-7]{26}/`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -2181,6 +2205,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
+        :param str expand: List of sub-entities to expand in response. For now, only 'all' accepted.
         :return: FileEntity
                  If the method is called asynchronously,
                  returns the request thread.
@@ -2202,12 +2227,13 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
+        :param str expand: List of sub-entities to expand in response. For now, only 'all' accepted.
         :return: FileEntity
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['id']  # noqa: E501
+        all_params = ['id', 'expand']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -2234,6 +2260,8 @@ class DefaultApi(object):
             path_params['id'] = params['id']  # noqa: E501
 
         query_params = []
+        if 'expand' in params:
+            query_params.append(('expand', params['expand']))  # noqa: E501
 
         header_params = {}
 
@@ -2379,6 +2407,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
+        :param str expand: List of sub-entities to expand in response. For now, only 'all' accepted.
         :return: ReleaseEntity
                  If the method is called asynchronously,
                  returns the request thread.
@@ -2400,12 +2429,13 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
+        :param str expand: List of sub-entities to expand in response. For now, only 'all' accepted.
         :return: ReleaseEntity
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['id']  # noqa: E501
+        all_params = ['id', 'expand']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -2432,6 +2462,8 @@ class DefaultApi(object):
             path_params['id'] = params['id']  # noqa: E501
 
         query_params = []
+        if 'expand' in params:
+            query_params.append(('expand', params['expand']))  # noqa: E501
 
         header_params = {}
 
@@ -2767,6 +2799,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
+        :param str expand: List of sub-entities to expand in response. For now, only 'all' accepted.
         :return: WorkEntity
                  If the method is called asynchronously,
                  returns the request thread.
@@ -2788,12 +2821,13 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
+        :param str expand: List of sub-entities to expand in response. For now, only 'all' accepted.
         :return: WorkEntity
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['id']  # noqa: E501
+        all_params = ['id', 'expand']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -2820,6 +2854,8 @@ class DefaultApi(object):
             path_params['id'] = params['id']  # noqa: E501
 
         query_params = []
+        if 'expand' in params:
+            query_params.append(('expand', params['expand']))  # noqa: E501
 
         header_params = {}
 
@@ -3108,6 +3144,14 @@ class DefaultApi(object):
                 params['issnl'] is None):
             raise ValueError("Missing the required parameter `issnl` when calling `lookup_container`")  # noqa: E501
 
+        if ('issnl' in params and
+                len(params['issnl']) > 9):
+            raise ValueError("Invalid value for parameter `issnl` when calling `lookup_container`, length must be less than or equal to `9`")  # noqa: E501
+        if ('issnl' in params and
+                len(params['issnl']) < 9):
+            raise ValueError("Invalid value for parameter `issnl` when calling `lookup_container`, length must be greater than or equal to `9`")  # noqa: E501
+        if 'issnl' in params and not re.search('\\d{4}-\\d{3}[0-9X]', params['issnl']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `issnl` when calling `lookup_container`, must conform to the pattern `/\\d{4}-\\d{3}[0-9X]/`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -3205,6 +3249,14 @@ class DefaultApi(object):
                 params['orcid'] is None):
             raise ValueError("Missing the required parameter `orcid` when calling `lookup_creator`")  # noqa: E501
 
+        if ('orcid' in params and
+                len(params['orcid']) > 19):
+            raise ValueError("Invalid value for parameter `orcid` when calling `lookup_creator`, length must be less than or equal to `19`")  # noqa: E501
+        if ('orcid' in params and
+                len(params['orcid']) < 19):
+            raise ValueError("Invalid value for parameter `orcid` when calling `lookup_creator`, length must be greater than or equal to `19`")  # noqa: E501
+        if 'orcid' in params and not re.search('\\d{4}-\\d{4}-\\d{4}-\\d{4}', params['orcid']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `orcid` when calling `lookup_creator`, must conform to the pattern `/\\d{4}-\\d{4}-\\d{4}-\\d{4}/`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}

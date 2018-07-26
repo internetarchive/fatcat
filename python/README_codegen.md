@@ -52,7 +52,7 @@ from fatcat_client.rest import ApiException
 from pprint import pprint
 # create an instance of the API class
 api_instance = fatcat_client.DefaultApi()
-id = 'id_example' # str | 
+id = 'id_example' # str | base32-encoded unique identifier
 
 try:
     api_response = api_instance.accept_editgroup(id)

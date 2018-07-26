@@ -72,6 +72,7 @@ class Editgroup(object):
     def id(self):
         """Gets the id of this Editgroup.  # noqa: E501
 
+        base32-encoded unique identifier  # noqa: E501
 
         :return: The id of this Editgroup.  # noqa: E501
         :rtype: str
@@ -82,10 +83,17 @@ class Editgroup(object):
     def id(self, id):
         """Sets the id of this Editgroup.
 
+        base32-encoded unique identifier  # noqa: E501
 
         :param id: The id of this Editgroup.  # noqa: E501
         :type: str
         """
+        if id is not None and len(id) > 26:
+            raise ValueError("Invalid value for `id`, length must be less than or equal to `26`")  # noqa: E501
+        if id is not None and len(id) < 26:
+            raise ValueError("Invalid value for `id`, length must be greater than or equal to `26`")  # noqa: E501
+        if id is not None and not re.search('[a-zA-Z2-7]{26}', id):  # noqa: E501
+            raise ValueError("Invalid value for `id`, must be a follow pattern or equal to `/[a-zA-Z2-7]{26}/`")  # noqa: E501
 
         self._id = id
 
@@ -93,6 +101,7 @@ class Editgroup(object):
     def editor_id(self):
         """Gets the editor_id of this Editgroup.  # noqa: E501
 
+        base32-encoded unique identifier  # noqa: E501
 
         :return: The editor_id of this Editgroup.  # noqa: E501
         :rtype: str
@@ -103,12 +112,19 @@ class Editgroup(object):
     def editor_id(self, editor_id):
         """Sets the editor_id of this Editgroup.
 
+        base32-encoded unique identifier  # noqa: E501
 
         :param editor_id: The editor_id of this Editgroup.  # noqa: E501
         :type: str
         """
         if editor_id is None:
             raise ValueError("Invalid value for `editor_id`, must not be `None`")  # noqa: E501
+        if editor_id is not None and len(editor_id) > 26:
+            raise ValueError("Invalid value for `editor_id`, length must be less than or equal to `26`")  # noqa: E501
+        if editor_id is not None and len(editor_id) < 26:
+            raise ValueError("Invalid value for `editor_id`, length must be greater than or equal to `26`")  # noqa: E501
+        if editor_id is not None and not re.search('[a-zA-Z2-7]{26}', editor_id):  # noqa: E501
+            raise ValueError("Invalid value for `editor_id`, must be a follow pattern or equal to `/[a-zA-Z2-7]{26}/`")  # noqa: E501
 
         self._editor_id = editor_id
 

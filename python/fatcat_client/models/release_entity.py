@@ -16,6 +16,8 @@ import re  # noqa: F401
 
 import six
 
+from fatcat_client.models.container_entity import ContainerEntity  # noqa: F401,E501
+from fatcat_client.models.file_entity import FileEntity  # noqa: F401,E501
 from fatcat_client.models.release_contrib import ReleaseContrib  # noqa: F401,E501
 from fatcat_client.models.release_entity_abstracts import ReleaseEntityAbstracts  # noqa: F401,E501
 from fatcat_client.models.release_ref import ReleaseRef  # noqa: F401,E501
@@ -52,6 +54,8 @@ class ReleaseEntity(object):
         'release_status': 'str',
         'release_type': 'str',
         'container_id': 'str',
+        'files': 'list[FileEntity]',
+        'container': 'ContainerEntity',
         'work_id': 'str',
         'title': 'str',
         'state': 'str',
@@ -80,6 +84,8 @@ class ReleaseEntity(object):
         'release_status': 'release_status',
         'release_type': 'release_type',
         'container_id': 'container_id',
+        'files': 'files',
+        'container': 'container',
         'work_id': 'work_id',
         'title': 'title',
         'state': 'state',
@@ -90,7 +96,7 @@ class ReleaseEntity(object):
         'extra': 'extra'
     }
 
-    def __init__(self, abstracts=None, refs=None, contribs=None, language=None, publisher=None, pages=None, issue=None, volume=None, wikidata_qid=None, pmcid=None, pmid=None, isbn13=None, doi=None, release_date=None, release_status=None, release_type=None, container_id=None, work_id=None, title=None, state=None, ident=None, revision=None, redirect=None, editgroup_id=None, extra=None):  # noqa: E501
+    def __init__(self, abstracts=None, refs=None, contribs=None, language=None, publisher=None, pages=None, issue=None, volume=None, wikidata_qid=None, pmcid=None, pmid=None, isbn13=None, doi=None, release_date=None, release_status=None, release_type=None, container_id=None, files=None, container=None, work_id=None, title=None, state=None, ident=None, revision=None, redirect=None, editgroup_id=None, extra=None):  # noqa: E501
         """ReleaseEntity - a model defined in Swagger"""  # noqa: E501
 
         self._abstracts = None
@@ -110,6 +116,8 @@ class ReleaseEntity(object):
         self._release_status = None
         self._release_type = None
         self._container_id = None
+        self._files = None
+        self._container = None
         self._work_id = None
         self._title = None
         self._state = None
@@ -154,6 +162,10 @@ class ReleaseEntity(object):
             self.release_type = release_type
         if container_id is not None:
             self.container_id = container_id
+        if files is not None:
+            self.files = files
+        if container is not None:
+            self.container = container
         if work_id is not None:
             self.work_id = work_id
         self.title = title
@@ -530,6 +542,52 @@ class ReleaseEntity(object):
         self._container_id = container_id
 
     @property
+    def files(self):
+        """Gets the files of this ReleaseEntity.  # noqa: E501
+
+        Optional; GET-only  # noqa: E501
+
+        :return: The files of this ReleaseEntity.  # noqa: E501
+        :rtype: list[FileEntity]
+        """
+        return self._files
+
+    @files.setter
+    def files(self, files):
+        """Sets the files of this ReleaseEntity.
+
+        Optional; GET-only  # noqa: E501
+
+        :param files: The files of this ReleaseEntity.  # noqa: E501
+        :type: list[FileEntity]
+        """
+
+        self._files = files
+
+    @property
+    def container(self):
+        """Gets the container of this ReleaseEntity.  # noqa: E501
+
+        Optional; GET-only  # noqa: E501
+
+        :return: The container of this ReleaseEntity.  # noqa: E501
+        :rtype: ContainerEntity
+        """
+        return self._container
+
+    @container.setter
+    def container(self, container):
+        """Sets the container of this ReleaseEntity.
+
+        Optional; GET-only  # noqa: E501
+
+        :param container: The container of this ReleaseEntity.  # noqa: E501
+        :type: ContainerEntity
+        """
+
+        self._container = container
+
+    @property
     def work_id(self):
         """Gets the work_id of this ReleaseEntity.  # noqa: E501
 
@@ -604,6 +662,7 @@ class ReleaseEntity(object):
     def ident(self):
         """Gets the ident of this ReleaseEntity.  # noqa: E501
 
+        base32-encoded unique identifier  # noqa: E501
 
         :return: The ident of this ReleaseEntity.  # noqa: E501
         :rtype: str
@@ -614,10 +673,17 @@ class ReleaseEntity(object):
     def ident(self, ident):
         """Sets the ident of this ReleaseEntity.
 
+        base32-encoded unique identifier  # noqa: E501
 
         :param ident: The ident of this ReleaseEntity.  # noqa: E501
         :type: str
         """
+        if ident is not None and len(ident) > 26:
+            raise ValueError("Invalid value for `ident`, length must be less than or equal to `26`")  # noqa: E501
+        if ident is not None and len(ident) < 26:
+            raise ValueError("Invalid value for `ident`, length must be greater than or equal to `26`")  # noqa: E501
+        if ident is not None and not re.search('[a-zA-Z2-7]{26}', ident):  # noqa: E501
+            raise ValueError("Invalid value for `ident`, must be a follow pattern or equal to `/[a-zA-Z2-7]{26}/`")  # noqa: E501
 
         self._ident = ident
 
@@ -625,6 +691,7 @@ class ReleaseEntity(object):
     def revision(self):
         """Gets the revision of this ReleaseEntity.  # noqa: E501
 
+        UUID (lower-case, dash-separated, hex-encoded 128-bit)  # noqa: E501
 
         :return: The revision of this ReleaseEntity.  # noqa: E501
         :rtype: str
@@ -635,10 +702,17 @@ class ReleaseEntity(object):
     def revision(self, revision):
         """Sets the revision of this ReleaseEntity.
 
+        UUID (lower-case, dash-separated, hex-encoded 128-bit)  # noqa: E501
 
         :param revision: The revision of this ReleaseEntity.  # noqa: E501
         :type: str
         """
+        if revision is not None and len(revision) > 36:
+            raise ValueError("Invalid value for `revision`, length must be less than or equal to `36`")  # noqa: E501
+        if revision is not None and len(revision) < 36:
+            raise ValueError("Invalid value for `revision`, length must be greater than or equal to `36`")  # noqa: E501
+        if revision is not None and not re.search('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', revision):  # noqa: E501
+            raise ValueError("Invalid value for `revision`, must be a follow pattern or equal to `/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/`")  # noqa: E501
 
         self._revision = revision
 
@@ -646,6 +720,7 @@ class ReleaseEntity(object):
     def redirect(self):
         """Gets the redirect of this ReleaseEntity.  # noqa: E501
 
+        base32-encoded unique identifier  # noqa: E501
 
         :return: The redirect of this ReleaseEntity.  # noqa: E501
         :rtype: str
@@ -656,10 +731,17 @@ class ReleaseEntity(object):
     def redirect(self, redirect):
         """Sets the redirect of this ReleaseEntity.
 
+        base32-encoded unique identifier  # noqa: E501
 
         :param redirect: The redirect of this ReleaseEntity.  # noqa: E501
         :type: str
         """
+        if redirect is not None and len(redirect) > 26:
+            raise ValueError("Invalid value for `redirect`, length must be less than or equal to `26`")  # noqa: E501
+        if redirect is not None and len(redirect) < 26:
+            raise ValueError("Invalid value for `redirect`, length must be greater than or equal to `26`")  # noqa: E501
+        if redirect is not None and not re.search('[a-zA-Z2-7]{26}', redirect):  # noqa: E501
+            raise ValueError("Invalid value for `redirect`, must be a follow pattern or equal to `/[a-zA-Z2-7]{26}/`")  # noqa: E501
 
         self._redirect = redirect
 
@@ -667,6 +749,7 @@ class ReleaseEntity(object):
     def editgroup_id(self):
         """Gets the editgroup_id of this ReleaseEntity.  # noqa: E501
 
+        base32-encoded unique identifier  # noqa: E501
 
         :return: The editgroup_id of this ReleaseEntity.  # noqa: E501
         :rtype: str
@@ -677,10 +760,17 @@ class ReleaseEntity(object):
     def editgroup_id(self, editgroup_id):
         """Sets the editgroup_id of this ReleaseEntity.
 
+        base32-encoded unique identifier  # noqa: E501
 
         :param editgroup_id: The editgroup_id of this ReleaseEntity.  # noqa: E501
         :type: str
         """
+        if editgroup_id is not None and len(editgroup_id) > 26:
+            raise ValueError("Invalid value for `editgroup_id`, length must be less than or equal to `26`")  # noqa: E501
+        if editgroup_id is not None and len(editgroup_id) < 26:
+            raise ValueError("Invalid value for `editgroup_id`, length must be greater than or equal to `26`")  # noqa: E501
+        if editgroup_id is not None and not re.search('[a-zA-Z2-7]{26}', editgroup_id):  # noqa: E501
+            raise ValueError("Invalid value for `editgroup_id`, must be a follow pattern or equal to `/[a-zA-Z2-7]{26}/`")  # noqa: E501
 
         self._editgroup_id = editgroup_id
 
