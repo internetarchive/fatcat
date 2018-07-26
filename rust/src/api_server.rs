@@ -751,7 +751,6 @@ impl Server {
                 if contrib_list.is_empty() {
                     Some(vec![])
                 } else {
-                    println!("{:#?}", contrib_list);
                     let contrib_rows: Vec<ReleaseContribNewRow> = contrib_list
                         .iter()
                         .map(|c| ReleaseContribNewRow {
