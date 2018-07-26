@@ -142,14 +142,14 @@ paths:
         type: "string"
         formatString: "\\\"{}\\\""
         example: "\"id_example\".to_string()"
-      - name: "expend"
+      - name: "expand"
         in: "query"
         description: "List of sub-entities to expand in response. For now, only 'all'\
           \ accepted."
         required: false
         type: "string"
         formatString: "{:?}"
-        example: "Some(\"expend_example\".to_string())"
+        example: "Some(\"expand_example\".to_string())"
       responses:
         200:
           description: "Found Entity"
@@ -437,14 +437,14 @@ paths:
         type: "string"
         formatString: "\\\"{}\\\""
         example: "\"id_example\".to_string()"
-      - name: "expend"
+      - name: "expand"
         in: "query"
         description: "List of sub-entities to expand in response. For now, only 'all'\
           \ accepted."
         required: false
         type: "string"
         formatString: "{:?}"
-        example: "Some(\"expend_example\".to_string())"
+        example: "Some(\"expand_example\".to_string())"
       responses:
         200:
           description: "Found Entity"
@@ -786,14 +786,14 @@ paths:
         type: "string"
         formatString: "\\\"{}\\\""
         example: "\"id_example\".to_string()"
-      - name: "expend"
+      - name: "expand"
         in: "query"
         description: "List of sub-entities to expand in response. For now, only 'all'\
           \ accepted."
         required: false
         type: "string"
         formatString: "{:?}"
-        example: "Some(\"expend_example\".to_string())"
+        example: "Some(\"expand_example\".to_string())"
       responses:
         200:
           description: "Found Entity"
@@ -1078,14 +1078,14 @@ paths:
         type: "string"
         formatString: "\\\"{}\\\""
         example: "\"id_example\".to_string()"
-      - name: "expend"
+      - name: "expand"
         in: "query"
         description: "List of sub-entities to expand in response. For now, only 'all'\
           \ accepted."
         required: false
         type: "string"
         formatString: "{:?}"
-        example: "Some(\"expend_example\".to_string())"
+        example: "Some(\"expand_example\".to_string())"
       responses:
         200:
           description: "Found Entity"
@@ -1424,14 +1424,14 @@ paths:
         type: "string"
         formatString: "\\\"{}\\\""
         example: "\"id_example\".to_string()"
-      - name: "expend"
+      - name: "expand"
         in: "query"
         description: "List of sub-entities to expand in response. For now, only 'all'\
           \ accepted."
         required: false
         type: "string"
         formatString: "{:?}"
-        example: "Some(\"expend_example\".to_string())"
+        example: "Some(\"expand_example\".to_string())"
       responses:
         200:
           description: "Found Entity"

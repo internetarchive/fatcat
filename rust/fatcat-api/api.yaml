@@ -456,7 +456,7 @@ paths:
         in: path
         type: string
         required: true
-      - name: expend
+      - name: expand
         in: query
         type: string
         required: false
@@ -544,7 +544,7 @@ paths:
         in: path
         type: string
         required: true
-      - name: expend
+      - name: expand
         in: query
         type: string
         required: false
@@ -648,7 +648,7 @@ paths:
         in: path
         type: string
         required: true
-      - name: expend
+      - name: expand
         in: query
         type: string
         required: false
@@ -736,7 +736,7 @@ paths:
         in: path
         type: string
         required: true
-      - name: expend
+      - name: expand
         in: query
         type: string
         required: false
@@ -840,7 +840,7 @@ paths:
         in: path
         type: string
         required: true
-      - name: expend
+      - name: expand
         in: query
         type: string
         required: false

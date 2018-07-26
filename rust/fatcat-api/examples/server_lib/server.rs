@@ -110,9 +110,9 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn get_container(&self, id: String, expend: Option<String>, context: &Context) -> Box<Future<Item = GetContainerResponse, Error = ApiError> + Send> {
+    fn get_container(&self, id: String, expand: Option<String>, context: &Context) -> Box<Future<Item = GetContainerResponse, Error = ApiError> + Send> {
         let context = context.clone();
-        println!("get_container(\"{}\", {:?}) - X-Span-ID: {:?}", id, expend, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        println!("get_container(\"{}\", {:?}) - X-Span-ID: {:?}", id, expand, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))
     }
 
@@ -127,9 +127,9 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn get_creator(&self, id: String, expend: Option<String>, context: &Context) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send> {
+    fn get_creator(&self, id: String, expand: Option<String>, context: &Context) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send> {
         let context = context.clone();
-        println!("get_creator(\"{}\", {:?}) - X-Span-ID: {:?}", id, expend, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        println!("get_creator(\"{}\", {:?}) - X-Span-ID: {:?}", id, expand, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))
     }
 
@@ -168,9 +168,9 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn get_file(&self, id: String, expend: Option<String>, context: &Context) -> Box<Future<Item = GetFileResponse, Error = ApiError> + Send> {
+    fn get_file(&self, id: String, expand: Option<String>, context: &Context) -> Box<Future<Item = GetFileResponse, Error = ApiError> + Send> {
         let context = context.clone();
-        println!("get_file(\"{}\", {:?}) - X-Span-ID: {:?}", id, expend, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        println!("get_file(\"{}\", {:?}) - X-Span-ID: {:?}", id, expand, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))
     }
 
@@ -185,9 +185,9 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn get_release(&self, id: String, expend: Option<String>, context: &Context) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send> {
+    fn get_release(&self, id: String, expand: Option<String>, context: &Context) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send> {
         let context = context.clone();
-        println!("get_release(\"{}\", {:?}) - X-Span-ID: {:?}", id, expend, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        println!("get_release(\"{}\", {:?}) - X-Span-ID: {:?}", id, expand, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))
     }
 
@@ -214,9 +214,9 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn get_work(&self, id: String, expend: Option<String>, context: &Context) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send> {
+    fn get_work(&self, id: String, expand: Option<String>, context: &Context) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send> {
         let context = context.clone();
-        println!("get_work(\"{}\", {:?}) - X-Span-ID: {:?}", id, expend, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        println!("get_work(\"{}\", {:?}) - X-Span-ID: {:?}", id, expand, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))
     }
 

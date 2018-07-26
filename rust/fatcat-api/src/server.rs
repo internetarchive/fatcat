@@ -1497,9 +1497,9 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_expend = query_params.get("expend").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_expand = query_params.get("expand").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.get_container(param_id, param_expend, context).wait() {
+                match api.get_container(param_id, param_expand, context).wait() {
                     Ok(rsp) => match rsp {
                         GetContainerResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -1681,9 +1681,9 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_expend = query_params.get("expend").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_expand = query_params.get("expand").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.get_creator(param_id, param_expend, context).wait() {
+                match api.get_creator(param_id, param_expand, context).wait() {
                     Ok(rsp) => match rsp {
                         GetCreatorResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -2197,9 +2197,9 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_expend = query_params.get("expend").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_expand = query_params.get("expand").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.get_file(param_id, param_expend, context).wait() {
+                match api.get_file(param_id, param_expand, context).wait() {
                     Ok(rsp) => match rsp {
                         GetFileResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -2381,9 +2381,9 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_expend = query_params.get("expend").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_expand = query_params.get("expand").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.get_release(param_id, param_expend, context).wait() {
+                match api.get_release(param_id, param_expand, context).wait() {
                     Ok(rsp) => match rsp {
                         GetReleaseResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -2711,9 +2711,9 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_expend = query_params.get("expend").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_expand = query_params.get("expand").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.get_work(param_id, param_expend, context).wait() {
+                match api.get_work(param_id, param_expand, context).wait() {
                     Ok(rsp) => match rsp {
                         GetWorkResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");

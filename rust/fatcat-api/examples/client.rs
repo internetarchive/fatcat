@@ -156,7 +156,7 @@ fn main() {
         }
 
         Some("GetContainer") => {
-            let result = client.get_container("id_example".to_string(), Some("expend_example".to_string())).wait();
+            let result = client.get_container("id_example".to_string(), Some("expand_example".to_string())).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -166,7 +166,7 @@ fn main() {
         }
 
         Some("GetCreator") => {
-            let result = client.get_creator("id_example".to_string(), Some("expend_example".to_string())).wait();
+            let result = client.get_creator("id_example".to_string(), Some("expand_example".to_string())).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -196,7 +196,7 @@ fn main() {
         }
 
         Some("GetFile") => {
-            let result = client.get_file("id_example".to_string(), Some("expend_example".to_string())).wait();
+            let result = client.get_file("id_example".to_string(), Some("expand_example".to_string())).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -206,7 +206,7 @@ fn main() {
         }
 
         Some("GetRelease") => {
-            let result = client.get_release("id_example".to_string(), Some("expend_example".to_string())).wait();
+            let result = client.get_release("id_example".to_string(), Some("expand_example".to_string())).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -226,7 +226,7 @@ fn main() {
         }
 
         Some("GetWork") => {
-            let result = client.get_work("id_example".to_string(), Some("expend_example".to_string())).wait();
+            let result = client.get_work("id_example".to_string(), Some("expand_example".to_string())).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
