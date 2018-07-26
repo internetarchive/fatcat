@@ -149,7 +149,9 @@ This release citing other releases.
   {% for ref in release.refs %}
     <li>{% if ref.extra != None %}{{ ref.extra }}{% else %}<i>unknown</i>{% endif %}
     {% if ref.target_release_id != None %}
-    (<a href="/release/{{ ref.target_release_id }}">fatcat release</a>)
+      (<a href="/release/{{ ref.target_release_id }}">fatcat release</a>)
+    {% else if ref.extra.doi != None %}
+      (DOI: <a href="/release/lookup?doi={{ ref.exta.doi }}">{{ ref.extra.doi }}</a>)
     {% endif %}
   {% endfor %}
 </ol>
