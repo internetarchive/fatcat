@@ -98,6 +98,17 @@ fn test_entity_gets() {
         Some("bigger example"),
     );
 
+    // expand keyword
+    check_response(
+        request::get(
+            "http://localhost:9411/v0/release/aaaaaaaaaaaaarceaaaaaaaaai?expand=all",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("MySpace Blog"),
+    );
+
     check_response(
         request::get(
             "http://localhost:9411/v0/work/aaaaaaaaaaaaavkvaaaaaaaaai",
