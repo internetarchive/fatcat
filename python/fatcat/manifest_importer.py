@@ -25,13 +25,27 @@ class FatcatManifestImporter(FatcatImporter):
             release_id = self.lookup_doi(doi.lower())
             if release_id:
                 release_ids = [release_id,]
+        if datetime is None:
+            datetime = "1"
+        urls = []
+        if "//archive.org/" in url or "//arxiv.org/" in url:
+            # TODO: special-case the arxiv.org bulk mirror?
+            urls.append(fatcat_client.FileEntityUrls(url=url, rel="repository"))
+        elif "//web.archive.org/" in url or "//archive.is/" in url:
+            urls.append(fatcat_client.FileEntityUrls(url=url, rel="webarchive"))
+        else:
+            urls.append(fatcat_client.FileEntityUrls(url=url, rel="web"))
+            urls.append(fatcat_client.FileEntityUrls(
+                url="https://web.archive.org/web/{}/{}".format(datetime, url),
+                rel="webarchive"))
+            
         extra = None
         fe = fatcat_client.FileEntity(
             sha1=sha1,
             mimetype=mimetype,
             size=size_bytes,
             md5=md5,
-            url=url,
+            urls=urls,
             releases=release_ids,
             extra=extra)
         return fe
@@ -44,7 +58,6 @@ class FatcatManifestImporter(FatcatImporter):
     def process_db(self, db_path, size=100):
         # TODO: multiple DOIs per sha1
         # TODO: multiple URLs per sha1 (with schema change)
-        # TODO: a test!
         
         db = sqlite3.connect(db_path)
         last_sha1 = None

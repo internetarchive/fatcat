@@ -18,6 +18,9 @@
 <p><b>Sur ("family"/"last") name:</b>
     {% if creator.surname != None %}{{ creator.surname }}{% else %}<i>None or unknown</i>{% endif %}
 
+{% if creator.wikidata_qid != None %}
+<br><b>Wikidata Entity:</b> <a href="https://www.wikidata.org/wiki/{{ creator.wikidata_qid }}">&nbsp;<code>{{ creator.wikidata_qid }}</code></a>
+{% endif %}
 {% if creator.extra != None %}
 <h3>Extra Metadata (raw JSON)</h3>
 {% for (key, value) in creator.extra.items() %}

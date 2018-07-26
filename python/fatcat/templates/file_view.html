@@ -36,8 +36,9 @@ This file is not associated with any fatcat release.
 {% if file.url != None %}
 <p>Known locations of this file:
 <ul>
-  <li><a href="{{ file.url }}">{{ file.url.split('/')[2] }}</a>
-      (<a href="https://web.archive.org/web/1/{{ file.url }}">Wayback mirror</a>)
+{% for url in file.urls %}
+  <li><a href="{{ url.url }}">{{ url.url.split('/')[2] }}</a> ({{ url.rel }})<br>
+{% endfor %}
 </ul>
 {% else %}
 No known public URL, mirror, or archive for this file.
@@ -71,8 +72,8 @@ Raw Object:
 </div>
 <div class="five wide column">
 
-{% if file.url != None %}
-<a href="https://web.archive.org/web/1/{{ file.url }}" class="ui top attached fluid huge green button"><i class="file icon"></i>Download File</a>
+{% if file.urls != None and file.urls != [] %}
+<a href="https://web.archive.org/web/1/{{ file.urls[0].url }}" class="ui top attached fluid huge green button"><i class="file icon"></i>Download File</a>
 {% else %}
 <span class="ui top attached fluid huge grey button"><i class="file cross icon"></i>No Download Available</span>
 {% endif %}

@@ -24,6 +24,9 @@
 {% if (container.extra != None) and (container.extra['url'] != None) and (container.extra['url']|length > 0) %}
 <br><b>Homepage:</b> <a href="{{ container.extra['url'] }}">&nbsp;<code>{{ container.extra['url'] }}</code></a>
 {% endif %}
+{% if container.wikidata_qid != None %}
+<br><b>Wikidata Entity:</b> <a href="https://www.wikidata.org/wiki/{{ container.wikidata_qid }}">&nbsp;<code>{{ container.wikidata_qid }}</code></a>
+{% endif %}
 
 {% if container.extra != None %}
 <h3>Extra Metadata (raw JSON)</h3>

@@ -10,9 +10,9 @@
   {% if authors != [] %} by {% endif %}
   {% for contrib in authors %}
     {% if contrib.creator_id %}
-      <b><a href="/creator/{{contrib.creator_id}}">{{ contrib.raw }}</a></b>{% if not loop.last %}, {% endif %}
+      <b><a href="/creator/{{contrib.creator_id}}">{{ contrib.raw_name }}</a></b>{% if not loop.last %}, {% endif %}
     {% else %}
-      {% if contrib.raw != None %}{{ contrib.raw }}{% else %}<i>Unknown</i>{% endif %}{% if not loop.last %}, {% endif %}
+      {% if contrib.raw_name != None %}{{ contrib.raw_name }}{% else %}<i>Unknown</i>{% endif %}{% if not loop.last %}, {% endif %}
     {% endif %}
   {% endfor %}
 </div>
@@ -25,6 +25,15 @@
 {% if release.release_date != None %}<p><b>Date (published):</b> {{ release.release_date }}{% endif %}
 {% if release.doi != None %}
 <br><b>DOI:</b> <a href="https://doi.org/{{ release.doi }}">&nbsp;<code>{{ release.doi }}</code></a>
+{% endif %}
+{% if release.pmid != None %}
+<br><b>PubMed:</b> <a href="https://www.ncbi.nlm.nih.gov/pubmed/{{ release.pmid }}">&nbsp;<code>{{ release.pmid }}</code></a>
+{% endif %}
+{% if release.pmcid != None %}
+<br><b>PubMed Central:</b> <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/{{ release.pmcid }}">&nbsp;<code>{{ release.pmcid }}</code></a>
+{% endif %}
+{% if release.wikidata_qid != None %}
+<br><b>Wikidata Entity:</b> <a href="https://www.wikidata.org/wiki/{{ release.wikidata_qid }}">&nbsp;<code>{{ release.wikidata_qid }}</code></a>
 {% endif %}
 {% if release.isbn13 != None %}
 <br><b>ISBN-13:</b> &nbsp;<code>{{ release.isbn13 }}</code>
@@ -70,30 +79,13 @@ Raw Object:
 -->
 
 <br>
-<h3>Files</h3>
-{% if files != [] %}
-Believed to represent this release...
-<table class="ui compact table">
-  <thead>
-    <tr><th>SHA-1
-        <th>Size (bytes)
-        <th>File Type
-        <th>Links
-  </thead>
-  <tbody>
-  {% for file in files %}
-  <tr><td><small><code><a href="/file/{{ file.ident }}">{{ file.sha1}}</a></code></small>
-      <td>{% if file.size != None %}{{ file.size }}{% endif %}
-      <td>{% if file.mimetype != None %}{{ file.mimetype }}{% endif %}
-      <td><a href="{{ file.url }}">{{ file.url.split('/')[2] }}</a>
-          <br><a href="https://web.archive.org/web/1/{{ file.url }}">web.archive.org</a>
+<h3>Abstracts</h3>
+{% if release.abstracts != [] %}
+  {% for abstract in release.abstracts %}
+  <b>Abstract (<code>{{ abstract.sha1 }}</code>, {{ abstract.mimetype }}):</b> {{ abstract.content }}
   {% endfor %}
-  </tbody>
-</table>
-</ul>
 {% else %}
-<p>There are no known files associated with this release (you could try
-<a href="/work/{{ release.work_id }}">other releases for this work?</a>).
+<p>No known abstracts.
 {% endif %}
 
 <br>
@@ -109,9 +101,9 @@ Believed to represent this release...
   {% for contrib in release.contribs %}
   <tr><td>{{ contrib.index }}
       {% if contrib.creator_id %}
-        <td><a href="/creator/{{contrib.creator_id}}">{{ contrib.raw }}</a> 
+        <td><a href="/creator/{{contrib.creator_id}}">{{ contrib.raw_name }}</a> 
       {% else %}
-        <td>{{ contrib.raw }}
+        <td>{{ contrib.raw_name }}
       {% endif %}
       <td>{{ contrib.role or '' }}
   {% endfor %}
@@ -122,12 +114,40 @@ Believed to represent this release...
 {% endif %}
 
 <br>
+<h3>Files</h3>
+{% if files != [] %}
+Believed to represent this release...
+<table class="ui compact table">
+  <thead>
+    <tr><th>SHA-1
+        <th>Size (bytes)
+        <th>File Type
+        <th>Links
+  </thead>
+  <tbody>
+  {% for file in files %}
+  <tr><td><small><code><a href="/file/{{ file.ident }}">{{ file.sha1}}</a></code></small>
+      <td>{% if file.size != None %}{{ file.size }}{% endif %}
+      <td>{% if file.mimetype != None %}{{ file.mimetype }}{% endif %}
+      <td>{% for url in file.urls %}
+        <a href="{{ url.url }}">{{ url.url.split('/')[2] }}</a> ({{ url.rel }})<br>
+      {% endfor %}
+  {% endfor %}
+  </tbody>
+</table>
+</ul>
+{% else %}
+<p>There are no known files associated with this release (you could try
+<a href="/work/{{ release.work_id }}">other releases for this work?</a>).
+{% endif %}
+
+<br>
 {% if release.refs.size != 0 %}
 <h3>References</h3>
 This release citing other releases.
 <ol>
   {% for ref in release.refs %}
-    <li>{% if ref.raw != None %}{{ ref.raw }}{% else %}<i>unknown</i>{% endif %}
+    <li>{% if ref.extra != None %}{{ ref.extra }}{% else %}<i>unknown</i>{% endif %}
     {% if ref.target_release_id != None %}
     (<a href="/release/{{ ref.target_release_id }}">fatcat release</a>)
     {% endif %}

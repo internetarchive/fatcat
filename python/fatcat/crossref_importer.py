@@ -44,7 +44,7 @@ class FatcatCrossrefImporter(FatcatImporter):
             contribs.append(fatcat_client.ReleaseContrib(
                 creator_id=creator_id,
                 index=i+1,
-                raw=raw_name,
+                raw_name=raw_name,
                 role="author"))
 
         # container
@@ -82,7 +82,7 @@ class FatcatCrossrefImporter(FatcatImporter):
                 title=rm.get('title'),
                 locator=rm.get('first-page'),
                 # TODO: just dump JSON somewhere here?
-                raw=rm.get('unstructured')))
+                extra=rm.get('unstructured')))
 
         # release
         extra = dict(crossref={
