@@ -22,13 +22,14 @@ type DbConn = diesel::r2d2::PooledConnection<diesel::r2d2::ConnectionManager<die
 
 macro_rules! entity_batch_handler {
     ($post_handler:ident, $post_batch_handler:ident, $model:ident) => {
-        pub fn $post_batch_handler(&self, entity_list: &[models::$model]) ->
-                Result<Vec<EntityEdit>> {
-            let conn = self.db_pool.get().expect("db_pool error");
-            // TODO: start a transaction
+        pub fn $post_batch_handler(
+            &self,
+            entity_list: &[models::$model],
+            conn: &DbConn,
+        ) -> Result<Vec<EntityEdit>> {
             let mut ret: Vec<EntityEdit> = vec![];
             for entity in entity_list {
-                ret.push(self.$post_handler(entity.clone(), Some(&conn))?);
+                ret.push(self.$post_handler(entity.clone(), conn)?);
             }
             Ok(ret)
         }
@@ -41,8 +42,8 @@ macro_rules! entity_history_handler {
             &self,
             id: &str,
             limit: Option<i64>,
+            conn: &DbConn,
         ) -> Result<Vec<EntityHistoryEntry>> {
-            let conn = self.db_pool.get().expect("db_pool error");
             let id = fcid2uuid(id)?;
             let limit = limit.unwrap_or(50);
 
@@ -52,7 +53,7 @@ macro_rules! entity_history_handler {
                 .filter($edit_table::ident_id.eq(id))
                 .order(changelog::id.desc())
                 .limit(limit)
-                .get_results(&conn)?;
+                .get_results(conn)?;
 
             let history: Vec<EntityHistoryEntry> = rows.into_iter()
                 .map(|(eg_row, cl_row, e_row)| EntityHistoryEntry {
@@ -294,21 +295,19 @@ fn work_row2entity(ident: Option<WorkIdentRow>, rev: WorkRevRow) -> Result<WorkE
 }
 
 impl Server {
-    pub fn get_container_handler(&self, id: &str) -> Result<ContainerEntity> {
-        let conn = self.db_pool.get().expect("db_pool error");
+    pub fn get_container_handler(&self, id: &str, conn: &DbConn) -> Result<ContainerEntity> {
         let id = fcid2uuid(id)?;
 
         // TODO: handle Deletions
         let (ident, rev): (ContainerIdentRow, ContainerRevRow) = container_ident::table
             .find(id)
             .inner_join(container_rev::table)
-            .first(&conn)?;
+            .first(conn)?;
 
         container_row2entity(Some(ident), rev)
     }
 
-    pub fn lookup_container_handler(&self, issnl: &str) -> Result<ContainerEntity> {
-        let conn = self.db_pool.get().expect("db_pool error");
+    pub fn lookup_container_handler(&self, issnl: &str, conn: &DbConn) -> Result<ContainerEntity> {
 
         check_issn(issnl)?;
         let (ident, rev): (ContainerIdentRow, ContainerRevRow) = container_ident::table
@@ -316,25 +315,23 @@ impl Server {
             .filter(container_rev::issnl.eq(issnl))
             .filter(container_ident::is_live.eq(true))
             .filter(container_ident::redirect_id.is_null())
-            .first(&conn)?;
+            .first(conn)?;
 
         container_row2entity(Some(ident), rev)
     }
 
-    pub fn get_creator_handler(&self, id: &str) -> Result<CreatorEntity> {
-        let conn = self.db_pool.get().expect("db_pool error");
+    pub fn get_creator_handler(&self, id: &str, conn: &DbConn) -> Result<CreatorEntity> {
         let id = fcid2uuid(id)?;
 
         let (ident, rev): (CreatorIdentRow, CreatorRevRow) = creator_ident::table
             .find(id)
             .inner_join(creator_rev::table)
-            .first(&conn)?;
+            .first(conn)?;
 
         creator_row2entity(Some(ident), rev)
     }
 
-    pub fn lookup_creator_handler(&self, orcid: &str) -> Result<CreatorEntity> {
-        let conn = self.db_pool.get().expect("db_pool error");
+    pub fn lookup_creator_handler(&self, orcid: &str, conn: &DbConn) -> Result<CreatorEntity> {
 
         check_orcid(orcid)?;
         let (ident, rev): (CreatorIdentRow, CreatorRevRow) = creator_ident::table
@@ -342,13 +339,13 @@ impl Server {
             .filter(creator_rev::orcid.eq(orcid))
             .filter(creator_ident::is_live.eq(true))
             .filter(creator_ident::redirect_id.is_null())
-            .first(&conn)?;
+            .first(conn)?;
 
         creator_row2entity(Some(ident), rev)
     }
 
-    pub fn get_creator_releases_handler(&self, id: &str) -> Result<Vec<ReleaseEntity>> {
-        let conn = self.db_pool.get().expect("db_pool error");
+    pub fn get_creator_releases_handler(&self, id: &str, conn: &DbConn) -> Result<Vec<ReleaseEntity>> {
+
         let id = fcid2uuid(id)?;
 
         // TODO: some kind of unique or group-by?
@@ -358,52 +355,51 @@ impl Server {
             .filter(release_contrib::creator_ident_id.eq(&id))
             .filter(release_ident::is_live.eq(true))
             .filter(release_ident::redirect_id.is_null())
-            .load(&conn)?;
+            .load(conn)?;
 
         rows.into_iter()
-            .map(|(rev, ident, _)| release_row2entity(Some(ident), rev, &conn))
+            .map(|(rev, ident, _)| release_row2entity(Some(ident), rev, conn))
             .collect()
     }
 
-    pub fn get_file_handler(&self, id: &str) -> Result<FileEntity> {
-        let conn = self.db_pool.get().expect("db_pool error");
+    pub fn get_file_handler(&self, id: &str, conn: &DbConn) -> Result<FileEntity> {
+
         let id = fcid2uuid(id)?;
 
         let (ident, rev): (FileIdentRow, FileRevRow) = file_ident::table
             .find(id)
             .inner_join(file_rev::table)
-            .first(&conn)?;
+            .first(conn)?;
 
-        file_row2entity(Some(ident), rev, &conn)
+        file_row2entity(Some(ident), rev, conn)
     }
 
-    pub fn lookup_file_handler(&self, sha1: &str) -> Result<FileEntity> {
-        let conn = self.db_pool.get().expect("db_pool error");
+    pub fn lookup_file_handler(&self, sha1: &str, conn: &DbConn) -> Result<FileEntity> {
+
 
         let (ident, rev): (FileIdentRow, FileRevRow) = file_ident::table
             .inner_join(file_rev::table)
             .filter(file_rev::sha1.eq(sha1))
             .filter(file_ident::is_live.eq(true))
             .filter(file_ident::redirect_id.is_null())
-            .first(&conn)?;
+            .first(conn)?;
 
-        file_row2entity(Some(ident), rev, &conn)
+        file_row2entity(Some(ident), rev, conn)
     }
 
-    pub fn get_release_handler(&self, id: &str) -> Result<ReleaseEntity> {
-        let conn = self.db_pool.get().expect("db_pool error");
+    pub fn get_release_handler(&self, id: &str, conn: &DbConn) -> Result<ReleaseEntity> {
+
         let id = fcid2uuid(id)?;
 
         let (ident, rev): (ReleaseIdentRow, ReleaseRevRow) = release_ident::table
             .find(id)
             .inner_join(release_rev::table)
-            .first(&conn)?;
+            .first(conn)?;
 
-        release_row2entity(Some(ident), rev, &conn)
+        release_row2entity(Some(ident), rev, conn)
     }
 
-    pub fn lookup_release_handler(&self, doi: &str) -> Result<ReleaseEntity> {
-        let conn = self.db_pool.get().expect("db_pool error");
+    pub fn lookup_release_handler(&self, doi: &str, conn: &DbConn) -> Result<ReleaseEntity> {
 
         check_doi(doi)?;
         let (ident, rev): (ReleaseIdentRow, ReleaseRevRow) = release_ident::table
@@ -411,13 +407,13 @@ impl Server {
             .filter(release_rev::doi.eq(doi))
             .filter(release_ident::is_live.eq(true))
             .filter(release_ident::redirect_id.is_null())
-            .first(&conn)?;
+            .first(conn)?;
 
-        release_row2entity(Some(ident), rev, &conn)
+        release_row2entity(Some(ident), rev, conn)
     }
 
-    pub fn get_release_files_handler(&self, id: &str) -> Result<Vec<FileEntity>> {
-        let conn = self.db_pool.get().expect("db_pool error");
+    pub fn get_release_files_handler(&self, id: &str, conn: &DbConn) -> Result<Vec<FileEntity>> {
+
         let id = fcid2uuid(id)?;
 
         let rows: Vec<(FileRevRow, FileIdentRow, FileReleaseRow)> = file_rev::table
@@ -426,27 +422,27 @@ impl Server {
             .filter(file_release::target_release_ident_id.eq(&id))
             .filter(file_ident::is_live.eq(true))
             .filter(file_ident::redirect_id.is_null())
-            .load(&conn)?;
+            .load(conn)?;
 
         rows.into_iter()
-            .map(|(rev, ident, _)| file_row2entity(Some(ident), rev, &conn))
+            .map(|(rev, ident, _)| file_row2entity(Some(ident), rev, conn))
             .collect()
     }
 
-    pub fn get_work_handler(&self, id: &str) -> Result<WorkEntity> {
-        let conn = self.db_pool.get().expect("db_pool error");
+    pub fn get_work_handler(&self, id: &str, conn: &DbConn) -> Result<WorkEntity> {
+
         let id = fcid2uuid(id)?;
 
         let (ident, rev): (WorkIdentRow, WorkRevRow) = work_ident::table
             .find(id)
             .inner_join(work_rev::table)
-            .first(&conn)?;
+            .first(conn)?;
 
         work_row2entity(Some(ident), rev)
     }
 
-    pub fn get_work_releases_handler(&self, id: &str) -> Result<Vec<ReleaseEntity>> {
-        let conn = self.db_pool.get().expect("db_pool error");
+    pub fn get_work_releases_handler(&self, id: &str, conn: &DbConn) -> Result<Vec<ReleaseEntity>> {
+
         let id = fcid2uuid(id)?;
 
         let rows: Vec<(ReleaseRevRow, ReleaseIdentRow)> = release_rev::table
@@ -454,31 +450,21 @@ impl Server {
             .filter(release_rev::work_ident_id.eq(&id))
             .filter(release_ident::is_live.eq(true))
             .filter(release_ident::redirect_id.is_null())
-            .load(&conn)?;
+            .load(conn)?;
 
         rows.into_iter()
-            .map(|(rev, ident)| release_row2entity(Some(ident), rev, &conn))
+            .map(|(rev, ident)| release_row2entity(Some(ident), rev, conn))
             .collect()
     }
 
     pub fn create_container_handler(
         &self,
         entity: models::ContainerEntity,
-        conn: Option<&DbConn>,
+        conn: &DbConn,
     ) -> Result<EntityEdit> {
-        // TODO: still can't cast for some reason
-        // There mut be a cleaner way to manage the lifetime here
-        let real_conn = match conn {
-            Some(_) => None,
-            None => Some(self.db_pool.get().expect("database pool")),
-        };
-        let conn = match real_conn {
-            Some(ref c) => c,
-            None => conn.unwrap(),
-        };
         let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001")?; // TODO: auth
         let editgroup_id: Uuid = match entity.editgroup_id {
-            None => get_or_create_editgroup(editor_id, &conn)?,
+            None => get_or_create_editgroup(editor_id, conn)?,
             Some(param) => fcid2uuid(&param)?,
         };
         if let Some(ref extid) = entity.wikidata_qid {
@@ -514,20 +500,11 @@ impl Server {
     pub fn create_creator_handler(
         &self,
         entity: models::CreatorEntity,
-        conn: Option<&DbConn>,
+        conn: &DbConn,
     ) -> Result<EntityEdit> {
-        // There mut be a cleaner way to manage the lifetime here
-        let real_conn = match conn {
-            Some(_) => None,
-            None => Some(self.db_pool.get().expect("database pool")),
-        };
-        let conn = match real_conn {
-            Some(ref c) => c,
-            None => conn.unwrap(),
-        };
         let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001")?; // TODO: auth
         let editgroup_id = match entity.editgroup_id {
-            None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
+            None => get_or_create_editgroup(editor_id, conn).expect("current editgroup"),
             Some(param) => fcid2uuid(&param)?,
         };
         if let Some(ref extid) = entity.orcid {
@@ -562,20 +539,11 @@ impl Server {
     pub fn create_file_handler(
         &self,
         entity: models::FileEntity,
-        conn: Option<&DbConn>,
+        conn: &DbConn,
     ) -> Result<EntityEdit> {
-        // There mut be a cleaner way to manage the lifetime here
-        let real_conn = match conn {
-            Some(_) => None,
-            None => Some(self.db_pool.get().expect("database pool")),
-        };
-        let conn = match real_conn {
-            Some(ref c) => c,
-            None => conn.unwrap(),
-        };
         let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001")?; // TODO: auth
         let editgroup_id = match entity.editgroup_id {
-            None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
+            None => get_or_create_editgroup(editor_id, conn).expect("current editgroup"),
             Some(param) => fcid2uuid(&param)?,
         };
 
@@ -651,20 +619,11 @@ impl Server {
     pub fn create_release_handler(
         &self,
         entity: models::ReleaseEntity,
-        conn: Option<&DbConn>,
+        conn: &DbConn,
     ) -> Result<EntityEdit> {
-        // There mut be a cleaner way to manage the lifetime here
-        let real_conn = match conn {
-            Some(_) => None,
-            None => Some(self.db_pool.get().expect("database pool")),
-        };
-        let conn = match real_conn {
-            Some(ref c) => c,
-            None => conn.unwrap(),
-        };
         let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001")?; // TODO: auth
         let editgroup_id = match entity.editgroup_id {
-            None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
+            None => get_or_create_editgroup(editor_id, conn).expect("current editgroup"),
             Some(param) => fcid2uuid(&param)?,
         };
         if let Some(ref extid) = entity.doi {
@@ -692,7 +651,7 @@ impl Server {
                     editgroup_id: Some(uuid2fcid(&editgroup_id)),
                     extra: None,
                 };
-                let new_entity = self.create_work_handler(work_model, Some(&conn))?;
+                let new_entity = self.create_work_handler(work_model, conn)?;
                 fcid2uuid(&new_entity.ident)?
             }
         };
@@ -835,21 +794,12 @@ impl Server {
     pub fn create_work_handler(
         &self,
         entity: models::WorkEntity,
-        conn: Option<&DbConn>,
+        conn: &DbConn,
     ) -> Result<EntityEdit> {
-        // There mut be a cleaner way to manage the lifetime here
-        let real_conn = match conn {
-            Some(_) => None,
-            None => Some(self.db_pool.get().expect("database pool")),
-        };
-        let conn = match real_conn {
-            Some(ref c) => c,
-            None => conn.unwrap(),
-        };
 
         let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001")?; // TODO: auth
         let editgroup_id = match entity.editgroup_id {
-            None => get_or_create_editgroup(editor_id, &conn).expect("current editgroup"),
+            None => get_or_create_editgroup(editor_id, conn).expect("current editgroup"),
             Some(param) => fcid2uuid(&param)?,
         };
 
@@ -871,22 +821,19 @@ impl Server {
         edit.into_model()
     }
 
-    pub fn accept_editgroup_handler(&self, id: &str) -> Result<()> {
-        let conn = self.db_pool.get().expect("db_pool error");
-        accept_editgroup(fcid2uuid(id)?, &conn)?;
+    pub fn accept_editgroup_handler(&self, id: &str, conn: &DbConn) -> Result<()> {
+        accept_editgroup(fcid2uuid(id)?, conn)?;
         Ok(())
     }
 
-    pub fn create_editgroup_handler(&self, entity: models::Editgroup) -> Result<Editgroup> {
-        let conn = self.db_pool.get().expect("db_pool error");
-
+    pub fn create_editgroup_handler(&self, entity: models::Editgroup, conn: &DbConn) -> Result<Editgroup> {
         let row: EditgroupRow = insert_into(editgroup::table)
             .values((
                 editgroup::editor_id.eq(fcid2uuid(&entity.editor_id)?),
                 editgroup::description.eq(entity.description),
                 editgroup::extra_json.eq(entity.extra),
             ))
-            .get_result(&conn)
+            .get_result(conn)
             .expect("error creating edit group");
 
         Ok(Editgroup {
@@ -898,17 +845,7 @@ impl Server {
         })
     }
 
-    pub fn get_editgroup_handler(&self, id: &str, conn: Option<&DbConn>) -> Result<Editgroup> {
-        // TODO: still can't cast for some reason
-        // There mut be a cleaner way to manage the lifetime here
-        let real_conn = match conn {
-            Some(_) => None,
-            None => Some(self.db_pool.get().expect("database pool")),
-        };
-        let conn = match real_conn {
-            Some(ref c) => c,
-            None => conn.unwrap(),
-        };
+    pub fn get_editgroup_handler(&self, id: &str, conn: &DbConn) -> Result<Editgroup> {
 
         let id = fcid2uuid(id)?;
         let row: EditgroupRow = editgroup::table.find(id).first(conn)?;
@@ -966,11 +903,10 @@ impl Server {
         Ok(eg)
     }
 
-    pub fn get_editor_handler(&self, id: &str) -> Result<Editor> {
-        let conn = self.db_pool.get().expect("db_pool error");
+    pub fn get_editor_handler(&self, id: &str, conn: &DbConn) -> Result<Editor> {
 
         let id = fcid2uuid(id)?;
-        let row: EditorRow = editor::table.find(id).first(&conn)?;
+        let row: EditorRow = editor::table.find(id).first(conn)?;
 
         let ed = Editor {
             id: Some(uuid2fcid(&row.id)),
@@ -979,16 +915,15 @@ impl Server {
         Ok(ed)
     }
 
-    pub fn editor_changelog_get_handler(&self, id: &str) -> Result<Vec<ChangelogEntry>> {
-        let conn = self.db_pool.get().expect("db_pool error");
+    pub fn editor_changelog_get_handler(&self, id: &str, conn: &DbConn) -> Result<Vec<ChangelogEntry>> {
 
         let id = fcid2uuid(id)?;
         // TODO: single query
-        let editor: EditorRow = editor::table.find(id).first(&conn)?;
+        let editor: EditorRow = editor::table.find(id).first(conn)?;
         let changes: Vec<(ChangelogRow, EditgroupRow)> = changelog::table
             .inner_join(editgroup::table)
             .filter(editgroup::editor_id.eq(editor.id))
-            .load(&conn)?;
+            .load(conn)?;
 
         let entries = changes
             .into_iter()
@@ -1002,15 +937,15 @@ impl Server {
         Ok(entries)
     }
 
-    pub fn get_changelog_handler(&self, limit: Option<i64>) -> Result<Vec<ChangelogEntry>> {
-        let conn = self.db_pool.get().expect("db_pool error");
+    pub fn get_changelog_handler(&self, limit: Option<i64>, conn: &DbConn) -> Result<Vec<ChangelogEntry>> {
+
         let limit = limit.unwrap_or(50);
 
         let changes: Vec<(ChangelogRow, EditgroupRow)> = changelog::table
             .inner_join(editgroup::table)
             .order(changelog::id.desc())
             .limit(limit)
-            .load(&conn)?;
+            .load(conn)?;
 
         let entries = changes
             .into_iter()
@@ -1024,44 +959,42 @@ impl Server {
         Ok(entries)
     }
 
-    pub fn get_changelog_entry_handler(&self, id: i64) -> Result<ChangelogEntry> {
-        let conn = self.db_pool.get().expect("db_pool error");
+    pub fn get_changelog_entry_handler(&self, id: i64, conn: &DbConn) -> Result<ChangelogEntry> {
 
-        let cl_row: ChangelogRow = changelog::table.find(id).first(&conn)?;
-        let editgroup = self.get_editgroup_handler(&uuid2fcid(&cl_row.editgroup_id), Some(&conn))?;
+        let cl_row: ChangelogRow = changelog::table.find(id).first(conn)?;
+        let editgroup = self.get_editgroup_handler(&uuid2fcid(&cl_row.editgroup_id), conn)?;
 
         let mut entry = cl_row.into_model();
         entry.editgroup = Some(editgroup);
         Ok(entry)
     }
 
-    pub fn get_stats_handler(&self, more: &Option<String>) -> Result<StatsResponse> {
-        let conn = self.db_pool.get().expect("db_pool error");
+    pub fn get_stats_handler(&self, more: &Option<String>, conn: &DbConn) -> Result<StatsResponse> {
 
         let merged_editgroups: i64 = changelog::table
             .select(diesel::dsl::count_star())
-            .first(&conn)?;
+            .first(conn)?;
         let releases_with_dois: i64 = release_rev::table
             .inner_join(release_ident::table)
             .filter(release_rev::doi.is_not_null())
             .filter(release_ident::is_live.eq(true))
             .filter(release_ident::redirect_id.is_null())
             .select(diesel::dsl::count_star())
-            .first(&conn)?;
+            .first(conn)?;
         let creators_with_orcids: i64 = creator_rev::table
             .inner_join(creator_ident::table)
             .filter(creator_rev::orcid.is_not_null())
             .filter(creator_ident::is_live.eq(true))
             .filter(creator_ident::redirect_id.is_null())
             .select(diesel::dsl::count_star())
-            .first(&conn)?;
+            .first(conn)?;
         let containers_with_issnls: i64 = container_rev::table
             .inner_join(container_ident::table)
             .filter(container_rev::issnl.is_not_null())
             .filter(container_ident::is_live.eq(true))
             .filter(container_ident::redirect_id.is_null())
             .count()
-            .first(&conn)?;
+            .first(conn)?;
 
         let files_with_releases: Option<i64> = if more.is_some() {
             // this query is slightly inaccurate and over-counts: it includes files that have release
@@ -1074,7 +1007,7 @@ impl Server {
                 .select(file_ident::id)
                 .distinct()
                 .count()
-                .first(&conn)?)
+                .first(conn)?)
         } else {
             None
         };
@@ -1088,18 +1021,18 @@ impl Server {
                 .select(file_release::target_release_ident_id)
                 .distinct()
                 .count()
-                .first(&conn)?)
+                .first(conn)?)
         } else {
             None
         };
 
         let val = json!({
             "entity_counts": {
-                "container": count_entity!(container_ident, &conn),
-                "creator": count_entity!(creator_ident, &conn),
-                "file": count_entity!(file_ident, &conn),
-                "release": count_entity!(release_ident, &conn),
-                "work": count_entity!(work_ident, &conn),
+                "container": count_entity!(container_ident, conn),
+                "creator": count_entity!(creator_ident, conn),
+                "file": count_entity!(file_ident, conn),
+                "release": count_entity!(release_ident, conn),
+                "work": count_entity!(work_ident, conn),
             },
             "merged_editgroups": merged_editgroups,
             "releases_with_dois": releases_with_dois,

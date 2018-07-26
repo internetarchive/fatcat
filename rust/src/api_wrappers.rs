@@ -6,6 +6,7 @@ use fatcat_api::models;
 use fatcat_api::models::*;
 use fatcat_api::*;
 use futures::{self, Future};
+use diesel::Connection;
 
 /// Helper for generating wrappers (which return "Box::new(futures::done(Ok(BLAH)))" like the
 /// codegen fatcat-api code wants) that call through to actual helpers (which have simple Result<>
@@ -25,7 +26,9 @@ macro_rules! wrap_entity_handlers {
             id: String,
             _context: &Context,
         ) -> Box<Future<Item = $get_resp, Error = ApiError> + Send> {
-            let ret = match self.$get_handler(&id) {
+            let conn = self.db_pool.get().expect("db_pool error");
+            // No transaction for GET
+            let ret = match self.$get_handler(&id, &conn) {
                 Ok(entity) =>
                     $get_resp::FoundEntity(entity),
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
@@ -50,7 +53,8 @@ macro_rules! wrap_entity_handlers {
             entity: models::$model,
             _context: &Context,
         ) -> Box<Future<Item = $post_resp, Error = ApiError> + Send> {
-            let ret = match self.$post_handler(entity, None) {
+            let conn = self.db_pool.get().expect("db_pool error");
+            let ret = match conn.transaction(|| self.$post_handler(entity, &conn)) {
                 Ok(edit) =>
                     $post_resp::CreatedEntity(edit),
                 Err(Error(ErrorKind::Diesel(e), _)) =>
@@ -75,7 +79,8 @@ macro_rules! wrap_entity_handlers {
             entity_list: &Vec<models::$model>,
             _context: &Context,
         ) -> Box<Future<Item = $post_batch_resp, Error = ApiError> + Send> {
-            let ret = match self.$post_batch_handler(entity_list) {
+            let conn = self.db_pool.get().expect("db_pool error");
+            let ret = match conn.transaction(|| self.$post_batch_handler(entity_list, &conn)) {
                 Ok(edit) =>
                     $post_batch_resp::CreatedEntities(edit),
                 Err(Error(ErrorKind::Diesel(e), _)) =>
@@ -101,7 +106,9 @@ macro_rules! wrap_entity_handlers {
             limit: Option<i64>,
             _context: &Context,
         ) -> Box<Future<Item = $get_history_resp, Error = ApiError> + Send> {
-            let ret = match self.$get_history_handler(&id, limit) {
+            let conn = self.db_pool.get().expect("db_pool error");
+            // No transaction for GET
+            let ret = match self.$get_history_handler(&id, limit, &conn) {
                 Ok(history) =>
                     $get_history_resp::FoundEntityHistory(history),
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
@@ -128,7 +135,9 @@ macro_rules! wrap_lookup_handler {
             $idname: $idtype,
             _context: &Context,
         ) -> Box<Future<Item = $get_resp, Error = ApiError> + Send> {
-            let ret = match self.$get_handler(&$idname) {
+            let conn = self.db_pool.get().expect("db_pool error");
+            // No transaction for GET
+            let ret = match self.$get_handler(&$idname, &conn) {
                 Ok(entity) =>
                     $get_resp::FoundEntity(entity),
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
@@ -279,7 +288,8 @@ impl Api for Server {
         id: String,
         _context: &Context,
     ) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send> {
-        let ret = match self.accept_editgroup_handler(&id) {
+        let conn = self.db_pool.get().expect("db_pool error");
+        let ret = match conn.transaction(|| self.accept_editgroup_handler(&id, &conn)) {
             Ok(()) => AcceptEditgroupResponse::MergedSuccessfully(Success {
                 message: "horray!".to_string(),
             }),
@@ -300,7 +310,8 @@ impl Api for Server {
         id: String,
         _context: &Context,
     ) -> Box<Future<Item = GetEditgroupResponse, Error = ApiError> + Send> {
-        let ret = match self.get_editgroup_handler(&id, None) {
+        let conn = self.db_pool.get().expect("db_pool error");
+        let ret = match conn.transaction(|| self.get_editgroup_handler(&id, &conn)) {
             Ok(entity) =>
                 GetEditgroupResponse::FoundEntity(entity),
             Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
@@ -319,7 +330,8 @@ impl Api for Server {
         entity: models::Editgroup,
         _context: &Context,
     ) -> Box<Future<Item = CreateEditgroupResponse, Error = ApiError> + Send> {
-        let ret = match self.create_editgroup_handler(entity) {
+        let conn = self.db_pool.get().expect("db_pool error");
+        let ret = match conn.transaction(|| self.create_editgroup_handler(entity, &conn)) {
             Ok(eg) =>
                 CreateEditgroupResponse::SuccessfullyCreated(eg),
             Err(e) =>
@@ -335,7 +347,9 @@ impl Api for Server {
         username: String,
         _context: &Context,
     ) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send> {
-        let ret = match self.editor_changelog_get_handler(&username) {
+        let conn = self.db_pool.get().expect("db_pool error");
+        // No transaction for GET
+        let ret = match self.editor_changelog_get_handler(&username, &conn) {
             Ok(entries) => GetEditorChangelogResponse::FoundMergedChanges(entries),
             Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
                 GetEditorChangelogResponse::NotFound(ErrorResponse {
@@ -358,7 +372,9 @@ impl Api for Server {
         username: String,
         _context: &Context,
     ) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send> {
-        let ret = match self.get_editor_handler(&username) {
+        let conn = self.db_pool.get().expect("db_pool error");
+        // No transaction for GET
+        let ret = match self.get_editor_handler(&username, &conn) {
             Ok(entity) => GetEditorResponse::FoundEditor(entity),
             Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
                 GetEditorResponse::NotFound(ErrorResponse {
@@ -381,7 +397,9 @@ impl Api for Server {
         limit: Option<i64>,
         _context: &Context,
     ) -> Box<Future<Item = GetChangelogResponse, Error = ApiError> + Send> {
-        let ret = match self.get_changelog_handler(limit) {
+        let conn = self.db_pool.get().expect("db_pool error");
+        // No transaction for GET
+        let ret = match self.get_changelog_handler(limit, &conn) {
             Ok(changelog) => GetChangelogResponse::Success(changelog),
             Err(e) => {
                 error!("{}", e);
@@ -398,7 +416,9 @@ impl Api for Server {
         id: i64,
         _context: &Context,
     ) -> Box<Future<Item = GetChangelogEntryResponse, Error = ApiError> + Send> {
-        let ret = match self.get_changelog_entry_handler(id) {
+        let conn = self.db_pool.get().expect("db_pool error");
+        // No transaction for GET
+        let ret = match self.get_changelog_entry_handler(id, &conn) {
             Ok(entry) => GetChangelogEntryResponse::FoundChangelogEntry(entry),
             Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
                 GetChangelogEntryResponse::NotFound(ErrorResponse {
@@ -420,7 +440,9 @@ impl Api for Server {
         more: Option<String>,
         _context: &Context,
     ) -> Box<Future<Item = GetStatsResponse, Error = ApiError> + Send> {
-        let ret = match self.get_stats_handler(&more) {
+        let conn = self.db_pool.get().expect("db_pool error");
+        // No transaction for GET
+        let ret = match self.get_stats_handler(&more, &conn) {
             Ok(stats) => GetStatsResponse::Success(stats),
             Err(e) => {
                 error!("{}", e);
