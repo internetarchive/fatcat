@@ -3,7 +3,7 @@
 
 Use `pipenv` (which you can install with `pip`).
 
-    pipenv run run.py
+    pipenv run fatcat_webface.py
 
 Run tests:
 
