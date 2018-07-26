@@ -807,9 +807,9 @@ impl Server {
             if !new_abstracts.is_empty() {
                 // Sort of an "upsert"; only inserts new abstract rows if they don't already exist
                 insert_into(abstracts::table)
-                    .values(new_abstracts)
-                    //.on_conflict(abstracts::sha1)
-                    //.do_nothing()
+                    .values(&new_abstracts)
+                    .on_conflict(abstracts::sha1)
+                    .do_nothing()
                     .execute(conn)?;
             }
             let release_abstract_rows: Vec<ReleaseRevAbstractNewRow> = abstract_list

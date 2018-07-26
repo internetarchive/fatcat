@@ -797,6 +797,27 @@ fn test_abstracts() {
         None,
     );
 
+    // Same abstracts; checking that re-inserting works
+    check_response(
+        request::post(
+            "http://localhost:9411/v0/release",
+            headers.clone(),
+            r#"{"title": "some paper again",
+                "abstracts": [
+                  {"lang": "zh",
+                   "mimetype": "text/plain",
+                   "content": "some rando abstract 24iu3i25u2" },
+                  {"lang": "en",
+                   "mimetype": "application/xml+jats",
+                   "content": "some other abstract 99139405" }
+                ]
+                }"#,
+            &router,
+        ),
+        status::Created,
+        None,
+    );
+
     let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
     let editgroup_id = get_or_create_editgroup(editor_id, &conn).unwrap();
     check_response(
