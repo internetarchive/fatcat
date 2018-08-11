@@ -10,6 +10,31 @@ URL-agnostic file-level metadata.
 Fatcat is currently used internally at the Internet Archive, but interested
 folks are welcome to contribute to design and development.
 
+## Goals and Ecosystem Niche
+
+For the Internet Archive use case, fatcat has two primary use cases:
+
+- Track the "completeness" of our holdings against all known published works.
+  In particular, allow us to monitor and prioritize further collection work.
+- Be a public-facing catalog and access mechanism for our open access holdings.
+
+In the larger ecosystem, fatcat could also provide:
+
+- A work-level (as opposed to title-level) archival dashboard: what fraction of
+  all published works are preserved in archives? KBART, CLOCKSS, Portico, and
+  other preservations don't provide granular metadata
+- A collaborative, independent, non-commercial, fully-open, field-agnostic,
+  "completeness"-oriented catalog of scholarly metadata
+- Unified (centralized) foundation for discovery and access across repositories
+  and archives: discovery projects can focus on user experience instead of
+  building their own catalog from scratch
+- Research corpus for meta-science, with an emphasis on availability and
+  reproducibility (metadata corpus itself is open access, and file-level hashes
+  control for content drift)
+- Foundational infrastructure for distributed digital preservation
+- On-ramp for non-traditional digital works ("grey literature") into the
+  scholarly web
+
 ## Technical Architecture
 
 The canonical backend datastore exposes a microservice-like HTTP API, which
