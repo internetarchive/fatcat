@@ -101,19 +101,19 @@ usually represented in case-insensitive base32 format. Each entity type would
 have its own identifier namespace. Eg, 96-bit identifiers would have 20
 characters and look like:
 
-    fcwork_rzga5b9cd7efgh04iljk
-    https://fatcat.org/work/rzga5b9cd7efgh04iljk
+    work_rzga5b9cd7efgh04iljk
+    https://fatcat.wiki/work/rzga5b9cd7efgh04iljk
 
 128-bit (UUID size) would have 26 characters:
 
-    fcwork_rzga5b9cd7efgh04iljk8f3jvz
-    https://fatcat.org/work/rzga5b9cd7efgh04iljk8f3jvz
+    work_rzga5b9cd7efgh04iljk8f3jvz
+    https://fatcat.wiki/work/rzga5b9cd7efgh04iljk8f3jvz
 
 A 64-bit namespace is probably plenty though, and would work with most database
 Integer columns:
 
-    fcwork_rzga5b9cd7efg
-    https://fatcat.org/work/rzga5b9cd7efg
+    work_rzga5b9cd7efg
+    https://fatcat.wiki/work/rzga5b9cd7efg
 
 The idea would be to only have fatcat identifiers be used to interlink between
 databases, *not* to supplant DOIs, ISBNs, handle, ARKs, and other "registered"
