@@ -1,72 +1,41 @@
 
 ## Next Up
 
-bugs:
-- test: release pointing to a collection that has been deleted/redirected
-  => UI crash?
-
-schema:
-- primary key types
-    => idents as base32
-    => editor_id and editgroup as idents
-    => revisions as UUID
-- multiple URLs per file
-    => {type, url} table; display code to chose "best"
-    => web, repo, webarchive, shadow (?)
-- external idents (as columns)
-    => pm_id
-    => pmc_id
-    => wikidata_id (creator, release, container)
-    => oclc_id
-    => viaf_id (creator)
-- release_ref
-    => 'raw'/'extra' json column
-        => title
-        => url
-        => doi
-        => etc...
-    => citaion ID (`oci_id`)
-    => release_id
-- release_contrib
-    => add 'raw' json column? or just extra?
-- abstracts
-    => new table; primary key SHA-1
-    => release has multiple: {markup, lang, abstract_sha1}
-- other changes (see notebook)
-    => parent rev in edit table
-    => timestamp columns
-- "container" -> "venue"?
+- some significant slow-down has happened? transactions, or regexes?
 
 features:
 - fast database dump command: both changelog-based and entity-based (rust)
+    => lighter, more complete dumps for each entity type?
 
 importers:
+- manifest: multiple URLs per SHA1
 - pubmed (medline)
+    => and/or, use pubmed ID lookups on crossref import
 - core
 - semantic scholar (up to 39 million; author de-dupe)
 - wikidata (if they have a dump)
 
-other:
-- update RFC
-- basic python hbase/elastic matcher
-  => takes sha1 keys
-  => checks fatcat API + hbase
-  => if not matched yet, tries elastic search
-  => simple ~exact match heuristic
-  => proof-of-concept, no tests
+bugs:
+- test: release pointing to a collection that has been deleted/redirected
+  => UI crash?
 
+july roadmap:
+- complete and test this round of schema changes
+- container import (extra?): lang, region, subject
+- re-run imports
+- basic API+webface creation, editing, merging, editgroup approval
+- elastic schema/transform for releases; bulk and continuous scripts
 
 ## Schema / Alignment / Scope
 
-- abstracts! as files? separate table? format (latex, html, etc)?
-    => crossref has ~13% as JATS; plus pubmed, plus arxiv
-- work_type, release_type, release_status
+- "container" -> "venue"?
+- release_type, release_status, url.rel enums (and others?)
 
 name ref: https://www.w3.org/International/questions/qa-personal-names
 
 ## High-Level Priorities
 
-- full database dump and reload (import/export)
+- full database dump (export)
 - manual editing of containers and releases (web interface)
 
 ## Web UI
@@ -85,11 +54,18 @@ name ref: https://www.w3.org/International/questions/qa-personal-names
 
 - hydrate entities in API
     ? "expand" query param
-    ? "full entity" field
-    ? refactor file_releases to have objects as type
 
 ## Other
 
+- basic python hbase/elastic matcher
+  => takes sha1 keys
+  => checks fatcat API + hbase
+  => if not matched yet, tries elastic search
+  => simple ~exact match heuristic
+  => proof-of-concept, no tests
+- add_header Strict-Transport-Security "max-age=3600";
+    => 12 hours? 24?
+- criterion.rs benchmarking
 - schema.org metadata in webface
 - bulk endpoint auto-merge mode (huge postgres speedup on import)
 - elastic pipeline
@@ -102,6 +78,10 @@ name ref: https://www.w3.org/International/questions/qa-personal-names
 review
 - what does openlibrary API look like?
 x add a 'live' (or 'immutable') flag to revision tables
+
+better API docs
+- https://sourcey.com/spectacle/
+- https://github.com/DapperDox/dapperdox
 
 CSL:
 - https://citationstyles.org/
