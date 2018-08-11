@@ -1,5 +1,8 @@
 
-**Contact: Bryan Newbold <bnewbold@archive.org>. Last updated 2018-08-10**
+fatcat Design Document (RFC)
+------------------------------
+
+*Contact: Bryan Newbold <bnewbold@archive.org>. Last updated 2018-08-10*
 
 fatcat is a proposed open bibliographic catalog of written works.  The scope of
 works is somewhat flexible, with a focus on published research outputs like
@@ -7,7 +10,7 @@ journal articles, pre-prints, and conference proceedings. Records are
 collaboratively editable, versioned, available in bulk form, and include
 URL-agnostic file-level metadata.
 
-Fatcat is currently used internally at the Internet Archive, but interested
+fatcat is currently used internally at the Internet Archive, but interested
 folks are welcome to contribute to design and development.
 
 ## Goals and Ecosystem Niche
@@ -418,6 +421,6 @@ user-editable corpus of scholarly publication bibliographic metadata.
 
 ## RFC Changelog
 
-- *2017-12-16*: early notes
-- *2018-01-17*: initial RFC document
-- *2018-08-10*: updates from implementation work
+- **2017-12-16**: early notes
+- **2018-01-17**: initial RFC document
+- **2018-08-10**: updates from implementation work

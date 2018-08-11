@@ -4,34 +4,71 @@
 
 <xmp theme="united" style="display:none;">
 
-fatcat is a half-baked idea to build an open, independent, collaboratively
-editable bibliographic database of most written works, with a focus on
-published research outputs like journal articles, pre-prints, and conference
-proceedings.
+fatcat Design Document (RFC)
+------------------------------
+
+*Contact: Bryan Newbold <bnewbold@archive.org>. Last updated 2018-08-10*
+
+fatcat is a proposed open bibliographic catalog of written works.  The scope of
+works is somewhat flexible, with a focus on published research outputs like
+journal articles, pre-prints, and conference proceedings. Records are
+collaboratively editable, versioned, available in bulk form, and include
+URL-agnostic file-level metadata.
+
+fatcat is currently used internally at the Internet Archive, but interested
+folks are welcome to contribute to design and development.
+
+## Goals and Ecosystem Niche
+
+For the Internet Archive use case, fatcat has two primary use cases:
+
+- Track the "completeness" of our holdings against all known published works.
+  In particular, allow us to monitor and prioritize further collection work.
+- Be a public-facing catalog and access mechanism for our open access holdings.
+
+In the larger ecosystem, fatcat could also provide:
+
+- A work-level (as opposed to title-level) archival dashboard: what fraction of
+  all published works are preserved in archives? KBART, CLOCKSS, Portico, and
+  other preservations don't provide granular metadata
+- A collaborative, independent, non-commercial, fully-open, field-agnostic,
+  "completeness"-oriented catalog of scholarly metadata
+- Unified (centralized) foundation for discovery and access across repositories
+  and archives: discovery projects can focus on user experience instead of
+  building their own catalog from scratch
+- Research corpus for meta-science, with an emphasis on availability and
+  reproducibility (metadata corpus itself is open access, and file-level hashes
+  control for content drift)
+- Foundational infrastructure for distributed digital preservation
+- On-ramp for non-traditional digital works ("grey literature") into the
+  scholarly web
 
 ## Technical Architecture
 
-The canonical backend datastore would be a very large transactional SQL server.
-A relatively simple and stable back-end daemon would expose an API (could be
-REST, GraphQL, gRPC, etc). As little "application logic" as possible would be
-embedded in this back-end; as much as possible would be pushed to bots which
-could be authored and operated by anybody. A separate web interface project
-would talk to the API backend and could be developed more rapidly.
+The canonical backend datastore exposes a microservice-like HTTP API, which
+could be extended with gRPC or GraphQL interfaces. The initial datastore is a
+transactional SQL database, but this implementation detail is abstracted by the
+API.
 
-A cronjob would make periodic database dumps, both in "full" form (all tables
-and all edit history, removing only authentication credentials) and "flat" form
-(with only the most recent version of each entity, using only persistent IDs
-between entities).
+As little "application logic" as possible should be embedded in this back-end;
+as much as possible would be pushed to bots which could be authored and
+operated by anybody. A separate web interface project talks to the API backend
+and can be developed more rapidly with less concern about data loss or
+corruption.
+
+A cronjob will creae periodic database dumps, both in "full" form (all tables
+and all edit history, removing only authentication credentials) and "flattened"
+form (with only the most recent version of each entity).
 
 A goal is to be linked-data/RDF/JSON-LD/semantic-web "compatible", but not
 necessarily "first". It should be possible to export the database in a
 relatively clean RDF form, and to fetch data in a variety of formats, but
-internally fatcat would not be backed by a triple-store, and would not be
-bound to a specific third-party ontology or schema.
+internally fatcat will not be backed by a triple-store, and will not be bound
+to a rigid third-party ontology or schema.
 
 Microservice daemons should be able to proxy between the primary API and
-standard protocols like ResourceSync and OAI-PMH, and bots could consume
-external databases in those formats.
+standard protocols like ResourceSync and OAI-PMH, and third party bots could
+ingest or synchronize the databse in those formats.
 
 ## Licensing
 
@@ -42,84 +79,90 @@ content.
 The goal is to have a very permissively licensed database: CC-0 (no rights
 reserved) if possible. Under US law, it should be possible to scrape and pull
 in factual data from other corpuses without adopting their licenses. The goal
-here isn't to avoid all attribution (progeny information will be included, and a
-large sources and acknowledgments statement should be maintained), but trying
-to manage the intersection of all upstream source licenses seems untenable, and
-creates burdens for downstream users.
+here isn't to avoid attribution (progeny information will be included, and a
+large sources and acknowledgments statement should be maintained and shipped
+with bulk exports), but trying to manage the intersection of all upstream
+source licenses seems untenable, and creates burdens for downstream users and
+developers.
 
-Special care will need to be taken around copyright and original works. I would
-propose either not accepting abstracts at all, or including them in a
-partitioned database to prevent copyright contamination. Likewise, even simple
-user-created content like lists, reviews, ratings, comments, discussion,
-documentation, etc., should go in separate services.
+Special care will need to be taken around copyright, "original work" by
+editors, and contributions that raise privacy concerns.  If abstracts are
+stored at all, they should be in a partitioned database table to prevent
+copyright contamination. Likewise, even simple user-created content like lists,
+reviews, ratings, comments, discussion, documentation, etc., should live in
+separate services.
 
 ## Basic Editing Workflow and Bots
 
-Both human editors and bots would have edits go through the same API, with
-humans using either the default web interface, arbitrary integrations, or
-client software.
+Both human editors and bots should have edits go through the same API, with
+humans using either the default web interface, integrations, or client
+software.
 
-The usual workflow would be to create edits (or creations, merges, deletions)
-to individual entities one at a time, all under a single "edit group" of
+The normal workflow is to create edits (or updates, merges, deletions) on
+individual entities. Individual changes are bundled into an "edit group" of
 related edits (eg, correcting authorship info for multiple works related to a
 single author). When ready, the editor would "submit" the edit group for
-review. During the review period, humans could vote (or veto/approve if they
-have higher permissions), and bots can perform automated checks. During this
-period the editor can make tweaks if necessary. After some fixed time period
-(72 hours?) with no changes and no blocking issues, the edit group would be
-auto-accepted, if no auto-resolvable merge-conflicts have arisen. This process
-balances editing labor (reviews are easy, but optional) against quality
-(cool-down period makes it easier to detect and prevent spam or out-of-control
-bots). Advanced permissions could allow some trusted human and bot editors to
-push through edits more rapidly.
+review. During the review period, human editors vote and bots can perform
+automated checks. During this period the editor can make tweaks if necessary.
+After some fixed time period (72 hours?) with no changes and no blocking
+issues, the edit group would be auto-accepted if no merge conflicts have
+be created by other edits to the same entities. This process balances editing
+labor (reviews are easy, but optional) against quality (cool-down period makes
+it easier to detect and prevent spam or out-of-control bots). More
+sophisticated roles and permissions could allow some certain humans and bots to
+push through edits more rapidly (eg, importing new works from a publisher API).
 
-Bots would need to be tuned to have appropriate edit group sizes (eg, daily
-batches, instead of millions of works in a single edit) to make human QA and
-reverts possible.
+Bots need to be tuned to have appropriate edit group sizes (eg, daily batches,
+instead of millions of works in a single edit) to make human QA review and
+reverts managable.
 
-Data progeny and citation would be left to the edit history. In the case of
-importing external databases, the expectation would be that special-purpose
-bot accounts would be used. Human editors would leave edit messages to clarify
-their sources.
+Data progeny and source references are captured in the edit metadata, instead
+of being encoded in the entity data model itself. In the case of importing
+external databases, the expectation is that special-purpose bot accounts
+are be used, and tag timestamps and external identifiers in the edit metadata.
+Human editors would leave edit messages to clarify their sources.
 
-A style guide (wiki), chat room, and discussion forum would be hosted as
-separate stand-alone services for editors to propose projects and debate
-process or scope changes. It would be best if these could use federated account
-authorization (oauth?) to have consistent account IDs across mediums.
+A style guide (wiki) and discussion forum would be hosted as separate
+stand-alone services for editors to propose projects and debate process or
+scope changes. These services should have unified accounts and logins (oauth?)
+to have consistent account IDs across all mediums.
 
-## Edit Log
+## Global Edit Changelog
 
 As part of the process of "accepting" an edit group, a row would be written to
 an immutable, append-only log table (which internally could be a SQL table)
-documenting each identifier change. This log establishes a monotonically
+documenting each identifier change. This changelog establishes a monotonically
 increasing version number for the entire corpus, and should make interaction
 with other systems easier (eg, search engines, replicated databases,
 alternative storage backends, notification frameworks, etc.).
 
 ## Identifiers
 
-A fixed number of first-class "entities" would be defined, with common
-behavior and schema layouts. These would all be semantic entities like "work",
-"release", "container", and "person".
+A fixed number of first-class "entities" are defined, with common behavior and
+schema layouts. These are all be semantic entities like "work", "release",
+"container", and "creator".
 
-fatcat identifiers would be semantically meaningless fixed-length random numbers,
-usually represented in case-insensitive base32 format. Each entity type would
-have its own identifier namespace. Eg, 96-bit identifiers would have 20
-characters and look like:
+fatcat identifiers are semantically meaningless fixed-length random numbers,
+usually represented in case-insensitive base32 format. Each entity type has its
+own identifier namespace.
 
-    fcwork_rzga5b9cd7efgh04iljk
-    https://fatcat.org/work/rzga5b9cd7efgh04iljk
+128-bit (UUID size) identifiers encode as 26 characters (but note that not all
+such strings decode to valid UUIDs), and in the backend can be serialized in
+UUID columns:
 
-128-bit (UUID size) would have 26 characters:
+    work_rzga5b9cd7efgh04iljk8f3jvz
+    https://fatcat.wiki/work/rzga5b9cd7efgh04iljk8f3jvz
 
-    fcwork_rzga5b9cd7efgh04iljk8f3jvz
-    https://fatcat.org/work/rzga5b9cd7efgh04iljk8f3jvz
+In comparison, 96-bit identifiers would have 20 characters and look like:
 
-A 64-bit namespace is probably plenty though, and would work with most database
-Integer columns:
+    work_rzga5b9cd7efgh04iljk
+    https://fatcat.wiki/work/rzga5b9cd7efgh04iljk
 
-    fcwork_rzga5b9cd7efg
-    https://fatcat.org/work/rzga5b9cd7efg
+A 64-bit namespace would probably be large enought, and would work with
+database Integer columns:
+
+    work_rzga5b9cd7efg
+    https://fatcat.wiki/work/rzga5b9cd7efg
 
 The idea would be to only have fatcat identifiers be used to interlink between
 databases, *not* to supplant DOIs, ISBNs, handle, ARKs, and other "registered"
@@ -127,78 +170,95 @@ persistent identifiers.
 
 ## Entities and Internal Schema
 
-Internally, identifiers would be lightweight pointers to actual metadata
-objects, which can be thought of as "versions". The metadata objects themselves
-would be immutable once committed; the edit process is one of creating new
-objects and, if the edit is approved, pointing the identifier to the new
-version. Entities would reference between themselves by identifier.
+Internally, identifiers would be lightweight pointers to "revisions" of an
+entity. Revisions are stored in their complete form, not as a patch or
+difference; if comparing to distributed version control systems, this is the
+git model, not the mercurial model.
+
+The entity revisions are immutable once accepted; the editting process involves
+the creation of new entity revisions and, if the edit is approved, pointing the
+identifier to the new revision. Entities cross-reference between themselves by
+*identifier* not *revision number*. Identifier pointers also support
+(versioned) deletion and redirects (for merging entities).
 
 Edit objects represent a change to a single entity; edits get batched together
 into edit groups (like "commits" and "pull requests" in git parlance).
 
-SQL tables would probably look something like the following, though be specific
-to each entity type (eg, there would be an actual `work_revision` table, but
-not an actual `entity_revision` table):
+SQL tables would probably look something like the (but specific to each entity
+type, with tables like `work_revision` not `entity_revision`):
 
-    entity_id
-        uuid
-        current_revision
+    entity_ident
+        id (uuid)
+        current_revision (entity_revision foreign key)
+        redirect_id (optional; points to another entity_ident)
 
     entity_revision
-        entity_id (bi-directional?)
-        previous: entity_revision or none
-        state: normal, redirect, deletion
-        redirect_entity_id: optional
-        extra: json blob
-        edit_id
+        revision_id
+        <entity-specific fields>
+        extra: json blob for schema evolution
 
-    edit
-        mutable: boolean
-        edit_group
-        editor
+    entity_edit
+        timestamp
+        editgroup_id
+        ident (entity_ident foreign key)
+        new_revision (entity_revision foreign key)
+        previous_revision (optional; points to entity_revision)
+        extra: json blob for progeny metadata
 
-    edit_group
+    editgroup
+        editor_id
+        description
+        extra: json blob for progeny metadata
 
-Additional type-specific columns would hold actual metadata. Additional tables
-(which would reference both `entity_revision` and `entity_id` foreign keys as
-appropriate) would represent things like external identifiers, ordered
-author/work relationships, citations between works, etc. Every revision of an
-entity would require duplicating all of these associated rows, which could end
-up being a large source of inefficiency, but is necessary to represent the full
+Additional entity-specific columns would hold actual metadata. Additional
+tables (which would reference both `entity_revision` and `entity_id` foreign
+keys as appropriate) would represent things like authorship relationships
+(creator/release), citations between works, etc. Every revision of an entity
+would require duplicating all of these associated rows, which could end up
+being a large source of inefficiency, but is necessary to represent the full
 history of an object.
 
 ## Scope
 
-Want the "scholarly web": the graph of works that cite other works. Certainly
-every work that is cited more than once and every work that both cites and is
-cited; "leaf nodes" and small islands might not be in scope.
+The goal is to capture the "scholarly web": the graph of written works that
+cite other works. Any work that is both cited more than once and cites more
+than one other work in the catalog is very likely to be in scope. "Leaf nodes"
+and small islands of intra-cited works may or may not be in scope.
 
-Focusing on written works, with some exceptions. Expect core media (for which we would pursue "completeness") to be:
+Overall focus is on written works, with some exceptions. The expected core
+focus (for which we would pursue "completeness") is:
 
     journal articles
-    books
+    academic books
     conference proceedings
     technical memos
     dissertations
+    monographs
+    well-researched blog posts
+    web pages (that have citations)
+    "white papers"
 
-Probably in scope:
+Possibly in scope:
 
     reports
     magazine articles
-    published poetry
     essays
+    notable mailing list postings
     government documents
-    conference
     presentations (slides, video)
     datasets
+    well-researched wiki pages
+    patents
 
 Probably not:
 
-    patents
     court cases and legal documents
+    newspaper articles
+    social media
     manuals
     datasheets
     courses
+    published poetry
 
 Definitely not:
 
@@ -216,69 +276,64 @@ most existing databases in this space.
 fatcat would not include any fulltext content itself, even for cleanly licensed
 (open access) works, but would have "strong" (verified) links to fulltext
 content, and would include file-level metadata (like hashes and fingerprints)
-to help discovery and identify content from any source. Typed file-level links
-should make fatcat more useful for both humans and machines to quickly access
-fulltext content of a given mimetype than existing redirect or landing page
-systems.
+to help discovery and identify content from any source. File-level URLs with
+context ("repository", "author-homepage", "web-archive") should make fatcat
+more useful for both humans and machines to quickly access fulltext content of
+a given mimetype than existing redirect or landing page systems. So another
+factor in deciding scope is whether a work has "digital fixity" and can be
+contained in a single immutable file.
 
 ## Ontology
 
-Loosely following FRBR, but removing the "manifestation" abstraction, and
-favoring files (digital artifacts) over physical items, the primary entities
-are:
+Loosely following FRBR (Functional Requirements for Bibliographic Records), but
+removing the "manifestation" abstraction, and favoring files (digital
+artifacts) over physical items, the primary entities are:
 
     work
-        type
-        <has> contributors
-        <about> subject/category
-        <has-primary> release
+        <a stub, for grouping releases>
 
     release (aka "edition", "variant")
         title
         volume/pages/issue/chapter
-        open-access status
+        media/formfactor
+        publication/peer-review status
+        language
         <published> date
-        <of a> work
-        <published-by> publisher
-        <published in> container
-        <has> contributors
-        <citation> citetext <to> release
+        <variant-of> work
+        <published-in> container
+        <has-contributors> creator
+        <citation-to> release
         <has> identifier
 
     file (aka "digital artifact")
-        <of a> release
-        <has> hashes
-        <found at> URLs
-        <held-at> institution <with> accession
+        <instantiates> release
+        hashes/checksums
+        mimetype
+        <found-at> URLs
 
-    contributor
+    creator (aka "author")
         name
-        <has> aliases
-        <has> affiliation <for> date span
-        <has> identifier
+        identifiers
+        aliases
 
-    container
+    container (aka "venue", "serial", "title")
         name
         open-access policy
         peer-review policy
         <has> aliases, acronyms
         <about> subject/category
         <has> identifier
-        <published in> container
+        <published-in> container
         <published-by> publisher
-
-    publisher
-        name
-        <has> aliases, acronyms
-        <has> identifier
 
 ## Controlled Vocabularies
 
-Some special namespace tables and enums would probably be helpful; these should
+Some special namespace tables and enums would probably be helpful; these could
 live in the database (not requiring a database migration to update), but should
 have more controlled editing workflow... perhaps versioned in the codebase:
 
-- identifier namespaces (DOI, ISBN, ISSN, ORCID, etc)
+- identifier namespaces (DOI, ISBN, ISSN, ORCID, etc; but not the identifers
+  themselves)
 - subject categorization
 - license and open access status
 - work "types" (article vs. book chapter vs. proceeding, etc)
@@ -286,36 +341,38 @@ have more controlled editing workflow... perhaps versioned in the codebase:
 - human languages
 - file mimetypes
 
+These could also be enforced by QA bots that review all editgroups.
+
 ## Unresolved Questions
 
 How to handle translations of, eg, titles and author names? To be clear, not
-translations of works (which are just separate releases).
+translations of works (which are just separate releases), these are more like
+aliases or "originally known as".
 
 Are bi-directional links a schema anti-pattern? Eg, should "work" point to a
-primary "release" (which itself points back to the work), or should "release"
-have a "is-primary" flag?
+"primary release" (which itself points back to the work)?
 
 Should `identifier` and `citation` be their own entities, referencing other
-entities by UUID instead of by revision? This could save a ton of database
-space and chunder.
+entities by UUID instead of by revision? Not sure if this would increase or
+decrease database resource utilization.
 
-Should contributor/author contact information be retained? It could be very
-useful for disambiguation, but we don't want to build a huge database for
-spammers or "innovative" start-up marketing.
+Should contributor/author affiliation and contact information be retained? It
+could be very useful for disambiguation, but we don't want to build a huge
+database for spammers or "innovative" start-up marketing.
 
-Would general-purpose SQL databases like Postgres or MySQL scale well enough
-to hold several tables with billions of entries? Right from the start there
-are hundreds of millions of works and releases, many of which having dozens of
-citations, many authors, and many identifiers, and then we'll have potentially
-dozens of edits for each of these, which multiply out to `1e8 * 2e1 * 2e1 =
-4e10`, or 40 billion rows in the citation table. If each row was 32 bytes on
-average (uncompressed, not including index size), that would be 1.3 TByte on
-its own, larger than common SSD disk. I think a transactional SQL datastore is
-the right answer. In my experience locking and index rebuild times are usually
-the biggest scaling challenges; the largely-immutable architecture here should
-mitigate locking. Hopefully few indexes would be needed in the primary
-database, as user interfaces could rely on secondary read-only search engines
-for more complex queries and views.
+Can general-purpose SQL databases like Postgres or MySQL scale well enough to
+hold several tables with billions of entity revisions? Right from the start
+there are hundreds of millions of works and releases, many of which having
+dozens of citations, many authors, and many identifiers, and then we'll have
+potentially dozens of edits for each of these, which multiply out to `1e8 * 2e1
+* 2e1 = 4e10`, or 40 billion rows in the citation table. If each row was 32
+bytes on average (uncompressed, not including index size), that would be 1.3
+TByte on its own, larger than common SSD disks. I do think a transactional SQL
+datastore is the right answer. In my experience locking and index rebuild times
+are usually the biggest scaling challenges; the largely-immutable architecture
+here should mitigate locking. Hopefully few indexes would be needed in the
+primary database, as user interfaces could rely on secondary read-only search
+engines for more complex queries and views.
 
 I see a tension between focus and scope creep. If a central database like
 fatcat doesn't support enough fields and metadata, then it will not be possible
@@ -367,7 +424,13 @@ user-editable corpus of scholarly publication bibliographic metadata.
 [wd]: https://wikidata.org
 [wikicite]: https://meta.wikimedia.org/wiki/WikiCite_2017
 
+## RFC Changelog
+
+- **2017-12-16**: early notes
+- **2018-01-17**: initial RFC document
+- **2018-08-10**: updates from implementation work
+
 </xmp>
 
-<script src="http://strapdownjs.com/v/0.2/strapdown.js"></script>
+<script src="https://cdn.rawgit.com/arturadib/strapdown/gh-pages/v/0.2/strapdown.js"></script>
 </html>
