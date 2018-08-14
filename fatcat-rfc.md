@@ -419,6 +419,18 @@ user-editable corpus of scholarly publication bibliographic metadata.
 [wd]: https://wikidata.org
 [wikicite]: https://meta.wikimedia.org/wiki/WikiCite_2017
 
+## Further Reading
+
+"From ISIS to CouchDB: Databases and Data Models for Bibliographic Records" by Luciano G. Ramalho. code4lib, 2013. <https://journal.code4lib.org/articles/4893>
+
+"Representing bibliographic data in JSON". github README file, 2017. <https://github.com/rdmpage/bibliographic-metadata-json>
+
+"Citation Style Language", <https://citationstyles.org/>
+
+"Functional Requirements for Bibliographic Records", Wikipedia article, <https://en.wikipedia.org/wiki/Functional_Requirements_for_Bibliographic_Records>
+
+OpenCitations and I40C <http://opencitations.net/>, <https://i4oc.org/>
+
 ## RFC Changelog
 
 - **2017-12-16**: early notes
