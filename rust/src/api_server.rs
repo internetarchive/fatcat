@@ -216,14 +216,14 @@ fn release_row2entity(
 
     let contribs: Vec<ReleaseContrib> = release_contrib::table
         .filter(release_contrib::release_rev.eq(rev.id))
-        .order((release_contrib::role_val.asc(), release_contrib::index_val.asc()))
+        .order((release_contrib::role.asc(), release_contrib::index_val.asc()))
         .get_results(conn)
         .expect("fetch release refs")
         .into_iter()
         .map(|c: ReleaseContribRow| ReleaseContrib {
             index: c.index_val,
             raw_name: c.raw_name,
-            role: c.role_val,
+            role: c.role,
             extra: c.extra_json,
             creator_id: c.creator_ident_id.map(|v| uuid2fcid(&v)),
             creator: None,
@@ -762,7 +762,7 @@ impl Server {
                                 .map(|v| fcid2uuid(&v).expect("valid fatcat identifier")),
                             raw_name: c.raw_name.clone(),
                             index_val: c.index,
-                            role_val: c.role.clone(),
+                            role: c.role.clone(),
                             extra_json: c.extra.clone(),
                         })
                         .collect();

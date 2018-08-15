@@ -272,7 +272,7 @@ CREATE TABLE release_contrib (
     release_rev         UUID REFERENCES release_rev(id) NOT NULL,
     creator_ident_id    UUID REFERENCES creator_ident(id),
     raw_name            TEXT,
-    role_val            TEXT, -- TODO: enum?
+    role                TEXT, -- TODO: enum?
     index_val           BIGINT,
     extra_json          JSON
 );
@@ -429,7 +429,7 @@ INSERT INTO release_rev_abstract (release_rev, abstract_sha1, mimetype, lang) VA
     ('00000000-0000-0000-4444-FFF000000001', '1ba86bf8c2979a62d29b18b537e50b2b093be27e', 'text/plain', 'en'),
     ('00000000-0000-0000-4444-FFF000000002', '0da908ab584b5e445a06beb172e3fab8cb5169e3', 'application/xml+jats', 'en');
 
-INSERT INTO release_contrib (release_rev, creator_ident_id, raw_name, role_val, index_val) VALUES
+INSERT INTO release_contrib (release_rev, creator_ident_id, raw_name, role, index_val) VALUES
     ('00000000-0000-0000-4444-FFF000000002', null, null, null, null),
     ('00000000-0000-0000-4444-FFF000000002', '00000000-0000-0000-2222-000000000002', 'some contrib', 'editor', 4),
     ('00000000-0000-0000-4444-FFF000000003', '00000000-0000-0000-2222-000000000003', 'John P. A. Ioannidis', 'author', 0);

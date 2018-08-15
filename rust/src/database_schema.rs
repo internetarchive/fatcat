@@ -158,7 +158,7 @@ table! {
         release_rev -> Uuid,
         creator_ident_id -> Nullable<Uuid>,
         raw_name -> Nullable<Text>,
-        role_val -> Nullable<Text>,
+        role -> Nullable<Text>,
         index_val -> Nullable<Int8>,
         extra_json -> Nullable<Json>,
     }

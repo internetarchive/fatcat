@@ -227,7 +227,7 @@ pub struct ReleaseContribRow {
     pub release_rev: Uuid,
     pub creator_ident_id: Option<Uuid>,
     pub raw_name: Option<String>,
-    pub role_val: Option<String>,
+    pub role: Option<String>,
     pub index_val: Option<i64>,
     pub extra_json: Option<serde_json::Value>,
 }
@@ -238,7 +238,7 @@ pub struct ReleaseContribNewRow {
     pub release_rev: Uuid,
     pub creator_ident_id: Option<Uuid>,
     pub raw_name: Option<String>,
-    pub role_val: Option<String>,
+    pub role: Option<String>,
     pub index_val: Option<i64>,
     pub extra_json: Option<serde_json::Value>,
 }
