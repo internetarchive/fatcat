@@ -147,11 +147,11 @@ Believed to represent this release...
 This release citing other releases.
 <ol>
   {% for ref in release.refs %}
-    <li>{% if ref.extra != None %}{{ ref.extra }}{% else %}<i>unknown</i>{% endif %}
+    <li>{% if ref.extra != None and ref.extra.unstructured != None %}{{ ref.extra.unstructured }}{% else %}<i>unknown</i>{% endif %}
     {% if ref.target_release_id != None %}
       (<a href="/release/{{ ref.target_release_id }}">fatcat release</a>)
-    {% elif ref.extra != None and ref.extra.doi != None %}
-      (DOI: <a href="/release/lookup?doi={{ ref.exta.doi }}">{{ ref.extra.doi }}</a>)
+{#    {% elif ref.extra != None and ref.extra.doi != None %}
+      (DOI: <a href="/release/lookup?doi={{ ref.exta.get('doi') }}">{{ ref.extra.get('doi') }}</a>) #}
     {% endif %}
   {% endfor %}
 </ol>
