@@ -513,7 +513,7 @@ impl Server {
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.wikidata_qid)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.abbrev)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.coden)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Jsonb>, _>(entity.extra)
             .bind::<diesel::sql_types::Uuid, _>(editgroup_id)
             .get_result(conn)?;
 
@@ -552,7 +552,7 @@ impl Server {
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.surname)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.orcid)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.wikidata_qid)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Jsonb>, _>(entity.extra)
             .bind::<diesel::sql_types::Uuid, _>(editgroup_id)
             .get_result(conn)?;
 
@@ -586,7 +586,7 @@ impl Server {
                 .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.sha256)
                 .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.md5)
                 .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.mimetype)
-                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
+                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Jsonb>, _>(entity.extra)
                 .bind::<diesel::sql_types::Uuid, _>(editgroup_id)
                 .get_result(conn)?;
 
@@ -712,7 +712,7 @@ impl Server {
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Uuid>, _>(container_id)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.publisher)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.language)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Jsonb>, _>(entity.extra)
             .bind::<diesel::sql_types::Uuid, _>(editgroup_id)
             .get_result(conn)?;
 
@@ -836,7 +836,7 @@ impl Server {
             INSERT INTO work_edit (editgroup_id, ident_id, rev_id) VALUES
                 ($2, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
-            ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
+            ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Jsonb>, _>(entity.extra)
                 .bind::<diesel::sql_types::Uuid, _>(editgroup_id)
                 .get_result(conn)?;
 

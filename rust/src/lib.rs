@@ -98,9 +98,9 @@ pub fn test_server() -> Result<api_server::Server> {
     let conn = server.db_pool.get().expect("db_pool error");
 
     // run migrations; revert latest (dummy data); re-run latest
-    diesel_migrations::run_pending_migrations(&conn).unwrap();
-    diesel_migrations::revert_latest_migration(&conn).unwrap();
-    diesel_migrations::run_pending_migrations(&conn).unwrap();
+    //diesel_migrations::run_pending_migrations(&conn).unwrap();
+    //diesel_migrations::revert_latest_migration(&conn).unwrap();
+    //diesel_migrations::run_pending_migrations(&conn).unwrap();
     Ok(server)
 }
 
