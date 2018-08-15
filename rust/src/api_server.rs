@@ -198,12 +198,12 @@ fn release_row2entity(
 
     let refs: Vec<ReleaseRef> = release_ref::table
         .filter(release_ref::release_rev.eq(rev.id))
-        .order(release_ref::index.asc())
+        .order(release_ref::index_val.asc())
         .get_results(conn)
         .expect("fetch release refs")
         .into_iter()
         .map(|r: ReleaseRefRow| ReleaseRef {
-            index: r.index,
+            index: r.index_val,
             key: r.key,
             extra: r.extra_json,
             container_title: r.container_title,
@@ -216,14 +216,14 @@ fn release_row2entity(
 
     let contribs: Vec<ReleaseContrib> = release_contrib::table
         .filter(release_contrib::release_rev.eq(rev.id))
-        .order((release_contrib::role.asc(), release_contrib::index.asc()))
+        .order((release_contrib::role_val.asc(), release_contrib::index_val.asc()))
         .get_results(conn)
         .expect("fetch release refs")
         .into_iter()
         .map(|c: ReleaseContribRow| ReleaseContrib {
-            index: c.index,
+            index: c.index_val,
             raw_name: c.raw_name,
-            role: c.role,
+            role: c.role_val,
             extra: c.extra_json,
             creator_id: c.creator_ident_id.map(|v| uuid2fcid(&v)),
             creator: None,
@@ -729,7 +729,7 @@ impl Server {
                             target_release_ident_id: r.target_release_id
                                 .clone()
                                 .map(|v| fcid2uuid(&v).expect("valid fatcat identifier")),
-                            index: r.index,
+                            index_val: r.index,
                             key: r.key.clone(),
                             container_title: r.container_title.clone(),
                             year: r.year,
@@ -761,8 +761,8 @@ impl Server {
                                 .clone()
                                 .map(|v| fcid2uuid(&v).expect("valid fatcat identifier")),
                             raw_name: c.raw_name.clone(),
-                            index: c.index,
-                            role: c.role.clone(),
+                            index_val: c.index,
+                            role_val: c.role.clone(),
                             extra_json: c.extra.clone(),
                         })
                         .collect();
