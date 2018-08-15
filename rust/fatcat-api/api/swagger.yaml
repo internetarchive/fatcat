@@ -2239,6 +2239,8 @@ definitions:
         type: "string"
       pmid:
         type: "string"
+      core_id:
+        type: "string"
       isbn13:
         type: "string"
       doi:
@@ -2359,6 +2361,7 @@ definitions:
         creator_id: "creator_id"
         index: 1
       pages: "pages"
+      core_id: "core_id"
       extra: "{}"
       editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
       state: "wip"

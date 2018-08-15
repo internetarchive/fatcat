@@ -193,6 +193,9 @@ definitions:
       isbn13:
         type: string
         #format: custom
+      core_id:
+        type: string
+        #format: custom
       pmid:
         type: string
       pmcid:

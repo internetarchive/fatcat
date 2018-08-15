@@ -255,6 +255,7 @@ fn release_row2entity(
         pmid: rev.pmid,
         pmcid: rev.pmcid,
         isbn13: rev.isbn13,
+        core_id: rev.core_id,
         wikidata_qid: rev.wikidata_qid,
         volume: rev.volume,
         issue: rev.issue,
@@ -684,14 +685,14 @@ impl Server {
         };
 
         let edit: ReleaseEditRow = diesel::sql_query(
-            "WITH rev AS ( INSERT INTO release_rev (title, release_type, release_status, release_date, doi, pmid, pmcid, wikidata_qid, isbn13, volume, issue, pages, work_ident_id, container_ident_id, publisher, language, extra_json)
-                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
+            "WITH rev AS ( INSERT INTO release_rev (title, release_type, release_status, release_date, doi, pmid, pmcid, wikidata_qid, isbn13, core_id, volume, issue, pages, work_ident_id, container_ident_id, publisher, language, extra_json)
+                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
                         RETURNING id ),
                 ident AS ( INSERT INTO release_ident (rev_id)
                             VALUES ((SELECT rev.id FROM rev))
                             RETURNING id )
             INSERT INTO release_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($18, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+                ($19, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
         ).bind::<diesel::sql_types::Text, _>(entity.title)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.release_type)
@@ -703,6 +704,7 @@ impl Server {
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.pmcid)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.wikidata_qid)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.isbn13)
+            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.core_id)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.volume)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.issue)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.pages)

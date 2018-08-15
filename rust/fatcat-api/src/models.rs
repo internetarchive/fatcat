@@ -525,6 +525,10 @@ pub struct ReleaseEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pmid: Option<String>,
 
+    #[serde(rename = "core_id")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub core_id: Option<String>,
+
     #[serde(rename = "isbn13")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub isbn13: Option<String>,
@@ -610,6 +614,7 @@ impl ReleaseEntity {
             wikidata_qid: None,
             pmcid: None,
             pmid: None,
+            core_id: None,
             isbn13: None,
             doi: None,
             release_date: None,

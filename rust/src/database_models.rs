@@ -177,6 +177,7 @@ pub struct ReleaseRevRow {
     pub pmcid: Option<String>,
     pub wikidata_qid: Option<String>,
     pub isbn13: Option<String>,
+    pub core_id: Option<String>,
     pub volume: Option<String>,
     pub issue: Option<String>,
     pub pages: Option<String>,

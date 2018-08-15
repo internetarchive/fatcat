@@ -420,6 +420,7 @@ fn test_post_release() {
                 "pmid": "54321",
                 "pmcid": "PMC12345",
                 "wikidata_qid": "Q12345",
+                "core_id": "7890",
                 "volume": "439",
                 "issue": "IV",
                 "pages": "1-399",

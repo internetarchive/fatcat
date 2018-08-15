@@ -216,6 +216,7 @@ table! {
         pmcid -> Nullable<Text>,
         wikidata_qid -> Nullable<Text>,
         isbn13 -> Nullable<Text>,
+        core_id -> Nullable<Text>,
         volume -> Nullable<Text>,
         issue -> Nullable<Text>,
         pages -> Nullable<Text>,
