@@ -1,15 +1,15 @@
 -- written for Postgres 9.6 with OSSP extension for UUIDs -- ... but actually runs on Postgres 10 in qa/production
 
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+-- CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 
 -- uuid_generate_v1mc: timestamp ordered, random MAC address
--- uuid_generate_v4:   totally random
+-- gen_random_uuid:   totally random
 
 -- NB: could use LIKE clause, or "composite types"
 
 CREATE TABLE editor (
-    id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     username            TEXT NOT NULL UNIQUE,
     is_admin            BOOLEAN NOT NULL DEFAULT false,
     registered          TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL,
@@ -17,7 +17,7 @@ CREATE TABLE editor (
 );
 
 CREATE TABLE editgroup (
-    id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     editor_id           UUID REFERENCES editor(id) NOT NULL,
     created             TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL,
     extra_json          JSON,
@@ -44,7 +44,7 @@ CREATE TABLE abstracts (
 
 -------------------- Creators -----------------------------------------------
 CREATE TABLE creator_rev (
-    id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     extra_json          JSON,
 
     display_name        TEXT NOT NULL,
@@ -63,7 +63,7 @@ CREATE INDEX creator_rev_orcid_idx ON creator_rev(orcid) WHERE orcid IS NOT NULL
 CREATE INDEX creator_rev_wikidata_idx ON creator_rev(wikidata_qid) WHERE wikidata_qid IS NOT NULL;
 
 CREATE TABLE creator_ident (
-    id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     is_live             BOOL NOT NULL DEFAULT false,
     rev_id              UUID REFERENCES creator_rev(id),
     redirect_id         UUID REFERENCES creator_ident(id)
@@ -86,7 +86,7 @@ CREATE INDEX creator_edit_idx ON creator_edit(editgroup_id);
 
 -------------------- Containers --------------------------------------------
 CREATE TABLE container_rev (
-    id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     extra_json          JSON,
 
     name                TEXT NOT NULL,
@@ -101,7 +101,7 @@ CREATE INDEX container_rev_issnl_idx ON container_rev(issnl) WHERE issnl IS NOT 
 CREATE INDEX container_rev_wikidata_idx ON container_rev(wikidata_qid) WHERE wikidata_qid IS NOT NULL;
 
 CREATE TABLE container_ident (
-    id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     is_live             BOOL NOT NULL DEFAULT false,
     rev_id              UUID REFERENCES container_rev(id),
     redirect_id         UUID REFERENCES container_ident(id)
@@ -124,7 +124,7 @@ CREATE INDEX container_edit_idx ON container_edit(editgroup_id);
 
 -------------------- Files -------------------------------------------------
 CREATE TABLE file_rev (
-    id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     extra_json          JSON,
 
     size                BIGINT,
@@ -146,7 +146,7 @@ CREATE TABLE file_rev_url (
 );
 
 CREATE TABLE file_ident (
-    id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     is_live             BOOL NOT NULL DEFAULT false,
     rev_id              UUID REFERENCES file_rev(id),
     redirect_id         UUID REFERENCES file_ident(id)
@@ -169,7 +169,7 @@ CREATE INDEX file_edit_idx ON file_edit(editgroup_id);
 
 -------------------- Release -----------------------------------------------
 CREATE TABLE release_rev (
-    id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     extra_json          JSON,
 
     work_ident_id       UUID NOT NULL, -- FOREIGN KEY; see ALRTER below
@@ -210,7 +210,7 @@ CREATE TABLE release_rev_abstract (
 );
 
 CREATE TABLE release_ident (
-    id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     is_live             BOOL NOT NULL DEFAULT false,
     rev_id              UUID REFERENCES release_rev(id),
     redirect_id         UUID REFERENCES release_ident(id)
@@ -233,12 +233,12 @@ CREATE INDEX release_edit_idx ON release_edit(editgroup_id);
 
 -------------------- Works --------------------------------------------------
 CREATE TABLE work_rev (
-    id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     extra_json          JSON
 );
 
 CREATE TABLE work_ident (
-    id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     is_live             BOOL NOT NULL DEFAULT false,
     rev_id              UUID REFERENCES work_rev(id),
     redirect_id         UUID REFERENCES work_ident(id)
