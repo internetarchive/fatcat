@@ -48,6 +48,7 @@ class ReleaseEntity(object):
         'wikidata_qid': 'str',
         'pmcid': 'str',
         'pmid': 'str',
+        'core_id': 'str',
         'isbn13': 'str',
         'doi': 'str',
         'release_date': 'date',
@@ -78,6 +79,7 @@ class ReleaseEntity(object):
         'wikidata_qid': 'wikidata_qid',
         'pmcid': 'pmcid',
         'pmid': 'pmid',
+        'core_id': 'core_id',
         'isbn13': 'isbn13',
         'doi': 'doi',
         'release_date': 'release_date',
@@ -96,7 +98,7 @@ class ReleaseEntity(object):
         'extra': 'extra'
     }
 
-    def __init__(self, abstracts=None, refs=None, contribs=None, language=None, publisher=None, pages=None, issue=None, volume=None, wikidata_qid=None, pmcid=None, pmid=None, isbn13=None, doi=None, release_date=None, release_status=None, release_type=None, container_id=None, files=None, container=None, work_id=None, title=None, state=None, ident=None, revision=None, redirect=None, editgroup_id=None, extra=None):  # noqa: E501
+    def __init__(self, abstracts=None, refs=None, contribs=None, language=None, publisher=None, pages=None, issue=None, volume=None, wikidata_qid=None, pmcid=None, pmid=None, core_id=None, isbn13=None, doi=None, release_date=None, release_status=None, release_type=None, container_id=None, files=None, container=None, work_id=None, title=None, state=None, ident=None, revision=None, redirect=None, editgroup_id=None, extra=None):  # noqa: E501
         """ReleaseEntity - a model defined in Swagger"""  # noqa: E501
 
         self._abstracts = None
@@ -110,6 +112,7 @@ class ReleaseEntity(object):
         self._wikidata_qid = None
         self._pmcid = None
         self._pmid = None
+        self._core_id = None
         self._isbn13 = None
         self._doi = None
         self._release_date = None
@@ -150,6 +153,8 @@ class ReleaseEntity(object):
             self.pmcid = pmcid
         if pmid is not None:
             self.pmid = pmid
+        if core_id is not None:
+            self.core_id = core_id
         if isbn13 is not None:
             self.isbn13 = isbn13
         if doi is not None:
@@ -414,6 +419,27 @@ class ReleaseEntity(object):
         """
 
         self._pmid = pmid
+
+    @property
+    def core_id(self):
+        """Gets the core_id of this ReleaseEntity.  # noqa: E501
+
+
+        :return: The core_id of this ReleaseEntity.  # noqa: E501
+        :rtype: str
+        """
+        return self._core_id
+
+    @core_id.setter
+    def core_id(self, core_id):
+        """Sets the core_id of this ReleaseEntity.
+
+
+        :param core_id: The core_id of this ReleaseEntity.  # noqa: E501
+        :type: str
+        """
+
+        self._core_id = core_id
 
     @property
     def isbn13(self):
