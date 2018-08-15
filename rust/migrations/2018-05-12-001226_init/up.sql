@@ -22,7 +22,7 @@ CREATE TABLE editgroup (
     id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     editor_id           UUID REFERENCES editor(id) NOT NULL,
     created             TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL,
-    extra_json          JSON,
+    extra_json          JSONB,
     description         TEXT
 );
 
@@ -47,7 +47,7 @@ CREATE TABLE abstracts (
 -------------------- Creators -----------------------------------------------
 CREATE TABLE creator_rev (
     id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    extra_json          JSON,
+    extra_json          JSONB,
 
     display_name        TEXT NOT NULL,
     given_name          TEXT,
@@ -89,7 +89,7 @@ CREATE INDEX creator_edit_idx ON creator_edit(editgroup_id);
 -------------------- Containers --------------------------------------------
 CREATE TABLE container_rev (
     id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    extra_json          JSON,
+    extra_json          JSONB,
 
     name                TEXT NOT NULL,
     publisher           TEXT,
@@ -127,7 +127,7 @@ CREATE INDEX container_edit_idx ON container_edit(editgroup_id);
 -------------------- Files -------------------------------------------------
 CREATE TABLE file_rev (
     id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    extra_json          JSON,
+    extra_json          JSONB,
 
     size                BIGINT,
     sha1                CHAR(40),
@@ -172,7 +172,7 @@ CREATE INDEX file_edit_idx ON file_edit(editgroup_id);
 -------------------- Release -----------------------------------------------
 CREATE TABLE release_rev (
     id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    extra_json          JSON,
+    extra_json          JSONB,
 
     work_ident_id       UUID NOT NULL, -- FOREIGN KEY; see ALRTER below
     container_ident_id  UUID REFERENCES container_ident(id),
@@ -286,7 +286,7 @@ CREATE TABLE release_ref (
     target_release_ident_id UUID REFERENCES release_ident(id), -- or work?
     index_val               BIGINT,
     key                     TEXT,
-    extra_json              JSON, -- title, year, container_title, locator (aka, page), oci_id
+    extra_json              JSONB, -- title, year, container_title, locator (aka, page), oci_id
     container_title         TEXT,
     year                    BIGINT,
     title                   TEXT,
