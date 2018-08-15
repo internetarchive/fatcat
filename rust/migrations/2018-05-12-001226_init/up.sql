@@ -183,6 +183,7 @@ CREATE TABLE release_rev (
     pmcid               TEXT, -- TODO: BIGINT?
     wikidata_qid        TEXT, -- TODO: BIGINT?
     isbn13              TEXT, -- TODO: fixed-length
+    core_id             TEXT, -- TODO: BIGINT?
     volume              TEXT,
     issue               TEXT,
     pages               TEXT,
@@ -197,6 +198,7 @@ CREATE INDEX release_rev_pmid_idx ON release_rev(pmid) WHERE pmid IS NOT NULL;
 CREATE INDEX release_rev_pmcid_idx ON release_rev(pmcid) WHERE pmcid IS NOT NULL;
 CREATE INDEX release_rev_wikidata_idx ON release_rev(wikidata_qid) WHERE wikidata_qid IS NOT NULL;
 CREATE INDEX release_rev_isbn13_idx ON release_rev(isbn13) WHERE isbn13 IS NOT NULL;
+CREATE INDEX release_rev_core_idx ON release_rev(core_id) WHERE core_id IS NOT NULL;
 CREATE INDEX release_rev_work_idx ON release_rev(work_ident_id) WHERE work_ident_id IS NOT NULL;
 
 CREATE TABLE release_rev_abstract (
@@ -406,10 +408,10 @@ INSERT INTO work_edit (ident_id, rev_id, redirect_id, editgroup_id, prev_rev) VA
     ('00000000-0000-0000-5555-000000000002', '00000000-0000-0000-5555-FFF000000002', null, '00000000-0000-0000-BBBB-000000000004', null),
     ('00000000-0000-0000-5555-000000000002', '00000000-0000-0000-5555-FFF000000003', null, '00000000-0000-0000-BBBB-000000000005', '00000000-0000-0000-5555-FFF000000002');
 
-INSERT INTO release_rev (id, work_ident_id, container_ident_id, title, release_type, release_status, release_date, doi, isbn13, volume, issue, pages, publisher, language) VALUES
-    ('00000000-0000-0000-4444-FFF000000001', '00000000-0000-0000-5555-000000000001',                                   null,  'example title',              null, null,        null, null,         null,  null,  null, null, null, null),
-    ('00000000-0000-0000-4444-FFF000000002', '00000000-0000-0000-5555-000000000002', '00000000-0000-0000-1111-000000000001', 'bigger example', 'journal-article', null,'2018-01-01', '10.123/abc', '99999-999-9-X',  '12', 'IV', '5-9', 'bogus publishing group', 'cn'),
-    ('00000000-0000-0000-4444-FFF000000003', '00000000-0000-0000-5555-000000000003', '00000000-0000-0000-1111-000000000003', 'Why Most Published Research Findings Are False', 'journal-article', 'published', '2005-08-30', '10.1371/journal.pmed.0020124',  null, '2', '8', 'e124', 'Public Library of Science', 'en');
+INSERT INTO release_rev (id, work_ident_id, container_ident_id, title, release_type, release_status, release_date, doi, isbn13, core_id, volume, issue, pages, publisher, language) VALUES
+    ('00000000-0000-0000-4444-FFF000000001', '00000000-0000-0000-5555-000000000001',                                   null,  'example title',              null, null,        null,         null,            null,       null, null, null,  null,                     null, null),
+    ('00000000-0000-0000-4444-FFF000000002', '00000000-0000-0000-5555-000000000002', '00000000-0000-0000-1111-000000000001', 'bigger example', 'journal-article', null,'2018-01-01', '10.123/abc', '99999-999-9-X', '42022773', '12', 'IV', '5-9', 'bogus publishing group', 'cn'),
+    ('00000000-0000-0000-4444-FFF000000003', '00000000-0000-0000-5555-000000000003', '00000000-0000-0000-1111-000000000003', 'Why Most Published Research Findings Are False', 'journal-article', 'published', '2005-08-30', '10.1371/journal.pmed.0020124',  null, null, '2', '8', 'e124', 'Public Library of Science', 'en');
 
 INSERT INTO release_ident (id, is_live, rev_id, redirect_id) VALUES
     ('00000000-0000-0000-4444-000000000001', true, '00000000-0000-0000-4444-FFF000000001', null), -- aaaaaaaaaaaaarceaaaaaaaaae
