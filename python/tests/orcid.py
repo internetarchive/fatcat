@@ -13,6 +13,10 @@ def test_orcid_importer_batch(orcid_importer):
     with open('tests/files/0000-0001-8254-7103.json', 'r') as f:
         orcid_importer.process_batch(f)
 
+def test_orcid_importer_badid(orcid_importer):
+    with open('tests/files/0000-0001-8254-710X.json', 'r') as f:
+        orcid_importer.process_batch(f)
+
 def test_orcid_importer(orcid_importer):
     with open('tests/files/0000-0001-8254-7103.json', 'r') as f:
         orcid_importer.process_source(f)
