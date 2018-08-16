@@ -612,7 +612,7 @@ paths:
         type: "string"
         maxLength: 19
         minLength: 19
-        pattern: "\\d{4}-\\d{4}-\\d{4}-\\d{4}"
+        pattern: "\\d{4}-\\d{4}-\\d{4}-\\d{3}[\\dX]"
         formatString: "\\\"{}\\\""
         example: "\"orcid_example\".to_string()"
       responses:
@@ -2061,7 +2061,7 @@ definitions:
         example: "0000-0002-1825-0097"
         minLength: 19
         maxLength: 19
-        pattern: "\\d{4}-\\d{4}-\\d{4}-\\d{4}"
+        pattern: "\\d{4}-\\d{4}-\\d{4}-\\d{3}[\\dX]"
       surname:
         type: "string"
       given_name:
@@ -3180,7 +3180,7 @@ x-issn:
 x-orcid:
   type: "string"
   example: "0000-0002-1825-0097"
-  pattern: "\\d{4}-\\d{4}-\\d{4}-\\d{4}"
+  pattern: "\\d{4}-\\d{4}-\\d{4}-\\d{3}[\\dX]"
   minLength: 19
   maxLength: 19
 x-entity-props:

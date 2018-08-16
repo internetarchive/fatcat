@@ -3255,8 +3255,8 @@ class DefaultApi(object):
         if ('orcid' in params and
                 len(params['orcid']) < 19):
             raise ValueError("Invalid value for parameter `orcid` when calling `lookup_creator`, length must be greater than or equal to `19`")  # noqa: E501
-        if 'orcid' in params and not re.search('\\d{4}-\\d{4}-\\d{4}-\\d{4}', params['orcid']):  # noqa: E501
-            raise ValueError("Invalid value for parameter `orcid` when calling `lookup_creator`, must conform to the pattern `/\\d{4}-\\d{4}-\\d{4}-\\d{4}/`")  # noqa: E501
+        if 'orcid' in params and not re.search('\\d{4}-\\d{4}-\\d{4}-\\d{3}[\\dX]', params['orcid']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `orcid` when calling `lookup_creator`, must conform to the pattern `/\\d{4}-\\d{4}-\\d{4}-\\d{3}[\\dX]/`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}

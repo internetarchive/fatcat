@@ -181,7 +181,7 @@ pub fn check_issn(raw: &str) -> Result<()> {
 
 pub fn check_orcid(raw: &str) -> Result<()> {
     lazy_static! {
-        static ref RE: Regex = Regex::new(r"^\d{4}-\d{4}-\d{4}-\d{4}$").unwrap();
+        static ref RE: Regex = Regex::new(r"^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$").unwrap();
     }
     if RE.is_match(raw) {
         Ok(())
@@ -191,6 +191,14 @@ pub fn check_orcid(raw: &str) -> Result<()> {
             raw
         )).into())
     }
+}
+
+#[test]
+fn test_check_orcid() {
+    assert!(check_orcid("0123-4567-3456-6789").is_ok());
+    assert!(check_orcid("0123-4567-3456-678X").is_ok());
+    assert!(check_orcid("01234567-3456-6780").is_err());
+    assert!(check_orcid("0x23-4567-3456-6780").is_err());
 }
 
 // TODO: make the above checks "more correct"

@@ -37,7 +37,7 @@ x-issn: &FATCATISSN
 x-orcid: &FATCATORCID
   type: string
   example: "0000-0002-1825-0097"
-  pattern: "\\d{4}-\\d{4}-\\d{4}-\\d{4}"
+  pattern: "\\d{4}-\\d{4}-\\d{4}-\\d{3}[\\dX]"
   minLength: 19
   maxLength: 19
 
