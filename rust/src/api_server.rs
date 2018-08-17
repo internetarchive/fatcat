@@ -497,26 +497,25 @@ impl Server {
             check_issn(extid)?;
         }
 
-        let edit: ContainerEditRow = diesel::sql_query(
-            "WITH rev AS ( INSERT INTO container_rev (name, publisher, issnl, wikidata_qid, abbrev, coden, extra_json)
-                        VALUES ($1, $2, $3, $4, $5, $6, $7)
-                        RETURNING id ),
-                ident AS ( INSERT INTO container_ident (rev_id)
-                            VALUES ((SELECT rev.id FROM rev))
-                            RETURNING id )
-            INSERT INTO container_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($8, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
-            RETURNING *",
-        ).bind::<diesel::sql_types::Text, _>(entity.name)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.publisher)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.issnl)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.wikidata_qid)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.abbrev)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.coden)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Jsonb>, _>(entity.extra)
-            .bind::<diesel::sql_types::Uuid, _>(editgroup_id)
+        let rev_id: Uuid = insert_into(container_rev::table)
+            .values((container_rev::name.eq(entity.name),
+                     container_rev::publisher.eq(entity.publisher),
+                     container_rev::issnl.eq(entity.issnl),
+                     container_rev::wikidata_qid.eq(entity.wikidata_qid),
+                     container_rev::abbrev.eq(entity.abbrev),
+                     container_rev::coden.eq(entity.coden),
+                     container_rev::extra_json.eq(entity.extra)))
+            .returning(container_rev::id)
             .get_result(conn)?;
-
+        let ident_id: Uuid = insert_into(container_ident::table)
+            .values(container_ident::rev_id.eq(rev_id))
+            .returning(container_ident::id)
+            .get_result(conn)?;
+        let edit: ContainerEditRow = insert_into(container_edit::table)
+            .values((container_edit::editgroup_id.eq(editgroup_id),
+                     container_edit::ident_id.eq(ident_id),
+                     container_edit::rev_id.eq(rev_id)))
+            .get_result(conn)?;
         edit.into_model()
     }
 
@@ -537,23 +536,23 @@ impl Server {
             check_wikidata_qid(extid)?;
         }
 
-        let edit: CreatorEditRow = diesel::sql_query(
-            "WITH rev AS ( INSERT INTO creator_rev (display_name, given_name, surname, orcid, wikidata_qid, extra_json)
-                        VALUES ($1, $2, $3, $4, $5, $6)
-                        RETURNING id ),
-                ident AS ( INSERT INTO creator_ident (rev_id)
-                            VALUES ((SELECT rev.id FROM rev))
-                            RETURNING id )
-            INSERT INTO creator_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($7, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
-            RETURNING *",
-        ).bind::<diesel::sql_types::Text, _>(entity.display_name)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.given_name)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.surname)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.orcid)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.wikidata_qid)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Jsonb>, _>(entity.extra)
-            .bind::<diesel::sql_types::Uuid, _>(editgroup_id)
+        let rev_id: Uuid = insert_into(creator_rev::table)
+            .values((creator_rev::display_name.eq(entity.display_name),
+                     creator_rev::given_name.eq(entity.given_name),
+                     creator_rev::surname.eq(entity.surname),
+                     creator_rev::orcid.eq(entity.orcid),
+                     creator_rev::wikidata_qid.eq(entity.wikidata_qid),
+                     creator_rev::extra_json.eq(entity.extra)))
+            .returning(creator_rev::id)
+            .get_result(conn)?;
+        let ident_id: Uuid = insert_into(creator_ident::table)
+            .values(creator_ident::rev_id.eq(rev_id))
+            .returning(creator_ident::id)
+            .get_result(conn)?;
+        let edit: CreatorEditRow = insert_into(creator_edit::table)
+            .values((creator_edit::editgroup_id.eq(editgroup_id),
+                     creator_edit::ident_id.eq(ident_id),
+                     creator_edit::rev_id.eq(rev_id)))
             .get_result(conn)?;
 
         edit.into_model()
@@ -570,25 +569,24 @@ impl Server {
             Some(param) => fcid2uuid(&param)?,
         };
 
-        let edit: FileEditRow =
-            diesel::sql_query(
-                "WITH rev AS ( INSERT INTO file_rev (size, sha1, sha256, md5, mimetype, extra_json)
-                        VALUES ($1, $2, $3, $4, $5, $6)
-                        RETURNING id ),
-                ident AS ( INSERT INTO file_ident (rev_id)
-                            VALUES ((SELECT rev.id FROM rev))
-                            RETURNING id )
-            INSERT INTO file_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($7, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
-            RETURNING *",
-            ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Int8>, _>(entity.size)
-                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.sha1)
-                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.sha256)
-                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.md5)
-                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.mimetype)
-                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Jsonb>, _>(entity.extra)
-                .bind::<diesel::sql_types::Uuid, _>(editgroup_id)
-                .get_result(conn)?;
+        let rev_id: Uuid = insert_into(file_rev::table)
+            .values((file_rev::size.eq(entity.size),
+                     file_rev::sha1.eq(entity.sha1),
+                     file_rev::sha256.eq(entity.sha256),
+                     file_rev::md5.eq(entity.md5),
+                     file_rev::mimetype.eq(entity.mimetype),
+                     file_rev::extra_json.eq(entity.extra)))
+            .returning(file_rev::id)
+            .get_result(conn)?;
+        let ident_id: Uuid = insert_into(file_ident::table)
+            .values(file_ident::rev_id.eq(rev_id))
+            .returning(file_ident::id)
+            .get_result(conn)?;
+        let edit: FileEditRow = insert_into(file_edit::table)
+            .values((file_edit::editgroup_id.eq(editgroup_id),
+                     file_edit::ident_id.eq(ident_id),
+                     file_edit::rev_id.eq(rev_id)))
+            .get_result(conn)?;
 
         let _releases: Option<Vec<FileReleaseRow>> = match entity.releases {
             None => None,
@@ -684,36 +682,35 @@ impl Server {
             None => None,
         };
 
-        let edit: ReleaseEditRow = diesel::sql_query(
-            "WITH rev AS ( INSERT INTO release_rev (title, release_type, release_status, release_date, doi, pmid, pmcid, wikidata_qid, isbn13, core_id, volume, issue, pages, work_ident_id, container_ident_id, publisher, language, extra_json)
-                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
-                        RETURNING id ),
-                ident AS ( INSERT INTO release_ident (rev_id)
-                            VALUES ((SELECT rev.id FROM rev))
-                            RETURNING id )
-            INSERT INTO release_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($19, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
-            RETURNING *",
-        ).bind::<diesel::sql_types::Text, _>(entity.title)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.release_type)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.release_status)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Date>, _>(
-                entity.release_date.map(|v| v.naive_utc().date()))
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.doi)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.pmid)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.pmcid)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.wikidata_qid)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.isbn13)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.core_id)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.volume)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.issue)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.pages)
-            .bind::<diesel::sql_types::Uuid, _>(work_id)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Uuid>, _>(container_id)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.publisher)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.language)
-            .bind::<diesel::sql_types::Nullable<diesel::sql_types::Jsonb>, _>(entity.extra)
-            .bind::<diesel::sql_types::Uuid, _>(editgroup_id)
+        let rev_id: Uuid = insert_into(release_rev::table)
+            .values((release_rev::title.eq(entity.title),
+                     release_rev::release_type.eq(entity.release_type),
+                     release_rev::release_status.eq(entity.release_status),
+                     release_rev::release_date.eq(entity.release_date.map(|v| v.naive_utc().date())),
+                     release_rev::doi.eq(entity.doi),
+                     release_rev::pmid.eq(entity.pmid),
+                     release_rev::pmcid.eq(entity.pmcid),
+                     release_rev::wikidata_qid.eq(entity.wikidata_qid),
+                     release_rev::isbn13.eq(entity.isbn13),
+                     release_rev::core_id.eq(entity.core_id),
+                     release_rev::volume.eq(entity.volume),
+                     release_rev::issue.eq(entity.issue),
+                     release_rev::pages.eq(entity.pages),
+                     release_rev::work_ident_id.eq(work_id),
+                     release_rev::container_ident_id.eq(container_id),
+                     release_rev::publisher.eq(entity.publisher),
+                     release_rev::language.eq(entity.language),
+                     release_rev::extra_json.eq(entity.extra)))
+            .returning(release_rev::id)
+            .get_result(conn)?;
+        let ident_id: Uuid = insert_into(release_ident::table)
+            .values(release_ident::rev_id.eq(rev_id))
+            .returning(release_ident::id)
+            .get_result(conn)?;
+        let edit: ReleaseEditRow = insert_into(release_edit::table)
+            .values((release_edit::editgroup_id.eq(editgroup_id),
+                     release_edit::ident_id.eq(ident_id),
+                     release_edit::rev_id.eq(rev_id)))
             .get_result(conn)?;
 
         let _refs: Option<Vec<ReleaseRefRow>> = match entity.refs {
@@ -825,21 +822,19 @@ impl Server {
             Some(param) => fcid2uuid(&param)?,
         };
 
-        let edit: WorkEditRow =
-            diesel::sql_query(
-                "WITH rev AS ( INSERT INTO work_rev (extra_json)
-                        VALUES ($1)
-                        RETURNING id ),
-                ident AS ( INSERT INTO work_ident (rev_id)
-                            VALUES ((SELECT rev.id FROM rev))
-                            RETURNING id )
-            INSERT INTO work_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($2, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
-            RETURNING *",
-            ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Jsonb>, _>(entity.extra)
-                .bind::<diesel::sql_types::Uuid, _>(editgroup_id)
-                .get_result(conn)?;
-
+        let rev_id: Uuid = insert_into(work_rev::table)
+            .values(work_rev::extra_json.eq(entity.extra))
+            .returning(work_rev::id)
+            .get_result(conn)?;
+        let ident_id: Uuid = insert_into(work_ident::table)
+            .values(work_ident::rev_id.eq(rev_id))
+            .returning(work_ident::id)
+            .get_result(conn)?;
+        let edit: WorkEditRow = insert_into(work_edit::table)
+            .values((work_edit::editgroup_id.eq(editgroup_id),
+                     work_edit::ident_id.eq(ident_id),
+                     work_edit::rev_id.eq(rev_id)))
+            .get_result(conn)?;
         edit.into_model()
     }
 
