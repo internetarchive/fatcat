@@ -10,3 +10,45 @@ haven't been revoked.
 Could use portier with openid connect as an email-based option. Otherwise,
 orcid, github, google.
 
+---------
+
+Use macaroons!
+
+editor/user table has a "auth_epoch" timestamp; only macaroons generated
+after this timestamp are valid. revocation is done by incrementing this
+timestamp ("touch").
+
+Rust CLI tool for managing users:
+- create editor
+
+Special users/editor that can create editor accounts via API; eg, one for
+fatcat-web.
+
+Associate one oauth2 id per domain per editor/user.
+
+Users come to fatcat-web and do oauth2 to login or create an account. All
+oauth2 internal to fatcat-web. If successful, fatcat-web does an
+(authenticated) lookup to API for that identifier. If found, requests a
+new macaroon to use as a cookie for auth. All future requests pass this
+cookie through as bearer auth. fatcat-web remains stateless! macaroon
+contains username (for display); no lookup-per page. Need to logout/login for
+this to update?
+
+Later, can do a "add additional account" feature.
+
+Backend:
+- oauth2 account table, foreign key to editor table
+    => this is the only private table
+- auth_epoch timestamp column on editor table
+- lock editor by setting auth_epoch to deep future
+
+TODO: privacy policy
+
+fatcat API doesn't *require* auth, but if auth is provided, it will check
+macaroon, and validate against editor table's timestamp.
+
+support oauth2 against:
+- orcid
+- git.archive.org
+- github
+? google
