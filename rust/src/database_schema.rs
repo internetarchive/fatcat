@@ -22,7 +22,7 @@ table! {
         rev_id -> Nullable<Uuid>,
         redirect_id -> Nullable<Uuid>,
         prev_rev -> Nullable<Uuid>,
-        extra_json -> Nullable<Json>,
+        extra_json -> Nullable<Jsonb>,
     }
 }
 
@@ -57,7 +57,7 @@ table! {
         rev_id -> Nullable<Uuid>,
         redirect_id -> Nullable<Uuid>,
         prev_rev -> Nullable<Uuid>,
-        extra_json -> Nullable<Json>,
+        extra_json -> Nullable<Jsonb>,
     }
 }
 
@@ -111,7 +111,7 @@ table! {
         rev_id -> Nullable<Uuid>,
         redirect_id -> Nullable<Uuid>,
         prev_rev -> Nullable<Uuid>,
-        extra_json -> Nullable<Json>,
+        extra_json -> Nullable<Jsonb>,
     }
 }
 
@@ -160,7 +160,7 @@ table! {
         raw_name -> Nullable<Text>,
         role -> Nullable<Text>,
         index_val -> Nullable<Int8>,
-        extra_json -> Nullable<Json>,
+        extra_json -> Nullable<Jsonb>,
     }
 }
 
@@ -173,7 +173,7 @@ table! {
         rev_id -> Nullable<Uuid>,
         redirect_id -> Nullable<Uuid>,
         prev_rev -> Nullable<Uuid>,
-        extra_json -> Nullable<Json>,
+        extra_json -> Nullable<Jsonb>,
     }
 }
 
@@ -244,7 +244,7 @@ table! {
         rev_id -> Nullable<Uuid>,
         redirect_id -> Nullable<Uuid>,
         prev_rev -> Nullable<Uuid>,
-        extra_json -> Nullable<Json>,
+        extra_json -> Nullable<Jsonb>,
     }
 }
 
@@ -260,7 +260,7 @@ table! {
 table! {
     work_rev (id) {
         id -> Uuid,
-        extra_json -> Nullable<Json>,
+        extra_json -> Nullable<Jsonb>,
     }
 }
 
