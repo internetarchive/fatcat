@@ -209,6 +209,8 @@ CREATE TABLE release_rev_abstract (
     lang            TEXT
 );
 
+CREATE INDEX release_rev_abstract_rev_idx ON release_rev_abstract(release_rev);
+
 CREATE TABLE release_ident (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     is_live             BOOL NOT NULL DEFAULT false,
