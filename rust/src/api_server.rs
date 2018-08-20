@@ -396,6 +396,9 @@ impl Server {
         let (ident, rev): (FileIdentRow, FileRevRow) = file_ident::table
             .inner_join(file_rev::table)
             .filter(file_rev::sha1.eq(sha1))
+            // This NOT NULL is here to ensure the postgresql query planner that it can use an
+            // index
+            .filter(file_rev::sha1.is_not_null())
             .filter(file_ident::is_live.eq(true))
             .filter(file_ident::redirect_id.is_null())
             .first(conn)?;
@@ -434,6 +437,9 @@ impl Server {
         let (ident, rev): (ReleaseIdentRow, ReleaseRevRow) = release_ident::table
             .inner_join(release_rev::table)
             .filter(release_rev::doi.eq(doi))
+            // This NOT NULL is here to ensure the postgresql query planner that it can use an
+            // index
+            .filter(release_rev::doi.is_not_null())
             .filter(release_ident::is_live.eq(true))
             .filter(release_ident::redirect_id.is_null())
             .first(conn)?;
