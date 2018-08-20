@@ -212,6 +212,7 @@ CREATE TABLE release_rev_abstract (
 );
 
 CREATE INDEX release_rev_abstract_rev_idx ON release_rev_abstract(release_rev);
+CREATE INDEX release_rev_abstract_sha1_idx ON release_rev_abstract(abstract_sha1);
 
 CREATE TABLE release_ident (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
