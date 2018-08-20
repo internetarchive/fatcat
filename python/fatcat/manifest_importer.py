@@ -66,7 +66,7 @@ class FatcatManifestImporter(FatcatImporter):
         total_count = int(list(db.execute("SELECT COUNT(*) FROM files_metadata;"))[0][0])
         print("{} rows to process".format(total_count))
 
-        eg = self.api.create_editgroup(fatcat_client.Editgroup(editor_id=1))
+        eg = self.api.create_editgroup(fatcat_client.Editgroup(editor_id="aaaaaaaaaaaabkvkaaaaaaaaae"))
         i = 0
         j = -1
         for row in db.execute(QUERY):
@@ -81,7 +81,7 @@ class FatcatManifestImporter(FatcatImporter):
             self.create_entity(fe, editgroup_id=eg.id)
             if i > 0 and (i % size) == 0:
                 self.api.accept_editgroup(eg.id)
-                eg = self.api.create_editgroup(fatcat_client.Editgroup(editor_id=1))
+                eg = self.api.create_editgroup(fatcat_client.Editgroup(editor_id="aaaaaaaaaaaabkvkaaaaaaaaae"))
                 print("Finished a batch; row {} of {} ({:.2f}%).\tTotal inserted: {}".format(
                     j, total_count, 100.0*j/total_count, i))
             i = i + 1
