@@ -298,6 +298,10 @@ where
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
 
+                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
+                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
+                let param_autoaccept = query_params.get("autoaccept").and_then(|list| list.first()).and_then(|x| x.parse::<bool>().ok());
+
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
@@ -322,7 +326,7 @@ where
                 };
                 let param_entity_list = param_entity_list.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity_list".to_string())))?;
 
-                match api.create_container_batch(param_entity_list.as_ref(), context).wait() {
+                match api.create_container_batch(param_entity_list.as_ref(), param_autoaccept, context).wait() {
                     Ok(rsp) => match rsp {
                         CreateContainerBatchResponse::CreatedEntities(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -510,6 +514,10 @@ where
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
 
+                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
+                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
+                let param_autoaccept = query_params.get("autoaccept").and_then(|list| list.first()).and_then(|x| x.parse::<bool>().ok());
+
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
@@ -534,7 +542,7 @@ where
                 };
                 let param_entity_list = param_entity_list.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity_list".to_string())))?;
 
-                match api.create_creator_batch(param_entity_list.as_ref(), context).wait() {
+                match api.create_creator_batch(param_entity_list.as_ref(), param_autoaccept, context).wait() {
                     Ok(rsp) => match rsp {
                         CreateCreatorBatchResponse::CreatedEntities(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -815,6 +823,10 @@ where
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
 
+                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
+                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
+                let param_autoaccept = query_params.get("autoaccept").and_then(|list| list.first()).and_then(|x| x.parse::<bool>().ok());
+
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
@@ -839,7 +851,7 @@ where
                 };
                 let param_entity_list = param_entity_list.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity_list".to_string())))?;
 
-                match api.create_file_batch(param_entity_list.as_ref(), context).wait() {
+                match api.create_file_batch(param_entity_list.as_ref(), param_autoaccept, context).wait() {
                     Ok(rsp) => match rsp {
                         CreateFileBatchResponse::CreatedEntities(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -1027,6 +1039,10 @@ where
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
 
+                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
+                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
+                let param_autoaccept = query_params.get("autoaccept").and_then(|list| list.first()).and_then(|x| x.parse::<bool>().ok());
+
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
@@ -1051,7 +1067,7 @@ where
                 };
                 let param_entity_list = param_entity_list.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity_list".to_string())))?;
 
-                match api.create_release_batch(param_entity_list.as_ref(), context).wait() {
+                match api.create_release_batch(param_entity_list.as_ref(), param_autoaccept, context).wait() {
                     Ok(rsp) => match rsp {
                         CreateReleaseBatchResponse::CreatedEntities(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -1239,6 +1255,10 @@ where
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
 
+                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
+                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
+                let param_autoaccept = query_params.get("autoaccept").and_then(|list| list.first()).and_then(|x| x.parse::<bool>().ok());
+
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
@@ -1263,7 +1283,7 @@ where
                 };
                 let param_entity_list = param_entity_list.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity_list".to_string())))?;
 
-                match api.create_work_batch(param_entity_list.as_ref(), context).wait() {
+                match api.create_work_batch(param_entity_list.as_ref(), param_autoaccept, context).wait() {
                     Ok(rsp) => match rsp {
                         CreateWorkBatchResponse::CreatedEntities(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");

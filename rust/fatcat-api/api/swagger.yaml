@@ -76,6 +76,14 @@ paths:
     post:
       operationId: "create_container_batch"
       parameters:
+      - name: "autoaccept"
+        in: "query"
+        description: "If true, and editor is authorized, batch is accepted all at\
+          \ once"
+        required: false
+        type: "boolean"
+        formatString: "{:?}"
+        example: "Some(true)"
       - in: "body"
         name: "entity_list"
         required: true
@@ -371,6 +379,14 @@ paths:
     post:
       operationId: "create_creator_batch"
       parameters:
+      - name: "autoaccept"
+        in: "query"
+        description: "If true, and editor is authorized, batch is accepted all at\
+          \ once"
+        required: false
+        type: "boolean"
+        formatString: "{:?}"
+        example: "Some(true)"
       - in: "body"
         name: "entity_list"
         required: true
@@ -720,6 +736,14 @@ paths:
     post:
       operationId: "create_file_batch"
       parameters:
+      - name: "autoaccept"
+        in: "query"
+        description: "If true, and editor is authorized, batch is accepted all at\
+          \ once"
+        required: false
+        type: "boolean"
+        formatString: "{:?}"
+        example: "Some(true)"
       - in: "body"
         name: "entity_list"
         required: true
@@ -1012,6 +1036,14 @@ paths:
     post:
       operationId: "create_release_batch"
       parameters:
+      - name: "autoaccept"
+        in: "query"
+        description: "If true, and editor is authorized, batch is accepted all at\
+          \ once"
+        required: false
+        type: "boolean"
+        formatString: "{:?}"
+        example: "Some(true)"
       - in: "body"
         name: "entity_list"
         required: true
@@ -1358,6 +1390,14 @@ paths:
     post:
       operationId: "create_work_batch"
       parameters:
+      - name: "autoaccept"
+        in: "query"
+        description: "If true, and editor is authorized, batch is accepted all at\
+          \ once"
+        required: false
+        type: "boolean"
+        formatString: "{:?}"
+        example: "Some(true)"
       - in: "body"
         name: "entity_list"
         required: true

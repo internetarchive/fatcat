@@ -290,8 +290,20 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_container_batch(&self, param_entity_list: &Vec<models::ContainerEntity>, context: &Context) -> Box<Future<Item = CreateContainerBatchResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/container/batch", self.base_path);
+    fn create_container_batch(
+        &self,
+        param_entity_list: &Vec<models::ContainerEntity>,
+        param_autoaccept: Option<bool>,
+        context: &Context,
+    ) -> Box<Future<Item = CreateContainerBatchResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_autoaccept = param_autoaccept.map_or_else(String::new, |query| format!("autoaccept={autoaccept}&", autoaccept = query.to_string()));
+
+        let url = format!(
+            "{}/v0/container/batch?{autoaccept}",
+            self.base_path,
+            autoaccept = utf8_percent_encode(&query_autoaccept, QUERY_ENCODE_SET)
+        );
 
         let body = serde_json::to_string(&param_entity_list).expect("impossible to fail to serialize");
 
@@ -420,8 +432,20 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_creator_batch(&self, param_entity_list: &Vec<models::CreatorEntity>, context: &Context) -> Box<Future<Item = CreateCreatorBatchResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/creator/batch", self.base_path);
+    fn create_creator_batch(
+        &self,
+        param_entity_list: &Vec<models::CreatorEntity>,
+        param_autoaccept: Option<bool>,
+        context: &Context,
+    ) -> Box<Future<Item = CreateCreatorBatchResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_autoaccept = param_autoaccept.map_or_else(String::new, |query| format!("autoaccept={autoaccept}&", autoaccept = query.to_string()));
+
+        let url = format!(
+            "{}/v0/creator/batch?{autoaccept}",
+            self.base_path,
+            autoaccept = utf8_percent_encode(&query_autoaccept, QUERY_ENCODE_SET)
+        );
 
         let body = serde_json::to_string(&param_entity_list).expect("impossible to fail to serialize");
 
@@ -608,8 +632,16 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_file_batch(&self, param_entity_list: &Vec<models::FileEntity>, context: &Context) -> Box<Future<Item = CreateFileBatchResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/file/batch", self.base_path);
+    fn create_file_batch(
+        &self,
+        param_entity_list: &Vec<models::FileEntity>,
+        param_autoaccept: Option<bool>,
+        context: &Context,
+    ) -> Box<Future<Item = CreateFileBatchResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_autoaccept = param_autoaccept.map_or_else(String::new, |query| format!("autoaccept={autoaccept}&", autoaccept = query.to_string()));
+
+        let url = format!("{}/v0/file/batch?{autoaccept}", self.base_path, autoaccept = utf8_percent_encode(&query_autoaccept, QUERY_ENCODE_SET));
 
         let body = serde_json::to_string(&param_entity_list).expect("impossible to fail to serialize");
 
@@ -738,8 +770,20 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_release_batch(&self, param_entity_list: &Vec<models::ReleaseEntity>, context: &Context) -> Box<Future<Item = CreateReleaseBatchResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/release/batch", self.base_path);
+    fn create_release_batch(
+        &self,
+        param_entity_list: &Vec<models::ReleaseEntity>,
+        param_autoaccept: Option<bool>,
+        context: &Context,
+    ) -> Box<Future<Item = CreateReleaseBatchResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_autoaccept = param_autoaccept.map_or_else(String::new, |query| format!("autoaccept={autoaccept}&", autoaccept = query.to_string()));
+
+        let url = format!(
+            "{}/v0/release/batch?{autoaccept}",
+            self.base_path,
+            autoaccept = utf8_percent_encode(&query_autoaccept, QUERY_ENCODE_SET)
+        );
 
         let body = serde_json::to_string(&param_entity_list).expect("impossible to fail to serialize");
 
@@ -868,8 +912,16 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_work_batch(&self, param_entity_list: &Vec<models::WorkEntity>, context: &Context) -> Box<Future<Item = CreateWorkBatchResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/work/batch", self.base_path);
+    fn create_work_batch(
+        &self,
+        param_entity_list: &Vec<models::WorkEntity>,
+        param_autoaccept: Option<bool>,
+        context: &Context,
+    ) -> Box<Future<Item = CreateWorkBatchResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_autoaccept = param_autoaccept.map_or_else(String::new, |query| format!("autoaccept={autoaccept}&", autoaccept = query.to_string()));
+
+        let url = format!("{}/v0/work/batch?{autoaccept}", self.base_path, autoaccept = utf8_percent_encode(&query_autoaccept, QUERY_ENCODE_SET));
 
         let body = serde_json::to_string(&param_entity_list).expect("impossible to fail to serialize");
 

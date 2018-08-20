@@ -34,11 +34,17 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn create_container_batch(&self, entity_list: &Vec<models::ContainerEntity>, context: &Context) -> Box<Future<Item = CreateContainerBatchResponse, Error = ApiError> + Send> {
+    fn create_container_batch(
+        &self,
+        entity_list: &Vec<models::ContainerEntity>,
+        autoaccept: Option<bool>,
+        context: &Context,
+    ) -> Box<Future<Item = CreateContainerBatchResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "create_container_batch({:?}) - X-Span-ID: {:?}",
+            "create_container_batch({:?}, {:?}) - X-Span-ID: {:?}",
             entity_list,
+            autoaccept,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
         );
         Box::new(futures::failed("Generic failure".into()))
@@ -50,9 +56,14 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn create_creator_batch(&self, entity_list: &Vec<models::CreatorEntity>, context: &Context) -> Box<Future<Item = CreateCreatorBatchResponse, Error = ApiError> + Send> {
+    fn create_creator_batch(&self, entity_list: &Vec<models::CreatorEntity>, autoaccept: Option<bool>, context: &Context) -> Box<Future<Item = CreateCreatorBatchResponse, Error = ApiError> + Send> {
         let context = context.clone();
-        println!("create_creator_batch({:?}) - X-Span-ID: {:?}", entity_list, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        println!(
+            "create_creator_batch({:?}, {:?}) - X-Span-ID: {:?}",
+            entity_list,
+            autoaccept,
+            context.x_span_id.unwrap_or(String::from("<none>")).clone()
+        );
         Box::new(futures::failed("Generic failure".into()))
     }
 
@@ -68,9 +79,14 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn create_file_batch(&self, entity_list: &Vec<models::FileEntity>, context: &Context) -> Box<Future<Item = CreateFileBatchResponse, Error = ApiError> + Send> {
+    fn create_file_batch(&self, entity_list: &Vec<models::FileEntity>, autoaccept: Option<bool>, context: &Context) -> Box<Future<Item = CreateFileBatchResponse, Error = ApiError> + Send> {
         let context = context.clone();
-        println!("create_file_batch({:?}) - X-Span-ID: {:?}", entity_list, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        println!(
+            "create_file_batch({:?}, {:?}) - X-Span-ID: {:?}",
+            entity_list,
+            autoaccept,
+            context.x_span_id.unwrap_or(String::from("<none>")).clone()
+        );
         Box::new(futures::failed("Generic failure".into()))
     }
 
@@ -80,9 +96,14 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn create_release_batch(&self, entity_list: &Vec<models::ReleaseEntity>, context: &Context) -> Box<Future<Item = CreateReleaseBatchResponse, Error = ApiError> + Send> {
+    fn create_release_batch(&self, entity_list: &Vec<models::ReleaseEntity>, autoaccept: Option<bool>, context: &Context) -> Box<Future<Item = CreateReleaseBatchResponse, Error = ApiError> + Send> {
         let context = context.clone();
-        println!("create_release_batch({:?}) - X-Span-ID: {:?}", entity_list, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        println!(
+            "create_release_batch({:?}, {:?}) - X-Span-ID: {:?}",
+            entity_list,
+            autoaccept,
+            context.x_span_id.unwrap_or(String::from("<none>")).clone()
+        );
         Box::new(futures::failed("Generic failure".into()))
     }
 
@@ -92,9 +113,14 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn create_work_batch(&self, entity_list: &Vec<models::WorkEntity>, context: &Context) -> Box<Future<Item = CreateWorkBatchResponse, Error = ApiError> + Send> {
+    fn create_work_batch(&self, entity_list: &Vec<models::WorkEntity>, autoaccept: Option<bool>, context: &Context) -> Box<Future<Item = CreateWorkBatchResponse, Error = ApiError> + Send> {
         let context = context.clone();
-        println!("create_work_batch({:?}) - X-Span-ID: {:?}", entity_list, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        println!(
+            "create_work_batch({:?}, {:?}) - X-Span-ID: {:?}",
+            entity_list,
+            autoaccept,
+            context.x_span_id.unwrap_or(String::from("<none>")).clone()
+        );
         Box::new(futures::failed("Generic failure".into()))
     }
 
