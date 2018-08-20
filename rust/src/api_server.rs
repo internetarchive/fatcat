@@ -25,11 +25,23 @@ macro_rules! entity_batch_handler {
         pub fn $post_batch_handler(
             &self,
             entity_list: &[models::$model],
+            autoaccept: bool,
             conn: &DbConn,
         ) -> Result<Vec<EntityEdit>> {
             let mut ret: Vec<EntityEdit> = vec![];
+            let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001")?; // TODO: auth
+            let eg_row: EditgroupRow = diesel::insert_into(editgroup::table)
+                .values((editgroup::editor_id.eq(editor_id),))
+                .get_result(conn)?;
             for entity in entity_list {
-                ret.push(self.$post_handler(entity.clone(), conn)?);
+                let mut e = entity.clone();
+                e.editgroup_id = Some(uuid2fcid(&eg_row.id));
+                ret.push(self.$post_handler(e, autoaccept, conn)?);
+            }
+            if autoaccept {
+                let _clr: ChangelogRow = diesel::insert_into(changelog::table)
+                    .values((changelog::editgroup_id.eq(eg_row.id),))
+                    .get_result(conn)?;
             }
             Ok(ret)
         }
@@ -216,7 +228,10 @@ fn release_row2entity(
 
     let contribs: Vec<ReleaseContrib> = release_contrib::table
         .filter(release_contrib::release_rev.eq(rev.id))
-        .order((release_contrib::role.asc(), release_contrib::index_val.asc()))
+        .order((
+            release_contrib::role.asc(),
+            release_contrib::index_val.asc(),
+        ))
         .get_results(conn)
         .expect("fetch release refs")
         .into_iter()
@@ -495,6 +510,7 @@ impl Server {
     pub fn create_container_handler(
         &self,
         entity: models::ContainerEntity,
+        autoaccept: bool,
         conn: &DbConn,
     ) -> Result<EntityEdit> {
         let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001")?; // TODO: auth
@@ -513,11 +529,11 @@ impl Server {
             "WITH rev AS ( INSERT INTO container_rev (name, publisher, issnl, wikidata_qid, abbrev, coden, extra_json)
                         VALUES ($1, $2, $3, $4, $5, $6, $7)
                         RETURNING id ),
-                ident AS ( INSERT INTO container_ident (rev_id)
-                            VALUES ((SELECT rev.id FROM rev))
+                ident AS ( INSERT INTO container_ident (is_live, rev_id)
+                            VALUES ($8, (SELECT rev.id FROM rev))
                             RETURNING id )
             INSERT INTO container_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($8, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+                ($9, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
         ).bind::<diesel::sql_types::Text, _>(entity.name)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.publisher)
@@ -526,6 +542,7 @@ impl Server {
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.abbrev)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.coden)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
+            .bind::<diesel::sql_types::Bool, _>(autoaccept)
             .bind::<diesel::sql_types::Uuid, _>(editgroup_id)
             .get_result(conn)?;
 
@@ -535,6 +552,7 @@ impl Server {
     pub fn create_creator_handler(
         &self,
         entity: models::CreatorEntity,
+        autoaccept: bool,
         conn: &DbConn,
     ) -> Result<EntityEdit> {
         let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001")?; // TODO: auth
@@ -553,11 +571,11 @@ impl Server {
             "WITH rev AS ( INSERT INTO creator_rev (display_name, given_name, surname, orcid, wikidata_qid, extra_json)
                         VALUES ($1, $2, $3, $4, $5, $6)
                         RETURNING id ),
-                ident AS ( INSERT INTO creator_ident (rev_id)
-                            VALUES ((SELECT rev.id FROM rev))
+                ident AS ( INSERT INTO creator_ident (is_live, rev_id)
+                            VALUES ($7, (SELECT rev.id FROM rev))
                             RETURNING id )
             INSERT INTO creator_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($7, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+                ($8, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
         ).bind::<diesel::sql_types::Text, _>(entity.display_name)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.given_name)
@@ -565,6 +583,7 @@ impl Server {
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.orcid)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.wikidata_qid)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
+            .bind::<diesel::sql_types::Bool, _>(autoaccept)
             .bind::<diesel::sql_types::Uuid, _>(editgroup_id)
             .get_result(conn)?;
 
@@ -574,6 +593,7 @@ impl Server {
     pub fn create_file_handler(
         &self,
         entity: models::FileEntity,
+        autoaccept: bool,
         conn: &DbConn,
     ) -> Result<EntityEdit> {
         let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001")?; // TODO: auth
@@ -587,11 +607,11 @@ impl Server {
                 "WITH rev AS ( INSERT INTO file_rev (size, sha1, sha256, md5, mimetype, extra_json)
                         VALUES ($1, $2, $3, $4, $5, $6)
                         RETURNING id ),
-                ident AS ( INSERT INTO file_ident (rev_id)
-                            VALUES ((SELECT rev.id FROM rev))
+                ident AS ( INSERT INTO file_ident (is_live, rev_id)
+                            VALUES ($7, (SELECT rev.id FROM rev))
                             RETURNING id )
             INSERT INTO file_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($7, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+                ($8, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
             ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Int8>, _>(entity.size)
                 .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.sha1)
@@ -599,6 +619,7 @@ impl Server {
                 .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.md5)
                 .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.mimetype)
                 .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
+                .bind::<diesel::sql_types::Bool, _>(autoaccept)
                 .bind::<diesel::sql_types::Uuid, _>(editgroup_id)
                 .get_result(conn)?;
 
@@ -654,6 +675,7 @@ impl Server {
     pub fn create_release_handler(
         &self,
         entity: models::ReleaseEntity,
+        autoaccept: bool,
         conn: &DbConn,
     ) -> Result<EntityEdit> {
         let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001")?; // TODO: auth
@@ -686,7 +708,7 @@ impl Server {
                     editgroup_id: Some(uuid2fcid(&editgroup_id)),
                     extra: None,
                 };
-                let new_entity = self.create_work_handler(work_model, conn)?;
+                let new_entity = self.create_work_handler(work_model, autoaccept, conn)?;
                 fcid2uuid(&new_entity.ident)?
             }
         };
@@ -700,11 +722,11 @@ impl Server {
             "WITH rev AS ( INSERT INTO release_rev (title, release_type, release_status, release_date, doi, pmid, pmcid, wikidata_qid, isbn13, core_id, volume, issue, pages, work_ident_id, container_ident_id, publisher, language, extra_json)
                         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
                         RETURNING id ),
-                ident AS ( INSERT INTO release_ident (rev_id)
-                            VALUES ((SELECT rev.id FROM rev))
+                ident AS ( INSERT INTO release_ident (is_live, rev_id)
+                            VALUES ($19, (SELECT rev.id FROM rev))
                             RETURNING id )
             INSERT INTO release_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($19, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+                ($20, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
         ).bind::<diesel::sql_types::Text, _>(entity.title)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.release_type)
@@ -725,6 +747,7 @@ impl Server {
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.publisher)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Text>, _>(entity.language)
             .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
+            .bind::<diesel::sql_types::Bool, _>(autoaccept)
             .bind::<diesel::sql_types::Uuid, _>(editgroup_id)
             .get_result(conn)?;
 
@@ -829,6 +852,7 @@ impl Server {
     pub fn create_work_handler(
         &self,
         entity: models::WorkEntity,
+        autoaccept: bool,
         conn: &DbConn,
     ) -> Result<EntityEdit> {
         let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001")?; // TODO: auth
@@ -842,13 +866,14 @@ impl Server {
                 "WITH rev AS ( INSERT INTO work_rev (extra_json)
                         VALUES ($1)
                         RETURNING id ),
-                ident AS ( INSERT INTO work_ident (rev_id)
-                            VALUES ((SELECT rev.id FROM rev))
+                ident AS ( INSERT INTO work_ident (is_live, rev_id)
+                            VALUES ($2, (SELECT rev.id FROM rev))
                             RETURNING id )
             INSERT INTO work_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($2, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+                ($3, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
             RETURNING *",
             ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
+                .bind::<diesel::sql_types::Bool, _>(autoaccept)
                 .bind::<diesel::sql_types::Uuid, _>(editgroup_id)
                 .get_result(conn)?;
 
