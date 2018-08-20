@@ -1,0 +1,292 @@
+
+Schema changes since previous imports:
+- more fields (identifiers+indexes)
+- timestamps
+- UUIDs more places
+- fixed some crossref import bugs?
+- abstracts
+- file_urls as table (not single value)
+- timestamps
+- TEXT -> CHAR in a few places
+- removed many work fields
+
+## Containers
+
+(python)webcrawl@wbgrp-svc500:/srv/fatcat/src/python$ time ./fatcat_import.py import-issn /srv/datasets/journal_extra_metadata.csv
+
+real    1m25.292s
+user    0m12.640s
+sys     0m0.412s
+
+## Creators
+
+time parallel --bar --pipepart -j8 -a /srv/datasets/public_profiles_1_2_json.all.json ./fatcat_import.py import-orcid -
+
+(times very invalid due to hangs; got 3537837 creators, which is most of the way, so *shrug*)
+real    22m2.465s
+user    26m41.924s
+sys     1m33.844s
+
+## Releases
+
+xzcat /srv/datasets/crossref-works.2018-01-21.json.xz | time parallel -j20 --round-robin --pipe ./fatcat_import.py import-crossref - /srv/datasets/20180216.ISSN-to-ISSN-L.txt
+
+    128516.30 user
+    3905.14 system
+    44:17:05 elapsed
+    83% CPU
+
+Almost 44 hours... I think I remember more like 36 hours last time? Things
+slowed down a lot towards the end, many more ORCID cross-references?
+
+looking in htop, postgres seems to be primary bottleneck. At something like 12
+hours in, had 44 million release_ident rows, which is 1000/second.
+
+Note: seems like the more frequently `count(*)` is run, the more performant.
+Because in-memory?
+
+    2018-08-16 16:54:16.977 UTC [17996] postgres@fatcat_prod LOG:  duration: 42949.549 ms  statement: select count(id) from release_ident;
+
+    fatcat_prod=# select count(*) from release_ident;
+    count   
+    ----------
+    44185608
+    (1 row)
+
+    Time: 2753.916 ms (00:02.754)
+    fatcat_prod=# select count(*) from release_ident;
+    count   
+    ----------
+    44187937
+    (1 row)
+
+    Time: 2711.670 ms (00:02.712)
+
+As expected, autovacuum very busy. Only ~150 TPS; but that includes batch
+writes? 75061172 rows.
+
+## Files
+
+    time ./fatcat_import.py import-manifest /srv/datasets/idents_files_urls.sqlite
+
+    Done! Inserted 6607075
+
+    real    2152m28.822s => 36 hours (!)
+    user    401m46.464s
+    sys     21m45.724s
+
+
+Going pretty slow, < 100 transactions/sec. Lots of SELECTs, which seem slow, on the abstract table?
+
+    SELECT "release_rev_abstract"."id", "release_rev_abstract"."release_rev", "release_rev_abstract"."abstract_sha1", "release_rev_abstract"."mimetype", "release_rev_abstract"."lang", "abstracts"."sha1", "abstracts"."content" FROM ("release_rev_abstract" INNER JOIN "abstracts" ON "release_rev_abstract"."abstract_sha1" = "abstracts"."sha1") WHERE "release_rev_abstract"."release_rev" = 'ffffffc0-4dd2-47ce-a51d-44051f3699ce';
+
+Created index:
+    
+    CREATE INDEX release_rev_abstract_rev_idx ON release_rev_abstract(release_rev);
+
+... and things sped way up. Re-ran some crossref imports to EXPLAIN and didn't
+see non-indexed queries. Maybe an ANALYZE does need to happen?
+
+This being single-threaded is going to be a problem in the future. ~50 million
+files would be ~2 weeks.
+
+## Post-Import Status
+
+    Size:  358.89G (postgres self-reported)
+    Mem.:   57.10% -    16.85G/49.14G
+
+Was 184G last time in late June; doubled in size (!).
+
+    bnewbold@wbgrp-svc500$ df -h /
+    Filesystem      Size  Used Avail Use% Mounted on
+    /dev/vda1       858G  529G  286G  65% /
+
+    bnewbold@wbgrp-svc500$ sudo du -sh /var/lib/postgresql/ /srv/datasets/ /srv/elastic-blah/
+    361G    /var/lib/postgresql/
+    83G     /srv/datasets/
+    77G     /srv/elastic-blah/
+
+    fatcat_prod=# select count(*) from changelog; => 2,085,067
+
+    SELECT
+        table_name,
+        pg_size_pretty(table_size) AS table_size,
+        pg_size_pretty(indexes_size) AS indexes_size,
+        pg_size_pretty(total_size) AS total_size
+    FROM (
+        SELECT
+            table_name,
+            pg_table_size(table_name) AS table_size,
+            pg_indexes_size(table_name) AS indexes_size,
+            pg_total_relation_size(table_name) AS total_size
+        FROM (
+            SELECT ('"' || table_schema || '"."' || table_name || '"') AS table_name
+            FROM information_schema.tables
+        ) AS all_tables
+        ORDER BY total_size DESC
+    ) AS pretty_sizes;
+
+                          table_name                          | table_size | indexes_size | total_size 
+--------------------------------------------------------------+------------+--------------+------------
+ "public"."release_ref"                                       | 159 GB     | 47 GB        | 206 GB
+ "public"."release_rev"                                       | 40 GB      | 10 GB        | 51 GB
+ "public"."release_contrib"                                   | 19 GB      | 20 GB        | 39 GB
+ "public"."release_ident"                                     | 5797 MB    | 6597 MB      | 12 GB
+ "public"."work_ident"                                        | 5787 MB    | 6394 MB      | 12 GB
+ "public"."release_edit"                                      | 6674 MB    | 4646 MB      | 11 GB
+ "public"."work_edit"                                         | 6674 MB    | 4646 MB      | 11 GB
+ "public"."work_rev"                                          | 3175 MB    | 2939 MB      | 6114 MB
+ "public"."file_rev_url"                                      | 1995 MB    | 275 MB       | 2270 MB
+ "public"."abstracts"                                         | 1665 MB    | 135 MB       | 1800 MB
+ "public"."file_rev"                                          | 829 MB     | 954 MB       | 1783 MB
+ "public"."file_ident"                                        | 498 MB     | 532 MB       | 1030 MB
+ "public"."file_release"                                      | 369 MB     | 642 MB       | 1011 MB
+ "public"."file_edit"                                         | 591 MB     | 410 MB       | 1002 MB
+ "public"."creator_rev"                                       | 337 MB     | 318 MB       | 655 MB
+ "public"."creator_ident"                                     | 280 MB     | 297 MB       | 577 MB
+ "public"."creator_edit"                                      | 316 MB     | 220 MB       | 536 MB
+ "public"."release_rev_abstract"                              | 183 MB     | 84 MB        | 267 MB
+ "public"."changelog"                                         | 123 MB     | 125 MB       | 249 MB
+ "public"."editgroup"                                         | 139 MB     | 81 MB        | 220 MB
+ "public"."container_rev"                                     | 19 MB      | 6912 kB      | 26 MB
+ "public"."container_ident"                                   | 6896 kB    | 7016 kB      | 14 MB
+ "public"."container_edit"                                    | 8056 kB    | 5240 kB      | 13 MB
+
+In context, the full uncompressed crossref 2018-01-21 dump is about 285 GB.
+
+For many of these indexes, and the _ident tables, switching from UUID to
+BIGSERIAL would half the size.
+
+## Exports
+
+    time ./fatcat_export.py changelog - | pv -l | wc
+
+    As of:
+
+    159k 1:17:35 [34.3 /s]
+    159,740 lines
+    2,427,277,881 chars (bytes; 2.4GB)
+
+    real    77m35.183s
+    user    15m36.208s
+    sys     0m31.484s
+
+Running at about 100/sec; estimate 6 hours for completion. Could shard using
+start/end flags, but am not here.
+
+Running `quick_dump.sql` (identifier tables, in a transaction):
+
+    251M Aug 19 23:08 fatcat_ident_creators.tsv
+    5.9M Aug 19 23:08 fatcat_ident_containers.tsv
+    467M Aug 19 23:08 fatcat_ident_files.tsv
+    5.2G Aug 19 23:10 fatcat_ident_releases.tsv
+    5.2G Aug 19 23:11 fatcat_ident_works.tsv
+     12K Aug 19 23:11 .
+    1.8G Aug 19 23:12 fatcat_abstracts.json
+
+Work and Release tables in under 2 minutes each; say 5 minutes total.
+
+    time ./fatcat_export.py releases /tmp/fatcat_ident_releases.tsv - | pv -l | wc
+
+    172k 1:07:08 [42.7 /s]
+    172181 lines
+    1,118,166,293 chars (bytes; 1.1 GB)
+
+    real    67m8.340s
+    user    10m21.988s
+    sys     0m34.612s
+
+Running at only 10/sec or so, this would take forever even if sharded. :(
+
+Both exports/dumps are running in parallel. "Expand" queries might help with speed?
+
+## Postgres Analysis
+
+SELECT *
+FROM
+  pg_stat_statements
+ORDER BY
+  total_time DESC LIMIT 5;
+
+Summary:
+
+    SELECT "creator_ident" by ORCID
+        1,295,864 calls
+        930,305,208 total time
+        717.9 mean time     <= this should be less than a ms!
+
+    INSERT INTO release_rev
+        75144055 calls
+        111470961 total time
+        1.483 mean time
+
+    INSERT INTO work_rev
+        75,144,055 calls
+        82693994 total time
+        1.1 mean time
+
+    INSERT INTO release_contrib (creator_ident_id = DEFAULT) RETURNING *
+        26,008,280 calls    <= why so few? different query depending on number
+                               of rows inserted
+        18955782 total time
+        0.728 mean time
+
+    SELECT container_ident
+        78,4143 calls
+        17683156 total time
+        22.55 mean time     <= why so slow?
+
+    INSERT INTO release_contrib 
+        15,072,820 calls
+
+    INSERT INTO "release_contrib
+
+
+       relname        | too_much_seq |      case      |   rel_size   | seq_scan | idx_scan  
+----------------------+--------------+----------------+--------------+----------+-----------
+ file_rev_url         |         2391 | Missing Index? |   2091147264 |     2391 |         0
+ file_release         |       -30670 | OK             |    386899968 |        2 |     30672
+ container_rev        |      -979948 | OK             |     20242432 |   784146 |   1764094
+ file_edit            |     -2206807 | OK             |    619896832 |        6 |   2206813
+ creator_edit         |     -2206810 | OK             |    331079680 |       11 |   2206821
+ work_edit            |     -2206811 | OK             |   6996566016 |       14 |   2206825
+ release_edit         |     -2206811 | OK             |   6996582400 |       14 |   2206825
+ container_edit       |     -2206816 | OK             |      8216576 |        5 |   2206821
+ changelog            |     -2209659 | OK             |    129286144 |       10 |   2209669
+ abstracts            |     -3486466 | OK             |   1706237952 |        8 |   3486474
+ release_rev_abstract |     -4975493 | OK             |    191602688 |    42919 |   5018412
+ release_ref          |     -5032717 | OK             | 170494861312 |        3 |   5032720
+ release_contrib      |     -5032744 | OK             |  20370251776 |        3 |   5032747
+ creator_rev          |     -8400410 | OK             |    353583104 |  1296507 |   9696917
+ file_ident           |    -13483224 | OK             |    522190848 |        7 |  13483231
+ creator_ident        |    -16686744 | OK             |    293625856 |        3 |  16686747
+ file_rev             |    -32405557 | OK             |    868515840 |        4 |  32405561
+ container_ident      |    -69162337 | OK             |      7028736 |        3 |  69162340
+ work_rev             |   -150288161 | OK             |   3328589824 |        1 | 150288162
+ editgroup            |   -162783807 | OK             |    146112512 |        9 | 162783816
+ release_ident        |   -165676917 | OK             |   6076841984 |       52 | 165676969
+ work_ident           |   -229439828 | OK             |   6066814976 |        3 | 229439831
+ release_rev          |   -930140217 | OK             |  43360542720 |        9 | 930140226
+
+TODO changes:
+- don't return all as often; in particular, inserting release_contrib, release_ref
+x missing an index somewhere on file_rev_url, release_rev_abstract
+x why so many seq_scan on container_rev, creator_rev
+    => running/EXPLAIN same query on psql hits index, not seq_scan
+    => seemed to be an issue with VALUE params getting sent separately; query
+    planner only looked at query and wasn't using index on ORCID/ISSN-L because
+    it didn't know those values were not-NULL?
+    => adding NOT NULL to query seems to have sped up case of there being a
+    "hit", but no hit still slow. might need to change indices or something for
+    the (perhaps common in future) case of DOI lookups with invalid DOIs (eg,
+    CORE import)
+
+random DEBUG queries:
+
+    EXPLAIN ANALYSE SELECT "creator_ident"."id", "creator_ident"."is_live", "creator_ident"."rev_id", "creator_ident"."redirect_id", "creator_rev"."id", "creator_rev"."extra_json", "creator_rev"."display_name", "creator_rev"."given_name", "creator_rev"."surname", "creator_rev"."orcid", "creator_rev"."wikidata_qid" FROM ("creator_ident" INNER JOIN "creator_rev" ON "creator_ident"."rev_id" = "creator_rev"."id") WHERE "creator_rev"."orcid" = '0000-0002-8867-1663' AND "creator_ident"."is_live" = true AND "creator_ident"."redirect_id" IS NULL LIMIT 1;
+
+    EXPLAIN VERBOSE SELECT "creator_ident"."id", "creator_ident"."is_live", "creator_ident"."rev_id", "creator_ident"."redirect_id", "creator_rev"."id", "creator_rev"."extra_json", "creator_rev"."display_name", "creator_rev"."given_name", "creator_rev"."surname", "creator_rev"."orcid", "creator_rev"."wikidata_qid" FROM ("creator_ident" INNER JOIN "creator_rev" ON "creator_ident"."rev_id" = "creator_rev"."id") WHERE "creator_rev"."orcid" = $1 AND "creator_ident"."is_live" = true AND "creator_ident"."redirect_id" IS NULL VALUES ('0000-0002-8867-1669') LIMIT 1;
+
+    EXPLAIN SELECT "container_ident"."id", "container_ident"."is_live", "container_ident"."rev_id", "container_ident"."redirect_id", "container_rev"."id", "container_rev"."extra_json", "container_rev"."name", "container_rev"."publisher", "container_rev"."issnl", "container_rev"."wikidata_qid", "container_rev"."abbrev", "container_rev"."coden" FROM ("container_ident" INNER JOIN "container_rev" ON "container_ident"."rev_id" = "container_rev"."id") WHERE "container_rev"."issnl" = '0001-0782' AND "container_ident"."is_live" = true AND "container_ident"."redirect_id" IS NULL LIMIT 1;
+
+    SELECT "creator_ident"."id", "creator_ident"."is_live", "creator_ident"."rev_id", "creator_ident"."redirect_id", "creator_rev"."id", "creator_rev"."extra_json", "creator_rev"."display_name", "creator_rev"."given_name", "creator_rev"."surname", "creator_rev"."orcid", "creator_rev"."wikidata_qid" FROM ("creator_ident" INNER JOIN "creator_rev" ON "creator_ident"."rev_id" = "creator_rev"."id") WHERE "creator_rev"."orcid" = '0000-0002-8867-1663' AND "creator_ident"."is_live" = 't' AND "creator_ident"."redirect_id" IS NULL LIMIT 1;
