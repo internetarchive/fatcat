@@ -245,6 +245,7 @@ class DefaultApi(object):
 
         :param async bool
         :param list[ContainerEntity] entity_list: (required)
+        :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
         :return: list[EntityEdit]
                  If the method is called asynchronously,
                  returns the request thread.
@@ -266,12 +267,13 @@ class DefaultApi(object):
 
         :param async bool
         :param list[ContainerEntity] entity_list: (required)
+        :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
         :return: list[EntityEdit]
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['entity_list']  # noqa: E501
+        all_params = ['entity_list', 'autoaccept']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -296,6 +298,8 @@ class DefaultApi(object):
         path_params = {}
 
         query_params = []
+        if 'autoaccept' in params:
+            query_params.append(('autoaccept', params['autoaccept']))  # noqa: E501
 
         header_params = {}
 
@@ -439,6 +443,7 @@ class DefaultApi(object):
 
         :param async bool
         :param list[CreatorEntity] entity_list: (required)
+        :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
         :return: list[EntityEdit]
                  If the method is called asynchronously,
                  returns the request thread.
@@ -460,12 +465,13 @@ class DefaultApi(object):
 
         :param async bool
         :param list[CreatorEntity] entity_list: (required)
+        :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
         :return: list[EntityEdit]
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['entity_list']  # noqa: E501
+        all_params = ['entity_list', 'autoaccept']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -490,6 +496,8 @@ class DefaultApi(object):
         path_params = {}
 
         query_params = []
+        if 'autoaccept' in params:
+            query_params.append(('autoaccept', params['autoaccept']))  # noqa: E501
 
         header_params = {}
 
@@ -730,6 +738,7 @@ class DefaultApi(object):
 
         :param async bool
         :param list[FileEntity] entity_list: (required)
+        :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
         :return: list[EntityEdit]
                  If the method is called asynchronously,
                  returns the request thread.
@@ -751,12 +760,13 @@ class DefaultApi(object):
 
         :param async bool
         :param list[FileEntity] entity_list: (required)
+        :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
         :return: list[EntityEdit]
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['entity_list']  # noqa: E501
+        all_params = ['entity_list', 'autoaccept']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -781,6 +791,8 @@ class DefaultApi(object):
         path_params = {}
 
         query_params = []
+        if 'autoaccept' in params:
+            query_params.append(('autoaccept', params['autoaccept']))  # noqa: E501
 
         header_params = {}
 
@@ -924,6 +936,7 @@ class DefaultApi(object):
 
         :param async bool
         :param list[ReleaseEntity] entity_list: (required)
+        :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
         :return: list[EntityEdit]
                  If the method is called asynchronously,
                  returns the request thread.
@@ -945,12 +958,13 @@ class DefaultApi(object):
 
         :param async bool
         :param list[ReleaseEntity] entity_list: (required)
+        :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
         :return: list[EntityEdit]
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['entity_list']  # noqa: E501
+        all_params = ['entity_list', 'autoaccept']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -975,6 +989,8 @@ class DefaultApi(object):
         path_params = {}
 
         query_params = []
+        if 'autoaccept' in params:
+            query_params.append(('autoaccept', params['autoaccept']))  # noqa: E501
 
         header_params = {}
 
@@ -1118,6 +1134,7 @@ class DefaultApi(object):
 
         :param async bool
         :param list[WorkEntity] entity_list: (required)
+        :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
         :return: list[EntityEdit]
                  If the method is called asynchronously,
                  returns the request thread.
@@ -1139,12 +1156,13 @@ class DefaultApi(object):
 
         :param async bool
         :param list[WorkEntity] entity_list: (required)
+        :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
         :return: list[EntityEdit]
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['entity_list']  # noqa: E501
+        all_params = ['entity_list', 'autoaccept']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -1169,6 +1187,8 @@ class DefaultApi(object):
         path_params = {}
 
         query_params = []
+        if 'autoaccept' in params:
+            query_params.append(('autoaccept', params['autoaccept']))  # noqa: E501
 
         header_params = {}
 
