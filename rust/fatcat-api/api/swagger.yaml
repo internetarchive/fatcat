@@ -84,6 +84,14 @@ paths:
         type: "boolean"
         formatString: "{:?}"
         example: "Some(true)"
+      - name: "editgroup"
+        in: "query"
+        description: "Editgroup to auto-accept and apply to all entities (required\
+          \ if 'autoaccept' is True)"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"editgroup_example\".to_string())"
       - in: "body"
         name: "entity_list"
         required: true
@@ -387,6 +395,14 @@ paths:
         type: "boolean"
         formatString: "{:?}"
         example: "Some(true)"
+      - name: "editgroup"
+        in: "query"
+        description: "Editgroup to auto-accept and apply to all entities (required\
+          \ if 'autoaccept' is True)"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"editgroup_example\".to_string())"
       - in: "body"
         name: "entity_list"
         required: true
@@ -744,6 +760,14 @@ paths:
         type: "boolean"
         formatString: "{:?}"
         example: "Some(true)"
+      - name: "editgroup"
+        in: "query"
+        description: "Editgroup to auto-accept and apply to all entities (required\
+          \ if 'autoaccept' is True)"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"editgroup_example\".to_string())"
       - in: "body"
         name: "entity_list"
         required: true
@@ -1044,6 +1068,14 @@ paths:
         type: "boolean"
         formatString: "{:?}"
         example: "Some(true)"
+      - name: "editgroup"
+        in: "query"
+        description: "Editgroup to auto-accept and apply to all entities (required\
+          \ if 'autoaccept' is True)"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"editgroup_example\".to_string())"
       - in: "body"
         name: "entity_list"
         required: true
@@ -1398,6 +1430,14 @@ paths:
         type: "boolean"
         formatString: "{:?}"
         example: "Some(true)"
+      - name: "editgroup"
+        in: "query"
+        description: "Editgroup to auto-accept and apply to all entities (required\
+          \ if 'autoaccept' is True)"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"editgroup_example\".to_string())"
       - in: "body"
         name: "entity_list"
         required: true

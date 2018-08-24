@@ -447,6 +447,11 @@ paths:
           type: boolean
           required: false
           description: "If true, and editor is authorized, batch is accepted all at once"
+        - name: editgroup
+          in: query
+          type: string
+          required: false
+          description: "Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)"
         - name: entity_list
           in: body
           required: true
@@ -540,6 +545,11 @@ paths:
           type: boolean
           required: false
           description: "If true, and editor is authorized, batch is accepted all at once"
+        - name: editgroup
+          in: query
+          type: string
+          required: false
+          description: "Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)"
         - name: entity_list
           in: body
           required: true
@@ -649,6 +659,11 @@ paths:
           type: boolean
           required: false
           description: "If true, and editor is authorized, batch is accepted all at once"
+        - name: editgroup
+          in: query
+          type: string
+          required: false
+          description: "Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)"
         - name: entity_list
           in: body
           required: true
@@ -742,6 +757,11 @@ paths:
           type: boolean
           required: false
           description: "If true, and editor is authorized, batch is accepted all at once"
+        - name: editgroup
+          in: query
+          type: string
+          required: false
+          description: "Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)"
         - name: entity_list
           in: body
           required: true
@@ -851,6 +871,11 @@ paths:
           type: boolean
           required: false
           description: "If true, and editor is authorized, batch is accepted all at once"
+        - name: editgroup
+          in: query
+          type: string
+          required: false
+          description: "Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)"
         - name: entity_list
           in: body
           required: true
