@@ -23,9 +23,31 @@ There are a few different database dump formats folks might want:
   should be on a work or release basis; will go with release for now. Harder to
   do using public interface because of the need for transaction locking.
 
+## Full Postgres Backup
+
 Backing up the entire database using `pg_dump`, with parallelism 1 (use more on
 larger machine with fast disks; try 4 or 8?), assuming the database name is
 'fatcat', and the current user has access:
 
     pg_dump -j1 -Fd -f test-dump fatcat
 
+## Identifier Dumps
+
+The `extras/quick_dump.sql` script will dump abstracts and identifiers as TSV
+files to `/tmp/`. Pretty quick; takes about 15 GB of disk space (uncompressed).
+
+## Releases Export
+
+    # simple command
+    ./fatcat_export.py releases /tmp/fatcat_ident_releases.tsv /tmp/releases-dump.json
+
+    # usual command
+    time ./fatcat_export.py releases /tmp/fatcat_ident_releases.tsv - | pv -l | wc
+
+## Changelog Export
+
+    # simple command
+    ./fatcat_export.py changelog /tmp/changelog-dump.json
+
+    # usual command
+    time ./fatcat_export.py changelog - | pv -l | wc
