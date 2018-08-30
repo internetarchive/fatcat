@@ -14,6 +14,13 @@ importers:
 - core
 - semantic scholar (up to 39 million; author de-dupe)
 - wikidata (if they have a dump)
+- crossref: relations ("is-preprint-of")
+- crossref: filter works
+    => content-type whitelist
+    => title length and title/slug blacklist
+    => at least one author (?)
+    => make this a method on Release object
+    => or just set release_stub as "stub"?
 
 bugs:
 - test: release pointing to a collection that has been deleted/redirected
