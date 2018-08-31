@@ -33,7 +33,7 @@ macro_rules! entity_batch_handler {
             let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001")?; // TODO: auth
             // editgroup override logic based on parameters
             let eg_id: Option<Uuid> = match (editgroup, autoaccept) {
-                (Some(eg_string), _) => Some(Uuid::parse_str(&eg_string)?),
+                (Some(eg_string), _) => Some(fcid2uuid(&eg_string)?),
                 (None, true) => {
                     let eg_row: EditgroupRow = diesel::insert_into(editgroup::table)
                         .values((editgroup::editor_id.eq(editor_id),))
