@@ -918,3 +918,44 @@ fn test_contribs() {
         None,
     );
 }
+
+#[test]
+fn test_post_batch_autoaccept() {
+    let (headers, router, _conn) = setup();
+
+    // "true"
+    check_response(
+        request::post(
+            "http://localhost:9411/v0/container/batch?autoaccept=true",
+            headers.clone(),
+            r#"[{"name": "test journal"}, {"name": "another test journal"}]"#,
+            &router,
+        ),
+        status::Created,
+        None,
+    );
+
+    // "n"
+    check_response(
+        request::post(
+            "http://localhost:9411/v0/container/batch?autoaccept=n",
+            headers.clone(),
+            r#"[{"name": "test journal"}, {"name": "another test journal"}]"#,
+            &router,
+        ),
+        status::Created,
+        None,
+    );
+
+    // editgroup
+    check_response(
+        request::post(
+            "http://localhost:9411/v0/container/batch?autoaccept=yes&editgroup=asdf",
+            headers.clone(),
+            r#"[{"name": "test journal"}, {"name": "another test journal"}]"#,
+            &router,
+        ),
+        status::BadRequest,
+        None,
+    );
+}
