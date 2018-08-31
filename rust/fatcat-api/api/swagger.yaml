@@ -1808,11 +1808,11 @@ paths:
           uppercase_data_type: "SUCCESS"
           producesJson: true
         400:
-          description: "Unmergable"
+          description: "Bad Request"
           schema:
             $ref: "#/definitions/error_response"
-          x-responseId: "Unmergable"
-          x-uppercaseResponseId: "UNMERGABLE"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
           uppercase_operation_id: "ACCEPT_EDITGROUP"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true

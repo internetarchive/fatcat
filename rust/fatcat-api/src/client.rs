@@ -191,7 +191,7 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(AcceptEditgroupResponse::Unmergable(body))
+                    Ok(AcceptEditgroupResponse::BadRequest(body))
                 }
                 404 => {
                     let mut buf = String::new();

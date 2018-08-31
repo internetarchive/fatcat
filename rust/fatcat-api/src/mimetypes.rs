@@ -10,7 +10,7 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for AcceptEditgroup
     lazy_static! {
-        pub static ref ACCEPT_EDITGROUP_UNMERGABLE: Mime = mime!(Application / Json);
+        pub static ref ACCEPT_EDITGROUP_BAD_REQUEST: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for AcceptEditgroup
     lazy_static! {

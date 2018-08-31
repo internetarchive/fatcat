@@ -36,8 +36,8 @@ pub use swagger::{ApiError, Context, ContextWrapper};
 pub enum AcceptEditgroupResponse {
     /// Merged Successfully
     MergedSuccessfully(models::Success),
-    /// Unmergable
-    Unmergable(models::ErrorResponse),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error

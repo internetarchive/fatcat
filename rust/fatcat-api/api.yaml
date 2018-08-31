@@ -1001,6 +1001,10 @@ paths:
           description: Unmergable
           schema:
             $ref: "#/definitions/error_response"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/error_response"
         404:
           description: Not Found
           schema:

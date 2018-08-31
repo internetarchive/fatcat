@@ -130,11 +130,11 @@ where
 
                             Ok(response)
                         }
-                        AcceptEditgroupResponse::Unmergable(body) => {
+                        AcceptEditgroupResponse::BadRequest(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::ACCEPT_EDITGROUP_UNMERGABLE.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::ACCEPT_EDITGROUP_BAD_REQUEST.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
