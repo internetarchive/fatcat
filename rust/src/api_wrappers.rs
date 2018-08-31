@@ -308,6 +308,11 @@ impl Api for Server {
                     message: format!("No such editgroup: {}", id),
                 })
             }
+            Err(Error(ErrorKind::EditgroupAlreadyAccepted(e), _)) => {
+                AcceptEditgroupResponse::BadRequest(ErrorResponse {
+                    message: ErrorKind::EditgroupAlreadyAccepted(e).to_string(),
+                })
+            }
             Err(e) => AcceptEditgroupResponse::GenericError(ErrorResponse {
                 message: e.to_string(),
             }),

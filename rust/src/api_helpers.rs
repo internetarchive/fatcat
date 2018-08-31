@@ -34,10 +34,7 @@ pub fn accept_editgroup(editgroup_id: Uuid, conn: &PgConnection) -> Result<Chang
         .count()
         .get_result(conn)?;
     if count > 0 {
-        bail!(
-            "editgroup {} has already been accepted",
-            editgroup_id.to_string()
-        );
+        return Err(ErrorKind::EditgroupAlreadyAccepted(uuid2fcid(&editgroup_id)).into());
     }
 
     // for each entity type...

@@ -47,6 +47,10 @@ mod errors {
                 description("external identifier doesn't match required pattern")
                 display("external identifier doesn't match required pattern")
             }
+            EditgroupAlreadyAccepted(id: String) {
+                description("editgroup was already accepted")
+                display("attempted to accept an editgroup which was already accepted: {}", id)
+            }
         }
     }
 }
