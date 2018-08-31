@@ -43,7 +43,9 @@ class FatcatImporter:
     def process_batch(self, source, size=50):
         """Reads and processes in batches (not API-call-per-)"""
         for rows in grouper(source, size):
-            self.create_batch(rows)
+            eg = self.api.create_editgroup(
+                fatcat_client.Editgroup(editor_id='aaaaaaaaaaaabkvkaaaaaaaaae'))
+            self.create_batch(rows, editgroup_id=eg.id)
 
     def process_csv_source(self, source, group_size=100, delimiter=','):
         reader = csv.DictReader(source, delimiter=delimiter)
