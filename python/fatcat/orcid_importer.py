@@ -71,4 +71,4 @@ class FatcatOrcidImporter(FatcatImporter):
         objects = [o for o in objects if o != None]
         for o in objects:
             o.editgroup_id = editgroup_id
-        self.api.create_creator_batch(objects, autoaccept=True, editgroup=editgroup_id)
+        self.api.create_creator_batch(objects, autoaccept="true", editgroup=editgroup_id)
