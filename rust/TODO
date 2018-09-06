@@ -1,4 +1,11 @@
 
+- refactor rev creation (from an entity) into it's own function, across the board
+    => attach to database module structs?
+    => should make cockroachdb compatible (single use of CTE)
+    => usable from both "update" and "create"
+- editgroup param to update
+    => also for creation? for consistency
+
 - editor_id vs. editor username; return editor_id (in addition to name?)
 
 later:
