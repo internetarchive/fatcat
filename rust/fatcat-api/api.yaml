@@ -459,18 +459,46 @@ paths:
         in: path
         type: string
         required: true
-      - name: expand
-        in: query
-        type: string
-        required: false
-        description: "List of sub-entities to expand in response. For now, only 'all' accepted."
     get:
       operationId: "get_container"
+      parameters:
+        - name: expand
+          in: query
+          type: string
+          required: false
+          description: "List of sub-entities to expand in response. For now, only 'all' accepted."
       responses:
         200:
           description: Found Entity
           schema:
             $ref: "#/definitions/container_entity"
+        <<: *ENTITYRESPONSES
+    put:
+      operationId: "update_container"
+      parameters:
+        - name: entity
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/container_entity"
+      responses:
+        200:
+          description: Updated Entity
+          schema:
+            $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+    delete:
+      operationId: "delete_container"
+      parameters:
+        - name: editgroup
+          in: query
+          required: false
+          type: string
+      responses:
+        200:
+          description: Deleted Entity
+          schema:
+            $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
   /container/{id}/history:
     parameters:
@@ -547,18 +575,46 @@ paths:
         in: path
         type: string
         required: true
-      - name: expand
-        in: query
-        type: string
-        required: false
-        description: "List of sub-entities to expand in response. For now, only 'all' accepted."
     get:
       operationId: "get_creator"
+      parameters:
+        - name: expand
+          in: query
+          type: string
+          required: false
+          description: "List of sub-entities to expand in response. For now, only 'all' accepted."
       responses:
         200:
           description: Found Entity
           schema:
             $ref: "#/definitions/creator_entity"
+        <<: *ENTITYRESPONSES
+    put:
+      operationId: "update_creator"
+      parameters:
+        - name: entity
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/creator_entity"
+      responses:
+        200:
+          description: Updated Entity
+          schema:
+            $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+    delete:
+      operationId: "delete_creator"
+      parameters:
+        - name: editgroup
+          in: query
+          required: false
+          type: string
+      responses:
+        200:
+          description: Deleted Entity
+          schema:
+            $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
   /creator/{id}/history:
     parameters:
@@ -651,18 +707,46 @@ paths:
         in: path
         type: string
         required: true
-      - name: expand
-        in: query
-        type: string
-        required: false
-        description: "List of sub-entities to expand in response. For now, only 'all' accepted."
     get:
       operationId: "get_file"
+      parameters:
+        - name: expand
+          in: query
+          type: string
+          required: false
+          description: "List of sub-entities to expand in response. For now, only 'all' accepted."
       responses:
         200:
           description: Found Entity
           schema:
             $ref: "#/definitions/file_entity"
+        <<: *ENTITYRESPONSES
+    put:
+      operationId: "update_file"
+      parameters:
+        - name: entity
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/file_entity"
+      responses:
+        200:
+          description: Updated Entity
+          schema:
+            $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+    delete:
+      operationId: "delete_file"
+      parameters:
+        - name: editgroup
+          in: query
+          required: false
+          type: string
+      responses:
+        200:
+          description: Deleted Entity
+          schema:
+            $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
   /file/{id}/history:
     parameters:
@@ -739,18 +823,46 @@ paths:
         in: path
         type: string
         required: true
-      - name: expand
-        in: query
-        type: string
-        required: false
-        description: "List of sub-entities to expand in response. For now, only 'all' accepted."
     get:
       operationId: "get_release"
+      parameters:
+        - name: expand
+          in: query
+          type: string
+          required: false
+          description: "List of sub-entities to expand in response. For now, only 'all' accepted."
       responses:
         200:
           description: Found Entity
           schema:
             $ref: "#/definitions/release_entity"
+        <<: *ENTITYRESPONSES
+    put:
+      operationId: "update_release"
+      parameters:
+        - name: entity
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/release_entity"
+      responses:
+        200:
+          description: Updated Entity
+          schema:
+            $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+    delete:
+      operationId: "delete_release"
+      parameters:
+        - name: editgroup
+          in: query
+          required: false
+          type: string
+      responses:
+        200:
+          description: Deleted Entity
+          schema:
+            $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
   /release/{id}/history:
     parameters:
@@ -843,18 +955,46 @@ paths:
         in: path
         type: string
         required: true
-      - name: expand
-        in: query
-        type: string
-        required: false
-        description: "List of sub-entities to expand in response. For now, only 'all' accepted."
     get:
       operationId: "get_work"
+      parameters:
+        - name: expand
+          in: query
+          type: string
+          required: false
+          description: "List of sub-entities to expand in response. For now, only 'all' accepted."
       responses:
         200:
           description: Found Entity
           schema:
             $ref: "#/definitions/work_entity"
+        <<: *ENTITYRESPONSES
+    put:
+      operationId: "update_work"
+      parameters:
+        - name: entity
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/work_entity"
+      responses:
+        200:
+          description: Updated Entity
+          schema:
+            $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+    delete:
+      operationId: "delete_work"
+      parameters:
+        - name: editgroup
+          in: query
+          required: false
+          type: string
+      responses:
+        200:
+          description: Deleted Entity
+          schema:
+            $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
   /work/{id}/history:
     parameters:
@@ -1007,6 +1147,10 @@ paths:
             $ref: "#/definitions/error_response"
         404:
           description: Not Found
+          schema:
+            $ref: "#/definitions/error_response"
+        409:
+          description: Edit Conflict
           schema:
             $ref: "#/definitions/error_response"
         500:

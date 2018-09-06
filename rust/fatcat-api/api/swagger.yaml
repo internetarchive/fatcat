@@ -192,6 +192,127 @@ paths:
       path: "/container/:id"
       HttpMethod: "Get"
       httpmethod: "get"
+    put:
+      operationId: "update_container"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      - in: "body"
+        name: "entity"
+        required: true
+        schema:
+          $ref: "#/definitions/container_entity"
+        uppercase_data_type: "CONTAINERENTITY"
+        refName: "container_entity"
+        formatString: "{:?}"
+        example: "???"
+        model_key: "editgroup_edits"
+        uppercase_operation_id: "UPDATE_CONTAINER"
+        consumesJson: true
+      responses:
+        200:
+          description: "Updated Entity"
+          schema:
+            $ref: "#/definitions/entity_edit"
+          x-responseId: "UpdatedEntity"
+          x-uppercaseResponseId: "UPDATED_ENTITY"
+          uppercase_operation_id: "UPDATE_CONTAINER"
+          uppercase_data_type: "ENTITYEDIT"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "UPDATE_CONTAINER"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "UPDATE_CONTAINER"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "UPDATE_CONTAINER"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "update_container"
+      uppercase_operation_id: "UPDATE_CONTAINER"
+      path: "/container/:id"
+      HttpMethod: "Put"
+      httpmethod: "put"
+      noClientExample: true
+    delete:
+      operationId: "delete_container"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      - name: "editgroup"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"editgroup_example\".to_string())"
+      responses:
+        200:
+          description: "Deleted Entity"
+          schema:
+            $ref: "#/definitions/entity_edit"
+          x-responseId: "DeletedEntity"
+          x-uppercaseResponseId: "DELETED_ENTITY"
+          uppercase_operation_id: "DELETE_CONTAINER"
+          uppercase_data_type: "ENTITYEDIT"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "DELETE_CONTAINER"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "DELETE_CONTAINER"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "DELETE_CONTAINER"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "delete_container"
+      uppercase_operation_id: "DELETE_CONTAINER"
+      path: "/container/:id"
+      HttpMethod: "Delete"
+      httpmethod: "delete"
   /container/{id}/history:
     get:
       operationId: "get_container_history"
@@ -487,6 +608,127 @@ paths:
       path: "/creator/:id"
       HttpMethod: "Get"
       httpmethod: "get"
+    put:
+      operationId: "update_creator"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      - in: "body"
+        name: "entity"
+        required: true
+        schema:
+          $ref: "#/definitions/creator_entity"
+        uppercase_data_type: "CREATORENTITY"
+        refName: "creator_entity"
+        formatString: "{:?}"
+        example: "???"
+        model_key: "editgroup_edits"
+        uppercase_operation_id: "UPDATE_CREATOR"
+        consumesJson: true
+      responses:
+        200:
+          description: "Updated Entity"
+          schema:
+            $ref: "#/definitions/entity_edit"
+          x-responseId: "UpdatedEntity"
+          x-uppercaseResponseId: "UPDATED_ENTITY"
+          uppercase_operation_id: "UPDATE_CREATOR"
+          uppercase_data_type: "ENTITYEDIT"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "UPDATE_CREATOR"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "UPDATE_CREATOR"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "UPDATE_CREATOR"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "update_creator"
+      uppercase_operation_id: "UPDATE_CREATOR"
+      path: "/creator/:id"
+      HttpMethod: "Put"
+      httpmethod: "put"
+      noClientExample: true
+    delete:
+      operationId: "delete_creator"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      - name: "editgroup"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"editgroup_example\".to_string())"
+      responses:
+        200:
+          description: "Deleted Entity"
+          schema:
+            $ref: "#/definitions/entity_edit"
+          x-responseId: "DeletedEntity"
+          x-uppercaseResponseId: "DELETED_ENTITY"
+          uppercase_operation_id: "DELETE_CREATOR"
+          uppercase_data_type: "ENTITYEDIT"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "DELETE_CREATOR"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "DELETE_CREATOR"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "DELETE_CREATOR"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "delete_creator"
+      uppercase_operation_id: "DELETE_CREATOR"
+      path: "/creator/:id"
+      HttpMethod: "Delete"
+      httpmethod: "delete"
   /creator/{id}/history:
     get:
       operationId: "get_creator_history"
@@ -836,6 +1078,127 @@ paths:
       path: "/file/:id"
       HttpMethod: "Get"
       httpmethod: "get"
+    put:
+      operationId: "update_file"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      - in: "body"
+        name: "entity"
+        required: true
+        schema:
+          $ref: "#/definitions/file_entity"
+        uppercase_data_type: "FILEENTITY"
+        refName: "file_entity"
+        formatString: "{:?}"
+        example: "???"
+        model_key: "editgroup_edits"
+        uppercase_operation_id: "UPDATE_FILE"
+        consumesJson: true
+      responses:
+        200:
+          description: "Updated Entity"
+          schema:
+            $ref: "#/definitions/entity_edit"
+          x-responseId: "UpdatedEntity"
+          x-uppercaseResponseId: "UPDATED_ENTITY"
+          uppercase_operation_id: "UPDATE_FILE"
+          uppercase_data_type: "ENTITYEDIT"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "UPDATE_FILE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "UPDATE_FILE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "UPDATE_FILE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "update_file"
+      uppercase_operation_id: "UPDATE_FILE"
+      path: "/file/:id"
+      HttpMethod: "Put"
+      httpmethod: "put"
+      noClientExample: true
+    delete:
+      operationId: "delete_file"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      - name: "editgroup"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"editgroup_example\".to_string())"
+      responses:
+        200:
+          description: "Deleted Entity"
+          schema:
+            $ref: "#/definitions/entity_edit"
+          x-responseId: "DeletedEntity"
+          x-uppercaseResponseId: "DELETED_ENTITY"
+          uppercase_operation_id: "DELETE_FILE"
+          uppercase_data_type: "ENTITYEDIT"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "DELETE_FILE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "DELETE_FILE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "DELETE_FILE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "delete_file"
+      uppercase_operation_id: "DELETE_FILE"
+      path: "/file/:id"
+      HttpMethod: "Delete"
+      httpmethod: "delete"
   /file/{id}/history:
     get:
       operationId: "get_file_history"
@@ -1128,6 +1491,127 @@ paths:
       path: "/release/:id"
       HttpMethod: "Get"
       httpmethod: "get"
+    put:
+      operationId: "update_release"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      - in: "body"
+        name: "entity"
+        required: true
+        schema:
+          $ref: "#/definitions/release_entity"
+        uppercase_data_type: "RELEASEENTITY"
+        refName: "release_entity"
+        formatString: "{:?}"
+        example: "???"
+        model_key: "editgroup_edits"
+        uppercase_operation_id: "UPDATE_RELEASE"
+        consumesJson: true
+      responses:
+        200:
+          description: "Updated Entity"
+          schema:
+            $ref: "#/definitions/entity_edit"
+          x-responseId: "UpdatedEntity"
+          x-uppercaseResponseId: "UPDATED_ENTITY"
+          uppercase_operation_id: "UPDATE_RELEASE"
+          uppercase_data_type: "ENTITYEDIT"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "UPDATE_RELEASE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "UPDATE_RELEASE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "UPDATE_RELEASE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "update_release"
+      uppercase_operation_id: "UPDATE_RELEASE"
+      path: "/release/:id"
+      HttpMethod: "Put"
+      httpmethod: "put"
+      noClientExample: true
+    delete:
+      operationId: "delete_release"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      - name: "editgroup"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"editgroup_example\".to_string())"
+      responses:
+        200:
+          description: "Deleted Entity"
+          schema:
+            $ref: "#/definitions/entity_edit"
+          x-responseId: "DeletedEntity"
+          x-uppercaseResponseId: "DELETED_ENTITY"
+          uppercase_operation_id: "DELETE_RELEASE"
+          uppercase_data_type: "ENTITYEDIT"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "DELETE_RELEASE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "DELETE_RELEASE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "DELETE_RELEASE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "delete_release"
+      uppercase_operation_id: "DELETE_RELEASE"
+      path: "/release/:id"
+      HttpMethod: "Delete"
+      httpmethod: "delete"
   /release/{id}/history:
     get:
       operationId: "get_release_history"
@@ -1474,6 +1958,127 @@ paths:
       path: "/work/:id"
       HttpMethod: "Get"
       httpmethod: "get"
+    put:
+      operationId: "update_work"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      - in: "body"
+        name: "entity"
+        required: true
+        schema:
+          $ref: "#/definitions/work_entity"
+        uppercase_data_type: "WORKENTITY"
+        refName: "work_entity"
+        formatString: "{:?}"
+        example: "???"
+        model_key: "editgroup_edits"
+        uppercase_operation_id: "UPDATE_WORK"
+        consumesJson: true
+      responses:
+        200:
+          description: "Updated Entity"
+          schema:
+            $ref: "#/definitions/entity_edit"
+          x-responseId: "UpdatedEntity"
+          x-uppercaseResponseId: "UPDATED_ENTITY"
+          uppercase_operation_id: "UPDATE_WORK"
+          uppercase_data_type: "ENTITYEDIT"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "UPDATE_WORK"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "UPDATE_WORK"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "UPDATE_WORK"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "update_work"
+      uppercase_operation_id: "UPDATE_WORK"
+      path: "/work/:id"
+      HttpMethod: "Put"
+      httpmethod: "put"
+      noClientExample: true
+    delete:
+      operationId: "delete_work"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      - name: "editgroup"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"editgroup_example\".to_string())"
+      responses:
+        200:
+          description: "Deleted Entity"
+          schema:
+            $ref: "#/definitions/entity_edit"
+          x-responseId: "DeletedEntity"
+          x-uppercaseResponseId: "DELETED_ENTITY"
+          uppercase_operation_id: "DELETE_WORK"
+          uppercase_data_type: "ENTITYEDIT"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "DELETE_WORK"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "DELETE_WORK"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "DELETE_WORK"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "delete_work"
+      uppercase_operation_id: "DELETE_WORK"
+      path: "/work/:id"
+      HttpMethod: "Delete"
+      httpmethod: "delete"
   /work/{id}/history:
     get:
       operationId: "get_work_history"
@@ -1822,6 +2427,15 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "ACCEPT_EDITGROUP"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        409:
+          description: "Edit Conflict"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "EditConflict"
+          x-uppercaseResponseId: "EDIT_CONFLICT"
           uppercase_operation_id: "ACCEPT_EDITGROUP"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
