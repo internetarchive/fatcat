@@ -535,6 +535,19 @@ impl Server {
         edit.into_model()
     }
 
+    // XXX:
+    pub fn update_container_handler(
+        &self,
+        id: &Uuid,
+        entity: models::ContainerEntity,
+        conn: &DbConn,
+    ) -> Result<EntityEdit> {
+        unimplemented!()
+    }
+    pub fn delete_container_handler(&self, id: &Uuid, editgroup_id: Option<Uuid>, conn: &DbConn) -> Result<EntityEdit> {
+        unimplemented!()
+    }
+
     pub fn create_creator_handler(
         &self,
         entity: models::CreatorEntity,
@@ -572,6 +585,19 @@ impl Server {
             .get_result(conn)?;
 
         edit.into_model()
+    }
+
+    // XXX:
+    pub fn update_creator_handler(
+        &self,
+        id: &Uuid,
+        entity: models::CreatorEntity,
+        conn: &DbConn,
+    ) -> Result<EntityEdit> {
+        unimplemented!()
+    }
+    pub fn delete_creator_handler(&self, id: &Uuid, editgroup_id: Option<Uuid>, conn: &DbConn) -> Result<EntityEdit> {
+        unimplemented!()
     }
 
     pub fn create_file_handler(
@@ -652,6 +678,19 @@ impl Server {
         };
 
         edit.into_model()
+    }
+
+    // XXX:
+    pub fn update_file_handler(
+        &self,
+        id: &Uuid,
+        entity: models::FileEntity,
+        conn: &DbConn,
+    ) -> Result<EntityEdit> {
+        unimplemented!()
+    }
+    pub fn delete_file_handler(&self, id: &Uuid, editgroup_id: Option<Uuid>, conn: &DbConn) -> Result<EntityEdit> {
+        unimplemented!()
     }
 
     pub fn create_release_handler(
@@ -829,6 +868,19 @@ impl Server {
         edit.into_model()
     }
 
+    // XXX:
+    pub fn update_release_handler(
+        &self,
+        id: &Uuid,
+        entity: models::ReleaseEntity,
+        conn: &DbConn,
+    ) -> Result<EntityEdit> {
+        unimplemented!()
+    }
+    pub fn delete_release_handler(&self, id: &Uuid, editgroup_id: Option<Uuid>, conn: &DbConn) -> Result<EntityEdit> {
+        unimplemented!()
+    }
+
     pub fn create_work_handler(
         &self,
         entity: models::WorkEntity,
@@ -854,6 +906,76 @@ impl Server {
             ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
                 .bind::<diesel::sql_types::Uuid, _>(editgroup_id)
                 .get_result(conn)?;
+
+        edit.into_model()
+    }
+
+    pub fn update_work_handler(
+        &self,
+        id: &Uuid,
+        entity: models::WorkEntity,
+        conn: &DbConn,
+    ) -> Result<EntityEdit> {
+        let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001")?; // TODO: auth
+        let editgroup_id = match entity.editgroup_id {
+            None => get_or_create_editgroup(editor_id, conn).expect("current editgroup"),
+            Some(param) => fcid2uuid(&param)?,
+        };
+
+        // TODO: refactor this into a check on WorkIdentRow
+        let current: WorkIdentRow = work_ident::table.find(id).first(conn)?;
+        if current.is_live != true {
+            // TODO: what if isn't live? 4xx not 5xx
+            bail!("can't delete an entity that doesn't exist yet");
+        }
+        if current.rev_id.is_none() {
+            // TODO: what if it's already deleted? 4xx not 5xx
+            bail!("entity was already deleted");
+        }
+
+        let edit: WorkEditRow =
+            diesel::sql_query(
+                "WITH rev AS ( INSERT INTO work_rev (extra_json)
+                        VALUES ($1)
+                        RETURNING id ),
+            INSERT INTO work_edit (editgroup_id, ident_id, rev_id, prev_rev) VALUES
+                ($2, $3, (SELECT rev.id FROM rev), $4)
+            RETURNING *",
+            ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
+                .bind::<diesel::sql_types::Uuid, _>(editgroup_id)
+                .bind::<diesel::sql_types::Uuid, _>(id)
+                .bind::<diesel::sql_types::Uuid, _>(current.rev_id.unwrap())
+                .get_result(conn)?;
+
+        edit.into_model()
+    }
+
+    pub fn delete_work_handler(&self, id: &Uuid, editgroup_id: Option<Uuid>, conn: &DbConn) -> Result<EntityEdit> {
+        let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001")?; // TODO: auth
+        let editgroup_id = match editgroup_id {
+            Some(egid) => egid,
+            None => get_or_create_editgroup(editor_id, conn)?
+        };
+
+        let current: WorkIdentRow = work_ident::table.find(id).first(conn)?;
+        if current.is_live != true {
+            // TODO: what if isn't live? 4xx not 5xx
+            bail!("can't delete an entity that doesn't exist yet");
+        }
+        if current.rev_id.is_none() {
+            // TODO: what if it's already deleted? 4xx not 5xx
+            bail!("entity was already deleted");
+        }
+        let edit: WorkEditRow = insert_into(work_edit::table)
+            .values((
+                work_edit::editgroup_id.eq(editgroup_id),
+                work_edit::ident_id.eq(id),
+                work_edit::rev_id.eq(None::<Uuid>),
+                work_edit::redirect_id.eq(None::<Uuid>),
+                work_edit::prev_rev.eq(current.rev_id),
+                //work_edit::extra_json.eq(extra),
+            ))
+            .get_result(conn)?;
 
         edit.into_model()
     }
