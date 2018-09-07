@@ -27,6 +27,7 @@ pub mod api_server;
 pub mod api_wrappers;
 pub mod database_models;
 pub mod database_schema;
+pub mod database_entity_crud;
 
 mod errors {
     // Create the Error, ErrorKind, ResultExt, and Result types

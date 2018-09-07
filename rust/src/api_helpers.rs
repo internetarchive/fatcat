@@ -6,6 +6,9 @@ use diesel::prelude::*;
 use errors::*;
 use regex::Regex;
 use uuid::Uuid;
+use std::str::FromStr;
+
+pub type DbConn = diesel::r2d2::PooledConnection<diesel::r2d2::ConnectionManager<diesel::PgConnection>>;
 
 /// This function should always be run within a transaction
 pub fn get_or_create_editgroup(editor_id: Uuid, conn: &PgConnection) -> Result<Uuid> {
@@ -85,6 +88,30 @@ pub fn accept_editgroup(editgroup_id: Uuid, conn: &PgConnection) -> Result<Chang
         .set(editor::active_editgroup_id.eq(no_active))
         .execute(conn)?;
     Ok(entry)
+}
+
+pub struct FatCatId(Uuid);
+
+impl ToString for FatCatId {
+    fn to_string(&self) -> String {
+        uuid2fcid(&self.to_uuid())
+    }
+}
+
+impl FromStr for FatCatId {
+    type Err = Error;
+    fn from_str(s: &str) -> Result<FatCatId> {
+        fcid2uuid(s).map(|u| FatCatId(u))
+    }
+}
+
+impl FatCatId {
+    pub fn to_uuid(&self) -> Uuid {
+        self.0
+    }
+    pub fn from_uuid(u: &Uuid) -> FatCatId {
+        FatCatId(u.clone())
+    }
 }
 
 /// Convert fatcat IDs (base32 strings) to UUID

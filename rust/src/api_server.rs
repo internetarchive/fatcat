@@ -17,8 +17,8 @@ use fatcat_api::models::*;
 use sha1::Sha1;
 use uuid::Uuid;
 use ConnectionPool;
-
-type DbConn = diesel::r2d2::PooledConnection<diesel::r2d2::ConnectionManager<diesel::PgConnection>>;
+use database_entity_crud::{EntityCrud, EditContext};
+use std::str::FromStr;
 
 macro_rules! entity_batch_handler {
     ($post_handler:ident, $post_batch_handler:ident, $model:ident) => {
@@ -75,6 +75,19 @@ macro_rules! count_entity {
             .first($conn)?;
         count
     }};
+}
+
+fn make_edit_context(conn: &DbConn, editgroup_id: Option<FatCatId>) -> Result<EditContext> {
+    let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001")?; // TODO: auth
+    let editgroup_id = match editgroup_id {
+        None => FatCatId::from_uuid(&get_or_create_editgroup(editor_id, conn).expect("current editgroup")),
+        Some(param) => param,
+    };
+    Ok(EditContext {
+        editor_id: FatCatId::from_uuid(&editor_id),
+        editgroup_id: editgroup_id,
+        extra_json: None,
+    })
 }
 
 #[derive(Clone)]
@@ -281,6 +294,7 @@ fn release_row2entity(
     })
 }
 
+/* XXX:
 fn work_row2entity(ident: Option<WorkIdentRow>, rev: WorkRevRow) -> Result<WorkEntity> {
     let (state, ident_id, redirect_id) = match ident {
         Some(i) => (
@@ -299,6 +313,7 @@ fn work_row2entity(ident: Option<WorkIdentRow>, rev: WorkRevRow) -> Result<WorkE
         extra: rev.extra_json,
     })
 }
+*/
 
 impl Server {
     pub fn get_container_handler(
@@ -472,12 +487,7 @@ impl Server {
         _expand: Option<String>,
         conn: &DbConn,
     ) -> Result<WorkEntity> {
-        let (ident, rev): (WorkIdentRow, WorkRevRow) = work_ident::table
-            .find(id)
-            .inner_join(work_rev::table)
-            .first(conn)?;
-
-        work_row2entity(Some(ident), rev)
+        WorkEntity::db_get(conn, FatCatId::from_uuid(id))
     }
 
     pub fn get_work_releases_handler(&self, id: &str, conn: &DbConn) -> Result<Vec<ReleaseEntity>> {
@@ -886,27 +896,8 @@ impl Server {
         entity: models::WorkEntity,
         conn: &DbConn,
     ) -> Result<EntityEdit> {
-        let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001")?; // TODO: auth
-        let editgroup_id = match entity.editgroup_id {
-            None => get_or_create_editgroup(editor_id, conn).expect("current editgroup"),
-            Some(param) => fcid2uuid(&param)?,
-        };
-
-        let edit: WorkEditRow =
-            diesel::sql_query(
-                "WITH rev AS ( INSERT INTO work_rev (extra_json)
-                        VALUES ($1)
-                        RETURNING id ),
-                ident AS ( INSERT INTO work_ident (rev_id)
-                            VALUES ((SELECT rev.id FROM rev))
-                            RETURNING id )
-            INSERT INTO work_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($2, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
-            RETURNING *",
-            ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
-                .bind::<diesel::sql_types::Uuid, _>(editgroup_id)
-                .get_result(conn)?;
-
+        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?)?;
+        let edit = entity.db_create(conn, &edit_context)?;
         edit.into_model()
     }
 
@@ -916,66 +907,14 @@ impl Server {
         entity: models::WorkEntity,
         conn: &DbConn,
     ) -> Result<EntityEdit> {
-        let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001")?; // TODO: auth
-        let editgroup_id = match entity.editgroup_id {
-            None => get_or_create_editgroup(editor_id, conn).expect("current editgroup"),
-            Some(param) => fcid2uuid(&param)?,
-        };
-
-        // TODO: refactor this into a check on WorkIdentRow
-        let current: WorkIdentRow = work_ident::table.find(id).first(conn)?;
-        if current.is_live != true {
-            // TODO: what if isn't live? 4xx not 5xx
-            bail!("can't delete an entity that doesn't exist yet");
-        }
-        if current.rev_id.is_none() {
-            // TODO: what if it's already deleted? 4xx not 5xx
-            bail!("entity was already deleted");
-        }
-
-        let edit: WorkEditRow =
-            diesel::sql_query(
-                "WITH rev AS ( INSERT INTO work_rev (extra_json)
-                        VALUES ($1)
-                        RETURNING id ),
-            INSERT INTO work_edit (editgroup_id, ident_id, rev_id, prev_rev) VALUES
-                ($2, $3, (SELECT rev.id FROM rev), $4)
-            RETURNING *",
-            ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(entity.extra)
-                .bind::<diesel::sql_types::Uuid, _>(editgroup_id)
-                .bind::<diesel::sql_types::Uuid, _>(id)
-                .bind::<diesel::sql_types::Uuid, _>(current.rev_id.unwrap())
-                .get_result(conn)?;
-
+        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?)?;
+        let edit = entity.db_update(conn, &edit_context, FatCatId::from_uuid(id))?;
         edit.into_model()
     }
 
     pub fn delete_work_handler(&self, id: &Uuid, editgroup_id: Option<Uuid>, conn: &DbConn) -> Result<EntityEdit> {
-        let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001")?; // TODO: auth
-        let editgroup_id = match editgroup_id {
-            Some(egid) => egid,
-            None => get_or_create_editgroup(editor_id, conn)?
-        };
-
-        let current: WorkIdentRow = work_ident::table.find(id).first(conn)?;
-        if current.is_live != true {
-            // TODO: what if isn't live? 4xx not 5xx
-            bail!("can't delete an entity that doesn't exist yet");
-        }
-        if current.rev_id.is_none() {
-            // TODO: what if it's already deleted? 4xx not 5xx
-            bail!("entity was already deleted");
-        }
-        let edit: WorkEditRow = insert_into(work_edit::table)
-            .values((
-                work_edit::editgroup_id.eq(editgroup_id),
-                work_edit::ident_id.eq(id),
-                work_edit::rev_id.eq(None::<Uuid>),
-                work_edit::redirect_id.eq(None::<Uuid>),
-                work_edit::prev_rev.eq(current.rev_id),
-                //work_edit::extra_json.eq(extra),
-            ))
-            .get_result(conn)?;
+        let edit_context = make_edit_context(conn, editgroup_id.map(|u| FatCatId::from_uuid(&u)))?;
+        let edit = WorkEntity::db_delete(conn, &edit_context, FatCatId::from_uuid(id))?;
 
         edit.into_model()
     }
