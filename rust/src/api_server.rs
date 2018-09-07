@@ -87,6 +87,7 @@ fn make_edit_context(conn: &DbConn, editgroup_id: Option<FatCatId>) -> Result<Ed
         editor_id: FatCatId::from_uuid(&editor_id),
         editgroup_id: editgroup_id,
         extra_json: None,
+        autoapprove: false,
     })
 }
 

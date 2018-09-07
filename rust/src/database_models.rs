@@ -37,13 +37,26 @@ pub trait EntityEditRow {
 
 // Helper for constructing tables
 macro_rules! entity_structs {
-    ($edit_table:expr, $edit_struct:ident, $ident_table:expr, $ident_struct:ident) => {
+    ($edit_table:expr, $edit_struct:ident, $edit_new_struct:ident, $ident_table:expr,
+    $ident_struct:ident, $ident_new_struct:ident) => {
+
         #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset, QueryableByName)]
         #[table_name = $edit_table]
         pub struct $edit_struct {
             pub id: i64,
             pub editgroup_id: Uuid,
             pub updated: chrono::NaiveDateTime,
+            pub ident_id: Uuid,
+            pub rev_id: Option<Uuid>,
+            pub redirect_id: Option<Uuid>,
+            pub prev_rev: Option<Uuid>,
+            pub extra_json: Option<serde_json::Value>,
+        }
+
+        #[derive(Debug, Associations, AsChangeset, QueryableByName, Insertable)]
+        #[table_name = $edit_table]
+        pub struct $edit_new_struct {
+            pub editgroup_id: Uuid,
             pub ident_id: Uuid,
             pub rev_id: Option<Uuid>,
             pub redirect_id: Option<Uuid>,
@@ -70,6 +83,14 @@ macro_rules! entity_structs {
         #[table_name = $ident_table]
         pub struct $ident_struct {
             pub id: Uuid,
+            pub is_live: bool,
+            pub rev_id: Option<Uuid>,
+            pub redirect_id: Option<Uuid>,
+        }
+
+        #[derive(Debug, Associations, AsChangeset, Insertable)]
+        #[table_name = $ident_table]
+        pub struct $ident_new_struct {
             pub is_live: bool,
             pub rev_id: Option<Uuid>,
             pub redirect_id: Option<Uuid>,
@@ -107,8 +128,10 @@ pub struct ContainerRevRow {
 entity_structs!(
     "container_edit",
     ContainerEditRow,
+    ContainerEditNewRow,
     "container_ident",
-    ContainerIdentRow
+    ContainerIdentRow,
+    ContainerIdentNewRow
 );
 
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
@@ -126,8 +149,10 @@ pub struct CreatorRevRow {
 entity_structs!(
     "creator_edit",
     CreatorEditRow,
+    CreatorEditNewRow,
     "creator_ident",
-    CreatorIdentRow
+    CreatorIdentRow,
+    CreatorIdentNewRow
 );
 
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
@@ -159,7 +184,7 @@ pub struct FileRevRow {
     pub mimetype: Option<String>,
 }
 
-entity_structs!("file_edit", FileEditRow, "file_ident", FileIdentRow);
+entity_structs!("file_edit", FileEditRow, FileEditNewRow, "file_ident", FileIdentRow, FileIdentNewRow);
 
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
 #[table_name = "release_rev"]
@@ -188,8 +213,10 @@ pub struct ReleaseRevRow {
 entity_structs!(
     "release_edit",
     ReleaseEditRow,
+    ReleaseEditNewRow,
     "release_ident",
-    ReleaseIdentRow
+    ReleaseIdentRow,
+    ReleaseIdentNewRow
 );
 
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
@@ -199,7 +226,13 @@ pub struct WorkRevRow {
     pub extra_json: Option<serde_json::Value>,
 }
 
-entity_structs!("work_edit", WorkEditRow, "work_ident", WorkIdentRow);
+#[derive(Debug, Associations, AsChangeset, Insertable)]
+#[table_name = "work_rev"]
+pub struct WorkRevNewRow {
+    pub extra_json: Option<serde_json::Value>,
+}
+
+entity_structs!("work_edit", WorkEditRow, WorkEditNewRow, "work_ident", WorkIdentRow, WorkIdentNewRow);
 
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
 #[table_name = "release_rev_abstract"]

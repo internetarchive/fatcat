@@ -15,6 +15,7 @@ pub struct EditContext {
     pub editor_id: FatCatId,
     pub editgroup_id: FatCatId,
     pub extra_json: Option<serde_json::Value>,
+    pub autoapprove: bool,
 }
 
 /* One goal here is to abstract the non-entity-specific bits into generic traits or functions,
@@ -35,8 +36,11 @@ pub struct EditContext {
 
 // Associated Type, not parametric
 pub trait EntityCrud where Self: Sized {
+    // TODO: could these be generic structs? Or do they need to be bound to a specific table?
     type EditRow; // EntityEditRow
+    type EditNewRow;
     type IdentRow; // EntityIdentRow
+    type IdentNewRow;
     type RevRow;
 
     fn parse_editgroup_id(&self) -> Result<Option<FatCatId>>;
@@ -45,14 +49,15 @@ pub trait EntityCrud where Self: Sized {
     fn db_get(conn: &DbConn, ident: FatCatId) -> Result<Self>;
     fn db_get_rev(conn: &DbConn, rev_id: Uuid) -> Result<Self>;
     fn db_create(&self, conn: &DbConn, edit_context: &EditContext) -> Result<Self::EditRow>;
-    fn db_create_batch(conn: &DbConn, edit_context: &EditContext, models: &[Self]) -> Result<Vec<Self::EditRow>>;
+    fn db_create_batch(conn: &DbConn, edit_context: &EditContext, models: &[&Self]) -> Result<Vec<Self::EditRow>>;
     fn db_update(&self, conn: &DbConn, edit_context: &EditContext, ident: FatCatId) -> Result<Self::EditRow>;
     fn db_delete(conn: &DbConn, edit_context: &EditContext, ident: FatCatId) -> Result<Self::EditRow>;
     fn db_get_history(conn: &DbConn, ident: FatCatId, limit: Option<i64>) -> Result<Vec<EntityHistoryEntry>>;
 
     // Entity-specific Methods
-    fn db_from_row(conn: &DbConn, rev_row: Self::RevRow, ident_row: Option<Self::IdentRow>) -> Result<Self>;
+    fn from_row(conn: &DbConn, rev_row: Self::RevRow, ident_row: Option<Self::IdentRow>) -> Result<Self>;
     fn db_insert_rev(&self, conn: &DbConn) -> Result<Uuid>;
+    fn db_insert_revs(conn: &DbConn, models: &[&Self]) -> Result<Vec<Uuid>>;
 }
 
 // TODO: this could be a separate trait on all entities?
@@ -75,7 +80,7 @@ macro_rules! generic_db_get {
                 .inner_join($rev_table::table)
                 .first(conn)?;
 
-            Self::db_from_row(conn, rev, Some(ident))
+            Self::from_row(conn, rev, Some(ident))
         }
     }
 }
@@ -87,7 +92,7 @@ macro_rules! generic_db_get_rev {
                 .find(rev_id)
                 .first(conn)?;
             
-            Self::db_from_row(conn, rev, None)
+            Self::from_row(conn, rev, None)
         }
     }
 }
@@ -113,13 +118,32 @@ macro_rules! generic_db_create {
 }
 
 macro_rules! generic_db_create_batch {
-    () => {
-        fn db_create_batch(conn: &DbConn, edit_context: &EditContext, models: &[Self]) -> Result<Vec<Self::EditRow>> {
-            let mut ret: Vec<Self::EditRow> = vec![];
-            for entity in models {
-                ret.push(entity.db_create(conn, edit_context)?);
-            }
-            Ok(ret)
+    ($ident_table: ident, $edit_table: ident) => {
+        fn db_create_batch(conn: &DbConn, edit_context: &EditContext, models: &[&Self]) -> Result<Vec<Self::EditRow>> {
+            let rev_ids: Vec<Uuid> = Self::db_insert_revs(conn, models)?;
+            let ident_ids: Vec<Uuid> = insert_into($ident_table::table)
+                .values(rev_ids.iter()
+                    .map(|rev_id| Self::IdentNewRow {
+                        rev_id: Some(rev_id.clone()),
+                        is_live: edit_context.autoapprove,
+                        redirect_id: None,
+                    })
+                    .collect::<Vec<WorkIdentNewRow>>())
+                .returning($ident_table::id)
+                .get_results(conn)?;
+            let edits: Vec<Self::EditRow> = insert_into($edit_table::table)
+                .values(rev_ids.into_iter().zip(ident_ids.into_iter())
+                    .map(|(rev_id, ident_id)| Self::EditNewRow {
+                        editgroup_id: edit_context.editgroup_id.to_uuid(),
+                        rev_id: Some(rev_id),
+                        ident_id: ident_id,
+                        redirect_id: None,
+                        prev_rev: None,
+                        extra_json: edit_context.extra_json.clone(),
+                    })
+                    .collect::<Vec<WorkEditNewRow>>())
+                .get_results(conn)?;
+            Ok(edits)
         }
     }
 }
@@ -183,7 +207,6 @@ macro_rules! generic_db_delete {
 }
 
 macro_rules! generic_db_get_history {
-    // TODO: only actually need edit table? and maybe not that?
     ($edit_table:ident) => {
         fn db_get_history(conn: &DbConn, ident: FatCatId, limit: Option<i64>) -> Result<Vec<EntityHistoryEntry>> {
             let limit = limit.unwrap_or(50); // XXX: make a static
@@ -208,21 +231,32 @@ macro_rules! generic_db_get_history {
     }
 }
 
+macro_rules! generic_db_insert_rev {
+    () => {
+        fn db_insert_rev(&self, conn: &DbConn) -> Result<Uuid> {
+            Self::db_insert_revs(conn, &vec![self]).map(|id_list| id_list[0])
+        }
+    }
+}
+
 impl EntityCrud for WorkEntity {
     type EditRow = WorkEditRow;
+    type EditNewRow = WorkEditNewRow;
     type IdentRow = WorkIdentRow;
+    type IdentNewRow = WorkIdentNewRow;
     type RevRow = WorkRevRow;
 
     generic_parse_editgroup_id!();
     generic_db_get!(work_ident, work_rev);
     generic_db_get_rev!(work_rev);
     generic_db_create!(work_ident, work_edit);
-    generic_db_create_batch!();
+    generic_db_create_batch!(work_ident, work_edit);
     generic_db_update!(work_ident, work_edit);
     generic_db_delete!(work_ident, work_edit);
     generic_db_get_history!(work_edit);
+    generic_db_insert_rev!();
 
-    fn db_from_row(conn: &DbConn, rev_row: Self::RevRow, ident_row: Option<Self::IdentRow>) -> Result<Self> {
+    fn from_row(conn: &DbConn, rev_row: Self::RevRow, ident_row: Option<Self::IdentRow>) -> Result<Self> {
 
         let (state, ident_id, redirect_id) = match ident_row {
             Some(i) => (
@@ -243,14 +277,14 @@ impl EntityCrud for WorkEntity {
         })
     }
 
-    fn db_insert_rev(&self, conn: &DbConn) -> Result<Uuid> {
-        let rev_row: Uuid = insert_into(work_rev::table)
-            .values((
-                work_rev::extra_json.eq(&self.extra)
-            ))
+    fn db_insert_revs(conn: &DbConn, models: &[&Self]) -> Result<Vec<Uuid>> {
+        let rev_ids: Vec<Uuid> = insert_into(work_rev::table)
+            .values(models.iter()
+                .map(|model| WorkRevNewRow { extra_json: model.extra.clone() } )
+                .collect::<Vec<WorkRevNewRow>>())
             .returning(work_rev::id)
-            .get_result(conn)?;
-        Ok(rev_row)
+            .get_results(conn)?;
+        Ok(rev_ids)
     }
 }
 
