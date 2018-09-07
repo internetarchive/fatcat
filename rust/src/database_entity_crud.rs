@@ -92,6 +92,26 @@ macro_rules! generic_db_get_rev {
     }
 }
 
+macro_rules! generic_db_create {
+    ($ident_table: ident, $edit_table: ident) => {
+        fn db_create(&self, conn: &DbConn, edit_context: &EditContext) -> Result<Self::EditRow> {
+            let rev_id = self.db_insert_rev(conn)?;
+            let ident: Uuid = insert_into($ident_table::table)
+                .values($ident_table::rev_id.eq(&rev_id))
+                .returning($ident_table::id)
+                .get_result(conn)?;
+            let edit: Self::EditRow = insert_into($edit_table::table)
+                .values((
+                    $edit_table::editgroup_id.eq(edit_context.editgroup_id.to_uuid()),
+                    $edit_table::rev_id.eq(&rev_id),
+                    $edit_table::ident_id.eq(&ident),
+                ))
+                .get_result(conn)?;
+            Ok(edit)
+        }
+    }
+}
+
 macro_rules! generic_db_create_batch {
     () => {
         fn db_create_batch(conn: &DbConn, edit_context: &EditContext, models: &[Self]) -> Result<Vec<Self::EditRow>> {
@@ -196,30 +216,11 @@ impl EntityCrud for WorkEntity {
     generic_parse_editgroup_id!();
     generic_db_get!(work_ident, work_rev);
     generic_db_get_rev!(work_rev);
+    generic_db_create!(work_ident, work_edit);
     generic_db_create_batch!();
     generic_db_update!(work_ident, work_edit);
     generic_db_delete!(work_ident, work_edit);
     generic_db_get_history!(work_edit);
-
-    fn db_create(&self, conn: &DbConn, edit_context: &EditContext) -> Result<Self::EditRow> {
-
-        let rev_id = self.db_insert_rev(conn)?;
-        let edit: WorkEditRow =
-            diesel::sql_query(
-                "WITH ident AS (
-                    INSERT INTO work_ident (rev_id)
-                           VALUES ($1)
-                           RETURNING id )
-            INSERT INTO work_edit (editgroup_id, ident_id, rev_id, extra) VALUES
-                ($2, (SELECT ident.id FROM ident), $1, $3)
-            RETURNING *",
-            ).bind::<diesel::sql_types::Uuid, _>(rev_id)
-                .bind::<diesel::sql_types::Uuid, _>(edit_context.editgroup_id.to_uuid())
-                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(&edit_context.extra_json)
-                .get_result(conn)?;
-
-        Ok(edit)
-    }
 
     fn db_from_row(conn: &DbConn, rev_row: Self::RevRow, ident_row: Option<Self::IdentRow>) -> Result<Self> {
 
@@ -243,16 +244,13 @@ impl EntityCrud for WorkEntity {
     }
 
     fn db_insert_rev(&self, conn: &DbConn) -> Result<Uuid> {
-        let rev_row: WorkRevRow = insert_into(work_rev::table)
+        let rev_row: Uuid = insert_into(work_rev::table)
             .values((
                 work_rev::extra_json.eq(&self.extra)
             ))
-            .get_result(conn)?;
-        /* TODO: only return id
             .returning(work_rev::id)
-            .first(conn)?;
-        */
-        Ok(rev_row.id)
+            .get_result(conn)?;
+        Ok(rev_row)
     }
 }
 
