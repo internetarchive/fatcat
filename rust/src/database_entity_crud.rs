@@ -52,7 +52,7 @@ pub trait EntityCrud where Self: Sized {
 
     // Entity-specific Methods
     fn db_from_row(conn: &DbConn, rev_row: Self::RevRow, ident_row: Option<Self::IdentRow>) -> Result<Self>;
-    fn db_insert_rev(&self, conn: &DbConn, edit_context: &EditContext) -> Result<Uuid>;
+    fn db_insert_rev(&self, conn: &DbConn) -> Result<Uuid>;
 }
 
 // TODO: this could be a separate trait on all entities?
@@ -100,6 +100,35 @@ macro_rules! generic_db_create_batch {
                 ret.push(entity.db_create(conn, edit_context)?);
             }
             Ok(ret)
+        }
+    }
+}
+
+macro_rules! generic_db_update {
+    ($ident_table: ident, $edit_table: ident) => {
+        fn db_update(&self, conn: &DbConn, edit_context: &EditContext, ident: FatCatId) -> Result<Self::EditRow> {
+            let current: Self::IdentRow = $ident_table::table.find(ident.to_uuid()).first(conn)?;
+            if current.is_live != true {
+                // TODO: what if isn't live? 4xx not 5xx
+                bail!("can't delete an entity that doesn't exist yet");
+            }
+            if current.rev_id.is_none() {
+                // TODO: what if it's already deleted? 4xx not 5xx
+                bail!("entity was already deleted");
+            }
+
+            let rev_id = self.db_insert_rev(conn)?;
+            let edit: Self::EditRow = insert_into($edit_table::table)
+                .values((
+                    $edit_table::editgroup_id.eq(edit_context.editgroup_id.to_uuid()),
+                    $edit_table::ident_id.eq(&ident.to_uuid()),
+                    $edit_table::rev_id.eq(&rev_id),
+                    $edit_table::prev_rev.eq(current.rev_id.unwrap()),
+                    $edit_table::extra_json.eq(&self.extra),
+                ))
+                .get_result(conn)?;
+
+            Ok(edit)
         }
     }
 }
@@ -168,59 +197,29 @@ impl EntityCrud for WorkEntity {
     generic_db_get!(work_ident, work_rev);
     generic_db_get_rev!(work_rev);
     generic_db_create_batch!();
+    generic_db_update!(work_ident, work_edit);
     generic_db_delete!(work_ident, work_edit);
     generic_db_get_history!(work_edit);
 
     fn db_create(&self, conn: &DbConn, edit_context: &EditContext) -> Result<Self::EditRow> {
 
-        // TODO: refactor to use insert_rev
+        let rev_id = self.db_insert_rev(conn)?;
         let edit: WorkEditRow =
             diesel::sql_query(
-                "WITH rev AS ( INSERT INTO work_rev (extra_json)
-                        VALUES ($1)
-                        RETURNING id ),
-                ident AS ( INSERT INTO work_ident (rev_id)
-                            VALUES ((SELECT rev.id FROM rev))
-                            RETURNING id )
-            INSERT INTO work_edit (editgroup_id, ident_id, rev_id) VALUES
-                ($2, (SELECT ident.id FROM ident), (SELECT rev.id FROM rev))
+                "WITH ident AS (
+                    INSERT INTO work_ident (rev_id)
+                           VALUES ($1)
+                           RETURNING id )
+            INSERT INTO work_edit (editgroup_id, ident_id, rev_id, extra) VALUES
+                ($2, (SELECT ident.id FROM ident), $1, $3)
             RETURNING *",
-            ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(&self.extra)
+            ).bind::<diesel::sql_types::Uuid, _>(rev_id)
                 .bind::<diesel::sql_types::Uuid, _>(edit_context.editgroup_id.to_uuid())
+                .bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(&edit_context.extra_json)
                 .get_result(conn)?;
 
         Ok(edit)
     }
-
-    fn db_update(&self, conn: &DbConn, edit_context: &EditContext, ident: FatCatId) -> Result<Self::EditRow> {
-        // TODO: refactor this into a check on WorkIdentRow
-        let current: WorkIdentRow = work_ident::table.find(ident.to_uuid()).first(conn)?;
-        if current.is_live != true {
-            // TODO: what if isn't live? 4xx not 5xx
-            bail!("can't delete an entity that doesn't exist yet");
-        }
-        if current.rev_id.is_none() {
-            // TODO: what if it's already deleted? 4xx not 5xx
-            bail!("entity was already deleted");
-        }
-
-        let edit: WorkEditRow =
-            diesel::sql_query(
-                "WITH rev AS ( INSERT INTO work_rev (extra_json)
-                        VALUES ($1)
-                        RETURNING id ),
-            INSERT INTO work_edit (editgroup_id, ident_id, rev_id, prev_rev) VALUES
-                ($2, $3, (SELECT rev.id FROM rev), $4)
-            RETURNING *",
-            ).bind::<diesel::sql_types::Nullable<diesel::sql_types::Json>, _>(&self.extra)
-                .bind::<diesel::sql_types::Uuid, _>(edit_context.editgroup_id.to_uuid())
-                .bind::<diesel::sql_types::Uuid, _>(ident.to_uuid())
-                .bind::<diesel::sql_types::Uuid, _>(current.rev_id.unwrap())
-                .get_result(conn)?;
-
-        Ok(edit)
-    }
-
 
     fn db_from_row(conn: &DbConn, rev_row: Self::RevRow, ident_row: Option<Self::IdentRow>) -> Result<Self> {
 
@@ -243,8 +242,17 @@ impl EntityCrud for WorkEntity {
         })
     }
 
-    fn db_insert_rev(&self, conn: &DbConn, edit_context: &EditContext) -> Result<Uuid> {
-        unimplemented!()
+    fn db_insert_rev(&self, conn: &DbConn) -> Result<Uuid> {
+        let rev_row: WorkRevRow = insert_into(work_rev::table)
+            .values((
+                work_rev::extra_json.eq(&self.extra)
+            ))
+            .get_result(conn)?;
+        /* TODO: only return id
+            .returning(work_rev::id)
+            .first(conn)?;
+        */
+        Ok(rev_row.id)
     }
 }
 
