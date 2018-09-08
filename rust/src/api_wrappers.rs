@@ -61,7 +61,7 @@ macro_rules! wrap_entity_handlers {
             _context: &Context,
         ) -> Box<Future<Item = $post_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
-            let ret = match conn.transaction(|| self.$post_handler(entity, false, &conn)) {
+            let ret = match conn.transaction(|| self.$post_handler(entity, &conn)) {
                 Ok(edit) =>
                     $post_resp::CreatedEntity(edit),
                 Err(Error(ErrorKind::Diesel(e), _)) =>

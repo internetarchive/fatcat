@@ -15,7 +15,6 @@ use diesel::{self, insert_into};
 use errors::*;
 use fatcat_api::models;
 use fatcat_api::models::*;
-use sha1::Sha1;
 use std::str::FromStr;
 use uuid::Uuid;
 use ConnectionPool;
@@ -29,34 +28,19 @@ macro_rules! entity_batch_handler {
             editgroup: Option<String>,
             conn: &DbConn,
         ) -> Result<Vec<EntityEdit>> {
-            // editgroup override logic based on parameters
-            let eg_id: Option<Uuid> = match (editgroup, autoaccept) {
-                (Some(eg_string), _) => Some(fcid2uuid(&eg_string)?),
-                (None, true) => {
-                    let eg_row: EditgroupRow = diesel::insert_into(editgroup::table)
-                        .values((editgroup::editor_id.eq(editor_id),))
-                        .get_result(conn)?;
-                    Some(eg_row.id)
-                },
-                (None, false) => None
+
+            let editgroup_id: Option<FatCatId> = match editgroup {
+                Some(s) => Some(FatCatId::from_str(&s)?),
+                None => None,
             };
-            for entity in entity_list {
-                let mut e = entity.clone();
-                // override individual editgroup IDs (if set earlier)
-                if let Some(inner_id) = eg_id {
-                    e.editgroup_id = Some(uuid2fcid(&inner_id));
-                }
-                // actual wrapped function call here
-                ret.push(self.$post_handler(e, autoaccept, conn)?);
-            }
-            let mut edit_context = make_edit_context(conn, eg_id)?;
-            edit_context.autoaccept = autoaccept;
+            let edit_context = make_edit_context(conn, editgroup_id.clone(), autoaccept)?;
             let model_list: Vec<&models::$model> = entity_list.iter().map(|e| e).collect();
             let edits = $model::db_create_batch(conn, &edit_context, model_list.as_slice())?;
+
             if autoaccept {
-                // if autoaccept, eg_id is always Some
                 let _clr: ChangelogRow = diesel::insert_into(changelog::table)
-                    .values((changelog::editgroup_id.eq(eg_id.unwrap()),))
+                    // if autoaccept, eg_id is always Some
+                    .values((changelog::editgroup_id.eq(edit_context.editgroup_id.to_uuid()),))
                     .get_result(conn)?;
             }
             edits.into_iter().map(|e| e.into_model()).collect()
@@ -75,17 +59,24 @@ macro_rules! count_entity {
     }};
 }
 
-fn make_edit_context(conn: &DbConn, editgroup_id: Option<FatCatId>) -> Result<EditContext> {
+fn make_edit_context(conn: &DbConn, editgroup_id: Option<FatCatId>, autoaccept: bool) -> Result<EditContext> {
     let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001")?; // TODO: auth
-    let editgroup_id = match editgroup_id {
-        None => FatCatId::from_uuid(&get_or_create_editgroup(editor_id, conn)?),
-        Some(param) => param,
+    let editgroup_id: FatCatId = match (editgroup_id, autoaccept) {
+        (Some(eg), _) => eg,
+        // If autoaccept and no editgroup_id passed, always create a new one for this transaction
+        (None, true) => {
+            let eg_row: EditgroupRow = diesel::insert_into(editgroup::table)
+                .values((editgroup::editor_id.eq(editor_id),))
+                .get_result(conn)?;
+            FatCatId::from_uuid(&eg_row.id)
+        },
+        (None, false) => FatCatId::from_uuid(&get_or_create_editgroup(editor_id, conn)?),
     };
     Ok(EditContext {
         editor_id: FatCatId::from_uuid(&editor_id),
         editgroup_id: editgroup_id,
         extra_json: None,
-        autoapprove: false,
+        autoaccept: autoaccept,
     })
 }
 
@@ -268,7 +259,7 @@ impl Server {
         entity: models::ContainerEntity,
         conn: &DbConn,
     ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?)?;
+        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?, false)?;
         let edit = entity.db_create(conn, &edit_context)?;
         edit.into_model()
     }
@@ -279,7 +270,7 @@ impl Server {
         entity: models::ContainerEntity,
         conn: &DbConn,
     ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?)?;
+        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?, false)?;
         let edit = entity.db_update(conn, &edit_context, FatCatId::from_uuid(id))?;
         edit.into_model()
     }
@@ -289,7 +280,7 @@ impl Server {
         editgroup_id: Option<Uuid>,
         conn: &DbConn,
     ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, editgroup_id.map(|u| FatCatId::from_uuid(&u)))?;
+        let edit_context = make_edit_context(conn, editgroup_id.map(|u| FatCatId::from_uuid(&u)), false)?;
         let edit = ContainerEntity::db_delete(conn, &edit_context, FatCatId::from_uuid(id))?;
         edit.into_model()
     }
@@ -299,7 +290,7 @@ impl Server {
         entity: models::CreatorEntity,
         conn: &DbConn,
     ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?)?;
+        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?, false)?;
         let edit = entity.db_create(conn, &edit_context)?;
         edit.into_model()
     }
@@ -310,7 +301,7 @@ impl Server {
         entity: models::CreatorEntity,
         conn: &DbConn,
     ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?)?;
+        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?, false)?;
         let edit = entity.db_update(conn, &edit_context, FatCatId::from_uuid(id))?;
         edit.into_model()
     }
@@ -320,7 +311,7 @@ impl Server {
         editgroup_id: Option<Uuid>,
         conn: &DbConn,
     ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, editgroup_id.map(|u| FatCatId::from_uuid(&u)))?;
+        let edit_context = make_edit_context(conn, editgroup_id.map(|u| FatCatId::from_uuid(&u)), false)?;
         let edit = CreatorEntity::db_delete(conn, &edit_context, FatCatId::from_uuid(id))?;
         edit.into_model()
     }
@@ -330,7 +321,7 @@ impl Server {
         entity: models::FileEntity,
         conn: &DbConn,
     ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?)?;
+        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?, false)?;
         let edit = entity.db_create(conn, &edit_context)?;
         edit.into_model()
     }
@@ -341,7 +332,7 @@ impl Server {
         entity: models::FileEntity,
         conn: &DbConn,
     ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?)?;
+        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?, false)?;
         let edit = entity.db_update(conn, &edit_context, FatCatId::from_uuid(id))?;
         edit.into_model()
     }
@@ -351,7 +342,7 @@ impl Server {
         editgroup_id: Option<Uuid>,
         conn: &DbConn,
     ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, editgroup_id.map(|u| FatCatId::from_uuid(&u)))?;
+        let edit_context = make_edit_context(conn, editgroup_id.map(|u| FatCatId::from_uuid(&u)), false)?;
         let edit = FileEntity::db_delete(conn, &edit_context, FatCatId::from_uuid(id))?;
         edit.into_model()
     }
@@ -361,7 +352,7 @@ impl Server {
         entity: models::ReleaseEntity,
         conn: &DbConn,
     ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?)?;
+        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?, false)?;
         let edit = entity.db_create(conn, &edit_context)?;
         edit.into_model()
     }
@@ -372,7 +363,7 @@ impl Server {
         entity: models::ReleaseEntity,
         conn: &DbConn,
     ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?)?;
+        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?, false)?;
         let edit = entity.db_update(conn, &edit_context, FatCatId::from_uuid(id))?;
         edit.into_model()
     }
@@ -382,7 +373,7 @@ impl Server {
         editgroup_id: Option<Uuid>,
         conn: &DbConn,
     ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, editgroup_id.map(|u| FatCatId::from_uuid(&u)))?;
+        let edit_context = make_edit_context(conn, editgroup_id.map(|u| FatCatId::from_uuid(&u)), false)?;
         let edit = ReleaseEntity::db_delete(conn, &edit_context, FatCatId::from_uuid(id))?;
         edit.into_model()
     }
@@ -392,7 +383,7 @@ impl Server {
         entity: models::WorkEntity,
         conn: &DbConn,
     ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?)?;
+        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?, false)?;
         let edit = entity.db_create(conn, &edit_context)?;
         edit.into_model()
     }
@@ -403,7 +394,7 @@ impl Server {
         entity: models::WorkEntity,
         conn: &DbConn,
     ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?)?;
+        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?, false)?;
         let edit = entity.db_update(conn, &edit_context, FatCatId::from_uuid(id))?;
         edit.into_model()
     }
@@ -414,7 +405,7 @@ impl Server {
         editgroup_id: Option<Uuid>,
         conn: &DbConn,
     ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, editgroup_id.map(|u| FatCatId::from_uuid(&u)))?;
+        let edit_context = make_edit_context(conn, editgroup_id.map(|u| FatCatId::from_uuid(&u)), false)?;
         let edit = WorkEntity::db_delete(conn, &edit_context, FatCatId::from_uuid(id))?;
 
         edit.into_model()

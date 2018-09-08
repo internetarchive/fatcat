@@ -91,6 +91,7 @@ pub fn accept_editgroup(editgroup_id: Uuid, conn: &PgConnection) -> Result<Chang
     Ok(entry)
 }
 
+#[derive(Clone)]
 pub struct FatCatId(Uuid);
 
 impl ToString for FatCatId {

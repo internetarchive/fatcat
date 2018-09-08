@@ -3,7 +3,7 @@ use chrono;
 use database_models::*;
 use database_schema::*;
 use diesel::prelude::*;
-use diesel::{self, insert_into};
+use diesel::insert_into;
 use errors::*;
 use fatcat_api::models::*;
 use serde_json;
@@ -16,7 +16,7 @@ pub struct EditContext {
     pub editor_id: FatCatId,
     pub editgroup_id: FatCatId,
     pub extra_json: Option<serde_json::Value>,
-    pub autoapprove: bool,
+    pub autoaccept: bool,
 }
 
 /* One goal here is to abstract the non-entity-specific bits into generic traits or functions,
@@ -155,7 +155,7 @@ macro_rules! generic_db_create_batch {
                         .iter()
                         .map(|rev_id| Self::IdentNewRow {
                             rev_id: Some(rev_id.clone()),
-                            is_live: edit_context.autoapprove,
+                            is_live: edit_context.autoaccept,
                             redirect_id: None,
                         })
                         .collect::<Vec<Self::IdentNewRow>>(),
@@ -650,7 +650,7 @@ impl EntityCrud for ReleaseEntity {
                     .iter()
                     .map(|rev_id| Self::IdentNewRow {
                         rev_id: Some(rev_id.clone()),
-                        is_live: edit_context.autoapprove,
+                        is_live: edit_context.autoaccept,
                         redirect_id: None,
                     })
                     .collect::<Vec<Self::IdentNewRow>>(),
