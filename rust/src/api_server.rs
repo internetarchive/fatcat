@@ -25,11 +25,40 @@ macro_rules! entity_batch_handler {
         pub fn $post_batch_handler(
             &self,
             entity_list: &[models::$model],
+            autoaccept: bool,
+            editgroup: Option<String>,
             conn: &DbConn,
         ) -> Result<Vec<EntityEdit>> {
-            let edit_context = make_edit_context(conn, None)?;
+            // editgroup override logic based on parameters
+            let eg_id: Option<Uuid> = match (editgroup, autoaccept) {
+                (Some(eg_string), _) => Some(fcid2uuid(&eg_string)?),
+                (None, true) => {
+                    let eg_row: EditgroupRow = diesel::insert_into(editgroup::table)
+                        .values((editgroup::editor_id.eq(editor_id),))
+                        .get_result(conn)?;
+                    Some(eg_row.id)
+                },
+                (None, false) => None
+            };
+            for entity in entity_list {
+                let mut e = entity.clone();
+                // override individual editgroup IDs (if set earlier)
+                if let Some(inner_id) = eg_id {
+                    e.editgroup_id = Some(uuid2fcid(&inner_id));
+                }
+                // actual wrapped function call here
+                ret.push(self.$post_handler(e, autoaccept, conn)?);
+            }
+            let mut edit_context = make_edit_context(conn, eg_id)?;
+            edit_context.autoaccept = autoaccept;
             let model_list: Vec<&models::$model> = entity_list.iter().map(|e| e).collect();
             let edits = $model::db_create_batch(conn, &edit_context, model_list.as_slice())?;
+            if autoaccept {
+                // if autoaccept, eg_id is always Some
+                let _clr: ChangelogRow = diesel::insert_into(changelog::table)
+                    .values((changelog::editgroup_id.eq(eg_id.unwrap()),))
+                    .get_result(conn)?;
+            }
             edits.into_iter().map(|e| e.into_model()).collect()
         }
     }

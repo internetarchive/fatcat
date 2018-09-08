@@ -61,7 +61,7 @@ macro_rules! wrap_entity_handlers {
             _context: &Context,
         ) -> Box<Future<Item = $post_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
-            let ret = match conn.transaction(|| self.$post_handler(entity, &conn)) {
+            let ret = match conn.transaction(|| self.$post_handler(entity, false, &conn)) {
                 Ok(edit) =>
                     $post_resp::CreatedEntity(edit),
                 Err(Error(ErrorKind::Diesel(e), _)) =>
@@ -84,10 +84,12 @@ macro_rules! wrap_entity_handlers {
         fn $post_batch_fn(
             &self,
             entity_list: &Vec<models::$model>,
+            autoaccept: Option<bool>,
+            editgroup: Option<String>,
             _context: &Context,
         ) -> Box<Future<Item = $post_batch_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
-            let ret = match conn.transaction(|| self.$post_batch_handler(entity_list, &conn)) {
+            let ret = match conn.transaction(|| self.$post_batch_handler(entity_list, autoaccept.unwrap_or(false), editgroup, &conn)) {
                 Ok(edit) =>
                     $post_batch_resp::CreatedEntities(edit),
                 Err(Error(ErrorKind::Diesel(e), _)) =>

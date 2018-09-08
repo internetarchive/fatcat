@@ -68,11 +68,6 @@ cargo run --example client CreateRelease
 cargo run --example client CreateReleaseBatch
 cargo run --example client CreateWork
 cargo run --example client CreateWorkBatch
-cargo run --example client DeleteContainer
-cargo run --example client DeleteCreator
-cargo run --example client DeleteFile
-cargo run --example client DeleteRelease
-cargo run --example client DeleteWork
 cargo run --example client GetChangelog
 cargo run --example client GetChangelogEntry
 cargo run --example client GetContainer
@@ -96,11 +91,6 @@ cargo run --example client LookupContainer
 cargo run --example client LookupCreator
 cargo run --example client LookupFile
 cargo run --example client LookupRelease
-cargo run --example client UpdateContainer
-cargo run --example client UpdateCreator
-cargo run --example client UpdateFile
-cargo run --example client UpdateRelease
-cargo run --example client UpdateWork
 ```
 
 ### HTTPS

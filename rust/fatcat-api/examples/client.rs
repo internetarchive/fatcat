@@ -101,7 +101,7 @@ fn main() {
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         //  },
         Some("CreateContainerBatch") => {
-            let result = client.create_container_batch(&Vec::new()).wait();
+            let result = client.create_container_batch(&Vec::new(), Some(true), Some("editgroup_example".to_string())).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -111,7 +111,7 @@ fn main() {
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         //  },
         Some("CreateCreatorBatch") => {
-            let result = client.create_creator_batch(&Vec::new()).wait();
+            let result = client.create_creator_batch(&Vec::new(), Some(true), Some("editgroup_example".to_string())).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -127,7 +127,7 @@ fn main() {
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         //  },
         Some("CreateFileBatch") => {
-            let result = client.create_file_batch(&Vec::new()).wait();
+            let result = client.create_file_batch(&Vec::new(), Some(true), Some("editgroup_example".to_string())).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -137,7 +137,7 @@ fn main() {
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         //  },
         Some("CreateReleaseBatch") => {
-            let result = client.create_release_batch(&Vec::new()).wait();
+            let result = client.create_release_batch(&Vec::new(), Some(true), Some("editgroup_example".to_string())).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -147,7 +147,7 @@ fn main() {
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         //  },
         Some("CreateWorkBatch") => {
-            let result = client.create_work_batch(&Vec::new()).wait();
+            let result = client.create_work_batch(&Vec::new(), Some(true), Some("editgroup_example".to_string())).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 

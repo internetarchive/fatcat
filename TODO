@@ -2,14 +2,23 @@
 ## Next Up
 
 - some significant slow-down has happened? transactions, or regexes?
+summer roadmap:
+- PUT/UPDATE, DELETE, and merge code paths
+- faster UPDATE-free bulk import code path
+- container import (extra?): lang, region, subject
+- basic API+webface creation, editing, merging, editgroup approval
+- elastic schema/transform for releases; bulk and continuous scripts
 
 features:
 - fast database dump command: both changelog-based and entity-based (rust)
     => lighter, more complete dumps for each entity type?
+- guide skeleton (mdbook; guide.fatcat.wiki)
 
 importers:
+- CORE
+- wikidata cross-ref (if they have a dump)
 - manifest: multiple URLs per SHA1
-- pubmed (medline)
+- pubmed (medline), if not in CORE
     => and/or, use pubmed ID lookups on crossref import
 - core
 - semantic scholar (up to 39 million; author de-dupe)
@@ -36,9 +45,15 @@ july roadmap:
 ## Schema / Alignment / Scope
 
 - "container" -> "venue"?
-- release_type, release_status, url.rel enums (and others?)
+- release_type, release_status, url.rel write-time schema(and others?)
 
 name ref: https://www.w3.org/International/questions/qa-personal-names
+
+## API
+
+- how to send edit "extra" metadata?
+- hydrate entities in API
+    ? "expand" query param
 
 ## High-Level Priorities
 
