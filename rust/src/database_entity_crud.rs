@@ -222,14 +222,14 @@ macro_rules! generic_db_get_history {
                 .limit(limit)
                 .get_results(conn)?;
 
-            let history: Vec<EntityHistoryEntry> = rows.into_iter()
-                .map(|(eg_row, cl_row, e_row)| EntityHistoryEntry {
-                    edit: e_row.into_model().expect("edit row to model"),
+            let history: Result<Vec<EntityHistoryEntry>> = rows.into_iter()
+                .map(|(eg_row, cl_row, e_row)| Ok(EntityHistoryEntry {
+                    edit: e_row.into_model()?,
                     editgroup: eg_row.into_model_partial(),
                     changelog_entry: cl_row.into_model(),
-                })
+                }))
                 .collect();
-            Ok(history)
+            history
         }
     }
 }
@@ -470,16 +470,14 @@ impl EntityCrud for FileEntity {
             match &model.releases {
                 None => (),
                 Some(release_list) => {
-                    let these_release_rows: Vec<FileReleaseRow> = release_list
+                    let these_release_rows: Result<Vec<FileReleaseRow>> = release_list
                         .iter()
-                        .map(|r| FileReleaseRow {
+                        .map(|r| Ok(FileReleaseRow {
                             file_rev: rev_id.clone(),
-                            target_release_ident_id: fcid2uuid(r)
-                                // XXX: shouldn't expect
-                                .expect("invalid fatcat identifier"),
-                        })
+                            target_release_ident_id: FatCatId::from_str(r)?.to_uuid(),
+                        }))
                         .collect();
-                    file_release_rows.extend(these_release_rows);
+                    file_release_rows.extend(these_release_rows?);
                 }
             };
 
@@ -615,8 +613,7 @@ impl EntityCrud for ReleaseEntity {
         let refs: Vec<ReleaseRef> = release_ref::table
             .filter(release_ref::release_rev.eq(rev_row.id))
             .order(release_ref::index_val.asc())
-            .get_results(conn)
-            .expect("fetch release refs")
+            .get_results(conn)?
             .into_iter()
             .map(|r: ReleaseRefRow| ReleaseRef {
                 index: r.index_val,
@@ -636,8 +633,7 @@ impl EntityCrud for ReleaseEntity {
                 release_contrib::role.asc(),
                 release_contrib::index_val.asc(),
             ))
-            .get_results(conn)
-            .expect("fetch release refs")
+            .get_results(conn)?
             .into_iter()
             .map(|c: ReleaseContribRow| ReleaseContrib {
                 index: c.index_val,
@@ -717,7 +713,7 @@ impl EntityCrud for ReleaseEntity {
 
         let rev_ids: Vec<Uuid> = insert_into(release_rev::table)
             .values(models.iter()
-                .map(|model| ReleaseRevNewRow {
+                .map(|model| Ok(ReleaseRevNewRow {
                     title: model.title.clone(),
                     release_type: model.release_type.clone(),
                     release_status: model.release_status.clone(),
@@ -731,18 +727,19 @@ impl EntityCrud for ReleaseEntity {
                     volume: model.volume.clone(),
                     issue: model.issue.clone(),
                     pages: model.pages.clone(),
-                    work_ident_id: model.work_id
-                        .clone()
-                        .map(|s| FatCatId::from_str(&s).expect("invalid fatcat identifier").to_uuid())
-                        .expect("release_revs must have a work_id by the time they are inserted; this is an internal soundness error"),
-                    container_ident_id: model.container_id
-                        .clone()
-                        .map(|s| FatCatId::from_str(&s).expect("invalid fatcat identifier").to_uuid()),
+                    work_ident_id: match model.work_id.clone() {
+                        None => bail!("release_revs must have a work_id by the time they are inserted; this is an internal soundness error"),
+                        Some(s) => FatCatId::from_str(&s)?.to_uuid(),
+                    },
+                    container_ident_id: match model.container_id.clone() {
+                        None => None,
+                        Some(s) => Some(FatCatId::from_str(&s)?.to_uuid()),
+                    },
                     publisher: model.publisher.clone(),
                     language: model.language.clone(),
                     extra_json: model.extra.clone()
-                })
-                .collect::<Vec<ReleaseRevNewRow>>())
+                }))
+                .collect::<Result<Vec<ReleaseRevNewRow>>>()?)
             .returning(release_rev::id)
             .get_results(conn)?;
 
@@ -755,11 +752,12 @@ impl EntityCrud for ReleaseEntity {
                 Some(ref_list) => {
                     let these_ref_rows: Vec<ReleaseRefNewRow> = ref_list
                         .iter()
-                        .map(|r| ReleaseRefNewRow {
+                        .map(|r| Ok(ReleaseRefNewRow {
                             release_rev: rev_id.clone(),
-                            target_release_ident_id: r.target_release_id
-                                .clone()
-                                .map(|v| fcid2uuid(&v).expect("valid fatcat identifier")),
+                            target_release_ident_id: match r.target_release_id.clone() {
+                                None => None,
+                                Some(v) => Some(FatCatId::from_str(&v)?.to_uuid()),
+                            },
                             index_val: r.index,
                             key: r.key.clone(),
                             container_title: r.container_title.clone(),
@@ -767,8 +765,8 @@ impl EntityCrud for ReleaseEntity {
                             title: r.title.clone(),
                             locator: r.locator.clone(),
                             extra_json: r.extra.clone(),
-                        })
-                        .collect();
+                        }))
+                        .collect::<Result<Vec<ReleaseRefNewRow>>>()?;
                     release_ref_rows.extend(these_ref_rows);
                 }
             };
@@ -778,18 +776,18 @@ impl EntityCrud for ReleaseEntity {
                 Some(contrib_list) => {
                     let these_contrib_rows: Vec<ReleaseContribNewRow> = contrib_list
                         .iter()
-                        .map(|c| ReleaseContribNewRow {
+                        .map(|c| Ok(ReleaseContribNewRow {
                             release_rev: rev_id.clone(),
-                            creator_ident_id: c.creator_id
-                                .clone()
-                                // XXX: shouldn't have these expects
-                                .map(|v| fcid2uuid(&v).expect("valid fatcat identifier")),
+                            creator_ident_id: match c.creator_id.clone() {
+                                None => None,
+                                Some(v) => Some(FatCatId::from_str(&v)?.to_uuid()),
+                            },
                             raw_name: c.raw_name.clone(),
                             index_val: c.index,
                             role: c.role.clone(),
                             extra_json: c.extra.clone(),
-                        })
-                        .collect();
+                        }))
+                        .collect::<Result<Vec<ReleaseContribNewRow>>>()?;
                     release_contrib_rows.extend(these_contrib_rows);
                 }
             };
@@ -816,17 +814,19 @@ impl EntityCrud for ReleaseEntity {
                 }
                 let release_abstract_rows: Vec<ReleaseRevAbstractNewRow> = abstract_list
                     .into_iter()
-                    .map(|c| ReleaseRevAbstractNewRow {
+                    .map(|c| Ok(ReleaseRevAbstractNewRow {
                         release_rev: rev_id.clone(),
                         abstract_sha1: match c.content {
                             Some(ref content) => Sha1::from(content).hexdigest(),
-                            // XXX: shouldn't have these expects
-                            None => c.sha1.clone().expect("either abstract_sha1 or content is required"),
+                            None => match c.sha1.clone() {
+                                Some(v) => v,
+                                None => { bail!("either abstract_sha1 or content is required") }
+                            },
                         },
                         lang: c.lang.clone(),
                         mimetype: c.mimetype.clone(),
-                    })
-                    .collect();
+                    }))
+                    .collect::<Result<Vec<ReleaseRevAbstractNewRow>>>()?;
                 insert_into(release_rev_abstract::table)
                     .values(release_abstract_rows)
                     .execute(conn)?;

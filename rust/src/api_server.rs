@@ -49,7 +49,7 @@ macro_rules! count_entity {
 fn make_edit_context(conn: &DbConn, editgroup_id: Option<FatCatId>) -> Result<EditContext> {
     let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001")?; // TODO: auth
     let editgroup_id = match editgroup_id {
-        None => FatCatId::from_uuid(&get_or_create_editgroup(editor_id, conn).expect("current editgroup")),
+        None => FatCatId::from_uuid(&get_or_create_editgroup(editor_id, conn)?),
         Some(param) => param,
     };
     Ok(EditContext {
@@ -386,8 +386,7 @@ impl Server {
                 editgroup::description.eq(entity.description),
                 editgroup::extra_json.eq(entity.extra),
             ))
-            .get_result(conn)
-            .expect("error creating edit group");
+            .get_result(conn)?;
 
         Ok(Editgroup {
             id: Some(uuid2fcid(&row.id)),

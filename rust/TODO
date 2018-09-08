@@ -1,4 +1,6 @@
 
+- fatcat_api -> fatcat_api_schema (or spec? models? types?)
+- fatcat -> fatcat-api-server
 - refactor rev creation (from an entity) into it's own function, across the board
     => attach to database module structs?
     => should make cockroachdb compatible (single use of CTE)
