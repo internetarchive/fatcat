@@ -80,6 +80,11 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**create_release_batch**](docs/DefaultApi.md#create_release_batch) | **POST** /release/batch | 
 *DefaultApi* | [**create_work**](docs/DefaultApi.md#create_work) | **POST** /work | 
 *DefaultApi* | [**create_work_batch**](docs/DefaultApi.md#create_work_batch) | **POST** /work/batch | 
+*DefaultApi* | [**delete_container**](docs/DefaultApi.md#delete_container) | **DELETE** /container/{id} | 
+*DefaultApi* | [**delete_creator**](docs/DefaultApi.md#delete_creator) | **DELETE** /creator/{id} | 
+*DefaultApi* | [**delete_file**](docs/DefaultApi.md#delete_file) | **DELETE** /file/{id} | 
+*DefaultApi* | [**delete_release**](docs/DefaultApi.md#delete_release) | **DELETE** /release/{id} | 
+*DefaultApi* | [**delete_work**](docs/DefaultApi.md#delete_work) | **DELETE** /work/{id} | 
 *DefaultApi* | [**get_changelog**](docs/DefaultApi.md#get_changelog) | **GET** /changelog | 
 *DefaultApi* | [**get_changelog_entry**](docs/DefaultApi.md#get_changelog_entry) | **GET** /changelog/{id} | 
 *DefaultApi* | [**get_container**](docs/DefaultApi.md#get_container) | **GET** /container/{id} | 
@@ -103,6 +108,11 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**lookup_creator**](docs/DefaultApi.md#lookup_creator) | **GET** /creator/lookup | 
 *DefaultApi* | [**lookup_file**](docs/DefaultApi.md#lookup_file) | **GET** /file/lookup | 
 *DefaultApi* | [**lookup_release**](docs/DefaultApi.md#lookup_release) | **GET** /release/lookup | 
+*DefaultApi* | [**update_container**](docs/DefaultApi.md#update_container) | **PUT** /container/{id} | 
+*DefaultApi* | [**update_creator**](docs/DefaultApi.md#update_creator) | **PUT** /creator/{id} | 
+*DefaultApi* | [**update_file**](docs/DefaultApi.md#update_file) | **PUT** /file/{id} | 
+*DefaultApi* | [**update_release**](docs/DefaultApi.md#update_release) | **PUT** /release/{id} | 
+*DefaultApi* | [**update_work**](docs/DefaultApi.md#update_work) | **PUT** /work/{id} | 
 
 
 ## Documentation For Models

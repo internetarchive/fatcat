@@ -1,4 +1,6 @@
 
+- database_entity_crud -> api_entity_crud
+- merge autoaccept branch in with http-verbs branch
 - fatcat_api -> fatcat_api_schema (or spec? models? types?)
 - fatcat -> fatcat-api-server
 - refactor rev creation (from an entity) into it's own function, across the board

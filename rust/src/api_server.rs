@@ -39,7 +39,6 @@ macro_rules! entity_batch_handler {
 
             if autoaccept {
                 let _clr: ChangelogRow = diesel::insert_into(changelog::table)
-                    // if autoaccept, eg_id is always Some
                     .values((changelog::editgroup_id.eq(edit_context.editgroup_id.to_uuid()),))
                     .get_result(conn)?;
             }
