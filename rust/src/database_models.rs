@@ -125,6 +125,18 @@ pub struct ContainerRevRow {
     pub coden: Option<String>,
 }
 
+#[derive(Debug, Associations, AsChangeset, Insertable)]
+#[table_name = "container_rev"]
+pub struct ContainerRevNewRow {
+    pub extra_json: Option<serde_json::Value>,
+    pub name: String,
+    pub publisher: Option<String>,
+    pub issnl: Option<String>,
+    pub wikidata_qid: Option<String>,
+    pub abbrev: Option<String>,
+    pub coden: Option<String>,
+}
+
 entity_structs!(
     "container_edit",
     ContainerEditRow,
@@ -138,6 +150,17 @@ entity_structs!(
 #[table_name = "creator_rev"]
 pub struct CreatorRevRow {
     pub id: Uuid,
+    pub extra_json: Option<serde_json::Value>,
+    pub display_name: String,
+    pub given_name: Option<String>,
+    pub surname: Option<String>,
+    pub orcid: Option<String>,
+    pub wikidata_qid: Option<String>,
+}
+
+#[derive(Debug, Associations, AsChangeset, Insertable)]
+#[table_name = "creator_rev"]
+pub struct CreatorRevNewRow {
     pub extra_json: Option<serde_json::Value>,
     pub display_name: String,
     pub given_name: Option<String>,
@@ -184,12 +207,46 @@ pub struct FileRevRow {
     pub mimetype: Option<String>,
 }
 
+#[derive(Debug, Associations, AsChangeset, Insertable)]
+#[table_name = "file_rev"]
+pub struct FileRevNewRow {
+    pub extra_json: Option<serde_json::Value>,
+    pub size: Option<i64>,
+    pub sha1: Option<String>,
+    pub sha256: Option<String>,
+    pub md5: Option<String>,
+    pub mimetype: Option<String>,
+}
+
 entity_structs!("file_edit", FileEditRow, FileEditNewRow, "file_ident", FileIdentRow, FileIdentNewRow);
 
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
 #[table_name = "release_rev"]
 pub struct ReleaseRevRow {
     pub id: Uuid,
+    pub extra_json: Option<serde_json::Value>,
+    pub work_ident_id: Uuid,
+    pub container_ident_id: Option<Uuid>,
+    pub title: String,
+    pub release_type: Option<String>,
+    pub release_status: Option<String>,
+    pub release_date: Option<chrono::NaiveDate>,
+    pub doi: Option<String>,
+    pub pmid: Option<String>,
+    pub pmcid: Option<String>,
+    pub wikidata_qid: Option<String>,
+    pub isbn13: Option<String>,
+    pub core_id: Option<String>,
+    pub volume: Option<String>,
+    pub issue: Option<String>,
+    pub pages: Option<String>,
+    pub publisher: Option<String>,
+    pub language: Option<String>,
+}
+
+#[derive(Debug, Associations, AsChangeset, Insertable)]
+#[table_name = "release_rev"]
+pub struct ReleaseRevNewRow {
     pub extra_json: Option<serde_json::Value>,
     pub work_ident_id: Uuid,
     pub container_ident_id: Option<Uuid>,
