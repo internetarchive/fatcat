@@ -37,9 +37,14 @@ pub trait EntityEditRow {
 
 // Helper for constructing tables
 macro_rules! entity_structs {
-    ($edit_table:expr, $edit_struct:ident, $edit_new_struct:ident, $ident_table:expr,
-    $ident_struct:ident, $ident_new_struct:ident) => {
-
+    (
+        $edit_table:expr,
+        $edit_struct:ident,
+        $edit_new_struct:ident,
+        $ident_table:expr,
+        $ident_struct:ident,
+        $ident_new_struct:ident
+    ) => {
         #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset, QueryableByName)]
         #[table_name = $edit_table]
         pub struct $edit_struct {
@@ -218,7 +223,14 @@ pub struct FileRevNewRow {
     pub mimetype: Option<String>,
 }
 
-entity_structs!("file_edit", FileEditRow, FileEditNewRow, "file_ident", FileIdentRow, FileIdentNewRow);
+entity_structs!(
+    "file_edit",
+    FileEditRow,
+    FileEditNewRow,
+    "file_ident",
+    FileIdentRow,
+    FileIdentNewRow
+);
 
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
 #[table_name = "release_rev"]
@@ -289,7 +301,14 @@ pub struct WorkRevNewRow {
     pub extra_json: Option<serde_json::Value>,
 }
 
-entity_structs!("work_edit", WorkEditRow, WorkEditNewRow, "work_ident", WorkIdentRow, WorkIdentNewRow);
+entity_structs!(
+    "work_edit",
+    WorkEditRow,
+    WorkEditNewRow,
+    "work_ident",
+    WorkIdentRow,
+    WorkIdentNewRow
+);
 
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
 #[table_name = "release_rev_abstract"]

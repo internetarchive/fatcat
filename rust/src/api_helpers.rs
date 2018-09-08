@@ -5,10 +5,11 @@ use diesel;
 use diesel::prelude::*;
 use errors::*;
 use regex::Regex;
-use uuid::Uuid;
 use std::str::FromStr;
+use uuid::Uuid;
 
-pub type DbConn = diesel::r2d2::PooledConnection<diesel::r2d2::ConnectionManager<diesel::PgConnection>>;
+pub type DbConn =
+    diesel::r2d2::PooledConnection<diesel::r2d2::ConnectionManager<diesel::PgConnection>>;
 
 /// This function should always be run within a transaction
 pub fn get_or_create_editgroup(editor_id: Uuid, conn: &PgConnection) -> Result<Uuid> {

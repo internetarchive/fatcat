@@ -2,6 +2,7 @@
 
 use api_helpers::*;
 use chrono;
+use database_entity_crud::{EditContext, EntityCrud};
 use database_models::*;
 use database_schema::{
     abstracts, changelog, container_edit, container_ident, container_rev, creator_edit,
@@ -15,10 +16,9 @@ use errors::*;
 use fatcat_api::models;
 use fatcat_api::models::*;
 use sha1::Sha1;
+use std::str::FromStr;
 use uuid::Uuid;
 use ConnectionPool;
-use database_entity_crud::{EntityCrud, EditContext};
-use std::str::FromStr;
 
 macro_rules! entity_batch_handler {
     ($post_batch_handler:ident, $model:ident) => {
@@ -125,7 +125,6 @@ impl Server {
         _expand: Option<String>,
         conn: &DbConn,
     ) -> Result<CreatorEntity> {
-
         CreatorEntity::db_get(conn, FatCatId::from_uuid(id))
     }
 
@@ -195,7 +194,6 @@ impl Server {
         expand: Option<String>,
         conn: &DbConn,
     ) -> Result<ReleaseEntity> {
-
         let mut release = ReleaseEntity::db_get(conn, FatCatId::from_uuid(id))?;
 
         // For now, if there is any expand param we do them all
@@ -226,7 +224,6 @@ impl Server {
     }
 
     pub fn get_release_files_handler(&self, id: &str, conn: &DbConn) -> Result<Vec<FileEntity>> {
-
         let ident = FatCatId::from_str(id)?;
 
         let rows: Vec<(FileRevRow, FileIdentRow, FileReleaseRow)> = file_rev::table
@@ -286,7 +283,12 @@ impl Server {
         let edit = entity.db_update(conn, &edit_context, FatCatId::from_uuid(id))?;
         edit.into_model()
     }
-    pub fn delete_container_handler(&self, id: &Uuid, editgroup_id: Option<Uuid>, conn: &DbConn) -> Result<EntityEdit> {
+    pub fn delete_container_handler(
+        &self,
+        id: &Uuid,
+        editgroup_id: Option<Uuid>,
+        conn: &DbConn,
+    ) -> Result<EntityEdit> {
         let edit_context = make_edit_context(conn, editgroup_id.map(|u| FatCatId::from_uuid(&u)))?;
         let edit = ContainerEntity::db_delete(conn, &edit_context, FatCatId::from_uuid(id))?;
         edit.into_model()
@@ -300,7 +302,6 @@ impl Server {
         let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?)?;
         let edit = entity.db_create(conn, &edit_context)?;
         edit.into_model()
-
     }
 
     pub fn update_creator_handler(
@@ -313,7 +314,12 @@ impl Server {
         let edit = entity.db_update(conn, &edit_context, FatCatId::from_uuid(id))?;
         edit.into_model()
     }
-    pub fn delete_creator_handler(&self, id: &Uuid, editgroup_id: Option<Uuid>, conn: &DbConn) -> Result<EntityEdit> {
+    pub fn delete_creator_handler(
+        &self,
+        id: &Uuid,
+        editgroup_id: Option<Uuid>,
+        conn: &DbConn,
+    ) -> Result<EntityEdit> {
         let edit_context = make_edit_context(conn, editgroup_id.map(|u| FatCatId::from_uuid(&u)))?;
         let edit = CreatorEntity::db_delete(conn, &edit_context, FatCatId::from_uuid(id))?;
         edit.into_model()
@@ -339,7 +345,12 @@ impl Server {
         let edit = entity.db_update(conn, &edit_context, FatCatId::from_uuid(id))?;
         edit.into_model()
     }
-    pub fn delete_file_handler(&self, id: &Uuid, editgroup_id: Option<Uuid>, conn: &DbConn) -> Result<EntityEdit> {
+    pub fn delete_file_handler(
+        &self,
+        id: &Uuid,
+        editgroup_id: Option<Uuid>,
+        conn: &DbConn,
+    ) -> Result<EntityEdit> {
         let edit_context = make_edit_context(conn, editgroup_id.map(|u| FatCatId::from_uuid(&u)))?;
         let edit = FileEntity::db_delete(conn, &edit_context, FatCatId::from_uuid(id))?;
         edit.into_model()
@@ -365,7 +376,12 @@ impl Server {
         let edit = entity.db_update(conn, &edit_context, FatCatId::from_uuid(id))?;
         edit.into_model()
     }
-    pub fn delete_release_handler(&self, id: &Uuid, editgroup_id: Option<Uuid>, conn: &DbConn) -> Result<EntityEdit> {
+    pub fn delete_release_handler(
+        &self,
+        id: &Uuid,
+        editgroup_id: Option<Uuid>,
+        conn: &DbConn,
+    ) -> Result<EntityEdit> {
         let edit_context = make_edit_context(conn, editgroup_id.map(|u| FatCatId::from_uuid(&u)))?;
         let edit = ReleaseEntity::db_delete(conn, &edit_context, FatCatId::from_uuid(id))?;
         edit.into_model()
@@ -392,7 +408,12 @@ impl Server {
         edit.into_model()
     }
 
-    pub fn delete_work_handler(&self, id: &Uuid, editgroup_id: Option<Uuid>, conn: &DbConn) -> Result<EntityEdit> {
+    pub fn delete_work_handler(
+        &self,
+        id: &Uuid,
+        editgroup_id: Option<Uuid>,
+        conn: &DbConn,
+    ) -> Result<EntityEdit> {
         let edit_context = make_edit_context(conn, editgroup_id.map(|u| FatCatId::from_uuid(&u)))?;
         let edit = WorkEntity::db_delete(conn, &edit_context, FatCatId::from_uuid(id))?;
 
@@ -627,34 +648,50 @@ impl Server {
         Ok(StatsResponse { extra: Some(val) })
     }
 
-    entity_batch_handler!(
-        create_container_batch_handler,
-        ContainerEntity
-    );
-    entity_batch_handler!(
-        create_creator_batch_handler,
-        CreatorEntity
-    );
+    entity_batch_handler!(create_container_batch_handler, ContainerEntity);
+    entity_batch_handler!(create_creator_batch_handler, CreatorEntity);
     entity_batch_handler!(create_file_batch_handler, FileEntity);
-    entity_batch_handler!(
-        create_release_batch_handler,
-        ReleaseEntity
-    );
+    entity_batch_handler!(create_release_batch_handler, ReleaseEntity);
     entity_batch_handler!(create_work_batch_handler, WorkEntity);
 
-    pub fn get_container_history_handler(&self, id: &Uuid, limit: Option<i64>, conn: &DbConn,) -> Result<Vec<EntityHistoryEntry>> {
+    pub fn get_container_history_handler(
+        &self,
+        id: &Uuid,
+        limit: Option<i64>,
+        conn: &DbConn,
+    ) -> Result<Vec<EntityHistoryEntry>> {
         ContainerEntity::db_get_history(conn, FatCatId::from_uuid(id), limit)
     }
-    pub fn get_creator_history_handler(&self, id: &Uuid, limit: Option<i64>, conn: &DbConn,) -> Result<Vec<EntityHistoryEntry>> {
+    pub fn get_creator_history_handler(
+        &self,
+        id: &Uuid,
+        limit: Option<i64>,
+        conn: &DbConn,
+    ) -> Result<Vec<EntityHistoryEntry>> {
         CreatorEntity::db_get_history(conn, FatCatId::from_uuid(id), limit)
     }
-    pub fn get_file_history_handler(&self, id: &Uuid, limit: Option<i64>, conn: &DbConn,) -> Result<Vec<EntityHistoryEntry>> {
+    pub fn get_file_history_handler(
+        &self,
+        id: &Uuid,
+        limit: Option<i64>,
+        conn: &DbConn,
+    ) -> Result<Vec<EntityHistoryEntry>> {
         FileEntity::db_get_history(conn, FatCatId::from_uuid(id), limit)
     }
-    pub fn get_release_history_handler(&self, id: &Uuid, limit: Option<i64>, conn: &DbConn,) -> Result<Vec<EntityHistoryEntry>> {
+    pub fn get_release_history_handler(
+        &self,
+        id: &Uuid,
+        limit: Option<i64>,
+        conn: &DbConn,
+    ) -> Result<Vec<EntityHistoryEntry>> {
         ReleaseEntity::db_get_history(conn, FatCatId::from_uuid(id), limit)
     }
-    pub fn get_work_history_handler(&self, id: &Uuid, limit: Option<i64>, conn: &DbConn,) -> Result<Vec<EntityHistoryEntry>> {
+    pub fn get_work_history_handler(
+        &self,
+        id: &Uuid,
+        limit: Option<i64>,
+        conn: &DbConn,
+    ) -> Result<Vec<EntityHistoryEntry>> {
         WorkEntity::db_get_history(conn, FatCatId::from_uuid(id), limit)
     }
 }
