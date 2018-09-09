@@ -40,7 +40,8 @@ pub trait EntityCrud
 where
     Self: Sized,
 {
-    // TODO: could these be generic structs? Or do they need to be bound to a specific table?
+    // TODO: could EditRow and IdentRow be generic structs? Or do they need to be bound to a
+    // specific table?
     type EditRow; // EntityEditRow
     type EditNewRow;
     type IdentRow; // EntityIdentRow
@@ -85,7 +86,7 @@ where
     fn db_insert_revs(conn: &DbConn, models: &[&Self]) -> Result<Vec<Uuid>>;
 }
 
-// TODO: this could be a separate trait on all entities?
+// TODO: this could be a separate trait on all entities
 macro_rules! generic_parse_editgroup_id{
     () => {
         fn parse_editgroup_id(&self) -> Result<Option<FatCatId>> {
@@ -832,6 +833,8 @@ impl EntityCrud for ReleaseEntity {
 
         let mut release_ref_rows: Vec<ReleaseRefNewRow> = vec![];
         let mut release_contrib_rows: Vec<ReleaseContribNewRow> = vec![];
+        let mut abstract_rows: Vec<AbstractsRow> = vec![];
+        let mut release_abstract_rows: Vec<ReleaseRevAbstractNewRow> = vec![];
 
         for (model, rev_id) in models.iter().zip(rev_ids.iter()) {
             match &model.refs {
@@ -883,7 +886,6 @@ impl EntityCrud for ReleaseEntity {
                 }
             };
 
-            // TODO: this part still isn't parallelized
             if let Some(abstract_list) = &model.abstracts {
                 // For rows that specify content, we need to insert the abstract if it doesn't exist
                 // already
@@ -895,15 +897,8 @@ impl EntityCrud for ReleaseEntity {
                         content: c.content.clone().unwrap(),
                     })
                     .collect();
-                if !new_abstracts.is_empty() {
-                    // Sort of an "upsert"; only inserts new abstract rows if they don't already exist
-                    insert_into(abstracts::table)
-                        .values(&new_abstracts)
-                        .on_conflict(abstracts::sha1)
-                        .do_nothing()
-                        .execute(conn)?;
-                }
-                let release_abstract_rows: Vec<ReleaseRevAbstractNewRow> = abstract_list
+                abstract_rows.extend(new_abstracts);
+                let new_release_abstract_rows: Vec<ReleaseRevAbstractNewRow> = abstract_list
                     .into_iter()
                     .map(|c| {
                         Ok(ReleaseRevAbstractNewRow {
@@ -920,9 +915,7 @@ impl EntityCrud for ReleaseEntity {
                         })
                     })
                     .collect::<Result<Vec<ReleaseRevAbstractNewRow>>>()?;
-                insert_into(release_rev_abstract::table)
-                    .values(release_abstract_rows)
-                    .execute(conn)?;
+                release_abstract_rows.extend(new_release_abstract_rows);
             }
         }
 
@@ -935,6 +928,18 @@ impl EntityCrud for ReleaseEntity {
         if !release_contrib_rows.is_empty() {
             insert_into(release_contrib::table)
                 .values(release_contrib_rows)
+                .execute(conn)?;
+        }
+
+        if !abstract_rows.is_empty() {
+            // Sort of an "upsert"; only inserts new abstract rows if they don't already exist
+            insert_into(abstracts::table)
+                .values(&abstract_rows)
+                .on_conflict(abstracts::sha1)
+                .do_nothing()
+                .execute(conn)?;
+            insert_into(release_rev_abstract::table)
+                .values(release_abstract_rows)
                 .execute(conn)?;
         }
 
