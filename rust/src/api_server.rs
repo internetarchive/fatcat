@@ -4,12 +4,7 @@ use api_helpers::*;
 use chrono;
 use database_entity_crud::{EditContext, EntityCrud};
 use database_models::*;
-use database_schema::{
-    abstracts, changelog, container_edit, container_ident, container_rev, creator_edit,
-    creator_ident, creator_rev, editgroup, editor, file_edit, file_ident, file_release, file_rev,
-    file_rev_url, release_contrib, release_edit, release_ident, release_ref, release_rev,
-    release_rev_abstract, work_edit, work_ident, work_rev,
-};
+use database_schema::*;
 use diesel::prelude::*;
 use diesel::{self, insert_into};
 use errors::*;

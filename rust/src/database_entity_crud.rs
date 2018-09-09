@@ -3,7 +3,7 @@ use chrono;
 use database_models::*;
 use database_schema::*;
 use diesel::prelude::*;
-use diesel::insert_into;
+use diesel::{self, insert_into};
 use errors::*;
 use fatcat_api::models::*;
 use serde_json;
@@ -51,9 +51,19 @@ where
     fn parse_editgroup_id(&self) -> Result<Option<FatCatId>>;
 
     // Generic Methods
-    fn db_get(conn: &DbConn, ident: FatCatId) -> Result<Self>;
-    fn db_get_rev(conn: &DbConn, rev_id: Uuid) -> Result<Self>;
-    fn db_create(&self, conn: &DbConn, edit_context: &EditContext) -> Result<Self::EditRow>;
+    fn db_get(
+        conn: &DbConn,
+        ident: FatCatId
+    ) -> Result<Self>;
+    fn db_get_rev(
+        conn: &DbConn,
+        rev_id: Uuid
+    ) -> Result<Self>;
+    fn db_create(
+        &self,
+        conn: &DbConn,
+        edit_context: &EditContext
+    ) -> Result<Self::EditRow>;
     fn db_create_batch(
         conn: &DbConn,
         edit_context: &EditContext,
@@ -75,6 +85,10 @@ where
         ident: FatCatId,
         limit: Option<i64>,
     ) -> Result<Vec<EntityHistoryEntry>>;
+    fn db_accept_edits(
+        conn: &DbConn,
+        editgroup_id: FatCatId
+    ) -> Result<u64>;
 
     // Entity-specific Methods
     fn db_from_row(
@@ -82,8 +96,14 @@ where
         rev_row: Self::RevRow,
         ident_row: Option<Self::IdentRow>,
     ) -> Result<Self>;
-    fn db_insert_rev(&self, conn: &DbConn) -> Result<Uuid>;
-    fn db_insert_revs(conn: &DbConn, models: &[&Self]) -> Result<Vec<Uuid>>;
+    fn db_insert_rev(
+        &self,
+        conn: &DbConn
+    ) -> Result<Uuid>;
+    fn db_insert_revs(
+        conn: &DbConn,
+        models: &[&Self]
+    ) -> Result<Vec<Uuid>>;
 }
 
 // TODO: this could be a separate trait on all entities
@@ -276,6 +296,116 @@ macro_rules! generic_db_get_history {
     };
 }
 
+/*
+// This would be the clean and efficient way, but see:
+// https://github.com/diesel-rs/diesel/issues/1478
+//
+    diesel::update(container_ident::table)
+        .inner_join(container_edit::table.on(
+            container_ident::id.eq(container_edit::ident_id)
+        ))
+        .filter(container_edit::editgroup_id.eq(editgroup_id))
+        .values((
+            container_ident::is_live.eq(true),
+            container_ident::rev_id.eq(container_edit::rev_id),
+            container_ident::redirect_id.eq(container_edit::redirect_id),
+        ))
+        .execute()?;
+
+// Was previously:
+
+    for entity in &["container", "creator", "file", "work", "release"] {
+        diesel::sql_query(format!(
+            "
+                UPDATE {entity}_ident
+                SET
+                    is_live = true,
+                    rev_id = {entity}_edit.rev_id,
+                    redirect_id = {entity}_edit.redirect_id
+                FROM {entity}_edit
+                WHERE
+                    {entity}_ident.id = {entity}_edit.ident_id
+                    AND {entity}_edit.editgroup_id = $1",
+            entity = entity
+        )).bind::<diesel::sql_types::Uuid, _>(editgroup_id)
+            .execute(conn)?;
+*/
+
+// UPDATE FROM version: single query for many rows
+// Works with Postgres, not Cockroach
+macro_rules! generic_db_accept_edits_batch {
+    ($entity_name_str:expr) => {
+        fn db_accept_edits(
+            conn: &DbConn,
+            editgroup_id: FatCatId,
+        ) -> Result<u64> {
+
+            let count = diesel::sql_query(format!(
+                "
+                    UPDATE {entity}_ident
+                    SET
+                        is_live = true,
+                        rev_id = {entity}_edit.rev_id,
+                        redirect_id = {entity}_edit.redirect_id
+                    FROM {entity}_edit
+                    WHERE
+                        {entity}_ident.id = {entity}_edit.ident_id
+                        AND {entity}_edit.editgroup_id = $1",
+                entity = $entity_name_str 
+            )).bind::<diesel::sql_types::Uuid, _>(editgroup_id.to_uuid())
+                .execute(conn)?;
+            Ok(count as u64)
+        }
+    }
+}
+
+// UPDATE ROW version: single query per row
+// CockroachDB version (slow, single query per row)
+macro_rules! generic_db_accept_edits_each {
+    ($ident_table:ident, $edit_table:ident) => {
+        fn db_accept_edits(
+            conn: &DbConn,
+            editgroup_id: FatCatId,
+        ) -> Result<u64> {
+
+            // 1. select edit rows (in sql)
+            let edit_rows: Vec<Self::EditRow> = $edit_table::table
+                .filter($edit_table::editgroup_id.eq(&editgroup_id.to_uuid()))
+                .get_results(conn)?;
+            // 2. create ident rows (in rust)
+            let ident_rows: Vec<Self::IdentRow> = edit_rows
+                .iter()
+                .map(|edit|
+                    Self::IdentRow {
+                        id: edit.ident_id,
+                        is_live: true,
+                        rev_id: edit.rev_id,
+                        redirect_id: edit.redirect_id,
+
+                    }
+                )
+                .collect();
+            /*
+            // 3. upsert ident rows (in sql)
+            let count: u64 = diesel::insert_into($ident_table::table)
+                .values(ident_rows)
+                .on_conflict()
+                .do_update()
+                .set(ident_rows)
+                .execute(conn)?;
+            */
+            // 3. update every row individually
+            let count = ident_rows.len() as u64;
+            for row in ident_rows {
+                diesel::update(&row)
+                    .set(&row)
+                    .execute(conn)?;
+            }
+            Ok(count)
+        }
+    };
+}
+
 macro_rules! generic_db_insert_rev {
     () => {
         fn db_insert_rev(&self, conn: &DbConn) -> Result<Uuid> {
@@ -299,6 +429,8 @@ impl EntityCrud for ContainerEntity {
     generic_db_update!(container_ident, container_edit);
     generic_db_delete!(container_ident, container_edit);
     generic_db_get_history!(container_edit);
+    generic_db_accept_edits_batch!("container");
+    //generic_db_accept_edits_each!(container_ident, container_edit);
     generic_db_insert_rev!();
 
     fn db_from_row(
@@ -378,6 +510,8 @@ impl EntityCrud for CreatorEntity {
     generic_db_update!(creator_ident, creator_edit);
     generic_db_delete!(creator_ident, creator_edit);
     generic_db_get_history!(creator_edit);
+    generic_db_accept_edits_batch!("creator");
+    //generic_db_accept_edits_each!(creator_ident, creator_edit);
     generic_db_insert_rev!();
 
     fn db_from_row(
@@ -454,6 +588,8 @@ impl EntityCrud for FileEntity {
     generic_db_update!(file_ident, file_edit);
     generic_db_delete!(file_ident, file_edit);
     generic_db_get_history!(file_edit);
+    generic_db_accept_edits_batch!("file");
+    //generic_db_accept_edits_each!(file_ident, file_edit);
     generic_db_insert_rev!();
 
     fn db_from_row(
@@ -590,6 +726,8 @@ impl EntityCrud for ReleaseEntity {
     generic_db_update!(release_ident, release_edit);
     generic_db_delete!(release_ident, release_edit);
     generic_db_get_history!(release_edit);
+    generic_db_accept_edits_batch!("release");
+    //generic_db_accept_edits_each!(release_ident, release_edit);
     generic_db_insert_rev!();
 
     fn db_create(&self, conn: &DbConn, edit_context: &EditContext) -> Result<Self::EditRow> {
@@ -962,6 +1100,8 @@ impl EntityCrud for WorkEntity {
     generic_db_update!(work_ident, work_edit);
     generic_db_delete!(work_ident, work_edit);
     generic_db_get_history!(work_edit);
+    generic_db_accept_edits_batch!("work");
+    //generic_db_accept_edits_each!(work_ident, work_edit);
     generic_db_insert_rev!();
 
     fn db_from_row(
