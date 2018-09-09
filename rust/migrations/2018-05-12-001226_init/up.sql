@@ -30,8 +30,10 @@ ALTER TABLE editor
     ADD CONSTRAINT editor_editgroupid_fkey FOREIGN KEY (active_editgroup_id)
         REFERENCES editgroup(id);
 
+CREATE SEQUENCE changelog_seq START 1 INCREMENT 1;
+
 CREATE TABLE changelog (
-    id                  BIGSERIAL PRIMARY KEY,
+    id                  BIGINT PRIMARY KEY DEFAULT nextval('changelog_seq'),
     editgroup_id        UUID REFERENCES editgroup(id) NOT NULL,
     timestamp           TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL
 );
