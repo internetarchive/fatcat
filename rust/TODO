@@ -1,23 +1,26 @@
 
+finish refactor:
 - database_entity_crud -> api_entity_crud
-- merge autoaccept branch in with http-verbs branch
+x merge autoaccept branch in with http-verbs branch
+- direct CRUD calls from api_wrappers (except, maybe, batch?)
+    => generally, standardize "edit" actions
+- FatCatId and edit context between wrappers and handlers
+- review editgroup accept code
+
+verbs:
+- enforce "previous_rev" required in updates
+
 - fatcat_api -> fatcat_api_schema (or spec? models? types?)
 - fatcat -> fatcat-api-server
-- refactor rev creation (from an entity) into it's own function, across the board
-    => attach to database module structs?
-    => should make cockroachdb compatible (single use of CTE)
-    => usable from both "update" and "create"
 - editgroup param to update
     => also for creation? for consistency
-
 - editor_id vs. editor username; return editor_id (in addition to name?)
 
 later:
+- have editgroup_id be a request-level param everywhere (not entity-level; for batch)
 - editgroup: state to track review status?
 - re-implement old python tests
 - enforce "no editing if editgroup accepted" behavior
-- refactor entity creation/editing (DRY)
-- refactor to allow Result<> in all handlers
 - real auth
 - metrics, jwt, config, sentry
 - ansible/deployment/DNS story
@@ -29,5 +32,4 @@ schema/api questions:
 - "types"
 - define release field stuff
 - what should entity POST return? include both the entity and the edit?
-- PUTs (updates) to entities
 
