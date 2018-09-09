@@ -950,7 +950,7 @@ fn test_contribs() {
             "http://localhost:9411/v0/release",
             headers.clone(),
             r#"{"title": "some paper",
-                "doi": "10.1234/iiiiiii",
+                "doi": "10.1234/kkkkkkk",
                 "contribs": [{
                         "index": 1,
                         "raw_name": "textual description of contributor (aka, name)",
