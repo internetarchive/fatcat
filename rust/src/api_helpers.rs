@@ -1,18 +1,20 @@
 use data_encoding::BASE32_NOPAD;
 use database_models::*;
 use database_schema::*;
+use fatcat_api::models::*;
 use diesel;
 use diesel::prelude::*;
 use errors::*;
 use regex::Regex;
 use std::str::FromStr;
 use uuid::Uuid;
+use database_entity_crud::EntityCrud;
 
 pub type DbConn =
     diesel::r2d2::PooledConnection<diesel::r2d2::ConnectionManager<diesel::PgConnection>>;
 
 /// This function should always be run within a transaction
-pub fn get_or_create_editgroup(editor_id: Uuid, conn: &PgConnection) -> Result<Uuid> {
+pub fn get_or_create_editgroup(editor_id: Uuid, conn: &DbConn) -> Result<Uuid> {
     // check for current active
     let ed_row: EditorRow = editor::table.find(editor_id).first(conn)?;
     if let Some(current) = ed_row.active_editgroup_id {
@@ -30,7 +32,7 @@ pub fn get_or_create_editgroup(editor_id: Uuid, conn: &PgConnection) -> Result<U
 }
 
 /// This function should always be run within a transaction
-pub fn accept_editgroup(editgroup_id: Uuid, conn: &PgConnection) -> Result<ChangelogRow> {
+pub fn accept_editgroup(editgroup_id: Uuid, conn: &DbConn) -> Result<ChangelogRow> {
     // check that we haven't accepted already (in changelog)
     // NB: could leave this to a UNIQUE constraint
     let count: i64 = changelog::table
@@ -41,41 +43,13 @@ pub fn accept_editgroup(editgroup_id: Uuid, conn: &PgConnection) -> Result<Chang
         return Err(ErrorKind::EditgroupAlreadyAccepted(uuid2fcid(&editgroup_id)).into());
     }
 
-    // for each entity type...
-    //for entity in (container_edit, creator_edit, file_edit, release_edit, work_edit) {
-        /*
-        // This would be the clean and efficient way, but see:
-        // https://github.com/diesel-rs/diesel/issues/1478
-        diesel::update(container_ident::table)
-            .inner_join(container_edit::table.on(
-                container_ident::id.eq(container_edit::ident_id)
-            ))
-            .filter(container_edit::editgroup_id.eq(editgroup_id))
-            .values((
-                container_ident::is_live.eq(true),
-                container_ident::rev_id.eq(container_edit::rev_id),
-                container_ident::redirect_id.eq(container_edit::redirect_id),
-            ))
-            .execute()?;
-        */
-
-    // Sketchy... but fast? Only a few queries per accept.
-    for entity in &["container", "creator", "file", "work", "release"] {
-        diesel::sql_query(format!(
-            "
-                UPDATE {entity}_ident
-                SET
-                    is_live = true,
-                    rev_id = {entity}_edit.rev_id,
-                    redirect_id = {entity}_edit.redirect_id
-                FROM {entity}_edit
-                WHERE
-                    {entity}_ident.id = {entity}_edit.ident_id
-                    AND {entity}_edit.editgroup_id = $1",
-            entity = entity
-        )).bind::<diesel::sql_types::Uuid, _>(editgroup_id)
-            .execute(conn)?;
-    }
+    // copy edit columns to ident table
+    let eg_id = FatCatId::from_uuid(&editgroup_id);
+    ContainerEntity::db_accept_edits(conn, eg_id)?;
+    CreatorEntity::db_accept_edits(conn, eg_id)?;
+    FileEntity::db_accept_edits(conn, eg_id)?;
+    ReleaseEntity::db_accept_edits(conn, eg_id)?;
+    WorkEntity::db_accept_edits(conn, eg_id)?;
 
     // append log/changelog row
     let entry: ChangelogRow = diesel::insert_into(changelog::table)
@@ -91,7 +65,7 @@ pub fn accept_editgroup(editgroup_id: Uuid, conn: &PgConnection) -> Result<Chang
     Ok(entry)
 }
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub struct FatCatId(Uuid);
 
 impl ToString for FatCatId {
