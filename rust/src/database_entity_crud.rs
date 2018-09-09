@@ -429,8 +429,8 @@ impl EntityCrud for ContainerEntity {
     generic_db_update!(container_ident, container_edit);
     generic_db_delete!(container_ident, container_edit);
     generic_db_get_history!(container_edit);
-    generic_db_accept_edits_batch!("container");
-    //generic_db_accept_edits_each!(container_ident, container_edit);
+    //generic_db_accept_edits_batch!("container");
+    generic_db_accept_edits_each!(container_ident, container_edit);
     generic_db_insert_rev!();
 
     fn db_from_row(
@@ -510,8 +510,8 @@ impl EntityCrud for CreatorEntity {
     generic_db_update!(creator_ident, creator_edit);
     generic_db_delete!(creator_ident, creator_edit);
     generic_db_get_history!(creator_edit);
-    generic_db_accept_edits_batch!("creator");
-    //generic_db_accept_edits_each!(creator_ident, creator_edit);
+    //generic_db_accept_edits_batch!("creator");
+    generic_db_accept_edits_each!(creator_ident, creator_edit);
     generic_db_insert_rev!();
 
     fn db_from_row(
@@ -588,8 +588,8 @@ impl EntityCrud for FileEntity {
     generic_db_update!(file_ident, file_edit);
     generic_db_delete!(file_ident, file_edit);
     generic_db_get_history!(file_edit);
-    generic_db_accept_edits_batch!("file");
-    //generic_db_accept_edits_each!(file_ident, file_edit);
+    //generic_db_accept_edits_batch!("file");
+    generic_db_accept_edits_each!(file_ident, file_edit);
     generic_db_insert_rev!();
 
     fn db_from_row(
@@ -726,8 +726,8 @@ impl EntityCrud for ReleaseEntity {
     generic_db_update!(release_ident, release_edit);
     generic_db_delete!(release_ident, release_edit);
     generic_db_get_history!(release_edit);
-    generic_db_accept_edits_batch!("release");
-    //generic_db_accept_edits_each!(release_ident, release_edit);
+    //generic_db_accept_edits_batch!("release");
+    generic_db_accept_edits_each!(release_ident, release_edit);
     generic_db_insert_rev!();
 
     fn db_create(&self, conn: &DbConn, edit_context: &EditContext) -> Result<Self::EditRow> {
@@ -1100,8 +1100,8 @@ impl EntityCrud for WorkEntity {
     generic_db_update!(work_ident, work_edit);
     generic_db_delete!(work_ident, work_edit);
     generic_db_get_history!(work_edit);
-    generic_db_accept_edits_batch!("work");
-    //generic_db_accept_edits_each!(work_ident, work_edit);
+    //generic_db_accept_edits_batch!("work");
+    generic_db_accept_edits_each!(work_ident, work_edit);
     generic_db_insert_rev!();
 
     fn db_from_row(
