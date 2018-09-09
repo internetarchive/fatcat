@@ -1,0 +1,31 @@
+
+Currently only on batch creation (POST) for entities.
+
+For all bulk operations, optional 'editgroup' query parameter overrides
+individual editgroup parameters.
+
+If autoaccept flag is set and editgroup is not, a new editgroup is
+automatically created and overrides for all entities inserted. Note
+that this is different behavior from the "use current or create new"
+default behavior for regular creation.
+
+Unfortunately, "true" and "false" are the only values acceptable for boolean
+rust/openapi2 query parameters
+
+THOUGHT: doing an UPDATE in a transaction is probably not expensive
+
+Intent:
+- check can_autoaccept flag on editor table
+
+---------
+
+Crude benchmarking...
+
+cat /data/crossref/crossref-works.2018-01-21.badsample_5k.json | time ./fatcat_import.py import-crossref - /data/issn/20180216.ISSN-to-ISSN-L.txt
+
+autoaccept: 7.47user 0.48system 0:30.64elapsed 25%CPU
+master: 5.70user 0.34system 0:25.61elapsed 23%CPU
+    batch creation: ~153ms+
+    accept: ~5ms
+
+uh...

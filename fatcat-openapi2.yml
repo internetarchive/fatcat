@@ -37,7 +37,7 @@ x-issn: &FATCATISSN
 x-orcid: &FATCATORCID
   type: string
   example: "0000-0002-1825-0097"
-  pattern: "\\d{4}-\\d{4}-\\d{4}-\\d{4}"
+  pattern: "\\d{4}-\\d{4}-\\d{4}-\\d{3}[\\dX]"
   minLength: 19
   maxLength: 19
 
@@ -57,6 +57,10 @@ x-entity-props: &ENTITYPROPS
   extra:
     type: object
     additionalProperties: {}
+# TODO:
+#  edit_extra:
+#    type: object
+#    additionalProperties: {}
 
 definitions:
   error_response:
@@ -438,6 +442,16 @@ paths:
     post:
       operationId: "create_container_batch"
       parameters:
+        - name: autoaccept
+          in: query
+          type: boolean
+          required: false
+          description: "If true, and editor is authorized, batch is accepted all at once"
+        - name: editgroup
+          in: query
+          type: string
+          required: false
+          description: "Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)"
         - name: entity_list
           in: body
           required: true
@@ -459,18 +473,46 @@ paths:
         in: path
         type: string
         required: true
-      - name: expand
-        in: query
-        type: string
-        required: false
-        description: "List of sub-entities to expand in response. For now, only 'all' accepted."
     get:
       operationId: "get_container"
+      parameters:
+        - name: expand
+          in: query
+          type: string
+          required: false
+          description: "List of sub-entities to expand in response. For now, only 'all' accepted."
       responses:
         200:
           description: Found Entity
           schema:
             $ref: "#/definitions/container_entity"
+        <<: *ENTITYRESPONSES
+    put:
+      operationId: "update_container"
+      parameters:
+        - name: entity
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/container_entity"
+      responses:
+        200:
+          description: Updated Entity
+          schema:
+            $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+    delete:
+      operationId: "delete_container"
+      parameters:
+        - name: editgroup
+          in: query
+          required: false
+          type: string
+      responses:
+        200:
+          description: Deleted Entity
+          schema:
+            $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
   /container/{id}/history:
     parameters:
@@ -526,6 +568,16 @@ paths:
     post:
       operationId: "create_creator_batch"
       parameters:
+        - name: autoaccept
+          in: query
+          type: boolean
+          required: false
+          description: "If true, and editor is authorized, batch is accepted all at once"
+        - name: editgroup
+          in: query
+          type: string
+          required: false
+          description: "Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)"
         - name: entity_list
           in: body
           required: true
@@ -547,18 +599,46 @@ paths:
         in: path
         type: string
         required: true
-      - name: expand
-        in: query
-        type: string
-        required: false
-        description: "List of sub-entities to expand in response. For now, only 'all' accepted."
     get:
       operationId: "get_creator"
+      parameters:
+        - name: expand
+          in: query
+          type: string
+          required: false
+          description: "List of sub-entities to expand in response. For now, only 'all' accepted."
       responses:
         200:
           description: Found Entity
           schema:
             $ref: "#/definitions/creator_entity"
+        <<: *ENTITYRESPONSES
+    put:
+      operationId: "update_creator"
+      parameters:
+        - name: entity
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/creator_entity"
+      responses:
+        200:
+          description: Updated Entity
+          schema:
+            $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+    delete:
+      operationId: "delete_creator"
+      parameters:
+        - name: editgroup
+          in: query
+          required: false
+          type: string
+      responses:
+        200:
+          description: Deleted Entity
+          schema:
+            $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
   /creator/{id}/history:
     parameters:
@@ -630,6 +710,16 @@ paths:
     post:
       operationId: "create_file_batch"
       parameters:
+        - name: autoaccept
+          in: query
+          type: boolean
+          required: false
+          description: "If true, and editor is authorized, batch is accepted all at once"
+        - name: editgroup
+          in: query
+          type: string
+          required: false
+          description: "Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)"
         - name: entity_list
           in: body
           required: true
@@ -651,18 +741,46 @@ paths:
         in: path
         type: string
         required: true
-      - name: expand
-        in: query
-        type: string
-        required: false
-        description: "List of sub-entities to expand in response. For now, only 'all' accepted."
     get:
       operationId: "get_file"
+      parameters:
+        - name: expand
+          in: query
+          type: string
+          required: false
+          description: "List of sub-entities to expand in response. For now, only 'all' accepted."
       responses:
         200:
           description: Found Entity
           schema:
             $ref: "#/definitions/file_entity"
+        <<: *ENTITYRESPONSES
+    put:
+      operationId: "update_file"
+      parameters:
+        - name: entity
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/file_entity"
+      responses:
+        200:
+          description: Updated Entity
+          schema:
+            $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+    delete:
+      operationId: "delete_file"
+      parameters:
+        - name: editgroup
+          in: query
+          required: false
+          type: string
+      responses:
+        200:
+          description: Deleted Entity
+          schema:
+            $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
   /file/{id}/history:
     parameters:
@@ -718,6 +836,16 @@ paths:
     post:
       operationId: "create_release_batch"
       parameters:
+        - name: autoaccept
+          in: query
+          type: boolean
+          required: false
+          description: "If true, and editor is authorized, batch is accepted all at once"
+        - name: editgroup
+          in: query
+          type: string
+          required: false
+          description: "Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)"
         - name: entity_list
           in: body
           required: true
@@ -739,18 +867,46 @@ paths:
         in: path
         type: string
         required: true
-      - name: expand
-        in: query
-        type: string
-        required: false
-        description: "List of sub-entities to expand in response. For now, only 'all' accepted."
     get:
       operationId: "get_release"
+      parameters:
+        - name: expand
+          in: query
+          type: string
+          required: false
+          description: "List of sub-entities to expand in response. For now, only 'all' accepted."
       responses:
         200:
           description: Found Entity
           schema:
             $ref: "#/definitions/release_entity"
+        <<: *ENTITYRESPONSES
+    put:
+      operationId: "update_release"
+      parameters:
+        - name: entity
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/release_entity"
+      responses:
+        200:
+          description: Updated Entity
+          schema:
+            $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+    delete:
+      operationId: "delete_release"
+      parameters:
+        - name: editgroup
+          in: query
+          required: false
+          type: string
+      responses:
+        200:
+          description: Deleted Entity
+          schema:
+            $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
   /release/{id}/history:
     parameters:
@@ -822,6 +978,16 @@ paths:
     post:
       operationId: "create_work_batch"
       parameters:
+        - name: autoaccept
+          in: query
+          type: boolean
+          required: false
+          description: "If true, and editor is authorized, batch is accepted all at once"
+        - name: editgroup
+          in: query
+          type: string
+          required: false
+          description: "Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)"
         - name: entity_list
           in: body
           required: true
@@ -843,18 +1009,46 @@ paths:
         in: path
         type: string
         required: true
-      - name: expand
-        in: query
-        type: string
-        required: false
-        description: "List of sub-entities to expand in response. For now, only 'all' accepted."
     get:
       operationId: "get_work"
+      parameters:
+        - name: expand
+          in: query
+          type: string
+          required: false
+          description: "List of sub-entities to expand in response. For now, only 'all' accepted."
       responses:
         200:
           description: Found Entity
           schema:
             $ref: "#/definitions/work_entity"
+        <<: *ENTITYRESPONSES
+    put:
+      operationId: "update_work"
+      parameters:
+        - name: entity
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/work_entity"
+      responses:
+        200:
+          description: Updated Entity
+          schema:
+            $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+    delete:
+      operationId: "delete_work"
+      parameters:
+        - name: editgroup
+          in: query
+          required: false
+          type: string
+      responses:
+        200:
+          description: Deleted Entity
+          schema:
+            $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
   /work/{id}/history:
     parameters:
@@ -1001,8 +1195,16 @@ paths:
           description: Unmergable
           schema:
             $ref: "#/definitions/error_response"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/error_response"
         404:
           description: Not Found
+          schema:
+            $ref: "#/definitions/error_response"
+        409:
+          description: Edit Conflict
           schema:
             $ref: "#/definitions/error_response"
         500:

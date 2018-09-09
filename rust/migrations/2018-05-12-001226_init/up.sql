@@ -147,6 +147,8 @@ CREATE TABLE file_rev_url (
     url                 TEXT NOT NULL
 );
 
+CREATE INDEX file_rev_url_rev_idx ON file_rev_url(file_rev);
+
 CREATE TABLE file_ident (
     id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     is_live             BOOL NOT NULL DEFAULT false,

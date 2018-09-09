@@ -19,8 +19,9 @@ macro_rules! wrap_entity_handlers {
     // The only stable approach I know of would be: https://github.com/dtolnay/mashup
     ($get_fn:ident, $get_handler:ident, $get_resp:ident, $post_fn:ident, $post_handler:ident,
             $post_resp:ident, $post_batch_fn:ident, $post_batch_handler:ident,
-            $post_batch_resp:ident, $get_history_fn:ident, $get_history_handler:ident,
-            $get_history_resp:ident, $model:ident) => {
+            $post_batch_resp:ident, $update_fn:ident, $update_handler:ident, $update_resp:ident,
+            $delete_fn:ident, $delete_handler:ident, $delete_resp:ident, $get_history_fn:ident,
+            $get_history_handler:ident, $get_history_resp:ident, $model:ident) => {
 
         fn $get_fn(
             &self,
@@ -83,10 +84,12 @@ macro_rules! wrap_entity_handlers {
         fn $post_batch_fn(
             &self,
             entity_list: &Vec<models::$model>,
+            autoaccept: Option<bool>,
+            editgroup: Option<String>,
             _context: &Context,
         ) -> Box<Future<Item = $post_batch_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
-            let ret = match conn.transaction(|| self.$post_batch_handler(entity_list, &conn)) {
+            let ret = match conn.transaction(|| self.$post_batch_handler(entity_list, autoaccept.unwrap_or(false), editgroup, &conn)) {
                 Ok(edit) =>
                     $post_batch_resp::CreatedEntities(edit),
                 Err(Error(ErrorKind::Diesel(e), _)) =>
@@ -101,6 +104,79 @@ macro_rules! wrap_entity_handlers {
                 Err(e) => {
                     error!("{}", e);
                     $post_batch_resp::GenericError(ErrorResponse { message: e.to_string() })
+                },
+            };
+            Box::new(futures::done(Ok(ret)))
+        }
+
+        fn $update_fn(
+            &self,
+            id: String,
+            entity: models::$model,
+            _context: &Context,
+        ) -> Box<Future<Item = $update_resp, Error = ApiError> + Send> {
+            let id = if let Ok(parsed) = fcid2uuid(&id) { parsed } else {
+                return Box::new(futures::done(Ok($update_resp::BadRequest(ErrorResponse {
+                    message: ErrorKind::InvalidFatcatId(id).to_string() }))));
+            };
+            let conn = self.db_pool.get().expect("db_pool error");
+            let ret = match conn.transaction(|| self.$update_handler(&id, entity, &conn)) {
+                Ok(edit) =>
+                    $update_resp::UpdatedEntity(edit),
+                Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
+                    $update_resp::NotFound(ErrorResponse { message: format!("No such entity {}: {}", stringify!($model), id) }),
+                Err(Error(ErrorKind::Diesel(e), _)) =>
+                    $update_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::Uuid(e), _)) =>
+                    $update_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::InvalidFatcatId(e), _)) =>
+                    $update_resp::BadRequest(ErrorResponse {
+                        message: ErrorKind::InvalidFatcatId(e).to_string() }),
+                Err(Error(ErrorKind::MalformedExternalId(e), _)) =>
+                    $update_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(e) => {
+                    error!("{}", e);
+                    $update_resp::GenericError(ErrorResponse { message: e.to_string() })
+                },
+            };
+            Box::new(futures::done(Ok(ret)))
+        }
+
+        fn $delete_fn(
+            &self,
+            id: String,
+            editgroup_id: Option<String>,
+            _context: &Context,
+        ) -> Box<Future<Item = $delete_resp, Error = ApiError> + Send> {
+            let id = if let Ok(parsed) = fcid2uuid(&id) { parsed } else {
+                return Box::new(futures::done(Ok($delete_resp::BadRequest(ErrorResponse {
+                    message: ErrorKind::InvalidFatcatId(id).to_string() }))));
+            };
+            let editgroup_id = match editgroup_id {
+                Some(raw) => if let Ok(parsed) = fcid2uuid(&raw) { Some(parsed) } else {
+                    return Box::new(futures::done(Ok($delete_resp::BadRequest(ErrorResponse {
+                        message: ErrorKind::InvalidFatcatId(raw).to_string() }))))
+                }
+                None => None
+            };
+            let conn = self.db_pool.get().expect("db_pool error");
+            let ret = match conn.transaction(|| self.$delete_handler(&id, editgroup_id, &conn)) {
+                Ok(edit) =>
+                    $delete_resp::DeletedEntity(edit),
+                Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
+                    $delete_resp::NotFound(ErrorResponse { message: format!("No such entity {}: {}", stringify!($model), id) }),
+                Err(Error(ErrorKind::Diesel(e), _)) =>
+                    $delete_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::Uuid(e), _)) =>
+                    $delete_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::InvalidFatcatId(e), _)) =>
+                    $delete_resp::BadRequest(ErrorResponse {
+                        message: ErrorKind::InvalidFatcatId(e).to_string() }),
+                Err(Error(ErrorKind::MalformedExternalId(e), _)) =>
+                    $delete_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(e) => {
+                    error!("{}", e);
+                    $delete_resp::GenericError(ErrorResponse { message: e.to_string() })
                 },
             };
             Box::new(futures::done(Ok(ret)))
@@ -175,6 +251,12 @@ impl Api for Server {
         create_container_batch,
         create_container_batch_handler,
         CreateContainerBatchResponse,
+        update_container,
+        update_container_handler,
+        UpdateContainerResponse,
+        delete_container,
+        delete_container_handler,
+        DeleteContainerResponse,
         get_container_history,
         get_container_history_handler,
         GetContainerHistoryResponse,
@@ -191,6 +273,12 @@ impl Api for Server {
         create_creator_batch,
         create_creator_batch_handler,
         CreateCreatorBatchResponse,
+        update_creator,
+        update_creator_handler,
+        UpdateCreatorResponse,
+        delete_creator,
+        delete_creator_handler,
+        DeleteCreatorResponse,
         get_creator_history,
         get_creator_history_handler,
         GetCreatorHistoryResponse,
@@ -206,6 +294,12 @@ impl Api for Server {
         create_file_batch,
         create_file_batch_handler,
         CreateFileBatchResponse,
+        update_file,
+        update_file_handler,
+        UpdateFileResponse,
+        delete_file,
+        delete_file_handler,
+        DeleteFileResponse,
         get_file_history,
         get_file_history_handler,
         GetFileHistoryResponse,
@@ -221,6 +315,12 @@ impl Api for Server {
         create_release_batch,
         create_release_batch_handler,
         CreateReleaseBatchResponse,
+        update_release,
+        update_release_handler,
+        UpdateReleaseResponse,
+        delete_release,
+        delete_release_handler,
+        DeleteReleaseResponse,
         get_release_history,
         get_release_history_handler,
         GetReleaseHistoryResponse,
@@ -236,6 +336,12 @@ impl Api for Server {
         create_work_batch,
         create_work_batch_handler,
         CreateWorkBatchResponse,
+        update_work,
+        update_work_handler,
+        UpdateWorkResponse,
+        delete_work,
+        delete_work_handler,
+        DeleteWorkResponse,
         get_work_history,
         get_work_history_handler,
         GetWorkHistoryResponse,
@@ -306,6 +412,11 @@ impl Api for Server {
             Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
                 AcceptEditgroupResponse::NotFound(ErrorResponse {
                     message: format!("No such editgroup: {}", id),
+                })
+            }
+            Err(Error(ErrorKind::EditgroupAlreadyAccepted(e), _)) => {
+                AcceptEditgroupResponse::BadRequest(ErrorResponse {
+                    message: ErrorKind::EditgroupAlreadyAccepted(e).to_string(),
                 })
             }
             Err(e) => AcceptEditgroupResponse::GenericError(ErrorResponse {

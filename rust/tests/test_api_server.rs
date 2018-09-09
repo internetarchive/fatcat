@@ -469,6 +469,71 @@ fn test_post_work() {
 }
 
 #[test]
+fn test_update_work() {
+    let (headers, router, conn) = setup();
+
+    check_response(
+        request::post(
+            "http://localhost:9411/v0/work",
+            headers.clone(),
+            r#"{
+                "extra": { "source": "other speculation" }
+            }"#,
+            &router,
+        ),
+        status::Created,
+        None,
+    );
+
+    let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
+    let editgroup_id = get_or_create_editgroup(editor_id, &conn).unwrap();
+    check_response(
+        request::post(
+            &format!(
+                "http://localhost:9411/v0/editgroup/{}/accept",
+                uuid2fcid(&editgroup_id)
+            ),
+            headers.clone(),
+            "",
+            &router,
+        ),
+        status::Ok,
+        None,
+    );
+}
+
+#[test]
+fn test_delete_work() {
+    let (headers, router, conn) = setup();
+
+    check_response(
+        request::delete(
+            "http://localhost:9411/v0/work/aaaaaaaaaaaaavkvaaaaaaaaai",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        None,
+    );
+
+    let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
+    let editgroup_id = get_or_create_editgroup(editor_id, &conn).unwrap();
+    check_response(
+        request::post(
+            &format!(
+                "http://localhost:9411/v0/editgroup/{}/accept",
+                uuid2fcid(&editgroup_id)
+            ),
+            headers.clone(),
+            "",
+            &router,
+        ),
+        status::Ok,
+        None,
+    );
+}
+
+#[test]
 fn test_accept_editgroup() {
     let (headers, router, conn) = setup();
 
@@ -915,6 +980,47 @@ fn test_contribs() {
             &router,
         ),
         status::Ok,
+        None,
+    );
+}
+
+#[test]
+fn test_post_batch_autoaccept() {
+    let (headers, router, _conn) = setup();
+
+    // "true"
+    check_response(
+        request::post(
+            "http://localhost:9411/v0/container/batch?autoaccept=true",
+            headers.clone(),
+            r#"[{"name": "test journal"}, {"name": "another test journal"}]"#,
+            &router,
+        ),
+        status::Created,
+        None,
+    );
+
+    // "n"
+    check_response(
+        request::post(
+            "http://localhost:9411/v0/container/batch?autoaccept=n",
+            headers.clone(),
+            r#"[{"name": "test journal"}, {"name": "another test journal"}]"#,
+            &router,
+        ),
+        status::Created,
+        None,
+    );
+
+    // editgroup
+    check_response(
+        request::post(
+            "http://localhost:9411/v0/container/batch?autoaccept=yes&editgroup=asdf",
+            headers.clone(),
+            r#"[{"name": "test journal"}, {"name": "another test journal"}]"#,
+            &router,
+        ),
+        status::BadRequest,
         None,
     );
 }

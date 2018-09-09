@@ -10,11 +10,15 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for AcceptEditgroup
     lazy_static! {
-        pub static ref ACCEPT_EDITGROUP_UNMERGABLE: Mime = mime!(Application / Json);
+        pub static ref ACCEPT_EDITGROUP_BAD_REQUEST: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for AcceptEditgroup
     lazy_static! {
         pub static ref ACCEPT_EDITGROUP_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AcceptEditgroup
+    lazy_static! {
+        pub static ref ACCEPT_EDITGROUP_EDIT_CONFLICT: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for AcceptEditgroup
     lazy_static! {
@@ -191,6 +195,86 @@ pub mod responses {
     /// Create Mime objects for the response content types for CreateWorkBatch
     lazy_static! {
         pub static ref CREATE_WORK_BATCH_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteContainer
+    lazy_static! {
+        pub static ref DELETE_CONTAINER_DELETED_ENTITY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteContainer
+    lazy_static! {
+        pub static ref DELETE_CONTAINER_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteContainer
+    lazy_static! {
+        pub static ref DELETE_CONTAINER_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteContainer
+    lazy_static! {
+        pub static ref DELETE_CONTAINER_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteCreator
+    lazy_static! {
+        pub static ref DELETE_CREATOR_DELETED_ENTITY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteCreator
+    lazy_static! {
+        pub static ref DELETE_CREATOR_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteCreator
+    lazy_static! {
+        pub static ref DELETE_CREATOR_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteCreator
+    lazy_static! {
+        pub static ref DELETE_CREATOR_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteFile
+    lazy_static! {
+        pub static ref DELETE_FILE_DELETED_ENTITY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteFile
+    lazy_static! {
+        pub static ref DELETE_FILE_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteFile
+    lazy_static! {
+        pub static ref DELETE_FILE_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteFile
+    lazy_static! {
+        pub static ref DELETE_FILE_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteRelease
+    lazy_static! {
+        pub static ref DELETE_RELEASE_DELETED_ENTITY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteRelease
+    lazy_static! {
+        pub static ref DELETE_RELEASE_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteRelease
+    lazy_static! {
+        pub static ref DELETE_RELEASE_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteRelease
+    lazy_static! {
+        pub static ref DELETE_RELEASE_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteWork
+    lazy_static! {
+        pub static ref DELETE_WORK_DELETED_ENTITY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteWork
+    lazy_static! {
+        pub static ref DELETE_WORK_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteWork
+    lazy_static! {
+        pub static ref DELETE_WORK_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteWork
+    lazy_static! {
+        pub static ref DELETE_WORK_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for GetChangelog
     lazy_static! {
@@ -532,6 +616,86 @@ pub mod responses {
     lazy_static! {
         pub static ref LOOKUP_RELEASE_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
+    /// Create Mime objects for the response content types for UpdateContainer
+    lazy_static! {
+        pub static ref UPDATE_CONTAINER_UPDATED_ENTITY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateContainer
+    lazy_static! {
+        pub static ref UPDATE_CONTAINER_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateContainer
+    lazy_static! {
+        pub static ref UPDATE_CONTAINER_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateContainer
+    lazy_static! {
+        pub static ref UPDATE_CONTAINER_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateCreator
+    lazy_static! {
+        pub static ref UPDATE_CREATOR_UPDATED_ENTITY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateCreator
+    lazy_static! {
+        pub static ref UPDATE_CREATOR_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateCreator
+    lazy_static! {
+        pub static ref UPDATE_CREATOR_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateCreator
+    lazy_static! {
+        pub static ref UPDATE_CREATOR_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateFile
+    lazy_static! {
+        pub static ref UPDATE_FILE_UPDATED_ENTITY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateFile
+    lazy_static! {
+        pub static ref UPDATE_FILE_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateFile
+    lazy_static! {
+        pub static ref UPDATE_FILE_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateFile
+    lazy_static! {
+        pub static ref UPDATE_FILE_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateRelease
+    lazy_static! {
+        pub static ref UPDATE_RELEASE_UPDATED_ENTITY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateRelease
+    lazy_static! {
+        pub static ref UPDATE_RELEASE_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateRelease
+    lazy_static! {
+        pub static ref UPDATE_RELEASE_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateRelease
+    lazy_static! {
+        pub static ref UPDATE_RELEASE_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateWork
+    lazy_static! {
+        pub static ref UPDATE_WORK_UPDATED_ENTITY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateWork
+    lazy_static! {
+        pub static ref UPDATE_WORK_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateWork
+    lazy_static! {
+        pub static ref UPDATE_WORK_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateWork
+    lazy_static! {
+        pub static ref UPDATE_WORK_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
 
 }
 
@@ -580,6 +744,26 @@ pub mod requests {
     /// Create Mime objects for the request content types for CreateWorkBatch
     lazy_static! {
         pub static ref CREATE_WORK_BATCH: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the request content types for UpdateContainer
+    lazy_static! {
+        pub static ref UPDATE_CONTAINER: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the request content types for UpdateCreator
+    lazy_static! {
+        pub static ref UPDATE_CREATOR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the request content types for UpdateFile
+    lazy_static! {
+        pub static ref UPDATE_FILE: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the request content types for UpdateRelease
+    lazy_static! {
+        pub static ref UPDATE_RELEASE: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the request content types for UpdateWork
+    lazy_static! {
+        pub static ref UPDATE_WORK: Mime = mime!(Application / Json);
     }
 
 }

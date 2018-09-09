@@ -25,6 +25,7 @@ extern crate sha1;
 pub mod api_helpers;
 pub mod api_server;
 pub mod api_wrappers;
+pub mod database_entity_crud;
 pub mod database_models;
 pub mod database_schema;
 
@@ -46,6 +47,10 @@ mod errors {
             MalformedExternalId(id: String) {
                 description("external identifier doesn't match required pattern")
                 display("external identifier doesn't match required pattern")
+            }
+            EditgroupAlreadyAccepted(id: String) {
+                description("editgroup was already accepted")
+                display("attempted to accept an editgroup which was already accepted: {}", id)
             }
         }
     }

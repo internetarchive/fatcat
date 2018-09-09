@@ -139,8 +139,8 @@ class CreatorEntity(object):
             raise ValueError("Invalid value for `orcid`, length must be less than or equal to `19`")  # noqa: E501
         if orcid is not None and len(orcid) < 19:
             raise ValueError("Invalid value for `orcid`, length must be greater than or equal to `19`")  # noqa: E501
-        if orcid is not None and not re.search('\\d{4}-\\d{4}-\\d{4}-\\d{4}', orcid):  # noqa: E501
-            raise ValueError("Invalid value for `orcid`, must be a follow pattern or equal to `/\\d{4}-\\d{4}-\\d{4}-\\d{4}/`")  # noqa: E501
+        if orcid is not None and not re.search('\\d{4}-\\d{4}-\\d{4}-\\d{3}[\\dX]', orcid):  # noqa: E501
+            raise ValueError("Invalid value for `orcid`, must be a follow pattern or equal to `/\\d{4}-\\d{4}-\\d{4}-\\d{3}[\\dX]/`")  # noqa: E501
 
         self._orcid = orcid
 

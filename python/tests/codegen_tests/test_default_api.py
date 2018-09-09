@@ -101,6 +101,36 @@ class TestDefaultApi(unittest.TestCase):
         """
         pass
 
+    def test_delete_container(self):
+        """Test case for delete_container
+
+        """
+        pass
+
+    def test_delete_creator(self):
+        """Test case for delete_creator
+
+        """
+        pass
+
+    def test_delete_file(self):
+        """Test case for delete_file
+
+        """
+        pass
+
+    def test_delete_release(self):
+        """Test case for delete_release
+
+        """
+        pass
+
+    def test_delete_work(self):
+        """Test case for delete_work
+
+        """
+        pass
+
     def test_get_changelog(self):
         """Test case for get_changelog
 
@@ -235,6 +265,36 @@ class TestDefaultApi(unittest.TestCase):
 
     def test_lookup_release(self):
         """Test case for lookup_release
+
+        """
+        pass
+
+    def test_update_container(self):
+        """Test case for update_container
+
+        """
+        pass
+
+    def test_update_creator(self):
+        """Test case for update_creator
+
+        """
+        pass
+
+    def test_update_file(self):
+        """Test case for update_file
+
+        """
+        pass
+
+    def test_update_release(self):
+        """Test case for update_release
+
+        """
+        pass
+
+    def test_update_work(self):
+        """Test case for update_work
 
         """
         pass

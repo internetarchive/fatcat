@@ -1,0 +1,10 @@
+
+digital ocean
+    48 GB RAM, 12 cores, 960 GB $240/month
+    (or more)
+
+aws
+    i3.2xlarge 61 GB RAM, 8 cores, 1900 GB NVMe, $455/month
+
+OVH
+    MG-128 128 GB RAM, 16 cores, 2880 GB SSD (RAID), 500mbps unlimited b/w, $315/month

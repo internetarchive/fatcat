@@ -1,4 +1,5 @@
 
+import re
 import sys
 import csv
 import json
@@ -22,6 +23,7 @@ class FatcatImporter:
         self._orcid_id_map = dict()
         self._doi_id_map = dict()
         self._issn_issnl_map = None
+        self._orcid_regex = re.compile("^\\d{4}-\\d{4}-\\d{4}-\\d{4}$")
         if issn_map_file:
             self.read_issn_map_file(issn_map_file)
 
@@ -43,8 +45,7 @@ class FatcatImporter:
         for rows in grouper(source, size):
             eg = self.api.create_editgroup(
                 fatcat_client.Editgroup(editor_id='aaaaaaaaaaaabkvkaaaaaaaaae'))
-            self.create_batch(rows, eg.id)
-            self.api.accept_editgroup(eg.id)
+            self.create_batch(rows, editgroup_id=eg.id)
 
     def process_csv_source(self, source, group_size=100, delimiter=','):
         reader = csv.DictReader(source, delimiter=delimiter)
@@ -54,9 +55,11 @@ class FatcatImporter:
         reader = csv.DictReader(source, delimiter=delimiter)
         self.process_batch(reader, size)
 
+    def is_issnl(self, issnl):
+        return len(issnl) == 9 and issnl[4] == '-'
+
     def lookup_issnl(self, issnl):
         """Caches calls to the ISSN-L lookup API endpoint in a local dict"""
-        assert len(issnl) == 9 and issnl[4] == '-'
         if issnl in self._issnl_id_map:
             return self._issnl_id_map[issnl]
         container_id = None
@@ -69,9 +72,13 @@ class FatcatImporter:
         self._issnl_id_map[issnl] = container_id # might be None
         return container_id
 
+    def is_orcid(self, orcid):
+        return self._orcid_regex.match(orcid) != None
+
     def lookup_orcid(self, orcid):
         """Caches calls to the Orcid lookup API endpoint in a local dict"""
-        assert len(orcid) == 19 and orcid[4] == '-'
+        if not self.is_orcid(orcid):
+            return None
         if orcid in self._orcid_id_map:
             return self._orcid_id_map[orcid]
         creator_id = None
@@ -84,9 +91,12 @@ class FatcatImporter:
         self._orcid_id_map[orcid] = creator_id # might be None
         return creator_id
 
+    def is_doi(self, doi):
+        return doi.startswith("10.") and doi.count("/") >= 1
+
     def lookup_doi(self, doi):
         """Caches calls to the doi lookup API endpoint in a local dict"""
-        assert doi.startswith('10.')
+        assert self.is_doi(doi)
         doi = doi.lower()
         if doi in self._doi_id_map:
             return self._doi_id_map[doi]

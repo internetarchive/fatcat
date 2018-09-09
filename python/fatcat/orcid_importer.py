@@ -5,7 +5,6 @@ import itertools
 import fatcat_client
 from fatcat.importer_common import FatcatImporter
 
-
 def value_or_none(e):
     if type(e) == dict:
         e = e.get('value')
@@ -46,8 +45,12 @@ class FatcatOrcidImporter(FatcatImporter):
             else:
                 # must have *some* name
                 return None
+        orcid = obj['orcid-identifier']['path']
+        if not self.is_orcid(orcid):
+            sys.stderr.write("Bad ORCID: {}\n".format(orcid))
+            return None
         ce = fatcat_client.CreatorEntity(
-            orcid=obj['orcid-identifier']['path'],
+            orcid=orcid,
             given_name=given,
             surname=sur,
             display_name=display,
@@ -68,4 +71,4 @@ class FatcatOrcidImporter(FatcatImporter):
         objects = [o for o in objects if o != None]
         for o in objects:
             o.editgroup_id = editgroup_id
-        self.api.create_creator_batch(objects)
+        self.api.create_creator_batch(objects, autoaccept="true", editgroup=editgroup_id)

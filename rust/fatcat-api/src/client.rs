@@ -36,10 +36,11 @@ use swagger::{ApiError, Context, XSpanId};
 use models;
 use {
     AcceptEditgroupResponse, Api, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse, CreateEditgroupResponse, CreateFileBatchResponse,
-    CreateFileResponse, CreateReleaseBatchResponse, CreateReleaseResponse, CreateWorkBatchResponse, CreateWorkResponse, GetChangelogEntryResponse, GetChangelogResponse, GetContainerHistoryResponse,
-    GetContainerResponse, GetCreatorHistoryResponse, GetCreatorReleasesResponse, GetCreatorResponse, GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileHistoryResponse,
-    GetFileResponse, GetReleaseFilesResponse, GetReleaseHistoryResponse, GetReleaseResponse, GetStatsResponse, GetWorkHistoryResponse, GetWorkReleasesResponse, GetWorkResponse,
-    LookupContainerResponse, LookupCreatorResponse, LookupFileResponse, LookupReleaseResponse,
+    CreateFileResponse, CreateReleaseBatchResponse, CreateReleaseResponse, CreateWorkBatchResponse, CreateWorkResponse, DeleteContainerResponse, DeleteCreatorResponse, DeleteFileResponse,
+    DeleteReleaseResponse, DeleteWorkResponse, GetChangelogEntryResponse, GetChangelogResponse, GetContainerHistoryResponse, GetContainerResponse, GetCreatorHistoryResponse,
+    GetCreatorReleasesResponse, GetCreatorResponse, GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileHistoryResponse, GetFileResponse, GetReleaseFilesResponse,
+    GetReleaseHistoryResponse, GetReleaseResponse, GetStatsResponse, GetWorkHistoryResponse, GetWorkReleasesResponse, GetWorkResponse, LookupContainerResponse, LookupCreatorResponse,
+    LookupFileResponse, LookupReleaseResponse, UpdateContainerResponse, UpdateCreatorResponse, UpdateFileResponse, UpdateReleaseResponse, UpdateWorkResponse,
 };
 
 /// Convert input into a base path, e.g. "http://example:123". Also checks the scheme as it goes.
@@ -191,7 +192,7 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(AcceptEditgroupResponse::Unmergable(body))
+                    Ok(AcceptEditgroupResponse::BadRequest(body))
                 }
                 404 => {
                     let mut buf = String::new();
@@ -199,6 +200,13 @@ impl Api for Client {
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
                     Ok(AcceptEditgroupResponse::NotFound(body))
+                }
+                409 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(AcceptEditgroupResponse::EditConflict(body))
                 }
                 500 => {
                     let mut buf = String::new();
@@ -290,8 +298,23 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_container_batch(&self, param_entity_list: &Vec<models::ContainerEntity>, context: &Context) -> Box<Future<Item = CreateContainerBatchResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/container/batch", self.base_path);
+    fn create_container_batch(
+        &self,
+        param_entity_list: &Vec<models::ContainerEntity>,
+        param_autoaccept: Option<bool>,
+        param_editgroup: Option<String>,
+        context: &Context,
+    ) -> Box<Future<Item = CreateContainerBatchResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_autoaccept = param_autoaccept.map_or_else(String::new, |query| format!("autoaccept={autoaccept}&", autoaccept = query.to_string()));
+        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+
+        let url = format!(
+            "{}/v0/container/batch?{autoaccept}{editgroup}",
+            self.base_path,
+            autoaccept = utf8_percent_encode(&query_autoaccept, QUERY_ENCODE_SET),
+            editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET)
+        );
 
         let body = serde_json::to_string(&param_entity_list).expect("impossible to fail to serialize");
 
@@ -420,8 +443,23 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_creator_batch(&self, param_entity_list: &Vec<models::CreatorEntity>, context: &Context) -> Box<Future<Item = CreateCreatorBatchResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/creator/batch", self.base_path);
+    fn create_creator_batch(
+        &self,
+        param_entity_list: &Vec<models::CreatorEntity>,
+        param_autoaccept: Option<bool>,
+        param_editgroup: Option<String>,
+        context: &Context,
+    ) -> Box<Future<Item = CreateCreatorBatchResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_autoaccept = param_autoaccept.map_or_else(String::new, |query| format!("autoaccept={autoaccept}&", autoaccept = query.to_string()));
+        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+
+        let url = format!(
+            "{}/v0/creator/batch?{autoaccept}{editgroup}",
+            self.base_path,
+            autoaccept = utf8_percent_encode(&query_autoaccept, QUERY_ENCODE_SET),
+            editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET)
+        );
 
         let body = serde_json::to_string(&param_entity_list).expect("impossible to fail to serialize");
 
@@ -608,8 +646,23 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_file_batch(&self, param_entity_list: &Vec<models::FileEntity>, context: &Context) -> Box<Future<Item = CreateFileBatchResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/file/batch", self.base_path);
+    fn create_file_batch(
+        &self,
+        param_entity_list: &Vec<models::FileEntity>,
+        param_autoaccept: Option<bool>,
+        param_editgroup: Option<String>,
+        context: &Context,
+    ) -> Box<Future<Item = CreateFileBatchResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_autoaccept = param_autoaccept.map_or_else(String::new, |query| format!("autoaccept={autoaccept}&", autoaccept = query.to_string()));
+        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+
+        let url = format!(
+            "{}/v0/file/batch?{autoaccept}{editgroup}",
+            self.base_path,
+            autoaccept = utf8_percent_encode(&query_autoaccept, QUERY_ENCODE_SET),
+            editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET)
+        );
 
         let body = serde_json::to_string(&param_entity_list).expect("impossible to fail to serialize");
 
@@ -738,8 +791,23 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_release_batch(&self, param_entity_list: &Vec<models::ReleaseEntity>, context: &Context) -> Box<Future<Item = CreateReleaseBatchResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/release/batch", self.base_path);
+    fn create_release_batch(
+        &self,
+        param_entity_list: &Vec<models::ReleaseEntity>,
+        param_autoaccept: Option<bool>,
+        param_editgroup: Option<String>,
+        context: &Context,
+    ) -> Box<Future<Item = CreateReleaseBatchResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_autoaccept = param_autoaccept.map_or_else(String::new, |query| format!("autoaccept={autoaccept}&", autoaccept = query.to_string()));
+        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+
+        let url = format!(
+            "{}/v0/release/batch?{autoaccept}{editgroup}",
+            self.base_path,
+            autoaccept = utf8_percent_encode(&query_autoaccept, QUERY_ENCODE_SET),
+            editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET)
+        );
 
         let body = serde_json::to_string(&param_entity_list).expect("impossible to fail to serialize");
 
@@ -868,8 +936,23 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_work_batch(&self, param_entity_list: &Vec<models::WorkEntity>, context: &Context) -> Box<Future<Item = CreateWorkBatchResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/work/batch", self.base_path);
+    fn create_work_batch(
+        &self,
+        param_entity_list: &Vec<models::WorkEntity>,
+        param_autoaccept: Option<bool>,
+        param_editgroup: Option<String>,
+        context: &Context,
+    ) -> Box<Future<Item = CreateWorkBatchResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_autoaccept = param_autoaccept.map_or_else(String::new, |query| format!("autoaccept={autoaccept}&", autoaccept = query.to_string()));
+        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+
+        let url = format!(
+            "{}/v0/work/batch?{autoaccept}{editgroup}",
+            self.base_path,
+            autoaccept = utf8_percent_encode(&query_autoaccept, QUERY_ENCODE_SET),
+            editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET)
+        );
 
         let body = serde_json::to_string(&param_entity_list).expect("impossible to fail to serialize");
 
@@ -914,6 +997,346 @@ impl Api for Client {
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
                     Ok(CreateWorkBatchResponse::GenericError(body))
+                }
+                code => {
+                    let mut buf = [0; 100];
+                    let debug_body = match response.read(&mut buf) {
+                        Ok(len) => match str::from_utf8(&buf[..len]) {
+                            Ok(body) => Cow::from(body),
+                            Err(_) => Cow::from(format!("<Body was not UTF8: {:?}>", &buf[..len].to_vec())),
+                        },
+                        Err(e) => Cow::from(format!("<Failed to read body: {}>", e)),
+                    };
+                    Err(ApiError(format!("Unexpected response code {}:\n{:?}\n\n{}", code, response.headers, debug_body)))
+                }
+            }
+        }
+
+        let result = request.send().map_err(|e| ApiError(format!("No response received: {}", e))).and_then(parse_response);
+        Box::new(futures::done(result))
+    }
+
+    fn delete_container(&self, param_id: String, param_editgroup: Option<String>, context: &Context) -> Box<Future<Item = DeleteContainerResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+
+        let url = format!(
+            "{}/v0/container/{id}?{editgroup}",
+            self.base_path,
+            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET)
+        );
+
+        let hyper_client = (self.hyper_client)();
+        let request = hyper_client.request(hyper::method::Method::Delete, &url);
+        let mut custom_headers = hyper::header::Headers::new();
+
+        context.x_span_id.as_ref().map(|header| custom_headers.set(XSpanId(header.clone())));
+
+        let request = request.headers(custom_headers);
+
+        // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
+        fn parse_response(mut response: hyper::client::response::Response) -> Result<DeleteContainerResponse, ApiError> {
+            match response.status.to_u16() {
+                200 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::EntityEdit>(&buf)?;
+
+                    Ok(DeleteContainerResponse::DeletedEntity(body))
+                }
+                400 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(DeleteContainerResponse::BadRequest(body))
+                }
+                404 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(DeleteContainerResponse::NotFound(body))
+                }
+                500 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(DeleteContainerResponse::GenericError(body))
+                }
+                code => {
+                    let mut buf = [0; 100];
+                    let debug_body = match response.read(&mut buf) {
+                        Ok(len) => match str::from_utf8(&buf[..len]) {
+                            Ok(body) => Cow::from(body),
+                            Err(_) => Cow::from(format!("<Body was not UTF8: {:?}>", &buf[..len].to_vec())),
+                        },
+                        Err(e) => Cow::from(format!("<Failed to read body: {}>", e)),
+                    };
+                    Err(ApiError(format!("Unexpected response code {}:\n{:?}\n\n{}", code, response.headers, debug_body)))
+                }
+            }
+        }
+
+        let result = request.send().map_err(|e| ApiError(format!("No response received: {}", e))).and_then(parse_response);
+        Box::new(futures::done(result))
+    }
+
+    fn delete_creator(&self, param_id: String, param_editgroup: Option<String>, context: &Context) -> Box<Future<Item = DeleteCreatorResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+
+        let url = format!(
+            "{}/v0/creator/{id}?{editgroup}",
+            self.base_path,
+            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET)
+        );
+
+        let hyper_client = (self.hyper_client)();
+        let request = hyper_client.request(hyper::method::Method::Delete, &url);
+        let mut custom_headers = hyper::header::Headers::new();
+
+        context.x_span_id.as_ref().map(|header| custom_headers.set(XSpanId(header.clone())));
+
+        let request = request.headers(custom_headers);
+
+        // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
+        fn parse_response(mut response: hyper::client::response::Response) -> Result<DeleteCreatorResponse, ApiError> {
+            match response.status.to_u16() {
+                200 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::EntityEdit>(&buf)?;
+
+                    Ok(DeleteCreatorResponse::DeletedEntity(body))
+                }
+                400 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(DeleteCreatorResponse::BadRequest(body))
+                }
+                404 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(DeleteCreatorResponse::NotFound(body))
+                }
+                500 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(DeleteCreatorResponse::GenericError(body))
+                }
+                code => {
+                    let mut buf = [0; 100];
+                    let debug_body = match response.read(&mut buf) {
+                        Ok(len) => match str::from_utf8(&buf[..len]) {
+                            Ok(body) => Cow::from(body),
+                            Err(_) => Cow::from(format!("<Body was not UTF8: {:?}>", &buf[..len].to_vec())),
+                        },
+                        Err(e) => Cow::from(format!("<Failed to read body: {}>", e)),
+                    };
+                    Err(ApiError(format!("Unexpected response code {}:\n{:?}\n\n{}", code, response.headers, debug_body)))
+                }
+            }
+        }
+
+        let result = request.send().map_err(|e| ApiError(format!("No response received: {}", e))).and_then(parse_response);
+        Box::new(futures::done(result))
+    }
+
+    fn delete_file(&self, param_id: String, param_editgroup: Option<String>, context: &Context) -> Box<Future<Item = DeleteFileResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+
+        let url = format!(
+            "{}/v0/file/{id}?{editgroup}",
+            self.base_path,
+            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET)
+        );
+
+        let hyper_client = (self.hyper_client)();
+        let request = hyper_client.request(hyper::method::Method::Delete, &url);
+        let mut custom_headers = hyper::header::Headers::new();
+
+        context.x_span_id.as_ref().map(|header| custom_headers.set(XSpanId(header.clone())));
+
+        let request = request.headers(custom_headers);
+
+        // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
+        fn parse_response(mut response: hyper::client::response::Response) -> Result<DeleteFileResponse, ApiError> {
+            match response.status.to_u16() {
+                200 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::EntityEdit>(&buf)?;
+
+                    Ok(DeleteFileResponse::DeletedEntity(body))
+                }
+                400 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(DeleteFileResponse::BadRequest(body))
+                }
+                404 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(DeleteFileResponse::NotFound(body))
+                }
+                500 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(DeleteFileResponse::GenericError(body))
+                }
+                code => {
+                    let mut buf = [0; 100];
+                    let debug_body = match response.read(&mut buf) {
+                        Ok(len) => match str::from_utf8(&buf[..len]) {
+                            Ok(body) => Cow::from(body),
+                            Err(_) => Cow::from(format!("<Body was not UTF8: {:?}>", &buf[..len].to_vec())),
+                        },
+                        Err(e) => Cow::from(format!("<Failed to read body: {}>", e)),
+                    };
+                    Err(ApiError(format!("Unexpected response code {}:\n{:?}\n\n{}", code, response.headers, debug_body)))
+                }
+            }
+        }
+
+        let result = request.send().map_err(|e| ApiError(format!("No response received: {}", e))).and_then(parse_response);
+        Box::new(futures::done(result))
+    }
+
+    fn delete_release(&self, param_id: String, param_editgroup: Option<String>, context: &Context) -> Box<Future<Item = DeleteReleaseResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+
+        let url = format!(
+            "{}/v0/release/{id}?{editgroup}",
+            self.base_path,
+            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET)
+        );
+
+        let hyper_client = (self.hyper_client)();
+        let request = hyper_client.request(hyper::method::Method::Delete, &url);
+        let mut custom_headers = hyper::header::Headers::new();
+
+        context.x_span_id.as_ref().map(|header| custom_headers.set(XSpanId(header.clone())));
+
+        let request = request.headers(custom_headers);
+
+        // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
+        fn parse_response(mut response: hyper::client::response::Response) -> Result<DeleteReleaseResponse, ApiError> {
+            match response.status.to_u16() {
+                200 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::EntityEdit>(&buf)?;
+
+                    Ok(DeleteReleaseResponse::DeletedEntity(body))
+                }
+                400 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(DeleteReleaseResponse::BadRequest(body))
+                }
+                404 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(DeleteReleaseResponse::NotFound(body))
+                }
+                500 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(DeleteReleaseResponse::GenericError(body))
+                }
+                code => {
+                    let mut buf = [0; 100];
+                    let debug_body = match response.read(&mut buf) {
+                        Ok(len) => match str::from_utf8(&buf[..len]) {
+                            Ok(body) => Cow::from(body),
+                            Err(_) => Cow::from(format!("<Body was not UTF8: {:?}>", &buf[..len].to_vec())),
+                        },
+                        Err(e) => Cow::from(format!("<Failed to read body: {}>", e)),
+                    };
+                    Err(ApiError(format!("Unexpected response code {}:\n{:?}\n\n{}", code, response.headers, debug_body)))
+                }
+            }
+        }
+
+        let result = request.send().map_err(|e| ApiError(format!("No response received: {}", e))).and_then(parse_response);
+        Box::new(futures::done(result))
+    }
+
+    fn delete_work(&self, param_id: String, param_editgroup: Option<String>, context: &Context) -> Box<Future<Item = DeleteWorkResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+
+        let url = format!(
+            "{}/v0/work/{id}?{editgroup}",
+            self.base_path,
+            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET)
+        );
+
+        let hyper_client = (self.hyper_client)();
+        let request = hyper_client.request(hyper::method::Method::Delete, &url);
+        let mut custom_headers = hyper::header::Headers::new();
+
+        context.x_span_id.as_ref().map(|header| custom_headers.set(XSpanId(header.clone())));
+
+        let request = request.headers(custom_headers);
+
+        // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
+        fn parse_response(mut response: hyper::client::response::Response) -> Result<DeleteWorkResponse, ApiError> {
+            match response.status.to_u16() {
+                200 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::EntityEdit>(&buf)?;
+
+                    Ok(DeleteWorkResponse::DeletedEntity(body))
+                }
+                400 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(DeleteWorkResponse::BadRequest(body))
+                }
+                404 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(DeleteWorkResponse::NotFound(body))
+                }
+                500 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(DeleteWorkResponse::GenericError(body))
                 }
                 code => {
                     let mut buf = [0; 100];
@@ -2343,6 +2766,331 @@ impl Api for Client {
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
                     Ok(LookupReleaseResponse::GenericError(body))
+                }
+                code => {
+                    let mut buf = [0; 100];
+                    let debug_body = match response.read(&mut buf) {
+                        Ok(len) => match str::from_utf8(&buf[..len]) {
+                            Ok(body) => Cow::from(body),
+                            Err(_) => Cow::from(format!("<Body was not UTF8: {:?}>", &buf[..len].to_vec())),
+                        },
+                        Err(e) => Cow::from(format!("<Failed to read body: {}>", e)),
+                    };
+                    Err(ApiError(format!("Unexpected response code {}:\n{:?}\n\n{}", code, response.headers, debug_body)))
+                }
+            }
+        }
+
+        let result = request.send().map_err(|e| ApiError(format!("No response received: {}", e))).and_then(parse_response);
+        Box::new(futures::done(result))
+    }
+
+    fn update_container(&self, param_id: String, param_entity: models::ContainerEntity, context: &Context) -> Box<Future<Item = UpdateContainerResponse, Error = ApiError> + Send> {
+        let url = format!("{}/v0/container/{id}", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
+
+        let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
+
+        let hyper_client = (self.hyper_client)();
+        let request = hyper_client.request(hyper::method::Method::Put, &url);
+        let mut custom_headers = hyper::header::Headers::new();
+
+        let request = request.body(&body);
+
+        custom_headers.set(ContentType(mimetypes::requests::UPDATE_CONTAINER.clone()));
+        context.x_span_id.as_ref().map(|header| custom_headers.set(XSpanId(header.clone())));
+
+        let request = request.headers(custom_headers);
+
+        // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
+        fn parse_response(mut response: hyper::client::response::Response) -> Result<UpdateContainerResponse, ApiError> {
+            match response.status.to_u16() {
+                200 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::EntityEdit>(&buf)?;
+
+                    Ok(UpdateContainerResponse::UpdatedEntity(body))
+                }
+                400 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(UpdateContainerResponse::BadRequest(body))
+                }
+                404 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(UpdateContainerResponse::NotFound(body))
+                }
+                500 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(UpdateContainerResponse::GenericError(body))
+                }
+                code => {
+                    let mut buf = [0; 100];
+                    let debug_body = match response.read(&mut buf) {
+                        Ok(len) => match str::from_utf8(&buf[..len]) {
+                            Ok(body) => Cow::from(body),
+                            Err(_) => Cow::from(format!("<Body was not UTF8: {:?}>", &buf[..len].to_vec())),
+                        },
+                        Err(e) => Cow::from(format!("<Failed to read body: {}>", e)),
+                    };
+                    Err(ApiError(format!("Unexpected response code {}:\n{:?}\n\n{}", code, response.headers, debug_body)))
+                }
+            }
+        }
+
+        let result = request.send().map_err(|e| ApiError(format!("No response received: {}", e))).and_then(parse_response);
+        Box::new(futures::done(result))
+    }
+
+    fn update_creator(&self, param_id: String, param_entity: models::CreatorEntity, context: &Context) -> Box<Future<Item = UpdateCreatorResponse, Error = ApiError> + Send> {
+        let url = format!("{}/v0/creator/{id}", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
+
+        let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
+
+        let hyper_client = (self.hyper_client)();
+        let request = hyper_client.request(hyper::method::Method::Put, &url);
+        let mut custom_headers = hyper::header::Headers::new();
+
+        let request = request.body(&body);
+
+        custom_headers.set(ContentType(mimetypes::requests::UPDATE_CREATOR.clone()));
+        context.x_span_id.as_ref().map(|header| custom_headers.set(XSpanId(header.clone())));
+
+        let request = request.headers(custom_headers);
+
+        // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
+        fn parse_response(mut response: hyper::client::response::Response) -> Result<UpdateCreatorResponse, ApiError> {
+            match response.status.to_u16() {
+                200 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::EntityEdit>(&buf)?;
+
+                    Ok(UpdateCreatorResponse::UpdatedEntity(body))
+                }
+                400 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(UpdateCreatorResponse::BadRequest(body))
+                }
+                404 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(UpdateCreatorResponse::NotFound(body))
+                }
+                500 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(UpdateCreatorResponse::GenericError(body))
+                }
+                code => {
+                    let mut buf = [0; 100];
+                    let debug_body = match response.read(&mut buf) {
+                        Ok(len) => match str::from_utf8(&buf[..len]) {
+                            Ok(body) => Cow::from(body),
+                            Err(_) => Cow::from(format!("<Body was not UTF8: {:?}>", &buf[..len].to_vec())),
+                        },
+                        Err(e) => Cow::from(format!("<Failed to read body: {}>", e)),
+                    };
+                    Err(ApiError(format!("Unexpected response code {}:\n{:?}\n\n{}", code, response.headers, debug_body)))
+                }
+            }
+        }
+
+        let result = request.send().map_err(|e| ApiError(format!("No response received: {}", e))).and_then(parse_response);
+        Box::new(futures::done(result))
+    }
+
+    fn update_file(&self, param_id: String, param_entity: models::FileEntity, context: &Context) -> Box<Future<Item = UpdateFileResponse, Error = ApiError> + Send> {
+        let url = format!("{}/v0/file/{id}", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
+
+        let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
+
+        let hyper_client = (self.hyper_client)();
+        let request = hyper_client.request(hyper::method::Method::Put, &url);
+        let mut custom_headers = hyper::header::Headers::new();
+
+        let request = request.body(&body);
+
+        custom_headers.set(ContentType(mimetypes::requests::UPDATE_FILE.clone()));
+        context.x_span_id.as_ref().map(|header| custom_headers.set(XSpanId(header.clone())));
+
+        let request = request.headers(custom_headers);
+
+        // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
+        fn parse_response(mut response: hyper::client::response::Response) -> Result<UpdateFileResponse, ApiError> {
+            match response.status.to_u16() {
+                200 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::EntityEdit>(&buf)?;
+
+                    Ok(UpdateFileResponse::UpdatedEntity(body))
+                }
+                400 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(UpdateFileResponse::BadRequest(body))
+                }
+                404 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(UpdateFileResponse::NotFound(body))
+                }
+                500 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(UpdateFileResponse::GenericError(body))
+                }
+                code => {
+                    let mut buf = [0; 100];
+                    let debug_body = match response.read(&mut buf) {
+                        Ok(len) => match str::from_utf8(&buf[..len]) {
+                            Ok(body) => Cow::from(body),
+                            Err(_) => Cow::from(format!("<Body was not UTF8: {:?}>", &buf[..len].to_vec())),
+                        },
+                        Err(e) => Cow::from(format!("<Failed to read body: {}>", e)),
+                    };
+                    Err(ApiError(format!("Unexpected response code {}:\n{:?}\n\n{}", code, response.headers, debug_body)))
+                }
+            }
+        }
+
+        let result = request.send().map_err(|e| ApiError(format!("No response received: {}", e))).and_then(parse_response);
+        Box::new(futures::done(result))
+    }
+
+    fn update_release(&self, param_id: String, param_entity: models::ReleaseEntity, context: &Context) -> Box<Future<Item = UpdateReleaseResponse, Error = ApiError> + Send> {
+        let url = format!("{}/v0/release/{id}", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
+
+        let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
+
+        let hyper_client = (self.hyper_client)();
+        let request = hyper_client.request(hyper::method::Method::Put, &url);
+        let mut custom_headers = hyper::header::Headers::new();
+
+        let request = request.body(&body);
+
+        custom_headers.set(ContentType(mimetypes::requests::UPDATE_RELEASE.clone()));
+        context.x_span_id.as_ref().map(|header| custom_headers.set(XSpanId(header.clone())));
+
+        let request = request.headers(custom_headers);
+
+        // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
+        fn parse_response(mut response: hyper::client::response::Response) -> Result<UpdateReleaseResponse, ApiError> {
+            match response.status.to_u16() {
+                200 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::EntityEdit>(&buf)?;
+
+                    Ok(UpdateReleaseResponse::UpdatedEntity(body))
+                }
+                400 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(UpdateReleaseResponse::BadRequest(body))
+                }
+                404 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(UpdateReleaseResponse::NotFound(body))
+                }
+                500 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(UpdateReleaseResponse::GenericError(body))
+                }
+                code => {
+                    let mut buf = [0; 100];
+                    let debug_body = match response.read(&mut buf) {
+                        Ok(len) => match str::from_utf8(&buf[..len]) {
+                            Ok(body) => Cow::from(body),
+                            Err(_) => Cow::from(format!("<Body was not UTF8: {:?}>", &buf[..len].to_vec())),
+                        },
+                        Err(e) => Cow::from(format!("<Failed to read body: {}>", e)),
+                    };
+                    Err(ApiError(format!("Unexpected response code {}:\n{:?}\n\n{}", code, response.headers, debug_body)))
+                }
+            }
+        }
+
+        let result = request.send().map_err(|e| ApiError(format!("No response received: {}", e))).and_then(parse_response);
+        Box::new(futures::done(result))
+    }
+
+    fn update_work(&self, param_id: String, param_entity: models::WorkEntity, context: &Context) -> Box<Future<Item = UpdateWorkResponse, Error = ApiError> + Send> {
+        let url = format!("{}/v0/work/{id}", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
+
+        let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
+
+        let hyper_client = (self.hyper_client)();
+        let request = hyper_client.request(hyper::method::Method::Put, &url);
+        let mut custom_headers = hyper::header::Headers::new();
+
+        let request = request.body(&body);
+
+        custom_headers.set(ContentType(mimetypes::requests::UPDATE_WORK.clone()));
+        context.x_span_id.as_ref().map(|header| custom_headers.set(XSpanId(header.clone())));
+
+        let request = request.headers(custom_headers);
+
+        // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
+        fn parse_response(mut response: hyper::client::response::Response) -> Result<UpdateWorkResponse, ApiError> {
+            match response.status.to_u16() {
+                200 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::EntityEdit>(&buf)?;
+
+                    Ok(UpdateWorkResponse::UpdatedEntity(body))
+                }
+                400 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(UpdateWorkResponse::BadRequest(body))
+                }
+                404 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(UpdateWorkResponse::NotFound(body))
+                }
+                500 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(UpdateWorkResponse::GenericError(body))
                 }
                 code => {
                     let mut buf = [0; 100];

@@ -5,7 +5,11 @@ use diesel;
 use diesel::prelude::*;
 use errors::*;
 use regex::Regex;
+use std::str::FromStr;
 use uuid::Uuid;
+
+pub type DbConn =
+    diesel::r2d2::PooledConnection<diesel::r2d2::ConnectionManager<diesel::PgConnection>>;
 
 /// This function should always be run within a transaction
 pub fn get_or_create_editgroup(editor_id: Uuid, conn: &PgConnection) -> Result<Uuid> {
@@ -34,10 +38,7 @@ pub fn accept_editgroup(editgroup_id: Uuid, conn: &PgConnection) -> Result<Chang
         .count()
         .get_result(conn)?;
     if count > 0 {
-        bail!(
-            "editgroup {} has already been accepted",
-            editgroup_id.to_string()
-        );
+        return Err(ErrorKind::EditgroupAlreadyAccepted(uuid2fcid(&editgroup_id)).into());
     }
 
     // for each entity type...
@@ -88,6 +89,31 @@ pub fn accept_editgroup(editgroup_id: Uuid, conn: &PgConnection) -> Result<Chang
         .set(editor::active_editgroup_id.eq(no_active))
         .execute(conn)?;
     Ok(entry)
+}
+
+#[derive(Clone)]
+pub struct FatCatId(Uuid);
+
+impl ToString for FatCatId {
+    fn to_string(&self) -> String {
+        uuid2fcid(&self.to_uuid())
+    }
+}
+
+impl FromStr for FatCatId {
+    type Err = Error;
+    fn from_str(s: &str) -> Result<FatCatId> {
+        fcid2uuid(s).map(|u| FatCatId(u))
+    }
+}
+
+impl FatCatId {
+    pub fn to_uuid(&self) -> Uuid {
+        self.0
+    }
+    pub fn from_uuid(u: &Uuid) -> FatCatId {
+        FatCatId(u.clone())
+    }
 }
 
 /// Convert fatcat IDs (base32 strings) to UUID
@@ -181,7 +207,7 @@ pub fn check_issn(raw: &str) -> Result<()> {
 
 pub fn check_orcid(raw: &str) -> Result<()> {
     lazy_static! {
-        static ref RE: Regex = Regex::new(r"^\d{4}-\d{4}-\d{4}-\d{4}$").unwrap();
+        static ref RE: Regex = Regex::new(r"^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$").unwrap();
     }
     if RE.is_match(raw) {
         Ok(())
@@ -191,6 +217,14 @@ pub fn check_orcid(raw: &str) -> Result<()> {
             raw
         )).into())
     }
+}
+
+#[test]
+fn test_check_orcid() {
+    assert!(check_orcid("0123-4567-3456-6789").is_ok());
+    assert!(check_orcid("0123-4567-3456-678X").is_ok());
+    assert!(check_orcid("01234567-3456-6780").is_err());
+    assert!(check_orcid("0x23-4567-3456-6780").is_err());
 }
 
 // TODO: make the above checks "more correct"

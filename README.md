@@ -31,7 +31,7 @@ released, while the API server and web interface are strong copyleft (AGPLv3).
 ## Status
 
 - HTTP API
-    - [ ] base32 encoding of UUID identifiers
+    - [x] base32 encoding of UUID identifiers
     - [x] inverse many-to-many helpers (files-by-release, release-by-creator)
 - SQL Schema
     - [x] Basic entities
@@ -53,7 +53,9 @@ released, while the API server and web interface are strong copyleft (AGPLv3).
 
 ## Identifiers
 
-Fatcat entity identifiers are in "boring" 
+Fatcat entity identifiers are 128-bit UUIDs encoded in base32 format. Revision
+ids are also UUIDs, and encoded in normal UUID fashion, to disambiguate from
+edity identifiers.
 
 Python helpers for conversion:
 

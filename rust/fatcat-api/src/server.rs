@@ -38,10 +38,11 @@ use swagger::{ApiError, Context, XSpanId};
 use models;
 use {
     AcceptEditgroupResponse, Api, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse, CreateEditgroupResponse, CreateFileBatchResponse,
-    CreateFileResponse, CreateReleaseBatchResponse, CreateReleaseResponse, CreateWorkBatchResponse, CreateWorkResponse, GetChangelogEntryResponse, GetChangelogResponse, GetContainerHistoryResponse,
-    GetContainerResponse, GetCreatorHistoryResponse, GetCreatorReleasesResponse, GetCreatorResponse, GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileHistoryResponse,
-    GetFileResponse, GetReleaseFilesResponse, GetReleaseHistoryResponse, GetReleaseResponse, GetStatsResponse, GetWorkHistoryResponse, GetWorkReleasesResponse, GetWorkResponse,
-    LookupContainerResponse, LookupCreatorResponse, LookupFileResponse, LookupReleaseResponse,
+    CreateFileResponse, CreateReleaseBatchResponse, CreateReleaseResponse, CreateWorkBatchResponse, CreateWorkResponse, DeleteContainerResponse, DeleteCreatorResponse, DeleteFileResponse,
+    DeleteReleaseResponse, DeleteWorkResponse, GetChangelogEntryResponse, GetChangelogResponse, GetContainerHistoryResponse, GetContainerResponse, GetCreatorHistoryResponse,
+    GetCreatorReleasesResponse, GetCreatorResponse, GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileHistoryResponse, GetFileResponse, GetReleaseFilesResponse,
+    GetReleaseHistoryResponse, GetReleaseResponse, GetStatsResponse, GetWorkHistoryResponse, GetWorkReleasesResponse, GetWorkResponse, LookupContainerResponse, LookupCreatorResponse,
+    LookupFileResponse, LookupReleaseResponse, UpdateContainerResponse, UpdateCreatorResponse, UpdateFileResponse, UpdateReleaseResponse, UpdateWorkResponse,
 };
 
 header! { (Warning, "Warning") => [String] }
@@ -130,11 +131,11 @@ where
 
                             Ok(response)
                         }
-                        AcceptEditgroupResponse::Unmergable(body) => {
+                        AcceptEditgroupResponse::BadRequest(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::ACCEPT_EDITGROUP_UNMERGABLE.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::ACCEPT_EDITGROUP_BAD_REQUEST.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -145,6 +146,16 @@ where
 
                             let mut response = Response::with((status::Status::from_u16(404), body_string));
                             response.headers.set(ContentType(mimetypes::responses::ACCEPT_EDITGROUP_NOT_FOUND.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                        AcceptEditgroupResponse::EditConflict(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(409), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::ACCEPT_EDITGROUP_EDIT_CONFLICT.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -298,6 +309,11 @@ where
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
 
+                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
+                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
+                let param_autoaccept = query_params.get("autoaccept").and_then(|list| list.first()).and_then(|x| x.parse::<bool>().ok());
+                let param_editgroup = query_params.get("editgroup").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
@@ -322,7 +338,7 @@ where
                 };
                 let param_entity_list = param_entity_list.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity_list".to_string())))?;
 
-                match api.create_container_batch(param_entity_list.as_ref(), context).wait() {
+                match api.create_container_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup, context).wait() {
                     Ok(rsp) => match rsp {
                         CreateContainerBatchResponse::CreatedEntities(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -510,6 +526,11 @@ where
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
 
+                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
+                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
+                let param_autoaccept = query_params.get("autoaccept").and_then(|list| list.first()).and_then(|x| x.parse::<bool>().ok());
+                let param_editgroup = query_params.get("editgroup").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
@@ -534,7 +555,7 @@ where
                 };
                 let param_entity_list = param_entity_list.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity_list".to_string())))?;
 
-                match api.create_creator_batch(param_entity_list.as_ref(), context).wait() {
+                match api.create_creator_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup, context).wait() {
                     Ok(rsp) => match rsp {
                         CreateCreatorBatchResponse::CreatedEntities(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -815,6 +836,11 @@ where
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
 
+                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
+                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
+                let param_autoaccept = query_params.get("autoaccept").and_then(|list| list.first()).and_then(|x| x.parse::<bool>().ok());
+                let param_editgroup = query_params.get("editgroup").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
@@ -839,7 +865,7 @@ where
                 };
                 let param_entity_list = param_entity_list.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity_list".to_string())))?;
 
-                match api.create_file_batch(param_entity_list.as_ref(), context).wait() {
+                match api.create_file_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup, context).wait() {
                     Ok(rsp) => match rsp {
                         CreateFileBatchResponse::CreatedEntities(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -1027,6 +1053,11 @@ where
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
 
+                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
+                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
+                let param_autoaccept = query_params.get("autoaccept").and_then(|list| list.first()).and_then(|x| x.parse::<bool>().ok());
+                let param_editgroup = query_params.get("editgroup").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
@@ -1051,7 +1082,7 @@ where
                 };
                 let param_entity_list = param_entity_list.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity_list".to_string())))?;
 
-                match api.create_release_batch(param_entity_list.as_ref(), context).wait() {
+                match api.create_release_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup, context).wait() {
                     Ok(rsp) => match rsp {
                         CreateReleaseBatchResponse::CreatedEntities(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -1239,6 +1270,11 @@ where
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
 
+                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
+                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
+                let param_autoaccept = query_params.get("autoaccept").and_then(|list| list.first()).and_then(|x| x.parse::<bool>().ok());
+                let param_editgroup = query_params.get("editgroup").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
@@ -1263,7 +1299,7 @@ where
                 };
                 let param_entity_list = param_entity_list.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity_list".to_string())))?;
 
-                match api.create_work_batch(param_entity_list.as_ref(), context).wait() {
+                match api.create_work_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup, context).wait() {
                     Ok(rsp) => match rsp {
                         CreateWorkBatchResponse::CreatedEntities(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -1328,6 +1364,466 @@ where
             })
         },
         "CreateWorkBatch",
+    );
+
+    let api_clone = api.clone();
+    router.delete(
+        "/v0/container/:id",
+        move |req: &mut Request| {
+            let mut context = Context::default();
+
+            // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
+            fn handle_request<T>(req: &mut Request, api: &T, context: &mut Context) -> Result<Response, Response>
+            where
+                T: Api,
+            {
+                context.x_span_id = Some(req.headers.get::<XSpanId>().map(XSpanId::to_string).unwrap_or_else(|| self::uuid::Uuid::new_v4().to_string()));
+                context.auth_data = req.extensions.remove::<AuthData>();
+                context.authorization = req.extensions.remove::<Authorization>();
+
+                // Path parameters
+                let param_id = {
+                    let param = req.extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                };
+
+                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
+                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
+                let param_editgroup = query_params.get("editgroup").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+
+                match api.delete_container(param_id, param_editgroup, context).wait() {
+                    Ok(rsp) => match rsp {
+                        DeleteContainerResponse::DeletedEntity(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(200), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_CONTAINER_DELETED_ENTITY.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                        DeleteContainerResponse::BadRequest(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(400), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_CONTAINER_BAD_REQUEST.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                        DeleteContainerResponse::NotFound(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(404), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_CONTAINER_NOT_FOUND.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                        DeleteContainerResponse::GenericError(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_CONTAINER_GENERIC_ERROR.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                    },
+                    Err(_) => {
+                        // Application code returned an error. This should not happen, as the implementation should
+                        // return a valid response.
+                        Err(Response::with((status::InternalServerError, "An internal error occurred".to_string())))
+                    }
+                }
+            }
+
+            handle_request(req, &api_clone, &mut context).or_else(|mut response| {
+                context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                Ok(response)
+            })
+        },
+        "DeleteContainer",
+    );
+
+    let api_clone = api.clone();
+    router.delete(
+        "/v0/creator/:id",
+        move |req: &mut Request| {
+            let mut context = Context::default();
+
+            // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
+            fn handle_request<T>(req: &mut Request, api: &T, context: &mut Context) -> Result<Response, Response>
+            where
+                T: Api,
+            {
+                context.x_span_id = Some(req.headers.get::<XSpanId>().map(XSpanId::to_string).unwrap_or_else(|| self::uuid::Uuid::new_v4().to_string()));
+                context.auth_data = req.extensions.remove::<AuthData>();
+                context.authorization = req.extensions.remove::<Authorization>();
+
+                // Path parameters
+                let param_id = {
+                    let param = req.extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                };
+
+                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
+                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
+                let param_editgroup = query_params.get("editgroup").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+
+                match api.delete_creator(param_id, param_editgroup, context).wait() {
+                    Ok(rsp) => match rsp {
+                        DeleteCreatorResponse::DeletedEntity(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(200), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_CREATOR_DELETED_ENTITY.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                        DeleteCreatorResponse::BadRequest(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(400), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_CREATOR_BAD_REQUEST.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                        DeleteCreatorResponse::NotFound(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(404), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_CREATOR_NOT_FOUND.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                        DeleteCreatorResponse::GenericError(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_CREATOR_GENERIC_ERROR.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                    },
+                    Err(_) => {
+                        // Application code returned an error. This should not happen, as the implementation should
+                        // return a valid response.
+                        Err(Response::with((status::InternalServerError, "An internal error occurred".to_string())))
+                    }
+                }
+            }
+
+            handle_request(req, &api_clone, &mut context).or_else(|mut response| {
+                context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                Ok(response)
+            })
+        },
+        "DeleteCreator",
+    );
+
+    let api_clone = api.clone();
+    router.delete(
+        "/v0/file/:id",
+        move |req: &mut Request| {
+            let mut context = Context::default();
+
+            // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
+            fn handle_request<T>(req: &mut Request, api: &T, context: &mut Context) -> Result<Response, Response>
+            where
+                T: Api,
+            {
+                context.x_span_id = Some(req.headers.get::<XSpanId>().map(XSpanId::to_string).unwrap_or_else(|| self::uuid::Uuid::new_v4().to_string()));
+                context.auth_data = req.extensions.remove::<AuthData>();
+                context.authorization = req.extensions.remove::<Authorization>();
+
+                // Path parameters
+                let param_id = {
+                    let param = req.extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                };
+
+                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
+                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
+                let param_editgroup = query_params.get("editgroup").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+
+                match api.delete_file(param_id, param_editgroup, context).wait() {
+                    Ok(rsp) => match rsp {
+                        DeleteFileResponse::DeletedEntity(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(200), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_FILE_DELETED_ENTITY.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                        DeleteFileResponse::BadRequest(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(400), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_FILE_BAD_REQUEST.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                        DeleteFileResponse::NotFound(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(404), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_FILE_NOT_FOUND.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                        DeleteFileResponse::GenericError(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_FILE_GENERIC_ERROR.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                    },
+                    Err(_) => {
+                        // Application code returned an error. This should not happen, as the implementation should
+                        // return a valid response.
+                        Err(Response::with((status::InternalServerError, "An internal error occurred".to_string())))
+                    }
+                }
+            }
+
+            handle_request(req, &api_clone, &mut context).or_else(|mut response| {
+                context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                Ok(response)
+            })
+        },
+        "DeleteFile",
+    );
+
+    let api_clone = api.clone();
+    router.delete(
+        "/v0/release/:id",
+        move |req: &mut Request| {
+            let mut context = Context::default();
+
+            // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
+            fn handle_request<T>(req: &mut Request, api: &T, context: &mut Context) -> Result<Response, Response>
+            where
+                T: Api,
+            {
+                context.x_span_id = Some(req.headers.get::<XSpanId>().map(XSpanId::to_string).unwrap_or_else(|| self::uuid::Uuid::new_v4().to_string()));
+                context.auth_data = req.extensions.remove::<AuthData>();
+                context.authorization = req.extensions.remove::<Authorization>();
+
+                // Path parameters
+                let param_id = {
+                    let param = req.extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                };
+
+                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
+                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
+                let param_editgroup = query_params.get("editgroup").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+
+                match api.delete_release(param_id, param_editgroup, context).wait() {
+                    Ok(rsp) => match rsp {
+                        DeleteReleaseResponse::DeletedEntity(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(200), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_RELEASE_DELETED_ENTITY.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                        DeleteReleaseResponse::BadRequest(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(400), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_RELEASE_BAD_REQUEST.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                        DeleteReleaseResponse::NotFound(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(404), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_RELEASE_NOT_FOUND.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                        DeleteReleaseResponse::GenericError(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_RELEASE_GENERIC_ERROR.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                    },
+                    Err(_) => {
+                        // Application code returned an error. This should not happen, as the implementation should
+                        // return a valid response.
+                        Err(Response::with((status::InternalServerError, "An internal error occurred".to_string())))
+                    }
+                }
+            }
+
+            handle_request(req, &api_clone, &mut context).or_else(|mut response| {
+                context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                Ok(response)
+            })
+        },
+        "DeleteRelease",
+    );
+
+    let api_clone = api.clone();
+    router.delete(
+        "/v0/work/:id",
+        move |req: &mut Request| {
+            let mut context = Context::default();
+
+            // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
+            fn handle_request<T>(req: &mut Request, api: &T, context: &mut Context) -> Result<Response, Response>
+            where
+                T: Api,
+            {
+                context.x_span_id = Some(req.headers.get::<XSpanId>().map(XSpanId::to_string).unwrap_or_else(|| self::uuid::Uuid::new_v4().to_string()));
+                context.auth_data = req.extensions.remove::<AuthData>();
+                context.authorization = req.extensions.remove::<Authorization>();
+
+                // Path parameters
+                let param_id = {
+                    let param = req.extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                };
+
+                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
+                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
+                let param_editgroup = query_params.get("editgroup").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+
+                match api.delete_work(param_id, param_editgroup, context).wait() {
+                    Ok(rsp) => match rsp {
+                        DeleteWorkResponse::DeletedEntity(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(200), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_WORK_DELETED_ENTITY.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                        DeleteWorkResponse::BadRequest(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(400), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_WORK_BAD_REQUEST.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                        DeleteWorkResponse::NotFound(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(404), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_WORK_NOT_FOUND.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                        DeleteWorkResponse::GenericError(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_WORK_GENERIC_ERROR.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                    },
+                    Err(_) => {
+                        // Application code returned an error. This should not happen, as the implementation should
+                        // return a valid response.
+                        Err(Response::with((status::InternalServerError, "An internal error occurred".to_string())))
+                    }
+                }
+            }
+
+            handle_request(req, &api_clone, &mut context).or_else(|mut response| {
+                context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                Ok(response)
+            })
+        },
+        "DeleteWork",
     );
 
     let api_clone = api.clone();
@@ -3286,6 +3782,606 @@ where
             })
         },
         "LookupRelease",
+    );
+
+    let api_clone = api.clone();
+    router.put(
+        "/v0/container/:id",
+        move |req: &mut Request| {
+            let mut context = Context::default();
+
+            // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
+            fn handle_request<T>(req: &mut Request, api: &T, context: &mut Context) -> Result<Response, Response>
+            where
+                T: Api,
+            {
+                context.x_span_id = Some(req.headers.get::<XSpanId>().map(XSpanId::to_string).unwrap_or_else(|| self::uuid::Uuid::new_v4().to_string()));
+                context.auth_data = req.extensions.remove::<AuthData>();
+                context.authorization = req.extensions.remove::<Authorization>();
+
+                // Path parameters
+                let param_id = {
+                    let param = req.extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                };
+
+                // Body parameters (note that non-required body parameters will ignore garbage
+                // values, rather than causing a 400 response). Produce warning header and logs for
+                // any unused fields.
+
+                let param_entity = req.get::<bodyparser::Raw>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - not valid UTF-8: {}", e))))?;
+
+                let mut unused_elements = Vec::new();
+
+                let param_entity = if let Some(param_entity_raw) = param_entity {
+                    let deserializer = &mut serde_json::Deserializer::from_str(&param_entity_raw);
+
+                    let param_entity: Option<models::ContainerEntity> =
+                        serde_ignored::deserialize(deserializer, |path| {
+                            warn!("Ignoring unknown field in body: {}", path);
+                            unused_elements.push(path.to_string());
+                        }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - doesn't match schema: {}", e))))?;
+
+                    param_entity
+                } else {
+                    None
+                };
+                let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
+
+                match api.update_container(param_id, param_entity, context).wait() {
+                    Ok(rsp) => match rsp {
+                        UpdateContainerResponse::UpdatedEntity(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(200), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::UPDATE_CONTAINER_UPDATED_ENTITY.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        UpdateContainerResponse::BadRequest(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(400), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::UPDATE_CONTAINER_BAD_REQUEST.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        UpdateContainerResponse::NotFound(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(404), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::UPDATE_CONTAINER_NOT_FOUND.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        UpdateContainerResponse::GenericError(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::UPDATE_CONTAINER_GENERIC_ERROR.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                    },
+                    Err(_) => {
+                        // Application code returned an error. This should not happen, as the implementation should
+                        // return a valid response.
+                        Err(Response::with((status::InternalServerError, "An internal error occurred".to_string())))
+                    }
+                }
+            }
+
+            handle_request(req, &api_clone, &mut context).or_else(|mut response| {
+                context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                Ok(response)
+            })
+        },
+        "UpdateContainer",
+    );
+
+    let api_clone = api.clone();
+    router.put(
+        "/v0/creator/:id",
+        move |req: &mut Request| {
+            let mut context = Context::default();
+
+            // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
+            fn handle_request<T>(req: &mut Request, api: &T, context: &mut Context) -> Result<Response, Response>
+            where
+                T: Api,
+            {
+                context.x_span_id = Some(req.headers.get::<XSpanId>().map(XSpanId::to_string).unwrap_or_else(|| self::uuid::Uuid::new_v4().to_string()));
+                context.auth_data = req.extensions.remove::<AuthData>();
+                context.authorization = req.extensions.remove::<Authorization>();
+
+                // Path parameters
+                let param_id = {
+                    let param = req.extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                };
+
+                // Body parameters (note that non-required body parameters will ignore garbage
+                // values, rather than causing a 400 response). Produce warning header and logs for
+                // any unused fields.
+
+                let param_entity = req.get::<bodyparser::Raw>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - not valid UTF-8: {}", e))))?;
+
+                let mut unused_elements = Vec::new();
+
+                let param_entity = if let Some(param_entity_raw) = param_entity {
+                    let deserializer = &mut serde_json::Deserializer::from_str(&param_entity_raw);
+
+                    let param_entity: Option<models::CreatorEntity> =
+                        serde_ignored::deserialize(deserializer, |path| {
+                            warn!("Ignoring unknown field in body: {}", path);
+                            unused_elements.push(path.to_string());
+                        }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - doesn't match schema: {}", e))))?;
+
+                    param_entity
+                } else {
+                    None
+                };
+                let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
+
+                match api.update_creator(param_id, param_entity, context).wait() {
+                    Ok(rsp) => match rsp {
+                        UpdateCreatorResponse::UpdatedEntity(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(200), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::UPDATE_CREATOR_UPDATED_ENTITY.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        UpdateCreatorResponse::BadRequest(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(400), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::UPDATE_CREATOR_BAD_REQUEST.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        UpdateCreatorResponse::NotFound(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(404), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::UPDATE_CREATOR_NOT_FOUND.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        UpdateCreatorResponse::GenericError(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::UPDATE_CREATOR_GENERIC_ERROR.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                    },
+                    Err(_) => {
+                        // Application code returned an error. This should not happen, as the implementation should
+                        // return a valid response.
+                        Err(Response::with((status::InternalServerError, "An internal error occurred".to_string())))
+                    }
+                }
+            }
+
+            handle_request(req, &api_clone, &mut context).or_else(|mut response| {
+                context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                Ok(response)
+            })
+        },
+        "UpdateCreator",
+    );
+
+    let api_clone = api.clone();
+    router.put(
+        "/v0/file/:id",
+        move |req: &mut Request| {
+            let mut context = Context::default();
+
+            // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
+            fn handle_request<T>(req: &mut Request, api: &T, context: &mut Context) -> Result<Response, Response>
+            where
+                T: Api,
+            {
+                context.x_span_id = Some(req.headers.get::<XSpanId>().map(XSpanId::to_string).unwrap_or_else(|| self::uuid::Uuid::new_v4().to_string()));
+                context.auth_data = req.extensions.remove::<AuthData>();
+                context.authorization = req.extensions.remove::<Authorization>();
+
+                // Path parameters
+                let param_id = {
+                    let param = req.extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                };
+
+                // Body parameters (note that non-required body parameters will ignore garbage
+                // values, rather than causing a 400 response). Produce warning header and logs for
+                // any unused fields.
+
+                let param_entity = req.get::<bodyparser::Raw>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - not valid UTF-8: {}", e))))?;
+
+                let mut unused_elements = Vec::new();
+
+                let param_entity = if let Some(param_entity_raw) = param_entity {
+                    let deserializer = &mut serde_json::Deserializer::from_str(&param_entity_raw);
+
+                    let param_entity: Option<models::FileEntity> =
+                        serde_ignored::deserialize(deserializer, |path| {
+                            warn!("Ignoring unknown field in body: {}", path);
+                            unused_elements.push(path.to_string());
+                        }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - doesn't match schema: {}", e))))?;
+
+                    param_entity
+                } else {
+                    None
+                };
+                let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
+
+                match api.update_file(param_id, param_entity, context).wait() {
+                    Ok(rsp) => match rsp {
+                        UpdateFileResponse::UpdatedEntity(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(200), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::UPDATE_FILE_UPDATED_ENTITY.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        UpdateFileResponse::BadRequest(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(400), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::UPDATE_FILE_BAD_REQUEST.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        UpdateFileResponse::NotFound(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(404), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::UPDATE_FILE_NOT_FOUND.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        UpdateFileResponse::GenericError(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::UPDATE_FILE_GENERIC_ERROR.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                    },
+                    Err(_) => {
+                        // Application code returned an error. This should not happen, as the implementation should
+                        // return a valid response.
+                        Err(Response::with((status::InternalServerError, "An internal error occurred".to_string())))
+                    }
+                }
+            }
+
+            handle_request(req, &api_clone, &mut context).or_else(|mut response| {
+                context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                Ok(response)
+            })
+        },
+        "UpdateFile",
+    );
+
+    let api_clone = api.clone();
+    router.put(
+        "/v0/release/:id",
+        move |req: &mut Request| {
+            let mut context = Context::default();
+
+            // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
+            fn handle_request<T>(req: &mut Request, api: &T, context: &mut Context) -> Result<Response, Response>
+            where
+                T: Api,
+            {
+                context.x_span_id = Some(req.headers.get::<XSpanId>().map(XSpanId::to_string).unwrap_or_else(|| self::uuid::Uuid::new_v4().to_string()));
+                context.auth_data = req.extensions.remove::<AuthData>();
+                context.authorization = req.extensions.remove::<Authorization>();
+
+                // Path parameters
+                let param_id = {
+                    let param = req.extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                };
+
+                // Body parameters (note that non-required body parameters will ignore garbage
+                // values, rather than causing a 400 response). Produce warning header and logs for
+                // any unused fields.
+
+                let param_entity = req.get::<bodyparser::Raw>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - not valid UTF-8: {}", e))))?;
+
+                let mut unused_elements = Vec::new();
+
+                let param_entity = if let Some(param_entity_raw) = param_entity {
+                    let deserializer = &mut serde_json::Deserializer::from_str(&param_entity_raw);
+
+                    let param_entity: Option<models::ReleaseEntity> =
+                        serde_ignored::deserialize(deserializer, |path| {
+                            warn!("Ignoring unknown field in body: {}", path);
+                            unused_elements.push(path.to_string());
+                        }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - doesn't match schema: {}", e))))?;
+
+                    param_entity
+                } else {
+                    None
+                };
+                let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
+
+                match api.update_release(param_id, param_entity, context).wait() {
+                    Ok(rsp) => match rsp {
+                        UpdateReleaseResponse::UpdatedEntity(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(200), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::UPDATE_RELEASE_UPDATED_ENTITY.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        UpdateReleaseResponse::BadRequest(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(400), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::UPDATE_RELEASE_BAD_REQUEST.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        UpdateReleaseResponse::NotFound(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(404), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::UPDATE_RELEASE_NOT_FOUND.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        UpdateReleaseResponse::GenericError(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::UPDATE_RELEASE_GENERIC_ERROR.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                    },
+                    Err(_) => {
+                        // Application code returned an error. This should not happen, as the implementation should
+                        // return a valid response.
+                        Err(Response::with((status::InternalServerError, "An internal error occurred".to_string())))
+                    }
+                }
+            }
+
+            handle_request(req, &api_clone, &mut context).or_else(|mut response| {
+                context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                Ok(response)
+            })
+        },
+        "UpdateRelease",
+    );
+
+    let api_clone = api.clone();
+    router.put(
+        "/v0/work/:id",
+        move |req: &mut Request| {
+            let mut context = Context::default();
+
+            // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
+            fn handle_request<T>(req: &mut Request, api: &T, context: &mut Context) -> Result<Response, Response>
+            where
+                T: Api,
+            {
+                context.x_span_id = Some(req.headers.get::<XSpanId>().map(XSpanId::to_string).unwrap_or_else(|| self::uuid::Uuid::new_v4().to_string()));
+                context.auth_data = req.extensions.remove::<AuthData>();
+                context.authorization = req.extensions.remove::<Authorization>();
+
+                // Path parameters
+                let param_id = {
+                    let param = req.extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                };
+
+                // Body parameters (note that non-required body parameters will ignore garbage
+                // values, rather than causing a 400 response). Produce warning header and logs for
+                // any unused fields.
+
+                let param_entity = req.get::<bodyparser::Raw>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - not valid UTF-8: {}", e))))?;
+
+                let mut unused_elements = Vec::new();
+
+                let param_entity = if let Some(param_entity_raw) = param_entity {
+                    let deserializer = &mut serde_json::Deserializer::from_str(&param_entity_raw);
+
+                    let param_entity: Option<models::WorkEntity> =
+                        serde_ignored::deserialize(deserializer, |path| {
+                            warn!("Ignoring unknown field in body: {}", path);
+                            unused_elements.push(path.to_string());
+                        }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - doesn't match schema: {}", e))))?;
+
+                    param_entity
+                } else {
+                    None
+                };
+                let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
+
+                match api.update_work(param_id, param_entity, context).wait() {
+                    Ok(rsp) => match rsp {
+                        UpdateWorkResponse::UpdatedEntity(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(200), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::UPDATE_WORK_UPDATED_ENTITY.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        UpdateWorkResponse::BadRequest(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(400), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::UPDATE_WORK_BAD_REQUEST.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        UpdateWorkResponse::NotFound(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(404), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::UPDATE_WORK_NOT_FOUND.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        UpdateWorkResponse::GenericError(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::UPDATE_WORK_GENERIC_ERROR.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                    },
+                    Err(_) => {
+                        // Application code returned an error. This should not happen, as the implementation should
+                        // return a valid response.
+                        Err(Response::with((status::InternalServerError, "An internal error occurred".to_string())))
+                    }
+                }
+            }
+
+            handle_request(req, &api_clone, &mut context).or_else(|mut response| {
+                context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                Ok(response)
+            })
+        },
+        "UpdateWork",
     );
 }
 
