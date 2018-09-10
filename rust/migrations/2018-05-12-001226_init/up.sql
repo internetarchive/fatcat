@@ -59,8 +59,8 @@ CREATE TABLE creator_rev (
 
 -- Could denormalize a "is_live" flag into revision tables, to make indices
 -- more efficient
-CREATE INDEX creator_rev_orcid_idx ON creator_rev(orcid) WHERE orcid IS NOT NULL;
-CREATE INDEX creator_rev_wikidata_idx ON creator_rev(wikidata_qid) WHERE wikidata_qid IS NOT NULL;
+CREATE INDEX creator_rev_orcid_idx ON creator_rev(orcid);
+CREATE INDEX creator_rev_wikidata_idx ON creator_rev(wikidata_qid);
 
 CREATE TABLE creator_ident (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -97,8 +97,8 @@ CREATE TABLE container_rev (
     coden               TEXT
 );
 
-CREATE INDEX container_rev_issnl_idx ON container_rev(issnl) WHERE issnl IS NOT NULL;
-CREATE INDEX container_rev_wikidata_idx ON container_rev(wikidata_qid) WHERE wikidata_qid IS NOT NULL;
+CREATE INDEX container_rev_issnl_idx ON container_rev(issnl);
+CREATE INDEX container_rev_wikidata_idx ON container_rev(wikidata_qid);
 
 CREATE TABLE container_ident (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -134,9 +134,9 @@ CREATE TABLE file_rev (
     mimetype            TEXT
 );
 
-CREATE INDEX file_rev_sha1_idx ON file_rev(sha1) WHERE sha1 IS NOT NULL;
-CREATE INDEX file_rev_md5_idx ON file_rev(md5) WHERE md5 IS NOT NULL;
-CREATE INDEX file_rev_sha256_idx ON file_rev(sha256) WHERE sha256 IS NOT NULL;
+CREATE INDEX file_rev_sha1_idx ON file_rev(sha1);
+CREATE INDEX file_rev_md5_idx ON file_rev(md5);
+CREATE INDEX file_rev_sha256_idx ON file_rev(sha256);
 
 CREATE TABLE file_rev_url (
     id                  BIGSERIAL PRIMARY KEY,
@@ -195,13 +195,13 @@ CREATE TABLE release_rev (
     -- TODO: identifier table?
 );
 
-CREATE INDEX release_rev_doi_idx ON release_rev(doi) WHERE doi IS NOT NULL;
-CREATE INDEX release_rev_pmid_idx ON release_rev(pmid) WHERE pmid IS NOT NULL;
-CREATE INDEX release_rev_pmcid_idx ON release_rev(pmcid) WHERE pmcid IS NOT NULL;
-CREATE INDEX release_rev_wikidata_idx ON release_rev(wikidata_qid) WHERE wikidata_qid IS NOT NULL;
-CREATE INDEX release_rev_isbn13_idx ON release_rev(isbn13) WHERE isbn13 IS NOT NULL;
-CREATE INDEX release_rev_core_idx ON release_rev(core_id) WHERE core_id IS NOT NULL;
-CREATE INDEX release_rev_work_idx ON release_rev(work_ident_id) WHERE work_ident_id IS NOT NULL;
+CREATE INDEX release_rev_doi_idx ON release_rev(doi);
+CREATE INDEX release_rev_pmid_idx ON release_rev(pmid);
+CREATE INDEX release_rev_pmcid_idx ON release_rev(pmcid);
+CREATE INDEX release_rev_wikidata_idx ON release_rev(wikidata_qid);
+CREATE INDEX release_rev_isbn13_idx ON release_rev(isbn13);
+CREATE INDEX release_rev_core_idx ON release_rev(core_id);
+CREATE INDEX release_rev_work_idx ON release_rev(work_ident_id);
 
 CREATE TABLE release_rev_abstract (
     id              BIGSERIAL PRIMARY KEY,
