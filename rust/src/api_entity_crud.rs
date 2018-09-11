@@ -5,7 +5,7 @@ use database_schema::*;
 use diesel::prelude::*;
 use diesel::{self, insert_into};
 use errors::*;
-use fatcat_api::models::*;
+use fatcat_api_spec::models::*;
 use sha1::Sha1;
 use std::marker::Sized;
 use std::str::FromStr;

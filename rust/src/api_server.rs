@@ -8,8 +8,8 @@ use database_schema::*;
 use diesel::prelude::*;
 use diesel::{self, insert_into};
 use errors::*;
-use fatcat_api::models;
-use fatcat_api::models::*;
+use fatcat_api_spec::models;
+use fatcat_api_spec::models::*;
 use std::str::FromStr;
 use ConnectionPool;
 

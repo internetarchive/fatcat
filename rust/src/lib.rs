@@ -1,5 +1,5 @@
 extern crate chrono;
-extern crate fatcat_api;
+extern crate fatcat_api_spec;
 #[macro_use]
 extern crate diesel;
 extern crate diesel_migrations;

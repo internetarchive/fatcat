@@ -2,7 +2,7 @@ use api_helpers::uuid2fcid;
 use chrono;
 use database_schema::*;
 use errors::*;
-use fatcat_api::models::{ChangelogEntry, Editgroup, EntityEdit};
+use fatcat_api_spec::models::{ChangelogEntry, Editgroup, EntityEdit};
 use serde_json;
 use uuid::Uuid;
 

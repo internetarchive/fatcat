@@ -5,7 +5,7 @@ use database_schema::*;
 use diesel;
 use diesel::prelude::*;
 use errors::*;
-use fatcat_api::models::*;
+use fatcat_api_spec::models::*;
 use regex::Regex;
 use serde_json;
 use std::str::FromStr;

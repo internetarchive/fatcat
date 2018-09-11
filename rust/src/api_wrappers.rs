@@ -6,15 +6,15 @@ use api_server::Server;
 use database_models::EntityEditRow;
 use diesel::Connection;
 use errors::*;
-use fatcat_api::models;
-use fatcat_api::models::*;
-use fatcat_api::*;
+use fatcat_api_spec::models;
+use fatcat_api_spec::models::*;
+use fatcat_api_spec::*;
 use futures::{self, Future};
 use std::str::FromStr;
 
 /// Helper for generating wrappers (which return "Box::new(futures::done(Ok(BLAH)))" like the
-/// codegen fatcat-api code wants) that call through to actual helpers (which have simple Result<>
-/// return types)
+/// codegen fatcat-api-spec code wants) that call through to actual helpers (which have simple
+/// Result<> return types)
 macro_rules! wrap_entity_handlers {
     // Would much rather just have entity ident, then generate the other fields from that, but Rust
     // stable doesn't have a mechanism to "concat" or generate new identifiers in macros, at least

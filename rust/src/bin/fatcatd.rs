@@ -6,7 +6,7 @@ extern crate diesel;
 //extern crate dotenv;
 extern crate error_chain;
 extern crate fatcat;
-extern crate fatcat_api;
+extern crate fatcat_api_spec;
 extern crate futures;
 extern crate iron;
 extern crate iron_slog;
@@ -42,7 +42,7 @@ fn main() {
     let formatter = DefaultLogFormatter;
 
     let server = fatcat::server().unwrap();
-    let mut router = fatcat_api::router(server);
+    let mut router = fatcat_api_spec::router(server);
 
     router.get("/", root_handler, "root-redirect");
     router.get("/swagger-ui", swaggerui_handler, "swagger-ui-html");
@@ -79,7 +79,7 @@ fn main() {
     let mut chain = Chain::new(LoggerMiddleware::new(router, logger, formatter));
 
     // Auth stuff unused for now
-    //chain.link_before(fatcat_api::server::ExtractAuthData);
+    //chain.link_before(fatcat_api_spec::server::ExtractAuthData);
     // add authentication middlewares into the chain here
     // for the purpose of this example, pretend we have authenticated a user
     //chain.link_before(AllowAllMiddleware::new("cosmo"));

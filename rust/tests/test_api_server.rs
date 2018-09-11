@@ -1,6 +1,6 @@
 extern crate diesel;
 extern crate fatcat;
-extern crate fatcat_api;
+extern crate fatcat_api_spec;
 extern crate iron;
 extern crate iron_test;
 extern crate uuid;
@@ -16,12 +16,12 @@ use uuid::Uuid;
 
 fn setup() -> (
     Headers,
-    fatcat_api::router::Router,
+    fatcat_api_spec::router::Router,
     diesel::r2d2::PooledConnection<diesel::r2d2::ConnectionManager<diesel::PgConnection>>,
 ) {
     let server = fatcat::test_server().unwrap();
     let conn = server.db_pool.get().expect("db_pool error");
-    let router = fatcat_api::router(server);
+    let router = fatcat_api_spec::router(server);
     let mut headers = Headers::new();
     let mime: Mime = "application/json".parse().unwrap();
     headers.set(ContentType(mime));
