@@ -19,15 +19,11 @@ macro_rules! entity_batch_handler {
             &self,
             entity_list: &[models::$model],
             autoaccept: bool,
-            editgroup: Option<String>,
+            editgroup_id: Option<FatCatId>,
             conn: &DbConn,
         ) -> Result<Vec<EntityEdit>> {
 
-            let editgroup_id: Option<FatCatId> = match editgroup {
-                Some(s) => Some(FatCatId::from_str(&s)?),
-                None => None,
-            };
-            let edit_context = make_edit_context(conn, editgroup_id.clone(), autoaccept)?;
+            let edit_context = make_edit_context(conn, editgroup_id, autoaccept)?;
             let model_list: Vec<&models::$model> = entity_list.iter().map(|e| e).collect();
             let edits = $model::db_create_batch(conn, &edit_context, model_list.as_slice())?;
 
@@ -57,10 +53,7 @@ pub struct Server {
     pub db_pool: ConnectionPool,
 }
 
-pub fn get_release_files (
-    id: FatCatId,
-    conn: &DbConn,
-) -> Result<Vec<FileEntity>> {
+pub fn get_release_files(id: FatCatId, conn: &DbConn) -> Result<Vec<FileEntity>> {
     let rows: Vec<(FileRevRow, FileIdentRow, FileReleaseRow)> = file_rev::table
         .inner_join(file_ident::table)
         .inner_join(file_release::table)
@@ -75,7 +68,6 @@ pub fn get_release_files (
 }
 
 impl Server {
-
     pub fn lookup_container_handler(&self, issnl: &str, conn: &DbConn) -> Result<ContainerEntity> {
         check_issn(issnl)?;
         let (ident, rev): (ContainerIdentRow, ContainerRevRow) = container_ident::table

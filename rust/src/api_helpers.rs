@@ -21,7 +21,7 @@ pub struct EditContext {
     pub autoaccept: bool,
 }
 
-#[derive(Clone,Copy,PartialEq)]
+#[derive(Clone, Copy, PartialEq)]
 pub struct ExpandFlags {
     pub files: bool,
     pub container: bool,
@@ -30,7 +30,6 @@ pub struct ExpandFlags {
 }
 
 impl ExpandFlags {
-
     pub fn from_string(param: &str) -> ExpandFlags {
         let list: Vec<&str> = param.split_terminator(",").collect();
         ExpandFlags::from_strings(&list)
@@ -72,24 +71,34 @@ fn test_expand_flags() {
     assert!(ExpandFlags::from_strings(&vec![]).files == false);
     assert!(ExpandFlags::from_strings(&vec!["files"]).files == true);
     assert!(ExpandFlags::from_strings(&vec!["file"]).files == false);
-    let all = ExpandFlags::from_strings(&vec!["files", "container", "other_thing", "releases", "creators"]);
-    assert!(all == ExpandFlags {
-        files: true,
-        container: true,
-        releases: true,
-        creators: true
-    });
+    let all = ExpandFlags::from_strings(&vec![
+        "files",
+        "container",
+        "other_thing",
+        "releases",
+        "creators",
+    ]);
+    assert!(
+        all == ExpandFlags {
+            files: true,
+            container: true,
+            releases: true,
+            creators: true
+        }
+    );
     assert!(ExpandFlags::from_string("").files == false);
     assert!(ExpandFlags::from_string("files").files == true);
     assert!(ExpandFlags::from_string("something,,files").files == true);
     assert!(ExpandFlags::from_string("file").files == false);
     let all = ExpandFlags::from_string("files,container,other_thing,releases,creators");
-    assert!(all == ExpandFlags {
-        files: true,
-        container: true,
-        releases: true,
-        creators: true
-    });
+    assert!(
+        all == ExpandFlags {
+            files: true,
+            container: true,
+            releases: true,
+            creators: true
+        }
+    );
     assert!(all == ExpandFlags::all());
 }
 
@@ -169,7 +178,7 @@ pub fn accept_editgroup(editgroup_id: FatCatId, conn: &DbConn) -> Result<Changel
     Ok(entry)
 }
 
-#[derive(Clone,Copy,PartialEq)]
+#[derive(Clone, Copy, PartialEq)]
 pub struct FatCatId(Uuid);
 
 impl ToString for FatCatId {

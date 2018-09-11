@@ -233,8 +233,11 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_container(&self, param_entity: models::ContainerEntity, context: &Context) -> Box<Future<Item = CreateContainerResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/container", self.base_path);
+    fn create_container(&self, param_entity: models::ContainerEntity, param_editgroup: Option<String>, context: &Context) -> Box<Future<Item = CreateContainerResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+
+        let url = format!("{}/v0/container?{editgroup}", self.base_path, editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET));
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
 
@@ -378,8 +381,11 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_creator(&self, param_entity: models::CreatorEntity, context: &Context) -> Box<Future<Item = CreateCreatorResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/creator", self.base_path);
+    fn create_creator(&self, param_entity: models::CreatorEntity, param_editgroup: Option<String>, context: &Context) -> Box<Future<Item = CreateCreatorResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+
+        let url = format!("{}/v0/creator?{editgroup}", self.base_path, editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET));
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
 
@@ -581,8 +587,11 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_file(&self, param_entity: models::FileEntity, context: &Context) -> Box<Future<Item = CreateFileResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/file", self.base_path);
+    fn create_file(&self, param_entity: models::FileEntity, param_editgroup: Option<String>, context: &Context) -> Box<Future<Item = CreateFileResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+
+        let url = format!("{}/v0/file?{editgroup}", self.base_path, editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET));
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
 
@@ -726,8 +735,11 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_release(&self, param_entity: models::ReleaseEntity, context: &Context) -> Box<Future<Item = CreateReleaseResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/release", self.base_path);
+    fn create_release(&self, param_entity: models::ReleaseEntity, param_editgroup: Option<String>, context: &Context) -> Box<Future<Item = CreateReleaseResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+
+        let url = format!("{}/v0/release?{editgroup}", self.base_path, editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET));
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
 
@@ -871,8 +883,11 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_work(&self, param_entity: models::WorkEntity, context: &Context) -> Box<Future<Item = CreateWorkResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/work", self.base_path);
+    fn create_work(&self, param_entity: models::WorkEntity, param_editgroup: Option<String>, context: &Context) -> Box<Future<Item = CreateWorkResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+
+        let url = format!("{}/v0/work?{editgroup}", self.base_path, editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET));
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
 
@@ -2799,8 +2814,22 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn update_container(&self, param_id: String, param_entity: models::ContainerEntity, context: &Context) -> Box<Future<Item = UpdateContainerResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/container/{id}", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
+    fn update_container(
+        &self,
+        param_id: String,
+        param_entity: models::ContainerEntity,
+        param_editgroup: Option<String>,
+        context: &Context,
+    ) -> Box<Future<Item = UpdateContainerResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+
+        let url = format!(
+            "{}/v0/container/{id}?{editgroup}",
+            self.base_path,
+            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET)
+        );
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
 
@@ -2864,8 +2893,22 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn update_creator(&self, param_id: String, param_entity: models::CreatorEntity, context: &Context) -> Box<Future<Item = UpdateCreatorResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/creator/{id}", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
+    fn update_creator(
+        &self,
+        param_id: String,
+        param_entity: models::CreatorEntity,
+        param_editgroup: Option<String>,
+        context: &Context,
+    ) -> Box<Future<Item = UpdateCreatorResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+
+        let url = format!(
+            "{}/v0/creator/{id}?{editgroup}",
+            self.base_path,
+            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET)
+        );
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
 
@@ -2929,8 +2972,16 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn update_file(&self, param_id: String, param_entity: models::FileEntity, context: &Context) -> Box<Future<Item = UpdateFileResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/file/{id}", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
+    fn update_file(&self, param_id: String, param_entity: models::FileEntity, param_editgroup: Option<String>, context: &Context) -> Box<Future<Item = UpdateFileResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+
+        let url = format!(
+            "{}/v0/file/{id}?{editgroup}",
+            self.base_path,
+            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET)
+        );
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
 
@@ -2994,8 +3045,22 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn update_release(&self, param_id: String, param_entity: models::ReleaseEntity, context: &Context) -> Box<Future<Item = UpdateReleaseResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/release/{id}", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
+    fn update_release(
+        &self,
+        param_id: String,
+        param_entity: models::ReleaseEntity,
+        param_editgroup: Option<String>,
+        context: &Context,
+    ) -> Box<Future<Item = UpdateReleaseResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+
+        let url = format!(
+            "{}/v0/release/{id}?{editgroup}",
+            self.base_path,
+            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET)
+        );
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
 
@@ -3059,8 +3124,16 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn update_work(&self, param_id: String, param_entity: models::WorkEntity, context: &Context) -> Box<Future<Item = UpdateWorkResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/work/{id}", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
+    fn update_work(&self, param_id: String, param_entity: models::WorkEntity, param_editgroup: Option<String>, context: &Context) -> Box<Future<Item = UpdateWorkResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+
+        let url = format!(
+            "{}/v0/work/{id}?{editgroup}",
+            self.base_path,
+            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET)
+        );
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
 

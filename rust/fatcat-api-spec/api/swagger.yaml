@@ -29,6 +29,12 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "CREATE_CONTAINER"
         consumesJson: true
+      - name: "editgroup"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"editgroup_example\".to_string())"
       responses:
         201:
           description: "Created Entity"
@@ -229,6 +235,12 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "UPDATE_CONTAINER"
         consumesJson: true
+      - name: "editgroup"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"editgroup_example\".to_string())"
       responses:
         200:
           description: "Updated Entity"
@@ -461,6 +473,12 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "CREATE_CREATOR"
         consumesJson: true
+      - name: "editgroup"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"editgroup_example\".to_string())"
       responses:
         201:
           description: "Created Entity"
@@ -661,6 +679,12 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "UPDATE_CREATOR"
         consumesJson: true
+      - name: "editgroup"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"editgroup_example\".to_string())"
       responses:
         200:
           description: "Updated Entity"
@@ -947,6 +971,12 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "CREATE_FILE"
         consumesJson: true
+      - name: "editgroup"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"editgroup_example\".to_string())"
       responses:
         201:
           description: "Created Entity"
@@ -1147,6 +1177,12 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "UPDATE_FILE"
         consumesJson: true
+      - name: "editgroup"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"editgroup_example\".to_string())"
       responses:
         200:
           description: "Updated Entity"
@@ -1376,6 +1412,12 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "CREATE_RELEASE"
         consumesJson: true
+      - name: "editgroup"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"editgroup_example\".to_string())"
       responses:
         201:
           description: "Created Entity"
@@ -1576,6 +1618,12 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "UPDATE_RELEASE"
         consumesJson: true
+      - name: "editgroup"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"editgroup_example\".to_string())"
       responses:
         200:
           description: "Updated Entity"
@@ -1859,6 +1907,12 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "CREATE_WORK"
         consumesJson: true
+      - name: "editgroup"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"editgroup_example\".to_string())"
       responses:
         201:
           description: "Created Entity"
@@ -2059,6 +2113,12 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "UPDATE_WORK"
         consumesJson: true
+      - name: "editgroup"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"editgroup_example\".to_string())"
       responses:
         200:
           description: "Updated Entity"
@@ -2710,15 +2770,10 @@ definitions:
       name:
         type: "string"
         example: "Journal of Important Results"
+      edit_extra:
+        type: "object"
       extra:
         type: "object"
-      editgroup_id:
-        type: "string"
-        example: "q3nouwy3nnbsvo3h5klxsx4a7y"
-        description: "base32-encoded unique identifier"
-        minLength: 26
-        maxLength: 26
-        pattern: "[a-zA-Z2-7]{26}"
       redirect:
         type: "string"
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -2754,11 +2809,11 @@ definitions:
       extra: "{}"
       name: "Journal of Important Results"
       publisher: "Society of Curious Students"
-      editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
       issnl: "1234-5678"
       abbrev: "abbrev"
       wikidata_qid: "wikidata_qid"
       state: "wip"
+      edit_extra: "{}"
       revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
     upperCaseName: "CONTAINER_ENTITY"
   creator_entity:
@@ -2809,26 +2864,21 @@ definitions:
         minLength: 26
         maxLength: 26
         pattern: "[a-zA-Z2-7]{26}"
-      editgroup_id:
-        type: "string"
-        example: "q3nouwy3nnbsvo3h5klxsx4a7y"
-        description: "base32-encoded unique identifier"
-        minLength: 26
-        maxLength: 26
-        pattern: "[a-zA-Z2-7]{26}"
       extra:
+        type: "object"
+      edit_extra:
         type: "object"
     example:
       redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
       surname: "surname"
       ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
       extra: "{}"
-      editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
       orcid: "0000-0002-1825-0097"
       wikidata_qid: "wikidata_qid"
       state: "wip"
       given_name: "given_name"
       display_name: "Grace Hopper"
+      edit_extra: "{}"
       revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
     upperCaseName: "CREATOR_ENTITY"
   file_entity:
@@ -2858,15 +2908,10 @@ definitions:
         type: "integer"
         format: "int64"
         example: 1048576
+      edit_extra:
+        type: "object"
       extra:
         type: "object"
-      editgroup_id:
-        type: "string"
-        example: "q3nouwy3nnbsvo3h5klxsx4a7y"
-        description: "base32-encoded unique identifier"
-        minLength: 26
-        maxLength: 26
-        pattern: "[a-zA-Z2-7]{26}"
       redirect:
         type: "string"
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -2911,9 +2956,9 @@ definitions:
         url: "https://example.edu/~frau/prcding.pdf"
       size: 1048576
       extra: "{}"
-      editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
       mimetype: "application/pdf"
       state: "wip"
+      edit_extra: "{}"
       md5: "d41efcc592d1e40ac13905377399eb9b"
     upperCaseName: "FILE_ENTITY"
   release_entity:
@@ -3011,14 +3056,9 @@ definitions:
         minLength: 26
         maxLength: 26
         pattern: "[a-zA-Z2-7]{26}"
-      editgroup_id:
-        type: "string"
-        example: "q3nouwy3nnbsvo3h5klxsx4a7y"
-        description: "base32-encoded unique identifier"
-        minLength: 26
-        maxLength: 26
-        pattern: "[a-zA-Z2-7]{26}"
       extra:
+        type: "object"
+      edit_extra:
         type: "object"
     example:
       container:
@@ -3028,11 +3068,11 @@ definitions:
         extra: "{}"
         name: "Journal of Important Results"
         publisher: "Society of Curious Students"
-        editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
         issnl: "1234-5678"
         abbrev: "abbrev"
         wikidata_qid: "wikidata_qid"
         state: "wip"
+        edit_extra: "{}"
         revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
       language: "language"
@@ -3043,12 +3083,12 @@ definitions:
           surname: "surname"
           ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
           extra: "{}"
-          editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
           orcid: "0000-0002-1825-0097"
           wikidata_qid: "wikidata_qid"
           state: "wip"
           given_name: "given_name"
           display_name: "Grace Hopper"
+          edit_extra: "{}"
           revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         raw_name: "raw_name"
         role: "role"
@@ -3060,12 +3100,12 @@ definitions:
           surname: "surname"
           ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
           extra: "{}"
-          editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
           orcid: "0000-0002-1825-0097"
           wikidata_qid: "wikidata_qid"
           state: "wip"
           given_name: "given_name"
           display_name: "Grace Hopper"
+          edit_extra: "{}"
           revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         raw_name: "raw_name"
         role: "role"
@@ -3075,8 +3115,8 @@ definitions:
       pages: "pages"
       core_id: "core_id"
       extra: "{}"
-      editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
       state: "wip"
+      edit_extra: "{}"
       redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
       work_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
       issue: "12"
@@ -3131,9 +3171,9 @@ definitions:
           url: "https://example.edu/~frau/prcding.pdf"
         size: 1048576
         extra: "{}"
-        editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
         mimetype: "application/pdf"
         state: "wip"
+        edit_extra: "{}"
         md5: "d41efcc592d1e40ac13905377399eb9b"
       - redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
         sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
@@ -3150,9 +3190,9 @@ definitions:
           url: "https://example.edu/~frau/prcding.pdf"
         size: 1048576
         extra: "{}"
-        editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
         mimetype: "application/pdf"
         state: "wip"
+        edit_extra: "{}"
         md5: "d41efcc592d1e40ac13905377399eb9b"
       pmcid: "pmcid"
       container_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -3161,15 +3201,10 @@ definitions:
   work_entity:
     type: "object"
     properties:
+      edit_extra:
+        type: "object"
       extra:
         type: "object"
-      editgroup_id:
-        type: "string"
-        example: "q3nouwy3nnbsvo3h5klxsx4a7y"
-        description: "base32-encoded unique identifier"
-        minLength: 26
-        maxLength: 26
-        pattern: "[a-zA-Z2-7]{26}"
       redirect:
         type: "string"
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -3202,8 +3237,8 @@ definitions:
       redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
       ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
       extra: "{}"
-      editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
       state: "wip"
+      edit_extra: "{}"
       revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
     upperCaseName: "WORK_ENTITY"
   entity_history_entry:
@@ -3713,12 +3748,12 @@ definitions:
         surname: "surname"
         ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
         extra: "{}"
-        editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
         orcid: "0000-0002-1825-0097"
         wikidata_qid: "wikidata_qid"
         state: "wip"
         given_name: "given_name"
         display_name: "Grace Hopper"
+        edit_extra: "{}"
         revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       raw_name: "raw_name"
       role: "role"
@@ -3924,14 +3959,10 @@ x-entity-props:
     minLength: 26
     maxLength: 26
     description: "base32-encoded unique identifier"
-  editgroup_id:
-    description: "base32-encoded unique identifier"
-    maxLength: 26
-    minLength: 26
-    pattern: "[a-zA-Z2-7]{26}"
-    example: "q3nouwy3nnbsvo3h5klxsx4a7y"
-    type: "string"
   extra:
+    type: "object"
+    additionalProperties: {}
+  edit_extra:
     type: "object"
     additionalProperties: {}
 x-entity-responses:

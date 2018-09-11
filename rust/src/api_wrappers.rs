@@ -68,11 +68,15 @@ macro_rules! wrap_entity_handlers {
         fn $post_fn(
             &self,
             entity: models::$model,
+            editgroup: Option<String>,
             _context: &Context,
         ) -> Box<Future<Item = $post_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             let ret = match conn.transaction(|| {
-                let edit_context = make_edit_context(&conn, entity.parse_editgroup_id()?, false)?;
+                let editgroup_id = if let Some(s) = editgroup {
+                    Some(FatCatId::from_str(&s)?)
+                } else { None };
+                let edit_context = make_edit_context(&conn, editgroup_id, false)?;
                 entity.db_create(&conn, &edit_context)?.into_model()
             }) {
                 Ok(edit) =>
@@ -102,7 +106,12 @@ macro_rules! wrap_entity_handlers {
             _context: &Context,
         ) -> Box<Future<Item = $post_batch_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
-            let ret = match conn.transaction(|| self.$post_batch_handler(entity_list, autoaccept.unwrap_or(false), editgroup, &conn)) {
+            let ret = match conn.transaction(|| {
+                let editgroup_id = if let Some(s) = editgroup {
+                    Some(FatCatId::from_str(&s)?)
+                } else { None };
+                self.$post_batch_handler(entity_list, autoaccept.unwrap_or(false), editgroup_id, &conn)
+            }) {
                 Ok(edit) =>
                     $post_batch_resp::CreatedEntities(edit),
                 Err(Error(ErrorKind::Diesel(e), _)) =>
@@ -126,12 +135,16 @@ macro_rules! wrap_entity_handlers {
             &self,
             id: String,
             entity: models::$model,
+            editgroup: Option<String>,
             _context: &Context,
         ) -> Box<Future<Item = $update_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             let ret = match conn.transaction(|| {
                 let entity_id = FatCatId::from_str(&id)?;
-                let edit_context = make_edit_context(&conn, entity.parse_editgroup_id()?, false)?;
+                let editgroup_id = if let Some(s) = editgroup {
+                    Some(FatCatId::from_str(&s)?)
+                } else { None };
+                let edit_context = make_edit_context(&conn, editgroup_id, false)?;
                 entity.db_update(&conn, &edit_context, entity_id)?.into_model()
             }) {
                 Ok(edit) =>

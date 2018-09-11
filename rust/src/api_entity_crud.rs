@@ -41,8 +41,6 @@ where
     type IdentNewRow;
     type RevRow;
 
-    fn parse_editgroup_id(&self) -> Result<Option<FatCatId>>;
-
     // Generic Methods
     fn db_get(conn: &DbConn, ident: FatCatId) -> Result<Self>;
     fn db_get_rev(conn: &DbConn, rev_id: Uuid) -> Result<Self>;
@@ -79,18 +77,6 @@ where
     ) -> Result<Self>;
     fn db_insert_rev(&self, conn: &DbConn) -> Result<Uuid>;
     fn db_insert_revs(conn: &DbConn, models: &[&Self]) -> Result<Vec<Uuid>>;
-}
-
-// TODO: this could be a separate trait on all entities
-macro_rules! generic_parse_editgroup_id{
-    () => {
-        fn parse_editgroup_id(&self) -> Result<Option<FatCatId>> {
-            match &self.editgroup_id {
-                Some(s) => Ok(Some(FatCatId::from_str(&s)?)),
-                None => Ok(None),
-            }
-        }
-    }
 }
 
 macro_rules! generic_db_get {
@@ -394,7 +380,6 @@ impl EntityCrud for ContainerEntity {
     type IdentNewRow = ContainerIdentNewRow;
     type RevRow = ContainerRevRow;
 
-    generic_parse_editgroup_id!();
     generic_db_get!(container_ident, container_rev);
     generic_db_get_rev!(container_rev);
     generic_db_expand!();
@@ -432,7 +417,7 @@ impl EntityCrud for ContainerEntity {
             revision: Some(rev_row.id.to_string()),
             redirect: redirect_id,
             extra: rev_row.extra_json,
-            editgroup_id: None,
+            edit_extra: None,
         })
     }
 
@@ -475,7 +460,6 @@ impl EntityCrud for CreatorEntity {
     type IdentNewRow = CreatorIdentNewRow;
     type RevRow = CreatorRevRow;
 
-    generic_parse_editgroup_id!();
     generic_db_get!(creator_ident, creator_rev);
     generic_db_get_rev!(creator_rev);
     generic_db_expand!();
@@ -510,8 +494,8 @@ impl EntityCrud for CreatorEntity {
             ident: ident_id,
             revision: Some(rev_row.id.to_string()),
             redirect: redirect_id,
-            editgroup_id: None,
             extra: rev_row.extra_json,
+            edit_extra: None,
         })
     }
 
@@ -553,7 +537,6 @@ impl EntityCrud for FileEntity {
     type IdentNewRow = FileIdentNewRow;
     type RevRow = FileRevRow;
 
-    generic_parse_editgroup_id!();
     generic_db_get!(file_ident, file_rev);
     generic_db_get_rev!(file_rev);
     generic_db_expand!();
@@ -608,8 +591,8 @@ impl EntityCrud for FileEntity {
             ident: ident_id,
             revision: Some(rev_row.id.to_string()),
             redirect: redirect_id,
-            editgroup_id: None,
             extra: rev_row.extra_json,
+            edit_extra: None,
         })
     }
 
@@ -691,7 +674,6 @@ impl EntityCrud for ReleaseEntity {
     type IdentNewRow = ReleaseIdentNewRow;
     type RevRow = ReleaseRevRow;
 
-    generic_parse_editgroup_id!();
     generic_db_get!(release_ident, release_rev);
     generic_db_get_rev!(release_rev);
     //generic_db_create!(release_ident, release_edit);
@@ -703,18 +685,16 @@ impl EntityCrud for ReleaseEntity {
     generic_db_insert_rev!();
 
     fn db_expand(&mut self, conn: &DbConn, expand: ExpandFlags) -> Result<()> {
-
         let ident = match &self.ident {
             None => bail!("Can't expand a non-concrete entity"),
-            Some(s) => FatCatId::from_str(&s)?
+            Some(s) => FatCatId::from_str(&s)?,
         };
         if expand.files {
             self.files = Some(get_release_files(ident, conn)?);
         }
         if expand.container {
             if let Some(ref cid) = self.container_id {
-                self.container =
-                    Some(ContainerEntity::db_get(conn, FatCatId::from_str(&cid)?)?);
+                self.container = Some(ContainerEntity::db_get(conn, FatCatId::from_str(&cid)?)?);
             }
         }
         Ok(())
@@ -744,8 +724,8 @@ impl EntityCrud for ReleaseEntity {
                     revision: None,
                     redirect: None,
                     state: None,
-                    editgroup_id: None,
                     extra: None,
+                    edit_extra: None,
                 });
             };
         }
@@ -904,8 +884,8 @@ impl EntityCrud for ReleaseEntity {
             ident: ident_id,
             revision: Some(rev_row.id.to_string()),
             redirect: redirect_id,
-            editgroup_id: None,
             extra: rev_row.extra_json,
+            edit_extra: None,
         })
     }
 
@@ -1086,7 +1066,6 @@ impl EntityCrud for WorkEntity {
     type IdentNewRow = WorkIdentNewRow;
     type RevRow = WorkRevRow;
 
-    generic_parse_editgroup_id!();
     generic_db_get!(work_ident, work_rev);
     generic_db_get_rev!(work_rev);
     generic_db_expand!();
@@ -1117,8 +1096,8 @@ impl EntityCrud for WorkEntity {
             ident: ident_id,
             revision: Some(rev_row.id.to_string()),
             redirect: redirect_id,
-            editgroup_id: None,
             extra: rev_row.extra_json,
+            edit_extra: None,
         })
     }
 

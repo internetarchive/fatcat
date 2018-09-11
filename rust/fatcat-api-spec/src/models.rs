@@ -61,14 +61,13 @@ pub struct ContainerEntity {
     #[serde(rename = "name")]
     pub name: String,
 
+    #[serde(rename = "edit_extra")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub edit_extra: Option<serde_json::Value>,
+
     #[serde(rename = "extra")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub extra: Option<serde_json::Value>,
-
-    /// base32-encoded unique identifier
-    #[serde(rename = "editgroup_id")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub editgroup_id: Option<String>,
 
     /// base32-encoded unique identifier
     #[serde(rename = "redirect")]
@@ -100,8 +99,8 @@ impl ContainerEntity {
             issnl: None,
             publisher: None,
             name: name,
+            edit_extra: None,
             extra: None,
-            editgroup_id: None,
             redirect: None,
             revision: None,
             ident: None,
@@ -151,14 +150,13 @@ pub struct CreatorEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub redirect: Option<String>,
 
-    /// base32-encoded unique identifier
-    #[serde(rename = "editgroup_id")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub editgroup_id: Option<String>,
-
     #[serde(rename = "extra")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub extra: Option<serde_json::Value>,
+
+    #[serde(rename = "edit_extra")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub edit_extra: Option<serde_json::Value>,
 }
 
 impl CreatorEntity {
@@ -173,8 +171,8 @@ impl CreatorEntity {
             ident: None,
             revision: None,
             redirect: None,
-            editgroup_id: None,
             extra: None,
+            edit_extra: None,
         }
     }
 }
@@ -372,14 +370,13 @@ pub struct FileEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub size: Option<i64>,
 
+    #[serde(rename = "edit_extra")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub edit_extra: Option<serde_json::Value>,
+
     #[serde(rename = "extra")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub extra: Option<serde_json::Value>,
-
-    /// base32-encoded unique identifier
-    #[serde(rename = "editgroup_id")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub editgroup_id: Option<String>,
 
     /// base32-encoded unique identifier
     #[serde(rename = "redirect")]
@@ -412,8 +409,8 @@ impl FileEntity {
             md5: None,
             sha1: None,
             size: None,
+            edit_extra: None,
             extra: None,
-            editgroup_id: None,
             redirect: None,
             revision: None,
             ident: None,
@@ -590,14 +587,13 @@ pub struct ReleaseEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub redirect: Option<String>,
 
-    /// base32-encoded unique identifier
-    #[serde(rename = "editgroup_id")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub editgroup_id: Option<String>,
-
     #[serde(rename = "extra")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub extra: Option<serde_json::Value>,
+
+    #[serde(rename = "edit_extra")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub edit_extra: Option<serde_json::Value>,
 }
 
 impl ReleaseEntity {
@@ -629,8 +625,8 @@ impl ReleaseEntity {
             ident: None,
             revision: None,
             redirect: None,
-            editgroup_id: None,
             extra: None,
+            edit_extra: None,
         }
     }
 }
@@ -742,14 +738,13 @@ impl Success {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct WorkEntity {
+    #[serde(rename = "edit_extra")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub edit_extra: Option<serde_json::Value>,
+
     #[serde(rename = "extra")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub extra: Option<serde_json::Value>,
-
-    /// base32-encoded unique identifier
-    #[serde(rename = "editgroup_id")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub editgroup_id: Option<String>,
 
     /// base32-encoded unique identifier
     #[serde(rename = "redirect")]
@@ -775,8 +770,8 @@ pub struct WorkEntity {
 impl WorkEntity {
     pub fn new() -> WorkEntity {
         WorkEntity {
+            edit_extra: None,
             extra: None,
-            editgroup_id: None,
             redirect: None,
             revision: None,
             ident: None,

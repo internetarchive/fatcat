@@ -52,15 +52,12 @@ x-entity-props: &ENTITYPROPS
     <<: *FATCATUUID
   redirect:
     <<: *FATCATIDENT
-  editgroup_id:
-    <<: *FATCATIDENT
   extra:
     type: object
     additionalProperties: {}
-# TODO:
-#  edit_extra:
-#    type: object
-#    additionalProperties: {}
+  edit_extra:
+    type: object
+    additionalProperties: {}
 
 definitions:
   error_response:
@@ -432,6 +429,10 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/container_entity"
+        - name: editgroup
+          in: query
+          required: false
+          type: string
       responses:
         201:
           description: Created Entity
@@ -495,6 +496,10 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/container_entity"
+        - name: editgroup
+          in: query
+          required: false
+          type: string
       responses:
         200:
           description: Updated Entity
@@ -558,6 +563,10 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/creator_entity"
+        - name: editgroup
+          in: query
+          required: false
+          type: string
       responses:
         201:
           description: Created Entity
@@ -621,6 +630,10 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/creator_entity"
+        - name: editgroup
+          in: query
+          required: false
+          type: string
       responses:
         200:
           description: Updated Entity
@@ -700,6 +713,10 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/file_entity"
+        - name: editgroup
+          in: query
+          required: false
+          type: string
       responses:
         201:
           description: Created Entity
@@ -763,6 +780,10 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/file_entity"
+        - name: editgroup
+          in: query
+          required: false
+          type: string
       responses:
         200:
           description: Updated Entity
@@ -826,6 +847,10 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/release_entity"
+        - name: editgroup
+          in: query
+          required: false
+          type: string
       responses:
         201:
           description: Created Entity
@@ -889,6 +914,10 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/release_entity"
+        - name: editgroup
+          in: query
+          required: false
+          type: string
       responses:
         200:
           description: Updated Entity
@@ -968,6 +997,10 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/work_entity"
+        - name: editgroup
+          in: query
+          required: false
+          type: string
       responses:
         201:
           description: Created Entity
@@ -1031,6 +1064,10 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/work_entity"
+        - name: editgroup
+          in: query
+          required: false
+          type: string
       responses:
         200:
           description: Updated Entity
