@@ -20,7 +20,7 @@ macro_rules! wrap_entity_handlers {
     // stable doesn't have a mechanism to "concat" or generate new identifiers in macros, at least
     // in the context of defining new functions.
     // The only stable approach I know of would be: https://github.com/dtolnay/mashup
-    ($get_fn:ident, $get_handler:ident, $get_resp:ident, $post_fn:ident,
+    ($get_fn:ident, $get_resp:ident, $post_fn:ident,
             $post_resp:ident, $post_batch_fn:ident, $post_batch_handler:ident,
             $post_batch_resp:ident, $update_fn:ident, $update_resp:ident,
             $delete_fn:ident, $delete_resp:ident, $get_history_fn:ident,
@@ -36,7 +36,15 @@ macro_rules! wrap_entity_handlers {
             // No transaction for GET
             let ret = match conn.transaction(|| {
                 let entity_id = FatCatId::from_str(&id)?;
-                self.$get_handler(entity_id, &expand, &conn)
+                match expand {
+                    None => $model::db_get(&conn, entity_id),
+                    Some(param) => {
+                        let expand_flags = ExpandFlags::from_string(&param);
+                        let mut entity = $model::db_get(&conn, entity_id)?;
+                        entity.db_expand(&conn, expand_flags)?;
+                        Ok(entity)
+                    },
+                }
             }) {
                 Ok(entity) =>
                     $get_resp::FoundEntity(entity),
@@ -65,7 +73,7 @@ macro_rules! wrap_entity_handlers {
             let conn = self.db_pool.get().expect("db_pool error");
             let ret = match conn.transaction(|| {
                 let edit_context = make_edit_context(&conn, entity.parse_editgroup_id()?, false)?;
-                Ok(entity.db_create(&conn, &edit_context)?.into_model()?)
+                entity.db_create(&conn, &edit_context)?.into_model()
             }) {
                 Ok(edit) =>
                     $post_resp::CreatedEntity(edit),
@@ -124,7 +132,7 @@ macro_rules! wrap_entity_handlers {
             let ret = match conn.transaction(|| {
                 let entity_id = FatCatId::from_str(&id)?;
                 let edit_context = make_edit_context(&conn, entity.parse_editgroup_id()?, false)?;
-                Ok(entity.db_update(&conn, &edit_context, entity_id)?.into_model()?)
+                entity.db_update(&conn, &edit_context, entity_id)?.into_model()
             }) {
                 Ok(edit) =>
                     $update_resp::UpdatedEntity(edit),
@@ -161,7 +169,7 @@ macro_rules! wrap_entity_handlers {
                     None => None,
                 };
                 let edit_context = make_edit_context(&conn, editgroup_id, false)?;
-                Ok($model::db_delete(&conn, &edit_context, entity_id)?.into_model()?)
+                $model::db_delete(&conn, &edit_context, entity_id)?.into_model()
             }) {
                 Ok(edit) =>
                     $delete_resp::DeletedEntity(edit),
@@ -194,7 +202,7 @@ macro_rules! wrap_entity_handlers {
             // No transaction for GET
             let ret = match conn.transaction(|| {
                 let entity_id = FatCatId::from_str(&id)?;
-                Ok($model::db_get_history(&conn, entity_id, limit)?)
+                $model::db_get_history(&conn, entity_id, limit)
             }) {
                 Ok(history) =>
                     $get_history_resp::FoundEntityHistory(history),
@@ -273,7 +281,6 @@ macro_rules! wrap_fcid_handler {
 impl Api for Server {
     wrap_entity_handlers!(
         get_container,
-        get_container_handler,
         GetContainerResponse,
         create_container,
         CreateContainerResponse,
@@ -291,7 +298,6 @@ impl Api for Server {
 
     wrap_entity_handlers!(
         get_creator,
-        get_creator_handler,
         GetCreatorResponse,
         create_creator,
         CreateCreatorResponse,
@@ -308,7 +314,6 @@ impl Api for Server {
     );
     wrap_entity_handlers!(
         get_file,
-        get_file_handler,
         GetFileResponse,
         create_file,
         CreateFileResponse,
@@ -325,7 +330,6 @@ impl Api for Server {
     );
     wrap_entity_handlers!(
         get_release,
-        get_release_handler,
         GetReleaseResponse,
         create_release,
         CreateReleaseResponse,
@@ -342,7 +346,6 @@ impl Api for Server {
     );
     wrap_entity_handlers!(
         get_work,
-        get_work_handler,
         GetWorkResponse,
         create_work,
         CreateWorkResponse,

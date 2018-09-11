@@ -57,15 +57,24 @@ pub struct Server {
     pub db_pool: ConnectionPool,
 }
 
+pub fn get_release_files (
+    id: FatCatId,
+    conn: &DbConn,
+) -> Result<Vec<FileEntity>> {
+    let rows: Vec<(FileRevRow, FileIdentRow, FileReleaseRow)> = file_rev::table
+        .inner_join(file_ident::table)
+        .inner_join(file_release::table)
+        .filter(file_release::target_release_ident_id.eq(&id.to_uuid()))
+        .filter(file_ident::is_live.eq(true))
+        .filter(file_ident::redirect_id.is_null())
+        .load(conn)?;
+
+    rows.into_iter()
+        .map(|(rev, ident, _)| FileEntity::db_from_row(conn, rev, Some(ident)))
+        .collect()
+}
+
 impl Server {
-    pub fn get_container_handler(
-        &self,
-        id: FatCatId,
-        _expand: &Option<String>,
-        conn: &DbConn,
-    ) -> Result<ContainerEntity> {
-        ContainerEntity::db_get(conn, id)
-    }
 
     pub fn lookup_container_handler(&self, issnl: &str, conn: &DbConn) -> Result<ContainerEntity> {
         check_issn(issnl)?;
@@ -80,15 +89,6 @@ impl Server {
             .first(conn)?;
 
         ContainerEntity::db_from_row(conn, rev, Some(ident))
-    }
-
-    pub fn get_creator_handler(
-        &self,
-        id: FatCatId,
-        _expand: &Option<String>,
-        conn: &DbConn,
-    ) -> Result<CreatorEntity> {
-        CreatorEntity::db_get(conn, id)
     }
 
     pub fn lookup_creator_handler(&self, orcid: &str, conn: &DbConn) -> Result<CreatorEntity> {
@@ -126,15 +126,6 @@ impl Server {
             .collect()
     }
 
-    pub fn get_file_handler(
-        &self,
-        id: FatCatId,
-        _expand: &Option<String>,
-        conn: &DbConn,
-    ) -> Result<FileEntity> {
-        FileEntity::db_get(conn, id)
-    }
-
     pub fn lookup_file_handler(&self, sha1: &str, conn: &DbConn) -> Result<FileEntity> {
         let (ident, rev): (FileIdentRow, FileRevRow) = file_ident::table
             .inner_join(file_rev::table)
@@ -147,25 +138,6 @@ impl Server {
             .first(conn)?;
 
         FileEntity::db_from_row(conn, rev, Some(ident))
-    }
-
-    pub fn get_release_handler(
-        &self,
-        id: FatCatId,
-        expand: &Option<String>,
-        conn: &DbConn,
-    ) -> Result<ReleaseEntity> {
-        let mut release = ReleaseEntity::db_get(conn, id)?;
-
-        // For now, if there is any expand param we do them all
-        if expand.is_some() {
-            release.files = Some(self.get_release_files_handler(id, conn)?);
-            if let Some(ref cid) = release.container_id {
-                release.container =
-                    Some(self.get_container_handler(FatCatId::from_str(&cid)?, &None, conn)?);
-            }
-        }
-        Ok(release)
     }
 
     pub fn lookup_release_handler(&self, doi: &str, conn: &DbConn) -> Result<ReleaseEntity> {
@@ -188,26 +160,7 @@ impl Server {
         id: FatCatId,
         conn: &DbConn,
     ) -> Result<Vec<FileEntity>> {
-        let rows: Vec<(FileRevRow, FileIdentRow, FileReleaseRow)> = file_rev::table
-            .inner_join(file_ident::table)
-            .inner_join(file_release::table)
-            .filter(file_release::target_release_ident_id.eq(&id.to_uuid()))
-            .filter(file_ident::is_live.eq(true))
-            .filter(file_ident::redirect_id.is_null())
-            .load(conn)?;
-
-        rows.into_iter()
-            .map(|(rev, ident, _)| FileEntity::db_from_row(conn, rev, Some(ident)))
-            .collect()
-    }
-
-    pub fn get_work_handler(
-        &self,
-        id: FatCatId,
-        _expand: &Option<String>,
-        conn: &DbConn,
-    ) -> Result<WorkEntity> {
-        WorkEntity::db_get(conn, id)
+        get_release_files(id, conn)
     }
 
     pub fn get_work_releases_handler(
