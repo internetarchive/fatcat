@@ -22,7 +22,7 @@ table! {
         rev_id -> Nullable<Uuid>,
         redirect_id -> Nullable<Uuid>,
         prev_rev -> Nullable<Uuid>,
-        extra_json -> Nullable<Json>,
+        extra_json -> Nullable<Jsonb>,
     }
 }
 
@@ -38,7 +38,7 @@ table! {
 table! {
     container_rev (id) {
         id -> Uuid,
-        extra_json -> Nullable<Json>,
+        extra_json -> Nullable<Jsonb>,
         name -> Text,
         publisher -> Nullable<Text>,
         issnl -> Nullable<Bpchar>,
@@ -57,7 +57,7 @@ table! {
         rev_id -> Nullable<Uuid>,
         redirect_id -> Nullable<Uuid>,
         prev_rev -> Nullable<Uuid>,
-        extra_json -> Nullable<Json>,
+        extra_json -> Nullable<Jsonb>,
     }
 }
 
@@ -73,7 +73,7 @@ table! {
 table! {
     creator_rev (id) {
         id -> Uuid,
-        extra_json -> Nullable<Json>,
+        extra_json -> Nullable<Jsonb>,
         display_name -> Text,
         given_name -> Nullable<Text>,
         surname -> Nullable<Text>,
@@ -87,7 +87,7 @@ table! {
         id -> Uuid,
         editor_id -> Uuid,
         created -> Timestamp,
-        extra_json -> Nullable<Json>,
+        extra_json -> Nullable<Jsonb>,
         description -> Nullable<Text>,
     }
 }
@@ -111,7 +111,7 @@ table! {
         rev_id -> Nullable<Uuid>,
         redirect_id -> Nullable<Uuid>,
         prev_rev -> Nullable<Uuid>,
-        extra_json -> Nullable<Json>,
+        extra_json -> Nullable<Jsonb>,
     }
 }
 
@@ -134,7 +134,7 @@ table! {
 table! {
     file_rev (id) {
         id -> Uuid,
-        extra_json -> Nullable<Json>,
+        extra_json -> Nullable<Jsonb>,
         size -> Nullable<Int8>,
         sha1 -> Nullable<Bpchar>,
         sha256 -> Nullable<Bpchar>,
@@ -160,7 +160,7 @@ table! {
         raw_name -> Nullable<Text>,
         role -> Nullable<Text>,
         index_val -> Nullable<Int8>,
-        extra_json -> Nullable<Json>,
+        extra_json -> Nullable<Jsonb>,
     }
 }
 
@@ -173,7 +173,7 @@ table! {
         rev_id -> Nullable<Uuid>,
         redirect_id -> Nullable<Uuid>,
         prev_rev -> Nullable<Uuid>,
-        extra_json -> Nullable<Json>,
+        extra_json -> Nullable<Jsonb>,
     }
 }
 
@@ -193,7 +193,7 @@ table! {
         target_release_ident_id -> Nullable<Uuid>,
         index_val -> Nullable<Int8>,
         key -> Nullable<Text>,
-        extra_json -> Nullable<Json>,
+        extra_json -> Nullable<Jsonb>,
         container_title -> Nullable<Text>,
         year -> Nullable<Int8>,
         title -> Nullable<Text>,
@@ -204,7 +204,7 @@ table! {
 table! {
     release_rev (id) {
         id -> Uuid,
-        extra_json -> Nullable<Json>,
+        extra_json -> Nullable<Jsonb>,
         work_ident_id -> Uuid,
         container_ident_id -> Nullable<Uuid>,
         title -> Text,
@@ -244,7 +244,7 @@ table! {
         rev_id -> Nullable<Uuid>,
         redirect_id -> Nullable<Uuid>,
         prev_rev -> Nullable<Uuid>,
-        extra_json -> Nullable<Json>,
+        extra_json -> Nullable<Jsonb>,
     }
 }
 
@@ -260,7 +260,7 @@ table! {
 table! {
     work_rev (id) {
         id -> Uuid,
-        extra_json -> Nullable<Json>,
+        extra_json -> Nullable<Jsonb>,
     }
 }
 

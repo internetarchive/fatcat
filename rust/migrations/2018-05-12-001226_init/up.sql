@@ -22,7 +22,7 @@ CREATE TABLE editgroup (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     editor_id           UUID REFERENCES editor(id) NOT NULL,
     created             TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL,
-    extra_json          JSON,
+    extra_json          JSONB,
     description         TEXT
 );
 
@@ -47,7 +47,7 @@ CREATE TABLE abstracts (
 -------------------- Creators -----------------------------------------------
 CREATE TABLE creator_rev (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    extra_json          JSON,
+    extra_json          JSONB,
 
     display_name        TEXT NOT NULL,
     given_name          TEXT,
@@ -81,7 +81,7 @@ CREATE TABLE creator_edit (
     rev_id              UUID REFERENCES creator_rev(id),
     redirect_id         UUID REFERENCES creator_ident(id),
     prev_rev            UUID REFERENCES creator_rev(id),
-    extra_json          JSON
+    extra_json          JSONB
 );
 
 CREATE INDEX creator_edit_idx ON creator_edit(editgroup_id);
@@ -89,7 +89,7 @@ CREATE INDEX creator_edit_idx ON creator_edit(editgroup_id);
 -------------------- Containers --------------------------------------------
 CREATE TABLE container_rev (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    extra_json          JSON,
+    extra_json          JSONB,
 
     name                TEXT NOT NULL,
     publisher           TEXT,
@@ -119,7 +119,7 @@ CREATE TABLE container_edit (
     rev_id              UUID REFERENCES container_rev(id),
     redirect_id         UUID REFERENCES container_ident(id),
     prev_rev            UUID REFERENCES container_rev(id),
-    extra_json          JSON
+    extra_json          JSONB
 );
 
 CREATE INDEX container_edit_idx ON container_edit(editgroup_id);
@@ -127,7 +127,7 @@ CREATE INDEX container_edit_idx ON container_edit(editgroup_id);
 -------------------- Files -------------------------------------------------
 CREATE TABLE file_rev (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    extra_json          JSON,
+    extra_json          JSONB,
 
     size                BIGINT,
     sha1                CHAR(40),
@@ -166,7 +166,7 @@ CREATE TABLE file_edit (
     rev_id              UUID REFERENCES file_rev(id),
     redirect_id         UUID REFERENCES file_ident(id),
     prev_rev            UUID REFERENCES file_rev(id),
-    extra_json          JSON
+    extra_json          JSONB
 );
 
 CREATE INDEX file_edit_idx ON file_edit(editgroup_id);
@@ -174,7 +174,7 @@ CREATE INDEX file_edit_idx ON file_edit(editgroup_id);
 -------------------- Release -----------------------------------------------
 CREATE TABLE release_rev (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    extra_json          JSON,
+    extra_json          JSONB,
 
     work_ident_id       UUID NOT NULL, -- FOREIGN KEY; see ALRTER below
     container_ident_id  UUID REFERENCES container_ident(id),
@@ -233,7 +233,7 @@ CREATE TABLE release_edit (
     rev_id              UUID REFERENCES release_rev(id),
     redirect_id         UUID REFERENCES release_ident(id),
     prev_rev            UUID REFERENCES release_rev(id),
-    extra_json          JSON
+    extra_json          JSONB
 );
 
 CREATE INDEX release_edit_idx ON release_edit(editgroup_id);
@@ -241,7 +241,7 @@ CREATE INDEX release_edit_idx ON release_edit(editgroup_id);
 -------------------- Works --------------------------------------------------
 CREATE TABLE work_rev (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    extra_json          JSON
+    extra_json          JSONB
 );
 
 CREATE TABLE work_ident (
@@ -261,7 +261,7 @@ CREATE TABLE work_edit (
     rev_id              UUID REFERENCES work_rev(id),
     redirect_id         UUID REFERENCES work_ident(id),
     prev_rev            UUID REFERENCES work_rev(id),
-    extra_json          JSON
+    extra_json          JSONB
 );
 
 CREATE INDEX work_edit_idx ON work_edit(editgroup_id);
@@ -279,7 +279,7 @@ CREATE TABLE release_contrib (
     raw_name            TEXT,
     role                TEXT, -- TODO: enum?
     index_val           BIGINT,
-    extra_json          JSON
+    extra_json          JSONB
 );
 
 CREATE INDEX release_contrib_rev_idx ON release_contrib(release_rev);
@@ -291,7 +291,7 @@ CREATE TABLE release_ref (
     target_release_ident_id UUID REFERENCES release_ident(id), -- or work?
     index_val               BIGINT,
     key                     TEXT,
-    extra_json              JSON, -- title, year, container_title, locator (aka, page), oci_id
+    extra_json              JSONB, -- title, year, container_title, locator (aka, page), oci_id
     container_title         TEXT,
     year                    BIGINT,
     title                   TEXT,
