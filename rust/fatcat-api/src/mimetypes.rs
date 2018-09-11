@@ -362,7 +362,7 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for GetCreatorReleases
     lazy_static! {
-        pub static ref GET_CREATOR_RELEASES_FOUND_ENTITY: Mime = mime!(Application / Json);
+        pub static ref GET_CREATOR_RELEASES_FOUND: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for GetCreatorReleases
     lazy_static! {
@@ -378,7 +378,7 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for GetEditgroup
     lazy_static! {
-        pub static ref GET_EDITGROUP_FOUND_ENTITY: Mime = mime!(Application / Json);
+        pub static ref GET_EDITGROUP_FOUND: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for GetEditgroup
     lazy_static! {
@@ -394,7 +394,11 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for GetEditor
     lazy_static! {
-        pub static ref GET_EDITOR_FOUND_EDITOR: Mime = mime!(Application / Json);
+        pub static ref GET_EDITOR_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetEditor
+    lazy_static! {
+        pub static ref GET_EDITOR_BAD_REQUEST: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for GetEditor
     lazy_static! {
@@ -406,7 +410,11 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for GetEditorChangelog
     lazy_static! {
-        pub static ref GET_EDITOR_CHANGELOG_FOUND_MERGED_CHANGES: Mime = mime!(Application / Json);
+        pub static ref GET_EDITOR_CHANGELOG_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetEditorChangelog
+    lazy_static! {
+        pub static ref GET_EDITOR_CHANGELOG_BAD_REQUEST: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for GetEditorChangelog
     lazy_static! {
@@ -466,7 +474,7 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for GetReleaseFiles
     lazy_static! {
-        pub static ref GET_RELEASE_FILES_FOUND_ENTITY: Mime = mime!(Application / Json);
+        pub static ref GET_RELEASE_FILES_FOUND: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for GetReleaseFiles
     lazy_static! {
@@ -538,7 +546,7 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for GetWorkReleases
     lazy_static! {
-        pub static ref GET_WORK_RELEASES_FOUND_ENTITY: Mime = mime!(Application / Json);
+        pub static ref GET_WORK_RELEASES_FOUND: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for GetWorkReleases
     lazy_static! {
