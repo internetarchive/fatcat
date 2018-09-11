@@ -255,7 +255,8 @@ macro_rules! generic_db_get_history {
                 .limit(limit)
                 .get_results(conn)?;
 
-            let history: Result<Vec<EntityHistoryEntry>> = rows.into_iter()
+            let history: Result<Vec<EntityHistoryEntry>> = rows
+                .into_iter()
                 .map(|(eg_row, cl_row, e_row)| {
                     Ok(EntityHistoryEntry {
                         edit: e_row.into_model()?,
@@ -804,7 +805,8 @@ impl EntityCrud for ReleaseEntity {
                 year: r.year,
                 title: r.title,
                 locator: r.locator,
-                target_release_id: r.target_release_ident_id
+                target_release_id: r
+                    .target_release_ident_id
                     .map(|v| FatCatId::from_uuid(&v).to_string()),
             })
             .collect();
@@ -822,7 +824,8 @@ impl EntityCrud for ReleaseEntity {
                 raw_name: c.raw_name,
                 role: c.role,
                 extra: c.extra_json,
-                creator_id: c.creator_ident_id
+                creator_id: c
+                    .creator_ident_id
                     .map(|v| FatCatId::from_uuid(&v).to_string()),
                 creator: None,
             })
@@ -897,10 +900,11 @@ impl EntityCrud for ReleaseEntity {
         }
 
         let rev_ids: Vec<Uuid> = insert_into(release_rev::table)
-            .values(models
-                .iter()
-                .map(|model| {
-                    Ok(ReleaseRevNewRow {
+            .values(
+                models
+                    .iter()
+                    .map(|model| {
+                        Ok(ReleaseRevNewRow {
                     title: model.title.clone(),
                     release_type: model.release_type.clone(),
                     release_status: model.release_status.clone(),
@@ -926,8 +930,9 @@ impl EntityCrud for ReleaseEntity {
                     language: model.language.clone(),
                     extra_json: model.extra.clone()
                 })
-                })
-                .collect::<Result<Vec<ReleaseRevNewRow>>>()?)
+                    })
+                    .collect::<Result<Vec<ReleaseRevNewRow>>>()?,
+            )
             .returning(release_rev::id)
             .get_results(conn)?;
 

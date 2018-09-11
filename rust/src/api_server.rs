@@ -408,29 +408,33 @@ impl Server {
         let files_with_releases: Option<i64> = if more.is_some() {
             // this query is slightly inaccurate and over-counts: it includes files that have release
             // links only to inactive releases
-            Some(file_rev::table
-                .inner_join(file_ident::table)
-                .inner_join(file_release::table)
-                .filter(file_ident::is_live.eq(true))
-                .filter(file_ident::redirect_id.is_null())
-                .select(file_ident::id)
-                .distinct()
-                .count()
-                .first(conn)?)
+            Some(
+                file_rev::table
+                    .inner_join(file_ident::table)
+                    .inner_join(file_release::table)
+                    .filter(file_ident::is_live.eq(true))
+                    .filter(file_ident::redirect_id.is_null())
+                    .select(file_ident::id)
+                    .distinct()
+                    .count()
+                    .first(conn)?,
+            )
         } else {
             None
         };
         let releases_with_files: Option<i64> = if more.is_some() {
             // this slightly overcounts also: it will include releases which are only linked to from
             // inactive files
-            Some(release_ident::table
-                .inner_join(file_release::table)
-                .filter(release_ident::is_live.eq(true))
-                .filter(release_ident::redirect_id.is_null())
-                .select(file_release::target_release_ident_id)
-                .distinct()
-                .count()
-                .first(conn)?)
+            Some(
+                release_ident::table
+                    .inner_join(file_release::table)
+                    .filter(release_ident::is_live.eq(true))
+                    .filter(release_ident::redirect_id.is_null())
+                    .select(file_release::target_release_ident_id)
+                    .distinct()
+                    .count()
+                    .first(conn)?,
+            )
         } else {
             None
         };
