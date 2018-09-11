@@ -16,6 +16,8 @@ CREATE TABLE editor (
     active_editgroup_id UUID -- REFERENCES( editgroup(id) via ALTER below
 );
 
+CREATE INDEX active_editgroup_idx ON editor(active_editgroup_id);
+
 CREATE TABLE editgroup (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     editor_id           UUID REFERENCES editor(id) NOT NULL,
