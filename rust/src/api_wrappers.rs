@@ -36,7 +36,7 @@ macro_rules! wrap_entity_handlers {
             // No transaction for GET
             let ret = match conn.transaction(|| {
                 let entity_id = FatCatId::from_str(&id)?;
-                self.$get_handler(entity_id, expand, &conn)
+                self.$get_handler(entity_id, &expand, &conn)
             }) {
                 Ok(entity) =>
                     $get_resp::FoundEntity(entity),

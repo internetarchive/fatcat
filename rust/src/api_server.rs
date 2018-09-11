@@ -61,7 +61,7 @@ impl Server {
     pub fn get_container_handler(
         &self,
         id: FatCatId,
-        _expand: Option<String>,
+        _expand: &Option<String>,
         conn: &DbConn,
     ) -> Result<ContainerEntity> {
         ContainerEntity::db_get(conn, id)
@@ -85,7 +85,7 @@ impl Server {
     pub fn get_creator_handler(
         &self,
         id: FatCatId,
-        _expand: Option<String>,
+        _expand: &Option<String>,
         conn: &DbConn,
     ) -> Result<CreatorEntity> {
         CreatorEntity::db_get(conn, id)
@@ -129,7 +129,7 @@ impl Server {
     pub fn get_file_handler(
         &self,
         id: FatCatId,
-        _expand: Option<String>,
+        _expand: &Option<String>,
         conn: &DbConn,
     ) -> Result<FileEntity> {
         FileEntity::db_get(conn, id)
@@ -152,7 +152,7 @@ impl Server {
     pub fn get_release_handler(
         &self,
         id: FatCatId,
-        expand: Option<String>,
+        expand: &Option<String>,
         conn: &DbConn,
     ) -> Result<ReleaseEntity> {
         let mut release = ReleaseEntity::db_get(conn, id)?;
@@ -162,7 +162,7 @@ impl Server {
             release.files = Some(self.get_release_files_handler(id, conn)?);
             if let Some(ref cid) = release.container_id {
                 release.container =
-                    Some(self.get_container_handler(FatCatId::from_str(&cid)?, None, conn)?);
+                    Some(self.get_container_handler(FatCatId::from_str(&cid)?, &None, conn)?);
             }
         }
         Ok(release)
@@ -204,7 +204,7 @@ impl Server {
     pub fn get_work_handler(
         &self,
         id: FatCatId,
-        _expand: Option<String>,
+        _expand: &Option<String>,
         conn: &DbConn,
     ) -> Result<WorkEntity> {
         WorkEntity::db_get(conn, id)

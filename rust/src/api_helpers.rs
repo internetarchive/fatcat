@@ -117,8 +117,9 @@ impl FatCatId {
     pub fn to_uuid(&self) -> Uuid {
         self.0
     }
+    // TODO: just make it u: Uuid and clone (not by ref)
     pub fn from_uuid(u: &Uuid) -> FatCatId {
-        FatCatId(u.clone())
+        FatCatId(*u)
     }
 }
 

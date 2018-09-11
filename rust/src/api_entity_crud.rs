@@ -371,7 +371,7 @@ macro_rules! generic_db_accept_edits_each {
 macro_rules! generic_db_insert_rev {
     () => {
         fn db_insert_rev(&self, conn: &DbConn) -> Result<Uuid> {
-            Self::db_insert_revs(conn, &vec![self]).map(|id_list| id_list[0])
+            Self::db_insert_revs(conn, &[self]).map(|id_list| id_list[0])
         }
     }
 }
@@ -631,7 +631,7 @@ impl EntityCrud for FileEntity {
                         .iter()
                         .map(|r| {
                             Ok(FileReleaseRow {
-                                file_rev: rev_id.clone(),
+                                file_rev: *rev_id,
                                 target_release_ident_id: FatCatId::from_str(r)?.to_uuid(),
                             })
                         })
@@ -646,7 +646,7 @@ impl EntityCrud for FileEntity {
                     let these_url_rows: Vec<FileRevUrlNewRow> = url_list
                         .into_iter()
                         .map(|u| FileRevUrlNewRow {
-                            file_rev: rev_id.clone(),
+                            file_rev: *rev_id,
                             rel: u.rel.clone(),
                             url: u.url.clone(),
                         })
@@ -693,7 +693,7 @@ impl EntityCrud for ReleaseEntity {
     generic_db_insert_rev!();
 
     fn db_create(&self, conn: &DbConn, edit_context: &EditContext) -> Result<Self::EditRow> {
-        let mut edits = Self::db_create_batch(conn, edit_context, &vec![self])?;
+        let mut edits = Self::db_create_batch(conn, edit_context, &[self])?;
         // probably a more elegant way to destroy the vec and take first element
         Ok(edits.pop().unwrap())
     }
@@ -750,7 +750,7 @@ impl EntityCrud for ReleaseEntity {
                 rev_ids
                     .iter()
                     .map(|rev_id| Self::IdentNewRow {
-                        rev_id: Some(rev_id.clone()),
+                        rev_id: Some(*rev_id),
                         is_live: edit_context.autoaccept,
                         redirect_id: None,
                     })
@@ -1002,7 +1002,7 @@ impl EntityCrud for ReleaseEntity {
                     .into_iter()
                     .map(|c| {
                         Ok(ReleaseRevAbstractNewRow {
-                            release_rev: rev_id.clone(),
+                            release_rev: *rev_id,
                             abstract_sha1: match c.content {
                                 Some(ref content) => Sha1::from(content).hexdigest(),
                                 None => match c.sha1.clone() {
