@@ -2,7 +2,7 @@
 
 use api_helpers::*;
 use chrono;
-use api_entity_crud::{EditContext, EntityCrud};
+use api_entity_crud::EntityCrud;
 use database_models::*;
 use database_schema::*;
 use diesel::prelude::*;
@@ -51,27 +51,6 @@ macro_rules! count_entity {
             .first($conn)?;
         count
     }};
-}
-
-fn make_edit_context(conn: &DbConn, editgroup_id: Option<FatCatId>, autoaccept: bool) -> Result<EditContext> {
-    let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001")?; // TODO: auth
-    let editgroup_id: FatCatId = match (editgroup_id, autoaccept) {
-        (Some(eg), _) => eg,
-        // If autoaccept and no editgroup_id passed, always create a new one for this transaction
-        (None, true) => {
-            let eg_row: EditgroupRow = diesel::insert_into(editgroup::table)
-                .values((editgroup::editor_id.eq(editor_id),))
-                .get_result(conn)?;
-            FatCatId::from_uuid(&eg_row.id)
-        },
-        (None, false) => FatCatId::from_uuid(&get_or_create_editgroup(editor_id, conn)?),
-    };
-    Ok(EditContext {
-        editor_id: FatCatId::from_uuid(&editor_id),
-        editgroup_id: editgroup_id,
-        extra_json: None,
-        autoaccept: autoaccept,
-    })
 }
 
 #[derive(Clone)]
@@ -246,163 +225,6 @@ impl Server {
         rows.into_iter()
             .map(|(rev, ident)| ReleaseEntity::db_from_row(conn, rev, Some(ident)))
             .collect()
-    }
-
-    pub fn create_container_handler(
-        &self,
-        entity: models::ContainerEntity,
-        conn: &DbConn,
-    ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?, false)?;
-        let edit = entity.db_create(conn, &edit_context)?;
-        edit.into_model()
-    }
-
-    pub fn update_container_handler(
-        &self,
-        id: &Uuid,
-        entity: models::ContainerEntity,
-        conn: &DbConn,
-    ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?, false)?;
-        let edit = entity.db_update(conn, &edit_context, FatCatId::from_uuid(id))?;
-        edit.into_model()
-    }
-    pub fn delete_container_handler(
-        &self,
-        id: &Uuid,
-        editgroup_id: Option<Uuid>,
-        conn: &DbConn,
-    ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, editgroup_id.map(|u| FatCatId::from_uuid(&u)), false)?;
-        let edit = ContainerEntity::db_delete(conn, &edit_context, FatCatId::from_uuid(id))?;
-        edit.into_model()
-    }
-
-    pub fn create_creator_handler(
-        &self,
-        entity: models::CreatorEntity,
-        conn: &DbConn,
-    ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?, false)?;
-        let edit = entity.db_create(conn, &edit_context)?;
-        edit.into_model()
-    }
-
-    pub fn update_creator_handler(
-        &self,
-        id: &Uuid,
-        entity: models::CreatorEntity,
-        conn: &DbConn,
-    ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?, false)?;
-        let edit = entity.db_update(conn, &edit_context, FatCatId::from_uuid(id))?;
-        edit.into_model()
-    }
-    pub fn delete_creator_handler(
-        &self,
-        id: &Uuid,
-        editgroup_id: Option<Uuid>,
-        conn: &DbConn,
-    ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, editgroup_id.map(|u| FatCatId::from_uuid(&u)), false)?;
-        let edit = CreatorEntity::db_delete(conn, &edit_context, FatCatId::from_uuid(id))?;
-        edit.into_model()
-    }
-
-    pub fn create_file_handler(
-        &self,
-        entity: models::FileEntity,
-        conn: &DbConn,
-    ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?, false)?;
-        let edit = entity.db_create(conn, &edit_context)?;
-        edit.into_model()
-    }
-
-    pub fn update_file_handler(
-        &self,
-        id: &Uuid,
-        entity: models::FileEntity,
-        conn: &DbConn,
-    ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?, false)?;
-        let edit = entity.db_update(conn, &edit_context, FatCatId::from_uuid(id))?;
-        edit.into_model()
-    }
-    pub fn delete_file_handler(
-        &self,
-        id: &Uuid,
-        editgroup_id: Option<Uuid>,
-        conn: &DbConn,
-    ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, editgroup_id.map(|u| FatCatId::from_uuid(&u)), false)?;
-        let edit = FileEntity::db_delete(conn, &edit_context, FatCatId::from_uuid(id))?;
-        edit.into_model()
-    }
-
-    pub fn create_release_handler(
-        &self,
-        entity: models::ReleaseEntity,
-        conn: &DbConn,
-    ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?, false)?;
-        let edit = entity.db_create(conn, &edit_context)?;
-        edit.into_model()
-    }
-
-    pub fn update_release_handler(
-        &self,
-        id: &Uuid,
-        entity: models::ReleaseEntity,
-        conn: &DbConn,
-    ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?, false)?;
-        let edit = entity.db_update(conn, &edit_context, FatCatId::from_uuid(id))?;
-        edit.into_model()
-    }
-    pub fn delete_release_handler(
-        &self,
-        id: &Uuid,
-        editgroup_id: Option<Uuid>,
-        conn: &DbConn,
-    ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, editgroup_id.map(|u| FatCatId::from_uuid(&u)), false)?;
-        let edit = ReleaseEntity::db_delete(conn, &edit_context, FatCatId::from_uuid(id))?;
-        edit.into_model()
-    }
-
-    pub fn create_work_handler(
-        &self,
-        entity: models::WorkEntity,
-        conn: &DbConn,
-    ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?, false)?;
-        let edit = entity.db_create(conn, &edit_context)?;
-        edit.into_model()
-    }
-
-    pub fn update_work_handler(
-        &self,
-        id: &Uuid,
-        entity: models::WorkEntity,
-        conn: &DbConn,
-    ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?, false)?;
-        let edit = entity.db_update(conn, &edit_context, FatCatId::from_uuid(id))?;
-        edit.into_model()
-    }
-
-    pub fn delete_work_handler(
-        &self,
-        id: &Uuid,
-        editgroup_id: Option<Uuid>,
-        conn: &DbConn,
-    ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, editgroup_id.map(|u| FatCatId::from_uuid(&u)), false)?;
-        let edit = WorkEntity::db_delete(conn, &edit_context, FatCatId::from_uuid(id))?;
-
-        edit.into_model()
     }
 
     pub fn accept_editgroup_handler(&self, id: &str, conn: &DbConn) -> Result<()> {
@@ -638,45 +460,4 @@ impl Server {
     entity_batch_handler!(create_file_batch_handler, FileEntity);
     entity_batch_handler!(create_release_batch_handler, ReleaseEntity);
     entity_batch_handler!(create_work_batch_handler, WorkEntity);
-
-    pub fn get_container_history_handler(
-        &self,
-        id: &Uuid,
-        limit: Option<i64>,
-        conn: &DbConn,
-    ) -> Result<Vec<EntityHistoryEntry>> {
-        ContainerEntity::db_get_history(conn, FatCatId::from_uuid(id), limit)
-    }
-    pub fn get_creator_history_handler(
-        &self,
-        id: &Uuid,
-        limit: Option<i64>,
-        conn: &DbConn,
-    ) -> Result<Vec<EntityHistoryEntry>> {
-        CreatorEntity::db_get_history(conn, FatCatId::from_uuid(id), limit)
-    }
-    pub fn get_file_history_handler(
-        &self,
-        id: &Uuid,
-        limit: Option<i64>,
-        conn: &DbConn,
-    ) -> Result<Vec<EntityHistoryEntry>> {
-        FileEntity::db_get_history(conn, FatCatId::from_uuid(id), limit)
-    }
-    pub fn get_release_history_handler(
-        &self,
-        id: &Uuid,
-        limit: Option<i64>,
-        conn: &DbConn,
-    ) -> Result<Vec<EntityHistoryEntry>> {
-        ReleaseEntity::db_get_history(conn, FatCatId::from_uuid(id), limit)
-    }
-    pub fn get_work_history_handler(
-        &self,
-        id: &Uuid,
-        limit: Option<i64>,
-        conn: &DbConn,
-    ) -> Result<Vec<EntityHistoryEntry>> {
-        WorkEntity::db_get_history(conn, FatCatId::from_uuid(id), limit)
-    }
 }

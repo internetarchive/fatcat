@@ -6,18 +6,10 @@ use diesel::prelude::*;
 use diesel::{self, insert_into};
 use errors::*;
 use fatcat_api::models::*;
-use serde_json;
 use sha1::Sha1;
 use std::marker::Sized;
 use std::str::FromStr;
 use uuid::Uuid;
-
-pub struct EditContext {
-    pub editor_id: FatCatId,
-    pub editgroup_id: FatCatId,
-    pub extra_json: Option<serde_json::Value>,
-    pub autoaccept: bool,
-}
 
 /* One goal here is to abstract the non-entity-specific bits into generic traits or functions,
  * instead of macros.

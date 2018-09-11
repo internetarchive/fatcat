@@ -1,6 +1,6 @@
 //! API endpoint handlers
 
-use api_helpers::fcid2uuid;
+use api_helpers::*;
 use api_server::Server;
 use diesel::Connection;
 use errors::*;
@@ -8,6 +8,9 @@ use fatcat_api::models;
 use fatcat_api::models::*;
 use fatcat_api::*;
 use futures::{self, Future};
+use api_entity_crud::EntityCrud;
+use database_models::EntityEditRow;
+use std::str::FromStr;
 
 /// Helper for generating wrappers (which return "Box::new(futures::done(Ok(BLAH)))" like the
 /// codegen fatcat-api code wants) that call through to actual helpers (which have simple Result<>
@@ -17,11 +20,11 @@ macro_rules! wrap_entity_handlers {
     // stable doesn't have a mechanism to "concat" or generate new identifiers in macros, at least
     // in the context of defining new functions.
     // The only stable approach I know of would be: https://github.com/dtolnay/mashup
-    ($get_fn:ident, $get_handler:ident, $get_resp:ident, $post_fn:ident, $post_handler:ident,
+    ($get_fn:ident, $get_handler:ident, $get_resp:ident, $post_fn:ident,
             $post_resp:ident, $post_batch_fn:ident, $post_batch_handler:ident,
-            $post_batch_resp:ident, $update_fn:ident, $update_handler:ident, $update_resp:ident,
-            $delete_fn:ident, $delete_handler:ident, $delete_resp:ident, $get_history_fn:ident,
-            $get_history_handler:ident, $get_history_resp:ident, $model:ident) => {
+            $post_batch_resp:ident, $update_fn:ident, $update_resp:ident,
+            $delete_fn:ident, $delete_resp:ident, $get_history_fn:ident,
+            $get_history_resp:ident, $model:ident) => {
 
         fn $get_fn(
             &self,
@@ -61,7 +64,10 @@ macro_rules! wrap_entity_handlers {
             _context: &Context,
         ) -> Box<Future<Item = $post_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
-            let ret = match conn.transaction(|| self.$post_handler(entity, &conn)) {
+            let ret = match conn.transaction(|| {
+                let edit_context = make_edit_context(&conn, entity.parse_editgroup_id()?, false)?;
+                Ok(entity.db_create(&conn, &edit_context)?.into_model()?)
+            }) {
                 Ok(edit) =>
                     $post_resp::CreatedEntity(edit),
                 Err(Error(ErrorKind::Diesel(e), _)) =>
@@ -115,12 +121,12 @@ macro_rules! wrap_entity_handlers {
             entity: models::$model,
             _context: &Context,
         ) -> Box<Future<Item = $update_resp, Error = ApiError> + Send> {
-            let id = if let Ok(parsed) = fcid2uuid(&id) { parsed } else {
-                return Box::new(futures::done(Ok($update_resp::BadRequest(ErrorResponse {
-                    message: ErrorKind::InvalidFatcatId(id).to_string() }))));
-            };
             let conn = self.db_pool.get().expect("db_pool error");
-            let ret = match conn.transaction(|| self.$update_handler(&id, entity, &conn)) {
+            let ret = match conn.transaction(|| {
+                let entity_id = FatCatId::from_str(&id)?;
+                let edit_context = make_edit_context(&conn, entity.parse_editgroup_id()?, false)?;
+                Ok(entity.db_update(&conn, &edit_context, entity_id)?.into_model()?)
+            }) {
                 Ok(edit) =>
                     $update_resp::UpdatedEntity(edit),
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
@@ -148,19 +154,16 @@ macro_rules! wrap_entity_handlers {
             editgroup_id: Option<String>,
             _context: &Context,
         ) -> Box<Future<Item = $delete_resp, Error = ApiError> + Send> {
-            let id = if let Ok(parsed) = fcid2uuid(&id) { parsed } else {
-                return Box::new(futures::done(Ok($delete_resp::BadRequest(ErrorResponse {
-                    message: ErrorKind::InvalidFatcatId(id).to_string() }))));
-            };
-            let editgroup_id = match editgroup_id {
-                Some(raw) => if let Ok(parsed) = fcid2uuid(&raw) { Some(parsed) } else {
-                    return Box::new(futures::done(Ok($delete_resp::BadRequest(ErrorResponse {
-                        message: ErrorKind::InvalidFatcatId(raw).to_string() }))))
-                }
-                None => None
-            };
             let conn = self.db_pool.get().expect("db_pool error");
-            let ret = match conn.transaction(|| self.$delete_handler(&id, editgroup_id, &conn)) {
+            let ret = match conn.transaction(|| {
+                let entity_id = FatCatId::from_str(&id)?;
+                let editgroup_id: Option<FatCatId> = match editgroup_id {
+                    Some(s) => Some(FatCatId::from_str(&s)?),
+                    None => None,
+                };
+                let edit_context = make_edit_context(&conn, editgroup_id, false)?;
+                Ok($model::db_delete(&conn, &edit_context, entity_id)?.into_model()?)
+            }) {
                 Ok(edit) =>
                     $delete_resp::DeletedEntity(edit),
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
@@ -188,13 +191,12 @@ macro_rules! wrap_entity_handlers {
             limit: Option<i64>,
             _context: &Context,
         ) -> Box<Future<Item = $get_history_resp, Error = ApiError> + Send> {
-            let id = if let Ok(parsed) = fcid2uuid(&id) { parsed } else {
-                return Box::new(futures::done(Ok($get_history_resp::BadRequest(ErrorResponse {
-                    message: ErrorKind::InvalidFatcatId(id).to_string() }))));
-            };
             let conn = self.db_pool.get().expect("db_pool error");
             // No transaction for GET
-            let ret = match self.$get_history_handler(&id, limit, &conn) {
+            let ret = match conn.transaction(|| {
+                let entity_id = FatCatId::from_str(&id)?;
+                Ok($model::db_get_history(&conn, entity_id, limit)?)
+            }) {
                 Ok(history) =>
                     $get_history_resp::FoundEntityHistory(history),
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
@@ -246,19 +248,15 @@ impl Api for Server {
         get_container_handler,
         GetContainerResponse,
         create_container,
-        create_container_handler,
         CreateContainerResponse,
         create_container_batch,
         create_container_batch_handler,
         CreateContainerBatchResponse,
         update_container,
-        update_container_handler,
         UpdateContainerResponse,
         delete_container,
-        delete_container_handler,
         DeleteContainerResponse,
         get_container_history,
-        get_container_history_handler,
         GetContainerHistoryResponse,
         ContainerEntity
     );
@@ -268,19 +266,15 @@ impl Api for Server {
         get_creator_handler,
         GetCreatorResponse,
         create_creator,
-        create_creator_handler,
         CreateCreatorResponse,
         create_creator_batch,
         create_creator_batch_handler,
         CreateCreatorBatchResponse,
         update_creator,
-        update_creator_handler,
         UpdateCreatorResponse,
         delete_creator,
-        delete_creator_handler,
         DeleteCreatorResponse,
         get_creator_history,
-        get_creator_history_handler,
         GetCreatorHistoryResponse,
         CreatorEntity
     );
@@ -289,19 +283,15 @@ impl Api for Server {
         get_file_handler,
         GetFileResponse,
         create_file,
-        create_file_handler,
         CreateFileResponse,
         create_file_batch,
         create_file_batch_handler,
         CreateFileBatchResponse,
         update_file,
-        update_file_handler,
         UpdateFileResponse,
         delete_file,
-        delete_file_handler,
         DeleteFileResponse,
         get_file_history,
-        get_file_history_handler,
         GetFileHistoryResponse,
         FileEntity
     );
@@ -310,19 +300,15 @@ impl Api for Server {
         get_release_handler,
         GetReleaseResponse,
         create_release,
-        create_release_handler,
         CreateReleaseResponse,
         create_release_batch,
         create_release_batch_handler,
         CreateReleaseBatchResponse,
         update_release,
-        update_release_handler,
         UpdateReleaseResponse,
         delete_release,
-        delete_release_handler,
         DeleteReleaseResponse,
         get_release_history,
-        get_release_history_handler,
         GetReleaseHistoryResponse,
         ReleaseEntity
     );
@@ -331,19 +317,15 @@ impl Api for Server {
         get_work_handler,
         GetWorkResponse,
         create_work,
-        create_work_handler,
         CreateWorkResponse,
         create_work_batch,
         create_work_batch_handler,
         CreateWorkBatchResponse,
         update_work,
-        update_work_handler,
         UpdateWorkResponse,
         delete_work,
-        delete_work_handler,
         DeleteWorkResponse,
         get_work_history,
-        get_work_history_handler,
         GetWorkHistoryResponse,
         WorkEntity
     );

@@ -2,6 +2,7 @@ use data_encoding::BASE32_NOPAD;
 use database_models::*;
 use database_schema::*;
 use fatcat_api::models::*;
+use serde_json;
 use diesel;
 use diesel::prelude::*;
 use errors::*;
@@ -12,6 +13,34 @@ use api_entity_crud::EntityCrud;
 
 pub type DbConn =
     diesel::r2d2::PooledConnection<diesel::r2d2::ConnectionManager<diesel::PgConnection>>;
+
+pub struct EditContext {
+    pub editor_id: FatCatId,
+    pub editgroup_id: FatCatId,
+    pub extra_json: Option<serde_json::Value>,
+    pub autoaccept: bool,
+}
+
+pub fn make_edit_context(conn: &DbConn, editgroup_id: Option<FatCatId>, autoaccept: bool) -> Result<EditContext> {
+    let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001")?; // TODO: auth
+    let editgroup_id: FatCatId = match (editgroup_id, autoaccept) {
+        (Some(eg), _) => eg,
+        // If autoaccept and no editgroup_id passed, always create a new one for this transaction
+        (None, true) => {
+            let eg_row: EditgroupRow = diesel::insert_into(editgroup::table)
+                .values((editgroup::editor_id.eq(editor_id),))
+                .get_result(conn)?;
+            FatCatId::from_uuid(&eg_row.id)
+        },
+        (None, false) => FatCatId::from_uuid(&get_or_create_editgroup(editor_id, conn)?),
+    };
+    Ok(EditContext {
+        editor_id: FatCatId::from_uuid(&editor_id),
+        editgroup_id: editgroup_id,
+        extra_json: None,
+        autoaccept: autoaccept,
+    })
+}
 
 /// This function should always be run within a transaction
 pub fn get_or_create_editgroup(editor_id: Uuid, conn: &DbConn) -> Result<Uuid> {
