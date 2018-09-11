@@ -1,24 +1,40 @@
 
-verbs:
-- enforce "previous_rev" required in updates
-
-- review editgroup accept code (?)
+refactors
+- fatcatd -> fatcat-api-server
 - fatcat_api -> fatcat_api_schema (or spec? models? types?)
-- generally, standardize "edit" actions
-- fatcat -> fatcat-api-server
-- editgroup param to update
-    => also for creation? for consistency
-- editor_id vs. editor username; return editor_id (in addition to name?)
+- standardize "mutating"/"edit" actions
+    => have editgroup_id be a request-level param everywhere (not entity-level;
+       for batch)
+    => editgroup_id as query param
+    => editor_id from auth (header)
+- consistent "expand"/"stub" flags
+
+correctness
+- enforce "previous_rev" required in updates
+- reread/review editgroup accept code
+- enforce "no editing if editgroup accepted" behavior
+- changelog sequence without gaps
+- batch insert editgroup behavior; always a new editgroup?
+
+edit lifecycle
+- editgroup: state to track review status?
+- per-edit extra JSON
+
+account helper tool
+- set admin bit
+- create editors
+- create keypairs
+- generate tokens
+- test/validate tokens
+
 
 later:
-- have editgroup_id be a request-level param everywhere (not entity-level; for batch)
-- editgroup: state to track review status?
-- re-implement old python tests
-- enforce "no editing if editgroup accepted" behavior
-- real auth
-- metrics, jwt, config, sentry
-- ansible/deployment/DNS story
+- pure-rust "benchmark" scripts that hit, eg, lookups and batch endpoints
+    => criterion.rs benchmarking
+- try new actix/openapi3 codegen branch
 - refactor logging; use slog
+- test using hash indexes for some UUID column indexes, or at least sha1 and
+  other hashes (abstracts, file lookups)
 
 schema/api questions:
 - url table (for files)
@@ -26,4 +42,3 @@ schema/api questions:
 - "types"
 - define release field stuff
 - what should entity POST return? include both the entity and the edit?
-

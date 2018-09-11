@@ -1,7 +1,7 @@
 
-- make debugbar really optional (don't import unless we're in debug mode)
+- schema.org metadata for releases
 
-tests
+additional tests
 - full object fields actually getting passed e2e (for rich_app)
 - implicit editor.active_edit_group behavior
 - modify existing release via edit mechanism (and commit)
@@ -13,3 +13,8 @@ tests
 
 views
 - oldest un-merged edits/edit-groups
+- changelog more like a https://semantic-ui.com/views/feed.html ?
+- instead of grid, maybe https://semantic-ui.com/elements/rail.html
+
+backlog
+- make debugbar really optional (don't import unless we're in debug mode)

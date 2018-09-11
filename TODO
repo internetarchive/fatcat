@@ -1,29 +1,31 @@
 
 ## Next Up
 
-- some significant slow-down has happened? transactions, or regexes?
-summer roadmap:
-- PUT/UPDATE, DELETE, and merge code paths
-- faster UPDATE-free bulk import code path
-- container import (extra?): lang, region, subject
-- basic API+webface creation, editing, merging, editgroup approval
+- basic webface creation, editing, merging, editgroup approval
 - elastic schema/transform for releases; bulk and continuous scripts
 
-features:
-- fast database dump command: both changelog-based and entity-based (rust)
-    => lighter, more complete dumps for each entity type?
-- guide skeleton (mdbook; guide.fatcat.wiki)
+## QA Blockers
 
-importers:
-- CORE
-- wikidata cross-ref (if they have a dump)
+- refactors and correctness in rust/TODO
+- importers have editor accounts and include editgroup metadata
+- crossref importer uses extids
+
+## Production blockers
+
+- enforce single-ident-edit-per-editgroup
+    => entity_edit: entity_ident/entity_editgroup should be UNIQ index
+    => UPDATE/REPLACE edits?
+- crossref importer sets release_type as "stub" when appropriate
+- re-implement old python tests
+- real auth
+- metrics, jwt, config, sentry
+
+## Metadata Import
+
 - manifest: multiple URLs per SHA1
-- pubmed (medline), if not in CORE
-    => and/or, use pubmed ID lookups on crossref import
-- core
-- semantic scholar (up to 39 million; author de-dupe)
-- wikidata (if they have a dump)
 - crossref: relations ("is-preprint-of")
+- crossref: two phse: no citations, then matched citations (via DOI table)
+- container import (extra?): lang, region, subject
 - crossref: filter works
     => content-type whitelist
     => title length and title/slug blacklist
@@ -31,61 +33,43 @@ importers:
     => make this a method on Release object
     => or just set release_stub as "stub"?
 
-bugs:
+new importers:
+- pubmed (medline) (filtered)
+    => and/or, use pubmed ID lookups on crossref import
+- CORE (filtered)
+- semantic scholar (up to 39 million; author de-dupe)
+
+## Entity/Edit Lifecycle
+
+- redirects and merges (API, webface, etc)
 - test: release pointing to a collection that has been deleted/redirected
   => UI crash?
+- commenting and accepting editgroups
+- editgroup state machine?
+- enforce "single ident edit per editgroup"
+    => how to "edit an edit"? clobber existing?
 
-july roadmap:
-- complete and test this round of schema changes
-- container import (extra?): lang, region, subject
-- re-run imports
-- basic API+webface creation, editing, merging, editgroup approval
-- elastic schema/transform for releases; bulk and continuous scripts
+## Guide / Book / Style
 
-## Schema / Alignment / Scope
-
-- "container" -> "venue"?
-- release_type, release_status, url.rel write-time schema(and others?)
+- release_type, release_status, url.rel schemas (and enforce in API?)
 
 name ref: https://www.w3.org/International/questions/qa-personal-names
 
-## API
+## Fun Features
 
-- how to send edit "extra" metadata?
-- hydrate entities in API
-    ? "expand" query param
-
-## High-Level Priorities
-
-- full database dump (export)
-- manual editing of containers and releases (web interface)
-
-## Web UI
-
-- changelog more like a https://semantic-ui.com/views/feed.html ?
-- instead of grid, maybe https://semantic-ui.com/elements/rail.html
-
-## Performance
-
-- write pure-rust "benchmark" scripts that hit, eg, lookups and batch
-  endpoints. run these with auto_explain on, then look in logs on dev machine
-- batch inserts automerge: create editgroup and changelog, mark all edits as
-  accepted, all in a single transaction
-
-## API
-
-- hydrate entities in API
-    ? "expand" query param
-- don't include abstracts by default?
-- "stub" mode for lookups, returning only the ident (or maybe whole row)?
-
-## Database
-
-- test using hash indexes for some UUID column indexes, or at least sha1 and
-  other hashes (abstracts, file lookups)
+- "save paper now"
+    => is it in GWB? if not, SPN
+    => get hash + url from GWB, verify mimetype acceptable
+    => is file in fatcat?
+    => what about HBase? GROBID?
+    => create edit, redirect user to editgroup submit page
+- python client tool and library in pypi
+    => or maybe rust?
+- bibtext (etc) export
 
 ## Other
 
+- consider using "HTTP 202: Accepted" for entity-mutating calls
 - basic python hbase/elastic matcher
   => takes sha1 keys
   => checks fatcat API + hbase
@@ -94,19 +78,11 @@ name ref: https://www.w3.org/International/questions/qa-personal-names
   => proof-of-concept, no tests
 - add_header Strict-Transport-Security "max-age=3600";
     => 12 hours? 24?
-- criterion.rs benchmarking
-- schema.org metadata in webface
-- bulk endpoint auto-merge mode (huge postgres speedup on import)
 - elastic pipeline
 - kong or oauth2_proxy for auth, rate-limit, etc
+- feature flags: consul?
+- secrets: vault?
 - "authn" microservice: https://keratin.tech/
-- PUT for mid-edit revisions
-- 'parent rev' for revisions (vs. container parent)
-- "submit" status for editgroups?
-
-review
-- what does openlibrary API look like?
-x add a 'live' (or 'immutable') flag to revision tables
 
 better API docs
 - https://sourcey.com/spectacle/
