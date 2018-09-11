@@ -21,6 +21,12 @@ def test_orcid_importer(orcid_importer):
     with open('tests/files/0000-0001-8254-7103.json', 'r') as f:
         orcid_importer.process_source(f)
 
+def test_orcid_importer_x(orcid_importer):
+    with open('tests/files/0000-0003-3953-765X.json', 'r') as f:
+        orcid_importer.process_source(f)
+    c = orcid_importer.api.lookup_creator(orcid="0000-0003-3953-765X")
+    assert c is not None
+
 def test_orcid_dict_parse(orcid_importer):
     with open('tests/files/0000-0001-8254-7103.json', 'r') as f:
         raw = json.loads(f.readline())
