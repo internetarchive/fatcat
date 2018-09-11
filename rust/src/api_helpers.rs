@@ -21,6 +21,78 @@ pub struct EditContext {
     pub autoaccept: bool,
 }
 
+#[derive(Clone,Copy,PartialEq)]
+pub struct ExpandFlags {
+    pub files: bool,
+    pub container: bool,
+    pub releases: bool,
+    pub creators: bool,
+}
+
+impl ExpandFlags {
+
+    pub fn from_string(param: &str) -> ExpandFlags {
+        let list: Vec<&str> = param.split_terminator(",").collect();
+        ExpandFlags::from_strings(&list)
+    }
+    pub fn from_strings(list: &[&str]) -> ExpandFlags {
+        if list.contains(&"none") {
+            ExpandFlags::none()
+        } else if list.contains(&"all") {
+            ExpandFlags::all()
+        } else {
+            ExpandFlags {
+                files: list.contains(&"files"),
+                container: list.contains(&"container"),
+                releases: list.contains(&"releases"),
+                creators: list.contains(&"creators"),
+            }
+        }
+    }
+    pub fn all() -> ExpandFlags {
+        ExpandFlags {
+            files: true,
+            container: true,
+            releases: true,
+            creators: true,
+        }
+    }
+    pub fn none() -> ExpandFlags {
+        ExpandFlags {
+            files: false,
+            container: false,
+            releases: false,
+            creators: false,
+        }
+    }
+}
+
+#[test]
+fn test_expand_flags() {
+    assert!(ExpandFlags::from_strings(&vec![]).files == false);
+    assert!(ExpandFlags::from_strings(&vec!["files"]).files == true);
+    assert!(ExpandFlags::from_strings(&vec!["file"]).files == false);
+    let all = ExpandFlags::from_strings(&vec!["files", "container", "other_thing", "releases", "creators"]);
+    assert!(all == ExpandFlags {
+        files: true,
+        container: true,
+        releases: true,
+        creators: true
+    });
+    assert!(ExpandFlags::from_string("").files == false);
+    assert!(ExpandFlags::from_string("files").files == true);
+    assert!(ExpandFlags::from_string("something,,files").files == true);
+    assert!(ExpandFlags::from_string("file").files == false);
+    let all = ExpandFlags::from_string("files,container,other_thing,releases,creators");
+    assert!(all == ExpandFlags {
+        files: true,
+        container: true,
+        releases: true,
+        creators: true
+    });
+    assert!(all == ExpandFlags::all());
+}
+
 pub fn make_edit_context(
     conn: &DbConn,
     editgroup_id: Option<FatCatId>,
