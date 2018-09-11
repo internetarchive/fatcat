@@ -43,19 +43,9 @@ where
     fn parse_editgroup_id(&self) -> Result<Option<FatCatId>>;
 
     // Generic Methods
-    fn db_get(
-        conn: &DbConn,
-        ident: FatCatId
-    ) -> Result<Self>;
-    fn db_get_rev(
-        conn: &DbConn,
-        rev_id: Uuid
-    ) -> Result<Self>;
-    fn db_create(
-        &self,
-        conn: &DbConn,
-        edit_context: &EditContext
-    ) -> Result<Self::EditRow>;
+    fn db_get(conn: &DbConn, ident: FatCatId) -> Result<Self>;
+    fn db_get_rev(conn: &DbConn, rev_id: Uuid) -> Result<Self>;
+    fn db_create(&self, conn: &DbConn, edit_context: &EditContext) -> Result<Self::EditRow>;
     fn db_create_batch(
         conn: &DbConn,
         edit_context: &EditContext,
@@ -77,10 +67,7 @@ where
         ident: FatCatId,
         limit: Option<i64>,
     ) -> Result<Vec<EntityHistoryEntry>>;
-    fn db_accept_edits(
-        conn: &DbConn,
-        editgroup_id: FatCatId
-    ) -> Result<u64>;
+    fn db_accept_edits(conn: &DbConn, editgroup_id: FatCatId) -> Result<u64>;
 
     // Entity-specific Methods
     fn db_from_row(
@@ -88,14 +75,8 @@ where
         rev_row: Self::RevRow,
         ident_row: Option<Self::IdentRow>,
     ) -> Result<Self>;
-    fn db_insert_rev(
-        &self,
-        conn: &DbConn
-    ) -> Result<Uuid>;
-    fn db_insert_revs(
-        conn: &DbConn,
-        models: &[&Self]
-    ) -> Result<Vec<Uuid>>;
+    fn db_insert_rev(&self, conn: &DbConn) -> Result<Uuid>;
+    fn db_insert_revs(conn: &DbConn, models: &[&Self]) -> Result<Vec<Uuid>>;
 }
 
 // TODO: this could be a separate trait on all entities
@@ -328,11 +309,7 @@ macro_rules! generic_db_get_history {
 #[allow(unused_macros)]
 macro_rules! generic_db_accept_edits_batch {
     ($entity_name_str:expr) => {
-        fn db_accept_edits(
-            conn: &DbConn,
-            editgroup_id: FatCatId,
-        ) -> Result<u64> {
-
+        fn db_accept_edits(conn: &DbConn, editgroup_id: FatCatId) -> Result<u64> {
             let count = diesel::sql_query(format!(
                 "
                     UPDATE {entity}_ident
@@ -344,12 +321,12 @@ macro_rules! generic_db_accept_edits_batch {
                     WHERE
                         {entity}_ident.id = {entity}_edit.ident_id
                         AND {entity}_edit.editgroup_id = $1",
-                entity = $entity_name_str 
+                entity = $entity_name_str
             )).bind::<diesel::sql_types::Uuid, _>(editgroup_id.to_uuid())
                 .execute(conn)?;
             Ok(count as u64)
         }
-    }
+    };
 }
 
 // UPDATE ROW version: single query per row
@@ -357,11 +334,7 @@ macro_rules! generic_db_accept_edits_batch {
 #[allow(unused_macros)]
 macro_rules! generic_db_accept_edits_each {
     ($ident_table:ident, $edit_table:ident) => {
-        fn db_accept_edits(
-            conn: &DbConn,
-            editgroup_id: FatCatId,
-        ) -> Result<u64> {
-
+        fn db_accept_edits(conn: &DbConn, editgroup_id: FatCatId) -> Result<u64> {
             // 1. select edit rows (in sql)
             let edit_rows: Vec<Self::EditRow> = $edit_table::table
                 .filter($edit_table::editgroup_id.eq(&editgroup_id.to_uuid()))
@@ -369,31 +342,26 @@ macro_rules! generic_db_accept_edits_each {
             // 2. create ident rows (in rust)
             let ident_rows: Vec<Self::IdentRow> = edit_rows
                 .iter()
-                .map(|edit|
-                    Self::IdentRow {
-                        id: edit.ident_id,
-                        is_live: true,
-                        rev_id: edit.rev_id,
-                        redirect_id: edit.redirect_id,
-
-                    }
-                )
+                .map(|edit| Self::IdentRow {
+                    id: edit.ident_id,
+                    is_live: true,
+                    rev_id: edit.rev_id,
+                    redirect_id: edit.redirect_id,
+                })
                 .collect();
             /*
-            // 3. upsert ident rows (in sql)
-            let count: u64 = diesel::insert_into($ident_table::table)
-                .values(ident_rows)
-                .on_conflict()
-                .do_update()
-                .set(ident_rows)
-                .execute(conn)?;
-            */
+                                    // 3. upsert ident rows (in sql)
+                                    let count: u64 = diesel::insert_into($ident_table::table)
+                                        .values(ident_rows)
+                                        .on_conflict()
+                                        .do_update()
+                                        .set(ident_rows)
+                                        .execute(conn)?;
+                                    */
             // 3. update every row individually
             let count = ident_rows.len() as u64;
             for row in ident_rows {
-                diesel::update(&row)
-                    .set(&row)
-                    .execute(conn)?;
+                diesel::update(&row).set(&row).execute(conn)?;
             }
             Ok(count)
         }

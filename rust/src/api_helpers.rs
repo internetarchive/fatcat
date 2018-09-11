@@ -1,15 +1,15 @@
+use api_entity_crud::EntityCrud;
 use data_encoding::BASE32_NOPAD;
 use database_models::*;
 use database_schema::*;
-use fatcat_api::models::*;
-use serde_json;
 use diesel;
 use diesel::prelude::*;
 use errors::*;
+use fatcat_api::models::*;
 use regex::Regex;
+use serde_json;
 use std::str::FromStr;
 use uuid::Uuid;
-use api_entity_crud::EntityCrud;
 
 pub type DbConn =
     diesel::r2d2::PooledConnection<diesel::r2d2::ConnectionManager<diesel::PgConnection>>;
@@ -21,7 +21,11 @@ pub struct EditContext {
     pub autoaccept: bool,
 }
 
-pub fn make_edit_context(conn: &DbConn, editgroup_id: Option<FatCatId>, autoaccept: bool) -> Result<EditContext> {
+pub fn make_edit_context(
+    conn: &DbConn,
+    editgroup_id: Option<FatCatId>,
+    autoaccept: bool,
+) -> Result<EditContext> {
     let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001")?; // TODO: auth
     let editgroup_id: FatCatId = match (editgroup_id, autoaccept) {
         (Some(eg), _) => eg,
@@ -31,7 +35,7 @@ pub fn make_edit_context(conn: &DbConn, editgroup_id: Option<FatCatId>, autoacce
                 .values((editgroup::editor_id.eq(editor_id),))
                 .get_result(conn)?;
             FatCatId::from_uuid(&eg_row.id)
-        },
+        }
         (None, false) => FatCatId::from_uuid(&get_or_create_editgroup(editor_id, conn)?),
     };
     Ok(EditContext {
@@ -61,34 +65,33 @@ pub fn get_or_create_editgroup(editor_id: Uuid, conn: &DbConn) -> Result<Uuid> {
 }
 
 /// This function should always be run within a transaction
-pub fn accept_editgroup(editgroup_id: Uuid, conn: &DbConn) -> Result<ChangelogRow> {
+pub fn accept_editgroup(editgroup_id: FatCatId, conn: &DbConn) -> Result<ChangelogRow> {
     // check that we haven't accepted already (in changelog)
     // NB: could leave this to a UNIQUE constraint
     let count: i64 = changelog::table
-        .filter(changelog::editgroup_id.eq(editgroup_id))
+        .filter(changelog::editgroup_id.eq(editgroup_id.to_uuid()))
         .count()
         .get_result(conn)?;
     if count > 0 {
-        return Err(ErrorKind::EditgroupAlreadyAccepted(uuid2fcid(&editgroup_id)).into());
+        return Err(ErrorKind::EditgroupAlreadyAccepted(editgroup_id.to_string()).into());
     }
 
     // copy edit columns to ident table
-    let eg_id = FatCatId::from_uuid(&editgroup_id);
-    ContainerEntity::db_accept_edits(conn, eg_id)?;
-    CreatorEntity::db_accept_edits(conn, eg_id)?;
-    FileEntity::db_accept_edits(conn, eg_id)?;
-    ReleaseEntity::db_accept_edits(conn, eg_id)?;
-    WorkEntity::db_accept_edits(conn, eg_id)?;
+    ContainerEntity::db_accept_edits(conn, editgroup_id)?;
+    CreatorEntity::db_accept_edits(conn, editgroup_id)?;
+    FileEntity::db_accept_edits(conn, editgroup_id)?;
+    ReleaseEntity::db_accept_edits(conn, editgroup_id)?;
+    WorkEntity::db_accept_edits(conn, editgroup_id)?;
 
     // append log/changelog row
     let entry: ChangelogRow = diesel::insert_into(changelog::table)
-        .values((changelog::editgroup_id.eq(editgroup_id),))
+        .values((changelog::editgroup_id.eq(editgroup_id.to_uuid()),))
         .get_result(conn)?;
 
     // update any editor's active editgroup
     let no_active: Option<Uuid> = None;
     diesel::update(editor::table)
-        .filter(editor::active_editgroup_id.eq(editgroup_id))
+        .filter(editor::active_editgroup_id.eq(editgroup_id.to_uuid()))
         .set(editor::active_editgroup_id.eq(no_active))
         .execute(conn)?;
     Ok(entry)

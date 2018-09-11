@@ -1,15 +1,15 @@
 //! API endpoint handlers
 
+use api_entity_crud::EntityCrud;
 use api_helpers::*;
 use api_server::Server;
+use database_models::EntityEditRow;
 use diesel::Connection;
 use errors::*;
 use fatcat_api::models;
 use fatcat_api::models::*;
 use fatcat_api::*;
 use futures::{self, Future};
-use api_entity_crud::EntityCrud;
-use database_models::EntityEditRow;
 use std::str::FromStr;
 
 /// Helper for generating wrappers (which return "Box::new(futures::done(Ok(BLAH)))" like the
@@ -32,13 +32,12 @@ macro_rules! wrap_entity_handlers {
             expand: Option<String>,
             _context: &Context,
         ) -> Box<Future<Item = $get_resp, Error = ApiError> + Send> {
-            let id = if let Ok(parsed) = fcid2uuid(&id) { parsed } else {
-                return Box::new(futures::done(Ok($get_resp::BadRequest(ErrorResponse {
-                    message: ErrorKind::InvalidFatcatId(id).to_string() }))));
-            };
             let conn = self.db_pool.get().expect("db_pool error");
             // No transaction for GET
-            let ret = match self.$get_handler(&id, expand, &conn) {
+            let ret = match conn.transaction(|| {
+                let entity_id = FatCatId::from_str(&id)?;
+                self.$get_handler(entity_id, expand, &conn)
+            }) {
                 Ok(entity) =>
                     $get_resp::FoundEntity(entity),
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
@@ -242,6 +241,35 @@ macro_rules! wrap_lookup_handler {
     }
 }
 
+macro_rules! wrap_fcid_handler {
+    ($get_fn:ident, $get_handler:ident, $get_resp:ident) => {
+        fn $get_fn(
+            &self,
+            id: String,
+            _context: &Context,
+        ) -> Box<Future<Item = $get_resp, Error = ApiError> + Send> {
+            let conn = self.db_pool.get().expect("db_pool error");
+            // No transaction for GET
+            let ret = match (|| {
+                let fcid = FatCatId::from_str(&id)?;
+                self.$get_handler(fcid, &conn)
+            })() {
+                Ok(entity) =>
+                    $get_resp::Found(entity),
+                Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
+                    $get_resp::NotFound(ErrorResponse { message: format!("Not found: {}", id) }),
+                Err(Error(ErrorKind::MalformedExternalId(e), _)) =>
+                    $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(e) => {
+                    error!("{}", e);
+                    $get_resp::BadRequest(ErrorResponse { message: e.to_string() })
+                },
+            };
+            Box::new(futures::done(Ok(ret)))
+        }
+    }
+}
+
 impl Api for Server {
     wrap_entity_handlers!(
         get_container,
@@ -359,26 +387,26 @@ impl Api for Server {
         String
     );
 
-    wrap_lookup_handler!(
+    wrap_fcid_handler!(
         get_release_files,
         get_release_files_handler,
-        GetReleaseFilesResponse,
-        id,
-        String
+        GetReleaseFilesResponse
     );
-    wrap_lookup_handler!(
+    wrap_fcid_handler!(
         get_work_releases,
         get_work_releases_handler,
-        GetWorkReleasesResponse,
-        id,
-        String
+        GetWorkReleasesResponse
     );
-    wrap_lookup_handler!(
+    wrap_fcid_handler!(
         get_creator_releases,
         get_creator_releases_handler,
-        GetCreatorReleasesResponse,
-        id,
-        String
+        GetCreatorReleasesResponse
+    );
+    wrap_fcid_handler!(get_editor, get_editor_handler, GetEditorResponse);
+    wrap_fcid_handler!(
+        get_editor_changelog,
+        get_editor_changelog_handler,
+        GetEditorChangelogResponse
     );
 
     fn accept_editgroup(
@@ -387,7 +415,10 @@ impl Api for Server {
         _context: &Context,
     ) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let ret = match conn.transaction(|| self.accept_editgroup_handler(&id, &conn)) {
+        let ret = match conn.transaction(|| {
+            let id = FatCatId::from_str(&id)?;
+            self.accept_editgroup_handler(id, &conn)
+        }) {
             Ok(()) => AcceptEditgroupResponse::MergedSuccessfully(Success {
                 message: "horray!".to_string(),
             }),
@@ -414,9 +445,12 @@ impl Api for Server {
         _context: &Context,
     ) -> Box<Future<Item = GetEditgroupResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let ret = match conn.transaction(|| self.get_editgroup_handler(&id, &conn)) {
+        let ret = match conn.transaction(|| {
+            let id = FatCatId::from_str(&id)?;
+            self.get_editgroup_handler(id, &conn)
+        }) {
             Ok(entity) =>
-                GetEditgroupResponse::FoundEntity(entity),
+                GetEditgroupResponse::Found(entity),
             Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
                 GetEditgroupResponse::NotFound(
                     ErrorResponse { message: format!("No such editgroup: {}", id) }),
@@ -434,63 +468,15 @@ impl Api for Server {
         _context: &Context,
     ) -> Box<Future<Item = CreateEditgroupResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let ret = match conn.transaction(|| self.create_editgroup_handler(entity, &conn)) {
+        let ret = match conn.transaction(||
+            self.create_editgroup_handler(entity, &conn)
+        ) {
             Ok(eg) =>
                 CreateEditgroupResponse::SuccessfullyCreated(eg),
             Err(e) =>
                 // TODO: dig in to error type here
                 CreateEditgroupResponse::GenericError(
                     ErrorResponse { message: e.to_string() }),
-        };
-        Box::new(futures::done(Ok(ret)))
-    }
-
-    fn get_editor_changelog(
-        &self,
-        username: String,
-        _context: &Context,
-    ) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send> {
-        let conn = self.db_pool.get().expect("db_pool error");
-        // No transaction for GET
-        let ret = match self.editor_changelog_get_handler(&username, &conn) {
-            Ok(entries) => GetEditorChangelogResponse::FoundMergedChanges(entries),
-            Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
-                GetEditorChangelogResponse::NotFound(ErrorResponse {
-                    message: format!("No such editor: {}", username.clone()),
-                })
-            }
-            Err(e) => {
-                // TODO: dig in to error type here
-                error!("{}", e);
-                GetEditorChangelogResponse::GenericError(ErrorResponse {
-                    message: e.to_string(),
-                })
-            }
-        };
-        Box::new(futures::done(Ok(ret)))
-    }
-
-    fn get_editor(
-        &self,
-        username: String,
-        _context: &Context,
-    ) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send> {
-        let conn = self.db_pool.get().expect("db_pool error");
-        // No transaction for GET
-        let ret = match self.get_editor_handler(&username, &conn) {
-            Ok(entity) => GetEditorResponse::FoundEditor(entity),
-            Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
-                GetEditorResponse::NotFound(ErrorResponse {
-                    message: format!("No such editor: {}", username.clone()),
-                })
-            }
-            Err(e) => {
-                // TODO: dig in to error type here
-                error!("{}", e);
-                GetEditorResponse::GenericError(ErrorResponse {
-                    message: e.to_string(),
-                })
-            }
         };
         Box::new(futures::done(Ok(ret)))
     }
