@@ -8,7 +8,7 @@ use errors::*;
 use regex::Regex;
 use std::str::FromStr;
 use uuid::Uuid;
-use database_entity_crud::EntityCrud;
+use api_entity_crud::EntityCrud;
 
 pub type DbConn =
     diesel::r2d2::PooledConnection<diesel::r2d2::ConnectionManager<diesel::PgConnection>>;

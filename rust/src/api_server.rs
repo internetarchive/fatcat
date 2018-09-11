@@ -2,7 +2,7 @@
 
 use api_helpers::*;
 use chrono;
-use database_entity_crud::{EditContext, EntityCrud};
+use api_entity_crud::{EditContext, EntityCrud};
 use database_models::*;
 use database_schema::*;
 use diesel::prelude::*;

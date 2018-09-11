@@ -25,7 +25,7 @@ extern crate sha1;
 pub mod api_helpers;
 pub mod api_server;
 pub mod api_wrappers;
-pub mod database_entity_crud;
+pub mod api_entity_crud;
 pub mod database_models;
 pub mod database_schema;
 
