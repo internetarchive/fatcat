@@ -40,8 +40,8 @@ class FileEntity(object):
         'md5': 'str',
         'sha1': 'str',
         'size': 'int',
+        'edit_extra': 'object',
         'extra': 'object',
-        'editgroup_id': 'str',
         'redirect': 'str',
         'revision': 'str',
         'ident': 'str',
@@ -56,15 +56,15 @@ class FileEntity(object):
         'md5': 'md5',
         'sha1': 'sha1',
         'size': 'size',
+        'edit_extra': 'edit_extra',
         'extra': 'extra',
-        'editgroup_id': 'editgroup_id',
         'redirect': 'redirect',
         'revision': 'revision',
         'ident': 'ident',
         'state': 'state'
     }
 
-    def __init__(self, releases=None, mimetype=None, urls=None, sha256=None, md5=None, sha1=None, size=None, extra=None, editgroup_id=None, redirect=None, revision=None, ident=None, state=None):  # noqa: E501
+    def __init__(self, releases=None, mimetype=None, urls=None, sha256=None, md5=None, sha1=None, size=None, edit_extra=None, extra=None, redirect=None, revision=None, ident=None, state=None):  # noqa: E501
         """FileEntity - a model defined in Swagger"""  # noqa: E501
 
         self._releases = None
@@ -74,8 +74,8 @@ class FileEntity(object):
         self._md5 = None
         self._sha1 = None
         self._size = None
+        self._edit_extra = None
         self._extra = None
-        self._editgroup_id = None
         self._redirect = None
         self._revision = None
         self._ident = None
@@ -96,10 +96,10 @@ class FileEntity(object):
             self.sha1 = sha1
         if size is not None:
             self.size = size
+        if edit_extra is not None:
+            self.edit_extra = edit_extra
         if extra is not None:
             self.extra = extra
-        if editgroup_id is not None:
-            self.editgroup_id = editgroup_id
         if redirect is not None:
             self.redirect = redirect
         if revision is not None:
@@ -257,6 +257,27 @@ class FileEntity(object):
         self._size = size
 
     @property
+    def edit_extra(self):
+        """Gets the edit_extra of this FileEntity.  # noqa: E501
+
+
+        :return: The edit_extra of this FileEntity.  # noqa: E501
+        :rtype: object
+        """
+        return self._edit_extra
+
+    @edit_extra.setter
+    def edit_extra(self, edit_extra):
+        """Sets the edit_extra of this FileEntity.
+
+
+        :param edit_extra: The edit_extra of this FileEntity.  # noqa: E501
+        :type: object
+        """
+
+        self._edit_extra = edit_extra
+
+    @property
     def extra(self):
         """Gets the extra of this FileEntity.  # noqa: E501
 
@@ -276,35 +297,6 @@ class FileEntity(object):
         """
 
         self._extra = extra
-
-    @property
-    def editgroup_id(self):
-        """Gets the editgroup_id of this FileEntity.  # noqa: E501
-
-        base32-encoded unique identifier  # noqa: E501
-
-        :return: The editgroup_id of this FileEntity.  # noqa: E501
-        :rtype: str
-        """
-        return self._editgroup_id
-
-    @editgroup_id.setter
-    def editgroup_id(self, editgroup_id):
-        """Sets the editgroup_id of this FileEntity.
-
-        base32-encoded unique identifier  # noqa: E501
-
-        :param editgroup_id: The editgroup_id of this FileEntity.  # noqa: E501
-        :type: str
-        """
-        if editgroup_id is not None and len(editgroup_id) > 26:
-            raise ValueError("Invalid value for `editgroup_id`, length must be less than or equal to `26`")  # noqa: E501
-        if editgroup_id is not None and len(editgroup_id) < 26:
-            raise ValueError("Invalid value for `editgroup_id`, length must be greater than or equal to `26`")  # noqa: E501
-        if editgroup_id is not None and not re.search('[a-zA-Z2-7]{26}', editgroup_id):  # noqa: E501
-            raise ValueError("Invalid value for `editgroup_id`, must be a follow pattern or equal to `/[a-zA-Z2-7]{26}/`")  # noqa: E501
-
-        self._editgroup_id = editgroup_id
 
     @property
     def redirect(self):

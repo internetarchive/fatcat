@@ -119,22 +119,20 @@ class FatcatCrossrefImporter(FatcatImporter):
             extra=extra)
         return (re, ce)
 
-    def create_row(self, row, editgroup_id=None):
+    def create_row(self, row, editgroup=None):
         if row is None:
             return
         obj = json.loads(row)
         entities = self.parse_crossref_dict(obj)
         if entities is not None:
             (re, ce) = entities
-            re.editgroup_id = editgroup_id
             if ce is not None:
-                ce.editgroup_id = editgroup_id
-                container = self.api.create_container(ce)
+                container = self.api.create_container(ce, editgroup=editgroup)
                 re.container_id = container.ident
                 self._issnl_id_map[ce.issnl] = container.ident
-            self.api.create_release(re)
+            self.api.create_release(re, editgroup=editgroup)
 
-    def create_batch(self, batch, editgroup_id=None):
+    def create_batch(self, batch, editgroup=None):
         """Current work/release pairing disallows batch creation of releases.
         Could do batch work creation and then match against releases, but meh."""
         release_batch = []
@@ -145,11 +143,9 @@ class FatcatCrossrefImporter(FatcatImporter):
             entities = self.parse_crossref_dict(obj)
             if entities is not None:
                 (re, ce) = entities
-                re.editgroup_id = editgroup_id
                 if ce is not None:
-                    ce.editgroup_id = editgroup_id
-                    container = self.api.create_container(ce)
+                    container = self.api.create_container(ce, editgroup=editgroup)
                     re.container_id = container.ident
                     self._issnl_id_map[ce.issnl] = container.ident
                 release_batch.append(re)
-        self.api.create_release_batch(release_batch, autoaccept="true", editgroup=editgroup_id)
+        self.api.create_release_batch(release_batch, autoaccept="true", editgroup=editgroup)

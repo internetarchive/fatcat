@@ -57,18 +57,15 @@ class FatcatOrcidImporter(FatcatImporter):
             extra=extra)
         return ce
 
-    def create_row(self, row, editgroup_id=None):
+    def create_row(self, row, editgroup=None):
         obj = json.loads(row)
         ce = self.parse_orcid_dict(obj)
         if ce is not None:
-            ce.editgroup_id = editgroup_id
-            self.api.create_creator(ce)
+            self.api.create_creator(ce, editgroup=editgroup)
 
-    def create_batch(self, batch, editgroup_id=None):
+    def create_batch(self, batch, editgroup=None):
         """Reads and processes in batches (not API-call-per-line)"""
         objects = [self.parse_orcid_dict(json.loads(l))
                    for l in batch if l != None]
         objects = [o for o in objects if o != None]
-        for o in objects:
-            o.editgroup_id = editgroup_id
-        self.api.create_creator_batch(objects, autoaccept="true", editgroup=editgroup_id)
+        self.api.create_creator_batch(objects, autoaccept="true", editgroup=editgroup)

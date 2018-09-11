@@ -50,10 +50,9 @@ class FatcatManifestImporter(FatcatImporter):
             extra=extra)
         return fe
 
-    def create_entity(self, entity, editgroup_id=None):
+    def create_entity(self, entity, editgroup=None):
         if entity is not None:
-            entity.editgroup_id = editgroup_id
-            self.api.create_file(entity)
+            self.api.create_file(entity, editgroup=editgroup)
 
     def process_db(self, db_path, size=100):
         # TODO: multiple DOIs per sha1
@@ -78,7 +77,7 @@ class FatcatManifestImporter(FatcatImporter):
             fe = self.parse_manifest_row(row)
             if fe is None:
                 continue
-            self.create_entity(fe, editgroup_id=eg.id)
+            self.create_entity(fe, editgroup=eg.id)
             if i > 0 and (i % size) == 0:
                 self.api.accept_editgroup(eg.id)
                 eg = self.api.create_editgroup(fatcat_client.Editgroup(editor_id="aaaaaaaaaaaabkvkaaaaaaaaae"))

@@ -57,17 +57,14 @@ class FatcatIssnImporter(FatcatImporter):
             extra=extra)
         return ce
 
-    def create_row(self, row, editgroup_id=None):
+    def create_row(self, row, editgroup=None):
         ce = self.parse_issn_row(row)
         if ce is not None:
-            ce.editgroup_id = editgroup_id
-            self.api.create_container(ce)
+            self.api.create_container(ce, editgroup=editgroup)
 
-    def create_batch(self, batch, editgroup_id=None):
+    def create_batch(self, batch, editgroup=None):
         """Reads and processes in batches (not API-call-per-line)"""
         objects = [self.parse_issn_row(l)
                    for l in batch if l != None]
         objects = [o for o in objects if o != None]
-        for o in objects:
-            o.editgroup_id = editgroup_id
-        self.api.create_container_batch(objects, autoaccept="true", editgroup=editgroup_id)
+        self.api.create_container_batch(objects, autoaccept="true", editgroup=editgroup)

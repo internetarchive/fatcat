@@ -40,8 +40,8 @@ class CreatorEntity(object):
         'ident': 'str',
         'revision': 'str',
         'redirect': 'str',
-        'editgroup_id': 'str',
-        'extra': 'object'
+        'extra': 'object',
+        'edit_extra': 'object'
     }
 
     attribute_map = {
@@ -54,11 +54,11 @@ class CreatorEntity(object):
         'ident': 'ident',
         'revision': 'revision',
         'redirect': 'redirect',
-        'editgroup_id': 'editgroup_id',
-        'extra': 'extra'
+        'extra': 'extra',
+        'edit_extra': 'edit_extra'
     }
 
-    def __init__(self, wikidata_qid=None, orcid=None, surname=None, given_name=None, display_name=None, state=None, ident=None, revision=None, redirect=None, editgroup_id=None, extra=None):  # noqa: E501
+    def __init__(self, wikidata_qid=None, orcid=None, surname=None, given_name=None, display_name=None, state=None, ident=None, revision=None, redirect=None, extra=None, edit_extra=None):  # noqa: E501
         """CreatorEntity - a model defined in Swagger"""  # noqa: E501
 
         self._wikidata_qid = None
@@ -70,8 +70,8 @@ class CreatorEntity(object):
         self._ident = None
         self._revision = None
         self._redirect = None
-        self._editgroup_id = None
         self._extra = None
+        self._edit_extra = None
         self.discriminator = None
 
         if wikidata_qid is not None:
@@ -91,10 +91,10 @@ class CreatorEntity(object):
             self.revision = revision
         if redirect is not None:
             self.redirect = redirect
-        if editgroup_id is not None:
-            self.editgroup_id = editgroup_id
         if extra is not None:
             self.extra = extra
+        if edit_extra is not None:
+            self.edit_extra = edit_extra
 
     @property
     def wikidata_qid(self):
@@ -324,35 +324,6 @@ class CreatorEntity(object):
         self._redirect = redirect
 
     @property
-    def editgroup_id(self):
-        """Gets the editgroup_id of this CreatorEntity.  # noqa: E501
-
-        base32-encoded unique identifier  # noqa: E501
-
-        :return: The editgroup_id of this CreatorEntity.  # noqa: E501
-        :rtype: str
-        """
-        return self._editgroup_id
-
-    @editgroup_id.setter
-    def editgroup_id(self, editgroup_id):
-        """Sets the editgroup_id of this CreatorEntity.
-
-        base32-encoded unique identifier  # noqa: E501
-
-        :param editgroup_id: The editgroup_id of this CreatorEntity.  # noqa: E501
-        :type: str
-        """
-        if editgroup_id is not None and len(editgroup_id) > 26:
-            raise ValueError("Invalid value for `editgroup_id`, length must be less than or equal to `26`")  # noqa: E501
-        if editgroup_id is not None and len(editgroup_id) < 26:
-            raise ValueError("Invalid value for `editgroup_id`, length must be greater than or equal to `26`")  # noqa: E501
-        if editgroup_id is not None and not re.search('[a-zA-Z2-7]{26}', editgroup_id):  # noqa: E501
-            raise ValueError("Invalid value for `editgroup_id`, must be a follow pattern or equal to `/[a-zA-Z2-7]{26}/`")  # noqa: E501
-
-        self._editgroup_id = editgroup_id
-
-    @property
     def extra(self):
         """Gets the extra of this CreatorEntity.  # noqa: E501
 
@@ -372,6 +343,27 @@ class CreatorEntity(object):
         """
 
         self._extra = extra
+
+    @property
+    def edit_extra(self):
+        """Gets the edit_extra of this CreatorEntity.  # noqa: E501
+
+
+        :return: The edit_extra of this CreatorEntity.  # noqa: E501
+        :rtype: object
+        """
+        return self._edit_extra
+
+    @edit_extra.setter
+    def edit_extra(self, edit_extra):
+        """Sets the edit_extra of this CreatorEntity.
+
+
+        :param edit_extra: The edit_extra of this CreatorEntity.  # noqa: E501
+        :type: object
+        """
+
+        self._edit_extra = edit_extra
 
     def to_dict(self):
         """Returns the model properties as a dict"""

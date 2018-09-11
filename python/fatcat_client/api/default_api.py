@@ -148,6 +148,7 @@ class DefaultApi(object):
 
         :param async bool
         :param ContainerEntity entity: (required)
+        :param str editgroup:
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
@@ -169,12 +170,13 @@ class DefaultApi(object):
 
         :param async bool
         :param ContainerEntity entity: (required)
+        :param str editgroup:
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['entity']  # noqa: E501
+        all_params = ['entity', 'editgroup']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -199,6 +201,8 @@ class DefaultApi(object):
         path_params = {}
 
         query_params = []
+        if 'editgroup' in params:
+            query_params.append(('editgroup', params['editgroup']))  # noqa: E501
 
         header_params = {}
 
@@ -350,6 +354,7 @@ class DefaultApi(object):
 
         :param async bool
         :param CreatorEntity entity: (required)
+        :param str editgroup:
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
@@ -371,12 +376,13 @@ class DefaultApi(object):
 
         :param async bool
         :param CreatorEntity entity: (required)
+        :param str editgroup:
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['entity']  # noqa: E501
+        all_params = ['entity', 'editgroup']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -401,6 +407,8 @@ class DefaultApi(object):
         path_params = {}
 
         query_params = []
+        if 'editgroup' in params:
+            query_params.append(('editgroup', params['editgroup']))  # noqa: E501
 
         header_params = {}
 
@@ -649,6 +657,7 @@ class DefaultApi(object):
 
         :param async bool
         :param FileEntity entity: (required)
+        :param str editgroup:
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
@@ -670,12 +679,13 @@ class DefaultApi(object):
 
         :param async bool
         :param FileEntity entity: (required)
+        :param str editgroup:
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['entity']  # noqa: E501
+        all_params = ['entity', 'editgroup']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -700,6 +710,8 @@ class DefaultApi(object):
         path_params = {}
 
         query_params = []
+        if 'editgroup' in params:
+            query_params.append(('editgroup', params['editgroup']))  # noqa: E501
 
         header_params = {}
 
@@ -851,6 +863,7 @@ class DefaultApi(object):
 
         :param async bool
         :param ReleaseEntity entity: (required)
+        :param str editgroup:
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
@@ -872,12 +885,13 @@ class DefaultApi(object):
 
         :param async bool
         :param ReleaseEntity entity: (required)
+        :param str editgroup:
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['entity']  # noqa: E501
+        all_params = ['entity', 'editgroup']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -902,6 +916,8 @@ class DefaultApi(object):
         path_params = {}
 
         query_params = []
+        if 'editgroup' in params:
+            query_params.append(('editgroup', params['editgroup']))  # noqa: E501
 
         header_params = {}
 
@@ -1053,6 +1069,7 @@ class DefaultApi(object):
 
         :param async bool
         :param WorkEntity entity: (required)
+        :param str editgroup:
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
@@ -1074,12 +1091,13 @@ class DefaultApi(object):
 
         :param async bool
         :param WorkEntity entity: (required)
+        :param str editgroup:
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['entity']  # noqa: E501
+        all_params = ['entity', 'editgroup']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -1104,6 +1122,8 @@ class DefaultApi(object):
         path_params = {}
 
         query_params = []
+        if 'editgroup' in params:
+            query_params.append(('editgroup', params['editgroup']))  # noqa: E501
 
         header_params = {}
 
@@ -4048,6 +4068,7 @@ class DefaultApi(object):
         :param async bool
         :param str id: (required)
         :param ContainerEntity entity: (required)
+        :param str editgroup:
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
@@ -4070,12 +4091,13 @@ class DefaultApi(object):
         :param async bool
         :param str id: (required)
         :param ContainerEntity entity: (required)
+        :param str editgroup:
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['id', 'entity']  # noqa: E501
+        all_params = ['id', 'entity', 'editgroup']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -4106,6 +4128,8 @@ class DefaultApi(object):
             path_params['id'] = params['id']  # noqa: E501
 
         query_params = []
+        if 'editgroup' in params:
+            query_params.append(('editgroup', params['editgroup']))  # noqa: E501
 
         header_params = {}
 
@@ -4153,6 +4177,7 @@ class DefaultApi(object):
         :param async bool
         :param str id: (required)
         :param CreatorEntity entity: (required)
+        :param str editgroup:
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
@@ -4175,12 +4200,13 @@ class DefaultApi(object):
         :param async bool
         :param str id: (required)
         :param CreatorEntity entity: (required)
+        :param str editgroup:
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['id', 'entity']  # noqa: E501
+        all_params = ['id', 'entity', 'editgroup']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -4211,6 +4237,8 @@ class DefaultApi(object):
             path_params['id'] = params['id']  # noqa: E501
 
         query_params = []
+        if 'editgroup' in params:
+            query_params.append(('editgroup', params['editgroup']))  # noqa: E501
 
         header_params = {}
 
@@ -4258,6 +4286,7 @@ class DefaultApi(object):
         :param async bool
         :param str id: (required)
         :param FileEntity entity: (required)
+        :param str editgroup:
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
@@ -4280,12 +4309,13 @@ class DefaultApi(object):
         :param async bool
         :param str id: (required)
         :param FileEntity entity: (required)
+        :param str editgroup:
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['id', 'entity']  # noqa: E501
+        all_params = ['id', 'entity', 'editgroup']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -4316,6 +4346,8 @@ class DefaultApi(object):
             path_params['id'] = params['id']  # noqa: E501
 
         query_params = []
+        if 'editgroup' in params:
+            query_params.append(('editgroup', params['editgroup']))  # noqa: E501
 
         header_params = {}
 
@@ -4363,6 +4395,7 @@ class DefaultApi(object):
         :param async bool
         :param str id: (required)
         :param ReleaseEntity entity: (required)
+        :param str editgroup:
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
@@ -4385,12 +4418,13 @@ class DefaultApi(object):
         :param async bool
         :param str id: (required)
         :param ReleaseEntity entity: (required)
+        :param str editgroup:
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['id', 'entity']  # noqa: E501
+        all_params = ['id', 'entity', 'editgroup']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -4421,6 +4455,8 @@ class DefaultApi(object):
             path_params['id'] = params['id']  # noqa: E501
 
         query_params = []
+        if 'editgroup' in params:
+            query_params.append(('editgroup', params['editgroup']))  # noqa: E501
 
         header_params = {}
 
@@ -4468,6 +4504,7 @@ class DefaultApi(object):
         :param async bool
         :param str id: (required)
         :param WorkEntity entity: (required)
+        :param str editgroup:
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
@@ -4490,12 +4527,13 @@ class DefaultApi(object):
         :param async bool
         :param str id: (required)
         :param WorkEntity entity: (required)
+        :param str editgroup:
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['id', 'entity']  # noqa: E501
+        all_params = ['id', 'entity', 'editgroup']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -4526,6 +4564,8 @@ class DefaultApi(object):
             path_params['id'] = params['id']  # noqa: E501
 
         query_params = []
+        if 'editgroup' in params:
+            query_params.append(('editgroup', params['editgroup']))  # noqa: E501
 
         header_params = {}
 

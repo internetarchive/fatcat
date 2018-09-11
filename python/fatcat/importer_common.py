@@ -32,7 +32,7 @@ class FatcatImporter:
         eg = self.api.create_editgroup(
             fatcat_client.Editgroup(editor_id='aaaaaaaaaaaabkvkaaaaaaaaae'))
         for i, row in enumerate(source):
-            self.create_row(row, editgroup_id=eg.id)
+            self.create_row(row, editgroup=eg.id)
             if i > 0 and (i % group_size) == 0:
                 self.api.accept_editgroup(eg)
                 eg = self.api.create_editgroup(
@@ -45,7 +45,7 @@ class FatcatImporter:
         for rows in grouper(source, size):
             eg = self.api.create_editgroup(
                 fatcat_client.Editgroup(editor_id='aaaaaaaaaaaabkvkaaaaaaaaae'))
-            self.create_batch(rows, editgroup_id=eg.id)
+            self.create_batch(rows, editgroup=eg.id)
 
     def process_csv_source(self, source, group_size=100, delimiter=','):
         reader = csv.DictReader(source, delimiter=delimiter)
