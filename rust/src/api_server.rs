@@ -1,8 +1,8 @@
 //! API endpoint handlers
 
+use api_entity_crud::EntityCrud;
 use api_helpers::*;
 use chrono;
-use database_entity_crud::{EditContext, EntityCrud};
 use database_models::*;
 use database_schema::*;
 use diesel::prelude::*;
@@ -11,7 +11,6 @@ use errors::*;
 use fatcat_api::models;
 use fatcat_api::models::*;
 use std::str::FromStr;
-use uuid::Uuid;
 use ConnectionPool;
 
 macro_rules! entity_batch_handler {
@@ -53,27 +52,6 @@ macro_rules! count_entity {
     }};
 }
 
-fn make_edit_context(conn: &DbConn, editgroup_id: Option<FatCatId>, autoaccept: bool) -> Result<EditContext> {
-    let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001")?; // TODO: auth
-    let editgroup_id: FatCatId = match (editgroup_id, autoaccept) {
-        (Some(eg), _) => eg,
-        // If autoaccept and no editgroup_id passed, always create a new one for this transaction
-        (None, true) => {
-            let eg_row: EditgroupRow = diesel::insert_into(editgroup::table)
-                .values((editgroup::editor_id.eq(editor_id),))
-                .get_result(conn)?;
-            FatCatId::from_uuid(&eg_row.id)
-        },
-        (None, false) => FatCatId::from_uuid(&get_or_create_editgroup(editor_id, conn)?),
-    };
-    Ok(EditContext {
-        editor_id: FatCatId::from_uuid(&editor_id),
-        editgroup_id: editgroup_id,
-        extra_json: None,
-        autoaccept: autoaccept,
-    })
-}
-
 #[derive(Clone)]
 pub struct Server {
     pub db_pool: ConnectionPool,
@@ -82,11 +60,11 @@ pub struct Server {
 impl Server {
     pub fn get_container_handler(
         &self,
-        id: &Uuid,
+        id: FatCatId,
         _expand: Option<String>,
         conn: &DbConn,
     ) -> Result<ContainerEntity> {
-        ContainerEntity::db_get(conn, FatCatId::from_uuid(id))
+        ContainerEntity::db_get(conn, id)
     }
 
     pub fn lookup_container_handler(&self, issnl: &str, conn: &DbConn) -> Result<ContainerEntity> {
@@ -106,11 +84,11 @@ impl Server {
 
     pub fn get_creator_handler(
         &self,
-        id: &Uuid,
+        id: FatCatId,
         _expand: Option<String>,
         conn: &DbConn,
     ) -> Result<CreatorEntity> {
-        CreatorEntity::db_get(conn, FatCatId::from_uuid(id))
+        CreatorEntity::db_get(conn, id)
     }
 
     pub fn lookup_creator_handler(&self, orcid: &str, conn: &DbConn) -> Result<CreatorEntity> {
@@ -130,16 +108,14 @@ impl Server {
 
     pub fn get_creator_releases_handler(
         &self,
-        id: &str,
+        id: FatCatId,
         conn: &DbConn,
     ) -> Result<Vec<ReleaseEntity>> {
-        let id = fcid2uuid(&id)?;
-
         // TODO: some kind of unique or group-by?
         let rows: Vec<(ReleaseRevRow, ReleaseIdentRow, ReleaseContribRow)> = release_rev::table
             .inner_join(release_ident::table)
             .inner_join(release_contrib::table)
-            .filter(release_contrib::creator_ident_id.eq(&id))
+            .filter(release_contrib::creator_ident_id.eq(&id.to_uuid()))
             .filter(release_ident::is_live.eq(true))
             .filter(release_ident::redirect_id.is_null())
             .load(conn)?;
@@ -152,11 +128,11 @@ impl Server {
 
     pub fn get_file_handler(
         &self,
-        id: &Uuid,
+        id: FatCatId,
         _expand: Option<String>,
         conn: &DbConn,
     ) -> Result<FileEntity> {
-        FileEntity::db_get(conn, FatCatId::from_uuid(id))
+        FileEntity::db_get(conn, id)
     }
 
     pub fn lookup_file_handler(&self, sha1: &str, conn: &DbConn) -> Result<FileEntity> {
@@ -175,19 +151,18 @@ impl Server {
 
     pub fn get_release_handler(
         &self,
-        id: &Uuid,
+        id: FatCatId,
         expand: Option<String>,
         conn: &DbConn,
     ) -> Result<ReleaseEntity> {
-        let mut release = ReleaseEntity::db_get(conn, FatCatId::from_uuid(id))?;
+        let mut release = ReleaseEntity::db_get(conn, id)?;
 
         // For now, if there is any expand param we do them all
         if expand.is_some() {
-            release.files =
-                Some(self.get_release_files_handler(&release.ident.clone().unwrap(), conn)?);
+            release.files = Some(self.get_release_files_handler(id, conn)?);
             if let Some(ref cid) = release.container_id {
                 release.container =
-                    Some(self.get_container_handler(&fcid2uuid(&cid)?, None, conn)?);
+                    Some(self.get_container_handler(FatCatId::from_str(&cid)?, None, conn)?);
             }
         }
         Ok(release)
@@ -208,13 +183,15 @@ impl Server {
         ReleaseEntity::db_from_row(conn, rev, Some(ident))
     }
 
-    pub fn get_release_files_handler(&self, id: &str, conn: &DbConn) -> Result<Vec<FileEntity>> {
-        let ident = FatCatId::from_str(id)?;
-
+    pub fn get_release_files_handler(
+        &self,
+        id: FatCatId,
+        conn: &DbConn,
+    ) -> Result<Vec<FileEntity>> {
         let rows: Vec<(FileRevRow, FileIdentRow, FileReleaseRow)> = file_rev::table
             .inner_join(file_ident::table)
             .inner_join(file_release::table)
-            .filter(file_release::target_release_ident_id.eq(&ident.to_uuid()))
+            .filter(file_release::target_release_ident_id.eq(&id.to_uuid()))
             .filter(file_ident::is_live.eq(true))
             .filter(file_ident::redirect_id.is_null())
             .load(conn)?;
@@ -226,19 +203,21 @@ impl Server {
 
     pub fn get_work_handler(
         &self,
-        id: &Uuid,
+        id: FatCatId,
         _expand: Option<String>,
         conn: &DbConn,
     ) -> Result<WorkEntity> {
-        WorkEntity::db_get(conn, FatCatId::from_uuid(id))
+        WorkEntity::db_get(conn, id)
     }
 
-    pub fn get_work_releases_handler(&self, id: &str, conn: &DbConn) -> Result<Vec<ReleaseEntity>> {
-        let id = fcid2uuid(&id)?;
-
+    pub fn get_work_releases_handler(
+        &self,
+        id: FatCatId,
+        conn: &DbConn,
+    ) -> Result<Vec<ReleaseEntity>> {
         let rows: Vec<(ReleaseRevRow, ReleaseIdentRow)> = release_rev::table
             .inner_join(release_ident::table)
-            .filter(release_rev::work_ident_id.eq(&id))
+            .filter(release_rev::work_ident_id.eq(&id.to_uuid()))
             .filter(release_ident::is_live.eq(true))
             .filter(release_ident::redirect_id.is_null())
             .load(conn)?;
@@ -248,165 +227,8 @@ impl Server {
             .collect()
     }
 
-    pub fn create_container_handler(
-        &self,
-        entity: models::ContainerEntity,
-        conn: &DbConn,
-    ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?, false)?;
-        let edit = entity.db_create(conn, &edit_context)?;
-        edit.into_model()
-    }
-
-    pub fn update_container_handler(
-        &self,
-        id: &Uuid,
-        entity: models::ContainerEntity,
-        conn: &DbConn,
-    ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?, false)?;
-        let edit = entity.db_update(conn, &edit_context, FatCatId::from_uuid(id))?;
-        edit.into_model()
-    }
-    pub fn delete_container_handler(
-        &self,
-        id: &Uuid,
-        editgroup_id: Option<Uuid>,
-        conn: &DbConn,
-    ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, editgroup_id.map(|u| FatCatId::from_uuid(&u)), false)?;
-        let edit = ContainerEntity::db_delete(conn, &edit_context, FatCatId::from_uuid(id))?;
-        edit.into_model()
-    }
-
-    pub fn create_creator_handler(
-        &self,
-        entity: models::CreatorEntity,
-        conn: &DbConn,
-    ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?, false)?;
-        let edit = entity.db_create(conn, &edit_context)?;
-        edit.into_model()
-    }
-
-    pub fn update_creator_handler(
-        &self,
-        id: &Uuid,
-        entity: models::CreatorEntity,
-        conn: &DbConn,
-    ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?, false)?;
-        let edit = entity.db_update(conn, &edit_context, FatCatId::from_uuid(id))?;
-        edit.into_model()
-    }
-    pub fn delete_creator_handler(
-        &self,
-        id: &Uuid,
-        editgroup_id: Option<Uuid>,
-        conn: &DbConn,
-    ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, editgroup_id.map(|u| FatCatId::from_uuid(&u)), false)?;
-        let edit = CreatorEntity::db_delete(conn, &edit_context, FatCatId::from_uuid(id))?;
-        edit.into_model()
-    }
-
-    pub fn create_file_handler(
-        &self,
-        entity: models::FileEntity,
-        conn: &DbConn,
-    ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?, false)?;
-        let edit = entity.db_create(conn, &edit_context)?;
-        edit.into_model()
-    }
-
-    pub fn update_file_handler(
-        &self,
-        id: &Uuid,
-        entity: models::FileEntity,
-        conn: &DbConn,
-    ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?, false)?;
-        let edit = entity.db_update(conn, &edit_context, FatCatId::from_uuid(id))?;
-        edit.into_model()
-    }
-    pub fn delete_file_handler(
-        &self,
-        id: &Uuid,
-        editgroup_id: Option<Uuid>,
-        conn: &DbConn,
-    ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, editgroup_id.map(|u| FatCatId::from_uuid(&u)), false)?;
-        let edit = FileEntity::db_delete(conn, &edit_context, FatCatId::from_uuid(id))?;
-        edit.into_model()
-    }
-
-    pub fn create_release_handler(
-        &self,
-        entity: models::ReleaseEntity,
-        conn: &DbConn,
-    ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?, false)?;
-        let edit = entity.db_create(conn, &edit_context)?;
-        edit.into_model()
-    }
-
-    pub fn update_release_handler(
-        &self,
-        id: &Uuid,
-        entity: models::ReleaseEntity,
-        conn: &DbConn,
-    ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?, false)?;
-        let edit = entity.db_update(conn, &edit_context, FatCatId::from_uuid(id))?;
-        edit.into_model()
-    }
-    pub fn delete_release_handler(
-        &self,
-        id: &Uuid,
-        editgroup_id: Option<Uuid>,
-        conn: &DbConn,
-    ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, editgroup_id.map(|u| FatCatId::from_uuid(&u)), false)?;
-        let edit = ReleaseEntity::db_delete(conn, &edit_context, FatCatId::from_uuid(id))?;
-        edit.into_model()
-    }
-
-    pub fn create_work_handler(
-        &self,
-        entity: models::WorkEntity,
-        conn: &DbConn,
-    ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?, false)?;
-        let edit = entity.db_create(conn, &edit_context)?;
-        edit.into_model()
-    }
-
-    pub fn update_work_handler(
-        &self,
-        id: &Uuid,
-        entity: models::WorkEntity,
-        conn: &DbConn,
-    ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, entity.parse_editgroup_id()?, false)?;
-        let edit = entity.db_update(conn, &edit_context, FatCatId::from_uuid(id))?;
-        edit.into_model()
-    }
-
-    pub fn delete_work_handler(
-        &self,
-        id: &Uuid,
-        editgroup_id: Option<Uuid>,
-        conn: &DbConn,
-    ) -> Result<EntityEdit> {
-        let edit_context = make_edit_context(conn, editgroup_id.map(|u| FatCatId::from_uuid(&u)), false)?;
-        let edit = WorkEntity::db_delete(conn, &edit_context, FatCatId::from_uuid(id))?;
-
-        edit.into_model()
-    }
-
-    pub fn accept_editgroup_handler(&self, id: &str, conn: &DbConn) -> Result<()> {
-        accept_editgroup(fcid2uuid(id)?, conn)?;
+    pub fn accept_editgroup_handler(&self, id: FatCatId, conn: &DbConn) -> Result<()> {
+        accept_editgroup(id, conn)?;
         Ok(())
     }
 
@@ -417,7 +239,7 @@ impl Server {
     ) -> Result<Editgroup> {
         let row: EditgroupRow = insert_into(editgroup::table)
             .values((
-                editgroup::editor_id.eq(fcid2uuid(&entity.editor_id)?),
+                editgroup::editor_id.eq(FatCatId::from_str(&entity.editor_id)?.to_uuid()),
                 editgroup::description.eq(entity.description),
                 editgroup::extra_json.eq(entity.extra),
             ))
@@ -432,14 +254,13 @@ impl Server {
         })
     }
 
-    pub fn get_editgroup_handler(&self, id: &str, conn: &DbConn) -> Result<Editgroup> {
-        let id = fcid2uuid(id)?;
-        let row: EditgroupRow = editgroup::table.find(id).first(conn)?;
+    pub fn get_editgroup_handler(&self, id: FatCatId, conn: &DbConn) -> Result<Editgroup> {
+        let row: EditgroupRow = editgroup::table.find(id.to_uuid()).first(conn)?;
 
         let edits = EditgroupEdits {
             containers: Some(
                 container_edit::table
-                    .filter(container_edit::editgroup_id.eq(id))
+                    .filter(container_edit::editgroup_id.eq(id.to_uuid()))
                     .get_results(conn)?
                     .into_iter()
                     .map(|e: ContainerEditRow| e.into_model().unwrap())
@@ -447,7 +268,7 @@ impl Server {
             ),
             creators: Some(
                 creator_edit::table
-                    .filter(creator_edit::editgroup_id.eq(id))
+                    .filter(creator_edit::editgroup_id.eq(id.to_uuid()))
                     .get_results(conn)?
                     .into_iter()
                     .map(|e: CreatorEditRow| e.into_model().unwrap())
@@ -455,7 +276,7 @@ impl Server {
             ),
             files: Some(
                 file_edit::table
-                    .filter(file_edit::editgroup_id.eq(id))
+                    .filter(file_edit::editgroup_id.eq(id.to_uuid()))
                     .get_results(conn)?
                     .into_iter()
                     .map(|e: FileEditRow| e.into_model().unwrap())
@@ -463,7 +284,7 @@ impl Server {
             ),
             releases: Some(
                 release_edit::table
-                    .filter(release_edit::editgroup_id.eq(id))
+                    .filter(release_edit::editgroup_id.eq(id.to_uuid()))
                     .get_results(conn)?
                     .into_iter()
                     .map(|e: ReleaseEditRow| e.into_model().unwrap())
@@ -471,7 +292,7 @@ impl Server {
             ),
             works: Some(
                 work_edit::table
-                    .filter(work_edit::editgroup_id.eq(id))
+                    .filter(work_edit::editgroup_id.eq(id.to_uuid()))
                     .get_results(conn)?
                     .into_iter()
                     .map(|e: WorkEditRow| e.into_model().unwrap())
@@ -489,9 +310,8 @@ impl Server {
         Ok(eg)
     }
 
-    pub fn get_editor_handler(&self, id: &str, conn: &DbConn) -> Result<Editor> {
-        let id = fcid2uuid(id)?;
-        let row: EditorRow = editor::table.find(id).first(conn)?;
+    pub fn get_editor_handler(&self, id: FatCatId, conn: &DbConn) -> Result<Editor> {
+        let row: EditorRow = editor::table.find(id.to_uuid()).first(conn)?;
 
         let ed = Editor {
             id: Some(uuid2fcid(&row.id)),
@@ -500,14 +320,13 @@ impl Server {
         Ok(ed)
     }
 
-    pub fn editor_changelog_get_handler(
+    pub fn get_editor_changelog_handler(
         &self,
-        id: &str,
+        id: FatCatId,
         conn: &DbConn,
     ) -> Result<Vec<ChangelogEntry>> {
-        let id = fcid2uuid(id)?;
         // TODO: single query
-        let editor: EditorRow = editor::table.find(id).first(conn)?;
+        let editor: EditorRow = editor::table.find(id.to_uuid()).first(conn)?;
         let changes: Vec<(ChangelogRow, EditgroupRow)> = changelog::table
             .inner_join(editgroup::table)
             .filter(editgroup::editor_id.eq(editor.id))
@@ -552,7 +371,8 @@ impl Server {
 
     pub fn get_changelog_entry_handler(&self, id: i64, conn: &DbConn) -> Result<ChangelogEntry> {
         let cl_row: ChangelogRow = changelog::table.find(id).first(conn)?;
-        let editgroup = self.get_editgroup_handler(&uuid2fcid(&cl_row.editgroup_id), conn)?;
+        let editgroup =
+            self.get_editgroup_handler(FatCatId::from_uuid(&cl_row.editgroup_id), conn)?;
 
         let mut entry = cl_row.into_model();
         entry.editgroup = Some(editgroup);
@@ -638,45 +458,4 @@ impl Server {
     entity_batch_handler!(create_file_batch_handler, FileEntity);
     entity_batch_handler!(create_release_batch_handler, ReleaseEntity);
     entity_batch_handler!(create_work_batch_handler, WorkEntity);
-
-    pub fn get_container_history_handler(
-        &self,
-        id: &Uuid,
-        limit: Option<i64>,
-        conn: &DbConn,
-    ) -> Result<Vec<EntityHistoryEntry>> {
-        ContainerEntity::db_get_history(conn, FatCatId::from_uuid(id), limit)
-    }
-    pub fn get_creator_history_handler(
-        &self,
-        id: &Uuid,
-        limit: Option<i64>,
-        conn: &DbConn,
-    ) -> Result<Vec<EntityHistoryEntry>> {
-        CreatorEntity::db_get_history(conn, FatCatId::from_uuid(id), limit)
-    }
-    pub fn get_file_history_handler(
-        &self,
-        id: &Uuid,
-        limit: Option<i64>,
-        conn: &DbConn,
-    ) -> Result<Vec<EntityHistoryEntry>> {
-        FileEntity::db_get_history(conn, FatCatId::from_uuid(id), limit)
-    }
-    pub fn get_release_history_handler(
-        &self,
-        id: &Uuid,
-        limit: Option<i64>,
-        conn: &DbConn,
-    ) -> Result<Vec<EntityHistoryEntry>> {
-        ReleaseEntity::db_get_history(conn, FatCatId::from_uuid(id), limit)
-    }
-    pub fn get_work_history_handler(
-        &self,
-        id: &Uuid,
-        limit: Option<i64>,
-        conn: &DbConn,
-    ) -> Result<Vec<EntityHistoryEntry>> {
-        WorkEntity::db_get_history(conn, FatCatId::from_uuid(id), limit)
-    }
 }

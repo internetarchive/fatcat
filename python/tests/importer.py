@@ -29,6 +29,7 @@ def test_identifiers():
     assert fi.is_doi("10.1234_56789") == False
 
     assert fi.is_orcid("0000-0003-3118-6591") == True
+    assert fi.is_orcid("0000-0003-3953-765X") == True
     assert fi.is_orcid("0000-00x3-3118-659") == False
     assert fi.is_orcid("0000-00033118-659") == False
     assert fi.is_orcid("0000-0003-3118-659.") == False

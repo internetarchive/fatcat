@@ -76,6 +76,13 @@ name ref: https://www.w3.org/International/questions/qa-personal-names
 
 - hydrate entities in API
     ? "expand" query param
+- don't include abstracts by default?
+- "stub" mode for lookups, returning only the ident (or maybe whole row)?
+
+## Database
+
+- test using hash indexes for some UUID column indexes, or at least sha1 and
+  other hashes (abstracts, file lookups)
 
 ## Other
 

@@ -23,7 +23,7 @@ class FatcatImporter:
         self._orcid_id_map = dict()
         self._doi_id_map = dict()
         self._issn_issnl_map = None
-        self._orcid_regex = re.compile("^\\d{4}-\\d{4}-\\d{4}-\\d{4}$")
+        self._orcid_regex = re.compile("^\\d{4}-\\d{4}-\\d{4}-\\d{3}[\\dX]$")
         if issn_map_file:
             self.read_issn_map_file(issn_map_file)
 

@@ -834,13 +834,13 @@ paths:
         example: "\"id_example\".to_string()"
       responses:
         200:
-          description: "Found Entity"
+          description: "Found"
           schema:
             type: "array"
             items:
               $ref: "#/definitions/release_entity"
-          x-responseId: "FoundEntity"
-          x-uppercaseResponseId: "FOUND_ENTITY"
+          x-responseId: "Found"
+          x-uppercaseResponseId: "FOUND"
           uppercase_operation_id: "GET_CREATOR_RELEASES"
           uppercase_data_type: "VEC<RELEASEENTITY>"
           producesJson: true
@@ -1749,13 +1749,13 @@ paths:
         example: "\"id_example\".to_string()"
       responses:
         200:
-          description: "Found Entity"
+          description: "Found"
           schema:
             type: "array"
             items:
               $ref: "#/definitions/file_entity"
-          x-responseId: "FoundEntity"
-          x-uppercaseResponseId: "FOUND_ENTITY"
+          x-responseId: "Found"
+          x-uppercaseResponseId: "FOUND"
           uppercase_operation_id: "GET_RELEASE_FILES"
           uppercase_data_type: "VEC<FILEENTITY>"
           producesJson: true
@@ -2232,13 +2232,13 @@ paths:
         example: "\"id_example\".to_string()"
       responses:
         200:
-          description: "Found Entity"
+          description: "Found"
           schema:
             type: "array"
             items:
               $ref: "#/definitions/release_entity"
-          x-responseId: "FoundEntity"
-          x-uppercaseResponseId: "FOUND_ENTITY"
+          x-responseId: "Found"
+          x-uppercaseResponseId: "FOUND"
           uppercase_operation_id: "GET_WORK_RELEASES"
           uppercase_data_type: "VEC<RELEASEENTITY>"
           producesJson: true
@@ -2286,13 +2286,22 @@ paths:
         example: "\"id_example\".to_string()"
       responses:
         200:
-          description: "Found Editor"
+          description: "Found"
           schema:
             $ref: "#/definitions/editor"
-          x-responseId: "FoundEditor"
-          x-uppercaseResponseId: "FOUND_EDITOR"
+          x-responseId: "Found"
+          x-uppercaseResponseId: "FOUND"
           uppercase_operation_id: "GET_EDITOR"
           uppercase_data_type: "EDITOR"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_EDITOR"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
           description: "Not Found"
@@ -2329,15 +2338,24 @@ paths:
         example: "\"id_example\".to_string()"
       responses:
         200:
-          description: "Found Merged Changes"
+          description: "Found"
           schema:
             type: "array"
             items:
               $ref: "#/definitions/changelog_entry"
-          x-responseId: "FoundMergedChanges"
-          x-uppercaseResponseId: "FOUND_MERGED_CHANGES"
+          x-responseId: "Found"
+          x-uppercaseResponseId: "FOUND"
           uppercase_operation_id: "GET_EDITOR_CHANGELOG"
           uppercase_data_type: "VEC<CHANGELOGENTRY>"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_EDITOR_CHANGELOG"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
           description: "Not Found"
@@ -2428,11 +2446,11 @@ paths:
         example: "\"id_example\".to_string()"
       responses:
         200:
-          description: "Found Entity"
+          description: "Found"
           schema:
             $ref: "#/definitions/editgroup"
-          x-responseId: "FoundEntity"
-          x-uppercaseResponseId: "FOUND_ENTITY"
+          x-responseId: "Found"
+          x-uppercaseResponseId: "FOUND"
           uppercase_operation_id: "GET_EDITGROUP"
           uppercase_data_type: "EDITGROUP"
           producesJson: true

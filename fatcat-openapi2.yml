@@ -671,7 +671,7 @@ paths:
       operationId: "get_creator_releases"
       responses:
         200:
-          description: Found Entity
+          description: Found
           schema:
             type: array
             items:
@@ -939,7 +939,7 @@ paths:
       operationId: "get_release_files"
       responses:
         200:
-          description: Found Entity
+          description: Found
           schema:
             type: array
             items:
@@ -1081,7 +1081,7 @@ paths:
       operationId: "get_work_releases"
       responses:
         200:
-          description: Found Entity
+          description: Found
           schema:
             type: array
             items:
@@ -1097,9 +1097,13 @@ paths:
       operationId: "get_editor"
       responses:
         200:
-          description: Found Editor
+          description: Found
           schema:
             $ref: "#/definitions/editor"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/error_response"
         404:
           description: Not Found
           schema:
@@ -1118,11 +1122,15 @@ paths:
       operationId: "get_editor_changelog"
       responses:
         200:
-          description: Found Merged Changes
+          description: Found
           schema:
             type: array
             items:
               $ref: "#/definitions/changelog_entry"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/error_response"
         404:
           description: Not Found
           schema:
@@ -1163,7 +1171,7 @@ paths:
       operationId: "get_editgroup"
       responses:
         200:
-          description: Found Entity
+          description: Found
           schema:
             $ref: "#/definitions/editgroup"
         400:

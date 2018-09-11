@@ -1,16 +1,10 @@
 
-finish refactor:
-- database_entity_crud -> api_entity_crud
-x merge autoaccept branch in with http-verbs branch
-- direct CRUD calls from api_wrappers (except, maybe, batch?)
-    => generally, standardize "edit" actions
-- FatCatId and edit context between wrappers and handlers
-- review editgroup accept code
-
 verbs:
 - enforce "previous_rev" required in updates
 
+- review editgroup accept code (?)
 - fatcat_api -> fatcat_api_schema (or spec? models? types?)
+- generally, standardize "edit" actions
 - fatcat -> fatcat-api-server
 - editgroup param to update
     => also for creation? for consistency

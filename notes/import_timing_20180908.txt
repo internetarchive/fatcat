@@ -1,0 +1,249 @@
+
+Changes since last time:
+- auto-accept flag (potentially no need to UPDATE/vacuum database)
+- large CRUD code refactor (but not complete removal of api_server CRUD yet)
+- removed "single query insert per entity", but added row-based inserts
+
+## Laptop Rough Timing
+
+HTTP-VERB branch 7354899493f6448bed5698ad6ade1dbebcf39379:
+=> note: in this branch, importer is sitll creating editgroups in separate request
+
+    time ./fatcat_import.py import-issn /home/bnewbold/code/oa-journals-analysis/upload-2018-04-05/journal_extra_metadata.csv
+    real    0m28.779s
+    user    0m5.716s
+    sys     0m0.208s
+
+    cat /data/crossref/crossref-works.2018-01-21.badsample_100k.json | time parallel -j4 --round-robin --pipe ./fatcat_import.py import-crossref - /data/issn/20180216.ISSN-to-ISSN-L.txt
+
+    89.83user 4.58system 1:46.67elapsed 88%CPU (0avgtext+0avgdata 386184maxresident)k
+    78632inputs+385408outputs (1major+579693minor)pagefaults 0swaps
+    # 1:46.67 elapsed
+
+    # running again
+    time ./fatcat_import.py import-issn /home/bnewbold/code/oa-journals-analysis/upload-2018-04-05/journal_extra_metadata.csv
+    real    0m29.714s
+    user    0m6.048s
+    sys     0m0.212s
+
+    cat /data/crossref/crossref-works.2018-01-21.badsample_100k.json | time parallel -j4 --round-robin --pipe ./fatcat_import.py import-crossref - /data/issn/20180216.ISSN-to-ISSN-L.txt
+    89.07user 4.52system 1:48.11elapsed 86%CPU (0avgtext+0avgdata 385940maxresident)k
+    0inputs+377456outputs (0major+583532minor)pagefaults 0swaps
+    # 1:48.11 elapsed
+
+MASTER branch 0053d133f8ff96aa4dedc1ff7e2754812ddfc79a
+
+    time ./fatcat_import.py import-issn /home/bnewbold/code/oa-journals-analysis/upload-2018-04-05/journal_extra_metadata.csv
+    real    1m8.061s
+    user    0m7.384s
+    sys     0m0.280s
+
+    cat /data/crossref/crossref-works.2018-01-21.badsample_100k.json | time parallel -j4 --round-robin --pipe ./fatcat_import.py import-crossref - /data/issn/20180216.ISSN-to-ISSN-L.txt
+    96.68user 5.25system 3:23.05elapsed 50%CPU (0avgtext+0avgdata 385516maxresident)k
+    0inputs+389168outputs (0major+586810minor)pagefaults 0swaps
+    # 3:23.05 elapsed
+
+AUTO-ACCEPT branch 8cccbcdef11e7ddc761ec494cb894a8d49a0d510
+
+    time ./fatcat_import.py import-issn /home/bnewbold/code/oa-journals-analysis/upload-2018-04-05/journal_extra_metadata.csv
+    real    1m7.757s
+    user    0m6.240s
+    sys     0m0.228s
+
+    cat /data/crossref/crossref-works.2018-01-21.badsample_100k.json | time parallel -j4 --round-robin --pipe ./fatcat_import.py import-crossref - /data/issn/20180216.ISSN-to-ISSN-L.txt
+    91.73user 4.65system 3:26.61elapsed 46%CPU (0avgtext+0avgdata 385512maxresident)k
+    0inputs+384976outputs (0major+580544minor)pagefaults 0swaps
+
+So, annecdotally, seems like autoaccept didn't do much here (not
+vacuum-limited?), but the row inserts were more than a factor of 2x performance
+improvement. Great! Could try experimenting with even larger batch sizes...
+
+
+## Production Import
+
+http-verb branch 7354899493f6448bed5698ad6ade1dbebcf39379
+
+    time ./fatcat_import.py import-issn /srv/datasets/journal_extra_metadata.csv
+
+    real    0m30.845s
+    user    0m8.884s
+    sys     0m0.312s
+
+
+    time parallel --bar --pipepart -j8 -a /srv/datasets/public_profiles_1_2_json.all.json ./fatcat_import.py import-orcid -
+    # TPS: 1181
+    real    6m54.019s => down from 22m!
+    user    25m33.980s
+    sys     1m30.480s
+
+    xzcat /srv/datasets/crossref-works.2018-01-21.json.xz | time parallel -j20 --round-robin --pipe ./fatcat_import.py import-crossref - /srv/datasets/20180216.ISSN-to-ISSN-L.txt
+    # fatcatd at 200% CPU (2 full cores); many PIDs/workers, but only one so busy (must be diesel/db driver?)
+    # parallel at ~80%
+    # postgres pretty busy; looks like doing PARSE on ever request? some idle in transaction
+    # postgres still does a vacuum to analyze; good!
+    # ~600-1000 TPS near start (large variance)
+    # left to run overnight...
+    # slowed down to ~50-80 TPS about 10 hours later
+    # lots of IOWAIT
+    # only at 40309165 rows in the morning; this could take a long time
+
+    #   PostgreSQL 10.4 - wbgrp-svc500.us.archive.org - postgres@localhost:5432/postgres - Ref.: 2s
+    #   Size:  153.71G -     1.90M/s        | TPS:          77
+    #   Mem.:   68.70% -    22.60G/49.14G   | IO Max:    20448/s
+    #   Swap:    3.80% -     1.88G/50.00G   | Read :     10.17M/s -   2603/s
+    #   Load:    11.71 11.80 12.01          | Write:      4.00M/s -   1024/s
+
+    92530.17user 2891.76system 35:45:15elapsed 74%CPU (0avgtext+0avgdata 463520maxresident)k
+    1093736inputs+302588448outputs (52568major+36405225minor)pagefaults 0swaps
+    # 35:45:15 elapsed
+
+    time ./fatcat_import.py import-manifest /srv/datasets/idents_files_urls.sqlite
+
+## Perf Tweaks
+
+
+
+    SELECT
+      relname,
+      seq_scan - idx_scan AS too_much_seq,
+      CASE
+        WHEN
+          seq_scan - coalesce(idx_scan, 0) > 0
+        THEN
+          'Missing Index?'
+        ELSE
+          'OK'
+      END,
+      pg_relation_size(relname::regclass) AS rel_size, seq_scan, idx_scan
+    FROM
+      pg_stat_all_tables
+    WHERE
+      schemaname = 'public'
+      AND pg_relation_size(relname::regclass) > 80000
+    ORDER BY
+      too_much_seq DESC;
+
+       relname        | too_much_seq | case |   rel_size   | seq_scan | idx_scan  
+----------------------+--------------+------+--------------+----------+-----------
+ file_rev_url         |           -1 | OK   |    163323904 |        2 |         3
+ file_release         |           -3 | OK   |     24461312 |        2 |         5
+ release_edit         |       -10265 | OK   |   6080495616 |        2 |     10267
+ container_edit       |       -10265 | OK   |     31170560 |        2 |     10267
+ work_edit            |       -10265 | OK   |   6080364544 |        2 |     10267
+ file_edit            |       -10265 | OK   |     49111040 |        2 |     10267
+ creator_edit         |       -10265 | OK   |    330924032 |        2 |     10267
+ changelog            |       -11692 | OK   |    106668032 |        2 |     11694
+ release_ref          |      -374197 | OK   | 125437673472 |        3 |    374200
+ release_contrib      |      -374202 | OK   |  16835354624 |        3 |    374205
+ release_rev_abstract |      -374919 | OK   |    162250752 |        3 |    374922
+ file_ident           |     -1047172 | OK   |     41926656 |        2 |   1047174
+ container_rev        |     -1378943 | OK   |     50356224 |   724612 |   2103555   <=
+ file_rev             |     -2407647 | OK   |     68493312 |        4 |   2407651
+ abstracts            |     -2765610 | OK   |   1450901504 |        1 |   2765611
+ creator_ident        |     -7127467 | OK   |    242688000 |        2 |   7127469
+ creator_rev          |     -7943007 | OK   |    353370112 |   839155 |   8782162   <=
+ container_ident      |    -57488245 | OK   |     23060480 |        2 |  57488247
+ release_ident        |    -66085389 | OK   |   4459159552 |       14 |  66085403
+ work_rev             |   -130613391 | OK   |   2892775424 |        1 | 130613392
+ work_ident           |   -130633923 | OK   |   4459192320 |        2 | 130633925
+ editgroup            |   -136775970 | OK   |    120561664 |        1 | 136775971
+ release_rev          |   -718337215 | OK   |  36850507776 |        8 | 718337223
+
+
+Slowest queries:
+
+    SELECT "creator_ident"."id", "creator_ident"."is_live", "creator_ident"."rev_id", "creator_ident"."redirect_id", "creator_rev"."id", "creator_rev"."extra_json", "creator_rev"."display_name", "creator_rev"."given_name", "creator_rev"."surname", "creator_rev"."orcid", "creator_rev"."wikidata_qid" FROM ("creator_ident" INNER JOIN "creator_rev" ON "creator_ident"."rev_id" = "creator_rev"."id") WHERE "creator_rev"."orcid" = $1 AND "creator_rev"."orcid" IS NOT NULL AND "creator_ident"."is_live" = $2 AND "creator_ident"."redirect_id" IS NULL LIMIT $3
+
+    SELECT "container_ident"."id", "container_ident"."is_live", "container_ident"."rev_id", "container_ident"."redirect_id", "container_rev"."id", "container_rev"."extra_json", "container_rev"."name", "container_rev"."publisher", "container_rev"."issnl", "container_rev"."wikidata_qid", "container_rev"."abbrev", "container_rev"."coden" FROM ("container_ident" INNER JOIN "container_rev" ON "container_ident"."rev_id" = "container_rev"."id") WHERE "container_rev"."issnl" = $1 AND "container_rev"."issnl" IS NOT NULL AND "container_ident"."is_live" = $2 AND "container_ident"."redirect_id" IS NULL LIMIT $3
+
+    SELECT $2 FROM ONLY "public"."release_rev" x WHERE "id" OPERATOR(pg_catalog.=) $1 FOR KEY SHARE OF x:...skipping...
+
+    SELECT "creator_ident"."id", "creator_ident"."is_live", "creator_ident"."rev_id", "creator_ident"."redirect_id", "creator_rev"."id", "creator_rev"."extra_json", "creator_rev"."display_name", "creator_rev"."given_name", "creator_rev"."surname", "creator_rev"."orcid", "creator_rev"."wikidata_qid" FROM ("creator_ident" INNER JOIN "creator_rev" ON "creator_ident"."rev_id" = "creator_rev"."id") WHERE "creator_rev"."orcid" = $1 AND "creator_rev"."orcid" IS NOT NULL AND "creator_ident"."is_live" = $2 AND "creator_ident"."redirect_id" IS NULL LIMIT $3
+
+
+DEBUG: (while a file import is running)
+
+Creator lookup where row exists:
+
+    time curl localhost:9411/v0/creator/lookup?orcid=0000-0002-8867-1663
+    real    0m0.020s
+    user    0m0.004s
+    sys     0m0.004s
+
+    SELECT "creator_ident"."id", "creator_ident"."is_live", "creator_ident"."rev_id", "creator_ident"."redirect_id", "creator_rev"."id", "creator_rev"."extra_json", "creator_rev"."display_name", "creator_rev"."given_name", "creator_rev"."surname", "creator_rev"."orcid", "creator_rev"."wikidata_qid" FROM ("creator_ident" INNER JOIN "creator_rev" ON "creator_ident"."rev_id" = "creator_rev"."id") WHERE "creator_rev"."orcid" = '0000-0002-8867-1663' AND "creator_rev"."orcid" IS NOT NULL AND "creator_ident"."is_live" = 't' AND "creator_ident"."redirect_id" IS NULL LIMIT 1;
+    => (1 row)
+    Time: 0.988 ms
+    
+Creator lookup where row doesn't exist:
+
+    bnewbold@wbgrp-svc500$ time curl localhost:9411/v0/creator/lookup?orcid=0000-0002-8867-166X
+    {"message":"Not found: 0000-0002-8867-166X"}
+    real    0m1.282s
+    user    0m0.008s
+    sys     0m0.000s
+    Sep 10 21:50:49 wbgrp-svc500.us.archive.org fatcat-api[25327]: Sep 10 21:50:49.231 INFO GET http://localhost:9411/v0/creator/lookup?orcid=0000-0002-8867-166X 404 Not Found (1282 ms)
+
+    SELECT "creator_ident"."id", "creator_ident"."is_live", "creator_ident"."rev_id", "creator_ident"."redirect_id", "creator_rev"."id", "creator_rev"."extra_json", "creator_rev"."display_name", "creator_rev"."given_name", "creator_rev"."surname", "creator_rev"."orcid", "creator_rev"."wikidata_qid" FROM ("creator_ident" INNER JOIN "creator_rev" ON "creator_ident"."rev_id" = "creator_rev"."id") WHERE "creator_rev"."orcid" = '0000-0002-8867-166X' AND "creator_rev"."orcid" IS NOT NULL AND "creator_ident"."is_live" = 't' AND "creator_ident"."redirect_id" IS NULL LIMIT 1;
+    => (0 rows)
+    Time: 0.810 ms
+
+-------
+
+    SELECT "creator_ident"."id", "creator_ident"."is_live", "creator_ident"."rev_id", "creator_ident"."redirect_id", "creator_rev"."id", "creator_rev"."extra_json", "creator_rev"."display_name", "creator_rev"."given_name", "creator_rev"."surname", "creator_rev"."orcid", "creator_rev"."wikidata_qid" FROM ("creator_ident" INNER JOIN "creator_rev" ON "creator_ident"."rev_id" = "creator_rev"."id") WHERE "creator_rev"."orcid" = '0000-0002-8867-1663' AND "creator_ident"."is_live" = 't' AND "creator_ident"."redirect_id" IS NULL LIMIT 1;
+
+    SELECT "creator_ident"."id", "creator_ident"."is_live", "creator_ident"."rev_id", "creator_ident"."redirect_id", "creator_rev"."id", "creator_rev"."extra_json", "creator_rev"."display_name", "creator_rev"."given_name", "creator_rev"."surname", "creator_rev"."orcid", "creator_rev"."wikidata_qid" FROM ("creator_ident" INNER JOIN "creator_rev" ON "creator_ident"."rev_id" = "creator_rev"."id") WHERE "creator_rev"."orcid" = '0000-0002-8867-1663' AND "creator_rev"."orcid" IS NOT NULL AND "creator_ident"."is_live" = 't' AND "creator_ident"."redirect_id" IS NULL LIMIT 1;
+    SELECT "creator_ident"."id", "creator_ident"."is_live", "creator_ident"."rev_id", "creator_ident"."redirect_id", "creator_rev"."id", "creator_rev"."extra_json", "creator_rev"."display_name", "creator_rev"."given_name", "creator_rev"."surname", "creator_rev"."orcid", "creator_rev"."wikidata_qid" FROM ("creator_ident" INNER JOIN "creator_rev" ON "creator_ident"."rev_id" = "creator_rev"."id") WHERE "creator_rev"."orcid" = '0000-0002-8867-166X' AND "creator_rev"."orcid" IS NOT NULL AND "creator_ident"."is_live" = 't' AND "creator_ident"."redirect_id" IS NULL LIMIT 1;
+
+from logs:
+
+    execute __diesel_stmt_5: SELECT "creator_ident"."id", "creator_ident"."is_live", "creator_ident"."rev_id", "creator_ident"."redirect_id", "creator_rev"."id", "creator_rev"."extra_json", "creator_rev"."display_name", "creator_rev"."given_name", "creator_rev"."surname", "creator_rev"."orcid", "creator_rev"."wikidata_qid" FROM ("creator_ident" INNER JOIN "creator_rev" ON "creator_ident"."rev_id" = "creator_rev"."id") WHERE "creator_rev"."orcid" = $1 AND "creator_rev"."orcid" IS NOT NULL AND "creator_ident"."is_live" = $2 AND "creator_ident"."redirect_id" IS NULL LIMIT $3
+
+NOTE: have been doing *full* postgres logs this whole time! probably a ton of disk churn. :(
+
+
+    exact logs:
+    SET TIME ZONE 'UTC'
+    SET CLIENT_ENCODING TO 'UTF8'
+    SELECT 1
+    SELECT "creator_ident"."id", "creator_ident"."is_live", "creator_ident"."rev_id", "creator_ident"."redirect_id", "creator_rev"."id", "creator_rev"."extra_json", "creator_rev"."display_name", "creator_rev"."given_name", "creator_rev"."surname", "creator_rev"."orcid", "creator_rev"."wikidata_qid" FROM ("creator_ident" INNER JOIN "creator_rev" ON "creator_ident"."rev_id" = "creator_rev"."id") WHERE "creator_rev"."orcid" = $1 AND "creator_rev"."orcid" IS NOT NULL AND "creator_ident"."is_live" = $2 AND "creator_ident"."redirect_id" IS NULL LIMIT $3
+    parameters: $1 = '0000-0002-8867-166X', $2 = 't', $3 = '1'
+
+    SELECT "creator_ident"."id", "creator_ident"."is_live", "creator_ident"."rev_id", "creator_ident"."redirect_id", "creator_rev"."id", "creator_rev"."extra_json", "creator_rev"."display_name", "creator_rev"."given_name", "creator_rev"."surname", "creator_rev"."orcid", "creator_rev"."wikidata_qid" FROM ("creator_ident" INNER JOIN "creator_rev" ON "creator_ident"."rev_id" = "creator_rev"."id") WHERE "creator_rev"."orcid" = '0000-0002-8867-166X' AND "creator_rev"."orcid" IS NOT NULL AND "creator_ident"."is_live" = 't' AND "creator_ident"."redirect_id" IS NULL LIMIT '1';
+
+CHANGES:
+- restart fatcat-api
+- restart postgresql
+- select pg_stat_reset();
+
+seems like the fetch involves a index scans on creator_rev and creator_ident, *and* a scan on creator_rev.
+
+
+                          table_name                          | table_size | indexes_size | total_size 
+--------------------------------------------------------------+------------+--------------+------------
+ "public"."release_ref"                                       | 117 GB     | 34 GB        | 151 GB
+ "public"."release_rev"                                       | 34 GB      | 9202 MB      | 43 GB
+ "public"."release_contrib"                                   | 16 GB      | 17 GB        | 33 GB
+ "public"."work_edit"                                         | 5800 MB    | 4033 MB      | 9833 MB
+ "public"."release_edit"                                      | 5800 MB    | 4032 MB      | 9833 MB
+ "public"."work_ident"                                        | 4254 MB    | 5102 MB      | 9356 MB
+ "public"."release_ident"                                     | 4254 MB    | 5095 MB      | 9349 MB
+ "public"."work_rev"                                          | 2759 MB    | 2545 MB      | 5304 MB
+ "public"."abstracts"                                         | 1417 MB    | 114 MB       | 1530 MB
+ "public"."creator_rev"                                       | 337 MB     | 277 MB       | 614 MB
+ "public"."creator_edit"                                      | 316 MB     | 221 MB       | 536 MB
+ "public"."creator_ident"                                     | 232 MB     | 279 MB       | 511 MB
+ "public"."file_rev_url"                                      | 260 MB     | 101 MB       | 361 MB
+ "public"."release_rev_abstract"                              | 155 MB     | 200 MB       | 355 MB
+ "public"."file_rev"                                          | 109 MB     | 124 MB       | 233 MB
+ "public"."changelog"                                         | 102 MB     | 106 MB       | 208 MB
+ "public"."editgroup"                                         | 116 MB     | 69 MB        | 184 MB
+ "public"."file_ident"                                        | 66 MB      | 70 MB        | 136 MB
+ "public"."file_edit"                                         | 78 MB      | 53 MB        | 131 MB
+ "public"."file_release"                                      | 38 MB      | 64 MB        | 103 MB
+ "public"."container_rev"                                     | 48 MB      | 26 MB        | 74 MB
+ "public"."container_edit"                                    | 30 MB      | 20 MB        | 50 MB
+ "public"."container_ident"                                   | 22 MB      | 26 MB        | 48 MB
+
+CHANGES:
+- remove "IS NOT NULL" from creator_rev, that seemed to be a significant speedup for the "row not found" case.
+

@@ -304,8 +304,8 @@ pub enum GetCreatorHistoryResponse {
 
 #[derive(Debug, PartialEq)]
 pub enum GetCreatorReleasesResponse {
-    /// Found Entity
-    FoundEntity(Vec<models::ReleaseEntity>),
+    /// Found
+    Found(Vec<models::ReleaseEntity>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
     /// Not Found
@@ -316,8 +316,8 @@ pub enum GetCreatorReleasesResponse {
 
 #[derive(Debug, PartialEq)]
 pub enum GetEditgroupResponse {
-    /// Found Entity
-    FoundEntity(models::Editgroup),
+    /// Found
+    Found(models::Editgroup),
     /// Bad Request
     BadRequest(models::ErrorResponse),
     /// Not Found
@@ -328,8 +328,10 @@ pub enum GetEditgroupResponse {
 
 #[derive(Debug, PartialEq)]
 pub enum GetEditorResponse {
-    /// Found Editor
-    FoundEditor(models::Editor),
+    /// Found
+    Found(models::Editor),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -338,8 +340,10 @@ pub enum GetEditorResponse {
 
 #[derive(Debug, PartialEq)]
 pub enum GetEditorChangelogResponse {
-    /// Found Merged Changes
-    FoundMergedChanges(Vec<models::ChangelogEntry>),
+    /// Found
+    Found(Vec<models::ChangelogEntry>),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -384,8 +388,8 @@ pub enum GetReleaseResponse {
 
 #[derive(Debug, PartialEq)]
 pub enum GetReleaseFilesResponse {
-    /// Found Entity
-    FoundEntity(Vec<models::FileEntity>),
+    /// Found
+    Found(Vec<models::FileEntity>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
     /// Not Found
@@ -440,8 +444,8 @@ pub enum GetWorkHistoryResponse {
 
 #[derive(Debug, PartialEq)]
 pub enum GetWorkReleasesResponse {
-    /// Found Entity
-    FoundEntity(Vec<models::ReleaseEntity>),
+    /// Found
+    Found(Vec<models::ReleaseEntity>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
     /// Not Found
