@@ -107,7 +107,8 @@ where
 
                 // Path parameters
                 let param_id = {
-                    let param = req.extensions
+                    let param = req
+                        .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
                         .find("id")
@@ -207,7 +208,8 @@ where
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_entity = req.get::<bodyparser::Raw>()
+                let param_entity = req
+                    .get::<bodyparser::Raw>()
                     .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
@@ -318,7 +320,8 @@ where
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_entity_list = req.get::<bodyparser::Raw>()
+                let param_entity_list = req
+                    .get::<bodyparser::Raw>()
                     .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity_list - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
@@ -424,7 +427,8 @@ where
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_entity = req.get::<bodyparser::Raw>()
+                let param_entity = req
+                    .get::<bodyparser::Raw>()
                     .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
@@ -535,7 +539,8 @@ where
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_entity_list = req.get::<bodyparser::Raw>()
+                let param_entity_list = req
+                    .get::<bodyparser::Raw>()
                     .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity_list - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
@@ -641,7 +646,8 @@ where
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_entity = req.get::<bodyparser::Raw>()
+                let param_entity = req
+                    .get::<bodyparser::Raw>()
                     .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
@@ -734,7 +740,8 @@ where
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_entity = req.get::<bodyparser::Raw>()
+                let param_entity = req
+                    .get::<bodyparser::Raw>()
                     .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
@@ -845,7 +852,8 @@ where
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_entity_list = req.get::<bodyparser::Raw>()
+                let param_entity_list = req
+                    .get::<bodyparser::Raw>()
                     .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity_list - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
@@ -951,7 +959,8 @@ where
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_entity = req.get::<bodyparser::Raw>()
+                let param_entity = req
+                    .get::<bodyparser::Raw>()
                     .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
@@ -1062,7 +1071,8 @@ where
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_entity_list = req.get::<bodyparser::Raw>()
+                let param_entity_list = req
+                    .get::<bodyparser::Raw>()
                     .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity_list - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
@@ -1168,7 +1178,8 @@ where
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_entity = req.get::<bodyparser::Raw>()
+                let param_entity = req
+                    .get::<bodyparser::Raw>()
                     .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
@@ -1279,7 +1290,8 @@ where
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_entity_list = req.get::<bodyparser::Raw>()
+                let param_entity_list = req
+                    .get::<bodyparser::Raw>()
                     .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity_list - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
@@ -1383,7 +1395,8 @@ where
 
                 // Path parameters
                 let param_id = {
-                    let param = req.extensions
+                    let param = req
+                        .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
                         .find("id")
@@ -1475,7 +1488,8 @@ where
 
                 // Path parameters
                 let param_id = {
-                    let param = req.extensions
+                    let param = req
+                        .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
                         .find("id")
@@ -1567,7 +1581,8 @@ where
 
                 // Path parameters
                 let param_id = {
-                    let param = req.extensions
+                    let param = req
+                        .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
                         .find("id")
@@ -1659,7 +1674,8 @@ where
 
                 // Path parameters
                 let param_id = {
-                    let param = req.extensions
+                    let param = req
+                        .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
                         .find("id")
@@ -1751,7 +1767,8 @@ where
 
                 // Path parameters
                 let param_id = {
-                    let param = req.extensions
+                    let param = req
+                        .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
                         .find("id")
@@ -1901,7 +1918,8 @@ where
 
                 // Path parameters
                 let param_id = {
-                    let param = req.extensions
+                    let param = req
+                        .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
                         .find("id")
@@ -1979,7 +1997,8 @@ where
 
                 // Path parameters
                 let param_id = {
-                    let param = req.extensions
+                    let param = req
+                        .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
                         .find("id")
@@ -2071,7 +2090,8 @@ where
 
                 // Path parameters
                 let param_id = {
-                    let param = req.extensions
+                    let param = req
+                        .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
                         .find("id")
@@ -2163,7 +2183,8 @@ where
 
                 // Path parameters
                 let param_id = {
-                    let param = req.extensions
+                    let param = req
+                        .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
                         .find("id")
@@ -2255,7 +2276,8 @@ where
 
                 // Path parameters
                 let param_id = {
-                    let param = req.extensions
+                    let param = req
+                        .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
                         .find("id")
@@ -2347,7 +2369,8 @@ where
 
                 // Path parameters
                 let param_id = {
-                    let param = req.extensions
+                    let param = req
+                        .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
                         .find("id")
@@ -2435,7 +2458,8 @@ where
 
                 // Path parameters
                 let param_id = {
-                    let param = req.extensions
+                    let param = req
+                        .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
                         .find("id")
@@ -2523,7 +2547,8 @@ where
 
                 // Path parameters
                 let param_id = {
-                    let param = req.extensions
+                    let param = req
+                        .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
                         .find("id")
@@ -2611,7 +2636,8 @@ where
 
                 // Path parameters
                 let param_id = {
-                    let param = req.extensions
+                    let param = req
+                        .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
                         .find("id")
@@ -2699,7 +2725,8 @@ where
 
                 // Path parameters
                 let param_id = {
-                    let param = req.extensions
+                    let param = req
+                        .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
                         .find("id")
@@ -2791,7 +2818,8 @@ where
 
                 // Path parameters
                 let param_id = {
-                    let param = req.extensions
+                    let param = req
+                        .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
                         .find("id")
@@ -2883,7 +2911,8 @@ where
 
                 // Path parameters
                 let param_id = {
-                    let param = req.extensions
+                    let param = req
+                        .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
                         .find("id")
@@ -2975,7 +3004,8 @@ where
 
                 // Path parameters
                 let param_id = {
-                    let param = req.extensions
+                    let param = req
+                        .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
                         .find("id")
@@ -3063,7 +3093,8 @@ where
 
                 // Path parameters
                 let param_id = {
-                    let param = req.extensions
+                    let param = req
+                        .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
                         .find("id")
@@ -3213,7 +3244,8 @@ where
 
                 // Path parameters
                 let param_id = {
-                    let param = req.extensions
+                    let param = req
+                        .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
                         .find("id")
@@ -3305,7 +3337,8 @@ where
 
                 // Path parameters
                 let param_id = {
-                    let param = req.extensions
+                    let param = req
+                        .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
                         .find("id")
@@ -3397,7 +3430,8 @@ where
 
                 // Path parameters
                 let param_id = {
-                    let param = req.extensions
+                    let param = req
+                        .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
                         .find("id")
@@ -3821,7 +3855,8 @@ where
 
                 // Path parameters
                 let param_id = {
-                    let param = req.extensions
+                    let param = req
+                        .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
                         .find("id")
@@ -3837,7 +3872,8 @@ where
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_entity = req.get::<bodyparser::Raw>()
+                let param_entity = req
+                    .get::<bodyparser::Raw>()
                     .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
@@ -3941,7 +3977,8 @@ where
 
                 // Path parameters
                 let param_id = {
-                    let param = req.extensions
+                    let param = req
+                        .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
                         .find("id")
@@ -3957,7 +3994,8 @@ where
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_entity = req.get::<bodyparser::Raw>()
+                let param_entity = req
+                    .get::<bodyparser::Raw>()
                     .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
@@ -4061,7 +4099,8 @@ where
 
                 // Path parameters
                 let param_id = {
-                    let param = req.extensions
+                    let param = req
+                        .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
                         .find("id")
@@ -4077,7 +4116,8 @@ where
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_entity = req.get::<bodyparser::Raw>()
+                let param_entity = req
+                    .get::<bodyparser::Raw>()
                     .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
@@ -4181,7 +4221,8 @@ where
 
                 // Path parameters
                 let param_id = {
-                    let param = req.extensions
+                    let param = req
+                        .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
                         .find("id")
@@ -4197,7 +4238,8 @@ where
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_entity = req.get::<bodyparser::Raw>()
+                let param_entity = req
+                    .get::<bodyparser::Raw>()
                     .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
@@ -4301,7 +4343,8 @@ where
 
                 // Path parameters
                 let param_id = {
-                    let param = req.extensions
+                    let param = req
+                        .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
                         .find("id")
@@ -4317,7 +4360,8 @@ where
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_entity = req.get::<bodyparser::Raw>()
+                let param_entity = req
+                    .get::<bodyparser::Raw>()
                     .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
