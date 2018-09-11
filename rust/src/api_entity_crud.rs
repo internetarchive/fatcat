@@ -333,6 +333,7 @@ macro_rules! generic_db_get_history {
 
 // UPDATE FROM version: single query for many rows
 // Works with Postgres, not Cockroach
+#[allow(unused_macros)]
 macro_rules! generic_db_accept_edits_batch {
     ($entity_name_str:expr) => {
         fn db_accept_edits(
@@ -361,6 +362,7 @@ macro_rules! generic_db_accept_edits_batch {
 
 // UPDATE ROW version: single query per row
 // CockroachDB version (slow, single query per row)
+#[allow(unused_macros)]
 macro_rules! generic_db_accept_edits_each {
     ($ident_table:ident, $edit_table:ident) => {
         fn db_accept_edits(
