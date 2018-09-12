@@ -23,7 +23,7 @@ Re-create database from scratch:
 
 Build and run:
 
-    cargo run
+    cargo run --bin fatcatd
 
 Tests:
 

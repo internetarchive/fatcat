@@ -23,7 +23,7 @@ unified_test:
     - diesel database reset && diesel migration run
     - cargo build
     - cargo test -- --test-threads 1
-    - cargo run &
+    - cargo run --bin fatcatd &
     - cd ../python
     - pipenv install --dev --deploy
     - pipenv run pytest --cov

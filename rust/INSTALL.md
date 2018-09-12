@@ -33,4 +33,4 @@ To install manually, on a bare server, as root:
 
     # as fatcat, in a screen or something
     cd /srv/fatcat/fatcat/rust
-    cargo run
+    cargo run --bin fatcatd
