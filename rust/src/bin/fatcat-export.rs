@@ -114,7 +114,7 @@ fn loop_printer(output_receiver: channel::Receiver<String>, done_sender: channel
     Ok(())
 }
 
-fn parse_line(s: String) -> Result<IdentRow> {
+fn parse_line(s: &str) -> Result<IdentRow> {
     let fields: Vec<String> = s.split("\t").map(|v| v.to_string()).collect();
     if fields.len() != 3 {
         bail!("Invalid input line");
@@ -187,7 +187,7 @@ pub fn do_export(num_workers: usize, expand: Option<ExpandFlags>, entity_type: E
     let mut count = 0;
     for line in buf_input.lines() {
         let line = line?;
-        let row = parse_line(line)?;
+        let row = parse_line(&line)?;
         match (row.rev_id, row.redirect_id, redirects) {
             (None, _, _) => (),
             (Some(_), Some(_), false) => (),

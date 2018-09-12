@@ -90,11 +90,11 @@ fn test_expand_flags() {
             creators: true
         }
     );
-    assert!(ExpandFlags::from_str("").files == false);
-    assert!(ExpandFlags::from_str("files").files == true);
-    assert!(ExpandFlags::from_str("something,,files").files == true);
-    assert!(ExpandFlags::from_str("file").files == false);
-    let all = ExpandFlags::from_str("files,container,other_thing,releases,creators");
+    assert!(ExpandFlags::from_str("").unwrap().files == false);
+    assert!(ExpandFlags::from_str("files").unwrap().files == true);
+    assert!(ExpandFlags::from_str("something,,files").unwrap().files == true);
+    assert!(ExpandFlags::from_str("file").unwrap().files == false);
+    let all = ExpandFlags::from_str("files,container,other_thing,releases,creators").unwrap();
     assert!(
         all == ExpandFlags {
             files: true,
