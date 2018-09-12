@@ -10,7 +10,7 @@ from fatcat.issn_importer import FatcatIssnImporter
 
 def run_import_crossref(args):
     fci = FatcatCrossrefImporter(args.host_url, args.issn_map_file,
-        create_containers=(not args.no_create_containers))
+        args.extid_map_file, create_containers=(not args.no_create_containers))
     fci.process_batch(args.json_file, size=args.batch_size)
 
 def run_import_orcid(args):
@@ -46,7 +46,10 @@ def main():
         default=sys.stdin, type=argparse.FileType('r'))
     sub_import_crossref.add_argument('issn_map_file',
         help="ISSN to ISSN-L mapping file",
-        default=sys.stdin, type=argparse.FileType('r'))
+        default=None, type=argparse.FileType('r'))
+    sub_import_crossref.add_argument('extid_map_file',
+        help="DOI-to-other-identifiers sqlite3 database",
+        default=None, type=argparse.FileType('r'))
     sub_import_crossref.add_argument('--no-create-containers',
         action='store_true',
         help="skip creation of new container entities based on ISSN")

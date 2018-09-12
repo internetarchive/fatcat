@@ -1,6 +1,7 @@
 
 import sys
 import json
+import sqlite3
 import itertools
 import fatcat_client
 from fatcat.importer_common import FatcatImporter
@@ -8,9 +9,30 @@ from fatcat.importer_common import FatcatImporter
 
 class FatcatCrossrefImporter(FatcatImporter):
 
-    def __init__(self, host_url, issn_map_file, create_containers=True):
+    def __init__(self, host_url, issn_map_file, extid_map_file=None, create_containers=True):
         super().__init__(host_url, issn_map_file)
+        self.extid_map_db = None
+        if extid_map_file:
+            db_uri = "file:{}?mode=ro".format(extid_map_file)
+            print("Using external ID map: {}".format(db_uri))
+            self.extid_map_db = sqlite3.connect(db_uri, uri=True)
+        else:
+            print("Not using external ID map")
         self.create_containers = create_containers
+
+    def lookup_ext_ids(self, doi):
+        if self.extid_map_db is None:
+            return dict(core_id=None, pmid=None, pmcid=None, wikidata_qid=None)
+        row = self.extid_map_db.execute("SELECT core, pmid, pmcid, wikidata FROM ids WHERE doi=? LIMIT 1",
+            [doi.lower()]).fetchone()
+        if row is None:
+            return dict(core_id=None, pmid=None, pmcid=None, wikidata_qid=None)
+        row = [str((cell or None)) for cell in row]
+        return dict(
+            core_id=row[0],
+            pmid=row[1],
+            pmcid=row[2],
+            wikidata_qid=row[3])
 
     def parse_crossref_dict(self, obj):
         """
@@ -103,6 +125,9 @@ class FatcatCrossrefImporter(FatcatImporter):
             'license': obj.get('license', [dict(URL=None)])[0]['URL'] or None,
             'alternative-id': obj.get('alternative-id', [])})
 
+        # external identifiers
+        extids = self.lookup_ext_ids(doi=obj['DOI'].lower())
+
         re = fatcat_client.ReleaseEntity(
             work_id=None,
             title=obj['title'][0],
@@ -111,6 +136,10 @@ class FatcatCrossrefImporter(FatcatImporter):
             container_id=container_id,
             release_type=obj['type'],
             doi=obj['DOI'].lower(),
+            core_id=extids['core_id'],
+            pmid=extids['pmid'],
+            pmcid=extids['pmcid'],
+            wikidata_qid=extids['wikidata_qid'],
             release_date=obj['created']['date-time'],
             issue=obj.get('issue'),
             volume=obj.get('volume'),
