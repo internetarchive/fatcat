@@ -1,14 +1,4 @@
 
-refactors
-- fatcatd -> fatcat-api-server
-- fatcat_api -> fatcat_api_schema (or spec? models? types?)
-- standardize "mutating"/"edit" actions
-    => have editgroup_id be a request-level param everywhere (not entity-level;
-       for batch)
-    => editgroup_id as query param
-    => editor_id from auth (header)
-- consistent "expand"/"stub" flags
-
 correctness
 - enforce "previous_rev" required in updates
 - reread/review editgroup accept code
@@ -27,8 +17,8 @@ account helper tool
 - generate tokens
 - test/validate tokens
 
-
 later:
+- could some of the EntityCrud trait macro stuff be re-implemented as an enum type?
 - pure-rust "benchmark" scripts that hit, eg, lookups and batch endpoints
     => criterion.rs benchmarking
 - try new actix/openapi3 codegen branch
