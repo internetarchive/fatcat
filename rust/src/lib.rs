@@ -29,7 +29,7 @@ pub mod api_wrappers;
 pub mod database_models;
 pub mod database_schema;
 
-mod errors {
+pub mod errors {
     // Create the Error, ErrorKind, ResultExt, and Result types
     error_chain! {
         foreign_links { Fmt(::std::fmt::Error);
