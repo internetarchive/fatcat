@@ -685,11 +685,11 @@ impl EntityCrud for ReleaseEntity {
     generic_db_insert_rev!();
 
     fn db_expand(&mut self, conn: &DbConn, expand: ExpandFlags) -> Result<()> {
-        let ident = match &self.ident {
-            None => bail!("Can't expand a non-concrete entity"),
-            Some(s) => FatCatId::from_str(&s)?,
-        };
         if expand.files {
+            let ident = match &self.ident {
+                None => bail!("Can't expand files on a non-concrete entity"),
+                Some(s) => FatCatId::from_str(&s)?,
+            };
             self.files = Some(get_release_files(ident, conn)?);
         }
         if expand.container {
