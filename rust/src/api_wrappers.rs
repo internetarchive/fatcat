@@ -39,7 +39,7 @@ macro_rules! wrap_entity_handlers {
                 match expand {
                     None => $model::db_get(&conn, entity_id),
                     Some(param) => {
-                        let expand_flags = ExpandFlags::from_string(&param);
+                        let expand_flags = ExpandFlags::from_str(&param)?;
                         let mut entity = $model::db_get(&conn, entity_id)?;
                         entity.db_expand(&conn, expand_flags)?;
                         Ok(entity)

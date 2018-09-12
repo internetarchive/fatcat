@@ -29,12 +29,16 @@ pub struct ExpandFlags {
     pub creators: bool,
 }
 
-impl ExpandFlags {
-    pub fn from_string(param: &str) -> ExpandFlags {
+impl FromStr for ExpandFlags {
+    type Err = Error;
+    fn from_str(param: &str) -> Result<ExpandFlags> {
         let list: Vec<&str> = param.split_terminator(",").collect();
-        ExpandFlags::from_strings(&list)
+        Ok(ExpandFlags::from_str_list(&list))
     }
-    pub fn from_strings(list: &[&str]) -> ExpandFlags {
+}
+
+impl ExpandFlags {
+    pub fn from_str_list(list: &[&str]) -> ExpandFlags {
         if list.contains(&"none") {
             ExpandFlags::none()
         } else if list.contains(&"all") {
@@ -68,10 +72,10 @@ impl ExpandFlags {
 
 #[test]
 fn test_expand_flags() {
-    assert!(ExpandFlags::from_strings(&vec![]).files == false);
-    assert!(ExpandFlags::from_strings(&vec!["files"]).files == true);
-    assert!(ExpandFlags::from_strings(&vec!["file"]).files == false);
-    let all = ExpandFlags::from_strings(&vec![
+    assert!(ExpandFlags::from_str_list(&vec![]).files == false);
+    assert!(ExpandFlags::from_str_list(&vec!["files"]).files == true);
+    assert!(ExpandFlags::from_str_list(&vec!["file"]).files == false);
+    let all = ExpandFlags::from_str_list(&vec![
         "files",
         "container",
         "other_thing",
@@ -86,11 +90,11 @@ fn test_expand_flags() {
             creators: true
         }
     );
-    assert!(ExpandFlags::from_string("").files == false);
-    assert!(ExpandFlags::from_string("files").files == true);
-    assert!(ExpandFlags::from_string("something,,files").files == true);
-    assert!(ExpandFlags::from_string("file").files == false);
-    let all = ExpandFlags::from_string("files,container,other_thing,releases,creators");
+    assert!(ExpandFlags::from_str("").files == false);
+    assert!(ExpandFlags::from_str("files").files == true);
+    assert!(ExpandFlags::from_str("something,,files").files == true);
+    assert!(ExpandFlags::from_str("file").files == false);
+    let all = ExpandFlags::from_str("files,container,other_thing,releases,creators");
     assert!(
         all == ExpandFlags {
             files: true,
