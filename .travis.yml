@@ -45,6 +45,8 @@ script:
 after_success:
   - cd rust
 # upload documentation to github.io (gh-pages branch)
-  - cargo doc-upload
+# Do this manually for now, because couldn't get auto-push set up in a
+# reasonably secure way (travis/github API access errors)
+#  - cargo doc-upload
 # measure code coverage and upload to coveralls.io
   - cargo coveralls
