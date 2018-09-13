@@ -19,7 +19,7 @@ echo "Running SQL (from '${DATABASE_URI}')..."
 psql $DATABASE_URI < ./dump_idents.sql
 
 CHANGELOG_REV="`head -n1 /tmp/fatcat_ident_latest_changelog.tsv`"
-OUTFILE="${OUTPUT_DIR}/fatcat_idents.$DATESLUG.r$CHANGELOG_REV.tar.xz"
+OUTFILE="${OUTPUT_DIR}/fatcat_idents.$DATESLUG.r$CHANGELOG_REV.tar.gz"
 
 echo "Compressing..."
 tar -C /tmp -c --gzip --verbose \
