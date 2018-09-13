@@ -1,5 +1,0 @@
-BEGIN
-{"sha1":"1ba86bf8c2979a62d29b18b537e50b2b093be27e","content":"some long abstract in plain text"}
-{"sha1":"0da908ab584b5e445a06beb172e3fab8cb5169e3","content":"<jats>A longer, more correct abstract should in theory go here</jats>"}
-{"sha1":"bd864bf5c612e64473e6b724c1d8f5e53a56bb6e","content":"<jats:p>This brief meeting review summarizes the recommendations of NSF and NPGI funded bioinformaticians concerning the future requirements for plant bioinformatics systems and databases.</jats:p>"}
-ROLLBACK
