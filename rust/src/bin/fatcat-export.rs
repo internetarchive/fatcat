@@ -122,11 +122,11 @@ fn parse_line(s: &str) -> Result<IdentRow> {
     Ok(IdentRow {
         ident_id: FatCatId::from_uuid(&Uuid::from_str(&fields[0])?),
         rev_id: match fields[1].as_ref() {
-            "\\N" => None,
+            "" => None,
             val => Some(Uuid::from_str(&val)?),
         },
         redirect_id: match fields[2].as_ref() {
-            "\\N" => None,
+            "" => None,
             val => Some(FatCatId::from_uuid(&Uuid::from_str(&val)?)),
         },
     })
@@ -134,8 +134,8 @@ fn parse_line(s: &str) -> Result<IdentRow> {
 
 #[test]
 fn test_parse_line() {
-    assert!(parse_line("00000000-0000-0000-3333-000000000001\t00000000-0000-0000-3333-fff000000001\t\\N").is_ok());
-    assert!(parse_line("00000-0000-0000-3333-000000000001\t00000000-0000-0000-3333-fff000000001\t\\N").is_err());
+    assert!(parse_line("00000000-0000-0000-3333-000000000001\t00000000-0000-0000-3333-fff000000001\t").is_ok());
+    assert!(parse_line("00000-0000-0000-3333-000000000001\t00000000-0000-0000-3333-fff000000001\t").is_err());
     assert!(parse_line("00000-0000-0000-3333-000000000001\t00000000-0000-0000-3333-fff000000001").is_err());
     assert!(parse_line("00000000-0000-0000-3333-000000000002\t00000000-0000-0000-3333-fff000000001\t00000000-0000-0000-3333-000000000001").is_ok());
 }
