@@ -21,6 +21,7 @@ golang/fatcatd
 *.log
 
 !.gitlab-ci.yml
+!.travis.yml
 
 # Don't ignore this file itself
-:Q!.gitignore
+!.gitignore
