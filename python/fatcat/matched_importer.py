@@ -25,10 +25,10 @@ class FatcatMatchedImporter(FatcatImporter):
         - dt
         - url
     - mimetype
+    - urls (list of strings... or objects?)
 
     Future handlings/extensions:
     - core_id, wikidata_id, pmcid, pmid: not as lists
-    - urls (list of strings... or objects?)
     """
 
     def __init__(self, host_url, skip_file_update=False, default_mime=None,
@@ -42,6 +42,11 @@ class FatcatMatchedImporter(FatcatImporter):
         rel = self.default_link_rel
         # TODO: this is where we could map specific domains to rel types,
         # and also filter out bad domains, invalid URLs, etc
+        if "//archive.org/" in url or "//arxiv.org/" in url:
+            # TODO: special-case the arxiv.org bulk mirror?
+            rel = "repository"
+        elif "//web.archive.org/" in url or "//archive.is/" in url:
+            rel = "webarchive"
         return fatcat_client.FileEntityUrls(url=raw, rel=rel)
 
     def parse_matched_dict(self, obj):
@@ -90,10 +95,10 @@ class FatcatMatchedImporter(FatcatImporter):
                 url = self.make_url(url)
                 if url != None:
                     fe.urls.append(url)
-        if obj.get('cdx') != None:
-            original = obj['cdx']['url']
+        for cdx in obj.get('cdx', []):
+            original = cdx['url']
             wayback = "https://web.archive.org/web/{}/{}".format(
-                obj['cdx']['dt'],
+                cdx['dt'],
                 original)
             if wayback not in existing_urls:
                 fe.urls.append(

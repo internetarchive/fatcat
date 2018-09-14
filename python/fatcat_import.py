@@ -5,8 +5,8 @@ import argparse
 from fatcat.raw_api_client import RawFatcatApiClient
 from fatcat.crossref_importer import FatcatCrossrefImporter
 from fatcat.orcid_importer import FatcatOrcidImporter
-from fatcat.manifest_importer import FatcatManifestImporter
 from fatcat.issn_importer import FatcatIssnImporter
+from fatcat.matched_importer import FatcatMatchedImporter
 
 def run_import_crossref(args):
     fci = FatcatCrossrefImporter(args.host_url, args.issn_map_file,
@@ -24,15 +24,10 @@ def run_import_issn(args):
     fii.process_csv_batch(args.csv_file, size=args.batch_size)
     fii.describe_run()
 
-def run_import_manifest(args):
-    fmi = FatcatManifestImporter(args.host_url)
-    fmi.process_db(args.db_path, size=args.batch_size)
-    fmi.describe_run()
-
 def run_import_matched(args):
     fmi = FatcatMatchedImporter(args.host_url,
         skip_file_update=args.no_file_update)
-    fmi.process_db(args.db_path, size=args.batch_size)
+    fmi.process_batch(args.json_file, size=args.batch_size)
     fmi.describe_run()
 
 def health(args):
@@ -82,15 +77,6 @@ def main():
         help="Journal ISSN CSV metadata file to import from (or stdin)",
         default=sys.stdin, type=argparse.FileType('r'))
     sub_import_issn.add_argument('--batch-size',
-        help="size of batch to send",
-        default=50, type=int)
-
-    sub_import_manifest = subparsers.add_parser('import-manifest')
-    sub_import_manifest.set_defaults(func=run_import_manifest)
-    sub_import_manifest.add_argument('db_path',
-        help="sqlite3 database to import from",
-        type=str)
-    sub_import_manifest.add_argument('--batch-size',
         help="size of batch to send",
         default=50, type=int)
 
