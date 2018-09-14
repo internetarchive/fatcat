@@ -37,13 +37,11 @@ before_script:
 # cargo bench &&
 script:
   - |
-      cd rust &&
       cargo build &&
       cargo test &&
       cargo doc
 
 after_success:
-  - cd rust
 # upload documentation to github.io (gh-pages branch)
 # Do this manually for now, because couldn't get auto-push set up in a
 # reasonably secure way (travis/github API access errors)
