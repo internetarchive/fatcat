@@ -1237,10 +1237,6 @@ paths:
           schema:
             $ref: "#/definitions/success"
         400:
-          description: Unmergable
-          schema:
-            $ref: "#/definitions/error_response"
-        400:
           description: Bad Request
           schema:
             $ref: "#/definitions/error_response"
