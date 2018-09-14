@@ -89,10 +89,10 @@ class FatcatCrossrefImporter(FatcatImporter):
         for i, rm in enumerate(obj.get('reference', [])):
             try:
                 year = int(rm.get('year'))
-                if year > 2025 or year < 1000:
-                    # NOTE: will need to update/config in the future!
-                    # NOTE: are there crossref works with year < 1000?
-                    return None
+                # NOTE: will need to update/config in the future!
+                # NOTE: are there crossref works with year < 100?
+                if year > 2025 or year < 100:
+                    year = None
             except:
                 year = None
             extra = dict(crossref=rm)
