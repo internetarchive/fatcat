@@ -1,0 +1,259 @@
+
+Changes since last time:
+- removed "WHERE IS NOT NULL" from lookup indexes
+- some cleanups
+- JSONB
+
+## QA Timing
+
+master branch b15fa552e288bec5bbc2b07a3e11bab9235a1e7c
+
+    time ./fatcat_import.py import-issn /srv/datasets/journal_extra_metadata.csv # --batch-size 100
+    real    0m30.249s
+    user    0m9.364s
+    sys     0m0.268s
+
+    time parallel --bar --pipepart -j8 -a /srv/datasets/public_profiles_1_2_json.all.json ./fatcat_import.py import-orcid - # --batch-size 100
+    => something went sort of wrong? seemed to hang, with no activity.
+    => may have sent a signal or something accidentally?
+
+    xzcat /srv/datasets/crossref-works.2018-01-21.json.xz | time parallel -j20 --round-robin --pipe ./fatcat_import.py import-crossref - /srv/datasets/20180216.ISSN-to-ISSN-L.txt --batch-size 100
+    => ran for a few seconds before restarting with increased batch size
+    => increased batch size seems to be too much for releases? stick with 50
+    => still lots of long autovacuum (ANALYZE)
+
+    67017.73user 2054.96system 25:59:38elapsed 73%CPU (0avgtext+0avgdata 424692maxresident)k
+    2085872inputs+219678920outputs (100457major+30837042minor)pagefaults 0swaps
+    # 25:59:38 elapsed
+
+    time ./fatcat_import.py import-manifest /srv/datasets/idents_files_urls.sqlite # --batch-size 100
+    => taking longer to start than I remembered...
+
+    Done! Inserted 6607075
+    real    1521m37.856s
+    user    305m38.444s
+    sys     18m13.916s
+    => 25.5 hours
+
+Disk/table usage:
+
+    Size:  233.95G
+
+                              table_name                          | table_size | indexes_size | total_size 
+    --------------------------------------------------------------+------------+--------------+------------
+     "public"."release_ref"                                       | 92 GB      | 26 GB        | 118 GB
+     "public"."release_rev"                                       | 30 GB      | 14 GB        | 45 GB
+     "public"."release_contrib"                                   | 12 GB      | 13 GB        | 26 GB
+     "public"."release_edit"                                      | 4710 MB    | 3353 MB      | 8062 MB
+     "public"."work_edit"                                         | 4710 MB    | 3352 MB      | 8062 MB
+     "public"."work_ident"                                        | 3454 MB    | 4153 MB      | 7608 MB
+     "public"."release_ident"                                     | 3454 MB    | 4152 MB      | 7606 MB
+     "public"."work_rev"                                          | 2241 MB    | 2076 MB      | 4317 MB
+     "public"."file_rev_url"                                      | 1994 MB    | 778 MB       | 2772 MB
+     "public"."file_rev"                                          | 827 MB     | 1215 MB      | 2042 MB
+     "public"."file_ident"                                        | 501 MB     | 533 MB       | 1034 MB
+     "public"."file_edit"                                         | 590 MB     | 411 MB       | 1001 MB
+     "public"."creator_rev"                                       | 371 MB     | 455 MB       | 826 MB
+     "public"."abstracts"                                         | 649 MB     | 52 MB        | 701 MB
+     "public"."file_release"                                      | 251 MB     | 435 MB       | 686 MB
+     "public"."creator_edit"                                      | 347 MB     | 242 MB       | 590 MB
+     "public"."creator_ident"                                     | 255 MB     | 305 MB       | 560 MB
+     "public"."release_rev_abstract"                              | 70 MB      | 90 MB        | 160 MB
+     "public"."changelog"                                         | 52 MB      | 53 MB        | 106 MB
+     "public"."editgroup"                                         | 60 MB      | 35 MB        | 94 MB
+     "public"."container_rev"                                     | 40 MB      | 27 MB        | 67 MB
+     "public"."container_edit"                                    | 24 MB      | 16 MB        | 39 MB
+     "public"."container_ident"                                   | 17 MB      | 20 MB        | 37 MB
+
+I think this is before the JSONB schema change, so won't reflect actual/final.
+
+Perf:
+
+           relname        | too_much_seq | case |  rel_size   | seq_scan | idx_scan  
+    ----------------------+--------------+------+-------------+----------+-----------
+     file_rev_url         |          -18 | OK   |  2089836544 |        2 |        20
+     file_release         |        -4001 | OK   |   263249920 |        2 |      4003
+     container_edit       |      -132140 | OK   |    24608768 |        2 |    132142
+     release_edit         |      -132140 | OK   |  4937408512 |        2 |    132142
+     work_edit            |      -132140 | OK   |  4937351168 |        2 |    132142
+     file_edit            |      -132140 | OK   |   618545152 |        2 |    132142
+     creator_edit         |      -132140 | OK   |   363954176 |        2 |    132142
+     changelog            |      -134456 | OK   |    54919168 |        5 |    134461
+     container_rev        |     -1276670 | OK   |    41680896 |   592993 |   1869663
+     abstracts            |     -1353093 | OK   |   669425664 |        3 |   1353096
+     release_ref          |     -3429019 | OK   | 99223470080 |        3 |   3429022
+     release_contrib      |     -3429026 | OK   | 13406437376 |        3 |   3429029
+     release_rev_abstract |     -3435251 | OK   |    73359360 |        3 |   3435254
+     creator_ident        |     -5360858 | OK   |   266977280 |       11 |   5360869
+     creator_rev          |     -8071846 | OK   |   388734976 |   257781 |   8329627
+     file_ident           |    -13478348 | OK   |   524746752 |        7 |  13478355
+     file_rev             |    -30368193 | OK   |   867401728 |        4 |  30368197
+     container_ident      |    -47140767 | OK   |    18219008 |        9 |  47140776
+     release_ident        |    -61021070 | OK   |  3620864000 |       24 |  61021094
+     work_rev             |   -106056502 | OK   |  2349146112 |        1 | 106056503
+     work_ident           |   -106320780 | OK   |  3620954112 |        6 | 106320786
+     editgroup            |   -117742455 | OK   |    62398464 |        2 | 117742457
+     release_rev          |   -563415274 | OK   | 32455860224 |        8 | 563415282
+
+Thought I had resoled those scans... hrm. Pretty sure (but not 100%) that I
+cleared the counters.
+
+Dumps!
+
+    time psql fatcat_prod < ../extra/quick_dump.sql
+    real    4m5.729s
+    user    0m0.056s
+    sys     0m0.016s
+    => while other stuff running
+
+    time ./ident_table_snapshot.sh
+    => seems very dominated by tar/xz compression time; should switch back to gzip
+
+    DATABASE_URL=$DATABASE_URL time ./ident_table_snapshot.sh /tmp
+    614.80user 31.74system 13:23.51elapsed 80%CPU (0avgtext+0avgdata 10124maxresident)k
+    8311456inputs+9761200outputs (2major+3792minor)pagefaults 0swaps
+    => 13.5 minutes
+    => fatcat_idents.2018-09-13.215147.r874951.tar.gz: 4.7GB
+    => uncompressed, 8.3GB total
+
+    cat ../extra/sql_dumps/fatcat_ident_releases.tsv | time ./target/release/fatcat-export release -j8 -q | pv -l | gzip > fatcat_release_dump.json.gz
+    => can not run with more than -j8, it seems (postgres client limit)
+    => TPS: 12522 (!)
+    => 101k 0:00:34 [2.99k/s]
+    => estimate 6.5 hours
+
+    cat ../extra/sql_dumps/fatcat_ident_releases.tsv | time ./target/release/fatcat-export release --expand files,contaner -j8 -q | pv -l | gzip > fatcat_release_dump_expanded.json.gz
+    => TPS: 29605 (!)
+    => 183k 0:00:35 [ 5.8k/s] (how is this faster than the above? other disk stuff finished?)
+    => 341k 0:01:07 [3.48k/s] (ah, must have been in disk cache)
+    => 4.12M 0:16:11 (averaging 4.2k/s; estimate 4 hours total)
+    => fatcat_release_dump_expanded.json.gz: 3.4G with 6.76M lines, so expecting 35GB or so
+
+    ----total-cpu-usage---- -dsk/total- -net/total- ---paging-- ---system--
+    usr sys idl wai hiq siq| read  writ| recv  send|  in   out | int   csw 
+     14   3  73   8   0   2|  43M   21M| 143k  326B|   0     0 |  64k  113k
+     18   4  72   5   0   2|  55M 4096k| 246k  326B|   0     0 |  84k  157k
+     17   4  72   6   0   2|  53M 9964k| 428k  908B|   0     0 |  84k  155k
+     14   3  73   8   0   1|  46M   20M| 143k   87k|   0     0 |  71k  132k
+     18   3  72   5   0   2|  52M 8880k| 318k   95k|   0     0 |  82k  149k
+
+    => fatcat-export using about 200% CPU in a single thread; other 8 threads at about 25% each
+        => might be interesting to profile... too many copies? switch to tsv library?
+    => seems like postgres only about 50% utilized
+
+Benchmarks!
+
+    # stub entity
+    $ wrk -t8 -c100 -d30s http://localhost:9411/v0/work/aaaaaaaaaaaaavkvaaaaaaaaai
+    Running 30s test @ http://localhost:9411/v0/work/aaaaaaaaaaaaavkvaaaaaaaaai
+      8 threads and 100 connections
+      Thread Stats   Avg      Stdev     Max   +/- Stdev
+        Latency     7.44ms    5.26ms  67.53ms   60.07%
+        Req/Sec     1.71k   113.55     2.07k    68.79%
+      408986 requests in 30.01s, 117.01MB read
+    Requests/sec:  13627.62
+    Transfer/sec:      3.90MB
+    => TPS: 39958
+    => lots of "BEGIN" and "SELECT 1", implying new connections? hrm.
+    => should run longer for more stable results
+
+    wrk -t12 -c400 -d2m --latency http://localhost:9411/v0/work/aaaaaaaaaaaaavkvaaaaaaaaai
+
+    Running 2m test @ http://localhost:9411/v0/work/aaaaaaaaaaaaavkvaaaaaaaaai
+      12 threads and 400 connections
+      Thread Stats   Avg      Stdev     Max   +/- Stdev
+        Latency    25.75ms   17.02ms 263.74ms   65.11%
+        Req/Sec     1.05k   377.38     1.82k    74.81%
+      Latency Distribution
+         50%   25.40ms
+         75%   26.56ms
+         90%   49.57ms
+         99%   76.47ms
+      1128253 requests in 2.00m, 322.80MB read
+      Socket errors: connect 0, read 10, write 0, timeout 0
+    Requests/sec:   9396.03
+    Transfer/sec:      2.69MB
+
+    => single 470% fatcatd thread; diesel?
+    => 50% systemd-journald
+
+    # rich entity
+    $ wrk -t8 -c100 -d30s https://api.qa.fatcat.wiki/v0/release/aaaaaaaaaaaaarceaaaaaaaaam?expand=files,container
+    Running 30s test @ https://api.qa.fatcat.wiki/v0/release/aaaaaaaaaaaaarceaaaaaaaaam?expand=files,container
+      8 threads and 100 connections
+      Thread Stats   Avg      Stdev     Max   +/- Stdev
+        Latency    33.35ms   14.01ms 152.05ms   79.98%
+        Req/Sec   363.14     30.36   464.00     76.48%
+      86719 requests in 30.04s, 234.46MB read
+    Requests/sec:   2886.55
+    Transfer/sec:      7.80MB
+
+    wrk -t12 -c400 -d2m --latency https://api.qa.fatcat.wiki/v0/release/aaaaaaaaaaaaarceaaaaaaaaam?expand=files,container
+
+    Running 2m test @ https://api.qa.fatcat.wiki/v0/release/aaaaaaaaaaaaarceaaaaaaaaam?expand=files,container
+      12 threads and 400 connections
+      Thread Stats   Avg      Stdev     Max   +/- Stdev
+        Latency   149.19ms  125.30ms   1.93s    95.06%
+        Req/Sec   237.89     34.60   650.00     73.54%
+      Latency Distribution
+         50%  129.86ms
+         75%  134.14ms
+         90%  210.42ms
+         99%  904.26ms
+      340625 requests in 2.00m, 0.90GB read
+      Socket errors: connect 0, read 0, write 0, timeout 303
+    Requests/sec:   2836.17
+    Transfer/sec:      7.67MB
+
+    => TPS: 9090
+    ----total-cpu-usage---- -dsk/total- -net/total- ---paging-- ---system--
+     usr sys idl wai hiq siq| read  writ| recv  send|  in   out | int   csw 
+      4   0  93   3   0   0|2401k   13M|   0     0 |2317B 4812B|4274  3824 
+     22   6  68   0   0   3|4096B    0 |  57k  956B|4096B    0 | 135k  255k
+     21   7  68   0   0   3|4096B    0 |  61k   66B|4096B    0 | 137k  259k
+     21   7  68   0   0   3|  16k 8192B| 179k  636B|  16k    0 | 134k  252k
+     21   7  68   0   0   3|   0     0 |  53k   66B|   0     0 | 135k  255k
+     22   6  68   0   0   3|   0    17M|  51k  326B|   0     0 | 137k  261k
+     22   6  68   0   0   3|   0     0 |  82k  903B|   0     0 | 136k  257k
+
+    # static (404)
+    wrk -t12 -c400 -d2m --latency http://localhost:9411/v0/asdf
+    => full 2600+% CPU in a single fatcat process (?)
+    => lots of load in wrk also
+    => system at a whole basically 100% CPU on all cores, though mostly kernel
+
+    ----total-cpu-usage---- -dsk/total- -net/total- ---paging-- ---system--
+    usr sys idl wai hiq siq| read  writ| recv  send|  in   out | int   csw 
+      4   0  93   3   0   0|2399k   13M|   0     0 |2315B 4808B|4359  3976 
+     26  66   2   0   0   6|   0     0 |4191k  956B|   0     0 | 465k  536k
+     26  67   1   0   0   6|   0     0 | 511k   66B|   0     0 | 466k  543k
+     27  64   3   0   0   6|   0     0 |2648k  318B|   0     0 | 481k  555k
+     25  67   2   0   0   6|   0     0 |1909k  768B|   0     0 | 481k  550k
+
+    Running 2m test @ http://localhost:9411/v0/asdf
+      12 threads and 400 connections
+      Thread Stats   Avg      Stdev     Max   +/- Stdev
+        Latency     1.40ms    1.65ms 219.48ms   93.33%
+        Req/Sec    17.71k     8.97k   65.69k    63.84%
+      Latency Distribution
+         50%    1.13ms
+         75%    1.89ms
+         90%    2.71ms
+         99%    4.76ms
+      21145472 requests in 2.00m, 1.61GB read
+      Socket errors: connect 0, read 12, write 0, timeout 0
+      Non-2xx or 3xx responses: 21145472
+    Requests/sec: 176071.79
+    Transfer/sec:     13.77MB
+
+Noting pretty non-trival traffic to 207.241.229.230 and
+es-worker-02.us.archive.org (207.241.229.246)... probably because this is a
+datanode?
+
+## Misc
+
+Postgres really wanted to log: <https://wiki.postgresql.org/wiki/Per-user_log_settings>
+
+    ALTER DATABASE fatcat_prod SET log_statement = 'ddl';
+    ALTER USER fatcat SET log_statement = 'ddl';
+
