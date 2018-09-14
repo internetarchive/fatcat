@@ -61,6 +61,7 @@ class FatcatIssnImporter(FatcatImporter):
         ce = self.parse_issn_row(row)
         if ce is not None:
             self.api.create_container(ce, editgroup=editgroup)
+            self.insert_count = self.insert_count + 1
 
     def create_batch(self, batch, editgroup=None):
         """Reads and processes in batches (not API-call-per-line)"""
@@ -68,3 +69,4 @@ class FatcatIssnImporter(FatcatImporter):
                    for l in batch if l != None]
         objects = [o for o in objects if o != None]
         self.api.create_container_batch(objects, autoaccept="true", editgroup=editgroup)
+        self.insert_count = self.insert_count + len(objects)

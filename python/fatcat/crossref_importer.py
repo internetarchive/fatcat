@@ -160,6 +160,7 @@ class FatcatCrossrefImporter(FatcatImporter):
                 re.container_id = container.ident
                 self._issnl_id_map[ce.issnl] = container.ident
             self.api.create_release(re, editgroup=editgroup)
+            self.insert_count = self.insert_count + 1
 
     def create_batch(self, batch, editgroup=None):
         """Current work/release pairing disallows batch creation of releases.
@@ -178,3 +179,4 @@ class FatcatCrossrefImporter(FatcatImporter):
                     self._issnl_id_map[ce.issnl] = container.ident
                 release_batch.append(re)
         self.api.create_release_batch(release_batch, autoaccept="true", editgroup=editgroup)
+        self.insert_count = self.insert_count + len(release_batch)

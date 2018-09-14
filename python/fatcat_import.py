@@ -12,18 +12,28 @@ def run_import_crossref(args):
     fci = FatcatCrossrefImporter(args.host_url, args.issn_map_file,
         args.extid_map_file, create_containers=(not args.no_create_containers))
     fci.process_batch(args.json_file, size=args.batch_size)
+    fci.describe_run()
 
 def run_import_orcid(args):
     foi = FatcatOrcidImporter(args.host_url)
     foi.process_batch(args.json_file, size=args.batch_size)
+    foi.describe_run()
 
 def run_import_issn(args):
     fii = FatcatIssnImporter(args.host_url)
     fii.process_csv_batch(args.csv_file, size=args.batch_size)
+    fii.describe_run()
 
 def run_import_manifest(args):
     fmi = FatcatManifestImporter(args.host_url)
     fmi.process_db(args.db_path, size=args.batch_size)
+    fmi.describe_run()
+
+def run_import_matched(args):
+    fmi = FatcatMatchedImporter(args.host_url,
+        skip_file_update=args.no_file_update)
+    fmi.process_db(args.db_path, size=args.batch_size)
+    fmi.describe_run()
 
 def health(args):
     rfac = RawFatcatApiClient(args.host_url)
@@ -81,6 +91,18 @@ def main():
         help="sqlite3 database to import from",
         type=str)
     sub_import_manifest.add_argument('--batch-size',
+        help="size of batch to send",
+        default=50, type=int)
+
+    sub_import_matched = subparsers.add_parser('import-matched')
+    sub_import_matched.set_defaults(func=run_import_matched)
+    sub_import_matched.add_argument('json_file',
+        help="JSON file to import from (or stdin)",
+        default=sys.stdin, type=argparse.FileType('r'))
+    sub_import_matched.add_argument('--no-file-update',
+        action='store_true',
+        help="don't lookup existing files, just insert (only for bootstrap)")
+    sub_import_matched.add_argument('--batch-size',
         help="size of batch to send",
         default=50, type=int)
 
