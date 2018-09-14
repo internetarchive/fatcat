@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Note: this script is BROKEN; the resulting docs don't have javascript search,
+# throw a javascript error, and don't include private/internal docs. Not a
+# priority right now.
+
 set -e -u -o pipefail
 
 cd rust
