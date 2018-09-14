@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["route","Add routes for `Api` to a provided router."],["router","Create a new router for `Api`"]],"struct":[["Authorization","Storage of authorization parameters for an incoming request, used for REST API authorization."],["ExtractAuthData","Middleware to extract authentication data from request"],["Warning",""]]});

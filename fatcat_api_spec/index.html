@@ -1,0 +1,413 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `fatcat_api_spec` crate."><meta name="keywords" content="rust, rustlang, rust-lang, fatcat_api_spec"><title>fatcat_api_spec - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><p class='location'>Crate fatcat_api_spec</p><div class="sidebar-elems"><div class="block items"><ul><li><a href="#reexports">Re-exports</a></li><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#traits">Traits</a></li></ul></div><p class='location'></p><script>window.sidebarCurrent = {name: 'fatcat_api_spec', ty: 'mod', relpath: '../'};</script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='in-band'>Crate <a class="mod" href=''>fatcat_api_spec</a></span><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/fatcat_api_spec/lib.rs.html#1-1022' title='goto source code'>[src]</a></span></h1><h2 id='reexports' class='section-header'><a href="#reexports">Re-exports</a></h2>
+<table><tr><td><code>pub use self::client::<a class="struct" href="../fatcat_api_spec/client/struct.Client.html" title="struct fatcat_api_spec::client::Client">Client</a>;</code></td></tr><tr><td><code>pub use self::server::<a class="fn" href="../fatcat_api_spec/server/fn.router.html" title="fn fatcat_api_spec::server::router">router</a>;</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="mod" href="client/index.html"
+                                  title='mod fatcat_api_spec::client'>client</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="mod" href="models/index.html"
+                                  title='mod fatcat_api_spec::models'>models</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="mod" href="router/index.html"
+                                  title='mod fatcat_api_spec::router'>router</a></td>
+                           <td class='docblock-short'>
+                                <p><code>Router</code> provides fast and flexible routing for Iron.</p>
+
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="mod" href="server/index.html"
+                                  title='mod fatcat_api_spec::server'>server</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr></table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.ApiError.html"
+                                  title='struct fatcat_api_spec::ApiError'>ApiError</a></td>
+                           <td class='docblock-short'>
+                                <p>Very simple error type - just holds a description of the error. This is useful for human
+diagnosis and troubleshooting, but not for applications to parse. The justification for this
+is to deny applications visibility into the communication layer, forcing the application code
+to act solely on the logical responses that the API provides, promoting abstraction in the
+application code.</p>
+
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.Context.html"
+                                  title='struct fatcat_api_spec::Context'>Context</a></td>
+                           <td class='docblock-short'>
+                                <p>Request context, both as received in a server handler or as sent in a
+client request. When REST microservices are chained, the Context passes
+data from the server API to any further HTTP requests.</p>
+
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.ContextWrapper.html"
+                                  title='struct fatcat_api_spec::ContextWrapper'>ContextWrapper</a></td>
+                           <td class='docblock-short'>
+                                <p>Context wrapper, to bind an API with a context.</p>
+
+                           </td>
+                       </tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.AcceptEditgroupResponse.html"
+                                  title='enum fatcat_api_spec::AcceptEditgroupResponse'>AcceptEditgroupResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.CreateContainerBatchResponse.html"
+                                  title='enum fatcat_api_spec::CreateContainerBatchResponse'>CreateContainerBatchResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.CreateContainerResponse.html"
+                                  title='enum fatcat_api_spec::CreateContainerResponse'>CreateContainerResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.CreateCreatorBatchResponse.html"
+                                  title='enum fatcat_api_spec::CreateCreatorBatchResponse'>CreateCreatorBatchResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.CreateCreatorResponse.html"
+                                  title='enum fatcat_api_spec::CreateCreatorResponse'>CreateCreatorResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.CreateEditgroupResponse.html"
+                                  title='enum fatcat_api_spec::CreateEditgroupResponse'>CreateEditgroupResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.CreateFileBatchResponse.html"
+                                  title='enum fatcat_api_spec::CreateFileBatchResponse'>CreateFileBatchResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.CreateFileResponse.html"
+                                  title='enum fatcat_api_spec::CreateFileResponse'>CreateFileResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.CreateReleaseBatchResponse.html"
+                                  title='enum fatcat_api_spec::CreateReleaseBatchResponse'>CreateReleaseBatchResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.CreateReleaseResponse.html"
+                                  title='enum fatcat_api_spec::CreateReleaseResponse'>CreateReleaseResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.CreateWorkBatchResponse.html"
+                                  title='enum fatcat_api_spec::CreateWorkBatchResponse'>CreateWorkBatchResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.CreateWorkResponse.html"
+                                  title='enum fatcat_api_spec::CreateWorkResponse'>CreateWorkResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.DeleteContainerResponse.html"
+                                  title='enum fatcat_api_spec::DeleteContainerResponse'>DeleteContainerResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.DeleteCreatorResponse.html"
+                                  title='enum fatcat_api_spec::DeleteCreatorResponse'>DeleteCreatorResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.DeleteFileResponse.html"
+                                  title='enum fatcat_api_spec::DeleteFileResponse'>DeleteFileResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.DeleteReleaseResponse.html"
+                                  title='enum fatcat_api_spec::DeleteReleaseResponse'>DeleteReleaseResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.DeleteWorkResponse.html"
+                                  title='enum fatcat_api_spec::DeleteWorkResponse'>DeleteWorkResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.GetChangelogEntryResponse.html"
+                                  title='enum fatcat_api_spec::GetChangelogEntryResponse'>GetChangelogEntryResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.GetChangelogResponse.html"
+                                  title='enum fatcat_api_spec::GetChangelogResponse'>GetChangelogResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.GetContainerHistoryResponse.html"
+                                  title='enum fatcat_api_spec::GetContainerHistoryResponse'>GetContainerHistoryResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.GetContainerResponse.html"
+                                  title='enum fatcat_api_spec::GetContainerResponse'>GetContainerResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.GetCreatorHistoryResponse.html"
+                                  title='enum fatcat_api_spec::GetCreatorHistoryResponse'>GetCreatorHistoryResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.GetCreatorReleasesResponse.html"
+                                  title='enum fatcat_api_spec::GetCreatorReleasesResponse'>GetCreatorReleasesResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.GetCreatorResponse.html"
+                                  title='enum fatcat_api_spec::GetCreatorResponse'>GetCreatorResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.GetEditgroupResponse.html"
+                                  title='enum fatcat_api_spec::GetEditgroupResponse'>GetEditgroupResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.GetEditorChangelogResponse.html"
+                                  title='enum fatcat_api_spec::GetEditorChangelogResponse'>GetEditorChangelogResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.GetEditorResponse.html"
+                                  title='enum fatcat_api_spec::GetEditorResponse'>GetEditorResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.GetFileHistoryResponse.html"
+                                  title='enum fatcat_api_spec::GetFileHistoryResponse'>GetFileHistoryResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.GetFileResponse.html"
+                                  title='enum fatcat_api_spec::GetFileResponse'>GetFileResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.GetReleaseFilesResponse.html"
+                                  title='enum fatcat_api_spec::GetReleaseFilesResponse'>GetReleaseFilesResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.GetReleaseHistoryResponse.html"
+                                  title='enum fatcat_api_spec::GetReleaseHistoryResponse'>GetReleaseHistoryResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.GetReleaseResponse.html"
+                                  title='enum fatcat_api_spec::GetReleaseResponse'>GetReleaseResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.GetStatsResponse.html"
+                                  title='enum fatcat_api_spec::GetStatsResponse'>GetStatsResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.GetWorkHistoryResponse.html"
+                                  title='enum fatcat_api_spec::GetWorkHistoryResponse'>GetWorkHistoryResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.GetWorkReleasesResponse.html"
+                                  title='enum fatcat_api_spec::GetWorkReleasesResponse'>GetWorkReleasesResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.GetWorkResponse.html"
+                                  title='enum fatcat_api_spec::GetWorkResponse'>GetWorkResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.LookupContainerResponse.html"
+                                  title='enum fatcat_api_spec::LookupContainerResponse'>LookupContainerResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.LookupCreatorResponse.html"
+                                  title='enum fatcat_api_spec::LookupCreatorResponse'>LookupCreatorResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.LookupFileResponse.html"
+                                  title='enum fatcat_api_spec::LookupFileResponse'>LookupFileResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.LookupReleaseResponse.html"
+                                  title='enum fatcat_api_spec::LookupReleaseResponse'>LookupReleaseResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.UpdateContainerResponse.html"
+                                  title='enum fatcat_api_spec::UpdateContainerResponse'>UpdateContainerResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.UpdateCreatorResponse.html"
+                                  title='enum fatcat_api_spec::UpdateCreatorResponse'>UpdateCreatorResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.UpdateFileResponse.html"
+                                  title='enum fatcat_api_spec::UpdateFileResponse'>UpdateFileResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.UpdateReleaseResponse.html"
+                                  title='enum fatcat_api_spec::UpdateReleaseResponse'>UpdateReleaseResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.UpdateWorkResponse.html"
+                                  title='enum fatcat_api_spec::UpdateWorkResponse'>UpdateWorkResponse</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr></table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="trait" href="trait.Api.html"
+                                  title='trait fatcat_api_spec::Api'>Api</a></td>
+                           <td class='docblock-short'>
+                                <p>API</p>
+
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="trait" href="trait.ApiNoContext.html"
+                                  title='trait fatcat_api_spec::ApiNoContext'>ApiNoContext</a></td>
+                           <td class='docblock-short'>
+                                <p>API without a <code>Context</code></p>
+
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="trait" href="trait.ContextWrapperExt.html"
+                                  title='trait fatcat_api_spec::ContextWrapperExt'>ContextWrapperExt</a></td>
+                           <td class='docblock-short'>
+                                <p>Trait to extend an API to make it easy to bind it to a context.</p>
+
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="trait" href="trait.Future.html"
+                                  title='trait fatcat_api_spec::Future'>Future</a></td>
+                           <td class='docblock-short'>
+                                <p>Trait for types which are a placeholder of a value that may become
+available at some later point in time.</p>
+
+                           </td>
+                       </tr></table></section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g. <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g. <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g. <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../";window.currentCrate = "fatcat_api_spec";</script><script src="../aliases.js"></script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>

@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["creator_ident_id",""],["extra_json",""],["id",""],["index_val",""],["raw_name",""],["release_rev",""],["role",""],["star","Represents `table_name.*`, which is sometimes needed for efficient count queries. It cannot be used in place of `all_columns`, and has a `SqlType` of `()` to prevent it being used that way"]]});
