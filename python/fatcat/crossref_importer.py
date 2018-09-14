@@ -40,7 +40,7 @@ class FatcatCrossrefImporter(FatcatImporter):
         returns a ReleaseEntity
         """
 
-        # This work is out of scope if it doesn't have authors or a title
+        # This work is out of scope if it doesn't have authors and a title
         if (not 'author' in obj) or (not 'title' in obj):
             return None
 
