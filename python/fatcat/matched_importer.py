@@ -42,10 +42,10 @@ class FatcatMatchedImporter(FatcatImporter):
         rel = self.default_link_rel
         # TODO: this is where we could map specific domains to rel types,
         # and also filter out bad domains, invalid URLs, etc
-        if "//archive.org/" in url or "//arxiv.org/" in url:
+        if "//archive.org/" in raw or "//arxiv.org/" in raw:
             # TODO: special-case the arxiv.org bulk mirror?
             rel = "repository"
-        elif "//web.archive.org/" in url or "//archive.is/" in url:
+        elif "//web.archive.org/" in raw or "//archive.is/" in raw:
             rel = "webarchive"
         return fatcat_client.FileEntityUrls(url=raw, rel=rel)
 
