@@ -40,7 +40,7 @@ CREATE TABLE changelog (
 CREATE INDEX changelog_editgroup_idx ON changelog(editgroup_id);
 
 CREATE TABLE abstracts (
-    sha1                CHAR(40) PRIMARY KEY,
+    sha1                VARCHAR(40) PRIMARY KEY,    -- fixed size hash (in hex)
     content             TEXT NOT NULL
 );
 
@@ -52,8 +52,8 @@ CREATE TABLE creator_rev (
     display_name        TEXT NOT NULL,
     given_name          TEXT,
     surname             TEXT,
-    orcid               CHAR(19),
-    wikidata_qid        TEXT
+    orcid               VARCHAR(19),    -- fixed size identifier
+    wikidata_qid        VARCHAR(12)     -- limited size for data quality
     -- TODO: viaf                TEXT,
     -- TODO: aliases/alternatives
     -- TODO: sortable name?
@@ -93,10 +93,10 @@ CREATE TABLE container_rev (
 
     name                TEXT NOT NULL,
     publisher           TEXT,
-    issnl               CHAR(9),
-    wikidata_qid        TEXT,
+    issnl               VARCHAR(9),     -- fixed size identifier
+    wikidata_qid        VARCHAR(12),    -- limited size for data quality
     abbrev              TEXT,
-    coden               TEXT
+    coden               VARCHAR(12)     -- limited size for data quality
 );
 
 CREATE INDEX container_rev_issnl_idx ON container_rev(issnl);
@@ -130,9 +130,9 @@ CREATE TABLE file_rev (
     extra_json          JSONB,
 
     size                BIGINT,
-    sha1                CHAR(40),
-    sha256              CHAR(64),
-    md5                 CHAR(32),
+    sha1                VARCHAR(40),    -- fixed size hash (in hex)
+    sha256              VARCHAR(64),    -- fixed size hash (in hex)
+    md5                 VARCHAR(32),    -- fixed size hash (in hex)
     mimetype            TEXT
 );
 
@@ -183,11 +183,11 @@ CREATE TABLE release_rev (
     release_status      TEXT, -- TODO: enum
     release_date        DATE,
     doi                 TEXT,
-    pmid                TEXT, -- TODO: BIGINT?
-    pmcid               TEXT, -- TODO: BIGINT?
-    wikidata_qid        TEXT, -- TODO: BIGINT?
-    isbn13              TEXT, -- TODO: fixed-length
-    core_id             TEXT, -- TODO: BIGINT?
+    pmid                VARCHAR(12), -- limited for data quality
+    pmcid               VARCHAR(12), -- limited for data quality
+    wikidata_qid        VARCHAR(12), -- limited for data quality
+    isbn13              VARCHAR(13), -- fixed size identifier
+    core_id             VARCHAR(12), -- limited for data quality
     volume              TEXT,
     issue               TEXT,
     pages               TEXT,
@@ -208,7 +208,7 @@ CREATE INDEX release_rev_work_idx ON release_rev(work_ident_id);
 CREATE TABLE release_rev_abstract (
     id              BIGSERIAL PRIMARY KEY,
     release_rev     UUID REFERENCES release_rev(id) NOT NULL,
-    abstract_sha1   CHAR(40) REFERENCES abstracts(sha1) NOT NULL,
+    abstract_sha1   VARCHAR(40) REFERENCES abstracts(sha1) NOT NULL,    -- fixed size hash (in hex)
     mimetype        TEXT,
     lang            TEXT
 );
