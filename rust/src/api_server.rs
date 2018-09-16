@@ -73,9 +73,6 @@ impl Server {
         let (ident, rev): (ContainerIdentRow, ContainerRevRow) = container_ident::table
             .inner_join(container_rev::table)
             .filter(container_rev::issnl.eq(issnl))
-            // This NOT NULL is here to ensure the postgresql query planner that it can use an
-            // index
-            .filter(container_rev::issnl.is_not_null())
             .filter(container_ident::is_live.eq(true))
             .filter(container_ident::redirect_id.is_null())
             .first(conn)?;
@@ -88,9 +85,6 @@ impl Server {
         let (ident, rev): (CreatorIdentRow, CreatorRevRow) = creator_ident::table
             .inner_join(creator_rev::table)
             .filter(creator_rev::orcid.eq(orcid))
-            // This NOT NULL is here to ensure the postgresql query planner that it can use an
-            // index
-            .filter(creator_rev::orcid.is_not_null())
             .filter(creator_ident::is_live.eq(true))
             .filter(creator_ident::redirect_id.is_null())
             .first(conn)?;
@@ -122,9 +116,6 @@ impl Server {
         let (ident, rev): (FileIdentRow, FileRevRow) = file_ident::table
             .inner_join(file_rev::table)
             .filter(file_rev::sha1.eq(sha1))
-            // This NOT NULL is here to ensure the postgresql query planner that it can use an
-            // index
-            .filter(file_rev::sha1.is_not_null())
             .filter(file_ident::is_live.eq(true))
             .filter(file_ident::redirect_id.is_null())
             .first(conn)?;
@@ -137,9 +128,6 @@ impl Server {
         let (ident, rev): (ReleaseIdentRow, ReleaseRevRow) = release_ident::table
             .inner_join(release_rev::table)
             .filter(release_rev::doi.eq(doi))
-            // This NOT NULL is here to ensure the postgresql query planner that it can use an
-            // index
-            .filter(release_rev::doi.is_not_null())
             .filter(release_ident::is_live.eq(true))
             .filter(release_ident::redirect_id.is_null())
             .first(conn)?;
