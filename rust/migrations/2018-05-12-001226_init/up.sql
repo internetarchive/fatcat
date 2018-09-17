@@ -1,5 +1,9 @@
 -- written for Postgres 9.6 with OSSP extension for UUIDs -- ... but actually runs on Postgres 10 in qa/production
 
+-- Previously VARCHAR and fixed-size CHAR was used in this schema for specific
+-- columns (especially fixed-size external identifiers, and hashes). This was
+-- found to cause lookup problems, so switched to TEXT with CHECK constraints.
+
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 
@@ -40,7 +44,8 @@ CREATE TABLE changelog (
 CREATE INDEX changelog_editgroup_idx ON changelog(editgroup_id);
 
 CREATE TABLE abstracts (
-    sha1                VARCHAR(40) PRIMARY KEY,    -- fixed size hash (in hex)
+    -- fixed size hash (in hex). TODO: switch to bytes
+    sha1                TEXT PRIMARY KEY CHECK (octet_length(sha1) == 40),
     content             TEXT NOT NULL
 );
 
@@ -52,8 +57,11 @@ CREATE TABLE creator_rev (
     display_name        TEXT NOT NULL,
     given_name          TEXT,
     surname             TEXT,
-    orcid               VARCHAR(19),    -- fixed size identifier
-    wikidata_qid        VARCHAR(12)     -- limited size for data quality
+    -- fixed size identifier
+    orcid               TEXT CHECK(octet_length(orcid) == 19),
+    -- limited size for data quality
+    wikidata_qid        TEXT CHECK(octet_length(wikidata_qid) <= 12)
+
     -- TODO: viaf                TEXT,
     -- TODO: aliases/alternatives
     -- TODO: sortable name?
@@ -93,10 +101,13 @@ CREATE TABLE container_rev (
 
     name                TEXT NOT NULL,
     publisher           TEXT,
-    issnl               VARCHAR(9),     -- fixed size identifier
-    wikidata_qid        VARCHAR(12),    -- limited size for data quality
+    -- fixed size identifier
+    issnl               TEXT CHECK(octet_length(issnl) == 9),
+    -- limited size for data quality
+    wikidata_qid        TEXT CHECK(octet_length(wikidata_qid) <= 12),
     abbrev              TEXT,
-    coden               VARCHAR(12)     -- limited size for data quality
+    -- limited size for data quality
+    coden               TEXT CHECK(octet_length(coden) <= 6)
 );
 
 CREATE INDEX container_rev_issnl_idx ON container_rev(issnl);
@@ -130,9 +141,10 @@ CREATE TABLE file_rev (
     extra_json          JSONB,
 
     size                BIGINT,
-    sha1                VARCHAR(40),    -- fixed size hash (in hex)
-    sha256              VARCHAR(64),    -- fixed size hash (in hex)
-    md5                 VARCHAR(32),    -- fixed size hash (in hex)
+    -- fixed size hashes (in hex). TODO: switch to binary type type
+    sha1                TEXT CHECK(octet_length(sha1) == 40),
+    sha256              TEXT CHECK(octet_length(sha256) == 64),
+    md5                 TEXT CHECK(octet_length(md5) == 32),
     mimetype            TEXT
 );
 
@@ -183,11 +195,12 @@ CREATE TABLE release_rev (
     release_status      TEXT, -- TODO: enum
     release_date        DATE,
     doi                 TEXT,
-    pmid                VARCHAR(12), -- limited for data quality
-    pmcid               VARCHAR(12), -- limited for data quality
-    wikidata_qid        VARCHAR(12), -- limited for data quality
-    isbn13              VARCHAR(13), -- fixed size identifier
-    core_id             VARCHAR(12), -- limited for data quality
+    -- CHECK for length limit for data quality
+    pmid                TEXT CHECK(octet_length(pmid) <= 12),
+    pmcid               TEXT CHECK(octet_length(pmcid) <= 12),
+    wikidata_qid        TEXT CHECK(octet_length(wikidata_qid) <= 12),
+    isbn13              TEXT CHECK(octet_length(isbn13) == 13),
+    core_id             TEXT CHECK(octet_length(core_id) <= 12),
     volume              TEXT,
     issue               TEXT,
     pages               TEXT,
@@ -208,7 +221,7 @@ CREATE INDEX release_rev_work_idx ON release_rev(work_ident_id);
 CREATE TABLE release_rev_abstract (
     id              BIGSERIAL PRIMARY KEY,
     release_rev     UUID REFERENCES release_rev(id) NOT NULL,
-    abstract_sha1   VARCHAR(40) REFERENCES abstracts(sha1) NOT NULL,    -- fixed size hash (in hex)
+    abstract_sha1   TEXT REFERENCES abstracts(sha1) NOT NULL,
     mimetype        TEXT,
     lang            TEXT
 );
