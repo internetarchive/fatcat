@@ -257,3 +257,62 @@ Postgres really wanted to log: <https://wiki.postgresql.org/wiki/Per-user_log_se
     ALTER DATABASE fatcat_prod SET log_statement = 'ddl';
     ALTER USER fatcat SET log_statement = 'ddl';
 
+
+## Later Imports
+
+    zcat /srv/datasets/2018-08-27-2352.17-matchcrossref.insertable.json.gz | pv -l | time parallel -j12 --round-robin --pipe ./fatcat_import.py import-matched -
+    => only ~40 TPS
+    => looks like almost all selects... probably skipping? huge postgres CPU churn, huh. missing index?
+
+           relname        | too_much_seq |      case      |  rel_size   | seq_scan | idx_scan 
+    ----------------------+--------------+----------------+-------------+----------+----------
+     file_rev             |     -5343173 | OK             |   867483648 |      693 |  5343866
+
+    EXPLAIN SELECT "file_ident"."id", "file_ident"."is_live", "file_ident"."rev_id", "file_ident"."redirect_id", "file_rev"."id", "file_rev"."extra_json", "file_rev"."size", "file_rev"."sha1", "file_rev"."sha256", "file_rev"."md5", "file_rev"."mimetype" FROM ("file_ident" INNER JOIN "file_rev" ON "file_ident"."rev_id" = "file_rev"."id") WHERE "file_rev"."sha1" = '7d97e98f8af710c7e7fe703abc8f639e0ee507c4' AND "file_rev"."sha1" IS NOT NULL AND "file_ident"."is_live" = 't' AND "file_ident"."redirect_id" IS NULL LIMIT 1;
+
+Ugh, this whole cycle again. Query only takes 1ms for a no-hit, or 5ms for success.
+
+    http get http://localhost:9411/v0/file/lookup?sha1=d77cb2a8b207507e0df27ba1393e8118eec9217f => not found
+    http get http://localhost:9411/v0/file/lookup?sha1=d6c3f6ca785ee63293da02615c8495c5cd25fa25 => found
+        => but no releases?
+
+SET auto_explain.log_min_duration = 0;
+SET auto_explain.log_analyze = true;
+ALTER USER fatcat SET log_statement = 'all';
+ALTER USER fatcat SET auto_explain.log_min_duration = 0;
+ALTER USER fatcat SET auto_explain.log_analyze = true;;
+sudo service fatcat-api restart
+
+
+2018-09-16 00:42:29.883 UTC [13868] fatcat@fatcat_prod LOG:  duration: 3028.143 ms  plan:
+        Query Text: SELECT "file_ident"."id", "file_ident"."is_live", "file_ident"."rev_id", "file_ident"."redirect_id", "file_rev"."id", "file_rev"."extra_json", "file_rev"."size", "file_rev"."sha1", "file_rev"."sha256", "file_rev"."md5", "file_rev"."mimetype" FROM ("file_ident" INNER JOIN "file_rev" ON "file_ident"."rev_id" = "file_rev"."id") WHERE "file_rev"."sha1" = $1 AND "file_rev"."sha1" IS NOT NULL AND "file_ident"."is_live" = $2 AND "file_ident"."redirect_id" IS NULL LIMIT $3
+        Limit  (cost=0.43..8.56 rows=1 width=454) (actual time=3028.139..3028.139 rows=0 loops=1)
+          ->  Nested Loop  (cost=0.43..268756.48 rows=33056 width=454) (actual time=3028.138..3028.138 rows=0 loops=1)
+                ->  Seq Scan on file_rev  (cost=0.00..205023.16 rows=33042 width=405) (actual time=3028.137..3028.137 rows=0 loops=1)
+                      Filter: ((sha1 IS NOT NULL) AND ((sha1)::text = 'd68d4e2cc420647109cdfe410efed86cd64465e5'::text))
+                      Rows Removed by Filter: 6607786
+                ->  Index Scan using file_ident_rev_idx on file_ident  (cost=0.43..1.92 rows=1 width=49) (never executed)
+                      Index Cond: (rev_id = file_rev.id)
+                      Filter: (is_live AND (redirect_id IS NULL))
+
+
+fatcat_prod=# EXPLAIN SELECT "file_ident"."id", "file_ident"."is_live", "file_ident"."rev_id", "file_ident"."redirect_id", "file_rev"."id", "file_rev"."extra_json", "file_rev"."size", "file_rev"."sha1", "file_rev"."sha256", "file_rev"."md5", "file_rev"."mimetype" FROM ("file_ident" INNER JOIN "file_rev" ON "file_ident"."rev_id" = "file_rev"."id") WHERE "file_rev"."sha1" = '3f242a192acc258bdfdb15194341943222222222222440c313' AND "file_rev"."sha1" IS NOT NULL AND "file_ident"."is_live" = 't' AND "file_ident"."redirect_id" IS NULL LIMIT 1;
+                                                        QUERY PLAN                                                        
+--------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=0.99..5.04 rows=1 width=454)
+   ->  Nested Loop  (cost=0.99..5.04 rows=1 width=454)
+         ->  Index Scan using file_rev_sha1_idx on file_rev  (cost=0.56..2.58 rows=1 width=405)
+               Index Cond: ((sha1 IS NOT NULL) AND (sha1 = '3f242a192acc258bdfdb15194341943222222222222440c313'::bpchar))
+         ->  Index Scan using file_ident_rev_idx on file_ident  (cost=0.43..2.45 rows=1 width=49)
+               Index Cond: (rev_id = file_rev.id)
+               Filter: (is_live AND (redirect_id IS NULL))
+
+After all this debugging, asked on IRC and learned that I really shouldn't ever
+use CHAR() (or even VARCHAR()). Will update the schema.
+
+## Investigating Missing Rows
+
+    fatcat_prod=# select count(*) from release_ident; => 53028167
+
+Thought I had more than that previously? Table sizes were also bigger. Hrm.
+

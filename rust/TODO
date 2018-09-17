@@ -5,6 +5,7 @@ correctness
 - enforce "no editing if editgroup accepted" behavior
 - changelog sequence without gaps
 - batch insert editgroup behavior; always a new editgroup?
+- redirect rev_id needs to be updated when primary changes
 
 edit lifecycle
 - editgroup: state to track review status?

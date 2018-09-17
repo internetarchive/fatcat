@@ -1,6 +1,6 @@
 table! {
     abstracts (sha1) {
-        sha1 -> Bpchar,
+        sha1 -> Varchar,
         content -> Text,
     }
 }
@@ -41,10 +41,10 @@ table! {
         extra_json -> Nullable<Jsonb>,
         name -> Text,
         publisher -> Nullable<Text>,
-        issnl -> Nullable<Bpchar>,
-        wikidata_qid -> Nullable<Text>,
+        issnl -> Nullable<Varchar>,
+        wikidata_qid -> Nullable<Varchar>,
         abbrev -> Nullable<Text>,
-        coden -> Nullable<Text>,
+        coden -> Nullable<Varchar>,
     }
 }
 
@@ -77,8 +77,8 @@ table! {
         display_name -> Text,
         given_name -> Nullable<Text>,
         surname -> Nullable<Text>,
-        orcid -> Nullable<Bpchar>,
-        wikidata_qid -> Nullable<Text>,
+        orcid -> Nullable<Varchar>,
+        wikidata_qid -> Nullable<Varchar>,
     }
 }
 
@@ -136,9 +136,9 @@ table! {
         id -> Uuid,
         extra_json -> Nullable<Jsonb>,
         size -> Nullable<Int8>,
-        sha1 -> Nullable<Bpchar>,
-        sha256 -> Nullable<Bpchar>,
-        md5 -> Nullable<Bpchar>,
+        sha1 -> Nullable<Varchar>,
+        sha256 -> Nullable<Varchar>,
+        md5 -> Nullable<Varchar>,
         mimetype -> Nullable<Text>,
     }
 }
@@ -212,11 +212,11 @@ table! {
         release_status -> Nullable<Text>,
         release_date -> Nullable<Date>,
         doi -> Nullable<Text>,
-        pmid -> Nullable<Text>,
-        pmcid -> Nullable<Text>,
-        wikidata_qid -> Nullable<Text>,
-        isbn13 -> Nullable<Text>,
-        core_id -> Nullable<Text>,
+        pmid -> Nullable<Varchar>,
+        pmcid -> Nullable<Varchar>,
+        wikidata_qid -> Nullable<Varchar>,
+        isbn13 -> Nullable<Varchar>,
+        core_id -> Nullable<Varchar>,
         volume -> Nullable<Text>,
         issue -> Nullable<Text>,
         pages -> Nullable<Text>,
@@ -229,7 +229,7 @@ table! {
     release_rev_abstract (id) {
         id -> Int8,
         release_rev -> Uuid,
-        abstract_sha1 -> Bpchar,
+        abstract_sha1 -> Varchar,
         mimetype -> Nullable<Text>,
         lang -> Nullable<Text>,
     }

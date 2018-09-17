@@ -47,7 +47,7 @@ CREATE INDEX changelog_editgroup_idx ON changelog(editgroup_id);
 
 CREATE TABLE abstracts (
     -- fixed size hash (in hex). TODO: switch to bytes
-    sha1                TEXT PRIMARY KEY CHECK (octet_length(sha1) == 40),
+    sha1                TEXT PRIMARY KEY CHECK (octet_length(sha1) = 40),
     content             TEXT NOT NULL
 );
 
@@ -60,7 +60,7 @@ CREATE TABLE creator_rev (
     given_name          TEXT,
     surname             TEXT,
     -- fixed size identifier
-    orcid               TEXT CHECK(octet_length(orcid) == 19),
+    orcid               TEXT CHECK(octet_length(orcid) = 19),
     -- limited size for data quality
     wikidata_qid        TEXT CHECK(octet_length(wikidata_qid) <= 12)
 
@@ -103,7 +103,7 @@ CREATE TABLE container_rev (
     name                TEXT NOT NULL,
     publisher           TEXT,
     -- fixed size identifier
-    issnl               TEXT CHECK(octet_length(issnl) == 9),
+    issnl               TEXT CHECK(octet_length(issnl) = 9),
     -- limited size for data quality
     wikidata_qid        TEXT CHECK(octet_length(wikidata_qid) <= 12),
     abbrev              TEXT,
@@ -142,9 +142,9 @@ CREATE TABLE file_rev (
 
     size                BIGINT,
     -- fixed size hashes (in hex). TODO: switch to binary type type
-    sha1                TEXT CHECK(octet_length(sha1) == 40),
-    sha256              TEXT CHECK(octet_length(sha256) == 64),
-    md5                 TEXT CHECK(octet_length(md5) == 32),
+    sha1                TEXT CHECK(octet_length(sha1) = 40),
+    sha256              TEXT CHECK(octet_length(sha256) = 64),
+    md5                 TEXT CHECK(octet_length(md5) = 32),
     mimetype            TEXT
 );
 
@@ -198,7 +198,7 @@ CREATE TABLE release_rev (
     pmid                TEXT CHECK(octet_length(pmid) <= 12),
     pmcid               TEXT CHECK(octet_length(pmcid) <= 12),
     wikidata_qid        TEXT CHECK(octet_length(wikidata_qid) <= 12),
-    isbn13              TEXT CHECK(octet_length(isbn13) == 13),
+    isbn13              TEXT CHECK(octet_length(isbn13) = 13),
     core_id             TEXT CHECK(octet_length(core_id) <= 12),
     volume              TEXT,
     issue               TEXT,

@@ -112,3 +112,8 @@ From compressed:
     sys     19m3.576s
 
 Really sped up once not contending with Crossref import, so don't run these two at the same time.
+
+## Matched
+
+    zcat /srv/datasets/2018-08-27-2352.17-matchcrossref.insertable.json.gz | pv -l | time parallel -j12 --round-robin --pipe ./fatcat_import.py import-matched -
+
