@@ -91,10 +91,9 @@ CREATE TABLE creator_edit (
     rev_id              UUID REFERENCES creator_rev(id),
     redirect_id         UUID REFERENCES creator_ident(id),
     prev_rev            UUID REFERENCES creator_rev(id),
-    extra_json          JSONB
+    extra_json          JSONB,
+    UNIQUE (editgroup_id, ident_id)
 );
-
-CREATE INDEX creator_edit_idx ON creator_edit(editgroup_id);
 
 -------------------- Containers --------------------------------------------
 CREATE TABLE container_rev (
@@ -132,10 +131,9 @@ CREATE TABLE container_edit (
     rev_id              UUID REFERENCES container_rev(id),
     redirect_id         UUID REFERENCES container_ident(id),
     prev_rev            UUID REFERENCES container_rev(id),
-    extra_json          JSONB
+    extra_json          JSONB,
+    UNIQUE (editgroup_id, ident_id)
 );
-
-CREATE INDEX container_edit_idx ON container_edit(editgroup_id);
 
 -------------------- Files -------------------------------------------------
 CREATE TABLE file_rev (
@@ -180,10 +178,9 @@ CREATE TABLE file_edit (
     rev_id              UUID REFERENCES file_rev(id),
     redirect_id         UUID REFERENCES file_ident(id),
     prev_rev            UUID REFERENCES file_rev(id),
-    extra_json          JSONB
+    extra_json          JSONB,
+    UNIQUE (editgroup_id, ident_id)
 );
-
-CREATE INDEX file_edit_idx ON file_edit(editgroup_id);
 
 -------------------- Release -----------------------------------------------
 CREATE TABLE release_rev (
@@ -248,10 +245,9 @@ CREATE TABLE release_edit (
     rev_id              UUID REFERENCES release_rev(id),
     redirect_id         UUID REFERENCES release_ident(id),
     prev_rev            UUID REFERENCES release_rev(id),
-    extra_json          JSONB
+    extra_json          JSONB,
+    UNIQUE (editgroup_id, ident_id)
 );
-
-CREATE INDEX release_edit_idx ON release_edit(editgroup_id);
 
 -------------------- Works --------------------------------------------------
 CREATE TABLE work_rev (
@@ -276,10 +272,9 @@ CREATE TABLE work_edit (
     rev_id              UUID REFERENCES work_rev(id),
     redirect_id         UUID REFERENCES work_ident(id),
     prev_rev            UUID REFERENCES work_rev(id),
-    extra_json          JSONB
+    extra_json          JSONB,
+    UNIQUE (editgroup_id, ident_id)
 );
-
-CREATE INDEX work_edit_idx ON work_edit(editgroup_id);
 
 ALTER TABLE release_rev
     ADD CONSTRAINT release_containeridentid_fkey FOREIGN KEY (work_ident_id)
