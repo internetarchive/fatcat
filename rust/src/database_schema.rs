@@ -1,6 +1,6 @@
 table! {
     abstracts (sha1) {
-        sha1 -> Varchar,
+        sha1 -> Text,
         content -> Text,
     }
 }
@@ -9,7 +9,7 @@ table! {
     changelog (id) {
         id -> Int8,
         editgroup_id -> Uuid,
-        timestamp -> Timestamp,
+        timestamp -> Timestamptz,
     }
 }
 
@@ -17,7 +17,7 @@ table! {
     container_edit (id) {
         id -> Int8,
         editgroup_id -> Uuid,
-        updated -> Timestamp,
+        updated -> Timestamptz,
         ident_id -> Uuid,
         rev_id -> Nullable<Uuid>,
         redirect_id -> Nullable<Uuid>,
@@ -41,10 +41,10 @@ table! {
         extra_json -> Nullable<Jsonb>,
         name -> Text,
         publisher -> Nullable<Text>,
-        issnl -> Nullable<Varchar>,
-        wikidata_qid -> Nullable<Varchar>,
+        issnl -> Nullable<Text>,
+        wikidata_qid -> Nullable<Text>,
         abbrev -> Nullable<Text>,
-        coden -> Nullable<Varchar>,
+        coden -> Nullable<Text>,
     }
 }
 
@@ -52,7 +52,7 @@ table! {
     creator_edit (id) {
         id -> Int8,
         editgroup_id -> Uuid,
-        updated -> Timestamp,
+        updated -> Timestamptz,
         ident_id -> Uuid,
         rev_id -> Nullable<Uuid>,
         redirect_id -> Nullable<Uuid>,
@@ -77,8 +77,8 @@ table! {
         display_name -> Text,
         given_name -> Nullable<Text>,
         surname -> Nullable<Text>,
-        orcid -> Nullable<Varchar>,
-        wikidata_qid -> Nullable<Varchar>,
+        orcid -> Nullable<Text>,
+        wikidata_qid -> Nullable<Text>,
     }
 }
 
@@ -86,7 +86,7 @@ table! {
     editgroup (id) {
         id -> Uuid,
         editor_id -> Uuid,
-        created -> Timestamp,
+        created -> Timestamptz,
         extra_json -> Nullable<Jsonb>,
         description -> Nullable<Text>,
     }
@@ -97,7 +97,7 @@ table! {
         id -> Uuid,
         username -> Text,
         is_admin -> Bool,
-        registered -> Timestamp,
+        registered -> Timestamptz,
         active_editgroup_id -> Nullable<Uuid>,
     }
 }
@@ -106,7 +106,7 @@ table! {
     file_edit (id) {
         id -> Int8,
         editgroup_id -> Uuid,
-        updated -> Timestamp,
+        updated -> Timestamptz,
         ident_id -> Uuid,
         rev_id -> Nullable<Uuid>,
         redirect_id -> Nullable<Uuid>,
@@ -136,9 +136,9 @@ table! {
         id -> Uuid,
         extra_json -> Nullable<Jsonb>,
         size -> Nullable<Int8>,
-        sha1 -> Nullable<Varchar>,
-        sha256 -> Nullable<Varchar>,
-        md5 -> Nullable<Varchar>,
+        sha1 -> Nullable<Text>,
+        sha256 -> Nullable<Text>,
+        md5 -> Nullable<Text>,
         mimetype -> Nullable<Text>,
     }
 }
@@ -168,7 +168,7 @@ table! {
     release_edit (id) {
         id -> Int8,
         editgroup_id -> Uuid,
-        updated -> Timestamp,
+        updated -> Timestamptz,
         ident_id -> Uuid,
         rev_id -> Nullable<Uuid>,
         redirect_id -> Nullable<Uuid>,
@@ -212,11 +212,11 @@ table! {
         release_status -> Nullable<Text>,
         release_date -> Nullable<Date>,
         doi -> Nullable<Text>,
-        pmid -> Nullable<Varchar>,
-        pmcid -> Nullable<Varchar>,
-        wikidata_qid -> Nullable<Varchar>,
-        isbn13 -> Nullable<Varchar>,
-        core_id -> Nullable<Varchar>,
+        pmid -> Nullable<Text>,
+        pmcid -> Nullable<Text>,
+        wikidata_qid -> Nullable<Text>,
+        isbn13 -> Nullable<Text>,
+        core_id -> Nullable<Text>,
         volume -> Nullable<Text>,
         issue -> Nullable<Text>,
         pages -> Nullable<Text>,
@@ -229,7 +229,7 @@ table! {
     release_rev_abstract (id) {
         id -> Int8,
         release_rev -> Uuid,
-        abstract_sha1 -> Varchar,
+        abstract_sha1 -> Text,
         mimetype -> Nullable<Text>,
         lang -> Nullable<Text>,
     }
@@ -239,7 +239,7 @@ table! {
     work_edit (id) {
         id -> Int8,
         editgroup_id -> Uuid,
-        updated -> Timestamp,
+        updated -> Timestamptz,
         ident_id -> Uuid,
         rev_id -> Nullable<Uuid>,
         redirect_id -> Nullable<Uuid>,
