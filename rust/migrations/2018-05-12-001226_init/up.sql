@@ -4,6 +4,8 @@
 -- columns (especially fixed-size external identifiers, and hashes). This was
 -- found to cause lookup problems, so switched to TEXT with CHECK constraints.
 
+-- Default timezone (of clients) is expected to be UTC.
+
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 
@@ -16,7 +18,7 @@ CREATE TABLE editor (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     username            TEXT NOT NULL UNIQUE,
     is_admin            BOOLEAN NOT NULL DEFAULT false,
-    registered          TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL,
+    registered          TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
     active_editgroup_id UUID -- REFERENCES( editgroup(id) via ALTER below
 );
 
@@ -25,7 +27,7 @@ CREATE INDEX active_editgroup_idx ON editor(active_editgroup_id);
 CREATE TABLE editgroup (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     editor_id           UUID REFERENCES editor(id) NOT NULL,
-    created             TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL,
+    created             TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
     extra_json          JSONB,
     description         TEXT
 );
@@ -37,7 +39,7 @@ ALTER TABLE editor
 CREATE TABLE changelog (
     id                  BIGSERIAL PRIMARY KEY,
     editgroup_id        UUID REFERENCES editgroup(id) NOT NULL,
-    timestamp           TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL
+    timestamp           TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL
 );
 
 -- for "is this editgroup merged" queries
@@ -84,7 +86,7 @@ CREATE INDEX creator_ident_rev_idx ON creator_ident(rev_id);
 CREATE TABLE creator_edit (
     id                  BIGSERIAL PRIMARY KEY,
     editgroup_id        UUID REFERENCES editgroup(id) NOT NULL,
-    updated             TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL,
+    updated             TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
     ident_id            UUID REFERENCES creator_ident(id) NOT NULL,
     rev_id              UUID REFERENCES creator_rev(id),
     redirect_id         UUID REFERENCES creator_ident(id),
@@ -125,7 +127,7 @@ CREATE INDEX container_ident_rev_idx ON container_ident(rev_id);
 CREATE TABLE container_edit (
     id                  BIGSERIAL PRIMARY KEY,
     editgroup_id        UUID REFERENCES editgroup(id) NOT NULL,
-    updated             TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL,
+    updated             TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
     ident_id            UUID REFERENCES container_ident(id) NOT NULL,
     rev_id              UUID REFERENCES container_rev(id),
     redirect_id         UUID REFERENCES container_ident(id),
@@ -173,7 +175,7 @@ CREATE INDEX file_ident_rev_idx ON file_ident(rev_id);
 CREATE TABLE file_edit (
     id                  BIGSERIAL PRIMARY KEY,
     editgroup_id        UUID REFERENCES editgroup(id) NOT NULL,
-    updated             TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL,
+    updated             TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
     ident_id            UUID REFERENCES file_ident(id) NOT NULL,
     rev_id              UUID REFERENCES file_rev(id),
     redirect_id         UUID REFERENCES file_ident(id),
@@ -241,7 +243,7 @@ CREATE INDEX release_ident_rev_idx ON release_ident(rev_id);
 CREATE TABLE release_edit (
     id                  BIGSERIAL PRIMARY KEY,
     editgroup_id        UUID REFERENCES editgroup(id) NOT NULL,
-    updated             TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL,
+    updated             TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
     ident_id            UUID REFERENCES release_ident(id) NOT NULL,
     rev_id              UUID REFERENCES release_rev(id),
     redirect_id         UUID REFERENCES release_ident(id),
@@ -269,7 +271,7 @@ CREATE INDEX work_ident_rev_idx ON work_ident(rev_id);
 CREATE TABLE work_edit (
     id                  BIGSERIAL PRIMARY KEY,
     editgroup_id        UUID REFERENCES editgroup(id) NOT NULL,
-    updated             TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL,
+    updated             TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
     ident_id            UUID REFERENCES work_ident(id) NOT NULL,
     rev_id              UUID REFERENCES work_rev(id),
     redirect_id         UUID REFERENCES work_ident(id),
