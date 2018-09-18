@@ -1180,7 +1180,7 @@ paths:
     post:
       operationId: "create_editgroup"
       parameters:
-        - name: entity
+        - name: editgroup
           in: body
           required: true
           schema:
