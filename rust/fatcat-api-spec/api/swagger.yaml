@@ -64,6 +64,18 @@ paths:
           uppercase_operation_id: "CREATE_CONTAINER"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "CREATE_CONTAINER"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -82,6 +94,8 @@ paths:
           uppercase_operation_id: "CREATE_CONTAINER"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "create_container"
       uppercase_operation_id: "CREATE_CONTAINER"
       path: "/container"
@@ -143,6 +157,18 @@ paths:
           uppercase_operation_id: "CREATE_CONTAINER_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "CREATE_CONTAINER_BATCH"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -161,6 +187,8 @@ paths:
           uppercase_operation_id: "CREATE_CONTAINER_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "create_container_batch"
       uppercase_operation_id: "CREATE_CONTAINER_BATCH"
       path: "/container/batch"
@@ -210,6 +238,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_CONTAINER"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "GET_CONTAINER"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -284,6 +324,18 @@ paths:
           uppercase_operation_id: "UPDATE_CONTAINER"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "UPDATE_CONTAINER"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -302,6 +354,8 @@ paths:
           uppercase_operation_id: "UPDATE_CONTAINER"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "update_container"
       uppercase_operation_id: "UPDATE_CONTAINER"
       path: "/container/:ident"
@@ -344,6 +398,18 @@ paths:
           uppercase_operation_id: "DELETE_CONTAINER"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "DELETE_CONTAINER"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -362,6 +428,8 @@ paths:
           uppercase_operation_id: "DELETE_CONTAINER"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "delete_container"
       uppercase_operation_id: "DELETE_CONTAINER"
       path: "/container/:ident"
@@ -415,6 +483,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_CONTAINER_REVISION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "GET_CONTAINER_REVISION"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -481,6 +561,18 @@ paths:
           uppercase_operation_id: "GET_CONTAINER_HISTORY"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "GET_CONTAINER_HISTORY"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -534,6 +626,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_CONTAINER_REDIRECTS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "GET_CONTAINER_REDIRECTS"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -614,6 +718,18 @@ paths:
           uppercase_operation_id: "LOOKUP_CONTAINER"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "LOOKUP_CONTAINER"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -672,6 +788,18 @@ paths:
           uppercase_operation_id: "GET_CONTAINER_EDIT"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "GET_CONTAINER_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -726,6 +854,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "DELETE_CONTAINER_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "DELETE_CONTAINER_EDIT"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -795,6 +935,18 @@ paths:
           uppercase_operation_id: "CREATE_CREATOR"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "CREATE_CREATOR"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -813,6 +965,8 @@ paths:
           uppercase_operation_id: "CREATE_CREATOR"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "create_creator"
       uppercase_operation_id: "CREATE_CREATOR"
       path: "/creator"
@@ -874,6 +1028,18 @@ paths:
           uppercase_operation_id: "CREATE_CREATOR_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "CREATE_CREATOR_BATCH"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -892,6 +1058,8 @@ paths:
           uppercase_operation_id: "CREATE_CREATOR_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "create_creator_batch"
       uppercase_operation_id: "CREATE_CREATOR_BATCH"
       path: "/creator/batch"
@@ -941,6 +1109,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_CREATOR"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "GET_CREATOR"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -1015,6 +1195,18 @@ paths:
           uppercase_operation_id: "UPDATE_CREATOR"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "UPDATE_CREATOR"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -1033,6 +1225,8 @@ paths:
           uppercase_operation_id: "UPDATE_CREATOR"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "update_creator"
       uppercase_operation_id: "UPDATE_CREATOR"
       path: "/creator/:ident"
@@ -1075,6 +1269,18 @@ paths:
           uppercase_operation_id: "DELETE_CREATOR"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "DELETE_CREATOR"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -1093,6 +1299,8 @@ paths:
           uppercase_operation_id: "DELETE_CREATOR"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "delete_creator"
       uppercase_operation_id: "DELETE_CREATOR"
       path: "/creator/:ident"
@@ -1146,6 +1354,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_CREATOR_REVISION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "GET_CREATOR_REVISION"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -1209,6 +1429,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_CREATOR_HISTORY"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "GET_CREATOR_HISTORY"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -1276,6 +1508,18 @@ paths:
           uppercase_operation_id: "GET_CREATOR_RELEASES"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "GET_CREATOR_RELEASES"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -1329,6 +1573,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_CREATOR_REDIRECTS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "GET_CREATOR_REDIRECTS"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -1409,6 +1665,18 @@ paths:
           uppercase_operation_id: "LOOKUP_CREATOR"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "LOOKUP_CREATOR"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -1467,6 +1735,18 @@ paths:
           uppercase_operation_id: "GET_CREATOR_EDIT"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "GET_CREATOR_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -1521,6 +1801,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "DELETE_CREATOR_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "DELETE_CREATOR_EDIT"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -1590,6 +1882,18 @@ paths:
           uppercase_operation_id: "CREATE_FILE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "CREATE_FILE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -1608,6 +1912,8 @@ paths:
           uppercase_operation_id: "CREATE_FILE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "create_file"
       uppercase_operation_id: "CREATE_FILE"
       path: "/file"
@@ -1669,6 +1975,18 @@ paths:
           uppercase_operation_id: "CREATE_FILE_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "CREATE_FILE_BATCH"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -1687,6 +2005,8 @@ paths:
           uppercase_operation_id: "CREATE_FILE_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "create_file_batch"
       uppercase_operation_id: "CREATE_FILE_BATCH"
       path: "/file/batch"
@@ -1736,6 +2056,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_FILE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "GET_FILE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -1810,6 +2142,18 @@ paths:
           uppercase_operation_id: "UPDATE_FILE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "UPDATE_FILE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -1828,6 +2172,8 @@ paths:
           uppercase_operation_id: "UPDATE_FILE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "update_file"
       uppercase_operation_id: "UPDATE_FILE"
       path: "/file/:ident"
@@ -1870,6 +2216,18 @@ paths:
           uppercase_operation_id: "DELETE_FILE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "DELETE_FILE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -1888,6 +2246,8 @@ paths:
           uppercase_operation_id: "DELETE_FILE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "delete_file"
       uppercase_operation_id: "DELETE_FILE"
       path: "/file/:ident"
@@ -1941,6 +2301,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_FILE_REVISION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "GET_FILE_REVISION"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -2007,6 +2379,18 @@ paths:
           uppercase_operation_id: "GET_FILE_HISTORY"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "GET_FILE_HISTORY"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -2060,6 +2444,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_FILE_REDIRECTS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "GET_FILE_REDIRECTS"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -2153,6 +2549,18 @@ paths:
           uppercase_operation_id: "LOOKUP_FILE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "LOOKUP_FILE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -2211,6 +2619,18 @@ paths:
           uppercase_operation_id: "GET_FILE_EDIT"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "GET_FILE_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -2265,6 +2685,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "DELETE_FILE_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "DELETE_FILE_EDIT"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -2331,6 +2763,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "CREATE_FILESET"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "CREATE_FILESET"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -2413,6 +2857,18 @@ paths:
           uppercase_operation_id: "CREATE_FILESET_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "CREATE_FILESET_BATCH"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -2480,6 +2936,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_FILESET"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "GET_FILESET"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -2554,6 +3022,18 @@ paths:
           uppercase_operation_id: "UPDATE_FILESET"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "UPDATE_FILESET"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -2611,6 +3091,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "DELETE_FILESET"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "DELETE_FILESET"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -2688,6 +3180,18 @@ paths:
           uppercase_operation_id: "GET_FILESET_REVISION"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "GET_FILESET_REVISION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -2751,6 +3255,18 @@ paths:
           uppercase_operation_id: "GET_FILESET_HISTORY"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "GET_FILESET_HISTORY"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -2804,6 +3320,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_FILESET_REDIRECTS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "GET_FILESET_REDIRECTS"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -2865,6 +3393,18 @@ paths:
           uppercase_operation_id: "GET_FILESET_EDIT"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "GET_FILESET_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -2919,6 +3459,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "DELETE_FILESET_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "DELETE_FILESET_EDIT"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -2985,6 +3537,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "CREATE_WEBCAPTURE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "CREATE_WEBCAPTURE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -3067,6 +3631,18 @@ paths:
           uppercase_operation_id: "CREATE_WEBCAPTURE_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "CREATE_WEBCAPTURE_BATCH"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -3134,6 +3710,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_WEBCAPTURE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "GET_WEBCAPTURE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -3208,6 +3796,18 @@ paths:
           uppercase_operation_id: "UPDATE_WEBCAPTURE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "UPDATE_WEBCAPTURE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -3265,6 +3865,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "DELETE_WEBCAPTURE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "DELETE_WEBCAPTURE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -3342,6 +3954,18 @@ paths:
           uppercase_operation_id: "GET_WEBCAPTURE_REVISION"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "GET_WEBCAPTURE_REVISION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -3405,6 +4029,18 @@ paths:
           uppercase_operation_id: "GET_WEBCAPTURE_HISTORY"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "GET_WEBCAPTURE_HISTORY"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -3458,6 +4094,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_WEBCAPTURE_REDIRECTS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "GET_WEBCAPTURE_REDIRECTS"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -3519,6 +4167,18 @@ paths:
           uppercase_operation_id: "GET_WEBCAPTURE_EDIT"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "GET_WEBCAPTURE_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -3573,6 +4233,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "DELETE_WEBCAPTURE_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "DELETE_WEBCAPTURE_EDIT"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -3639,6 +4311,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "CREATE_RELEASE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "CREATE_RELEASE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -3721,6 +4405,18 @@ paths:
           uppercase_operation_id: "CREATE_RELEASE_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "CREATE_RELEASE_BATCH"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -3788,6 +4484,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_RELEASE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "GET_RELEASE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -3862,6 +4570,18 @@ paths:
           uppercase_operation_id: "UPDATE_RELEASE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "UPDATE_RELEASE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -3919,6 +4639,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "DELETE_RELEASE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "DELETE_RELEASE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -3996,6 +4728,18 @@ paths:
           uppercase_operation_id: "GET_RELEASE_REVISION"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "GET_RELEASE_REVISION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -4056,6 +4800,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_RELEASE_HISTORY"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "GET_RELEASE_HISTORY"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -4123,6 +4879,18 @@ paths:
           uppercase_operation_id: "GET_RELEASE_FILES"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "GET_RELEASE_FILES"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -4184,6 +4952,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_RELEASE_FILESETS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "GET_RELEASE_FILESETS"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -4251,6 +5031,18 @@ paths:
           uppercase_operation_id: "GET_RELEASE_WEBCAPTURES"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "GET_RELEASE_WEBCAPTURES"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -4304,6 +5096,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_RELEASE_REDIRECTS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "GET_RELEASE_REDIRECTS"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -4406,6 +5210,18 @@ paths:
           uppercase_operation_id: "LOOKUP_RELEASE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "LOOKUP_RELEASE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -4464,6 +5280,18 @@ paths:
           uppercase_operation_id: "GET_RELEASE_EDIT"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "GET_RELEASE_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -4518,6 +5346,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "DELETE_RELEASE_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "DELETE_RELEASE_EDIT"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -4584,6 +5424,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "CREATE_WORK"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "CREATE_WORK"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -4666,6 +5518,18 @@ paths:
           uppercase_operation_id: "CREATE_WORK_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "CREATE_WORK_BATCH"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -4733,6 +5597,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_WORK"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "GET_WORK"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -4807,6 +5683,18 @@ paths:
           uppercase_operation_id: "UPDATE_WORK"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "UPDATE_WORK"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -4864,6 +5752,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "DELETE_WORK"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "DELETE_WORK"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -4941,6 +5841,18 @@ paths:
           uppercase_operation_id: "GET_WORK_REVISION"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "GET_WORK_REVISION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -5004,6 +5916,18 @@ paths:
           uppercase_operation_id: "GET_WORK_HISTORY"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "GET_WORK_HISTORY"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -5057,6 +5981,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_WORK_REDIRECTS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "GET_WORK_REDIRECTS"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -5124,6 +6060,18 @@ paths:
           uppercase_operation_id: "GET_WORK_RELEASES"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "GET_WORK_RELEASES"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -5182,6 +6130,18 @@ paths:
           uppercase_operation_id: "GET_WORK_EDIT"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "GET_WORK_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         404:
           description: "Not Found"
           schema:
@@ -5236,6 +6196,18 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "DELETE_WORK_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
           uppercase_operation_id: "DELETE_WORK_EDIT"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
@@ -5630,6 +6602,11 @@ paths:
       path: "/changelog/:index"
       HttpMethod: "Get"
       httpmethod: "get"
+securityDefinitions:
+  Bearer:
+    type: "apiKey"
+    name: "Authorization"
+    in: "header"
 definitions:
   error_response:
     type: "object"
@@ -7494,6 +8471,13 @@ x-entity-responses:
     description: "Bad Request"
     schema:
       $ref: "#/definitions/error_response"
+  401:
+    description: "Not Authorized"
+    schema:
+      $ref: "#/definitions/error_response"
+    headers:
+      WWW_Authenticate:
+        type: "string"
   404:
     description: "Not Found"
     schema:

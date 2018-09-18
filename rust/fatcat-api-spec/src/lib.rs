@@ -38,6 +38,8 @@ pub enum CreateContainerResponse {
     CreatedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -50,6 +52,8 @@ pub enum CreateContainerBatchResponse {
     CreatedEntities(Vec<models::EntityEdit>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -62,6 +66,8 @@ pub enum DeleteContainerResponse {
     DeletedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -74,6 +80,8 @@ pub enum DeleteContainerEditResponse {
     DeletedEdit(models::Success),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -86,6 +94,8 @@ pub enum GetContainerResponse {
     FoundEntity(models::ContainerEntity),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -98,6 +108,8 @@ pub enum GetContainerEditResponse {
     FoundEdit(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -110,6 +122,8 @@ pub enum GetContainerHistoryResponse {
     FoundEntityHistory(Vec<models::EntityHistoryEntry>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -122,6 +136,8 @@ pub enum GetContainerRedirectsResponse {
     FoundEntityRedirects(Vec<String>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -134,6 +150,8 @@ pub enum GetContainerRevisionResponse {
     FoundEntityRevision(models::ContainerEntity),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -146,6 +164,8 @@ pub enum LookupContainerResponse {
     FoundEntity(models::ContainerEntity),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -158,6 +178,8 @@ pub enum UpdateContainerResponse {
     UpdatedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -170,6 +192,8 @@ pub enum CreateCreatorResponse {
     CreatedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -182,6 +206,8 @@ pub enum CreateCreatorBatchResponse {
     CreatedEntities(Vec<models::EntityEdit>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -194,6 +220,8 @@ pub enum DeleteCreatorResponse {
     DeletedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -206,6 +234,8 @@ pub enum DeleteCreatorEditResponse {
     DeletedEdit(models::Success),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -218,6 +248,8 @@ pub enum GetCreatorResponse {
     FoundEntity(models::CreatorEntity),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -230,6 +262,8 @@ pub enum GetCreatorEditResponse {
     FoundEdit(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -242,6 +276,8 @@ pub enum GetCreatorHistoryResponse {
     FoundEntityHistory(Vec<models::EntityHistoryEntry>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -254,6 +290,8 @@ pub enum GetCreatorRedirectsResponse {
     FoundEntityRedirects(Vec<String>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -266,6 +304,8 @@ pub enum GetCreatorReleasesResponse {
     Found(Vec<models::ReleaseEntity>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -278,6 +318,8 @@ pub enum GetCreatorRevisionResponse {
     FoundEntityRevision(models::CreatorEntity),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -290,6 +332,8 @@ pub enum LookupCreatorResponse {
     FoundEntity(models::CreatorEntity),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -302,6 +346,8 @@ pub enum UpdateCreatorResponse {
     UpdatedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -392,6 +438,8 @@ pub enum CreateFileResponse {
     CreatedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -404,6 +452,8 @@ pub enum CreateFileBatchResponse {
     CreatedEntities(Vec<models::EntityEdit>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -416,6 +466,8 @@ pub enum DeleteFileResponse {
     DeletedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -428,6 +480,8 @@ pub enum DeleteFileEditResponse {
     DeletedEdit(models::Success),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -440,6 +494,8 @@ pub enum GetFileResponse {
     FoundEntity(models::FileEntity),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -452,6 +508,8 @@ pub enum GetFileEditResponse {
     FoundEdit(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -464,6 +522,8 @@ pub enum GetFileHistoryResponse {
     FoundEntityHistory(Vec<models::EntityHistoryEntry>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -476,6 +536,8 @@ pub enum GetFileRedirectsResponse {
     FoundEntityRedirects(Vec<String>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -488,6 +550,8 @@ pub enum GetFileRevisionResponse {
     FoundEntityRevision(models::FileEntity),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -500,6 +564,8 @@ pub enum LookupFileResponse {
     FoundEntity(models::FileEntity),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -512,6 +578,8 @@ pub enum UpdateFileResponse {
     UpdatedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -524,6 +592,8 @@ pub enum CreateFilesetResponse {
     CreatedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -536,6 +606,8 @@ pub enum CreateFilesetBatchResponse {
     CreatedEntities(Vec<models::EntityEdit>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -548,6 +620,8 @@ pub enum DeleteFilesetResponse {
     DeletedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -560,6 +634,8 @@ pub enum DeleteFilesetEditResponse {
     DeletedEdit(models::Success),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -572,6 +648,8 @@ pub enum GetFilesetResponse {
     FoundEntity(models::FilesetEntity),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -584,6 +662,8 @@ pub enum GetFilesetEditResponse {
     FoundEdit(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -596,6 +676,8 @@ pub enum GetFilesetHistoryResponse {
     FoundEntityHistory(Vec<models::EntityHistoryEntry>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -608,6 +690,8 @@ pub enum GetFilesetRedirectsResponse {
     FoundEntityRedirects(Vec<String>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -620,6 +704,8 @@ pub enum GetFilesetRevisionResponse {
     FoundEntityRevision(models::FilesetEntity),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -632,6 +718,8 @@ pub enum UpdateFilesetResponse {
     UpdatedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -644,6 +732,8 @@ pub enum CreateReleaseResponse {
     CreatedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -656,6 +746,8 @@ pub enum CreateReleaseBatchResponse {
     CreatedEntities(Vec<models::EntityEdit>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -668,6 +760,8 @@ pub enum CreateWorkResponse {
     CreatedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -680,6 +774,8 @@ pub enum DeleteReleaseResponse {
     DeletedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -692,6 +788,8 @@ pub enum DeleteReleaseEditResponse {
     DeletedEdit(models::Success),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -704,6 +802,8 @@ pub enum GetReleaseResponse {
     FoundEntity(models::ReleaseEntity),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -716,6 +816,8 @@ pub enum GetReleaseEditResponse {
     FoundEdit(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -728,6 +830,8 @@ pub enum GetReleaseFilesResponse {
     Found(Vec<models::FileEntity>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -740,6 +844,8 @@ pub enum GetReleaseFilesetsResponse {
     Found(Vec<models::FilesetEntity>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -752,6 +858,8 @@ pub enum GetReleaseHistoryResponse {
     FoundEntityHistory(Vec<models::EntityHistoryEntry>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -764,6 +872,8 @@ pub enum GetReleaseRedirectsResponse {
     FoundEntityRedirects(Vec<String>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -776,6 +886,8 @@ pub enum GetReleaseRevisionResponse {
     FoundEntityRevision(models::ReleaseEntity),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -788,6 +900,8 @@ pub enum GetReleaseWebcapturesResponse {
     Found(Vec<models::WebcaptureEntity>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -800,6 +914,8 @@ pub enum LookupReleaseResponse {
     FoundEntity(models::ReleaseEntity),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -812,6 +928,8 @@ pub enum UpdateReleaseResponse {
     UpdatedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -824,6 +942,8 @@ pub enum CreateWebcaptureResponse {
     CreatedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -836,6 +956,8 @@ pub enum CreateWebcaptureBatchResponse {
     CreatedEntities(Vec<models::EntityEdit>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -848,6 +970,8 @@ pub enum DeleteWebcaptureResponse {
     DeletedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -860,6 +984,8 @@ pub enum DeleteWebcaptureEditResponse {
     DeletedEdit(models::Success),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -872,6 +998,8 @@ pub enum GetWebcaptureResponse {
     FoundEntity(models::WebcaptureEntity),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -884,6 +1012,8 @@ pub enum GetWebcaptureEditResponse {
     FoundEdit(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -896,6 +1026,8 @@ pub enum GetWebcaptureHistoryResponse {
     FoundEntityHistory(Vec<models::EntityHistoryEntry>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -908,6 +1040,8 @@ pub enum GetWebcaptureRedirectsResponse {
     FoundEntityRedirects(Vec<String>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -920,6 +1054,8 @@ pub enum GetWebcaptureRevisionResponse {
     FoundEntityRevision(models::WebcaptureEntity),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -932,6 +1068,8 @@ pub enum UpdateWebcaptureResponse {
     UpdatedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -944,6 +1082,8 @@ pub enum CreateWorkBatchResponse {
     CreatedEntities(Vec<models::EntityEdit>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -956,6 +1096,8 @@ pub enum DeleteWorkResponse {
     DeletedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -968,6 +1110,8 @@ pub enum DeleteWorkEditResponse {
     DeletedEdit(models::Success),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -980,6 +1124,8 @@ pub enum GetWorkResponse {
     FoundEntity(models::WorkEntity),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -992,6 +1138,8 @@ pub enum GetWorkEditResponse {
     FoundEdit(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -1004,6 +1152,8 @@ pub enum GetWorkHistoryResponse {
     FoundEntityHistory(Vec<models::EntityHistoryEntry>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -1016,6 +1166,8 @@ pub enum GetWorkRedirectsResponse {
     FoundEntityRedirects(Vec<String>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -1028,6 +1180,8 @@ pub enum GetWorkReleasesResponse {
     Found(Vec<models::ReleaseEntity>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -1040,6 +1194,8 @@ pub enum GetWorkRevisionResponse {
     FoundEntityRevision(models::WorkEntity),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -1052,6 +1208,8 @@ pub enum UpdateWorkResponse {
     UpdatedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error

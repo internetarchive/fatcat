@@ -13,6 +13,12 @@ consumes:
 produces:
   - application/json
 
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+
 tags: # TAGLINE
  - name: containers # TAGLINE
    descriptions: "Container entities: such as journals, conferences, book series" # TAGLINE
@@ -548,6 +554,13 @@ x-entity-responses: &ENTITYRESPONSES
     description: Bad Request
     schema:
       $ref: "#/definitions/error_response"
+  401:
+    description: Not Authorized # "Authentication information is missing or invalid"
+    schema:
+      $ref: "#/definitions/error_response"
+    headers:
+      WWW_Authenticate:
+        type: string
   404:
     description: Not Found
     schema:
@@ -573,6 +586,8 @@ paths:
           in: query
           required: false
           type: string
+      security:
+        - Bearer: []
       responses:
         201:
           description: Created Entity
@@ -602,6 +617,8 @@ paths:
             type: array
             items:
               $ref: "#/definitions/container_entity"
+      security:
+        - Bearer: []
       responses:
         201:
           description: Created Entities
@@ -651,6 +668,8 @@ paths:
           in: query
           required: false
           type: string
+      security:
+        - Bearer: []
       responses:
         200:
           description: Updated Entity
@@ -666,6 +685,8 @@ paths:
           in: query
           required: false
           type: string
+      security:
+        - Bearer: []
       responses:
         200:
           description: Deleted Entity
@@ -816,6 +837,8 @@ paths:
           in: query
           required: false
           type: string
+      security:
+        - Bearer: []
       responses:
         201:
           description: Created Entity
@@ -845,6 +868,8 @@ paths:
             type: array
             items:
               $ref: "#/definitions/creator_entity"
+      security:
+        - Bearer: []
       responses:
         201:
           description: Created Entities
@@ -894,6 +919,8 @@ paths:
           in: query
           required: false
           type: string
+      security:
+        - Bearer: []
       responses:
         200:
           description: Updated Entity
@@ -909,6 +936,8 @@ paths:
           in: query
           required: false
           type: string
+      security:
+        - Bearer: []
       responses:
         200:
           description: Deleted Entity
@@ -1082,6 +1111,8 @@ paths:
           in: query
           required: false
           type: string
+      security:
+        - Bearer: []
       responses:
         201:
           description: Created Entity
@@ -1111,6 +1142,8 @@ paths:
             type: array
             items:
               $ref: "#/definitions/file_entity"
+      security:
+        - Bearer: []
       responses:
         201:
           description: Created Entities
@@ -1160,6 +1193,8 @@ paths:
           in: query
           required: false
           type: string
+      security:
+        - Bearer: []
       responses:
         200:
           description: Updated Entity
@@ -1175,6 +1210,8 @@ paths:
           in: query
           required: false
           type: string
+      security:
+        - Bearer: []
       responses:
         200:
           description: Deleted Entity
