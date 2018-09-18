@@ -5,6 +5,7 @@ info:
   description: A scalable, versioned, API-oriented catalog of bibliographic entities
     and file metadata
   version: 0.1.0
+# Actually HTTPS in QA and production
 schemes: [http]
 basePath: /v0
 #host: api.fatcat.wiki
@@ -12,6 +13,20 @@ consumes:
   - application/json
 produces:
   - application/json
+
+tags:
+ - name: containers
+   descriptions: "Container entities: such as journals, conferences, book series"
+ - name: creators
+   descriptions: "Creator entities: such as authors"
+ - name: files
+   descriptions: "File entities"
+ - name: releases
+   descriptions: "Release entities: individual articles, pre-prints, books"
+ - name: works
+   descriptions: "Work entities: grouping releases which are variants of the same work"
+ - name: edit-lifecycle
+   descriptions: "Endpoints relating to global edit submission and history"
 
 # don't want these to be rust types (at least for now)
 x-fatcat-ident: &FATCATIDENT
@@ -423,6 +438,8 @@ paths:
   /container:
     post:
       operationId: "create_container"
+      tags:
+        - containers
       parameters:
         - name: entity
           in: body
@@ -442,6 +459,8 @@ paths:
   /container/batch:
     post:
       operationId: "create_container_batch"
+      tags:
+        - containers
       parameters:
         - name: autoaccept
           in: query
@@ -476,6 +495,8 @@ paths:
         required: true
     get:
       operationId: "get_container"
+      tags:
+        - containers
       parameters:
         - name: expand
           in: query
@@ -490,6 +511,8 @@ paths:
         <<: *ENTITYRESPONSES
     put:
       operationId: "update_container"
+      tags:
+        - containers
       parameters:
         - name: entity
           in: body
@@ -508,6 +531,8 @@ paths:
         <<: *ENTITYRESPONSES
     delete:
       operationId: "delete_container"
+      tags:
+        - containers
       parameters:
         - name: editgroup
           in: query
@@ -531,6 +556,8 @@ paths:
         format: int64
         required: false
     get:
+      tags:
+        - containers
       operationId: "get_container_history"
       responses:
         200:
@@ -543,6 +570,8 @@ paths:
   /container/lookup:
     get:
       operationId: "lookup_container"
+      tags:
+        - containers
       parameters:
         - name: issnl
           in: query
@@ -557,6 +586,8 @@ paths:
   /creator:
     post:
       operationId: "create_creator"
+      tags:
+        - creators
       parameters:
         - name: entity
           in: body
@@ -576,6 +607,8 @@ paths:
   /creator/batch:
     post:
       operationId: "create_creator_batch"
+      tags:
+        - creators
       parameters:
         - name: autoaccept
           in: query
@@ -610,6 +643,8 @@ paths:
         required: true
     get:
       operationId: "get_creator"
+      tags:
+        - creators
       parameters:
         - name: expand
           in: query
@@ -624,6 +659,8 @@ paths:
         <<: *ENTITYRESPONSES
     put:
       operationId: "update_creator"
+      tags:
+        - creators
       parameters:
         - name: entity
           in: body
@@ -642,6 +679,8 @@ paths:
         <<: *ENTITYRESPONSES
     delete:
       operationId: "delete_creator"
+      tags:
+        - creators
       parameters:
         - name: editgroup
           in: query
@@ -666,6 +705,8 @@ paths:
         required: false
     get:
       operationId: "get_creator_history"
+      tags:
+        - creators
       responses:
         200:
           description: Found Entity History
@@ -682,6 +723,8 @@ paths:
         required: true
     get:
       operationId: "get_creator_releases"
+      tags:
+        - creators
       responses:
         200:
           description: Found
@@ -693,6 +736,8 @@ paths:
   /creator/lookup:
     get:
       operationId: "lookup_creator"
+      tags:
+        - creators
       parameters:
         - name: orcid
           in: query
@@ -707,6 +752,8 @@ paths:
   /file:
     post:
       operationId: "create_file"
+      tags:
+        - files
       parameters:
         - name: entity
           in: body
@@ -726,6 +773,8 @@ paths:
   /file/batch:
     post:
       operationId: "create_file_batch"
+      tags:
+        - files
       parameters:
         - name: autoaccept
           in: query
@@ -760,6 +809,8 @@ paths:
         required: true
     get:
       operationId: "get_file"
+      tags:
+        - files
       parameters:
         - name: expand
           in: query
@@ -774,6 +825,8 @@ paths:
         <<: *ENTITYRESPONSES
     put:
       operationId: "update_file"
+      tags:
+        - files
       parameters:
         - name: entity
           in: body
@@ -792,6 +845,8 @@ paths:
         <<: *ENTITYRESPONSES
     delete:
       operationId: "delete_file"
+      tags:
+        - files
       parameters:
         - name: editgroup
           in: query
@@ -816,6 +871,8 @@ paths:
         required: false
     get:
       operationId: "get_file_history"
+      tags:
+        - files
       responses:
         200:
           description: Found Entity History
@@ -827,6 +884,8 @@ paths:
   /file/lookup:
     get:
       operationId: "lookup_file"
+      tags:
+        - files
       parameters:
         - name: sha1
           in: query
@@ -841,6 +900,8 @@ paths:
   /release:
     post:
       operationId: "create_release"
+      tags:
+        - releases
       parameters:
         - name: entity
           in: body
@@ -860,6 +921,8 @@ paths:
   /release/batch:
     post:
       operationId: "create_release_batch"
+      tags:
+        - releases
       parameters:
         - name: autoaccept
           in: query
@@ -894,6 +957,8 @@ paths:
         required: true
     get:
       operationId: "get_release"
+      tags:
+        - releases
       parameters:
         - name: expand
           in: query
@@ -908,6 +973,8 @@ paths:
         <<: *ENTITYRESPONSES
     put:
       operationId: "update_release"
+      tags:
+        - releases
       parameters:
         - name: entity
           in: body
@@ -926,6 +993,8 @@ paths:
         <<: *ENTITYRESPONSES
     delete:
       operationId: "delete_release"
+      tags:
+        - releases
       parameters:
         - name: editgroup
           in: query
@@ -950,6 +1019,8 @@ paths:
         required: false
     get:
       operationId: "get_release_history"
+      tags:
+        - releases
       responses:
         200:
           description: Found Entity History
@@ -966,6 +1037,8 @@ paths:
         required: true
     get:
       operationId: "get_release_files"
+      tags:
+        - releases
       responses:
         200:
           description: Found
@@ -977,6 +1050,8 @@ paths:
   /release/lookup:
     get:
       operationId: "lookup_release"
+      tags:
+        - releases
       parameters:
         - name: doi
           in: query
@@ -991,6 +1066,8 @@ paths:
   /work:
     post:
       operationId: "create_work"
+      tags:
+        - releases
       parameters:
         - name: entity
           in: body
@@ -1010,6 +1087,8 @@ paths:
   /work/batch:
     post:
       operationId: "create_work_batch"
+      tags:
+        - works
       parameters:
         - name: autoaccept
           in: query
@@ -1044,6 +1123,8 @@ paths:
         required: true
     get:
       operationId: "get_work"
+      tags:
+        - works
       parameters:
         - name: expand
           in: query
@@ -1058,6 +1139,8 @@ paths:
         <<: *ENTITYRESPONSES
     put:
       operationId: "update_work"
+      tags:
+        - works
       parameters:
         - name: entity
           in: body
@@ -1076,6 +1159,8 @@ paths:
         <<: *ENTITYRESPONSES
     delete:
       operationId: "delete_work"
+      tags:
+        - works
       parameters:
         - name: editgroup
           in: query
@@ -1100,6 +1185,8 @@ paths:
         required: false
     get:
       operationId: "get_work_history"
+      tags:
+        - works
       responses:
         200:
           description: Found Entity History
@@ -1116,6 +1203,8 @@ paths:
         required: true
     get:
       operationId: "get_work_releases"
+      tags:
+        - works
       responses:
         200:
           description: Found
@@ -1179,6 +1268,8 @@ paths:
   /editgroup:
     post:
       operationId: "create_editgroup"
+      tags:
+        - edit-lifecycle
       parameters:
         - name: editgroup
           in: body
@@ -1206,6 +1297,8 @@ paths:
         <<: *FATCATIDENT
     get:
       operationId: "get_editgroup"
+      tags:
+        - edit-lifecycle
       responses:
         200:
           description: Found
@@ -1231,6 +1324,8 @@ paths:
         <<: *FATCATIDENT
     post:
       operationId: "accept_editgroup"
+      tags:
+        - edit-lifecycle
       responses:
         200:
           description: Merged Successfully
@@ -1261,6 +1356,8 @@ paths:
         required: false
     get:
       operationId: "get_changelog"
+      tags:
+        - edit-lifecycle
       responses:
         200:
           description: Success
@@ -1281,6 +1378,8 @@ paths:
         required: true
     get:
       operationId: "get_changelog_entry"
+      tags:
+        - edit-lifecycle
       responses:
         200:
           description: Found Changelog Entry
