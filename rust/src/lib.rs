@@ -11,7 +11,7 @@ extern crate futures;
 extern crate uuid;
 #[macro_use]
 extern crate hyper;
-//extern crate swagger;
+extern crate swagger;
 #[macro_use]
 extern crate error_chain;
 extern crate iron;
@@ -24,6 +24,7 @@ extern crate regex;
 #[macro_use]
 extern crate lazy_static;
 extern crate sha1;
+extern crate macaroon;
 
 pub mod api_entity_crud;
 pub mod api_helpers;
@@ -31,6 +32,7 @@ pub mod api_server;
 pub mod api_wrappers;
 pub mod database_models;
 pub mod database_schema;
+pub mod auth;
 
 pub mod errors {
     // Create the Error, ErrorKind, ResultExt, and Result types
