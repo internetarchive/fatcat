@@ -1,3 +1,5 @@
+#![allow(proc_macro_derive_resolution_fallback)]
+
 extern crate chrono;
 extern crate fatcat_api_spec;
 #[macro_use]

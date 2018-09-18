@@ -1,3 +1,5 @@
+#![allow(proc_macro_derive_resolution_fallback)]
+
 use api_helpers::uuid2fcid;
 use chrono;
 use database_schema::*;
