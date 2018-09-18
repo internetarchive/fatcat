@@ -16,9 +16,12 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE editor (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    username            TEXT NOT NULL UNIQUE,
+    username            TEXT NOT NULL UNIQUE, -- TODO: alphanum and length constraints?
     is_admin            BOOLEAN NOT NULL DEFAULT false,
+    is_bot              BOOLEAN NOT NULL DEFAULT false,
     registered          TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
+    auth_epoch          TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
+    wrangler_id         UUID REFERENCES editor(id),
     active_editgroup_id UUID -- REFERENCES( editgroup(id) via ALTER below
 );
 
