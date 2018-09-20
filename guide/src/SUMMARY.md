@@ -2,9 +2,10 @@
 
 - [Fatcat Overview](./overview.md)
     - [Data Model](./data_model.md)
+    - [Workflow](./workflow.md)
     - [Sources](./sources.md)
     - [Implementation](./implementation.md)
-    - [Original Design Document](./rfc.md)
+    - [Roadmap](./roadmap.md)
 - [Cataloging Style Guide](./style_guide.md)
     - [Entity Field Reference](./entity_fields.md)
 - [Public API](./http_api.md)

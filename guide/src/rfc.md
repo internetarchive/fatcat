@@ -1,1 +1,0 @@
-../../fatcat-rfc.md

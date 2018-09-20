@@ -13,6 +13,41 @@ All API traffic is over HTTPS; there is no insecure HTTP endpoint, even for
 read-only operations. To start, all endpoints accept and return only JSON
 serialized content.
 
+## Entity Endpoints/Actions
+
+Actions could, in theory, be directed at any of:
+
+    entities (ident)
+    revision
+    edit
+
+A design decision to be made is how much to abstract away the distinction
+between these three types (particularly the identifier/revision distinction).
+
+Top-level entity actions (resulting in edits):
+
+    create (new rev)
+    redirect
+    split
+    update (new rev)
+    delete
+
+On existing entity edits (within a group):
+
+    update
+    delete
+
+An edit group as a whole can be:
+
+    create
+    submit
+    accept
+
+Other per-entity endpoints:
+
+    match (by field/context)
+    lookup (by external persistent identifier)
+
 ## Editgroups
 
 All mutating entity operations (create, update, delete) accept an
@@ -45,6 +80,21 @@ All mutating API calls (POST, PUT, DELETE HTTP verbs) require token-based
 authentication using an HTTP Bearer token. If you can't generate such a token
 from the web interface (because that feature hasn't been implemented), look for
 a public demo token for experimentation, or ask an administrator for a token.
+
+## Autoaccept Flag
+
+Currently only on batch creation (POST) for entities.
+
+For all bulk operations, optional 'editgroup' query parameter overrides
+individual editgroup parameters.
+
+If autoaccept flag is set and editgroup is not, a new editgroup is
+automatically created and overrides for all entities inserted. Note
+that this is different behavior from the "use current or create new"
+default behavior for regular creation.
+
+Unfortunately, "true" and "false" are the only values acceptable for boolean
+rust/openapi2 query parameters
 
 ## QA Instance
 
