@@ -1,0 +1,5 @@
+[book]
+title = "Fatcat: The Guide"
+authors = ["Fatcat Documentation Contributors"]
+multilingual = false
+src = "src"
