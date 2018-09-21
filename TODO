@@ -53,8 +53,6 @@ new importers:
 
 - release_type, release_status, url.rel schemas (and enforce in API?)
 
-name ref: https://www.w3.org/International/questions/qa-personal-names
-
 ## Fun Features
 
 - "save paper now"
@@ -67,8 +65,16 @@ name ref: https://www.w3.org/International/questions/qa-personal-names
     => or maybe rust?
 - bibtext (etc) export
 
+## Schema / Entity Fields
+
+- `doi` field for containers (at least for "journal" type; maybe for "series"
+  as well?)
+- `retracted`, `translation`, and perhaps `corrected` as flags on releases,
+  instead of release_status?
+
 ## Other
 
+- refactor openapi schema to use shared response types
 - consider using "HTTP 202: Accepted" for entity-mutating calls
 - basic python hbase/elastic matcher
   => takes sha1 keys
