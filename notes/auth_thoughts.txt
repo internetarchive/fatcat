@@ -42,6 +42,12 @@ Backend:
 - auth_epoch timestamp column on editor table
 - lock editor by setting auth_epoch to deep future
 
+Deploy process:
+- auto-create root (admin), import-bootstrap (admin,bot), and demo-user
+  editors, with fixed editor_id and "early" auth_epoch, as part of SQL. save
+  tokens in env files, on laptop and QA instance.
+- on live QA instance, revoke all keys when live (?)
+
 TODO: privacy policy
 
 fatcat API doesn't *require* auth, but if auth is provided, it will check
@@ -52,3 +58,4 @@ support oauth2 against:
 - git.archive.org
 - github
 ? google
+

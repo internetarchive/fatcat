@@ -6,6 +6,9 @@ Many co-authors (group):
     "Precision measurement of the top-quark mass in lepton+jets final states"
     https://arxiv.org/abs/1405.1756
 
+"Fake" creator: Bourbaki
+
+"Fake" works: John Bohanon sting operations, previous scandals
 
 ## Found in Testing Imports
 
@@ -32,6 +35,10 @@ Actual ORCID match:
 Fulltext via CORE publisher-connector:
 
     10.1186/s12889-016-2706-9 
+
+Fake/example DOI: 10.5555/12345678
+ORCID: 0000-0002-1825-0097
+ISSN (invalid?): 0264-3561
 
 ## Missing
 
