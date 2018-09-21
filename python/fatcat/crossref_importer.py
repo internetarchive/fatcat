@@ -27,7 +27,7 @@ class FatcatCrossrefImporter(FatcatImporter):
             [doi.lower()]).fetchone()
         if row is None:
             return dict(core_id=None, pmid=None, pmcid=None, wikidata_qid=None)
-        row = [str((cell or None)) for cell in row]
+        row = [str(cell or '') or None for cell in row]
         return dict(
             core_id=row[0],
             pmid=row[1],

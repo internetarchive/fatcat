@@ -54,7 +54,7 @@ def main():
         default=None, type=argparse.FileType('r'))
     sub_import_crossref.add_argument('extid_map_file',
         help="DOI-to-other-identifiers sqlite3 database",
-        default=None, type=argparse.FileType('r'))
+        default=None, type=str)
     sub_import_crossref.add_argument('--no-create-containers',
         action='store_true',
         help="skip creation of new container entities based on ISSN")
