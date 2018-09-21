@@ -71,35 +71,23 @@ guide.
 
 ## Releases
 
-- `title: (required)
-        type: string
-- `work_id:
-        type: string
-        example: "q3nouwy3nnbsvo3h5klxsx4a7y"
-- `container:
-        $ref: "#/definitions/container_entity"
-        description: "Optional; GET-only"
-- `files:
-        description: "Optional; GET-only"
-        type: array
-        items:
-          $ref: "#/definitions/file_entity"
-- `container_id:
-        type: string
-        example: "q3nouwy3nnbsvo3h5klxsx4a7y"
-- `release_type:
-        type: string
-        example: "book"
-- `release_status:
-        type: string
-        example: "preprint"
-- `release_date:
-        type: string
-        format: date
-- `doi:
-        type: string
-        #format: custom
-        example: "10.1234/abcde.789" See the "External Identifiers" section of style guide.
+- `title` (required): the title of the release.
+- `work_id` (fatcat identifier; required): the (single) work that this release
+  is grouped under. If not specified in a creation (`POST`) action, the API
+  will auto-generate a work.
+- `container_id` (fatcat identifier): a (single) container that this release is
+  part of. When expanded the `container` field contains the full `container`
+  entity.
+- `release_type` (string, controlled set): represents the medium or form-factor
+  of this release; eg, "book" versus "journal article". Not necessarily
+  consistent across all releases of a work. See definitions below.
+- `release_status` (string, controlled set): represents the publishing/review
+  lifecycle status of this particular release of the work. See definitions
+  below.
+- `release_date` (string, date format): when this release was first made
+  publicly available
+- `doi` (string): full DOI number, lower-case. Example: "10.1234/abcde.789".
+  See the "External Identifiers" section of style guide.
 - `isbn13` (string): external identifer for books. ISBN-9 and other formats
   should be converted to canonical ISBN-13. See the "External Identifiers"
   section of style guide.
@@ -158,27 +146,27 @@ guide.
   can only be linked to a specific target release (not a work), though it may
   be ambugious which release of a work is being referenced if the citation is
   not specific enough. Reference fields include:
-    - index:
-        type: integer
-        format: int64
-    - target_release_id:
-        type: string
-        #format: ident
-    - extra:
-        type: object
-        additionalProperties: {}
-    - key:
-        type: string
-    - year:
-        type: integer
-        format: int64
-    - container_title:
-        type: string
-    - title:
-        type: string
-    - locator:
-        type: string
-        example: "p123"
+    - `index` (integer, optional): reference lists and bibliographies almost
+      always have an implicit order. Zero-indexed. Note that this is distinct
+      from the `key` field.
+    - `target_release_id` (fatcat identifier): if known, and the release
+      exists, a cross-reference to the fatcat entity
+    - `extra` (JSON, optional): additional citation format metadata can be
+      stored here, particularly if the citation schema does not align. Common
+      fields might be "volume", "authors", "issue", "publisher", "url", and
+      external identifers ("doi", "isbn13").
+    - `key` (string): works often reference works with a short slug or index
+      number, which can be captured here. For example, "[BROWN2017]". Keys
+      generally supercede the `index` field, though both can/should be
+      supplied.
+    - `year` (integer): year of publication of the cited release.
+    - `container_title` (string): if applicable, the name of the container of
+      the release being cited, as written in the citation (usually an
+      abbreviation).
+    - `title` (string): the title of the work/release being cited, as written.
+    - `locator` (string): a more specific reference into the work/release being
+      cited, for example the page number(s). For web reference, store the URL
+      in "extra", not here.
 
 Controlled vocabulary for `release_type` is derived from the Crossref `type`
 vocabulary:
@@ -282,22 +270,21 @@ Current "extra" fields, flags, and content:
 
 [arxiv.org]: https://arxiv.org
 
-abstracts:
-        type: array
-        items:
-          type: object
-          properties:
-            sha1:
-              type: string
-              example: "3f242a192acc258bdfdb151943419437f440c313"
-            content:
-              type: string
-              example: "<jats:p>Some abstract thing goes here</jats:p>"
-            mimetype:
-              type: string
-              example: "application/xml+jats"
-            lang:
-              type: string
-              example: "en"
+### Abstracts
+
+Abstract *contents* (in raw string form) are stored in their own table, and are
+immutable (not editable), but there is release-specific metadata as part of
+`release` entities.
+
+- `sha1` (string, hex, required): reference to the abstract content (string).
+  Example: "3f242a192acc258bdfdb151943419437f440c313"
+- `content` (string): The abstract raw content itself. Example: `<jats:p>Some
+  abstract thing goes here</jats:p>`
+- `mimetype` (string): not formally required, but should effectively always get
+  set. `text/plain` if the abstract doesn't have a structured format
+- `lang` (string, controlled set): the human language this abstract is in. See
+  the `lang` field of release for format and vocabulary.
+
 ## Works
 
+Works have no field! They just group releases.
