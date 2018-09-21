@@ -1,5 +1,47 @@
 # Roadmap
 
+Major unimplemented features (as of September 2018) include:
+
+- backend "soundness" work to ensure corrupt data model states aren't reachable
+  via the API
+- authentication and account creation
+- rate-limiting and spam/abuse mitigation
+- "automated update" bots to consume metadata feeds (as opposed to one-time
+  bulk imports)
+- actual entity creation, editing, deleting through the web interface
+- updating the search index in near-real-time following editgroup merges. In
+  particular, the cache invalidation problem is tricky for some relationships
+  (eg, updating all releases if a container is updated)
+
+Once a reasonable degree of schema and API stability is attained, contributions
+would be helpful to implement:
+
+- import (bulk and/or continuous updates) for more metadata sources
+- better handling of work/release distinction in, eg, search results and
+  citation counting
+- de-duplication (via merging) for all entity types
+- matching improvements, eg, for references (citations), contributions
+  (authorship), work grouping, and file/release matching
+- internationalization of the web interface (translation to multiple languages)
+- review of design for accessibility
+- better handling of non-PDF file formats
+
+Longer term projects could include:
+
+- full-text search over release files
+- bi-directional synchronization with other user-editable catalogs, such as
+  Wikidata
+- better representation of multi-file objects such as websites and datasets
+- altenate/enhanced backend to store full edit history without overloading
+  traditional relational database
+
+## Known Issues
+
+Too many right now, but this section will be populated soon.
+
+- changelog index may have gaps due to postgresql sequence and transaction
+  roll-back behavior
+
 ## Unresolved Questions
 
 How to handle translations of, eg, titles and author names? To be clear, not
@@ -31,7 +73,7 @@ here should mitigate locking. Hopefully few indexes would be needed in the
 primary database, as user interfaces could rely on secondary read-only search
 engines for more complex queries and views.
 
-I see a tension between focus and scope creep. If a central database like
+There is a tension between focus and scope creep. If a central database like
 fatcat doesn't support enough fields and metadata, then it will not be possible
 to completely import other corpuses, and this becomes "yet another" partial
 bibliographic database. On the other hand, accepting arbitrary data leads to

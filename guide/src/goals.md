@@ -1,18 +1,18 @@
-# Goals and Related Projects
 
-## Goals and Ecosystem Niche
+## Project Goals and Ecosystem Niche
 
-For the Internet Archive use case, fatcat has two primary use cases:
+The Internet Archive has two primary use cases for fatcat:
 
-- Track the "completeness" of our holdings against all known published works.
-  In particular, allow us to monitor and prioritize further collection work.
+- Tracking the "completeness" of our holdings against all known published
+  works.  In particular, allow us to monitor progress, identify gaps, and
+  prioritize further collection work.
 - Be a public-facing catalog and access mechanism for our open access holdings.
 
 In the larger ecosystem, fatcat could also provide:
 
 - A work-level (as opposed to title-level) archival dashboard: what fraction of
-  all published works are preserved in archives? KBART, CLOCKSS, Portico, and
-  other preservations don't provide granular metadata
+  all published works are preserved in archives? [KBART](), [CLOCKSS](),
+  [Portico](), and other preservations don't provide granular metadata
 - A collaborative, independent, non-commercial, fully-open, field-agnostic,
   "completeness"-oriented catalog of scholarly metadata
 - Unified (centralized) foundation for discovery and access across repositories
@@ -25,16 +25,22 @@ In the larger ecosystem, fatcat could also provide:
 - On-ramp for non-traditional digital works ("grey literature") into the
   scholarly web
 
+[KBART]: https://thekeepers.org/
+[CLOCKSS]: https://clockss.org
+[Portico]: http://www.portico.org
+
 ## Scope
+
+What types of works should be included in the catalog?
 
 The goal is to capture the "scholarly web": the graph of written works that
 cite other works. Any work that is both cited more than once and cites more
 than one other work in the catalog is very likely to be in scope. "Leaf nodes"
 and small islands of intra-cited works may or may not be in scope.
 
-fatcat would not include any fulltext content itself, even for cleanly licensed
-(open access) works, but would have "strong" (verified) links to fulltext
-content, and would include file-level metadata (like hashes and fingerprints)
+Fatcat does not include any fulltext content itself, even for cleanly licensed
+(open access) works, but does have "strong" (verified) links to fulltext
+content, and includes file-level metadata (like hashes and fingerprints)
 to help discovery and identify content from any source. File-level URLs with
 context ("repository", "author-homepage", "web-archive") should make fatcat
 more useful for both humans and machines to quickly access fulltext content of
@@ -54,11 +60,11 @@ open bibliographic database at this time (early 2018), including the
 Wikidata is a general purpose semantic database of entities, facts, and
 relationships; bibliographic metadata has become a large fraction of all
 content in recent years. The focus there seems to be linking knowledge
-(statements) to specific sources unambiguously. Potential advantages fatcat
-would have would be a focus on a specific scope (not a general-purpose database
-of entities) and a goal of completeness (capturing as many works and
-relationships as rapidly as possible). However, it might be better to just
-pitch in to the wikidata efforts.
+(statements) to specific sources unambiguously. Potential advantages fatcat has
+are a focus on a specific scope (not a general-purpose database of entities)
+and a goal of completeness (capturing as many works and relationships as
+rapidly as possible). With so much overlap, the two efforts might merge in the
+future.
 
 The technical design of fatcat is loosely inspired by the git
 branch/tag/commit/tree architecture, and specifically inspired by Oliver
@@ -69,7 +75,7 @@ including Web of Science, Google Scholar, Microsoft Academic Graph, aminer,
 Scopus, and Dimensions. There are excellent field-limited databases like dblp,
 MEDLINE, and Semantic Scholar. There are some large general-purpose databases
 that are not directly user-editable, including the OpenCitation corpus, CORE,
-BASE, and CrossRef. I don't know of any large (more than 60 million works),
+BASE, and CrossRef. We do not know of any large (more than 60 million works),
 open (bulk-downloadable with permissive or no license), field agnostic,
 user-editable corpus of scholarly publication bibliographic metadata.
 

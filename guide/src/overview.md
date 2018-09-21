@@ -1,10 +1,17 @@
-# Fatcat Overview
 
-fatcat is an open bibliographic catalog of written works.  The scope of works
-is somewhat flexible, with a focus on published research outputs like journal
-articles, pre-prints, and conference proceedings. Records are collaboratively
-editable, versioned, available in bulk form, and include URL-agnostic
-file-level metadata.
+# High-Level Overview
 
-fatcat is currently used internally at the Internet Archive, but interested
-folks are welcome to contribute to design and development.
+This section gives an introduction to:
+
+- the goals of the project, and now it relates to the rest of the Open Access
+  and archival ecosystem
+- how catalog data is represented as entities and revisions with full edit
+  history, and how entities are refered to and cross-referenced with
+  identifiers
+- how humans and bots propose changes to the catalog, and how these changes are
+  reviewed
+- the major sources of bulk and continuously updated metadata that form the
+  foundation of the catalog
+- a rough sketch of the software back-end, database, and libraries
+- roadmap for near-future work
+
