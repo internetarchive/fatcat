@@ -1,6 +1,7 @@
 # Outline
 
 - [Fatcat Overview](./overview.md)
+    - [Goals and Related Projects](./goals.md)
     - [Data Model](./data_model.md)
     - [Workflow](./workflow.md)
     - [Sources](./sources.md)

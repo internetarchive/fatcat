@@ -13,7 +13,7 @@ the release listed in the work itself
 This is not to be confused with *translations* of entire works, which should be
 treated as an entirely separate `release`.
 
-## Work/Release Distinction
+## Work/Release/File Distinctions
 
 ## External Identifiers
 
@@ -50,6 +50,30 @@ to auto-create a release for every registered DOI. In particular,
 "sub-component" DOIs (eg, for an individual figure or table from a publication)
 aren't currently auto-created, but could be stored in "extra" metadata, or on a
 case-by-case basis.
+
+#### ISSN
+
+TODO
+
+#### ORCID
+
+TODO
+
+#### Wikidata QID
+
+TODO
+
+#### CORE Identifier
+
+TODO
+
+#### ISBN-13
+
+TODO
+
+#### PubMed (PMID and PMCID)
+
+TODO
 
 ## Human Names
 

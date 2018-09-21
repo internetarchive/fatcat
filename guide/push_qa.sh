@@ -1,3 +1,3 @@
 #!/bin/bash
 
-rsync -arv book/ fatcat-vm:/srv/fatcat/guide
+rsync -arv book/ fatcat-qa-vm:/srv/fatcat/guide
