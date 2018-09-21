@@ -7,6 +7,7 @@ Rust implementation of fatcat API server (`fatcatd`).
 - diesel (`cargo install diesel_cli`)
 - postgres (9.6+; targetting 11.1 for production)
 - postgres libs (debian: `sudo apt install libsqlite3-dev libpq-dev`)
+- libsodium library and development headers (debian: `libsodium-dev`)
 
 Create a new postgres superuser. A regular postgres user and an existing
 database should also work (with up/down migrations), but it's easier to just
