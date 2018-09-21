@@ -6,3 +6,5 @@ containing documentation for the fatcat bibliographic catalog, including:
 - developer (API) documentation
 - etc.
 
+Source (markdown) is under `./src/`. Output gets pushed to
+<https://guide.fatcat.wiki>.
