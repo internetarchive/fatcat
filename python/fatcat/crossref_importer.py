@@ -119,6 +119,7 @@ class FatcatCrossrefImporter(FatcatImporter):
 
         # release
         extra = dict(crossref={
+            # TODO: if exsits: group_title, subtitle, isPreprintOf
             'links': obj.get('link', []),
             'subject': obj.get('subject'),
             'type': obj['type'],
