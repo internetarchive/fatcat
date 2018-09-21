@@ -1,0 +1,60 @@
+{
+"settings": {
+    "index": {
+        "analysis": {
+            "analyzer": {
+                "default": {
+                    "type": "custom",
+                    "tokenizer": "standard",
+                    "filter": [ "lowercase", "asciifolding" ]
+                },
+                "textIcu": {
+                    "type": "custom",
+                    "tokenizer": "icu_tokenizer",
+                    "char_filter": [ "icu_normalizer" ],
+                    "filter": [ "icu_folding" ]
+                },
+                "textIcuSearch": {
+                    "type": "custom",
+                    "tokenizer": "icu_tokenizer",
+                    "char_filter": [ "icu_normalizer" ],
+                    "filter": [ "icu_folding" ]
+                }
+            }
+        }
+    }
+},
+"mappings": {
+    "work": {
+        "_all": { "enabled": true },
+        "properties": {
+            "ident":          { "type": "keyword", "include_in_all": false },
+            "revision":       { "type": "keyword", "include_in_all": false },
+            "title":          { "type": "text", "index": true, "analyzer": "textIcu", "search_analyzer":"textIcuSearch" },
+            "author_names":   { "type": "text", "index": true, "analyzer": "textIcu", "search_analyzer":"textIcuSearch" },
+            "release_date":   { "type": "date" },
+            "release_type":   { "type": "keyword", "include_in_all": false },
+            "release_status": { "type": "keyword", "include_in_all": false },
+            "language": { "type": "keyword", "include_in_all": false },
+            "doi":      { "type": "keyword" },
+            "pmid":     { "type": "keyword" },
+            "pmcid":    { "type": "keyword" },
+            "isbn13":   { "type": "keyword" },
+            "core_id":      { "type": "keyword", "include_in_all": false },
+            "wikidata_qid": { "type": "keyword", "include_in_all": false },
+            "publisher":                { "type": "text", "index": true, "analyzer": "textIcu", "search_analyzer":"textIcuSearch", "include_in_all": false },
+            "container_title":          { "type": "text", "index": true, "analyzer": "textIcu", "search_analyzer":"textIcuSearch" },
+            "container_issnl":          { "type": "keyword", "include_in_all": false },
+            "container_is_oa":          { "type": "boolean", "include_in_all": false },
+            "container_is_kept":        { "type": "boolean", "include_in_all": false },
+            "container_is_longtail_oa": { "type": "booloean", "include_in_all": false },
+            "file_count":           { "type": "number", "include_in_all": false },
+            "file_pdf_url":         { "type": "keyword", "include_in_all": false },
+            "file_in_webarchive":   { "type": "boolean", "include_in_all": false },
+            "file_in_ia":           { "type": "boolean", "include_in_all": false },
+            "any_abstract":         { "type": "boolean", "include_in_all": false },
+            "in_shadow":            { "type": "boolean", "include_in_all": false }
+        }
+    }
+}
+}
