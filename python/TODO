@@ -1,4 +1,5 @@
 
+- use dict counter type (in python collections) instead of currently janky counters
 - schema.org metadata for releases
 
 additional tests

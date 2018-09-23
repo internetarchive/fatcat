@@ -1,4 +1,5 @@
 codegen-out/
+*.json.gz
 !.coveragerc
 !.pylintrc
 !.gitignore

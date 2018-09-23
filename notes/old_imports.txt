@@ -1,0 +1,20 @@
+
+## ORCID
+
+Directly from compressed tarball; takes about 2 hours in production:
+
+    tar xf /srv/datasets/public_profiles_API-2.0_2017_10_json.tar.gz -O | jq -c . | grep '"person":' | time parallel -j12 --pipe --round-robin ./fatcat_import.py import-orcid -
+
+After tuning database, `jq` CPU seems to be bottleneck, so, from pre-extracted
+tarball:
+
+    tar xf /srv/datasets/public_profiles_API-2.0_2017_10_json.tar.gz -O | jq -c . | rg '"person":' > /srv/datasets/public_profiles_1_2_json.all.json
+    time parallel --bar --pipepart -j8 -a /srv/datasets/public_profiles_1_2_json.all.json ./fatcat_import.py import-orcid -
+
+Does not work:
+
+    ./fatcat_import.py import-orcid /data/orcid/partial/public_profiles_API-2.0_2017_10_json/3/0000-0001-5115-8623.json
+
+Instead:
+
+    cat /data/orcid/partial/public_profiles_API-2.0_2017_10_json/3/0000-0001-5115-8623.json | jq -c . | ./fatcat_import.py import-orcid -

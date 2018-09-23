@@ -122,6 +122,7 @@ Dumps!
     => 101k 0:00:34 [2.99k/s]
     => estimate 6.5 hours
 
+    # NOTE AFTER THE FACT: had "contaner" typo in the below, so wasn't expanding containers
     cat ../extra/sql_dumps/fatcat_ident_releases.tsv | time ./target/release/fatcat-export release --expand files,contaner -j8 -q | pv -l | gzip > fatcat_release_dump_expanded.json.gz
     => TPS: 29605 (!)
     => 183k 0:00:35 [ 5.8k/s] (how is this faster than the above? other disk stuff finished?)

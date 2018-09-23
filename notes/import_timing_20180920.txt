@@ -1,0 +1,68 @@
+
+This was on fatcat-prod-vm (2TB disk).
+
+    time ./fatcat_import.py import-issn /srv/fatcat/datasets/journal_extra_metadata.csv
+
+    Processed 53300 lines, inserted 53283, updated 0.
+    real    0m32.463s
+    user    0m8.716s
+    sys     0m0.284s
+
+    time parallel --bar --pipepart -j8 -a /srv/fatcat/datasets/public_profiles_1_2_json.all.json ./fatcat_import.py import-orcid -
+
+    Processed 48900 lines, inserted 48731, updated 0. <= these numbers times 80x
+    100% 80:0=0s
+
+    real    10m20.598s
+    user    26m16.544s
+    sys     1m40.284s
+
+    time xzcat /srv/fatcat/datasets/crossref-works.2018-01-21.json.xz | time parallel -j20 --round-robin --pipe ./fatcat_import.py import-crossref - /srv/fatcat/datasets/20180216.ISSN-to-ISSN-L.txt /srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3
+
+    Processed 4679900 lines, inserted 3755867, updated 0.
+    107730.08user 4110.22system 16:31:25elapsed 188%CPU (0avgtext+0avgdata 447496maxresident)k
+    77644160inputs+361948352outputs (105major+49094767minor)pagefaults 0swaps
+
+    => 16.5 hours, faster!
+
+    select count(id) from release_ident; => 75106713
+
+    kernel/system crashed after first file import (!), so don't have numbers from that.
+
+Table sizes at this point:
+
+    select count(id) from file_ident; => 6334606
+
+    Size:  389.25G
+
+                          table_name                          | table_size | indexes_size | total_size 
+--------------------------------------------------------------+------------+--------------+------------
+ "public"."release_ref"                                       | 170 GB     | 47 GB        | 217 GB
+ "public"."release_rev"                                       | 44 GB      | 21 GB        | 65 GB
+ "public"."release_contrib"                                   | 19 GB      | 20 GB        | 39 GB
+ "public"."release_edit"                                      | 6671 MB    | 6505 MB      | 13 GB
+ "public"."work_edit"                                         | 6671 MB    | 6505 MB      | 13 GB
+ "public"."release_ident"                                     | 4892 MB    | 5875 MB      | 11 GB
+ "public"."work_ident"                                        | 4892 MB    | 5874 MB      | 11 GB
+ "public"."work_rev"                                          | 3174 MB    | 2936 MB      | 6109 MB
+ "public"."file_rev_url"                                      | 3634 MB    | 1456 MB      | 5090 MB
+ "public"."file_rev"                                          | 792 MB     | 1281 MB      | 2073 MB
+ "public"."abstracts"                                         | 1665 MB    | 135 MB       | 1800 MB
+ "public"."file_edit"                                         | 565 MB     | 561 MB       | 1126 MB
+ "public"."file_release"                                      | 380 MB     | 666 MB       | 1045 MB
+ "public"."file_ident"                                        | 415 MB     | 496 MB       | 911 MB
+ "public"."creator_rev"                                       | 371 MB     | 457 MB       | 828 MB
+ "public"."creator_edit"                                      | 347 MB     | 353 MB       | 700 MB
+ "public"."creator_ident"                                     | 255 MB     | 305 MB       | 559 MB
+ "public"."release_rev_abstract"                              | 183 MB     | 237 MB       | 421 MB
+ "public"."changelog"                                         | 122 MB     | 126 MB       | 247 MB
+ "public"."editgroup"                                         | 138 MB     | 81 MB        | 219 MB
+ "public"."container_rev"                                     | 52 MB      | 38 MB        | 89 MB
+ "public"."container_edit"                                    | 32 MB      | 30 MB        | 62 MB
+ "public"."container_ident"                                   | 24 MB      | 28 MB        | 52 MB
+
+Continuing imports:
+
+    zcat /srv/fatcat/datasets/2018-08-27-2352.17-matchcrossref.insertable.json.gz | pv -l | time parallel -j12 --round-robin --pipe ./fatcat_import.py import-matched -
+
+    => HTTP response body: {"message":"duplicate key value violates unique constraint \"file_edit_editgroup_id_ident_id_key\""}
