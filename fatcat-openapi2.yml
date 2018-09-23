@@ -387,7 +387,7 @@ definitions:
       year:
         type: integer
         format: int64
-      container_title:
+      container_name:
         type: string
       title:
         type: string
