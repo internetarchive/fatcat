@@ -159,7 +159,7 @@ table! {
         creator_ident_id -> Nullable<Uuid>,
         raw_name -> Nullable<Text>,
         role -> Nullable<Text>,
-        index_val -> Nullable<Int8>,
+        index_val -> Nullable<Int4>,
         extra_json -> Nullable<Jsonb>,
     }
 }
@@ -191,11 +191,11 @@ table! {
         id -> Int8,
         release_rev -> Uuid,
         target_release_ident_id -> Nullable<Uuid>,
-        index_val -> Nullable<Int8>,
+        index_val -> Nullable<Int4>,
         key -> Nullable<Text>,
         extra_json -> Nullable<Jsonb>,
-        container_title -> Nullable<Text>,
-        year -> Nullable<Int8>,
+        container_name -> Nullable<Text>,
+        year -> Nullable<Int4>,
         title -> Nullable<Text>,
         locator -> Nullable<Text>,
     }

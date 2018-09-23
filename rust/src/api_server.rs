@@ -175,8 +175,7 @@ impl Server {
                 editgroup::editor_id.eq(FatCatId::from_str(&entity.editor_id)?.to_uuid()),
                 editgroup::description.eq(entity.description),
                 editgroup::extra_json.eq(entity.extra),
-            ))
-            .get_result(conn)?;
+            )).get_result(conn)?;
 
         Ok(Editgroup {
             id: Some(uuid2fcid(&row.id)),
@@ -272,8 +271,7 @@ impl Server {
                 editgroup: Some(eg_row.into_model_partial()),
                 editgroup_id: uuid2fcid(&cl_row.editgroup_id),
                 timestamp: chrono::DateTime::from_utc(cl_row.timestamp, chrono::Utc),
-            })
-            .collect();
+            }).collect();
         Ok(entries)
     }
 
@@ -297,8 +295,7 @@ impl Server {
                 editgroup: Some(eg_row.into_model_partial()),
                 editgroup_id: uuid2fcid(&cl_row.editgroup_id),
                 timestamp: chrono::DateTime::from_utc(cl_row.timestamp, chrono::Utc),
-            })
-            .collect();
+            }).collect();
         Ok(entries)
     }
 

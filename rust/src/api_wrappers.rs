@@ -465,15 +465,19 @@ impl Api for Server {
             let id = FatCatId::from_str(&id)?;
             self.get_editgroup_handler(id, &conn)
         }) {
-            Ok(entity) =>
-                GetEditgroupResponse::Found(entity),
-            Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
-                GetEditgroupResponse::NotFound(
-                    ErrorResponse { message: format!("No such editgroup: {}", id) }),
+            Ok(entity) => GetEditgroupResponse::Found(entity),
+            Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
+                GetEditgroupResponse::NotFound(ErrorResponse {
+                    message: format!("No such editgroup: {}", id),
+                })
+            }
             Err(e) =>
-                // TODO: dig in to error type here
-                GetEditgroupResponse::GenericError(
-                    ErrorResponse { message: e.to_string() }),
+            // TODO: dig in to error type here
+            {
+                GetEditgroupResponse::GenericError(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
         };
         Box::new(futures::done(Ok(ret)))
     }
@@ -484,15 +488,15 @@ impl Api for Server {
         _context: &Context,
     ) -> Box<Future<Item = CreateEditgroupResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let ret = match conn.transaction(||
-            self.create_editgroup_handler(entity, &conn)
-        ) {
-            Ok(eg) =>
-                CreateEditgroupResponse::SuccessfullyCreated(eg),
+        let ret = match conn.transaction(|| self.create_editgroup_handler(entity, &conn)) {
+            Ok(eg) => CreateEditgroupResponse::SuccessfullyCreated(eg),
             Err(e) =>
-                // TODO: dig in to error type here
-                CreateEditgroupResponse::GenericError(
-                    ErrorResponse { message: e.to_string() }),
+            // TODO: dig in to error type here
+            {
+                CreateEditgroupResponse::GenericError(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
         };
         Box::new(futures::done(Ok(ret)))
     }

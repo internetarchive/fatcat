@@ -32,8 +32,7 @@ fn main() {
             Arg::with_name("https")
                 .long("https")
                 .help("Whether to use HTTPS or not"),
-        )
-        .get_matches();
+        ).get_matches();
 
     let decorator = slog_term::TermDecorator::new().build();
     let drain = slog_term::CompactFormat::new(decorator).build().fuse();
