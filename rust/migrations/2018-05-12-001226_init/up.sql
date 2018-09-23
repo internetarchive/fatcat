@@ -288,7 +288,7 @@ CREATE TABLE release_contrib (
     creator_ident_id    UUID REFERENCES creator_ident(id),
     raw_name            TEXT,
     role                TEXT, -- TODO: enum?
-    index_val           BIGINT,
+    index_val           INTEGER,
     extra_json          JSONB
 );
 
@@ -299,11 +299,11 @@ CREATE TABLE release_ref (
     id                      BIGSERIAL PRIMARY KEY,
     release_rev             UUID REFERENCES release_rev(id) NOT NULL,
     target_release_ident_id UUID REFERENCES release_ident(id), -- or work?
-    index_val               BIGINT,
+    index_val               INTEGER,
     key                     TEXT,
     extra_json              JSONB, -- title, year, container_title, locator (aka, page), oci_id
-    container_title         TEXT,
-    year                    BIGINT,
+    container_name          TEXT,
+    year                    INTEGER,
     title                   TEXT,
     locator                 TEXT
     -- TODO: oci_id (TEXT)
