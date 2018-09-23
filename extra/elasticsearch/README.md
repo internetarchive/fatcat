@@ -25,8 +25,49 @@ relation is *removed*. For example, if a file match against a given release is
 removed, the old release elastic object needs to be updated to remove the file
 from it's `files`.
 
+## Loading Data
+
+Drop and rebuild the schema:
+
+    http delete :9200/fatcat
+    http put :9200/fatcat < release_schema.json
+
+Put a single object (good for debugging):
+
+    head -n1 examples.json | http post :9200/fatcat/release/0
+    http get :9200/fatcat/release/0
+
+Bulk insert from a file on disk:
+
+    esbulk -verbose -id ident -index fatcat -type release examples.json
+
+Or, in a bulk production live-stream conversion:
+
+    time zcat /srv/fatcat/snapshots/fatcat_release_dump_expanded.json.gz | ./transform_release.py | esbulk -verbose -size 20000 -id ident -w 8 -index fatcat-releases -type release
+
+## Full-Text Querying
+
+A generic full-text "query string" query look like this (replace "blood" with
+actual query string, and "size" field with the max results to return):
+
+    GET /fatcat/release/_search
+    {
+      "query": {
+        "query_string": {
+          "query": "blood",
+          "analyzer": "textIcuSearch",
+          "default_operator": "AND",
+          "analyze_wildcard": true,
+          "lenient": true,
+          "fields": ["title^3", "contrib_names^3", "container_title"]
+        }
+      },
+      "size": 3
+    }
+
+In the results take `.hits.hits[]._source` as the objects; `.hits.total` is the
+total number of search hits.
+
 ## TODO
 
-"enum" types, distinct from "keyword"?
-
-Other identifiers in search index? core, wikidata
+- file URL domains? seems heavy

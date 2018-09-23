@@ -26,18 +26,19 @@ def transform(m):
     )
 
     container = m.get('container')
+    container_is_kept = False
     if container:
         t['publisher'] = countainer.get('publisher')
-        t['container_title'] = countainer.get('title')
+        t['container_name'] = countainer.get('name')
         t['container_issnl'] = countainer.get('issnl')
         container_extra = container.get('extra')
         if container_extra:
             t['container_is_oa'] = container_extra.get('is_oa')
-            t['container_is_kept'] = container_extra.get('is_kept')
+            container_is_kept = container_extra.get('is_kept', False)
             t['container_is_longtail_oa'] = container_extra.get('is_longtail_oa')
     else:
         t['publisher'] = m.get('publisher')
-        t['container_title'] = m.get('container_title')
+        t['container_name'] = m.get('container_name')
 
     files = m.get('files', [])
     t['file_count'] = len(files)
@@ -62,11 +63,15 @@ def transform(m):
     if extra:
         t['in_shadow'] = extra.get('in_shadow')
     t['any_abstract'] = bool(t.get('abstracts'))
+    t['is_kept'] = container_is_kept or extra.get('is_kept', False)
 
-    author_names = []
-    for contrib in m.get('contribs', []):
-        if contrib.get('raw_name'):
-            author_names.append(contrib.get('raw_name'))
+    t['ref_count'] = len(m.get('refs', []))
+    t['contrib_count'] = len(m.get('contribs', []))
+    contrib_names = []
+    for c in m.get('contribs', []):
+        if c.get('raw_name'):
+            contrib_names.append(c.get('raw_name'))
+    t['contrib_names'] = contrib_names
     return t
 
 def run():
