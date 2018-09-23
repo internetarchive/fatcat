@@ -50,24 +50,38 @@ class FatcatCrossrefImporter(FatcatImporter):
             return None
 
         # contribs
-        contribs = []
-        for i, am in enumerate(obj['author']):
-            creator_id = None
-            if 'ORCID' in am.keys():
-                creator_id = self.lookup_orcid(am['ORCID'].split('/')[-1])
-            # Sorry humans :(
-            if am.get('given') and am.get('family'):
-                raw_name = "{} {}".format(am['given'], am['family'])
-            elif am.get('family'):
-                raw_name = am['family']
-            else:
-                # TODO: defaults back to a pseudo-null value
-                raw_name = am.get('given', '<blank>')
-            contribs.append(fatcat_client.ReleaseContrib(
-                creator_id=creator_id,
-                index=i+1,
-                raw_name=raw_name,
-                role="author"))
+        def do_contribs(obj_list, ctype):
+            contribs = []
+            for i, am in enumerate(obj_list):
+                creator_id = None
+                if 'ORCID' in am.keys():
+                    creator_id = self.lookup_orcid(am['ORCID'].split('/')[-1])
+                # Sorry humans :(
+                if am.get('given') and am.get('family'):
+                    raw_name = "{} {}".format(am['given'], am['family'])
+                elif am.get('family'):
+                    raw_name = am['family']
+                else:
+                    # TODO: defaults back to a pseudo-null value
+                    raw_name = am.get('given', '<blank>')
+                extra = None
+                if ctype == "author":
+                    index = i
+                else:
+                    index = None
+                if am.get('affiliation'):
+                    # note: affiliation => affiliations
+                    extra = dict(affiliations=am.get('affiliation'))
+                contribs.append(fatcat_client.ReleaseContrib(
+                    creator_id=creator_id,
+                    index=index,
+                    raw_name=raw_name,
+                    role=ctype,
+                    extra=extra))
+            return contribs
+        contribs = do_contribs(obj['author'], "author")
+        contribs.extend(do_contribs(obj.get('editor', []), "editor"))
+        contribs.extend(do_contribs(obj.get('translator', []), "translator"))
 
         # container
         issn = obj.get('ISSN', [None])[0]
@@ -95,20 +109,39 @@ class FatcatCrossrefImporter(FatcatImporter):
                     year = None
             except:
                 year = None
-            extra = dict(crossref=rm)
-            if rm.get('DOI') != None:
+            extra = rm.copy()
+            if rm.get('DOI'):
                 extra['doi'] = rm.get('DOI').lower()
+            key = rm.get('key')
+            if key and key.startswith(obj['DOI'].upper()):
+                key = key.replace(obj['DOI'].upper() + "-", '')
+                key = key.replace(obj['DOI'].upper(), '')
+            container_name = rm.get('volume-title')
+            if not container_name:
+                container_name = rm.get('journal-title')
+            extra.pop('DOI', None)
+            extra.pop('key', None)
+            extra.pop('year', None)
+            extra.pop('volume-name', None)
+            extra.pop('journal-title', None)
+            extra.pop('title', None)
+            extra.pop('first-page', None)
+            extra.pop('doi-asserted-by', None)
+            if extra:
+                extra = dict(crossref=extra)
+            else:
+                extra = None
             refs.append(fatcat_client.ReleaseRef(
-                index=i+1,
+                index=i,
                 # doing lookups would be a second import pass
                 target_release_id=None,
-                # unreliable for crossref: key=rm['key'].split('|')[-1],
+                key=key,
                 year=year,
-                container_title=rm.get('volume-title'),
+                container_name=container_name,
                 title=rm.get('title'),
                 locator=rm.get('first-page'),
                 # TODO: just dump JSON somewhere here?
-                extra=dict(crossref=rm)))
+                extra=extra))
 
         # abstracts
         abstracts = []
@@ -117,14 +150,37 @@ class FatcatCrossrefImporter(FatcatImporter):
                 mimetype="application/xml+jats",
                 content=obj.get('abstract')))
 
-        # release
-        extra = dict(crossref={
-            # TODO: if exsits: group_title, subtitle, isPreprintOf
-            'links': obj.get('link', []),
-            'subject': obj.get('subject'),
-            'type': obj['type'],
-            'license': obj.get('license', [dict(URL=None)])[0]['URL'] or None,
-            'alternative-id': obj.get('alternative-id', [])})
+        # extra fields
+        extra = dict()
+        for key in ('subject', 'type', 'license', 'alternative-id',
+                'container-title', 'original-title', 'subtitle', 'archive',
+                'funder', 'group-title'):
+            val = obj.get(key)
+            if val:
+                extra[key] = val
+        if 'license' in extra and extra['license']:
+            for i in range(len(extra['license'])):
+                if 'start' in extra['license'][i]:
+                    extra['license'][i]['start'] = extra['license'][i]['start']['date-time']
+        if len(obj['title']) > 1:
+            extra['other-titles'] = obj['title'][1:]
+        extra['is_kept'] = len(obj.get('archive', [])) > 0
+
+        # ISBN
+        isbn13 = None
+        for raw in obj.get('ISBN', []):
+            # TODO: convert if not ISBN-13 format
+            if len(raw) == 17:
+                isbn13 = raw
+                break
+
+        # release status
+        if obj['type'] in ('journal-article', 'conference-proceeding', 'book',
+                'dissertation', 'book-chapter'):
+            release_status = "published"
+        else:
+            # unknown
+            release_status = None
 
         # external identifiers
         extids = self.lookup_ext_ids(doi=obj['DOI'].lower())
@@ -135,8 +191,11 @@ class FatcatCrossrefImporter(FatcatImporter):
             contribs=contribs,
             refs=refs,
             container_id=container_id,
+            publisher=publisher,
             release_type=obj['type'],
+            release_status=release_status,
             doi=obj['DOI'].lower(),
+            isbn13=isbn13,
             core_id=extids['core_id'],
             pmid=extids['pmid'],
             pmcid=extids['pmcid'],
@@ -146,7 +205,7 @@ class FatcatCrossrefImporter(FatcatImporter):
             volume=obj.get('volume'),
             pages=obj.get('page'),
             abstracts=abstracts,
-            extra=extra)
+            extra=dict(crossref=extra))
         return (re, ce)
 
     def create_row(self, row, editgroup=None):
