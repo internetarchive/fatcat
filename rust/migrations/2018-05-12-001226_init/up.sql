@@ -198,7 +198,7 @@ CREATE TABLE release_rev (
     pmid                TEXT CHECK(octet_length(pmid) <= 12),
     pmcid               TEXT CHECK(octet_length(pmcid) <= 12),
     wikidata_qid        TEXT CHECK(octet_length(wikidata_qid) <= 12),
-    isbn13              TEXT CHECK(octet_length(isbn13) = 13),
+    isbn13              TEXT CHECK(octet_length(isbn13) = 17),
     core_id             TEXT CHECK(octet_length(core_id) <= 12),
     volume              TEXT,
     issue               TEXT,
@@ -427,7 +427,7 @@ INSERT INTO work_edit (ident_id, rev_id, redirect_id, editgroup_id, prev_rev) VA
 
 INSERT INTO release_rev (id, work_ident_id, container_ident_id, title, release_type, release_status, release_date, doi, isbn13, core_id, volume, issue, pages, publisher, language) VALUES
     ('00000000-0000-0000-4444-FFF000000001', '00000000-0000-0000-5555-000000000001',                                   null,  'example title',              null, null,        null,         null,            null,       null, null, null,  null,                     null, null),
-    ('00000000-0000-0000-4444-FFF000000002', '00000000-0000-0000-5555-000000000002', '00000000-0000-0000-1111-000000000001', 'bigger example', 'journal-article', null,'2018-01-01', '10.123/abc', '99999-999-9-X', '42022773', '12', 'IV', '5-9', 'bogus publishing group', 'cn'),
+    ('00000000-0000-0000-4444-FFF000000002', '00000000-0000-0000-5555-000000000002', '00000000-0000-0000-1111-000000000001', 'bigger example', 'journal-article', null,'2018-01-01', '10.123/abc', '978-3-16-148410-0', '42022773', '12', 'IV', '5-9', 'bogus publishing group', 'cn'),
     ('00000000-0000-0000-4444-FFF000000003', '00000000-0000-0000-5555-000000000003', '00000000-0000-0000-1111-000000000003', 'Why Most Published Research Findings Are False', 'journal-article', 'published', '2005-08-30', '10.1371/journal.pmed.0020124',  null, null, '2', '8', 'e124', 'Public Library of Science', 'en');
 
 INSERT INTO release_ident (id, is_live, rev_id, redirect_id) VALUES
