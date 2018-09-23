@@ -683,9 +683,9 @@ pub struct ReleaseRef {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub year: Option<i64>,
 
-    #[serde(rename = "container_title")]
+    #[serde(rename = "container_name")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub container_title: Option<String>,
+    pub container_name: Option<String>,
 
     #[serde(rename = "title")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -704,7 +704,7 @@ impl ReleaseRef {
             extra: None,
             key: None,
             year: None,
-            container_title: None,
+            container_name: None,
             title: None,
             locator: None,
         }

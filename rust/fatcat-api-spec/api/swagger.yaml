@@ -6,6 +6,13 @@ info:
   version: "0.1.0"
   title: "fatcat"
 basePath: "/v0"
+tags:
+- name: "containers"
+- name: "creators"
+- name: "files"
+- name: "releases"
+- name: "works"
+- name: "edit-lifecycle"
 schemes:
 - "http"
 consumes:
@@ -15,6 +22,8 @@ produces:
 paths:
   /container:
     post:
+      tags:
+      - "containers"
       operationId: "create_container"
       parameters:
       - in: "body"
@@ -80,6 +89,8 @@ paths:
       noClientExample: true
   /container/batch:
     post:
+      tags:
+      - "containers"
       operationId: "create_container_batch"
       parameters:
       - name: "autoaccept"
@@ -156,6 +167,8 @@ paths:
       httpmethod: "post"
   /container/{id}:
     get:
+      tags:
+      - "containers"
       operationId: "get_container"
       parameters:
       - name: "id"
@@ -215,6 +228,8 @@ paths:
       HttpMethod: "Get"
       httpmethod: "get"
     put:
+      tags:
+      - "containers"
       operationId: "update_container"
       parameters:
       - name: "id"
@@ -285,6 +300,8 @@ paths:
       httpmethod: "put"
       noClientExample: true
     delete:
+      tags:
+      - "containers"
       operationId: "delete_container"
       parameters:
       - name: "id"
@@ -343,6 +360,8 @@ paths:
       httpmethod: "delete"
   /container/{id}/history:
     get:
+      tags:
+      - "containers"
       operationId: "get_container_history"
       parameters:
       - name: "id"
@@ -404,6 +423,8 @@ paths:
       httpmethod: "get"
   /container/lookup:
     get:
+      tags:
+      - "containers"
       operationId: "lookup_container"
       parameters:
       - name: "issnl"
@@ -459,6 +480,8 @@ paths:
       httpmethod: "get"
   /creator:
     post:
+      tags:
+      - "creators"
       operationId: "create_creator"
       parameters:
       - in: "body"
@@ -524,6 +547,8 @@ paths:
       noClientExample: true
   /creator/batch:
     post:
+      tags:
+      - "creators"
       operationId: "create_creator_batch"
       parameters:
       - name: "autoaccept"
@@ -600,6 +625,8 @@ paths:
       httpmethod: "post"
   /creator/{id}:
     get:
+      tags:
+      - "creators"
       operationId: "get_creator"
       parameters:
       - name: "id"
@@ -659,6 +686,8 @@ paths:
       HttpMethod: "Get"
       httpmethod: "get"
     put:
+      tags:
+      - "creators"
       operationId: "update_creator"
       parameters:
       - name: "id"
@@ -729,6 +758,8 @@ paths:
       httpmethod: "put"
       noClientExample: true
     delete:
+      tags:
+      - "creators"
       operationId: "delete_creator"
       parameters:
       - name: "id"
@@ -787,6 +818,8 @@ paths:
       httpmethod: "delete"
   /creator/{id}/history:
     get:
+      tags:
+      - "creators"
       operationId: "get_creator_history"
       parameters:
       - name: "id"
@@ -848,6 +881,8 @@ paths:
       httpmethod: "get"
   /creator/{id}/releases:
     get:
+      tags:
+      - "creators"
       operationId: "get_creator_releases"
       parameters:
       - name: "id"
@@ -902,6 +937,8 @@ paths:
       httpmethod: "get"
   /creator/lookup:
     get:
+      tags:
+      - "creators"
       operationId: "lookup_creator"
       parameters:
       - name: "orcid"
@@ -957,6 +994,8 @@ paths:
       httpmethod: "get"
   /file:
     post:
+      tags:
+      - "files"
       operationId: "create_file"
       parameters:
       - in: "body"
@@ -1022,6 +1061,8 @@ paths:
       noClientExample: true
   /file/batch:
     post:
+      tags:
+      - "files"
       operationId: "create_file_batch"
       parameters:
       - name: "autoaccept"
@@ -1098,6 +1139,8 @@ paths:
       httpmethod: "post"
   /file/{id}:
     get:
+      tags:
+      - "files"
       operationId: "get_file"
       parameters:
       - name: "id"
@@ -1157,6 +1200,8 @@ paths:
       HttpMethod: "Get"
       httpmethod: "get"
     put:
+      tags:
+      - "files"
       operationId: "update_file"
       parameters:
       - name: "id"
@@ -1227,6 +1272,8 @@ paths:
       httpmethod: "put"
       noClientExample: true
     delete:
+      tags:
+      - "files"
       operationId: "delete_file"
       parameters:
       - name: "id"
@@ -1285,6 +1332,8 @@ paths:
       httpmethod: "delete"
   /file/{id}/history:
     get:
+      tags:
+      - "files"
       operationId: "get_file_history"
       parameters:
       - name: "id"
@@ -1346,6 +1395,8 @@ paths:
       httpmethod: "get"
   /file/lookup:
     get:
+      tags:
+      - "files"
       operationId: "lookup_file"
       parameters:
       - name: "sha1"
@@ -1398,6 +1449,8 @@ paths:
       httpmethod: "get"
   /release:
     post:
+      tags:
+      - "releases"
       operationId: "create_release"
       parameters:
       - in: "body"
@@ -1463,6 +1516,8 @@ paths:
       noClientExample: true
   /release/batch:
     post:
+      tags:
+      - "releases"
       operationId: "create_release_batch"
       parameters:
       - name: "autoaccept"
@@ -1539,6 +1594,8 @@ paths:
       httpmethod: "post"
   /release/{id}:
     get:
+      tags:
+      - "releases"
       operationId: "get_release"
       parameters:
       - name: "id"
@@ -1598,6 +1655,8 @@ paths:
       HttpMethod: "Get"
       httpmethod: "get"
     put:
+      tags:
+      - "releases"
       operationId: "update_release"
       parameters:
       - name: "id"
@@ -1668,6 +1727,8 @@ paths:
       httpmethod: "put"
       noClientExample: true
     delete:
+      tags:
+      - "releases"
       operationId: "delete_release"
       parameters:
       - name: "id"
@@ -1726,6 +1787,8 @@ paths:
       httpmethod: "delete"
   /release/{id}/history:
     get:
+      tags:
+      - "releases"
       operationId: "get_release_history"
       parameters:
       - name: "id"
@@ -1787,6 +1850,8 @@ paths:
       httpmethod: "get"
   /release/{id}/files:
     get:
+      tags:
+      - "releases"
       operationId: "get_release_files"
       parameters:
       - name: "id"
@@ -1841,6 +1906,8 @@ paths:
       httpmethod: "get"
   /release/lookup:
     get:
+      tags:
+      - "releases"
       operationId: "lookup_release"
       parameters:
       - name: "doi"
@@ -1893,6 +1960,8 @@ paths:
       httpmethod: "get"
   /work:
     post:
+      tags:
+      - "releases"
       operationId: "create_work"
       parameters:
       - in: "body"
@@ -1958,6 +2027,8 @@ paths:
       noClientExample: true
   /work/batch:
     post:
+      tags:
+      - "works"
       operationId: "create_work_batch"
       parameters:
       - name: "autoaccept"
@@ -2034,6 +2105,8 @@ paths:
       httpmethod: "post"
   /work/{id}:
     get:
+      tags:
+      - "works"
       operationId: "get_work"
       parameters:
       - name: "id"
@@ -2093,6 +2166,8 @@ paths:
       HttpMethod: "Get"
       httpmethod: "get"
     put:
+      tags:
+      - "works"
       operationId: "update_work"
       parameters:
       - name: "id"
@@ -2163,6 +2238,8 @@ paths:
       httpmethod: "put"
       noClientExample: true
     delete:
+      tags:
+      - "works"
       operationId: "delete_work"
       parameters:
       - name: "id"
@@ -2221,6 +2298,8 @@ paths:
       httpmethod: "delete"
   /work/{id}/history:
     get:
+      tags:
+      - "works"
       operationId: "get_work_history"
       parameters:
       - name: "id"
@@ -2282,6 +2361,8 @@ paths:
       httpmethod: "get"
   /work/{id}/releases:
     get:
+      tags:
+      - "works"
       operationId: "get_work_releases"
       parameters:
       - name: "id"
@@ -2442,10 +2523,12 @@ paths:
       httpmethod: "get"
   /editgroup:
     post:
+      tags:
+      - "edit-lifecycle"
       operationId: "create_editgroup"
       parameters:
       - in: "body"
-        name: "entity"
+        name: "editgroup"
         required: true
         schema:
           $ref: "#/definitions/editgroup"
@@ -2492,6 +2575,8 @@ paths:
       noClientExample: true
   /editgroup/{id}:
     get:
+      tags:
+      - "edit-lifecycle"
       operationId: "get_editgroup"
       parameters:
       - name: "id"
@@ -2548,6 +2633,8 @@ paths:
       httpmethod: "get"
   /editgroup/{id}/accept:
     post:
+      tags:
+      - "edit-lifecycle"
       operationId: "accept_editgroup"
       parameters:
       - name: "id"
@@ -2613,6 +2700,8 @@ paths:
       httpmethod: "post"
   /changelog:
     get:
+      tags:
+      - "edit-lifecycle"
       operationId: "get_changelog"
       parameters:
       - name: "limit"
@@ -2650,6 +2739,8 @@ paths:
       httpmethod: "get"
   /changelog/{id}:
     get:
+      tags:
+      - "edit-lifecycle"
       operationId: "get_changelog_entry"
       parameters:
       - name: "id"
@@ -3137,16 +3228,16 @@ definitions:
       volume: "volume"
       refs:
       - target_release_id: "target_release_id"
+        container_name: "container_name"
         year: 6
-        container_title: "container_title"
         extra: "{}"
         index: 0
         title: "title"
         locator: "p123"
         key: "key"
       - target_release_id: "target_release_id"
+        container_name: "container_name"
         year: 6
-        container_title: "container_title"
         extra: "{}"
         index: 0
         title: "title"
@@ -3708,7 +3799,7 @@ definitions:
       year:
         type: "integer"
         format: "int64"
-      container_title:
+      container_name:
         type: "string"
       title:
         type: "string"
@@ -3717,8 +3808,8 @@ definitions:
         example: "p123"
     example:
       target_release_id: "target_release_id"
+      container_name: "container_name"
       year: 6
-      container_title: "container_title"
       extra: "{}"
       index: 0
       title: "title"
