@@ -36,7 +36,7 @@ class ReleaseRef(object):
         'extra': 'object',
         'key': 'str',
         'year': 'int',
-        'container_title': 'str',
+        'container_name': 'str',
         'title': 'str',
         'locator': 'str'
     }
@@ -47,12 +47,12 @@ class ReleaseRef(object):
         'extra': 'extra',
         'key': 'key',
         'year': 'year',
-        'container_title': 'container_title',
+        'container_name': 'container_name',
         'title': 'title',
         'locator': 'locator'
     }
 
-    def __init__(self, index=None, target_release_id=None, extra=None, key=None, year=None, container_title=None, title=None, locator=None):  # noqa: E501
+    def __init__(self, index=None, target_release_id=None, extra=None, key=None, year=None, container_name=None, title=None, locator=None):  # noqa: E501
         """ReleaseRef - a model defined in Swagger"""  # noqa: E501
 
         self._index = None
@@ -60,7 +60,7 @@ class ReleaseRef(object):
         self._extra = None
         self._key = None
         self._year = None
-        self._container_title = None
+        self._container_name = None
         self._title = None
         self._locator = None
         self.discriminator = None
@@ -75,8 +75,8 @@ class ReleaseRef(object):
             self.key = key
         if year is not None:
             self.year = year
-        if container_title is not None:
-            self.container_title = container_title
+        if container_name is not None:
+            self.container_name = container_name
         if title is not None:
             self.title = title
         if locator is not None:
@@ -188,25 +188,25 @@ class ReleaseRef(object):
         self._year = year
 
     @property
-    def container_title(self):
-        """Gets the container_title of this ReleaseRef.  # noqa: E501
+    def container_name(self):
+        """Gets the container_name of this ReleaseRef.  # noqa: E501
 
 
-        :return: The container_title of this ReleaseRef.  # noqa: E501
+        :return: The container_name of this ReleaseRef.  # noqa: E501
         :rtype: str
         """
-        return self._container_title
+        return self._container_name
 
-    @container_title.setter
-    def container_title(self, container_title):
-        """Sets the container_title of this ReleaseRef.
+    @container_name.setter
+    def container_name(self, container_name):
+        """Sets the container_name of this ReleaseRef.
 
 
-        :param container_title: The container_title of this ReleaseRef.  # noqa: E501
+        :param container_name: The container_name of this ReleaseRef.  # noqa: E501
         :type: str
         """
 
-        self._container_title = container_title
+        self._container_name = container_name
 
     @property
     def title(self):

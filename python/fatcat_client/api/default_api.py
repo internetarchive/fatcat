@@ -550,43 +550,43 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def create_editgroup(self, entity, **kwargs):  # noqa: E501
+    def create_editgroup(self, editgroup, **kwargs):  # noqa: E501
         """create_editgroup  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.create_editgroup(entity, async=True)
+        >>> thread = api.create_editgroup(editgroup, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param Editgroup entity: (required)
+        :param Editgroup editgroup: (required)
         :return: Editgroup
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.create_editgroup_with_http_info(entity, **kwargs)  # noqa: E501
+            return self.create_editgroup_with_http_info(editgroup, **kwargs)  # noqa: E501
         else:
-            (data) = self.create_editgroup_with_http_info(entity, **kwargs)  # noqa: E501
+            (data) = self.create_editgroup_with_http_info(editgroup, **kwargs)  # noqa: E501
             return data
 
-    def create_editgroup_with_http_info(self, entity, **kwargs):  # noqa: E501
+    def create_editgroup_with_http_info(self, editgroup, **kwargs):  # noqa: E501
         """create_editgroup  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.create_editgroup_with_http_info(entity, async=True)
+        >>> thread = api.create_editgroup_with_http_info(editgroup, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param Editgroup entity: (required)
+        :param Editgroup editgroup: (required)
         :return: Editgroup
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['entity']  # noqa: E501
+        all_params = ['editgroup']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -601,10 +601,10 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
-        # verify the required parameter 'entity' is set
-        if ('entity' not in params or
-                params['entity'] is None):
-            raise ValueError("Missing the required parameter `entity` when calling `create_editgroup`")  # noqa: E501
+        # verify the required parameter 'editgroup' is set
+        if ('editgroup' not in params or
+                params['editgroup'] is None):
+            raise ValueError("Missing the required parameter `editgroup` when calling `create_editgroup`")  # noqa: E501
 
         collection_formats = {}
 
@@ -618,8 +618,8 @@ class DefaultApi(object):
         local_var_files = {}
 
         body_params = None
-        if 'entity' in params:
-            body_params = params['entity']
+        if 'editgroup' in params:
+            body_params = params['editgroup']
         # HTTP header `Accept`
         header_params['Accept'] = self.api_client.select_header_accept(
             ['application/json'])  # noqa: E501

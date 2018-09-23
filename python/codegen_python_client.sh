@@ -5,7 +5,8 @@ set -o pipefail
 
 OUTPUT=`pwd`/codegen-out
 mkdir -p $OUTPUT
-cp ../fatcat-openapi2.yml $OUTPUT/api.yml
+# Strip tags, so entire API is under a single class
+cat ../fatcat-openapi2.yml | grep -v "TAGLINE$" > $OUTPUT/api.yml
 
 docker run \
     -v $OUTPUT:/tmp/swagger/ \
