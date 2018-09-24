@@ -64,14 +64,18 @@ class FatcatCrossrefImporter(FatcatImporter):
                 else:
                     # TODO: defaults back to a pseudo-null value
                     raw_name = am.get('given', '<blank>')
-                extra = None
+                extra = dict()
                 if ctype == "author":
                     index = i
                 else:
                     index = None
                 if am.get('affiliation'):
                     # note: affiliation => affiliations
-                    extra = dict(affiliations=am.get('affiliation'))
+                    extra['affiliations'] = am.get('affiliation')
+                if am.get('sequence') and am.get('sequence') != "additional":
+                    extra['sequence'] = am.get('sequence')
+                if not extra:
+                    extra = None
                 contribs.append(fatcat_client.ReleaseContrib(
                     creator_id=creator_id,
                     index=index,
