@@ -189,6 +189,11 @@ class FatcatCrossrefImporter(FatcatImporter):
         # external identifiers
         extids = self.lookup_ext_ids(doi=obj['DOI'].lower())
 
+        # TODO: filter out huge releases; we'll get them later (and fix bug in
+        # fatcatd)
+        if max(len(contribs), len(refs)) > 2500:
+            return None
+
         re = fatcat_client.ReleaseEntity(
             work_id=None,
             title=obj['title'][0],
