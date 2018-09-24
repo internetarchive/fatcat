@@ -59,7 +59,7 @@ def transform(m):
     t['file_in_webarchive'] = in_wa
     t['file_in_ia'] = in_ia
 
-    extra = m.get('extra')
+    extra = m.get('extra', dict())
     if extra:
         t['in_shadow'] = extra.get('in_shadow')
     t['any_abstract'] = bool(t.get('abstracts'))
