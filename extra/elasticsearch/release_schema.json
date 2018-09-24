@@ -35,7 +35,6 @@
             "date":           { "type": "alias", "path": "release_date" },
             "issn":           { "type": "alias", "path": "container_issnl" },
             "oa":             { "type": "alias", "path": "container_is_oa" },
-            "kept":           { "type": "alias", "path": "container_is_kept" },
             "longtail":       { "type": "alias", "path": "container_is_longtail_oa" },
             "release_date":   { "type": "date" },
             "release_type":   { "type": "keyword" },
