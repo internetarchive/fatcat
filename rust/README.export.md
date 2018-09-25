@@ -9,5 +9,5 @@ Then dump:
 
 Or, perhaps, in production:
 
-    cat /tmp/fatcat_ident_releases.tsv | ./target/release/fatcat-export release --expand files,container -j8 | pv | gzip > all_releases.json.gz
+    cat /tmp/fatcat_ident_releases.tsv | ./target/release/fatcat-export release --expand files,container -j8 | pv | gzip > release_export_expanded.json.gz
 
