@@ -1,0 +1,91 @@
+
+    105595.18user 3903.65system 15:59:39elapsed 190%CPU (0avgtext+0avgdata 458836maxresident)k
+    71022792inputs+327828472outputs (176major+31149593minor)pagefaults 0swaps
+
+    real    959m39.521s
+    user    1845m10.392s
+    sys     70m33.780s
+
+Did I get the same error again? I'm confused:
+
+    HTTP response body: {"message":"number of parameters must be between 0 and 65535\n"}
+    (but not in all threads)
+
+Yes, ugh, because 50*2500 can be over (it's not just individual large releases,
+they come in big batches).
+
+But:
+
+    select count(id) from release_ident; => 70006121
+
+A lot, though not 72 million like last time, hrm. I'm... going to move ahead I
+guess.
+
+"Processed 4440850 lines, inserted 3509600, updated 0."
+    => implies 79029915 records
+
+    time zcat /srv/fatcat/datasets/ia_papers_manifest_2018-01-25.matched.json.gz | pv -l | time parallel -j12 --round-robin --pipe ./fatcat_import.py import-matched --no-file-update -
+    Processed 530750 lines, inserted 435239, updated 0. (etc)
+    Command exited with non-zero status 1
+    15121.47user 676.49system 2:23:52elapsed 183%CPU (0avgtext+0avgdata 70076maxresident)k
+    127760inputs+3477184outputs (116major+475489minor)pagefaults 0swaps
+
+    real    143m52.681s
+    user    252m31.620s
+    sys     11m21.608s
+
+    zcat /srv/fatcat/datasets/2018-08-27-2352.17-matchcrossref.insertable.json.gz | pv -l | time parallel -j12 --round-robin --pipe ./fatcat_import.py import-matched -
+
+    Processed 485200 lines, inserted 244101, updated 168344. (etc)
+    22671.44user 1069.84system 3:27:47elapsed 190%CPU (0avgtext+0avgdata 39348maxresident)k
+    99672inputs+2497848outputs (109major+422150minor)pagefaults 0swaps
+
+fatcat-export dump:
+
+     INFO 2018-09-25T10:01:06Z: fatcat_export: Done reading (70006121 lines), waiting for workers to exit...
+      197GiB 4:56:17 [11.4MiB/s] [                                   <=>                                                     ]
+
+How big is everything?
+
+    select count(*) from file_release; => 10,485,964
+    select count (distinct target_release_ident_id) from file_release; => 6,486,934
+    select count(id) from release_ident; => 70,006,121
+    select count(*) from container_ident; => 354,793
+    select count(*) from creator_ident; => 3,906,990
+    Size:  324.24G
+    /dev/vda1       1.8T  511G  1.2T  31% /
+
+                          table_name                          | table_size | indexes_size | total_size 
+--------------------------------------------------------------+------------+--------------+------------
+ "public"."release_ref"                                       | 121 GB     | 42 GB        | 163 GB
+ "public"."release_rev"                                       | 33 GB      | 19 GB        | 52 GB
+ "public"."release_contrib"                                   | 21 GB      | 18 GB        | 39 GB
+ "public"."release_edit"                                      | 6218 MB    | 6084 MB      | 12 GB
+ "public"."work_edit"                                         | 6218 MB    | 6084 MB      | 12 GB
+ "public"."release_ident"                                     | 4560 MB    | 5470 MB      | 10030 MB
+ "public"."work_ident"                                        | 4560 MB    | 5466 MB      | 10027 MB
+ "public"."file_rev_url"                                      | 5543 MB    | 2112 MB      | 7655 MB
+ "public"."work_rev"                                          | 2958 MB    | 2733 MB      | 5691 MB
+ "public"."file_rev"                                          | 1201 MB    | 1811 MB      | 3012 MB
+ "public"."abstracts"                                         | 2294 MB    | 184 MB       | 2478 MB
+ "public"."file_edit"                                         | 931 MB     | 864 MB       | 1795 MB
+ "public"."file_release"                                      | 605 MB     | 1058 MB      | 1663 MB
+ "public"."file_ident"                                        | 529 MB     | 633 MB       | 1162 MB
+ "public"."creator_rev"                                       | 371 MB     | 456 MB       | 826 MB
+ "public"."creator_edit"                                      | 347 MB     | 352 MB       | 699 MB
+ "public"."release_rev_abstract"                              | 250 MB     | 325 MB       | 575 MB
+ "public"."creator_ident"                                     | 255 MB     | 304 MB       | 559 MB
+ "public"."changelog"                                         | 122 MB     | 127 MB       | 250 MB
+ "public"."editgroup"                                         | 138 MB     | 82 MB        | 220 MB
+ "public"."container_rev"                                     | 52 MB      | 38 MB        | 89 MB
+ "public"."container_edit"                                    | 32 MB      | 30 MB        | 62 MB
+ "public"."container_ident"                                   | 24 MB      | 28 MB        | 52 MB
+
+Hrm, bunch of not-accepted containers:
+
+    select count(*) from container_ident where is_live='f'; => 301507
+    select count(*) from release_ident where is_live='f'; => 0
+    select count(*) from work_ident where is_live='f'; => 0
+    select count(*) from creator_ident where is_live='f'; => 1 (there was a hang earlier)
+    select count(*) from file_ident where is_live='f'; => 0
+
