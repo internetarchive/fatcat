@@ -250,7 +250,10 @@ class FatcatCrossrefImporter(FatcatImporter):
             if entities is not None:
                 (re, ce) = entities
                 if ce is not None:
-                    container = self.api.create_container(ce, editgroup=editgroup)
+                    ce_eg = self.api.create_editgroup(
+                        fatcat_client.Editgroup(editor_id='aaaaaaaaaaaabkvkaaaaaaaaae'))
+                    container = self.api.create_container(ce, editgroup=ce_eg.id)
+                    self.api.accept_editgroup(ce_eg.id)
                     re.container_id = container.ident
                     self._issnl_id_map[ce.issnl] = container.ident
                 release_batch.append(re)
