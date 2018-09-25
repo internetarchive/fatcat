@@ -2,6 +2,7 @@
 import sys
 import json
 import sqlite3
+import datetime
 import itertools
 import fatcat_client
 from fatcat.importer_common import FatcatImporter
@@ -194,6 +195,12 @@ class FatcatCrossrefImporter(FatcatImporter):
         if max(len(contribs), len(refs), len(abstracts)) > 750:
             return None
 
+        release_date = obj['issued']['date-parts'][0]
+        if len(release_date) == 3:
+            release_date = datetime.datetime(year=release_date[0], month=release_date[1], day=release_date[2])
+        else:
+            release_date = datetime.datetime(year=release_date[0], month=1, day=1)
+
         re = fatcat_client.ReleaseEntity(
             work_id=None,
             title=obj['title'][0],
@@ -209,7 +216,7 @@ class FatcatCrossrefImporter(FatcatImporter):
             pmid=extids['pmid'],
             pmcid=extids['pmcid'],
             wikidata_qid=extids['wikidata_qid'],
-            release_date=obj['issued']['date-time'],
+            release_date=release_date.isoformat() + "Z",
             issue=obj.get('issue'),
             volume=obj.get('volume'),
             pages=obj.get('page'),
