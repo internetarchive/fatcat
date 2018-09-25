@@ -191,7 +191,7 @@ class FatcatCrossrefImporter(FatcatImporter):
 
         # TODO: filter out huge releases; we'll get them later (and fix bug in
         # fatcatd)
-        if max(len(contribs), len(refs)) > 1000:
+        if max(len(contribs), len(refs), len(abstracts)) > 750:
             return None
 
         re = fatcat_client.ReleaseEntity(
