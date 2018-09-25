@@ -61,8 +61,36 @@ Table sizes at this point:
  "public"."container_edit"                                    | 32 MB      | 30 MB        | 62 MB
  "public"."container_ident"                                   | 24 MB      | 28 MB        | 52 MB
 
+
+       relname        | too_much_seq | case |   rel_size   | seq_scan | idx_scan 
+----------------------+--------------+------+--------------+----------+----------
+ release_edit         |            0 | OK   |   6993084416 |        0 |        0
+ container_rev        |            0 | OK   |     54124544 |        0 |        0
+ creator_ident        |            0 | OK   |    266919936 |        0 |        0
+ creator_edit         |            0 | OK   |    363921408 |        0 |        0
+ work_rev             |            0 | OK   |   3327262720 |        0 |        0
+ creator_rev          |            0 | OK   |    388726784 |        0 |        0
+ work_ident           |            0 | OK   |   5128560640 |        0 |        0
+ work_edit            |            0 | OK   |   6993108992 |        0 |        0
+ container_ident      |            0 | OK   |     25092096 |        0 |        0
+ file_edit            |            0 | OK   |    598278144 |        0 |        0
+ container_edit       |            0 | OK   |     33857536 |        0 |        0
+ changelog            |            0 | OK   |    127549440 |        0 |        0
+ abstracts            |        -4714 | OK   |   1706713088 |        0 |     4714
+ file_release         |       -13583 | OK   |    401752064 |        0 |    13583
+ file_rev_url         |       -13583 | OK   |   3832389632 |        0 |    13583
+ editgroup            |       -74109 | OK   |    144277504 |        0 |    74109
+ release_contrib      |       -76699 | OK   |  20357849088 |        0 |    76699
+ release_ref          |       -76700 | OK   | 183009157120 |        3 |    76703
+ release_rev_abstract |       -76939 | OK   |    192102400 |        0 |    76939
+ release_rev          |       -77965 | OK   |  47602647040 |        0 |    77965
+ file_ident           |      -100089 | OK   |    438255616 |        3 |   100092
+ release_ident        |      -152809 | OK   |   5128617984 |        0 |   152809
+ file_rev             |      -440780 | OK   |    837705728 |        0 |   440780
+(23 rows)
+
 Continuing imports:
 
     zcat /srv/fatcat/datasets/2018-08-27-2352.17-matchcrossref.insertable.json.gz | pv -l | time parallel -j12 --round-robin --pipe ./fatcat_import.py import-matched -
-
     => HTTP response body: {"message":"duplicate key value violates unique constraint \"file_edit_editgroup_id_ident_id_key\""}
+
