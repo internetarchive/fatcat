@@ -44,6 +44,7 @@ Bulk insert from a file on disk:
 Or, in a bulk production live-stream conversion:
 
     time zcat /srv/fatcat/snapshots/fatcat_release_dump_expanded.json.gz | ./transform_release.py | esbulk -verbose -size 20000 -id ident -w 8 -index fatcat-releases -type release
+    # 2018/09/24 21:42:26 53028167 docs in 1h0m56.853006293s at 14501.039 docs/s with 8 workers
 
 ## Full-Text Querying
 
