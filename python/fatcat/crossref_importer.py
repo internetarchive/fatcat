@@ -209,7 +209,7 @@ class FatcatCrossrefImporter(FatcatImporter):
             pmid=extids['pmid'],
             pmcid=extids['pmcid'],
             wikidata_qid=extids['wikidata_qid'],
-            release_date=obj['created']['date-time'],
+            release_date=obj['issued']['date-time'],
             issue=obj.get('issue'),
             volume=obj.get('volume'),
             pages=obj.get('page'),
