@@ -28,9 +28,9 @@ def transform(m):
     container = m.get('container')
     container_is_kept = False
     if container:
-        t['publisher'] = countainer.get('publisher')
-        t['container_name'] = countainer.get('name')
-        t['container_issnl'] = countainer.get('issnl')
+        t['publisher'] = container.get('publisher')
+        t['container_name'] = container.get('name')
+        t['container_issnl'] = container.get('issnl')
         container_extra = container.get('extra')
         if container_extra:
             t['container_is_oa'] = container_extra.get('is_oa')
