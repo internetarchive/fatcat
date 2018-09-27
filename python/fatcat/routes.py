@@ -313,10 +313,6 @@ def search():
             if word.startswith("10.") and word.count("/") >= 1:
                 query = query.replace(word, 'doi:"{}"'.format(word))
 
-    # Convert "author:" query to "authors:"
-    if query is not None:
-        query = query.replace("author:", "authors:")
-
     if 'q' in request.args.keys():
         # always do files for HTML
         found = do_search(query, limit=limit)

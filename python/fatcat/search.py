@@ -14,14 +14,13 @@ def do_search(q, limit=20):
     search_request = {
         "query": {
             "query_string": {
-                "query": q,
-                "analyzer": "textIcuSearch",
-                "default_operator": "AND",
-                "analyze_wildcard": True,
-                "lenient": True,
-                "auto_generate_phrase_queries": True,
-                "default_field": "_all",
-            },
+            "query": q,
+            "analyzer": "textIcuSearch",
+            "default_operator": "AND",
+            "analyze_wildcard": True,
+            "lenient": True,
+            "fields": ["title^5", "contrib_names^2", "container_title"]
+            }
         },
         "size": int(limit),
     }
@@ -36,11 +35,12 @@ def do_search(q, limit=20):
         abort(resp.status_code)
 
     content = resp.json()
+    print(content)
     results = [h['_source'] for h in content['hits']['hits']]
     for h in results:
-        # Ensure 'authors' is a list, not a single string
-        if type(h['authors']) is not list:
-            h['authors'] = [h['authors'], ]
+        # Ensure 'contrib_names' is a list, not a single string
+        if type(h['contrib_names']) is not list:
+            h['contrib_names'] = [h['contrib_names'], ]
 
     found = content['hits']['total']
     return {"query": { "q": q },

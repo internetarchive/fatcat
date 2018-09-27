@@ -11,8 +11,8 @@ class Config(object):
     GIT_REVISION = subprocess.check_output(["git", "describe", "--always"]).strip()
     # This is, effectively, the QA/PROD flag
     FATCAT_DOMAIN = "qa.fatcat.wiki"
-    ELASTIC_INDEX = "crossref-works"
-    ELASTIC_BACKEND = "http://search.{}:8088".format(FATCAT_DOMAIN)
+    ELASTIC_BACKEND = "https://search.fatcat.wiki"
+    ELASTIC_INDEX = "fatcat"
 
     # "Event more verbose" debug options. SECRET_KEY is bogus.
     #SQLALCHEMY_ECHO = True
