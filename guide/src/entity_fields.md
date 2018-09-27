@@ -169,7 +169,7 @@ guide.
       in "extra", not here.
 
 Controlled vocabulary for `release_type` is derived from the Crossref `type`
-vocabulary:
+vocabulary (TODO: should it follow [CSL types](http://docs.citationstyles.org/en/stable/specification.html#appendix-iii-types) instead?):
 
 - `journal-article`
 - `proceedings-article`
