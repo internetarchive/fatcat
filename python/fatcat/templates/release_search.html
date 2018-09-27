@@ -6,11 +6,26 @@
 <i>Showing top {{ found.count_returned }} out of {{ found.count_found }} results for: <code>{{ found.query.q }}</code></i>
 {% for paper in found.results %}
 <div>
-  <h4 style="margin-top: 1em; margin-bottom: 4px;"><a href="/release/lookup?doi={{ paper.doi }}" style="color: #2224c7;">{{ paper['title'] }}</a></h4>
-  <h5 style="margin-top: 4px; margin-bottom: 4px;">{{ ", ".join(paper.authors) }}</h5>
-  DOI: <a href="http://oadoi.org/{{paper.doi }}" style="color: green;">{{ paper.doi }}</a>
-  <br>Journal: {{ paper.journal }}
-  <!-- <br>Date: {{ paper.date }} -->
+  <h4 style="margin-top: 1em; margin-bottom: 4px; font-size: 1.1em;"><a href="/release/lookup?doi={{ paper.doi }}" style="color: #2224c7;">{{ paper['title'] }}</a>
+  {% if paper.file_pdf_url %}
+  &nbsp;&nbsp;<a href="{{ paper.file_pdf_url }}" class="ui label small"><i class="file icon"></i>fulltext</a>
+  {% endif %}
+  </h4>
+  <h5 style="margin-top: 4px; margin-bottom: 4px; font-size: 1em;">{{ ", ".join(paper.contrib_names) }}</h5>
+  {% if paper.doi %}
+  DOI: <a href="https://doi.org/{{paper.doi }}" style="color: green;">{{ paper.doi }}</a>
+  - {{ paper.release_type }}
+  - {{ paper.release_date[:4] }}<br>
+  {% endif %}
+  {% if paper.container_name %}
+    {% if paper.container_issnl %}
+      <a href="/container/lookup?issnl={{ paper.container_issnl}}" style="color: black;">{{ paper.container_name }}</a>
+    {% else %}
+      {{ paper.container_name }}
+    {% endif %}
+    {% if paper.container_is_oa %}<i class="icon unlock orange small"></i>{% endif %}
+  {% endif %}
+  <!-- <br>Date: {{ paper.release_date }} -->
 </div>
 {% else %}
 <br/>
