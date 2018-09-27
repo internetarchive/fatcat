@@ -247,7 +247,7 @@ This release citing other releases.
 <b>Fatcat Bits</b>
 <p>State is "{{ release.state }}". Revision:
 <br><small><code>{{ release.revision }}</code></small>
-<br><a href="https://api.qa.fatcat.wiki/v0/release/{{ release.ident }}?expand=container,files">As JSON object via API</a>
+<br><a href="https://api.{{ config.FATCAT_DOMAIN }}/v0/release/{{ release.ident }}?expand=container,files">As JSON object via API</a>
 
 </div>
 <div class="two ui buttons bottom attached">

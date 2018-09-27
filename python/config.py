@@ -8,9 +8,11 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URI') or \
         'sqlite:///' + os.path.join(basedir, 'fatcat_dev.sqlite')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    ELASTIC_BACKEND = "http://search.qa.fatcat.wiki:8088"
-    ELASTIC_INDEX = "crossref-works"
     GIT_REVISION = subprocess.check_output(["git", "describe", "--always"]).strip()
+    # This is, effectively, the QA/PROD flag
+    FATCAT_DOMAIN = "qa.fatcat.wiki"
+    ELASTIC_INDEX = "crossref-works"
+    ELASTIC_BACKEND = "http://search.{}:8088".format(FATCAT_DOMAIN)
 
     # "Event more verbose" debug options. SECRET_KEY is bogus.
     #SQLALCHEMY_ECHO = True
