@@ -8,7 +8,6 @@
 
 - refactors and correctness in rust/TODO
 - importers have editor accounts and include editgroup metadata
-- crossref importer uses extids
 
 ## Production blockers
 
@@ -52,6 +51,7 @@ new importers:
 ## Guide / Book / Style
 
 - release_type, release_status, url.rel schemas (and enforce in API?)
+- more+better terms+policies: https://tosdr.org/index.html
 
 ## Fun Features
 
