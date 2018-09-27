@@ -23,9 +23,6 @@
 <div class="ten wide column" style="font-size: 16px;">
 
 {% if release.release_date != None %}<p><b>Date (published):</b> {{ release.release_date }}{% endif %}
-{% if release.doi != None %}
-<br><b>DOI:</b> <a href="https://doi.org/{{ release.doi }}">&nbsp;<code>{{ release.doi }}</code></a>
-{% endif %}
 {% if release.pmid != None %}
 <br><b>PubMed:</b> <a href="https://www.ncbi.nlm.nih.gov/pubmed/{{ release.pmid }}">&nbsp;<code>{{ release.pmid }}</code></a>
 {% endif %}
@@ -35,34 +32,35 @@
 {% if release.wikidata_qid != None %}
 <br><b>Wikidata Entity:</b> <a href="https://www.wikidata.org/wiki/{{ release.wikidata_qid }}">&nbsp;<code>{{ release.wikidata_qid }}</code></a>
 {% endif %}
-{% if release.isbn13 != None %}
-<br><b>ISBN-13:</b> &nbsp;<code>{{ release.isbn13 }}</code>
-{% endif %}
 {% if release.language != None %}
 <br><b>Primary Language:</b> &nbsp;<code>{{ release.language }}</code> (<a href="https://www.loc.gov/standards/iso639-2/php/langcodes_name.php?iso_639_1={{ release.language }}">lookup ISO-639 code</a>)
 {% endif %}
-<br><b>Fatcat Work:</b>&nbsp;<a href="/work/{{ release.work_id }}">&nbsp;<code>{{ release.work_id }}</code></a>
-<br>There may be other versions or releases (pre-prints, publications, etc)
-linked to the same work.
+<br>This <i>{{ release.release_status or "unknown-type" }}</i> is a release
+(version) of the work <a href="/work/{{ release.work_id }}">&nbsp;<code>{{
+release.work_id }}</code></a>. There may be other releases (eg, pre-prints,
+formal publications, etc) linked to the same work.
 
 {% if container != None %}
-<div class="ui attached message">
-<h4>
-{% if release.release_status == 'published' %}
-  Published in <a href="/container/{{ container.ident }}">{{ container.name }}</a>
-{% else %}
-  In <i>{{ release.release_type }}</i> in <a href="/container/{{ container.ident }}">{{ container.name }}</a>
-{% endif %}
-</h4>
+<div class="ui styled accordion">
+<div class="title">
+  <i class="dropdown icon"></i>
+  {% if release.release_status == 'published' %}
+    Published in <a href="/container/{{ container.ident }}">{{ container.name }}</a>
+  {% else %}
+    Released in <i>{{ release.release_type }}</i> in <a href="/container/{{ container.ident }}">{{ container.name }}</a>
+  {% endif %}
+  {% if release.publisher %}
+    by {{ release.publisher }}
+  {% endif %}
+</div><div class="content">
+  {% if container != None and container.issnl != None %}<b>ISSN-L:</b> {{ container.issnl }}<br>{% endif %}
+  {% if release.volume != None %}<b>Volume:</b> {{ release.volume }}<br>{% endif %}
+  {% if release.issue != None %}<b>Issue:</b> {{ release.issue }}<br>{% endif %}
+  {% if release.pages != None %}<b>Page(s):</b> {{ release.pages }}<br>{% endif %}
+  {% if release.publisher != None %}<b>Publisher:</b> {{ release.publisher }}<br>{% endif %}
+  {% if release.release_status != None %}<b>Release Status:</b> {{ release.release_status }}<br>{% endif %}
+  {% if release.release_type != None %}<b>Release Type:</b> {{ release.release_type}}<br>{% endif %}
 </div>
-<div class="ui segment attached">
-{% if container != None and container.issnl != None %}<b>ISSN-L:</b> {{ container.issnl }}<br>{% endif %}
-{% if release.volume != None %}<b>Volume:</b> {{ release.volume }}<br>{% endif %}
-{% if release.issue != None %}<b>Issue:</b> {{ release.issue }}<br>{% endif %}
-{% if release.pages != None %}<b>Page(s):</b> {{ release.pages }}<br>{% endif %}
-{% if release.publisher != None %}<b>Publisher:</b> {{ release.publisher }}<br>{% endif %}
-{% if release.release_status != None %}<b>Release Status:</b> {{ release.release_status }}<br>{% endif %}
-{% if release.release_type != None %}<b>Release Type:</b> {{ release.release_type}}<br>{% endif %}
 </div>
 {% endif %}
 
@@ -99,7 +97,7 @@ Raw Object:
   </thead>
   <tbody>
   {% for contrib in release.contribs %}
-  <tr><td>{{ contrib.index }}
+  <tr><td>{{ contrib.index or '' }}
       {% if contrib.creator_id %}
         <td><a href="/creator/{{contrib.creator_id}}">{{ contrib.raw_name }}</a> 
       {% else %}
@@ -110,13 +108,12 @@ Raw Object:
   </tbody>
 </table>
 {% else %}
-<p>Contributors (authors, etc) not known.
+<p>Contributors (authors, translators, etc) not known.
 {% endif %}
 
 <br>
-<h3>Files</h3>
+<h3>Known Files and URLs</h3>
 {% if files != [] %}
-Believed to represent this release...
 <table class="ui compact table">
   <thead>
     <tr><th>SHA-1
@@ -126,7 +123,7 @@ Believed to represent this release...
   </thead>
   <tbody>
   {% for file in files %}
-  <tr><td><small><code><a href="/file/{{ file.ident }}">{{ file.sha1}}</a></code></small>
+  <tr><td><small><code><a href="/file/{{ file.ident }}">{{ file.sha1[:16] + "..." }}</a></code></small>
       <td>{% if file.size != None %}{{ file.size }}{% endif %}
       <td>{% if file.mimetype != None %}{{ file.mimetype }}{% endif %}
       <td>{% for url in file.urls %}
@@ -167,32 +164,35 @@ This release citing other releases.
 {% else %}
 <span class="ui top attached fluid huge grey button"><i class="file cross icon"></i>No Full Text Available</span>
 {% endif %}
-<div class="ui segment attached">
 
 {% if release.release_type != None %}
+<div class="ui segment attached">
 <b>Release Type</b> <code>{{ release.release_type }}</code>
-</div><div class="ui segment attached">
+</div>
 {% endif %}
 
 {% if release.doi %}
+<div class="ui segment attached">
 <b>DOI </b> <a href="https://doi.org/{{ release.doi }}">{{ release.doi }}</a>
-<br><a href="https://api.crossref.org/v1/works/http://dx.doi.org/{{ release.doi }}">Crossref Metadata</a> (via API)
-</div><div class="ui segment attached">
+</div>
 {% endif %}
 {% if release.isbn13 != None %}
+<div class="ui segment attached">
 <p><b>ISBN-13 </b> &nbsp;<code>{{ release.isbn13 }}</code>
-</div><div class="ui segment attached">
+</div>
 {% endif %}
 
 {% if release.extra.is_oa == True %}
+<div class="ui segment attached">
 <b><i class="ui icon unlock alternate green"></i> Open Access</b>
 </div><div class="ui segment attached">
 {% elif release.extra.is_oa == False %}
 <b><i class="ui icon lock red"></i> Not Open Access</b>
-</div><div class="ui segment attached">
+</div>
 {% endif %}
 
 {% if container != None %}
+<div class="ui segment attached">
 <b>Container Metadata</b><br>
 {% if container.extra.is_oa == True %}
 <i class="icon unlock orange"></i>Open Access Publication<br>
@@ -222,28 +222,35 @@ This release citing other releases.
   <i class="icon hashtag"></i>ISSN-L: &nbsp;<code>{{ container.issnl }}</code><br>
 {% endif %}
   <i class="icon linkify"></i>Fatcat: &nbsp;<small><code><a href="/container/{{ container.ident }}">{{ container.ident }}</a></code></small><br>
-</div><div class="ui segment attached">
+</div>
 {% endif %}
 
-<b>Lookup Links</b>
+<div class="ui segment attached accordion">
+  <div class="title" style="padding: 0px;"><i class="dropdown icon"></i><b>Lookup Links</b></div>
+  <div class="content">
 {% if container != None and container.issnl != None %}
-  <br><a href="http://www.sherpa.ac.uk/romeo/issn/{{ container.issnl }}/">SHERPA/RoMEO</a> (journal policies)
+  <a href="http://www.sherpa.ac.uk/romeo/issn/{{ container.issnl }}/">SHERPA/RoMEO</a> (journal policies)<br/>
 {% endif %}
 {% if container != None and container.doi != None %}
-  <br><a href="https://oadoi.org/{{ release.doi }}">oaDOI/unpaywall</a>
+  <a href="https://oadoi.org/{{ release.doi }}">oaDOI/unpaywall</a><br/>
 {% endif %}
 {% if release.isbn13 != None %}
-  <br><a href="https://openlibrary.org/search?isbn={{ release.isbn13 }}">Open Library</a>
-  <br><a href="http://www.worldcat.org/search?q=bn%3A{{ release.isbn13 }}">Worldcat</a>
+  <a href="https://openlibrary.org/search?isbn={{ release.isbn13 }}">Open Library</a><br>
+  <a href="http://www.worldcat.org/search?q=bn%3A{{ release.isbn13 }}">Worldcat</a><br>
 {% else %}
-  <br><a href="http://www.worldcat.org/search?qt=worldcat_org_art&q={{ release.title }}">Worldcat</a>
+  <a href="http://www.worldcat.org/search?qt=worldcat_org_art&q={{ release.title }}">Worldcat</a><br>
 {% endif %}
-<br><a href="https://www.wikidata.org/w/index.php?search={{ release.title }}">wikidata.org</a>
-<br><a href="https://core.ac.uk/search?q={{ release.title }}">CORE.ac.uk</a>
-<br><a href="https://www.semanticscholar.org/search?q={{ release.title }}">Semantic Scholar</a> (CS, neuro)
-<br><a href="https://scholar.google.com/scholar?q={{ release.title }}">Google Scholar</a>
-</div><div class="ui segment attached">
+{% if release.doi %}
+<a href="https://api.crossref.org/v1/works/http://dx.doi.org/{{ release.doi }}">Crossref Metadata</a> (via API)<br>
+{% endif %}
+<a href="https://www.wikidata.org/w/index.php?search={{ release.title }}">wikidata.org</a><br>
+<a href="https://core.ac.uk/search?q={{ release.title }}">CORE.ac.uk</a><br>
+<a href="https://www.semanticscholar.org/search?q={{ release.title }}">Semantic Scholar</a> (CS, neuro)<br>
+<a href="https://scholar.google.com/scholar?q={{ release.title }}">Google Scholar</a><br>
+</div>
+</div>
 
+<div class="ui segment attached">
 <b>Fatcat Bits</b>
 <p>State is "{{ release.state }}". Revision:
 <br><small><code>{{ release.revision }}</code></small>
@@ -257,4 +264,12 @@ This release citing other releases.
 
 </div>
 </div>
+{% endblock %}
+
+{% block postscript %}
+<script>
+$('.ui.accordion')
+  .accordion()
+;
+</script>
 {% endblock %}
