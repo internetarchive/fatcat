@@ -160,6 +160,7 @@ class FatcatCrossrefImporter(FatcatImporter):
         for key in ('subject', 'type', 'license', 'alternative-id',
                 'container-title', 'original-title', 'subtitle', 'archive',
                 'funder', 'group-title'):
+            # TODO: unpack "container-title" array
             val = obj.get(key)
             if val:
                 extra[key] = val
@@ -169,6 +170,7 @@ class FatcatCrossrefImporter(FatcatImporter):
                     extra['license'][i]['start'] = extra['license'][i]['start']['date-time']
         if len(obj['title']) > 1:
             extra['other-titles'] = obj['title'][1:]
+        # TODO: this should be top-level
         extra['is_kept'] = len(obj.get('archive', [])) > 0
 
         # ISBN
