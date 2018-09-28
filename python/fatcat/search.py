@@ -6,7 +6,7 @@ from fatcat import app
 
 def do_search(q, limit=20):
 
-    print("Search hit: " + q)
+    #print("Search hit: " + q)
     if limit > 100:
         # Sanity check
         limit = 100
@@ -35,12 +35,15 @@ def do_search(q, limit=20):
         abort(resp.status_code)
 
     content = resp.json()
-    print(content)
+    #print(content)
     results = [h['_source'] for h in content['hits']['hits']]
     for h in results:
         # Ensure 'contrib_names' is a list, not a single string
         if type(h['contrib_names']) is not list:
             h['contrib_names'] = [h['contrib_names'], ]
+        # TODO: a total hack; why is elastic sending weird surrogate
+        # characters?
+        h['contrib_names'] = [name.encode('utf8', 'ignore').decode('utf8') for name in h['contrib_names']]
 
     found = content['hits']['total']
     return {"query": { "q": q },
