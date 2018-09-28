@@ -43,6 +43,7 @@ Bulk insert from a file on disk:
 
 Or, in a bulk production live-stream conversion:
 
+    export LC_ALL=C.UTF-8
     time zcat /srv/fatcat/snapshots/fatcat_release_dump_expanded.json.gz | ./transform_release.py | esbulk -verbose -size 20000 -id ident -w 8 -index fatcat -type release
     # 2018/09/24 21:42:26 53028167 docs in 1h0m56.853006293s at 14501.039 docs/s with 8 workers
 
@@ -60,7 +61,7 @@ actual query string, and "size" field with the max results to return):
           "default_operator": "AND",
           "analyze_wildcard": true,
           "lenient": true,
-          "fields": ["title^3", "contrib_names^3", "container_title"]
+          "fields": ["title^5", "contrib_names^2", "container_title"]
         }
       },
       "size": 3
