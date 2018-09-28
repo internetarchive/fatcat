@@ -97,7 +97,7 @@ Raw Object:
   </thead>
   <tbody>
   {% for contrib in release.contribs %}
-  <tr><td>{% if type(contrib.index) == int %} {{ contrib.index + 1 }}{% endif %}
+  <tr><td>{% if contrib.index or contrib.index == 0 %} {{ contrib.index + 1 }}{% endif %}
       {% if contrib.creator_id %}
         <td><a href="/creator/{{contrib.creator_id}}">{{ contrib.raw_name }}</a> 
       {% else %}
