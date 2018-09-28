@@ -44,18 +44,18 @@ def container_edit_view(ident):
 #    # else:
 #    #return render_template('container_edit.html')
 
-@app.route('/container/create', methods=['GET'])
-def container_create_view():
-    return render_template('container_create.html')
+#@app.route('/container/create', methods=['GET'])
+#def container_create_view():
+#    return render_template('container_create.html')
 
-@app.route('/container/create', methods=['POST'])
-def container_create():
-    params = dict()
-    for k in request.form:
-        if k.startswith('container_'):
-            params[k[10:]] = request.form[k]
-    edit = api.create_container(params=params)
-    return redirect("/container/{}".format(edit.ident))
+#@app.route('/container/create', methods=['POST'])
+#def container_create():
+#    params = dict()
+#    for k in request.form:
+#        if k.startswith('container_'):
+#            params[k[10:]] = request.form[k]
+#    edit = api.create_container(params=params)
+#    return redirect("/container/{}".format(edit.ident))
 
 @app.route('/container/lookup', methods=['GET'])
 def container_lookup():
@@ -168,18 +168,18 @@ def release_lookup():
         abort(ae.status)
     return redirect('/release/{}'.format(resp.ident))
 
-@app.route('/release/create', methods=['GET'])
-def release_create_view():
-    return render_template('release_create.html')
+#@app.route('/release/create', methods=['GET'])
+#def release_create_view():
+#    return render_template('release_create.html')
 
-@app.route('/release/create', methods=['POST'])
-def release_create():
-    params = dict()
-    for k in request.form:
-        if k.startswith('release_'):
-            params[k[10:]] = request.form[k]
-    edit = api.create_release(params=params)
-    return redirect("/release/{}".format(edit.ident))
+#@app.route('/release/create', methods=['POST'])
+#def release_create():
+#    params = dict()
+#    for k in request.form:
+#        if k.startswith('release_'):
+#            params[k[10:]] = request.form[k]
+#    edit = api.create_release(params=params)
+#    return redirect("/release/{}".format(edit.ident))
 
 @app.route('/release/<ident>/history', methods=['GET'])
 def release_history(ident):
@@ -217,9 +217,9 @@ def release_view(ident):
     return render_template('release_view.html', release=entity,
         authors=authors, files=files, container=container)
 
-@app.route('/work/create', methods=['GET'])
-def work_create_view():
-    return abort(404)
+#@app.route('/work/create', methods=['GET'])
+#def work_create_view():
+    #return abort(404)
 
 @app.route('/work/<ident>/history', methods=['GET'])
 def work_history(ident):
