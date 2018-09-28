@@ -15,7 +15,10 @@
   {% if paper.doi %}
   DOI: <a href="https://doi.org/{{paper.doi }}" style="color: green;">{{ paper.doi }}</a>
   - {{ paper.release_type }}
-  - {{ paper.release_date[:4] }}<br>
+    {% if paper.release_date %}
+    - {{ paper.release_date[:4] }}
+    {% endif %}
+  <br>
   {% endif %}
   {% if paper.container_name %}
     {% if paper.container_issnl %}
