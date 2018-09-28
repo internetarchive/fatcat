@@ -3,6 +3,10 @@ import json
 import pytest
 from fatcat.grobid_metadata_importer import FatcatGrobidMetadataImporter
 
+"""
+WARNING: these tests are currently very fragile because they have database
+side-effects. Should probably be disabled or re-written.
+"""
 
 @pytest.fixture(scope="function")
 def grobid_metadata_importer():
@@ -12,10 +16,6 @@ def grobid_metadata_importer():
 #def test_grobid_metadata_importer_batch(grobid_metadata_importer):
 #    with open('tests/files/example_grobid_metadata_lines.tsv', 'r') as f:
 #        grobid_metadata_importer.process_batch(f)
-
-def test_grobid_metadata_importer(grobid_metadata_importer):
-    with open('tests/files/example_grobid_metadata_lines.tsv', 'r') as f:
-        grobid_metadata_importer.process_source(f)
 
 def test_grobid_metadata_parse(grobid_metadata_importer):
     with open('tests/files/example_grobid_metadata_lines.tsv', 'r') as f:
@@ -32,16 +32,21 @@ def test_grobid_metadata_parse(grobid_metadata_importer):
 
 def test_file_metadata_parse(grobid_metadata_importer):
     with open('tests/files/example_grobid_metadata_lines.tsv', 'r') as f:
+        f.readline()
         raw = f.readline().split('\t')
         fe = grobid_metadata_importer.parse_file_metadata(
             raw[0], json.loads(raw[1]), raw[2], int(raw[3]))
         assert fe
-        assert fe.sha1 == "38d725127246895368e4d9f950e377b4f21b6d75" # "sha1:HDLSKETSI2EVG2HE3H4VBY3XWTZBW3LV"
+        assert fe.sha1 == "d4a841744719518bf8bdd5d91576ccedc55efbb5" # "sha1:2SUEC5CHDFIYX6F52XMRK5WM5XCV565V"
         assert fe.md5 == None
         assert fe.mimetype == "application/pdf"
-        assert fe.size == 260608
-        assert fe.urls[1].url.startswith("http://e-journal.hamzanwadi.ac.id")
+        assert fe.size == 142710
+        assert fe.urls[1].url.startswith("http://via.library.depaul.edu")
         assert fe.urls[1].rel == "web"
         assert fe.urls[0].url.startswith("https://web.archive.org/")
         assert fe.urls[0].rel == "webarchive"
         assert len(fe.releases) == 0
+
+def test_grobid_metadata_importer(grobid_metadata_importer):
+    with open('tests/files/example_grobid_metadata_lines.tsv', 'r') as f:
+        grobid_metadata_importer.process_source(f)
