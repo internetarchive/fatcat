@@ -144,7 +144,22 @@ Raw Object:
 This release citing other releases.
 <ol>
   {% for ref in release.refs %}
-    <li>{% if ref.extra != None and ref.extra.unstructured != None %}{{ ref.extra.unstructured }}{% else %}<i>unknown</i>{% endif %}
+    <li>
+    {% if ref.title %}
+      {{ ref.title }}
+      {% if ref.container_name %}{{ ref.container_name }}.{% endif %}
+      {% if ref.year %}{{ ref.year }}{% endif %}
+      {% if ref.locator %}{{ ref.locator }}{% endif %}
+    {% elif ref.extra and ref.extra.crossref %}
+      {% if ref.extra.crossref.get('author') %}{{ ref.extra.crossref['author'] }}.{% endif %}
+      {% if ref.extra.crossref.get('article-title') %}{{ ref.extra.crossref['article-title'] }}.{% endif %}
+      {% if ref.container_name %}{{ ref.container_name }}.{% endif %}
+      {% if ref.year %}{{ ref.year }}.{% endif %}
+    {% elif ref.extra and ref.extra.unstructured %}
+      {{ ref.extra.unstructured }}
+    {% else %}
+      <i>unknown</i>
+    {% endif %}
     {% if ref.target_release_id != None %}
       (<a href="/release/{{ ref.target_release_id }}">fatcat release</a>)
 {#    {% elif ref.extra != None and ref.extra.doi != None %}
