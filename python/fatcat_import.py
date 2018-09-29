@@ -7,6 +7,7 @@ from fatcat.crossref_importer import FatcatCrossrefImporter
 from fatcat.orcid_importer import FatcatOrcidImporter
 from fatcat.issn_importer import FatcatIssnImporter
 from fatcat.matched_importer import FatcatMatchedImporter
+from fatcat.grobid_metadata_importer import FatcatGrobidMetadataImporter
 
 def run_import_crossref(args):
     fci = FatcatCrossrefImporter(args.host_url, args.issn_map_file,
@@ -28,6 +29,11 @@ def run_import_matched(args):
     fmi = FatcatMatchedImporter(args.host_url,
         skip_file_update=args.no_file_update)
     fmi.process_batch(args.json_file, size=args.batch_size)
+    fmi.describe_run()
+
+def run_import_grobid_metadata(args):
+    fmi = FatcatGrobidMetadataImporter(args.host_url)
+    fmi.process_source(args.tsv_file, group_size=args.group_size)
     fmi.describe_run()
 
 def health(args):
@@ -91,6 +97,15 @@ def main():
     sub_import_matched.add_argument('--batch-size',
         help="size of batch to send",
         default=50, type=int)
+
+    sub_import_grobid_metadata = subparsers.add_parser('import-grobid-metadata')
+    sub_import_grobid_metadata.set_defaults(func=run_import_grobid_metadata)
+    sub_import_grobid_metadata.add_argument('tsv_file',
+        help="TSV file to import from (or stdin)",
+        default=sys.stdin, type=argparse.FileType('r'))
+    sub_import_grobid_metadata.add_argument('--group-size',
+        help="editgroup group size to use",
+        default=75, type=int)
 
     sub_health = subparsers.add_parser('health')
     sub_health.set_defaults(func=health)
