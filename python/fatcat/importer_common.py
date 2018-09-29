@@ -41,7 +41,7 @@ class FatcatImporter:
         for i, row in enumerate(source):
             self.create_row(row, editgroup=eg.id)
             if i > 0 and (i % group_size) == 0:
-                self.api.accept_editgroup(eg)
+                self.api.accept_editgroup(eg.id)
                 eg = self.api.create_editgroup(
                     fatcat_client.Editgroup(editor_id='aaaaaaaaaaaabkvkaaaaaaaaae'))
             self.processed_lines = self.processed_lines + 1
