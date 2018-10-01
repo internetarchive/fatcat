@@ -63,8 +63,8 @@
     <div class="ui horizontal inverted small divided link list">
       <a class="item" href="/">fatcat!</a>
       <a class="item" href="/about">About</a>
-      <a class="item" href="https://guide.{{ config.FATCAT_DOMAIN }}/Sources</a>
-      <a class="item" href="#TODO">Status</a>
+      <a class="item" href="https://guide.{{ config.FATCAT_DOMAIN }}/sources.html">Sources</a>
+      <a class="item" href="{% if config.FATCAT_DOMAIN == "fatcat.wiki" %}https://stats.uptimerobot.com/GM9YNSrB0{% elif config.FATCAT_DOMAIN =="qa.fatcat.wiki" %}https://stats.uptimerobot.com/WQ8wAUREA{% else %}#{% endif %}">Status</a>
       <a class="item" href="https://guide.{{ config.FATCAT_DOMAIN }}/bulk_exports.html">Bulk Exports</a>
       <a class="item" href="https://git.bnewbold.net/fatcat/">Source Code (<code>{{ config.GIT_REVISION.decode() }}</code>)</a>
     </div>
