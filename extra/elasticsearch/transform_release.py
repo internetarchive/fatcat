@@ -62,6 +62,8 @@ def transform(m):
     extra = m.get('extra', dict())
     if extra:
         t['in_shadow'] = extra.get('in_shadow')
+        if extra.get('grobid') and extra['grobid'].get('is_longtail_oa'):
+            t['container_is_longtail_oa'] = True
     t['any_abstract'] = bool(t.get('abstracts'))
     t['is_kept'] = container_is_kept or extra.get('is_kept', False)
 
