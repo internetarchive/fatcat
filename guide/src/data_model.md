@@ -14,13 +14,13 @@ artifacts) over physical items, the primary bibliographic entity types are:
   `work`.
 - `release`: a specific "release" or "publicly published" (in a formal or
   informal sense) version of a work. Contains traditional bibliographic
-  metadata (title, date of publiction, media type, language, etc). Has
+  metadata (title, date of publication, media type, language, etc). Has
   relationships to other entities:
     - "variant of" a single `work`
     - "contributed to by" multiple `creators`
     - "references to" (cites) multiple `releases`
     - "published as part of" a single `container`
-- `file`: a single concrete, fixed ditigal artifact; a manifestation of one or
+- `file`: a single concrete, fixed digital artifact; a manifestation of one or
   more `releases`. Machine-verifiable metadata includes file hashes, size, and
   detected file format. Verified URLs link to locations on the open web where
   this file can be found or has been archived. Has relationships:
@@ -49,9 +49,9 @@ the same regardless of type.
 
 A specific version of any entity in the catalog is called a "revision".
 Revisions are generally immutable (do not change and are not editable), and are
-not usually refered to directly by users. Instead, persistent identifiers can
-be created, which "point to" a specific revsiion at a time. This distinction
-means that entities refered to by an identifier can change over time (as
+not usually referred to directly by users. Instead, persistent identifiers can
+be created, which "point to" a specific revision at a time. This distinction
+means that entities referred to by an identifier can change over time (as
 metadata is corrected and expanded). Revision objects do not "point" back to
 specific identifiers, so they are not the same as a simple "version number" for
 an identifier.
@@ -63,7 +63,7 @@ be fetched and inspected on a per-identifier basis, and any changes can easily
 be reverted (even merges/redirects and "deletion").
 
 "Staged" or "proposed" changes are captured as edit objects without updating
-the identifers themselves.
+the identifiers themselves.
 
 ### Fatcat Identifiers
 
@@ -83,7 +83,7 @@ In comparison, 96-bit identifiers would have 20 characters and look like:
     work_rzga5b9cd7efgh04iljk
     https://fatcat.wiki/work/rzga5b9cd7efgh04iljk
 
-A 64-bit namespace would probably be large enought, and would work with
+A 64-bit namespace would probably be large enough, and would work with
 database Integer columns:
 
     work_rzga5b9cd7efg
@@ -102,7 +102,7 @@ Revisions are stored in their complete form, not as a patch or difference; if
 comparing to distributed version control systems (for managing changes to
 source code), this follows the git model, not the mercurial model.
 
-The entity revisions are immutable once accepted; the editting process involves
+The entity revisions are immutable once accepted; the editing process involves
 the creation of new entity revisions and, if the edit is approved, pointing the
 identifier to the new revision. Entities cross-reference between themselves by
 *identifier* not *revision number*. Identifier pointers also support
@@ -122,7 +122,7 @@ SQL tables look something like this (with separate tables for entity type a la
 
     entity_revision
         revision_id
-        <all entity-tyle-specific fields>
+        <all entity-style-specific fields>
         extra: json blob for schema evolution
 
     entity_edit
@@ -140,7 +140,7 @@ SQL tables look something like this (with separate tables for entity type a la
         extra: json blob for progeny metadata
 
 An individual entity can be in the following "states", from which the given
-actions (transistion) can be made:
+actions (transition) can be made:
 
 - `wip` (not live; not redirect; has rev)
     - activate (to `active`)
@@ -166,7 +166,7 @@ history of an object.
 
 ## Controlled Vocabularies 
 
-Some individual fields have additional contraints, either in the form of
+Some individual fields have additional constraints, either in the form of
 pattern validation ("values must be upper case, contain only certain
 characters"), or membership in a fixed set of values. These may include:
 
@@ -175,7 +175,7 @@ characters"), or membership in a fixed set of values. These may include:
 - work "types" (article vs. book chapter vs. proceeding, etc)
 - contributor types (author, translator, illustrator, etc)
 - human languages
-- identifier namespaces (DOI, ISBN, ISSN, ORCID, etc; but not the identifers
+- identifier namespaces (DOI, ISBN, ISSN, ORCID, etc; but not the identifiers
   themselves)
 
 Other fixed-set "vocabularies" become too large to easily maintain or express
@@ -183,7 +183,7 @@ in code. These could be added to the backend databases, or be enforced by bots
 (instead of the core system itself). These mostly include externally-registered identifiers or types, such as:
 
 - file mimetypes
-- identifiers themselves (DOI, ORCID, etc), by checking for registeration
+- identifiers themselves (DOI, ORCID, etc), by checking for registration
   against canonical APIs and databases
 
 ## Global Edit Changelog

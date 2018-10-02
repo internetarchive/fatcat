@@ -11,7 +11,7 @@ operated by anybody. A separate web interface project talks to the API backend
 and can be developed more rapidly with less concern about data loss or
 corruption.
 
-A cronjob will creae periodic database dumps, both in "full" form (all tables
+A cronjob will create periodic database dumps, both in "full" form (all tables
 and all edit history, removing only authentication credentials) and "flattened"
 form (with only the most recent version of each entity).
 
@@ -23,4 +23,4 @@ to a rigid third-party ontology or schema.
 
 Microservice daemons should be able to proxy between the primary API and
 standard protocols like ResourceSync and OAI-PMH, and third party bots could
-ingest or synchronize the databse in those formats.
+ingest or synchronize the database in those formats.

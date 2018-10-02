@@ -3,7 +3,7 @@
 ## Basic Editing Workflow and Bots
 
 Both human editors and bots should have edits go through the same API, with
-humans using either the default web interface, integrations, or client
+humans using either the default web interface, integration, or client
 software.
 
 The normal workflow is to create edits (or updates, merges, deletions) on
@@ -22,7 +22,7 @@ push through edits more rapidly (eg, importing new works from a publisher API).
 
 Bots need to be tuned to have appropriate edit group sizes (eg, daily batches,
 instead of millions of works in a single edit) to make human QA review and
-reverts managable.
+reverts manageable.
 
 Data progeny and source references are captured in the edit metadata, instead
 of being encoded in the entity data model itself. In the case of importing
@@ -33,5 +33,5 @@ Human editors can leave edit messages to clarify their sources.
 A [style guide](./style_guide.md) and discussion forum are intended to be be
 hosted as separate stand-alone services for editors to propose projects and
 debate process or scope changes. These services should have unified accounts
-and logins (oauth?) for consistent account IDs across all services.
+and logins (OAuth?) for consistent account IDs across all services.
 

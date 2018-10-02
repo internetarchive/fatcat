@@ -2,7 +2,7 @@
 
 A table (CSV) of "alignments" between fatcat entity types and fields with other
 file formats and standards is available under the `./notes/` directory of the
-source repo.
+source git repository..
 
 TODO: in particular, highlight alignments with:
 

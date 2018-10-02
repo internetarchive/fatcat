@@ -5,8 +5,8 @@ All entities have:
 - `extra`: free-form JSON metadata
 
 The "extra" field is an "escape hatch" to include extra fields not in the
-regular schema. It is intented to enable gradual evolution of the schema, as
-well as accomodating niche or field-specific content. That being said,
+regular schema. It is intended to enable gradual evolution of the schema, as
+well as accommodating niche or field-specific content. That being said,
 reasonable limits should be adhered to.
 
 ## Containers
@@ -88,7 +88,7 @@ guide.
   publicly available
 - `doi` (string): full DOI number, lower-case. Example: "10.1234/abcde.789".
   See the "External Identifiers" section of style guide.
-- `isbn13` (string): external identifer for books. ISBN-9 and other formats
+- `isbn13` (string): external identifier for books. ISBN-9 and other formats
   should be converted to canonical ISBN-13. See the "External Identifiers"
   section of style guide.
 - `core_id` (string): external identifier for the [CORE] open access
@@ -144,7 +144,7 @@ guide.
       affiliation, "this is the corresponding author", etc.
 - `refs`: an array of references (aka, citations) to other releases. References
   can only be linked to a specific target release (not a work), though it may
-  be ambugious which release of a work is being referenced if the citation is
+  be ambiguous which release of a work is being referenced if the citation is
   not specific enough. Reference fields include:
     - `index` (integer, optional): reference lists and bibliographies almost
       always have an implicit order. Zero-indexed. Note that this is distinct
@@ -154,10 +154,10 @@ guide.
     - `extra` (JSON, optional): additional citation format metadata can be
       stored here, particularly if the citation schema does not align. Common
       fields might be "volume", "authors", "issue", "publisher", "url", and
-      external identifers ("doi", "isbn13").
+      external identifiers ("doi", "isbn13").
     - `key` (string): works often reference works with a short slug or index
       number, which can be captured here. For example, "[BROWN2017]". Keys
-      generally supercede the `index` field, though both can/should be
+      generally supersede the `index` field, though both can/should be
       supplied.
     - `year` (integer): year of publication of the cited release.
     - `container_title` (string): if applicable, the name of the container of
@@ -215,7 +215,7 @@ vocabulary (TODO: should it follow [CSL types](http://docs.citationstyles.org/en
   can be a `stub` release under the same work. `stub` releases shouldn't be
   considered full releases when counting or aggregating (though if technically
   difficult this may not always be implemented). Other things that can be
-  categorized as stubs (which seem to often end up miscategorized as full
+  categorized as stubs (which seem to often end up mis-categorized as full
   articles in bibliographic databases):
     - an abstract, which is only an abstract of a larger work
     - commercial advertisements
@@ -223,7 +223,7 @@ vocabulary (TODO: should it follow [CSL types](http://docs.citationstyles.org/en
       detect re-publishing without attribution
     - "This page is intentionally blank"
     - "About the author", "About the editors", "About the cover"
-    - "Acknowledgements"
+    - "Acknowledgments"
     - "Notices"
 
 Other types from Crossref (such as `component`, `reference-entry`) are valid,

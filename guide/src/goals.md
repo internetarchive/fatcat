@@ -12,7 +12,7 @@ In the larger ecosystem, fatcat could also provide:
 
 - A work-level (as opposed to title-level) archival dashboard: what fraction of
   all published works are preserved in archives? [KBART](), [CLOCKSS](),
-  [Portico](), and other preservations don't provide granular metadata
+  [Portico](), and other preservation networks don't provide granular metadata
 - A collaborative, independent, non-commercial, fully-open, field-agnostic,
   "completeness"-oriented catalog of scholarly metadata
 - Unified (centralized) foundation for discovery and access across repositories
