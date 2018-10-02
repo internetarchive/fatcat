@@ -42,14 +42,14 @@ history, including all of their contributions.
 ## Immutable History
 
 All editors agree to the licensing terms, and understand that their full public
-history of contributions is made irrevokably public. Edits and contributions
+history of contributions is made irrevocably public. Edits and contributions
 may be *reverted*, but the history (and content) of their edits are retained.
 Edit history is not removed from the corpus on the request of an editor or when
 an editor closes their account.
 
 In an emergency situation, such as non-bibliographic content getting encoded in
 the corpus by bypassing normal filters (eg, base64 encoding hate crime content
-or exploitive photos, as has happened to some blockchain projects), the
+or exploitative photos, as has happened to some blockchain projects), the
 ecosystem may decide to collectively, in a coordinated manner, expunge specific
 records from their history.
 
@@ -73,8 +73,8 @@ servers hosting early deployments of fatcat are largely in a default
 configuration and have not been audited to ensure that these guidelines are
 being followed.*
 
-It is a goal for fatcat to conduct as little surveillence of reader and editor
-bahavior and activities as possible. In pratical terms, this means minimizing
+It is a goal for fatcat to conduct as little surveillance of reader and editor
+behavior and activities as possible. In practical terms, this means minimizing
 the overall amount of logging and collection of identifying information. This
 is in contrast to *submitted edit content*, which is captured, preserved, and
 republished as widely as possible.
@@ -94,8 +94,8 @@ Exceptions will likely be made:
 
 Some uncertain areas of privacy include:
 
-- should third-party authenticion identities be linked to editor ids? what
-  about the specific case of ORCiDs if used for login?
+- should third-party authentication identities be linked to editor ids? what
+  about the specific case of ORCID if used for login?
 - what about discussion and comments on edits? should conversations be included
   in full history dumps? should editors be allowed to update or remove
   comments?

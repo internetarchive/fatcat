@@ -7,7 +7,7 @@ entity, or even a "native"/"international" representation as seems common in
 other bibliographic systems. This most notably applies to release titles, but
 also to container and publisher names, and likely other fields.
 
-For now, editors must use their own judgement over whether to use the title of
+For now, editors must use their own judgment over whether to use the title of
 the release listed in the work itself
 
 This is not to be confused with *translations* of entire works, which should be
@@ -30,9 +30,9 @@ All DOIs stored in an entity column should be registered (aka, should be
 resolvable from `doi.org`). Invalid identifiers may be cleaned up or removed by
 bots.
 
-DOIs should *always* be stored and transfered in lower-case form. Note that
+DOIs should *always* be stored and transferred in lower-case form. Note that
 there are almost no other constraints on DOIs (and handles in general): they
-may have muliple forward slashes, whitespace, of arbitrary length, etc.
+may have multiple forward slashes, whitespace, of arbitrary length, etc.
 Crossref has a [number of examples]() of such "valid" but frustratingly
 formatted strings.
 
@@ -60,28 +60,28 @@ background reading, see:
 
 Particular difficult issues in the context of a bibliographic database include
 the non-universal concept of "family" vs.  "given" names and their relationship
-to first and last names; the inclusion of honarary titles and other suffixes
-and prefixes to a name; the distinction between "prefered", "legal", and
+to first and last names; the inclusion of honorary titles and other suffixes
+and prefixes to a name; the distinction between "preferred", "legal", and
 "bibliographic" names, or other situations where a person may not wish to be
-known under the name they are commonly refered to under; language and character
+known under the name they are commonly referred to under; language and character
 set issues; and pseudonyms, anonymous publications, and fake personas (perhaps
 representing a group, like Bourbaki).
 
 The general guidance for Fatcat is to:
 
-- not be a "source of truth" for representing a persona or human being; ORCiD
+- not be a "source of truth" for representing a persona or human being; ORCID
   and Wikidata are better suited to this task
 - represent author personas, not necessarily 1-to-1 with human beings
 - prioritize the concerns of a reader or researcher over that of the author
 - enable basic interoperability with external databases, file formats, schemas,
-  and style gudies
+  and style guides
 - when possible, respect the wishes of individuals
 
 The data model for the `creator` entity has three name fields:
 
 - `surname` and `given_name`: needed for "aligning" with external databases,
   and to export metadata to many standard formats
-- `display_name`: the "prefered" representation for display of the entire name,
+- `display_name`: the "preferred" representation for display of the entire name,
   in the context of international attribution of authorship of a written work
   
 Names to not necessarily need to expressed in a Latin character set, but also
@@ -101,7 +101,7 @@ of a reasonable size for review and acceptance. For example, merging two
 `creators` and updating related `releases` could all go in a single editgroup.
 Large refactors, conversions, and imports, which may touch thousands of
 entities, should be grouped into reasonable size editgroups; extremely large
-editgroups may cause technical issues, and make review unmanagable. 50 edits is
+editgroups may cause technical issues, and make review unmanageable. 50 edits is
 a decent batch size, and 100 is a good upper limit (and may be enforced by the
 server).
 

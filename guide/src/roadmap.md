@@ -32,7 +32,7 @@ Longer term projects could include:
 - bi-directional synchronization with other user-editable catalogs, such as
   Wikidata
 - better representation of multi-file objects such as websites and datasets
-- altenate/enhanced backend to store full edit history without overloading
+- alternate/enhanced backend to store full edit history without overloading
   traditional relational database
 
 ## Known Issues

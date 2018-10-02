@@ -24,6 +24,6 @@ institution-specific catalogs.
 
 Progeny information (where the metadata comes from, or who "makes specific
 claims") is stored in edit metadata in the data model. Value-level attribution
-cna be achived by looking at the full edit history for an entity as a series of
+can be achieved by looking at the full edit history for an entity as a series of
 patches.
 
