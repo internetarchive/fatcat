@@ -214,6 +214,13 @@ def release_view(ident):
         abort(ae.status)
     authors = [c for c in entity.contribs if c.role in ('author', None)]
     authors = sorted(authors, key=lambda c: c.index)
+    for fe in files:
+        # crudely filter out exact duplicates
+        kept = []
+        for u in fe.urls:
+            if not u in kept:
+                kept.append(u)
+        fe.urls = [u for u in kept if not '/web/None/' in u.url]
     return render_template('release_view.html', release=entity,
         authors=authors, files=files, container=container)
 
