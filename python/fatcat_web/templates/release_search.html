@@ -22,7 +22,7 @@
   <i>Showing top {{ found.count_returned }} out of {{ found.count_found }} results for: <code>{{ found.query.q }}</code></i>
 {% for paper in found.results %}
 <div>
-  <h4 style="margin-top: 1em; margin-bottom: 4px; font-size: 1.1em;"><a href="/release/lookup?doi={{ paper.doi }}" style="color: #2224c7;">{{ paper['title'] }}</a>
+  <h4 style="margin-top: 1em; margin-bottom: 4px; font-size: 1.1em;"><a href="/release/{{ paper.ident }}" style="color: #2224c7;">{{ paper['title'] }}</a>
   {% if paper.file_pdf_url %}
   &nbsp;&nbsp;<a href="{{ paper.file_pdf_url }}" class="ui label small"><i class="file icon"></i>fulltext</a>
   {% endif %}
