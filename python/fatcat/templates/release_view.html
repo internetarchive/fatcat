@@ -35,7 +35,7 @@
 {% if release.language != None %}
 <br><b>Primary Language:</b> &nbsp;<code>{{ release.language }}</code> (<a href="https://www.loc.gov/standards/iso639-2/php/langcodes_name.php?iso_639_1={{ release.language }}">lookup ISO-639 code</a>)
 {% endif %}
-<br>This <i>{{ release.release_status or "unknown-type" }}</i> is a release
+<br>This <i>{{ release.release_type or "unknown-type" }}</i> is a release
 (version) of the work <a href="/work/{{ release.work_id }}">&nbsp;<code>{{
 release.work_id }}</code></a>. There may be other releases (eg, pre-prints,
 formal publications, etc) linked to the same work.
