@@ -4,12 +4,15 @@ from flask import abort
 from fatcat import app
 
 
-def do_search(q, limit=20):
+def do_search(q, limit=50, fulltext_only=True):
 
     #print("Search hit: " + q)
     if limit > 100:
         # Sanity check
         limit = 100
+
+    if fulltext_only:
+        q += " file_in_ia:true"
 
     search_request = {
         "query": {
@@ -20,11 +23,12 @@ def do_search(q, limit=20):
             "analyze_wildcard": True,
             "lenient": True,
             "fields": ["title^5", "contrib_names^2", "container_title"]
-            }
+            },
         },
         "size": int(limit),
     }
 
+    #print(search_request)
     resp = requests.get("%s/%s/_search" %
             (app.config['ELASTIC_BACKEND'], app.config['ELASTIC_INDEX']),
         json=search_request)

@@ -312,6 +312,7 @@ def search():
 
     limit = 20
     query = request.args.get('q')
+    fulltext_only = bool(request.args.get('fulltext_only'))
 
     # Convert raw DOIs to DOI queries
     if query is not None:
@@ -322,10 +323,10 @@ def search():
 
     if 'q' in request.args.keys():
         # always do files for HTML
-        found = do_search(query, limit=limit)
-        return render_template('release_search.html', found=found)
+        found = do_search(query, limit=limit, fulltext_only=fulltext_only)
+        return render_template('release_search.html', found=found, query=query, fulltext_only=fulltext_only)
     else:
-        return render_template('release_search.html')
+        return render_template('release_search.html', query=query, fulltext_only=fulltext_only)
 
 
 ### Static Routes ###########################################################
@@ -341,6 +342,10 @@ def homepage():
 @app.route('/about', methods=['GET'])
 def aboutpage():
     return render_template('about.html')
+
+@app.route('/search', methods=['GET'])
+def search_redirect():
+    return redirect("/release/search")
 
 @app.route('/robots.txt', methods=['GET'])
 def robots():

@@ -1,9 +1,25 @@
 {% extends "base.html" %}
 {% block body %}
 
+<h1>Article Search</h1>
+<form class="" role="search" action="/release/search" method="get">
+  <div class="ui form">
+    <div class="ui action input huge fluid">
+      <input type="text" placeholder="Query..." name="q" value="{% if query %}{{ query }}{% endif %}">
+      <button class="ui button">Search</button>
+    </div>
+    <div class="ui checkbox" style="float: right; margin: 1em;">
+      <input type="checkbox" name="fulltext_only" value="true" {% if fulltext_only %}checked{% endif %}>
+      <label>Fulltext Available Only</label>
+    </div>
+  </div>
+</form>
+
+<br clear="all" />
+
 {% if found %}
-<h1>Search Results</h1>
-<i>Showing top {{ found.count_returned }} out of {{ found.count_found }} results for: <code>{{ found.query.q }}</code></i>
+{% if found.results %}
+  <i>Showing top {{ found.count_returned }} out of {{ found.count_found }} results for: <code>{{ found.query.q }}</code></i>
 {% for paper in found.results %}
 <div>
   <h4 style="margin-top: 1em; margin-bottom: 4px; font-size: 1.1em;"><a href="/release/lookup?doi={{ paper.doi }}" style="color: #2224c7;">{{ paper['title'] }}</a>
@@ -29,22 +45,20 @@
     {% if paper.container_is_oa %}<i class="icon unlock orange small"></i>{% endif %}
   {% endif %}
 </div>
+{% endfor %}
 {% else %}
-<br/>
-<p>Try:</p>
-<ul>
+<div class="featurette-inner text-center" style="padding-top: 15%;">
+  <h3>No results found!</h3>
+  <i>Query was: <code>{{ found.query.q }}</code></i>
+  <br/>
+  <p>Try:</p>
+  <ul>
     <li>Search <a href="https://dissem.in/search?q={{ found.query.q | urlencode }}">dissem.in</a></li>
     <li>Search <a href="https://www.base-search.net/Search/Results?lookfor={{ found.query.q | urlencode }}">BASE</a></li>
     <li>Search <a href="https://scholar.google.com/scholar?q={{ found.query.q | urlencode }}">Google Scholar</a></li>
-</ul>
-<div class="featurette-inner text-center" style="padding-top: 25%;">
-<h3>Found nothing!</h3>
+  </ul>
 </div>
-{% endfor %}
-{% else %}
-<div class="featurette-inner text-center" style="padding-top: 25%;">
-<h3>Enter a query above</h3>
-</div>
+{% endif %}
 {% endif %}
 
 {% endblock %}
