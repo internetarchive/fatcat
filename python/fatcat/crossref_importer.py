@@ -46,8 +46,7 @@ class FatcatCrossrefImporter(FatcatImporter):
             return None
 
         # Other ways to be out of scope (provisionally)
-        if ((not 'type' in obj) or (not 'container-title' in obj) or
-                len(obj['container-title']) < 1):
+        if (not 'type' in obj):
             return None
 
         # contribs
@@ -97,7 +96,8 @@ class FatcatCrossrefImporter(FatcatImporter):
         publisher = obj.get('publisher')
 
         ce = None
-        if container_id is None and self.create_containers and issnl != None:
+        if (container_id is None and self.create_containers and issnl != None 
+            and obj.get('container-title') and len(obj['container-title']) > 0):
             ce = fatcat_client.ContainerEntity(
                 issnl=issnl,
                 publisher=publisher,
