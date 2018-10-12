@@ -40,6 +40,14 @@ Fake/example DOI: 10.5555/12345678
 ORCID: 0000-0002-1825-0097
 ISSN (invalid?): 0264-3561
 
+We have fulltext via long-tail; only Google also has a copy:
+    ON DECOMPOSITIONS OF THE IDENTITY OPERATOR INTO A LINEAR COMBINATION OF ORTHOGONAL PROJECTIONS
+    http://mfat.imath.kiev.ua/article/?id=543
+    2010, open access
+    Institute of Mathematics NAS of Ukraine
+    "arXiv overlay journal"
+    sha1=0d39d932aad191fe8ed07572d96260ee4fad26aa
+
 ## Missing
 
 "ACE: A Novel Software Platform to Ensure the Integrity [...]"
