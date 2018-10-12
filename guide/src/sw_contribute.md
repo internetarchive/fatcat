@@ -1,6 +1,6 @@
 # Software Contributions
 
-For now, issues and patches can be filed at <https://github.com/bnewbold/fatcat>.
+For now, issues and patches can be filed at <https://github.com/internetarchive/fatcat>.
 
 To start, the back-end (fatcatd, in rust), web interface (fatcat-web, in
 python), bots, and this guide are all versioned in the same git repository.

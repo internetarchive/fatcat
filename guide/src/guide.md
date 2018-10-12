@@ -1,7 +1,7 @@
 # About This Guide
 
 This guide is generated from markdown text files using the mdBook tool. The
-source is mirrored on Github at <https://github.com/bnewbold/fatcat>.
+source is mirrored on Github at <https://github.com/internetarchive/fatcat>.
 
 Contributions and corrections are welcome! If you create a (free) account on
 github you can submit comments and corrections as "Issues", or directly edit

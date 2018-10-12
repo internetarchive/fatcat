@@ -9,7 +9,9 @@
 
 
 The [RFC](./fatcat-rfc.md) is the original design document, and the best place
-to start for background.
+to start for background. There is a work-in-progress "guide" at
+<https://guide.fatcat.wiki>; the canonical public location of this repository
+is <https://github.com/internetarchive/fatcat>.
 
 There are four main components:
 
