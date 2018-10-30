@@ -7,6 +7,7 @@ Use `pipenv` (which you can install with `pip`).
 
 Run tests:
 
+    pipenv install --dev
     pipenv run pytest
 
     # for coverage:
