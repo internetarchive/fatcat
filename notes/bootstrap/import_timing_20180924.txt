@@ -1,0 +1,135 @@
+
+Pretty much all imports done at git hash c1d0fea
+
+    time xzcat /srv/fatcat/datasets/crossref-works.2018-09-05.json.xz | time parallel -j20 --round-robin --pipe ./fatcat_import.py import-crossref - /srv/fatcat/datasets/20180216.ISSN-to-ISSN-L.txt /srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3
+
+    Processed 4990450 lines, inserted 4005034, updated 0. (etc)
+
+    133387.36user 5255.64system 24:19:01elapsed 158%CPU (0avgtext+0avgdata 448196maxresident)k
+    177480808inputs+432403768outputs (204major+48533880minor)pagefaults 0swaps
+
+    real    1459m1.518s
+    user    2308m24.300s
+    sys     93m17.132s
+
+    Longer, bigger, etc than previously!
+
+    Size:  377.49G
+
+    select count(id) from release_ident; => 79,880,900
+
+
+    zcat /srv/fatcat/datasets/ia_papers_manifest_2018-01-25.matched.json.gz | pv -l | time parallel -j12 --round-robin --pipe ./fatcat_import.py import-matched --no-file-update -
+    Processed 531700 lines, inserted 511751, updated 0.
+    Command exited with non-zero status 1
+    17087.60user 717.77system 3:07:11elapsed 158%CPU (0avgtext+0avgdata 67420maxresident)k
+    60128inputs+3401960outputs (141major+403282minor)pagefaults 0swaps
+
+
+Sample of "not found" DOIs:
+
+    DOI not found: 10.1109/mic.2005.100
+    DOI not found: 10.3386/w9732
+    DOI not found: 10.1090/s0002-9939-97-04114-2
+    DOI not found: 10.1186/1475-2867-5-29
+    DOI not found: 10.2172/143964
+    DOI not found: 10.2172/10170724
+    DOI not found: 10.2172/383051
+    DOI not found: 10.1017/s0033291700051370
+    DOI not found: 10.12980/jclm.3.2015j5-154
+    DOI not found: 10.2172/801341
+    DOI not found: 10.2172/899508
+
+    DOI not found: 10.1136/bmj.2.4570.302
+    DOI not found: 10.1136/bmj.2.4687.1049
+    DOI not found: 10.1163/221125903x00429
+    DOI not found: 10.1177/004947557800800102
+    DOI not found: 10.1177/107755874800500313
+    DOI not found: 10.1177/107755874800500415
+    DOI not found: 10.1177/107755874800500713
+
+    DOI not found: 10.5990/jwpa.29.72
+    DOI not found: 10.2307/1107183
+    DOI not found: 10.1101/147165
+    DOI not found: 10.17848/wp04-108
+    DOI not found: 10.2172/542039
+    DOI not found: 10.2172/542040
+    DOI not found: 10.1002/9781444308747.ch6
+
+
+    zcat /srv/fatcat/datasets/2018-08-27-2352.17-matchcrossref.insertable.json.gz | pv -l | time parallel -j12 --round-robin --pipe ./fatcat_import.py import-matched -
+    Processed 485400 lines, inserted 283498, updated 197825.
+    25649.33user 1152.84system 4:42:24elapsed 158%CPU (0avgtext+0avgdata 38984maxresident)k
+    38584inputs+2371576outputs (136major+357478minor)pagefaults 0swaps
+
+    Size:  395.13G
+
+                          table_name                          | table_size | indexes_size | total_size 
+--------------------------------------------------------------+------------+--------------+------------
+ "public"."release_ref"                                       | 154 GB     | 54 GB        | 208 GB
+ "public"."release_rev"                                       | 39 GB      | 22 GB        | 61 GB
+ "public"."release_contrib"                                   | 25 GB      | 22 GB        | 47 GB
+ "public"."release_edit"                                      | 7095 MB    | 6956 MB      | 14 GB
+ "public"."work_edit"                                         | 7095 MB    | 6956 MB      | 14 GB
+ "public"."release_ident"                                     | 5203 MB    | 6254 MB      | 11 GB
+ "public"."work_ident"                                        | 5203 MB    | 6254 MB      | 11 GB
+ "public"."file_rev_url"                                      | 6535 MB    | 2478 MB      | 9013 MB
+ "public"."work_rev"                                          | 3376 MB    | 3127 MB      | 6503 MB
+ "public"."file_rev"                                          | 1404 MB    | 2115 MB      | 3519 MB
+ "public"."abstracts"                                         | 2611 MB    | 208 MB       | 2820 MB
+ "public"."file_edit"                                         | 1089 MB    | 1066 MB      | 2155 MB
+ "public"."file_release"                                      | 713 MB     | 1250 MB      | 1962 MB
+ "public"."file_ident"                                        | 618 MB     | 740 MB       | 1358 MB
+ "public"."creator_rev"                                       | 371 MB     | 457 MB       | 828 MB
+ "public"."creator_edit"                                      | 347 MB     | 352 MB       | 699 MB
+ "public"."release_rev_abstract"                              | 284 MB     | 369 MB       | 653 MB
+ "public"."creator_ident"                                     | 255 MB     | 305 MB       | 560 MB
+ "public"."changelog"                                         | 138 MB     | 142 MB       | 279 MB
+ "public"."editgroup"                                         | 155 MB     | 92 MB        | 247 MB
+ "public"."container_rev"                                     | 20 MB      | 9272 kB      | 29 MB
+ "public"."container_edit"                                    | 8312 kB    | 7360 kB      | 15 MB
+ "public"."container_ident"                                   | 7272 kB    | 6832 kB      | 14 MB
+
+Exports!
+
+    time cat /tmp/fatcat_ident_releases.tsv | ./target/release/fatcat-export release --expand files,container -j8 | gzip > release_export_expanded.json.gz
+     INFO 2018-09-27T22:54:30Z: fatcat_export: Done reading (79880900 lines), waiting for workers to exit...
+
+     real    384m29.435s
+     user    740m1.060s
+     sys     229m11.632s
+
+
+    time zcat /srv/fatcat/snapshots/2018-09-24/release_export_expanded.json.gz | ./transform_release.py | esbulk -verbose -size 20000 -id ident -w 8 -index fatcat -type release
+     2018/09/28 02:56:36 79880900 docs in 2h56m48.425914042s at 7529.948 docs/s with 8 workers
+     2018/09/28 02:56:36 applied setting: {"index": {"refresh_interval": "1s"}} with status 200 OK
+     2018/09/28 02:56:36 applied setting: {"index": {"number_of_replicas": "1"}} with status 200 OK
+     2018/09/28 02:56:40 index flushed: 200 OK
+
+     real    176m53.138s
+     user    318m17.004s
+     sys     29m48.944s
+
+    webcrawl@wbgrp-svc503:/srv/fatcat/src/extra/elasticsearch$ du -sh /srv/elasticsearch/data/      
+    52G     /srv/elasticsearch/data/
+
+TODO:
+x abstracts
+x file_hashes
+x ext idents
+x upload to an item
+x download and re-build elastic
+- insert new mellon matches
+
+
+    time zcat /srv/fatcat/datasets/2018-09-23-0405.30-dumpgrobidmetainsertable.longtail_join.filtered.tsv.gz | pv -l | time parallel -j12 --round-robin --pipe ./fatcat_import.py import-grobid-metadata -
+    [...]
+    Processed 132994 lines, inserted 123052, updated 0.
+    Processed 132984 lines, inserted 122979, updated 0.
+    10930.34user 475.87system 2:40:03elapsed 118%CPU (0avgtext+0avgdata 68180maxresident)k
+    8912inputs+20157832outputs (59major+1104467minor)pagefaults 0swaps
+
+    real    160m3.573s
+    user    184m54.176s
+    sys     8m23.388s
+
