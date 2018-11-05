@@ -1,5 +1,6 @@
 
 from fatcat_client.models import ReleaseEntity
+from fatcat_client.api_client import ApiClient
 
 class FatcatRelease(ReleaseEntity):
     """
@@ -83,3 +84,7 @@ class FatcatRelease(ReleaseEntity):
                 contrib_names.append(c.raw_name)
         t['contrib_names'] = contrib_names
         return t
+
+    def to_json(self):
+        ac = ApiClient()
+        return ac.sanitize_for_serialization(self)
