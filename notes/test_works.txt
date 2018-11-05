@@ -53,3 +53,8 @@ We have fulltext via long-tail; only Google also has a copy:
 ## Missing
 
 "ACE: A Novel Software Platform to Ensure the Integrity [...]"
+
+"Periods of Twenty-five Variable Stars in the Small Magellanic Cloud" by
+Leavitt, Henrietta
+=> shows as a chapter, not the original paper
+=> in google scholar as "Periods of 25 Variable Stars in the Small Magellanic Cloud.", as well as several other harvard.edu results
