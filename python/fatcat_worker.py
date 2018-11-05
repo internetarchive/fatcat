@@ -3,6 +3,7 @@
 import sys
 import argparse
 from fatcat.changelog_workers import FatcatChangelogWorker, FatcatEntityUpdatesWorker
+from fatcat.elastic_workers import FatcatElasticReleaseWorker
 
 def run_changelog_worker(args):
     topic = "fatcat-{}.changelog".format(args.env)
@@ -15,6 +16,12 @@ def run_entity_updates_worker(args):
     release_topic = "fatcat-{}.release-updates".format(args.env)
     worker = FatcatEntityUpdatesWorker(args.api_host_url, args.kafka_hosts,
         changelog_topic, release_topic)
+    worker.run()
+
+def run_elastic_release_worker(args):
+    consume_topic = "fatcat-{}.release-updates".format(args.env)
+    worker = FatcatElasticReleaseWorker(args.kafka_hosts,
+        consume_topic)
     worker.run()
 
 def main():
@@ -41,6 +48,9 @@ def main():
 
     sub_entity_updates = subparsers.add_parser('entity-updates')
     sub_entity_updates.set_defaults(func=run_entity_updates_worker)
+
+    sub_elastic_release = subparsers.add_parser('elastic-release')
+    sub_elastic_release.set_defaults(func=run_elastic_release_worker)
 
     args = parser.parse_args()
     if not args.__dict__.get("func"):

@@ -1,4 +1,5 @@
 
+import collections
 from fatcat_client.models import ReleaseEntity
 from fatcat_client.api_client import ApiClient
 
@@ -23,7 +24,6 @@ class FatcatRelease(ReleaseEntity):
             ident = self.ident,
             revision = self.revision,
             title = self.title,
-            release_date = self.release_date,
             release_type = self.release_type,
             release_status = self.release_status,
             language = self.language,
@@ -34,6 +34,9 @@ class FatcatRelease(ReleaseEntity):
             core_id = self.core_id,
             wikidata_qid = self.wikidata_qid
         )
+
+        if self.release_date:
+            t['release_date'] = self.release_date.strftime('%F')
 
         container = self.container
         container_is_kept = False
@@ -88,3 +91,13 @@ class FatcatRelease(ReleaseEntity):
     def to_json(self):
         ac = ApiClient()
         return ac.sanitize_for_serialization(self)
+
+    def from_json(json_str):
+        """
+        Hack to take advantage of the code-generated deserialization code
+        """
+        ac = ApiClient()
+        thing = collections.namedtuple('Thing', ['data'])
+        thing.data = json_str
+        return ac.deserialize(thing, FatcatRelease)
+
