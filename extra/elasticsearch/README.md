@@ -25,6 +25,16 @@ relation is *removed*. For example, if a file match against a given release is
 removed, the old release elastic object needs to be updated to remove the file
 from it's `files`.
 
+## Setting Up Elasticsearch
+
+We use elasticsearch version 6.x, with the `analysis-icu` plugin installed:
+
+    sudo /usr/share/elasticsearch/bin/elasticsearch-plugin install analysis-icu
+    sudo service elasticsearch restart
+
+If you can't install this plugin easily (eg, in a docker container), you can
+use the `no-plugin` variant (though, warning, it might not be up to date).
+
 ## Loading Data
 
 Drop and rebuild the schema:
