@@ -1,0 +1,29 @@
+version: '2'
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+  kafka:
+    #image: wurstmeister/kafka:2.11-2.0.0
+    image: wurstmeister/kafka:2.11-1.1.1
+    ports:
+      - "9092:9092"
+    environment:
+      #HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"
+      KAFKA_BROKER_ID: 1
+      KAFKA_ADVERTISED_HOST_NAME: 127.0.0.1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CREATE_TOPICS: "fatcat-qa.changelog:1:1,fatcat-qa.release-updates:3:1:compact"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.4.2
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      cluster.name: "docker-cluster"
+      bootstrap.memory_lock: "true"
+      discovery.type: "single-node"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
