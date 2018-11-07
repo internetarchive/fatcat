@@ -18,7 +18,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.4.2
+    build: ../elasticsearch/
     ports:
       - "9200:9200"
       - "9300:9300"

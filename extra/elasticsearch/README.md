@@ -32,8 +32,7 @@ We use elasticsearch version 6.x, with the `analysis-icu` plugin installed:
     sudo /usr/share/elasticsearch/bin/elasticsearch-plugin install analysis-icu
     sudo service elasticsearch restart
 
-If you can't install this plugin easily (eg, in a docker container), you can
-use the `no-plugin` variant (though, warning, it might not be up to date).
+There is a Dockerfile in this directory which includes this installation.
 
 ## Loading Data
 

@@ -4,8 +4,6 @@ install some large dependencies. Currently it isn't *required* for core
 development (the fatcat API server and most of the web interface), and also
 doesn't bundle *all* dependencies.
 
-This requires 
-
 To start docker compose (kafka, zookeeper, elasticsearch) with logging in the
 current terminal:
 
