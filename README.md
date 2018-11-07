@@ -8,23 +8,20 @@
                                         ... catalog all the things!
 
 
+This repository contains source code for 'fatcat', an editable catalog of
+published written works (mostly journal articles), with a focus on tracking
+the location and status of full-text copies to ensure "perpetual access".
+
 The [RFC](./fatcat-rfc.md) is the original design document, and the best place
 to start for background. There is a work-in-progress "guide" at
 <https://guide.fatcat.wiki>; the canonical public location of this repository
 is <https://github.com/internetarchive/fatcat>.
 
-There are four main components:
+There are three main components:
 
-- backend API server and database
-- elasticsearch index
-- API client libraries and bots (eg, ingesters)
-- front-end web interface (built on API and library)
-
-The API server was prototyped in python. "Real" implementation started in
-golang, but shifted to Rust, and is work-in-progress. The beginings of a client
-library, web interface, and data ingesters exist in python. Elasticsearch index
-is currently just a Crossref metadata dump and doesn't match entities in the
-database/API (but is useful for paper lookups).
+- backend API server and database (in Rust)
+- API client libraries and bots (in Python)
+- front-end web interface (in Python; built on API and library)
 
 See the LICENSE file for details permissions and licensing of both python and
 rust code. In short, the auto-generated client libraries are permissively
@@ -32,26 +29,28 @@ released, while the API server and web interface are strong copyleft (AGPLv3).
 
 ## Status
 
-- HTTP API
-    - [x] base32 encoding of UUID identifiers
-    - [x] inverse many-to-many helpers (files-by-release, release-by-creator)
-- SQL Schema
+- SQL and HTTP API schemas
     - [x] Basic entities
     - [x] one-to-many and many-to-many entities
     - [x] JSON(B) "extra" metadata fields
     - [x] full rev1 schema for all entities
     - [ ] editgroup review: comments? actions?
+    - [ ] file sets and web captures
+- HTTP API Server
+    - [x] base32 encoding of UUID identifiers
+    - [x] inverse many-to-many helpers (files-by-release, release-by-creator)
+    - [ ] Authentication (eg, accounts, OAuth2, JWT)
+    - [ ] Authorization (aka, roles)
 - Web Interface
     - [x] Migrate Python codebase
     - [ ] Creation and editing of all entities
 - Other
+    - [x] Elasticsearch schema
     - [x] Basic logging
     - [x] Swagger-UI 
+    - [x] Bulk metadata exports
     - [ ] Sentry (error reporting)
     - [ ] Metrics
-    - [ ] Authentication (eg, accounts, OAuth2, JWT)
-    - [ ] Authorization (aka, roles)
-    - [ ] bot vs. editor
 
 ## Identifiers
 

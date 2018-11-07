@@ -2,28 +2,24 @@
 ## Next Up
 
 - basic webface creation, editing, merging, editgroup approval
-- elastic schema/transform for releases; bulk and continuous scripts
-
-## QA Blockers
-
-- refactors and correctness in rust/TODO
-- importers have editor accounts and include editgroup metadata
 
 ## Production blockers
 
+- refactors and correctness in rust/TODO
+- importers have editor accounts and include editgroup metadata
 - enforce single-ident-edit-per-editgroup
     => entity_edit: entity_ident/entity_editgroup should be UNIQ index
     => UPDATE/REPLACE edits?
 - crossref importer sets release_type as "stub" when appropriate
 - re-implement old python tests
-- real auth
+- real authentication and authorization
 - metrics, jwt, config, sentry
 
 ## Metadata Import
 
 - manifest: multiple URLs per SHA1
 - crossref: relations ("is-preprint-of")
-- crossref: two phse: no citations, then matched citations (via DOI table)
+- crossref: two phase: no citations, then matched citations (via DOI table)
 - container import (extra?): lang, region, subject
 - crossref: filter works
     => content-type whitelist
@@ -35,8 +31,10 @@
 new importers:
 - pubmed (medline) (filtered)
     => and/or, use pubmed ID lookups on crossref import
+- arxiv.org
+- DOAJ
 - CORE (filtered)
-- semantic scholar (up to 39 million; author de-dupe)
+- semantic scholar (up to 39 million; includes author de-dupe)
 
 ## Entity/Edit Lifecycle
 
@@ -50,7 +48,7 @@ new importers:
 
 ## Guide / Book / Style
 
-- release_type, release_status, url.rel schemas (and enforce in API?)
+- release_type, release_status, url.rel schemas (enforced in API)
 - more+better terms+policies: https://tosdr.org/index.html
 
 ## Fun Features
@@ -67,12 +65,15 @@ new importers:
 
 ## Schema / Entity Fields
 
+- FileSet and WebSnapshot entities
 - `doi` field for containers (at least for "journal" type; maybe for "series"
   as well?)
 - `retracted`, `translation`, and perhaps `corrected` as flags on releases,
   instead of release_status?
+- 'part-of' relation for releases (release to release) and possibly containers
+- `container-type` field for containers (journal, conference, book series, etc)
 
-## Other
+## Other / Backburner
 
 - refactor openapi schema to use shared response types
 - consider using "HTTP 202: Accepted" for entity-mutating calls
@@ -84,8 +85,7 @@ new importers:
   => proof-of-concept, no tests
 - add_header Strict-Transport-Security "max-age=3600";
     => 12 hours? 24?
-- elastic pipeline
-- kong or oauth2_proxy for auth, rate-limit, etc
+- haproxy for rate-limiting
 - feature flags: consul?
 - secrets: vault?
 - "authn" microservice: https://keratin.tech/
