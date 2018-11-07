@@ -58,3 +58,9 @@ We have fulltext via long-tail; only Google also has a copy:
 Leavitt, Henrietta
 => shows as a chapter, not the original paper
 => in google scholar as "Periods of 25 Variable Stars in the Small Magellanic Cloud.", as well as several other harvard.edu results
+
+"Browser history re:visited"
+=> no DOI; conference proceeding
+=> in google scholar
+=> random un-published version at https://www.spinda.net/; "The copy of the
+   paper hosted here has been updated to reflect [...]"
