@@ -27,6 +27,11 @@ See the LICENSE file for details permissions and licensing of both python and
 rust code. In short, the auto-generated client libraries are permissively
 released, while the API server and web interface are strong copyleft (AGPLv3).
 
+## Building and Tests
+
+Automated integration tests run on Gitlab CI (see `.gitlab-ci.yml`) on the
+Internet Archive's internal (not public) infrastructure.
+
 ## Status
 
 - SQL and HTTP API schemas
