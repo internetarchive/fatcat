@@ -3,7 +3,8 @@ import json
 import time
 import requests
 from fatcat.worker_common import FatcatWorker
-from fatcat.release_model import FatcatRelease
+from fatcat_client.models import ReleaseEntity
+from fatcat.entity_helpers import *
 from pykafka.common import OffsetType
 
 
@@ -34,7 +35,7 @@ class FatcatElasticReleaseWorker(FatcatWorker):
 
         for msg in consumer:
             json_str = msg.value.decode('utf-8')
-            release = FatcatRelease.from_json(json_str)
+            release = entity_from_json(json_str, ReleaseEntity)
             #print(release)
             elastic_endpoint = "{}/{}/release/{}".format(
                 self.elastic_backend,
