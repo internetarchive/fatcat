@@ -2,7 +2,6 @@
 
 import sys
 import argparse
-from fatcat.raw_api_client import RawFatcatApiClient
 from fatcat.crossref_importer import FatcatCrossrefImporter
 from fatcat.orcid_importer import FatcatOrcidImporter
 from fatcat.issn_importer import FatcatIssnImporter
@@ -35,10 +34,6 @@ def run_import_grobid_metadata(args):
     fmi = FatcatGrobidMetadataImporter(args.host_url)
     fmi.process_source(args.tsv_file, group_size=args.group_size)
     fmi.describe_run()
-
-def health(args):
-    rfac = RawFatcatApiClient(args.host_url)
-    print(rfac.health())
 
 def main():
     parser = argparse.ArgumentParser()
@@ -106,9 +101,6 @@ def main():
     sub_import_grobid_metadata.add_argument('--group-size',
         help="editgroup group size to use",
         default=75, type=int)
-
-    sub_health = subparsers.add_parser('health')
-    sub_health.set_defaults(func=health)
 
     args = parser.parse_args()
     if not args.__dict__.get("func"):

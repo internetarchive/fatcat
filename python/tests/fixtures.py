@@ -18,11 +18,6 @@ def app(full_app):
     return full_app.test_client()
 
 
-@pytest.fixture(scope="function")
-def raw_api_client():
-    yield fatcat.raw_api_client.RawFatcatApiClient("http://localhost:9411")
-
-
 ## Helpers ##################################################################
 # TODO: what are these even here for?
 
