@@ -1970,7 +1970,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
-        :param str expand: List of sub-entities to expand in response. For now, only 'all' accepted.
+        :param str expand: List of sub-entities to expand in response. For containers, none accepted (yet).
         :return: ContainerEntity
                  If the method is called asynchronously,
                  returns the request thread.
@@ -1992,7 +1992,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
-        :param str expand: List of sub-entities to expand in response. For now, only 'all' accepted.
+        :param str expand: List of sub-entities to expand in response. For containers, none accepted (yet).
         :return: ContainerEntity
                  If the method is called asynchronously,
                  returns the request thread.
@@ -2172,7 +2172,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
-        :param str expand: List of sub-entities to expand in response. For now, only 'all' accepted.
+        :param str expand: List of sub-entities to expand in response. For creators, none accepted (yet).
         :return: CreatorEntity
                  If the method is called asynchronously,
                  returns the request thread.
@@ -2194,7 +2194,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
-        :param str expand: List of sub-entities to expand in response. For now, only 'all' accepted.
+        :param str expand: List of sub-entities to expand in response. For creators, none accepted (yet).
         :return: CreatorEntity
                  If the method is called asynchronously,
                  returns the request thread.
@@ -2770,7 +2770,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
-        :param str expand: List of sub-entities to expand in response. For now, only 'all' accepted.
+        :param str expand: List of sub-entities to expand in response. For files, none accepted (yet).
         :return: FileEntity
                  If the method is called asynchronously,
                  returns the request thread.
@@ -2792,7 +2792,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
-        :param str expand: List of sub-entities to expand in response. For now, only 'all' accepted.
+        :param str expand: List of sub-entities to expand in response. For files, none accepted (yet).
         :return: FileEntity
                  If the method is called asynchronously,
                  returns the request thread.
@@ -2972,7 +2972,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
-        :param str expand: List of sub-entities to expand in response. For now, only 'all' accepted.
+        :param str expand: List of sub-entities to expand in response. For releases, 'files' and 'container' are valid.
         :return: ReleaseEntity
                  If the method is called asynchronously,
                  returns the request thread.
@@ -2994,7 +2994,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
-        :param str expand: List of sub-entities to expand in response. For now, only 'all' accepted.
+        :param str expand: List of sub-entities to expand in response. For releases, 'files' and 'container' are valid.
         :return: ReleaseEntity
                  If the method is called asynchronously,
                  returns the request thread.
@@ -3364,7 +3364,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
-        :param str expand: List of sub-entities to expand in response. For now, only 'all' accepted.
+        :param str expand: List of sub-entities to expand in response. For works, none accepted (yet).
         :return: WorkEntity
                  If the method is called asynchronously,
                  returns the request thread.
@@ -3386,7 +3386,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
-        :param str expand: List of sub-entities to expand in response. For now, only 'all' accepted.
+        :param str expand: List of sub-entities to expand in response. For works, none accepted (yet).
         :return: WorkEntity
                  If the method is called asynchronously,
                  returns the request thread.

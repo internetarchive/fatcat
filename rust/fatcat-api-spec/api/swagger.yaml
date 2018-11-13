@@ -14,7 +14,7 @@ tags:
 - name: "works"
 - name: "edit-lifecycle"
 schemes:
-- "http"
+- "https"
 consumes:
 - "application/json"
 produces:
@@ -179,8 +179,8 @@ paths:
         example: "\"id_example\".to_string()"
       - name: "expand"
         in: "query"
-        description: "List of sub-entities to expand in response. For now, only 'all'\
-          \ accepted."
+        description: "List of sub-entities to expand in response. For containers,\
+          \ none accepted (yet)."
         required: false
         type: "string"
         formatString: "{:?}"
@@ -637,8 +637,8 @@ paths:
         example: "\"id_example\".to_string()"
       - name: "expand"
         in: "query"
-        description: "List of sub-entities to expand in response. For now, only 'all'\
-          \ accepted."
+        description: "List of sub-entities to expand in response. For creators, none\
+          \ accepted (yet)."
         required: false
         type: "string"
         formatString: "{:?}"
@@ -1151,8 +1151,8 @@ paths:
         example: "\"id_example\".to_string()"
       - name: "expand"
         in: "query"
-        description: "List of sub-entities to expand in response. For now, only 'all'\
-          \ accepted."
+        description: "List of sub-entities to expand in response. For files, none\
+          \ accepted (yet)."
         required: false
         type: "string"
         formatString: "{:?}"
@@ -1606,8 +1606,8 @@ paths:
         example: "\"id_example\".to_string()"
       - name: "expand"
         in: "query"
-        description: "List of sub-entities to expand in response. For now, only 'all'\
-          \ accepted."
+        description: "List of sub-entities to expand in response. For releases, 'files'\
+          \ and 'container' are valid."
         required: false
         type: "string"
         formatString: "{:?}"
@@ -2117,8 +2117,8 @@ paths:
         example: "\"id_example\".to_string()"
       - name: "expand"
         in: "query"
-        description: "List of sub-entities to expand in response. For now, only 'all'\
-          \ accepted."
+        description: "List of sub-entities to expand in response. For works, none\
+          \ accepted (yet)."
         required: false
         type: "string"
         formatString: "{:?}"
