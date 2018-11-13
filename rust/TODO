@@ -19,6 +19,10 @@ account helper tool
 - test/validate tokens
 
 later:
+- tried using sync::Once to wrap test database initilization (so it would only
+  run migrations once), but it didn't seem to work, maybe I had a bug or it
+  didn't compile?
+    => could also do a global mutex: https://github.com/SergioBenitez/Rocket/issues/697
 - could some of the EntityCrud trait macro stuff be re-implemented as an enum type?
 - pure-rust "benchmark" scripts that hit, eg, lookups and batch endpoints
     => criterion.rs benchmarking

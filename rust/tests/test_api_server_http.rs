@@ -1,3 +1,11 @@
+/*
+ * This file contains API server tests that hit the API by connecting via the Iron client,
+ * essentially doing raw HTTP/JSON requests.
+ *
+ * These tests are relatively simple and don't mutate much database state; they are primarily to
+ * test basic serialization/deserialization, and take advantage of hard-coded example entities.
+ */
+
 extern crate diesel;
 extern crate fatcat;
 extern crate fatcat_api_spec;
