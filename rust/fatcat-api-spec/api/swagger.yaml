@@ -5,6 +5,7 @@ info:
     \ and file metadata"
   version: "0.1.0"
   title: "fatcat"
+host: "api.fatcat.wiki"
 basePath: "/v0"
 tags:
 - name: "containers"

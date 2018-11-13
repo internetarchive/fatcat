@@ -64,7 +64,7 @@ except ApiException as e:
 
 ## Documentation for API Endpoints
 
-All URIs are relative to *http://localhost/v0*
+All URIs are relative to *https://api.fatcat.wiki/v0*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------

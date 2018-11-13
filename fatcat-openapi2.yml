@@ -7,7 +7,7 @@ info:
   version: 0.1.0
 schemes: [https]
 basePath: /v0
-#host: api.fatcat.wiki
+host: api.fatcat.wiki
 consumes:
   - application/json
 produces:

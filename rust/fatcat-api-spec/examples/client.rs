@@ -65,7 +65,7 @@ fn main() {
                 ]).required(true)
                 .index(1),
         ).arg(Arg::with_name("https").long("https").help("Whether to use HTTPS or not"))
-        .arg(Arg::with_name("host").long("host").takes_value(true).default_value("localhost").help("Hostname to contact"))
+        .arg(Arg::with_name("host").long("host").takes_value(true).default_value("api.fatcat.wiki").help("Hostname to contact"))
         .arg(Arg::with_name("port").long("port").takes_value(true).default_value("8080").help("Port to contact"))
         .get_matches();
 
