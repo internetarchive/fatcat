@@ -3,9 +3,9 @@ import os
 import json
 from flask import Flask, render_template, send_from_directory, request, \
     url_for, abort, g, redirect, jsonify, session
-from fatcat import app, api
+from fatcat_web import app, api
 from fatcat_client.rest import ApiException
-from fatcat.search import do_search
+from fatcat_web.search import do_search
 
 
 ### Views ###################################################################

@@ -1,7 +1,7 @@
 
 import requests
 from flask import abort
-from fatcat import app
+from fatcat_web import app
 
 
 def do_search(q, limit=50, fulltext_only=True):

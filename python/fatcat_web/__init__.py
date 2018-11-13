@@ -2,7 +2,7 @@
 from flask import Flask
 from flask_uuid import FlaskUUID
 from flask_debugtoolbar import DebugToolbarExtension
-from webface_config import Config
+from web_config import Config
 import fatcat_client
 
 toolbar = DebugToolbarExtension()
@@ -15,4 +15,4 @@ conf = fatcat_client.Configuration()
 conf.host = "http://localhost:9411/v0"
 api = fatcat_client.DefaultApi(fatcat_client.ApiClient(conf))
 
-from fatcat import routes
+from fatcat_web import routes
