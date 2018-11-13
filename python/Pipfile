@@ -24,6 +24,8 @@ flask-marshmallow = "*"
 flask-uuid = "*"
 "psycopg2" = "*"
 flask-debugtoolbar = "*"
+pykafka = "*"
+python-dateutil = "*"
 
 [requires]
 python_version = "3.5"
