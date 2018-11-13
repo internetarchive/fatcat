@@ -1,4 +1,6 @@
 codegen-out/
+build/
+*.egg-info
 *.json.gz
 !.coveragerc
 !.pylintrc
