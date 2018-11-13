@@ -23,4 +23,5 @@ mkdir -p tests/codegen_tests
 cp -r $OUTPUT/fatcat_client/* fatcat_client
 cp -r $OUTPUT/test/* tests/codegen_tests
 cp $OUTPUT/README.md README_codegen.md
-#rm -rf $OUTPUT
+# safer than 'rm -rf $OUTPUT'
+mv $OUTPUT /tmp
