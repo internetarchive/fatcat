@@ -4,7 +4,6 @@ from flask_uuid import FlaskUUID
 from flask_debugtoolbar import DebugToolbarExtension
 from config import Config
 import fatcat_client
-from fatcat.release_model import FatcatRelease
 
 toolbar = DebugToolbarExtension()
 app = Flask(__name__)

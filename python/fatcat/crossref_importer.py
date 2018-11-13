@@ -6,7 +6,6 @@ import datetime
 import itertools
 import fatcat_client
 from fatcat.importer_common import FatcatImporter
-from fatcat import FatcatRelease
 
 
 class FatcatCrossrefImporter(FatcatImporter):
@@ -39,7 +38,7 @@ class FatcatCrossrefImporter(FatcatImporter):
     def parse_crossref_dict(self, obj):
         """
         obj is a python dict (parsed from json).
-        returns a FatcatRelease
+        returns a ReleaseEntity
         """
 
         # This work is out of scope if it doesn't have authors and a title
@@ -213,7 +212,7 @@ class FatcatCrossrefImporter(FatcatImporter):
         if release_date:
             release_date = release_date.isoformat() + "Z"
 
-        re = FatcatRelease(
+        re = fatcat_client.ReleaseEntity(
             work_id=None,
             title=obj['title'][0],
             contribs=contribs,
