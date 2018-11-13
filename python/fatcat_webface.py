@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
-from fatcat import app
+from fatcat_webface import app
 
 def main():
     parser = argparse.ArgumentParser()
@@ -15,21 +15,7 @@ def main():
         type=int,
         default=9810,
         help="listen on this port")
-    parser.add_argument('--database-uri',
-        default=app.config['SQLALCHEMY_DATABASE_URI'],
-        help="sqlalchemy database string")
-    parser.add_argument('--init-db',
-        action='store_true',
-        help="create database tables and insert dummy data")
     args = parser.parse_args()
-
-    app.config['SQLALCHEMY_DATABASE_URI'] = args.database_uri
-
-    if args.init_db:
-        db.create_all()
-        fatcat.sql.populate_db()
-        print("Dummy database configured: " + app.config['SQLALCHEMY_DATABASE_URI'])
-        return
 
     app.run(debug=args.debug, host=args.host, port=args.port)
 

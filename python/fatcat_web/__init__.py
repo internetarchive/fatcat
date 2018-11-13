@@ -2,7 +2,7 @@
 from flask import Flask
 from flask_uuid import FlaskUUID
 from flask_debugtoolbar import DebugToolbarExtension
-from config import Config
+from webface_config import Config
 import fatcat_client
 
 toolbar = DebugToolbarExtension()
