@@ -1,7 +1,7 @@
 
 import json
 import pytest
-from fatcat.crossref_importer import FatcatCrossrefImporter
+from fatcat_tools.crossref_importer import FatcatCrossrefImporter
 
 
 @pytest.fixture(scope="function")

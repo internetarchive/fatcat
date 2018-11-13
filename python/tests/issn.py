@@ -1,6 +1,6 @@
 
 import pytest
-from fatcat.issn_importer import FatcatIssnImporter
+from fatcat_tools.issn_importer import FatcatIssnImporter
 
 
 @pytest.fixture(scope="function")

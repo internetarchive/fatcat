@@ -5,7 +5,7 @@ import json
 import argparse
 import fatcat_client
 from fatcat_client.rest import ApiException
-from fatcat.fcid import uuid2fcid
+from fatcat_tools.fcid import uuid2fcid
 
 def run_export_releases(args):
     conf = fatcat_client.Configuration()

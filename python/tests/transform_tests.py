@@ -1,8 +1,8 @@
 
 import json
 import pytest
-from fatcat.crossref_importer import FatcatCrossrefImporter
-from fatcat.entity_helpers import *
+from fatcat_tools.crossref_importer import FatcatCrossrefImporter
+from fatcat_tools.transforms import *
 
 from crossref import crossref_importer
 

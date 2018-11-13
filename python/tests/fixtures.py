@@ -4,14 +4,14 @@ import time
 import json
 import signal
 import pytest
-import fatcat
+import fatcat_web
 
 
 @pytest.fixture
 def full_app():
-    fatcat.app.testing = True
-    fatcat.app.debug = False
-    return fatcat.app
+    fatcat_web.app.testing = True
+    fatcat_web.app.debug = False
+    return fatcat_web.app
 
 @pytest.fixture
 def app(full_app):

@@ -1,7 +1,7 @@
 
 import json
 import pytest
-from fatcat.matched_importer import FatcatMatchedImporter
+from fatcat_tools.matched_importer import FatcatMatchedImporter
 
 
 @pytest.fixture(scope="function")

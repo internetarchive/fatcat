@@ -2,9 +2,9 @@
 import json
 import time
 import requests
-from fatcat.worker_common import FatcatWorker
+from fatcat_tools.worker_common import FatcatWorker
 from fatcat_client.models import ReleaseEntity
-from fatcat.entity_helpers import *
+from fatcat_tools.transforms import *
 from pykafka.common import OffsetType
 
 

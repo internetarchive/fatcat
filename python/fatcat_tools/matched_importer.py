@@ -4,7 +4,7 @@ import json
 import sqlite3
 import itertools
 import fatcat_client
-from fatcat.importer_common import FatcatImporter
+from fatcat_tools.importer_common import FatcatImporter
 
 #row = row.split('\t')
 #assert len(row) == 2

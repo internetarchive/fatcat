@@ -2,7 +2,6 @@
 import json
 import tempfile
 import pytest
-import fatcat
 from fatcat_client.rest import ApiException
 from fixtures import *
 

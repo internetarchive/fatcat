@@ -5,7 +5,7 @@ import json
 import base64
 import datetime
 import fatcat_client
-from fatcat.importer_common import FatcatImporter
+from fatcat_tools.importer_common import FatcatImporter
 
 MAX_ABSTRACT_BYTES=4096
 
