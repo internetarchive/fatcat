@@ -4,6 +4,8 @@ import sys
 import csv
 import json
 import itertools
+from collections import Counter
+
 import fatcat_client
 from fatcat_client.rest import ApiException
 
@@ -26,13 +28,11 @@ class FatcatImporter:
         self._orcid_regex = re.compile("^\\d{4}-\\d{4}-\\d{4}-\\d{3}[\\dX]$")
         if issn_map_file:
             self.read_issn_map_file(issn_map_file)
-        self.processed_lines = 0
-        self.insert_count = 0
-        self.update_count = 0
+        self.counts = Counter({'insert': 0, 'update': 0, 'processed_lines': 0})
 
     def describe_run(self):
         print("Processed {} lines, inserted {}, updated {}.".format(
-            self.processed_lines, self.insert_count, self.update_count))
+            self.counts['processed_lines'], self.counts['insert'], self.counts['update']))
 
     def process_source(self, source, group_size=100):
         """Creates and auto-accepts editgroup every group_size rows"""
@@ -44,14 +44,14 @@ class FatcatImporter:
                 self.api.accept_editgroup(eg.id)
                 eg = self.api.create_editgroup(
                     fatcat_client.Editgroup(editor_id='aaaaaaaaaaaabkvkaaaaaaaaae'))
-            self.processed_lines = self.processed_lines + 1
+            self.counts['processed_lines'] += 1
         if i == 0 or (i % group_size) != 0:
             self.api.accept_editgroup(eg.id)
 
     def process_batch(self, source, size=50):
         """Reads and processes in batches (not API-call-per-)"""
         for rows in grouper(source, size):
-            self.processed_lines = self.processed_lines + len(rows)
+            self.counts['processed_lines'] += len(rows)
             eg = self.api.create_editgroup(
                 fatcat_client.Editgroup(editor_id='aaaaaaaaaaaabkvkaaaaaaaaae'))
             self.create_batch(rows, editgroup=eg.id)

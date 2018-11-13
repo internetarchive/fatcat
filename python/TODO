@@ -3,7 +3,6 @@ Idea for further module simplification: move codegen'd library into it's own
 directory (with it's own README, tests, etc), and reference it here via
 symlink.
 
-- use dict counter type (in python collections) instead of currently janky counters
 - schema.org metadata for releases
 
 additional tests

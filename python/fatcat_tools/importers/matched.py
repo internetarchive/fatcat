@@ -125,10 +125,10 @@ class FatcatMatchedImporter(FatcatImporter):
         if fe is not None:
             if fe.ident is None:
                 self.api.create_file(fe, editgroup=editgroup)
-                self.insert_count = self.insert_count + 1
+                self.counts['insert'] += 1
             else:
                 self.api.update_file(fe.ident, fe, editgroup=editgroup)
-                self.update_count = self.update_count + 1
+                self.counts['update'] += 1
 
     def create_batch(self, batch, editgroup=None):
         """Reads and processes in batches (not API-call-per-line)"""
@@ -140,5 +140,5 @@ class FatcatMatchedImporter(FatcatImporter):
             self.api.update_file(obj.ident, obj, editgroup=editgroup)
         if len(new_objects) > 0:
             self.api.create_file_batch(new_objects, autoaccept="true", editgroup=editgroup)
-        self.update_count = self.update_count + len(update_objects)
-        self.insert_count = self.insert_count + len(new_objects)
+        self.counts['update'] += len(update_objects)
+        self.counts['insert'] += len(new_objects)

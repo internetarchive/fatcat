@@ -62,7 +62,7 @@ class FatcatOrcidImporter(FatcatImporter):
         ce = self.parse_orcid_dict(obj)
         if ce is not None:
             self.api.create_creator(ce, editgroup=editgroup)
-            self.insert_count = self.insert_count + 1
+            self.counts['insert'] += 1
 
     def create_batch(self, batch, editgroup=None):
         """Reads and processes in batches (not API-call-per-line)"""
@@ -70,4 +70,4 @@ class FatcatOrcidImporter(FatcatImporter):
                    for l in batch if l != None]
         objects = [o for o in objects if o != None]
         self.api.create_creator_batch(objects, autoaccept="true", editgroup=editgroup)
-        self.insert_count = self.insert_count + len(objects)
+        self.counts['insert'] += len(objects)

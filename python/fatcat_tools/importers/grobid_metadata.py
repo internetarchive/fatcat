@@ -163,6 +163,6 @@ class FatcatGrobidMetadataImporter(FatcatImporter):
             # created it
             fe.releases.append(release_entity.ident)
             file_entity = self.api.create_file(fe, editgroup=editgroup)
-            self.insert_count = self.insert_count + 1
+            self.counts['insert'] += 1
 
     # NB: batch mode not implemented
