@@ -17,7 +17,7 @@ server on the same machine by default), use:
 
 An auto-generated python client library for the fatcat API lives under
 `./fatcat_client`. It includes entity model objects and functions to call all
-API endpoints; see `./README_codegen.md` for details.
+API endpoints; see `./README_client.md` for details.
 
 To re-generate swagger-codegen python client library (requires docker installed
 locally):

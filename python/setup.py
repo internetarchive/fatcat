@@ -47,7 +47,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 # Import the README and use it as the long-description.
 # Note: this will only work if 'README.md' is present in your MANIFEST.in file!
 try:
-    with io.open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
+    with io.open(os.path.join(here, 'fatcat_client/README.md'), encoding='utf-8') as f:
         long_description = '\n' + f.read()
 except FileNotFoundError:
     long_description = DESCRIPTION
@@ -104,7 +104,7 @@ setup(
     version=about['__version__'],
     description=DESCRIPTION,
     long_description=long_description,
-    #long_description_content_type='text/markdown',
+    long_description_content_type='text/markdown',
     keywords=["Swagger", "fatcat"],
     author=AUTHOR,
     author_email=EMAIL,
@@ -124,9 +124,11 @@ setup(
         # Trove classifiers
         # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
         #'License :: OSI Approved :: MIT License',
+        'Development Status :: 3 - Alpha',
+        'Intended Audience :: Developers',
         'Programming Language :: Python',
-        #'Programming Language :: Python :: 3',
-        #'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.5',
         #'Programming Language :: Python :: Implementation :: CPython',
         #'Programming Language :: Python :: Implementation :: PyPy'
     ],

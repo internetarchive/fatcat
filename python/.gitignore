@@ -1,5 +1,6 @@
 codegen-out/
 build/
+dist/
 *.egg-info
 *.json.gz
 !.coveragerc
