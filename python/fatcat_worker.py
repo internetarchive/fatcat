@@ -2,8 +2,8 @@
 
 import sys
 import argparse
-from fatcat_tools.changelog_workers import FatcatChangelogWorker, FatcatEntityUpdatesWorker
-from fatcat_tools.elastic_workers import FatcatElasticReleaseWorker
+from fatcat_tools.workers.changelog import FatcatChangelogWorker, FatcatEntityUpdatesWorker
+from fatcat_tools.workers.elastic import FatcatElasticReleaseWorker
 
 def run_changelog_worker(args):
     topic = "fatcat-{}.changelog".format(args.env)

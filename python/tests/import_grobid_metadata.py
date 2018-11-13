@@ -3,7 +3,7 @@ import os
 import json
 import base64
 import pytest
-from fatcat_tools.grobid_metadata_importer import FatcatGrobidMetadataImporter
+from fatcat_tools.importers.grobid_metadata import FatcatGrobidMetadataImporter
 
 """
 WARNING: these tests are currently very fragile because they have database

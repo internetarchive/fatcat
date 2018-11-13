@@ -2,7 +2,7 @@
 import json
 import time
 from itertools import islice
-from fatcat_tools.worker_common import FatcatWorker
+from fatcat_tools.workers.worker_common import FatcatWorker
 from pykafka.common import OffsetType
 
 

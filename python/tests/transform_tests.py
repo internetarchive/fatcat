@@ -1,10 +1,10 @@
 
 import json
 import pytest
-from fatcat_tools.crossref_importer import FatcatCrossrefImporter
+from fatcat_tools.importers.crossref import FatcatCrossrefImporter
 from fatcat_tools.transforms import *
 
-from crossref import crossref_importer
+from import_crossref import crossref_importer
 
 def test_elastic_convert(crossref_importer):
     with open('tests/files/crossref-works.single.json', 'r') as f:

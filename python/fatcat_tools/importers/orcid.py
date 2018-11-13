@@ -3,7 +3,7 @@ import sys
 import json
 import itertools
 import fatcat_client
-from fatcat_tools.importer_common import FatcatImporter
+from fatcat_tools.importers.common import FatcatImporter
 
 def value_or_none(e):
     if type(e) == dict:

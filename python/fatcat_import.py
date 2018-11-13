@@ -2,11 +2,11 @@
 
 import sys
 import argparse
-from fatcat_tools.crossref_importer import FatcatCrossrefImporter
-from fatcat_tools.orcid_importer import FatcatOrcidImporter
-from fatcat_tools.issn_importer import FatcatIssnImporter
-from fatcat_tools.matched_importer import FatcatMatchedImporter
-from fatcat_tools.grobid_metadata_importer import FatcatGrobidMetadataImporter
+from fatcat_tools.importers.crossref import FatcatCrossrefImporter
+from fatcat_tools.importers.orcid import FatcatOrcidImporter
+from fatcat_tools.importers.issn import FatcatIssnImporter
+from fatcat_tools.importers.matched import FatcatMatchedImporter
+from fatcat_tools.importers.grobid_metadata import FatcatGrobidMetadataImporter
 
 def run_import_crossref(args):
     fci = FatcatCrossrefImporter(args.host_url, args.issn_map_file,

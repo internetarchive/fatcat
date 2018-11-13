@@ -1,7 +1,7 @@
 
 import json
 import pytest
-from fatcat_tools.orcid_importer import FatcatOrcidImporter
+from fatcat_tools.importers.orcid import FatcatOrcidImporter
 
 
 @pytest.fixture(scope="function")

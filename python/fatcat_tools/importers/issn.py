@@ -3,7 +3,7 @@ import sys
 import json
 import itertools
 import fatcat_client
-from fatcat_tools.importer_common import FatcatImporter
+from fatcat_tools.importers.common import FatcatImporter
 
 # CSV format (generated from git.archive.org/webgroup/oa-journal-analysis):
 # ISSN-L,in_doaj,in_road,in_norwegian,in_crossref,title,publisher,url,lang,ISSN-print,ISSN-electronic,doi_count,has_doi,is_oa,is_kept,publisher_size,url_live,url_live_status,url_live_final_status,url_live_final_url,url_live_status_simple,url_live_final_status_simple,url_domain,gwb_pdf_count
