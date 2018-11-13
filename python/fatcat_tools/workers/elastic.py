@@ -3,7 +3,7 @@ import json
 import time
 import requests
 from fatcat_tools.workers.worker_common import FatcatWorker
-from fatcat_client.models import ReleaseEntity
+from fatcat_client import ReleaseEntity
 from fatcat_tools.transforms import *
 from pykafka.common import OffsetType
 

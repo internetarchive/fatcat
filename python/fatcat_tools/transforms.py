@@ -1,7 +1,6 @@
 
 import collections
-from fatcat_client.models import ReleaseEntity
-from fatcat_client.api_client import ApiClient
+from fatcat_client import ReleaseEntity, ApiClient
 
 def entity_to_json(entity):
     ac = ApiClient()
