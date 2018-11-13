@@ -1,9 +1,7 @@
 
-Idea for new module structure: refactor 'fatcat_client' into 'fatcat' and have
-that be the general purpose API client. create a new 'fatcat_services' for web
-interface, importers, workers, etc, which depends on the other module.
-potentially, move library module into subdirectory or another top-level folder
-("python-fatcat"? "python-library"?).
+Idea for further module simplification: move codegen'd library into it's own
+directory (with it's own README, tests, etc), and reference it here via
+symlink.
 
 - use dict counter type (in python collections) instead of currently janky counters
 - schema.org metadata for releases
