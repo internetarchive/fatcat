@@ -21,14 +21,15 @@ Start off with:
 Download the following; uncompress the sqlite file, but **do not** uncompress
 the others:
 
-    https://archive.org/download/crossref_doi_dump_201801/crossref-works.2018-01-21.json.xz
-    https://archive.org/download/ia_papers_manifest_2018-01-25/index/idents_files_urls.sqlite.gz
-    https://archive.org/download/ia_journal_metadata_explore_2018-04-05/journal_extra_metadata.csv
-    https://archive.org/download/issn_issnl_mappings/20180216.ISSN-to-ISSN-L.txt
-    https://archive.org/download/orcid-dump-2017/public_profiles_API-2.0_2017_10_json.tar.gz
-    https://archive.org/download/ia_journal_pid_map_munge_20180908/release_ids.ia_munge_20180908.sqlite3.gz
-    https://archive.org/download/ia_test_paper_matches/2018-08-27-2352.17-matchcrossref.insertable.json.gz
-    https://archive.org/download/ia_papers_manifest_2018-01-25_matched/ia_papers_manifest_2018-01-25.matched.json.gz
+    cd /srv/fatcat/datasets
+    wget https://archive.org/download/crossref_doi_dump_201809/crossref-works.2018-09-05.json.xz
+    wget https://archive.org/download/ia_papers_manifest_2018-01-25/index/idents_files_urls.sqlite.gz
+    wget https://archive.org/download/ia_journal_metadata_explore_2018-04-05/journal_extra_metadata.csv
+    wget https://archive.org/download/issn_issnl_mappings/20180216.ISSN-to-ISSN-L.txt
+    wget https://archive.org/download/orcid-dump-2017/public_profiles_API-2.0_2017_10_json.tar.gz
+    wget https://archive.org/download/ia_journal_pid_map_munge_20180908/release_ids.ia_munge_20180908.sqlite3.gz
+    wget https://archive.org/download/ia_test_paper_matches/2018-08-27-2352.17-matchcrossref.insertable.json.gz
+    wget https://archive.org/download/ia_papers_manifest_2018-01-25_matched/ia_papers_manifest_2018-01-25.matched.json.gz
 
 ## ISSN
 
