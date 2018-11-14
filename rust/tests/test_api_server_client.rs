@@ -28,13 +28,3 @@ fn test_basic() {
     client.get_changelog_entry(1).wait().unwrap();
     server.close().unwrap()
 }
-
-#[test]
-fn test_basic2() {
-
-    let (client, mut server) = setup_client();
-    let client = client.with_context(Context::new());
-
-    client.get_changelog_entry(1).wait().unwrap();
-    server.close().unwrap()
-}
