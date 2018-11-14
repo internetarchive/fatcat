@@ -146,3 +146,86 @@ fn test_api_rich_create() {
  
     server.close().unwrap()
 }
+
+#[test]
+fn test_merge_works() {
+
+    let (client, mut server) = setup_client();
+    let client = client.with_context(Context::new());
+
+    let admin_id = "aaaaaaaaaaaabkvkaaaaaaaaae".to_string();
+
+    let resp = client.create_editgroup(Editgroup::new(admin_id)).wait().unwrap();
+    let editgroup_id = match resp {
+        CreateEditgroupResponse::SuccessfullyCreated(eg) => eg.id.unwrap(),
+        _ => unreachable!()
+    };
+
+    // Create 2x works, each with releases; work_b has two releases
+
+    let resp = client.create_work(WorkEntity::new(), Some(editgroup_id.clone())).wait().unwrap();
+    let work_a_id = match resp {
+        CreateWorkResponse::CreatedEntity(ee) => ee.ident,
+        _ => unreachable!()
+    };
+    let mut new_release = ReleaseEntity::new("some release".to_string());
+    new_release.release_type = Some("journal-article".to_string());
+    new_release.work_id = Some(work_a_id.clone());
+    new_release.doi = Some("10.1234/A1".to_string());
+    let resp = client.create_release(new_release, Some(editgroup_id.clone())).wait().unwrap();
+    let _release_a1_id = match resp {
+        CreateReleaseResponse::CreatedEntity(ee) => ee.ident,
+        _ => unreachable!()
+    };
+
+    let resp = client.create_work(WorkEntity::new(), Some(editgroup_id.clone())).wait().unwrap();
+    let work_b_id = match resp {
+        CreateWorkResponse::CreatedEntity(ee) => ee.ident,
+        _ => unreachable!()
+    };
+
+    let mut new_release = ReleaseEntity::new("some release".to_string());
+    new_release.release_type = Some("journal-article".to_string());
+    new_release.work_id = Some(work_b_id.clone());
+    new_release.doi = Some("10.1234/B1".to_string());
+    let resp = client.create_release(new_release, Some(editgroup_id.clone())).wait().unwrap();
+    let _release_b1_id = match resp {
+        CreateReleaseResponse::CreatedEntity(ee) => ee.ident,
+        _ => unreachable!()
+    };
+
+    let mut new_release = ReleaseEntity::new("some release".to_string());
+    new_release.release_type = Some("journal-article".to_string());
+    new_release.work_id = Some(work_b_id.clone());
+    new_release.doi = Some("10.1234/B2".to_string());
+    let resp = client.create_release(new_release, Some(editgroup_id.clone())).wait().unwrap();
+    let _release_b2_id = match resp {
+        CreateReleaseResponse::CreatedEntity(ee) => ee.ident,
+        _ => unreachable!()
+    };
+
+    match client.accept_editgroup(editgroup_id.clone()).wait().unwrap() {
+        AcceptEditgroupResponse::MergedSuccessfully(_) => (),
+        _ => unreachable!()
+    };
+
+/* TODO:
+    // merge works
+    client.merge_works(work_a_id, work_b_id)
+*/
+
+    // check results
+    let work_a = match client.get_work(work_a_id.clone(), None).wait().unwrap() {
+        GetWorkResponse::FoundEntity(e) => e,
+        _ => unreachable!()
+    };
+    let _work_b = match client.get_work(work_b_id.clone(), None).wait().unwrap() {
+        GetWorkResponse::FoundEntity(e) => e,
+        _ => unreachable!()
+    };
+    // TODO: assert_eq!(work_a.revision.unwrap(), work_b.revision.unwrap());
+    assert_eq!(work_a.redirect, None);
+    // TODO: assert_eq!(work_b.redirect, Some(work_a_id));
+
+    server.close().unwrap()
+}
