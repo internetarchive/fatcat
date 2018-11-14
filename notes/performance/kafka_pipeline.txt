@@ -1,0 +1,17 @@
+
+## Early Notes (2018-11-13)
+
+Ran through about 100k crossref objects, resulting in about 77k messages (in
+about 4k editgroups/changelogs).
+
+Have seen tens of messages per second go through trivially.
+
+The elastic-release worker is the current bottleneck, only some 4.3
+messages/second. Because this worker consumes from 8x partitions, I have a
+feeling it might be consumer group related. kafka-manager shows "0% coverage"
+for this topic. Note that this is a single worker process.
+
+_consumer_offsets is seeing about 36 messages/sec.
+
+Oh, looks like I just needed to enable auto_commit and tune parameters in
+pykafka!

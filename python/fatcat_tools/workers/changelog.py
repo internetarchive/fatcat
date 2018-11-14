@@ -102,12 +102,17 @@ class FatcatEntityUpdatesWorker(FatcatWorker):
             managed=True,
             auto_offset_reset=OffsetType.LATEST,
             reset_offset_on_start=False,
+            fetch_message_max_bytes=4000000, # up to ~4MBytes
+            auto_commit_enable=True,
+            auto_commit_interval_ms=30000, # 30 seconds
+            compacted_topic=True,
         )
 
         with release_topic.get_sync_producer() as producer:
             for msg in consumer:
                 cle = json.loads(msg.value.decode('utf-8'))
                 #print(cle)
+                print("processing changelog index {}".format(cle['index']))
                 release_edits = cle['editgroup']['edits']['releases']
                 for re in release_edits:
                     ident = re['ident']
@@ -118,5 +123,5 @@ class FatcatEntityUpdatesWorker(FatcatWorker):
                         partition_key=ident.encode('utf-8'),
                         timestamp=None,
                     )
-                consumer.commit_offsets()
+                #consumer.commit_offsets()
 

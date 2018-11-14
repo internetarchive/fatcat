@@ -32,6 +32,10 @@ class FatcatElasticReleaseWorker(FatcatWorker):
         consumer = consume_topic.get_balanced_consumer(
             consumer_group=self.consumer_group,
             managed=True,
+            fetch_message_max_bytes=4000000, # up to ~4MBytes
+            auto_commit_enable=True,
+            auto_commit_interval_ms=30000, # 30 seconds
+            compacted_topic=True,
         )
 
         for msg in consumer:
@@ -45,4 +49,4 @@ class FatcatElasticReleaseWorker(FatcatWorker):
             print("Updating document: {}".format(elastic_endpoint))
             resp = requests.post(elastic_endpoint, json=release_elastic_dict(release))
             assert resp.status_code in (200, 201)
-            consumer.commit_offsets()
+            #consumer.commit_offsets()
