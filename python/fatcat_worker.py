@@ -21,7 +21,8 @@ def run_entity_updates_worker(args):
 def run_elastic_release_worker(args):
     consume_topic = "fatcat-{}.release-updates".format(args.env)
     worker = FatcatElasticReleaseWorker(args.kafka_hosts,
-        consume_topic)
+        consume_topic, elastic_backend=args.elastic_backend,
+        elastic_index=args.elastic_index)
     worker.run()
 
 def main():
@@ -51,6 +52,12 @@ def main():
 
     sub_elastic_release = subparsers.add_parser('elastic-release')
     sub_elastic_release.set_defaults(func=run_elastic_release_worker)
+    sub_elastic_release.add_argument('--elastic-backend',
+        help="elasticsearch backend to connect to",
+        default="http://localhost:9200")
+    sub_elastic_release.add_argument('--elastic-index',
+        help="elasticsearch index to push into",
+        default="fatcat")
 
     args = parser.parse_args()
     if not args.__dict__.get("func"):
