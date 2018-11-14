@@ -2,6 +2,7 @@
 import json
 import time
 import requests
+from fatcat_tools.transforms import release_elastic_dict
 from fatcat_tools.workers.worker_common import FatcatWorker
 from fatcat_client import ReleaseEntity
 from fatcat_tools.transforms import *
@@ -42,6 +43,6 @@ class FatcatElasticReleaseWorker(FatcatWorker):
                 self.elastic_index,
                 release.ident)
             print("Updating document: {}".format(elastic_endpoint))
-            resp = requests.post(elastic_endpoint, json=release.to_elastic_dict())
+            resp = requests.post(elastic_endpoint, json=release_elastic_dict(release))
             assert resp.status_code in (200, 201)
             consumer.commit_offsets()
