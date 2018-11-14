@@ -3,9 +3,9 @@ Rust implementation of fatcat API server (`fatcatd`).
 
 ## Development
 
-- rust stable, 1.26+ (eg, via "rustup", includes cargo tool)
+- rust stable, 1.29+ (eg, via "rustup", includes cargo tool)
 - diesel (`cargo install diesel_cli`)
-- postgres (9.6+; targetting 10.3 for production)
+- postgres (9.6+; targetting 11.1 for production)
 - postgres libs (debian: `sudo apt install libsqlite3-dev libpq-dev`)
 
 Create a new postgres superuser. A regular postgres user and an existing

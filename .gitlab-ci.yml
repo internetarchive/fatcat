@@ -1,6 +1,6 @@
 
 unified_test:
-  image: "rust:1.26-stretch"
+  image: "rust:1.30-stretch"
   variables:
     LC_ALL: "C.UTF-8"
     LANG: "C.UTF-8"
@@ -10,7 +10,7 @@ unified_test:
     DATABASE_URL: "postgres://fatcat_user:fatcat_pw@postgres/fatcat_test"
     TEST_DATABASE_URL: "postgres://fatcat_user:fatcat_pw@postgres/fatcat_test"
   services:
-    - "postgres:9.6"
+    - "postgres:11"
   before_script:
     - cargo install diesel_cli --version 1.3.1
     - apt update -qy
