@@ -6,6 +6,7 @@ extern crate uuid;
 extern crate iron;
 extern crate iron_test;
 
+use std::{thread, time};
 use self::iron_test::response;
 use iron::{status, Iron, Listening, Headers};
 use iron::headers::ContentType;
@@ -22,6 +23,8 @@ pub fn setup_client() -> (
 ) {
     let server = fatcat::test_server().unwrap();
     let router = fatcat_api_spec::router(server);
+    // this is an unfortunate hack for testings seeming to fail in CI
+    thread::sleep(time::Duration::from_millis(100));
     let iron_server = Iron::new(router)
         .http("localhost:9144")
         .expect("Failed to start HTTP server");
