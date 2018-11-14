@@ -5,7 +5,7 @@
 <form class="" role="search" action="/release/search" method="get">
   <div class="ui form">
     <div class="ui action input huge fluid">
-      <input type="text" placeholder="Query..." name="q" value="{% if query %}{{ query }}{% endif %}">
+      <input type="text" placeholder="Query..." name="q" value="{% if query %}{{ query }}{% endif %}" aria-label="search release metadata">
       <button class="ui button">Search</button>
     </div>
     <div class="ui checkbox" style="float: right; margin: 1em;">
