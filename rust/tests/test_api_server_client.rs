@@ -14,33 +14,16 @@ extern crate fatcat_api_spec;
 extern crate uuid;
 extern crate iron;
 
-use iron::{Iron, Listening};
 use fatcat_api_spec::{Context, Api, ApiNoContext, Future, ContextWrapperExt};
-use fatcat_api_spec::client::Client;
-//use uuid::Uuid;
 
-
-fn setup() -> (
-    Context,
-    Client,
-    Listening,
-) {
-    let server = fatcat::test_server().unwrap();
-    let router = fatcat_api_spec::router(server);
-    let iron_server = Iron::new(router)
-        .http("localhost:9144")
-        .expect("Failed to start HTTP server");
-
-    let context = Context::new();
-    let client = Client::try_new_http("http://localhost:9144").unwrap();
-    (context, client, iron_server)
-}
+mod helpers;
+use helpers::{setup_client};
 
 #[test]
 fn test_basic() {
 
-    let (context, client, mut server) = setup();
-    let client = client.with_context(context);
+    let (client, mut server) = setup_client();
+    let client = client.with_context(Context::new());
 
     client.get_changelog_entry(1).wait().unwrap();
     server.close().unwrap()
@@ -49,8 +32,8 @@ fn test_basic() {
 #[test]
 fn test_basic2() {
 
-    let (context, client, mut server) = setup();
-    let client = client.with_context(context);
+    let (client, mut server) = setup_client();
+    let client = client.with_context(Context::new());
 
     client.get_changelog_entry(1).wait().unwrap();
     server.close().unwrap()

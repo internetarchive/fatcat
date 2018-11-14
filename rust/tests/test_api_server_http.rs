@@ -16,46 +16,18 @@ extern crate uuid;
 use diesel::prelude::*;
 use fatcat::api_helpers::*;
 use fatcat::database_schema::*;
-use iron::headers::ContentType;
-use iron::mime::Mime;
-use iron::{status, Headers};
-use iron_test::{request, response};
+use iron::status;
+use iron_test::request;
 use uuid::Uuid;
 
-fn setup() -> (
-    Headers,
-    fatcat_api_spec::router::Router,
-    diesel::r2d2::PooledConnection<diesel::r2d2::ConnectionManager<diesel::PgConnection>>,
-) {
-    let server = fatcat::test_server().unwrap();
-    let conn = server.db_pool.get().expect("db_pool error");
-    let router = fatcat_api_spec::router(server);
-    let mut headers = Headers::new();
-    let mime: Mime = "application/json".parse().unwrap();
-    headers.set(ContentType(mime));
-    (headers, router, conn)
-}
-
-fn check_response(
-    resp: iron::IronResult<iron::response::Response>,
-    want_status: status::Status,
-    in_body: Option<&str>,
-) {
-    let resp = resp.unwrap();
-    let status = resp.status;
-    let body = response::extract_body_to_string(resp);
-    println!("{}", body);
-    assert_eq!(status, Some(want_status));
-    if let Some(thing) = in_body {
-        assert!(body.contains(thing));
-    }
-}
+mod helpers;
+use helpers::{setup_http, check_http_response};
 
 #[test]
 fn test_entity_gets() {
-    let (headers, router, _conn) = setup();
+    let (headers, router, _conn) = setup_http();
 
-    check_response(
+    check_http_response(
         request::get(
             "http://localhost:9411/v0/container/aaaaaaaaaaaaaeiraaaaaaaaai",
             headers.clone(),
@@ -66,7 +38,7 @@ fn test_entity_gets() {
     );
 
     // Check revision encoding
-    check_response(
+    check_http_response(
         request::get(
             "http://localhost:9411/v0/container/aaaaaaaaaaaaaeiraaaaaaaaai",
             headers.clone(),
@@ -76,7 +48,7 @@ fn test_entity_gets() {
         Some("00000000-0000-0000-1111-fff000000002"),
     );
 
-    check_response(
+    check_http_response(
         request::get(
             "http://localhost:9411/v0/creator/aaaaaaaaaaaaaircaaaaaaaaae",
             headers.clone(),
@@ -86,7 +58,7 @@ fn test_entity_gets() {
         Some("Grace Hopper"),
     );
 
-    check_response(
+    check_http_response(
         request::get(
             "http://localhost:9411/v0/file/aaaaaaaaaaaaamztaaaaaaaaai",
             headers.clone(),
@@ -96,7 +68,7 @@ fn test_entity_gets() {
         Some("archive.org"),
     );
 
-    check_response(
+    check_http_response(
         request::get(
             "http://localhost:9411/v0/release/aaaaaaaaaaaaarceaaaaaaaaai",
             headers.clone(),
@@ -107,7 +79,7 @@ fn test_entity_gets() {
     );
 
     // expand keyword
-    check_response(
+    check_http_response(
         request::get(
             "http://localhost:9411/v0/release/aaaaaaaaaaaaarceaaaaaaaaai?expand=all",
             headers.clone(),
@@ -117,7 +89,7 @@ fn test_entity_gets() {
         Some("MySpace Blog"),
     );
 
-    check_response(
+    check_http_response(
         request::get(
             "http://localhost:9411/v0/work/aaaaaaaaaaaaavkvaaaaaaaaai",
             headers.clone(),
@@ -130,9 +102,9 @@ fn test_entity_gets() {
 
 #[test]
 fn test_entity_404() {
-    let (headers, router, _conn) = setup();
+    let (headers, router, _conn) = setup_http();
 
-    check_response(
+    check_http_response(
         request::get(
             "http://localhost:9411/v0/creator/aaaaaaaaaaaaairceeeeeeeeee",
             headers.clone(),
@@ -145,9 +117,9 @@ fn test_entity_404() {
 
 #[test]
 fn test_entity_history() {
-    let (headers, router, _conn) = setup();
+    let (headers, router, _conn) = setup_http();
 
-    check_response(
+    check_http_response(
         request::get(
             "http://localhost:9411/v0/container/aaaaaaaaaaaaaeiraaaaaaaaai/history",
             headers.clone(),
@@ -157,7 +129,7 @@ fn test_entity_history() {
         Some("changelog"),
     );
 
-    check_response(
+    check_http_response(
         request::get(
             "http://localhost:9411/v0/creator/aaaaaaaaaaaaaircaaaaaaaaae/history",
             headers.clone(),
@@ -167,7 +139,7 @@ fn test_entity_history() {
         Some("changelog"),
     );
 
-    check_response(
+    check_http_response(
         request::get(
             "http://localhost:9411/v0/file/aaaaaaaaaaaaamztaaaaaaaaai/history",
             headers.clone(),
@@ -177,7 +149,7 @@ fn test_entity_history() {
         Some("changelog"),
     );
 
-    check_response(
+    check_http_response(
         request::get(
             "http://localhost:9411/v0/release/aaaaaaaaaaaaarceaaaaaaaaai/history",
             headers.clone(),
@@ -187,7 +159,7 @@ fn test_entity_history() {
         Some("changelog"),
     );
 
-    check_response(
+    check_http_response(
         request::get(
             "http://localhost:9411/v0/work/aaaaaaaaaaaaavkvaaaaaaaaai/history",
             headers.clone(),
@@ -200,19 +172,19 @@ fn test_entity_history() {
 
 #[test]
 fn test_lookups() {
-    let (headers, router, _conn) = setup();
+    let (headers, router, _conn) = setup_http();
 
-    check_response(
+    check_http_response(
         request::get(
-            "http://localhost:9411/v0/container/lookup?issnl=1234-5678",
+            "http://localhost:9411/v0/container/lookup?issnl=1234-0000",
             headers.clone(),
             &router,
         ),
-        status::Ok,
-        Some("Journal of Trivial Results"),
+        status::NotFound,
+        None,
     );
 
-    check_response(
+    check_http_response(
         request::get(
             "http://localhost:9411/v0/creator/lookup?orcid=0000-0003-2088-7465",
             headers.clone(),
@@ -222,7 +194,17 @@ fn test_lookups() {
         Some("Christine Moran"),
     );
 
-    check_response(
+    check_http_response(
+        request::get(
+            "http://localhost:9411/v0/creator/lookup?orcid=0000-0003-2088-0000",
+            headers.clone(),
+            &router,
+        ),
+        status::NotFound,
+        None,
+    );
+
+    check_http_response(
         request::get(
             "http://localhost:9411/v0/file/lookup?sha1=7d97e98f8af710c7e7fe703abc8f639e0ee507c4",
             headers.clone(),
@@ -231,13 +213,23 @@ fn test_lookups() {
         status::Ok,
         Some("robots.txt"),
     );
+
+    check_http_response(
+        request::get(
+            "http://localhost:9411/v0/file/lookup?sha1=7d97e98f8af710c7e7fe703abc8f000000000000",
+            headers.clone(),
+            &router,
+        ),
+        status::NotFound,
+        None,
+    );
 }
 
 #[test]
 fn test_reverse_lookups() {
-    let (headers, router, _conn) = setup();
+    let (headers, router, _conn) = setup_http();
 
-    check_response(
+    check_http_response(
         request::get(
             "http://localhost:9411/v0/creator/aaaaaaaaaaaaaircaaaaaaaaai/releases",
             headers.clone(),
@@ -247,7 +239,7 @@ fn test_reverse_lookups() {
         Some("bigger example"),
     );
 
-    check_response(
+    check_http_response(
         request::get(
             "http://localhost:9411/v0/release/aaaaaaaaaaaaarceaaaaaaaaai/files",
             headers.clone(),
@@ -257,7 +249,7 @@ fn test_reverse_lookups() {
         Some("7d97e98f8af710c7e7fe703abc8f639e0ee507c4"),
     );
 
-    check_response(
+    check_http_response(
         request::get(
             "http://localhost:9411/v0/work/aaaaaaaaaaaaavkvaaaaaaaaai/releases",
             headers.clone(),
@@ -270,9 +262,9 @@ fn test_reverse_lookups() {
 
 #[test]
 fn test_post_container() {
-    let (headers, router, _conn) = setup();
+    let (headers, router, _conn) = setup_http();
 
-    check_response(
+    check_http_response(
         request::post(
             "http://localhost:9411/v0/container",
             headers,
@@ -286,9 +278,9 @@ fn test_post_container() {
 
 #[test]
 fn test_post_batch_container() {
-    let (headers, router, _conn) = setup();
+    let (headers, router, _conn) = setup_http();
 
-    check_response(
+    check_http_response(
         request::post(
             "http://localhost:9411/v0/container/batch",
             headers,
@@ -302,9 +294,9 @@ fn test_post_batch_container() {
 
 #[test]
 fn test_post_creator() {
-    let (headers, router, _conn) = setup();
+    let (headers, router, _conn) = setup_http();
 
-    check_response(
+    check_http_response(
         request::post(
             "http://localhost:9411/v0/creator",
             headers,
@@ -318,9 +310,9 @@ fn test_post_creator() {
 
 #[test]
 fn test_post_file() {
-    let (headers, router, conn) = setup();
+    let (headers, router, conn) = setup_http();
 
-    check_response(
+    check_http_response(
         request::post(
             "http://localhost:9411/v0/file",
             headers.clone(),
@@ -331,7 +323,7 @@ fn test_post_file() {
         None,
     );
 
-    check_response(
+    check_http_response(
         request::post(
             "http://localhost:9411/v0/file",
             headers.clone(),
@@ -358,7 +350,7 @@ fn test_post_file() {
 
     let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
     let editgroup_id = get_or_create_editgroup(editor_id, &conn).unwrap();
-    check_response(
+    check_http_response(
         request::post(
             &format!(
                 "http://localhost:9411/v0/editgroup/{}/accept",
@@ -372,7 +364,7 @@ fn test_post_file() {
         None,
     );
 
-    check_response(
+    check_http_response(
         request::get(
             "http://localhost:9411/v0/file/lookup?sha1=f0000000000000008b7eb2a93e6d0440c1f3e7f8",
             headers.clone(),
@@ -385,9 +377,9 @@ fn test_post_file() {
 
 #[test]
 fn test_post_release() {
-    let (headers, router, _conn) = setup();
+    let (headers, router, _conn) = setup_http();
 
-    check_response(
+    check_http_response(
         request::post(
             "http://localhost:9411/v0/release",
             headers.clone(),
@@ -403,7 +395,7 @@ fn test_post_release() {
     ); // TODO: "secret paper"
 
     // No work_id supplied (auto-created)
-    check_response(
+    check_http_response(
         request::post(
             "http://localhost:9411/v0/release",
             headers.clone(),
@@ -417,7 +409,7 @@ fn test_post_release() {
         None,
     );
 
-    check_response(
+    check_http_response(
         request::post(
             "http://localhost:9411/v0/release",
             headers,
@@ -459,9 +451,9 @@ fn test_post_release() {
 
 #[test]
 fn test_post_work() {
-    let (headers, router, _conn) = setup();
+    let (headers, router, _conn) = setup_http();
 
-    check_response(
+    check_http_response(
         request::post(
             "http://localhost:9411/v0/work",
             headers.clone(),
@@ -478,9 +470,9 @@ fn test_post_work() {
 
 #[test]
 fn test_update_work() {
-    let (headers, router, conn) = setup();
+    let (headers, router, conn) = setup_http();
 
-    check_response(
+    check_http_response(
         request::post(
             "http://localhost:9411/v0/work",
             headers.clone(),
@@ -495,7 +487,7 @@ fn test_update_work() {
 
     let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
     let editgroup_id = get_or_create_editgroup(editor_id, &conn).unwrap();
-    check_response(
+    check_http_response(
         request::post(
             &format!(
                 "http://localhost:9411/v0/editgroup/{}/accept",
@@ -512,9 +504,9 @@ fn test_update_work() {
 
 #[test]
 fn test_delete_work() {
-    let (headers, router, conn) = setup();
+    let (headers, router, conn) = setup_http();
 
-    check_response(
+    check_http_response(
         request::delete(
             "http://localhost:9411/v0/work/aaaaaaaaaaaaavkvaaaaaaaaai",
             headers.clone(),
@@ -526,7 +518,7 @@ fn test_delete_work() {
 
     let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
     let editgroup_id = get_or_create_editgroup(editor_id, &conn).unwrap();
-    check_response(
+    check_http_response(
         request::post(
             &format!(
                 "http://localhost:9411/v0/editgroup/{}/accept",
@@ -543,7 +535,7 @@ fn test_delete_work() {
 
 #[test]
 fn test_accept_editgroup() {
-    let (headers, router, conn) = setup();
+    let (headers, router, conn) = setup_http();
 
     let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
     let editgroup_id = get_or_create_editgroup(editor_id, &conn).unwrap();
@@ -561,7 +553,7 @@ fn test_accept_editgroup() {
         .unwrap();
     assert_eq!(c, 0);
 
-    check_response(
+    check_http_response(
         request::post(
             "http://localhost:9411/v0/container",
             headers.clone(),
@@ -574,7 +566,7 @@ fn test_accept_editgroup() {
         status::Created,
         None,
     );
-    check_response(
+    check_http_response(
         request::post(
             "http://localhost:9411/v0/container",
             headers.clone(),
@@ -595,7 +587,7 @@ fn test_accept_editgroup() {
         .unwrap();
     assert_eq!(c, 2);
 
-    check_response(
+    check_http_response(
         request::get(
             &format!(
                 "http://localhost:9411/v0/editgroup/{}",
@@ -608,7 +600,7 @@ fn test_accept_editgroup() {
         None,
     );
 
-    check_response(
+    check_http_response(
         request::post(
             &format!(
                 "http://localhost:9411/v0/editgroup/{}/accept",
@@ -638,9 +630,9 @@ fn test_accept_editgroup() {
 
 #[test]
 fn test_changelog() {
-    let (headers, router, _conn) = setup();
+    let (headers, router, _conn) = setup_http();
 
-    check_response(
+    check_http_response(
         request::get(
             "http://localhost:9411/v0/changelog",
             headers.clone(),
@@ -650,7 +642,7 @@ fn test_changelog() {
         Some("editgroup_id"),
     );
 
-    check_response(
+    check_http_response(
         request::get(
             "http://localhost:9411/v0/changelog/1",
             headers.clone(),
@@ -663,14 +655,14 @@ fn test_changelog() {
 
 #[test]
 fn test_stats() {
-    let (headers, router, _conn) = setup();
+    let (headers, router, _conn) = setup_http();
 
-    check_response(
+    check_http_response(
         request::get("http://localhost:9411/v0/stats", headers.clone(), &router),
         status::Ok,
         Some("merged_editgroups"),
     );
-    check_response(
+    check_http_response(
         request::get(
             "http://localhost:9411/v0/stats?more=yes",
             headers.clone(),
@@ -683,9 +675,9 @@ fn test_stats() {
 
 #[test]
 fn test_400() {
-    let (headers, router, _conn) = setup();
+    let (headers, router, _conn) = setup_http();
 
-    check_response(
+    check_http_response(
         request::post(
             "http://localhost:9411/v0/release",
             headers,
@@ -722,9 +714,9 @@ fn test_400() {
 
 #[test]
 fn test_edit_gets() {
-    let (headers, router, _conn) = setup();
+    let (headers, router, _conn) = setup_http();
 
-    check_response(
+    check_http_response(
         request::get(
             "http://localhost:9411/v0/editor/aaaaaaaaaaaabkvkaaaaaaaaae",
             headers.clone(),
@@ -734,7 +726,7 @@ fn test_edit_gets() {
         Some("admin"),
     );
 
-    check_response(
+    check_http_response(
         request::get(
             "http://localhost:9411/v0/editor/aaaaaaaaaaaabkvkaaaaaaaaae/changelog",
             headers.clone(),
@@ -744,7 +736,7 @@ fn test_edit_gets() {
         None,
     );
 
-    check_response(
+    check_http_response(
         request::get(
             "http://localhost:9411/v0/editgroup/aaaaaaaaaaaabo53aaaaaaaaae",
             headers.clone(),
@@ -757,10 +749,10 @@ fn test_edit_gets() {
 
 #[test]
 fn test_bad_external_idents() {
-    let (headers, router, _conn) = setup();
+    let (headers, router, _conn) = setup_http();
 
     // Bad wikidata QID
-    check_response(
+    check_http_response(
         request::post(
             "http://localhost:9411/v0/release",
             headers.clone(),
@@ -772,7 +764,7 @@ fn test_bad_external_idents() {
         status::BadRequest,
         Some("Wikidata QID"),
     );
-    check_response(
+    check_http_response(
         request::post(
             "http://localhost:9411/v0/container",
             headers.clone(),
@@ -784,7 +776,7 @@ fn test_bad_external_idents() {
         status::BadRequest,
         Some("Wikidata QID"),
     );
-    check_response(
+    check_http_response(
         request::post(
             "http://localhost:9411/v0/creator",
             headers.clone(),
@@ -798,7 +790,7 @@ fn test_bad_external_idents() {
     );
 
     // Bad PMCID
-    check_response(
+    check_http_response(
         request::post(
             "http://localhost:9411/v0/release",
             headers.clone(),
@@ -812,7 +804,7 @@ fn test_bad_external_idents() {
     );
 
     // Bad PMID
-    check_response(
+    check_http_response(
         request::post(
             "http://localhost:9411/v0/release",
             headers.clone(),
@@ -826,7 +818,7 @@ fn test_bad_external_idents() {
     );
 
     // Bad DOI
-    check_response(
+    check_http_response(
         request::post(
             "http://localhost:9411/v0/release",
             headers.clone(),
@@ -840,7 +832,7 @@ fn test_bad_external_idents() {
     );
 
     // Good identifiers
-    check_response(
+    check_http_response(
         request::post(
             "http://localhost:9411/v0/release",
             headers.clone(),
@@ -859,9 +851,9 @@ fn test_bad_external_idents() {
 
 #[test]
 fn test_abstracts() {
-    let (headers, router, conn) = setup();
+    let (headers, router, conn) = setup_http();
 
-    check_response(
+    check_http_response(
         request::post(
             "http://localhost:9411/v0/release",
             headers.clone(),
@@ -883,7 +875,7 @@ fn test_abstracts() {
     );
 
     // Same abstracts; checking that re-inserting works
-    check_response(
+    check_http_response(
         request::post(
             "http://localhost:9411/v0/release",
             headers.clone(),
@@ -905,7 +897,7 @@ fn test_abstracts() {
 
     let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
     let editgroup_id = get_or_create_editgroup(editor_id, &conn).unwrap();
-    check_response(
+    check_http_response(
         request::post(
             &format!(
                 "http://localhost:9411/v0/editgroup/{}/accept",
@@ -919,7 +911,7 @@ fn test_abstracts() {
         None,
     );
 
-    check_response(
+    check_http_response(
         request::get(
             "http://localhost:9411/v0/release/lookup?doi=10.1234/iiiiiii",
             headers.clone(),
@@ -929,7 +921,7 @@ fn test_abstracts() {
         // SHA-1 of first abstract string (with no trailing newline)
         Some("65c171bd8c968e12ede25ad95f02cd4b2ce9db52"),
     );
-    check_response(
+    check_http_response(
         request::get(
             "http://localhost:9411/v0/release/lookup?doi=10.1234/iiiiiii",
             headers.clone(),
@@ -938,7 +930,7 @@ fn test_abstracts() {
         status::Ok,
         Some("99139405"),
     );
-    check_response(
+    check_http_response(
         request::get(
             "http://localhost:9411/v0/release/lookup?doi=10.1234/iiiiiii",
             headers.clone(),
@@ -951,9 +943,9 @@ fn test_abstracts() {
 
 #[test]
 fn test_contribs() {
-    let (headers, router, conn) = setup();
+    let (headers, router, conn) = setup_http();
 
-    check_response(
+    check_http_response(
         request::post(
             "http://localhost:9411/v0/release",
             headers.clone(),
@@ -977,7 +969,7 @@ fn test_contribs() {
 
     let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
     let editgroup_id = get_or_create_editgroup(editor_id, &conn).unwrap();
-    check_response(
+    check_http_response(
         request::post(
             &format!(
                 "http://localhost:9411/v0/editgroup/{}/accept",
@@ -994,10 +986,10 @@ fn test_contribs() {
 
 #[test]
 fn test_post_batch_autoaccept() {
-    let (headers, router, _conn) = setup();
+    let (headers, router, _conn) = setup_http();
 
     // "true"
-    check_response(
+    check_http_response(
         request::post(
             "http://localhost:9411/v0/container/batch?autoaccept=true",
             headers.clone(),
@@ -1009,7 +1001,7 @@ fn test_post_batch_autoaccept() {
     );
 
     // "n"
-    check_response(
+    check_http_response(
         request::post(
             "http://localhost:9411/v0/container/batch?autoaccept=n",
             headers.clone(),
@@ -1021,7 +1013,7 @@ fn test_post_batch_autoaccept() {
     );
 
     // editgroup
-    check_response(
+    check_http_response(
         request::post(
             "http://localhost:9411/v0/container/batch?autoaccept=yes&editgroup=asdf",
             headers.clone(),
