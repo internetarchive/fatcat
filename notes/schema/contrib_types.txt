@@ -1,14 +1,30 @@
 
-See also: <http://docs.citationstyles.org/en/stable/specification.html#roles>
+fatcat should probably allow all roles, but only emphasize:
+- author
+- editor
+- translator
+- illustrator
 
-author
-editor
-translator
-illustrator
-interviewer
-reviewer
+possible additional (non-CSL) roles:
+- chair
 
+Crossref has the additional "chair" contributor_role: '"chair" should only be
+used for conference proceedings to indicate a conference chair'.
 
-container-author
-container-editor
-reviewed-author
+All CSL Roles:
+- author
+- collection-editor
+- composer
+- container-author
+- director
+- editor
+- editorial-director
+- editortranslator
+- illustrator
+- interviewer
+- original-author
+- recipient
+- reviewed-author
+- translator
+
+From: <http://docs.citationstyles.org/en/stable/specification.html#roles>

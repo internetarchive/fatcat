@@ -20,3 +20,24 @@ Quick descriptions of the "original 15" fields: <http://mn.gov/bridges/dcore.htm
 Human-readable specification: <http://docs.citationstyles.org/en/1.0.1/specification.html>
 
 Specifically, the "variables" and type definitions: <http://docs.citationstyles.org/en/stable/specification.html#appendix-iv-variables>
+
+"extra" fields:
+- medium (CD, DVD; from CSL)
+- genre (Phd vs. masters thesis? from CSL)
+- rights/license (for explicit OA)
+- version (eg, for software, standards)
+- url (eg, for blog posts and other web content; canonical only)
+
+other things:
+- align cite-items even closer with CSL? assuming this is what crossref is doing
+- anything specially needed for a blog post? url (original/canonical)?
+- press_release
+
+more serious schema issues:
+- add arxiv id (for easier aggressive import)
+- two levels of container? something for both "series" and "specific year of
+  conference". nested seems to get out of hand. for now, just a
+  "series-container" string in extra?
+- for chapter/book relations, a `part_of` field for release_rev to release_ident
+- ok, now I understand the whole "date-parts" business. hrm, maybe need to have
+  3 columns or use a string format

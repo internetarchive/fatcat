@@ -1,28 +1,105 @@
 
-see also: <http://docs.citationstyles.org/en/stable/specification.html#appendix-iii-types>
+see also:
+- <http://docs.citationstyles.org/en/stable/specification.html#appendix-iii-types>
+- <https://citeproc-js.readthedocs.io/en/latest/csl-m/index.html#unpublished-extension>
+
+"publication status" instead of pre-print and manuscript types
+
+all CSL types (note: can also be null):
+- article
+- article-magazine
+- article-newspaper
+- article-journal
+- bill
+- book
+- broadcast
+- chapter
+- dataset
+- entry
+- entry-dictionary
+- entry-encyclopedia
+- figure
+- graphic
+- interview
+- legislation
+- legal_case
+- manuscript
+- map
+- motion_picture
+- musical_score
+- pamphlet
+- paper-conference
+- patent
+- post
+- post-weblog
+- personal_communication
+- report
+- review
+- review-book
+- song
+- speech
+- thesis
+- treaty
+- webpage
 
 basics:
 - article-journal
+- article-magazine
+- article-newspaper
 - book
 - chapter
 - dataset
 - manuscript
 - paper-conference
-- blog-post
+- post-weblog
 - report
+- review
+- speech
 - thesis (aka, dissertation)
+- webpage
 
-- preprint
-- conference proceeding
-- book chapter
-- technical report/memo
-- dissertation/thesis
-- blog post
-- wiki page
-- presentation (slides, recording)
+additional fatcat types:
+- software (https://github.com/citation-style-language/zotero-bits/issues/69)
+- peer_review
+- standard (as in, RFC or ISO)
 
-"publication status" instead of pre-print and manuscript types?
+"paper-like" (for various stats):
+- article-journal
+- chapter
+- paper-conference
+- thesis
 
-abstracts as files?
+crossref work types (https://api.crossref.org/types):
+- book => book
+- book-chapter => chapter
+- book-part => chapter
+- book-section => chapter
+- component => <blank> (or more specific)
+- dataset => dataset
+- dissertation => thesis
+- edited-book => book
+- journal-article => article-journal
+- monograph => monograph
+- other => <blank>
+- peer-review => peer_review (or blank)
+- posted-content => post (or more specific)
+- proceedings-article => paper-conference
+- reference-book => book
+- reference-entry => entry (or more specific)
+- report => report
+- standard => ???
 
-videos, slides
+
+crossref non-work types (don't need mappings; don't import? as containers?
+    two-layers of containers?)
+- book-series
+- book-set
+- book-track
+- journal (definitely not release)
+- journal-issue
+- journal-volume
+- proceedings (definitely not release)
+- proceedings-series
+- report-series
+- standard-series
+
