@@ -203,14 +203,11 @@ class FatcatCrossrefImporter(FatcatImporter):
             # got some NoneType, even though at least year is supposed to be set
             release_date = None
         elif len(release_date) == 3:
-            release_date = datetime.datetime(year=release_date[0], month=release_date[1], day=release_date[2])
+            release_date = datetime.date(year=release_date[0], month=release_date[1], day=release_date[2])
         else:
             # only the year is actually required; mangle to first day for date
             # (TODO: something better?)
-            release_date = datetime.datetime(year=release_date[0], month=1, day=1)
-        # convert to string ISO datetime format (if not null)
-        if release_date:
-            release_date = release_date.isoformat() + "Z"
+            release_date = datetime.date(year=release_date[0], month=1, day=1)
 
         re = fatcat_client.ReleaseEntity(
             work_id=None,

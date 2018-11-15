@@ -42,11 +42,7 @@ def release_elastic_dict(release):
     )
 
     if release.release_date:
-        # TODO: resolve why this can be either a string or datetime
-        if type(release.release_date) == str:
-            t['release_date'] = release.release_date
-        else:
-            t['release_date'] = release.release_date.strftime('%F')
+        t['release_date'] = release.release_date.strftime('%F')
 
     container = release.container
     container_is_kept = False
