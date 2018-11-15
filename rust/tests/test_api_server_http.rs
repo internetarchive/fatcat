@@ -448,6 +448,22 @@ fn test_post_release() {
         status::Created,
         None,
     ); // TODO: "secret paper"
+
+    // Bogus non-existant fields
+    /* XXX: doesn't fail
+    check_http_response(
+        request::post(
+            "http://localhost:9411/v0/release",
+            headers.clone(),
+            r#"{"title": "secret minimal paper the second",
+                "asdf123": "lalala"
+                }"#,
+            &router,
+        ),
+        status::BadRequest,
+        None,
+    );
+    */
 }
 
 #[test]
