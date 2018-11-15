@@ -1,6 +1,5 @@
 use api_helpers::*;
 use api_server::get_release_files;
-use chrono;
 use database_models::*;
 use database_schema::*;
 use diesel::prelude::*;
@@ -833,9 +832,7 @@ impl EntityCrud for ReleaseEntity {
             title: rev_row.title,
             release_type: rev_row.release_type,
             release_status: rev_row.release_status,
-            release_date: rev_row
-                .release_date
-                .map(|v| chrono::DateTime::from_utc(v.and_hms(0, 0, 0), chrono::Utc)),
+            release_date: rev_row.release_date,
             doi: rev_row.doi,
             pmid: rev_row.pmid,
             pmcid: rev_row.pmcid,
@@ -891,7 +888,7 @@ impl EntityCrud for ReleaseEntity {
                     title: model.title.clone(),
                     release_type: model.release_type.clone(),
                     release_status: model.release_status.clone(),
-                    release_date: model.release_date.map(|v| v.naive_utc().date()),
+                    release_date: model.release_date,
                     doi: model.doi.clone(),
                     pmid: model.pmid.clone(),
                     pmcid: model.pmcid.clone(),

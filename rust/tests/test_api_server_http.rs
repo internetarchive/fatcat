@@ -416,6 +416,7 @@ fn test_post_release() {
             // TODO: target_release_id
             r#"{"title": "secret paper",
                 "release_type": "journal-article",
+                "release_date": "2000-01-02",
                 "doi": "10.1234/abcde.781231231239",
                 "pmid": "54321",
                 "pmcid": "PMC12345",
@@ -1018,6 +1019,71 @@ fn test_post_batch_autoaccept() {
             "http://localhost:9411/v0/container/batch?autoaccept=yes&editgroup=asdf",
             headers.clone(),
             r#"[{"name": "test journal"}, {"name": "another test journal"}]"#,
+            &router,
+        ),
+        status::BadRequest,
+        None,
+    );
+}
+
+#[test]
+fn test_release_dates() {
+    let (headers, router, _conn) = setup_http();
+
+    // Ok
+    check_http_response(
+        request::post(
+            "http://localhost:9411/v0/release",
+            headers.clone(),
+            r#"{"title": "secret minimal paper",
+                "release_type": "journal-article",
+                "release_date": "2000-01-02"
+                }"#,
+            &router,
+        ),
+        status::Created,
+        None,
+    );
+
+    // Bad: year/month only
+    check_http_response(
+        request::post(
+            "http://localhost:9411/v0/release",
+            headers.clone(),
+            r#"{"title": "secret minimal paper",
+                "release_type": "journal-article",
+                "release_date": "2000-01"
+                }"#,
+            &router,
+        ),
+        status::BadRequest,
+        None,
+    );
+
+    // Bad: full timestamp
+    check_http_response(
+        request::post(
+            "http://localhost:9411/v0/release",
+            headers.clone(),
+            r#"{"title": "secret minimal paper",
+                "release_type": "journal-article",
+                "release_date": "2005-08-30T00:00:00Z"
+                }"#,
+            &router,
+        ),
+        status::BadRequest,
+        None,
+    );
+
+    // Bad: bogus month/day
+    check_http_response(
+        request::post(
+            "http://localhost:9411/v0/release",
+            headers.clone(),
+            r#"{"title": "secret minimal paper",
+                "release_type": "journal-article",
+                "release_date": "2000-88-99"
+                }"#,
             &router,
         ),
         status::BadRequest,

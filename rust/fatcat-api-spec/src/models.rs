@@ -536,7 +536,7 @@ pub struct ReleaseEntity {
 
     #[serde(rename = "release_date")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub release_date: Option<chrono::DateTime<chrono::Utc>>,
+    pub release_date: Option<chrono::NaiveDate>,
 
     #[serde(rename = "release_status")]
     #[serde(skip_serializing_if = "Option::is_none")]

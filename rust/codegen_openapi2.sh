@@ -8,4 +8,7 @@ git checkout fatcat-api-spec/Cargo.toml
 sed -i 's/Object/serde_json::Value/g' fatcat-api-spec/src/models.rs
 sed -i 's/extern crate uuid;/extern crate serde_json;\nextern crate uuid;/g' fatcat-api-spec/src/models.rs
 
+# Hack to fix "release_date" as Date, not DateTime
+sed -i 's/release_date: Option<chrono::DateTime<chrono::Utc>>/release_date: Option<chrono::NaiveDate>/g' fatcat-api-spec/src/models.rs
+
 cargo fmt
