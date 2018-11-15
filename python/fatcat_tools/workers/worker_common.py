@@ -27,13 +27,17 @@ def most_recent_message(topic):
                 for p, op in consumer._partitions.items()]
     offsets = [(p, (o if o > -1 else -2)) for p, o in offsets]
     if -2 in [o for p, o in offsets]:
+        consumer.stop()
         return None
     else:
         consumer.reset_offsets(offsets)
         msg = islice(consumer, 1)
         if msg:
-            return list(msg)[0].value
+            val = list(msg)[0].value
+            consumer.stop()
+            return val
         else:
+            consumer.stop()
             return None
 
 class FatcatWorker:
