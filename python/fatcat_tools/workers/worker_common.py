@@ -5,7 +5,9 @@ import csv
 import json
 import itertools
 import fatcat_client
+from itertools import islice
 from pykafka import KafkaClient
+from pykafka.common import OffsetType
 from fatcat_client.rest import ApiException
 
 

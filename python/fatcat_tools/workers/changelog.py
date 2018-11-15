@@ -1,7 +1,6 @@
 
 import json
 import time
-from itertools import islice
 from fatcat_tools.workers.worker_common import FatcatWorker, most_recent_message
 from pykafka.common import OffsetType
 
@@ -33,7 +32,7 @@ class FatcatChangelogWorker(FatcatWorker):
             else:
                 self.offset = 1
 
-        with topic.get_sync_producer() as producer:
+        with topic.get_producer() as producer:
             while True: 
                 latest = int(self.api.get_changelog(limit=1)[0].index)
                 if latest > self.offset:
@@ -83,6 +82,8 @@ class FatcatEntityUpdatesWorker(FatcatWorker):
             compacted_topic=True,
         )
 
+        # using a sync producer to try and avoid racey loss of delivery (aka,
+        # if consumer group updated but produce didn't stick)
         with release_topic.get_sync_producer() as producer:
             for msg in consumer:
                 cle = json.loads(msg.value.decode('utf-8'))
