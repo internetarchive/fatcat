@@ -1,11 +1,11 @@
 
 import pytest
-from fatcat_tools.importers.issn import FatcatIssnImporter
+from fatcat_tools.importers import IssnImporter
 
 
 @pytest.fixture(scope="function")
 def issn_importer():
-    yield FatcatIssnImporter("http://localhost:9411/v0")
+    yield IssnImporter("http://localhost:9411/v0")
 
 # TODO: use API to check that entities actually created...
 def test_issn_importer_batch(issn_importer):

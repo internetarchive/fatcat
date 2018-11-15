@@ -1,12 +1,12 @@
 
 import json
 import pytest
-from fatcat_tools.importers.orcid import FatcatOrcidImporter
+from fatcat_tools.importers import OrcidImporter
 
 
 @pytest.fixture(scope="function")
 def orcid_importer():
-    yield FatcatOrcidImporter("http://localhost:9411/v0")
+    yield OrcidImporter("http://localhost:9411/v0")
 
 # TODO: use API to check that entities actually created...
 def test_orcid_importer_batch(orcid_importer):

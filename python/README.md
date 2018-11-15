@@ -23,10 +23,10 @@ locally):
 ## Web Interface
 
 This project uses `pipenv` to manage dependencies, and assumes Python 3.5
-(which pipenv may install if you are running a different local version). You
-can can install `pipenv` with `pip`. You may want to set the
-`PIPENV_VENV_IN_PROJECT` environment variable on your development machine (see
-pipenv docs for details).
+(which pipenv may install if you are running a different local version; see
+notes in Pipfile). You can can install `pipenv` with `pip`. You may want to set
+the `PIPENV_VENV_IN_PROJECT` environment variable on your development machine
+(see pipenv docs for details).
 
 To just run the web interface (which will try to connect to a back-end API
 server on the same machine by default), use:

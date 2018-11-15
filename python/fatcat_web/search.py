@@ -3,6 +3,10 @@ import requests
 from flask import abort
 from fatcat_web import app
 
+"""
+Helpers for doing elasticsearch queries (used in the web interface; not part of
+the formal API)
+"""
 
 def do_search(q, limit=50, fulltext_only=True):
 

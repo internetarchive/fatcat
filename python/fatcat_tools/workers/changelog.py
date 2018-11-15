@@ -1,11 +1,12 @@
 
 import json
 import time
-from fatcat_tools.workers.worker_common import FatcatWorker, most_recent_message
 from pykafka.common import OffsetType
 
+from .worker_common import FatcatWorker, most_recent_message
 
-class FatcatChangelogWorker(FatcatWorker):
+
+class ChangelogWorker(FatcatWorker):
     """
     Periodically polls the fatcat API looking for new changelogs. When they are
     found, fetch them and push (as JSON) into a Kafka topic.
@@ -52,7 +53,7 @@ class FatcatChangelogWorker(FatcatWorker):
                 time.sleep(self.poll_interval)
 
 
-class FatcatEntityUpdatesWorker(FatcatWorker):
+class EntityUpdatesWorker(FatcatWorker):
     """
     Consumes from the changelog topic and publishes expanded entities (fetched
     from API) to update topics.

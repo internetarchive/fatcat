@@ -2,14 +2,14 @@
 import json
 import time
 import requests
-from fatcat_tools.transforms import release_elastic_dict
-from fatcat_tools.workers.worker_common import FatcatWorker
-from fatcat_client import ReleaseEntity
-from fatcat_tools.transforms import *
 from pykafka.common import OffsetType
 
+from fatcat_client import ReleaseEntity
+from fatcat_tools import *
+from .worker_common import FatcatWorker
 
-class FatcatElasticReleaseWorker(FatcatWorker):
+
+class ElasticsearchReleaseWorker(FatcatWorker):
     """
     Consumes from release-updates topic and pushes into (presumably local)
     elasticsearch.
@@ -18,13 +18,13 @@ class FatcatElasticReleaseWorker(FatcatWorker):
     """
 
     def __init__(self, kafka_hosts, consume_topic, poll_interval=10.0, offset=None,
-            elastic_backend="http://localhost:9200", elastic_index="fatcat"):
+            elasticsearch_backend="http://localhost:9200", elasticsearch_index="fatcat"):
         super().__init__(kafka_hosts=kafka_hosts,
                          consume_topic=consume_topic,
                          api_host_url=None)
-        self.consumer_group = "elastic-updates"
-        self.elastic_backend = elastic_backend
-        self.elastic_index = elastic_index
+        self.consumer_group = "elasticsearch-updates"
+        self.elasticsearch_backend = elasticsearch_backend
+        self.elasticsearch_index = elasticsearch_index
 
     def run(self):
         consume_topic = self.kafka.topics[self.consume_topic]
@@ -42,11 +42,11 @@ class FatcatElasticReleaseWorker(FatcatWorker):
             json_str = msg.value.decode('utf-8')
             release = entity_from_json(json_str, ReleaseEntity)
             #print(release)
-            elastic_endpoint = "{}/{}/release/{}".format(
-                self.elastic_backend,
-                self.elastic_index,
+            elasticsearch_endpoint = "{}/{}/release/{}".format(
+                self.elasticsearch_backend,
+                self.elasticsearch_index,
                 release.ident)
-            print("Updating document: {}".format(elastic_endpoint))
-            resp = requests.post(elastic_endpoint, json=release_elastic_dict(release))
+            print("Updating document: {}".format(elasticsearch_endpoint))
+            resp = requests.post(elasticsearch_endpoint, json=release_to_elasticsearch(release))
             assert resp.status_code in (200, 201)
             #consumer.commit_offsets()

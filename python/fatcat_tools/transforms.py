@@ -3,6 +3,9 @@ import collections
 from fatcat_client import ReleaseEntity, ApiClient
 
 def entity_to_json(entity):
+    """
+    Hack to take advantage of the code-generated serialization code
+    """
     ac = ApiClient()
     return ac.sanitize_for_serialization(entity)
 
@@ -15,11 +18,12 @@ def entity_from_json(json_str, entity_type):
     thing.data = json_str
     return ac.deserialize(thing, entity_type)
 
-def release_elastic_dict(release):
+def release_to_elasticsearch(release):
     """
     Converts from an entity model/schema to elasticsearch oriented schema.
 
     Returns: dict
+    Raises exception on error (never returns None)
     """
 
     if release.state != 'active':

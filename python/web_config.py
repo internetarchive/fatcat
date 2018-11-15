@@ -1,4 +1,14 @@
 
+"""
+Default configuration for fatcat web interface (Flask application).
+
+In production, we currently reconfigure these values using environment
+variables, not by (eg) deploying a variant copy of this file.
+
+This config is *only* for the web interface, *not* for any of the workers or
+import scripts.
+"""
+
 import os
 import subprocess
 

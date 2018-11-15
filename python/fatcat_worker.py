@@ -3,27 +3,27 @@
 import sys
 import argparse
 import datetime
-from fatcat_tools.workers.changelog import FatcatChangelogWorker, FatcatEntityUpdatesWorker
-from fatcat_tools.workers.elastic import FatcatElasticReleaseWorker
+from fatcat_tools.workers import ChangelogWorker, EntityUpdatesWorker, ElasticsearchReleaseWorker
+
 
 def run_changelog(args):
     topic = "fatcat-{}.changelog".format(args.env)
-    worker = FatcatChangelogWorker(args.api_host_url, args.kafka_hosts, topic,
+    worker = ChangelogWorker(args.api_host_url, args.kafka_hosts, topic,
         args.poll_interval)
     worker.run()
 
 def run_entity_updates(args):
     changelog_topic = "fatcat-{}.changelog".format(args.env)
     release_topic = "fatcat-{}.release-updates".format(args.env)
-    worker = FatcatEntityUpdatesWorker(args.api_host_url, args.kafka_hosts,
+    worker = EntityUpdatesWorker(args.api_host_url, args.kafka_hosts,
         changelog_topic, release_topic)
     worker.run()
 
-def run_elastic_release(args):
+def run_elasticsearch_release(args):
     consume_topic = "fatcat-{}.release-updates".format(args.env)
-    worker = FatcatElasticReleaseWorker(args.kafka_hosts,
-        consume_topic, elastic_backend=args.elastic_backend,
-        elastic_index=args.elastic_index)
+    worker = ReleaseWorker(args.kafka_hosts,
+        consume_topic, elasticsearch_backend=args.elasticsearch_backend,
+        elasticsearch_index=args.elasticsearch_index)
     worker.run()
 
 def main():
@@ -51,12 +51,12 @@ def main():
     sub_entity_updates = subparsers.add_parser('entity-updates')
     sub_entity_updates.set_defaults(func=run_entity_updates)
 
-    sub_elastic_release = subparsers.add_parser('elastic-release')
-    sub_elastic_release.set_defaults(func=run_elastic_release)
-    sub_elastic_release.add_argument('--elastic-backend',
+    sub_elasticsearch_release = subparsers.add_parser('elasticsearch-release')
+    sub_elasticsearch_release.set_defaults(func=run_elasticsearch_release)
+    sub_elasticsearch_release.add_argument('--elasticsearch-backend',
         help="elasticsearch backend to connect to",
         default="http://localhost:9200")
-    sub_elastic_release.add_argument('--elastic-index',
+    sub_elasticsearch_release.add_argument('--elasticsearch-index',
         help="elasticsearch index to push into",
         default="fatcat")
 

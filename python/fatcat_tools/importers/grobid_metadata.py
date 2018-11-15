@@ -5,12 +5,12 @@ import json
 import base64
 import datetime
 import fatcat_client
-from fatcat_tools.importers.common import FatcatImporter
+from .common import FatcatImporter
 
 MAX_ABSTRACT_BYTES=4096
 
 
-class FatcatGrobidMetadataImporter(FatcatImporter):
+class GrobidMetadataImporter(FatcatImporter):
 
     def __init__(self, host_url, default_link_rel="web"):
         super().__init__(host_url)

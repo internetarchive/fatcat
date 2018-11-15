@@ -1,7 +1,7 @@
 
 
 import pytest
-from fatcat_tools.importers.common import FatcatImporter
+from fatcat_tools.importers import FatcatImporter
 
 
 def test_issnl_mapping_lookup():

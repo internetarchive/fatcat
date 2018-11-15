@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
 
+"""
+Note: this is *not* the tool used to generate "official" metadata dumps; that
+tool is written in rust and runs on the production infrastructure for speed.
+These scripts are just a demonstration of how the API *could* be scraped
+without permission by an third party.
+"""
+
 import sys
 import json
 import argparse
 import fatcat_client
 from fatcat_client.rest import ApiException
-from fatcat_tools.fcid import uuid2fcid
+from fatcat_tools import uuid2fcid
 
 def run_export_releases(args):
     conf = fatcat_client.Configuration()

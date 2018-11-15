@@ -3,7 +3,7 @@ import sys
 import json
 import itertools
 import fatcat_client
-from fatcat_tools.importers.common import FatcatImporter
+from .common import FatcatImporter
 
 def value_or_none(e):
     if type(e) == dict:
@@ -20,7 +20,7 @@ def value_or_none(e):
             return None
     return e
 
-class FatcatOrcidImporter(FatcatImporter):
+class OrcidImporter(FatcatImporter):
 
     def parse_orcid_dict(self, obj):
         """

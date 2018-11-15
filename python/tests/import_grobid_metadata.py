@@ -3,7 +3,7 @@ import os
 import json
 import base64
 import pytest
-from fatcat_tools.importers.grobid_metadata import FatcatGrobidMetadataImporter
+from fatcat_tools.importers import GrobidMetadataImporter
 
 """
 WARNING: these tests are currently very fragile because they have database
@@ -12,7 +12,7 @@ side-effects. Should probably be disabled or re-written.
 
 @pytest.fixture(scope="function")
 def grobid_metadata_importer():
-    yield FatcatGrobidMetadataImporter("http://localhost:9411/v0")
+    yield GrobidMetadataImporter("http://localhost:9411/v0")
 
 # TODO: use API to check that entities actually created...
 #def test_grobid_metadata_importer_batch(grobid_metadata_importer):

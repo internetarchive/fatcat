@@ -16,6 +16,9 @@ def grouper(iterable, n, fillvalue=None):
     return itertools.zip_longest(*args, fillvalue=fillvalue)
 
 class FatcatImporter:
+    """
+    Base class for fatcat importers
+    """
 
     def __init__(self, host_url, issn_map_file=None):
         conf = fatcat_client.Configuration()

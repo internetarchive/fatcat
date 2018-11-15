@@ -5,9 +5,11 @@ import sqlite3
 import datetime
 import itertools
 import fatcat_client
-from fatcat_tools.importers.common import FatcatImporter
+from .common import FatcatImporter
 
 
+# The docs/guide should be the cannonical home for these mappings; update there
+# first
 CROSSREF_TYPE_MAP = {
     'book': 'book',
     'book-chapter': 'chapter',
@@ -29,8 +31,14 @@ CROSSREF_TYPE_MAP = {
     'standard': 'standard',
 }
 
+class CrossrefImporter(FatcatImporter):
+    """
+    Importer for Crossref metadata.
 
-class FatcatCrossrefImporter(FatcatImporter):
+    Can use a local sqlite3 file for faster "external identifier" lookups
+
+    See https://github.com/CrossRef/rest-api-doc for JSON schema notes
+    """
 
     def __init__(self, host_url, issn_map_file, extid_map_file=None, create_containers=True):
         super().__init__(host_url, issn_map_file)

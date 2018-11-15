@@ -1,12 +1,12 @@
 
 import json
 import pytest
-from fatcat_tools.importers.matched import FatcatMatchedImporter
+from fatcat_tools.importers import MatchedImporter
 
 
 @pytest.fixture(scope="function")
 def matched_importer():
-    yield FatcatMatchedImporter("http://localhost:9411/v0")
+    yield MatchedImporter("http://localhost:9411/v0")
 
 # TODO: use API to check that entities actually created...
 def test_matched_importer_batch(matched_importer):

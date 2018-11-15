@@ -1,3 +1,8 @@
+
+# This file is *not* used as part of bundling or distributing the python client
+# library (fatcat_client). It *is* shared by the web interface (flask app),
+# workers, and import scripts.
+
 [[source]]
 url = "https://pypi.python.org/simple"
 verify_ssl = true
@@ -28,4 +33,8 @@ pykafka = "*"
 python-dateutil = "*"
 
 [requires]
+# Python 3.5 is the bundled (system) version of python for Ubuntu 16.04
+# (Xenial), currently the default on Internet Archive production VMs, as well
+# as Debian stable (stretch). Will probably bump to 3.6 in early 2019 when
+# updating both of these environments.
 python_version = "3.5"

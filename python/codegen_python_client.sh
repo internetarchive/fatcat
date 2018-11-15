@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# This script re-generates the fatcat API client (fatcat_client) from the
+# swagger/openapi2 spec file, using automated tools ("codegen")
+
 set -exu
 set -o pipefail
 
