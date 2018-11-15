@@ -10,7 +10,6 @@ use fatcat_api_spec::client::Client;
 use iron::headers::ContentType;
 use iron::mime::Mime;
 use iron::{status, Headers, Iron, Listening};
-use std::{thread, time};
 
 // A current problem with this method is that if the test fails (eg, panics, assert fails), the
 // server never gets closed, and the server thread hangs forever.
@@ -19,8 +18,6 @@ use std::{thread, time};
 pub fn setup_client() -> (Client, Listening) {
     let server = fatcat::test_server().unwrap();
     let router = fatcat_api_spec::router(server);
-    // this is an unfortunate hack for testings seeming to fail in CI
-    thread::sleep(time::Duration::from_millis(100));
     let iron_server = Iron::new(router)
         .http("localhost:9144")
         .expect("Failed to start HTTP server");
