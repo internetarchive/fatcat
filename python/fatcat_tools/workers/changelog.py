@@ -2,7 +2,7 @@
 import json
 import time
 from itertools import islice
-from fatcat_tools.workers.worker_common import FatcatWorker
+from fatcat_tools.workers.worker_common import FatcatWorker, most_recent_message
 from pykafka.common import OffsetType
 
 
@@ -19,31 +19,6 @@ class FatcatChangelogWorker(FatcatWorker):
                          api_host_url=api_host_url)
         self.poll_interval = poll_interval
         self.offset = offset    # the fatcat changelog offset, not the kafka offset
-
-    def most_recent_message(self, topic):
-        """
-        Tries to fetch the most recent message from a given topic.
-        This only makes sense for single partition topics, though could be
-        extended with "last N" behavior.
-
-        Following "Consuming the last N messages from a topic"
-        from https://pykafka.readthedocs.io/en/latest/usage.html#consumer-patterns
-        """
-        consumer = topic.get_simple_consumer(
-            auto_offset_reset=OffsetType.LATEST,
-            reset_offset_on_start=True)
-        offsets = [(p, op.last_offset_consumed - 1)
-                    for p, op in consumer._partitions.items()]
-        offsets = [(p, (o if o > -1 else -2)) for p, o in offsets]
-        if -2 in [o for p, o in offsets]:
-            return None
-        else:
-            consumer.reset_offsets(offsets)
-            msg = islice(consumer, 1)
-            if msg:
-                return list(msg)[0].value
-            else:
-                return None
 
     def run(self):
         topic = self.kafka.topics[self.produce_topic]
