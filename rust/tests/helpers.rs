@@ -1,26 +1,22 @@
-
 extern crate diesel;
 extern crate fatcat;
 extern crate fatcat_api_spec;
-extern crate uuid;
 extern crate iron;
 extern crate iron_test;
+extern crate uuid;
 
-use std::{thread, time};
 use self::iron_test::response;
-use iron::{status, Iron, Listening, Headers};
+use fatcat_api_spec::client::Client;
 use iron::headers::ContentType;
 use iron::mime::Mime;
-use fatcat_api_spec::client::Client;
+use iron::{status, Headers, Iron, Listening};
+use std::{thread, time};
 
 // A current problem with this method is that if the test fails (eg, panics, assert fails), the
 // server never gets closed, and the server thread hangs forever.
 // One workaround might be to invert the function, take a closure, capture the panic/failure, and
 // cleanup.
-pub fn setup_client() -> (
-    Client,
-    Listening,
-) {
+pub fn setup_client() -> (Client, Listening) {
     let server = fatcat::test_server().unwrap();
     let router = fatcat_api_spec::router(server);
     // this is an unfortunate hack for testings seeming to fail in CI

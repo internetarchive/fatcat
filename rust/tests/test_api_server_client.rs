@@ -11,17 +11,16 @@
 
 extern crate fatcat;
 extern crate fatcat_api_spec;
-extern crate uuid;
 extern crate iron;
+extern crate uuid;
 
-use fatcat_api_spec::{Context, Api, ApiNoContext, Future, ContextWrapperExt};
+use fatcat_api_spec::{Api, ApiNoContext, Context, ContextWrapperExt, Future};
 
 mod helpers;
-use helpers::{setup_client};
+use helpers::setup_client;
 
 #[test]
 fn test_basic() {
-
     let (client, mut server) = setup_client();
     let client = client.with_context(Context::new());
 

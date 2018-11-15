@@ -21,7 +21,7 @@ use iron_test::request;
 use uuid::Uuid;
 
 mod helpers;
-use helpers::{setup_http, check_http_response};
+use helpers::{check_http_response, setup_http};
 
 #[test]
 fn test_entity_gets() {
