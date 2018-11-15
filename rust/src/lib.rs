@@ -50,6 +50,10 @@ pub mod errors {
                 description("external identifier doesn't match required pattern")
                 display("external identifier doesn't match required pattern")
             }
+            NotInControlledVocabulary(word: String) {
+                description("word or type not correct for controlled vocabulary")
+                display("word or type not correct for controlled vocabulary")
+            }
             EditgroupAlreadyAccepted(id: String) {
                 description("editgroup was already accepted")
                 display("attempted to accept an editgroup which was already accepted: {}", id)

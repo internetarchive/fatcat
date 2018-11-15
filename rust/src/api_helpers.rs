@@ -319,6 +319,112 @@ fn test_check_orcid() {
     assert!(check_orcid("0x23-4567-3456-6780").is_err());
 }
 
+pub fn check_release_type(raw: &str) -> Result<()> {
+
+    let valid_types = vec![
+        // Citation Style Language official types
+        "article",
+        "article-magazine",
+        "article-newspaper",
+        "article-journal",
+        "bill",
+        "book",
+        "broadcast",
+        "chapter",
+        "dataset",
+        "entry",
+        "entry-dictionary",
+        "entry-encyclopedia",
+        "figure",
+        "graphic",
+        "interview",
+        "legislation",
+        "legal_case",
+        "manuscript",
+        "map",
+        "motion_picture",
+        "musical_score",
+        "pamphlet",
+        "paper-conference",
+        "patent",
+        "post",
+        "post-weblog",
+        "personal_communication",
+        "report",
+        "review",
+        "review-book",
+        "song",
+        "speech",
+        "thesis",
+        "treaty",
+        "webpage",
+        // fatcat-specific extensions
+        "peer_review",
+        "software",
+        "standard",
+    ];
+    for good in valid_types {
+        if raw == good {
+            return Ok(())
+        }
+    }
+    Err(ErrorKind::NotInControlledVocabulary(format!(
+        "not a valid release_type: '{}' (expected a CSL type, eg, 'article-journal', 'book')",
+        raw
+    )).into())
+}
+
+#[test]
+fn test_check_release_type() {
+    assert!(check_release_type("book").is_ok());
+    assert!(check_release_type("article-journal").is_ok());
+    assert!(check_release_type("standard").is_ok());
+    assert!(check_release_type("journal-article").is_err());
+    assert!(check_release_type("BOOK").is_err());
+    assert!(check_release_type("book ").is_err());
+}
+
+pub fn check_contrib_role(raw: &str) -> Result<()> {
+
+    let valid_types = vec![
+        // Citation Style Language official role types
+        "author",
+        "collection-editor",
+        "composer",
+        "container-author",
+        "director",
+        "editor",
+        "editorial-director",
+        "editortranslator",
+        "illustrator",
+        "interviewer",
+        "original-author",
+        "recipient",
+        "reviewed-author",
+        "translator",
+        // common extension (for conference proceeding chair)
+        //"chair",
+    ];
+    for good in valid_types {
+        if raw == good {
+            return Ok(())
+        }
+    }
+    Err(ErrorKind::NotInControlledVocabulary(format!(
+        "not a valid contrib.role: '{}' (expected a CSL type, eg, 'author', 'editor')",
+        raw
+    )).into())
+}
+
+#[test]
+fn test_check_contrib_role() {
+    assert!(check_contrib_role("author").is_ok());
+    assert!(check_contrib_role("editor").is_ok());
+    assert!(check_contrib_role("chair").is_err());
+    assert!(check_contrib_role("EDITOR").is_err());
+    assert!(check_contrib_role("editor ").is_err());
+}
+
 // TODO: make the above checks "more correct"
 // TODO: check ISBN-13
 // TODO: check hashes (SHA-1, etc)

@@ -877,6 +877,16 @@ impl EntityCrud for ReleaseEntity {
             if let Some(ref extid) = entity.wikidata_qid {
                 check_wikidata_qid(extid)?;
             }
+            if let Some(ref release_type) = entity.release_type {
+                check_release_type(release_type)?;
+            }
+            if let Some(ref contribs) = entity.contribs {
+                for contrib in contribs {
+                    if let Some(ref role) = contrib.role {
+                        check_contrib_role(role)?;
+                    }
+                }
+            }
         }
 
         let rev_ids: Vec<Uuid> = insert_into(release_rev::table)
