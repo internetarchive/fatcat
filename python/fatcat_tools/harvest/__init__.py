@@ -1,2 +1,2 @@
 
-from .crossrefish import HarvestCrossrefWorker
+from .doi_registrars import HarvestCrossrefWorker, HarvestDataciteWorker
