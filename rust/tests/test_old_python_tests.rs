@@ -68,7 +68,7 @@ fn test_api_rich_create() {
 
     // this stub work will be referenced
     let mut new_release = ReleaseEntity::new("derivative work".to_string());
-    new_release.release_type = Some("journal-article".to_string());
+    new_release.release_type = Some("article-journal".to_string());
     new_release.work_id = Some(work_id.clone());
     let mut contrib = ReleaseContrib::new();
     contrib.creator_id = Some(creator_id.clone());
@@ -209,7 +209,7 @@ fn test_merge_works() {
         _ => unreachable!(),
     };
     let mut new_release = ReleaseEntity::new("some release".to_string());
-    new_release.release_type = Some("journal-article".to_string());
+    new_release.release_type = Some("article-journal".to_string());
     new_release.work_id = Some(work_a_id.clone());
     new_release.doi = Some("10.1234/A1".to_string());
     let resp = client
@@ -231,7 +231,7 @@ fn test_merge_works() {
     };
 
     let mut new_release = ReleaseEntity::new("some release".to_string());
-    new_release.release_type = Some("journal-article".to_string());
+    new_release.release_type = Some("article-journal".to_string());
     new_release.work_id = Some(work_b_id.clone());
     new_release.doi = Some("10.1234/B1".to_string());
     let resp = client
@@ -244,7 +244,7 @@ fn test_merge_works() {
     };
 
     let mut new_release = ReleaseEntity::new("some release".to_string());
-    new_release.release_type = Some("journal-article".to_string());
+    new_release.release_type = Some("article-journal".to_string());
     new_release.work_id = Some(work_b_id.clone());
     new_release.doi = Some("10.1234/B2".to_string());
     let resp = client

@@ -385,7 +385,7 @@ fn test_post_release() {
             headers.clone(),
             // TODO: target_release_id
             r#"{"title": "secret minimal paper",
-                "release_type": "journal-article",
+                "release_type": "article-journal",
                 "work_id": "aaaaaaaaaaaaavkvaaaaaaaaae"
                 }"#,
             &router,
@@ -401,7 +401,7 @@ fn test_post_release() {
             headers.clone(),
             // TODO: target_release_id
             r#"{"title": "secret minimal paper the second",
-                "release_type": "journal-article"
+                "release_type": "article-journal"
                 }"#,
             &router,
         ),
@@ -412,10 +412,10 @@ fn test_post_release() {
     check_http_response(
         request::post(
             "http://localhost:9411/v0/release",
-            headers,
+            headers.clone(),
             // TODO: target_release_id
             r#"{"title": "secret paper",
-                "release_type": "journal-article",
+                "release_type": "article-journal",
                 "release_date": "2000-01-02",
                 "doi": "10.1234/abcde.781231231239",
                 "pmid": "54321",
@@ -437,7 +437,7 @@ fn test_post_release() {
                         "index": 1,
                         "raw_name": "textual description of contributor (aka, name)",
                         "creator_id": "aaaaaaaaaaaaaircaaaaaaaaae",
-                        "contrib_type": "author"
+                        "role": "author"
                     },{
                         "raw_name": "shorter"
                     }],
@@ -683,7 +683,7 @@ fn test_400() {
             "http://localhost:9411/v0/release",
             headers,
             r#"{"title": "secret paper",
-                "release_type": "journal-article",
+                "release_type": "article-journal",
                 "doi": "10.1234/abcde.781231231239",
                 "volume": "439",
                 "issue": "IV",
@@ -1036,7 +1036,7 @@ fn test_release_dates() {
             "http://localhost:9411/v0/release",
             headers.clone(),
             r#"{"title": "secret minimal paper",
-                "release_type": "journal-article",
+                "release_type": "article-journal",
                 "release_date": "2000-01-02"
                 }"#,
             &router,
@@ -1051,7 +1051,7 @@ fn test_release_dates() {
             "http://localhost:9411/v0/release",
             headers.clone(),
             r#"{"title": "secret minimal paper",
-                "release_type": "journal-article",
+                "release_type": "article-journal",
                 "release_date": "2000-01"
                 }"#,
             &router,
@@ -1066,7 +1066,7 @@ fn test_release_dates() {
             "http://localhost:9411/v0/release",
             headers.clone(),
             r#"{"title": "secret minimal paper",
-                "release_type": "journal-article",
+                "release_type": "article-journal",
                 "release_date": "2005-08-30T00:00:00Z"
                 }"#,
             &router,
@@ -1081,12 +1081,45 @@ fn test_release_dates() {
             "http://localhost:9411/v0/release",
             headers.clone(),
             r#"{"title": "secret minimal paper",
-                "release_type": "journal-article",
+                "release_type": "article-journal",
                 "release_date": "2000-88-99"
                 }"#,
             &router,
         ),
         status::BadRequest,
         None,
+    );
+}
+
+#[test]
+fn test_release_types() {
+    let (headers, router, _conn) = setup_http();
+
+    // Ok
+    check_http_response(
+        request::post(
+            "http://localhost:9411/v0/release",
+            headers.clone(),
+            r#"{"title": "secret minimal paper",
+                "release_type": "article-journal"
+                }"#,
+            &router,
+        ),
+        status::Created,
+        None,
+    );
+
+    // Bad
+    check_http_response(
+        request::post(
+            "http://localhost:9411/v0/release",
+            headers.clone(),
+            r#"{"title": "secret minimal paper",
+                "release_type": "journal-article"
+                }"#,
+            &router,
+        ),
+        status::BadRequest,
+        Some("release_type"),
     );
 }
