@@ -1,5 +1,6 @@
 
 correctness
+- extra or typo-d fields in requests don't seem to be errors (silently accepted)
 - enforce "previous_rev" required in updates
 - reread/review editgroup accept code
 - enforce "no editing if editgroup accepted" behavior

@@ -91,6 +91,9 @@ new importers:
 - "authn" microservice: https://keratin.tech/
 
 better API docs
+- readme.io has a free open source plan (or at least used to)
+- https://github.com/readmeio/api-explorer
+- https://github.com/lord/slate
 - https://sourcey.com/spectacle/
 - https://github.com/DapperDox/dapperdox
 
