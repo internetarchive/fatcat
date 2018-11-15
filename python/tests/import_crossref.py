@@ -17,6 +17,12 @@ def test_crossref_importer(crossref_importer):
     with open('tests/files/crossref-works.2018-01-21.badsample.json', 'r') as f:
         crossref_importer.process_source(f)
 
+def test_crossref_mappings(crossref_importer):
+    assert crossref_importer.map_release_type('journal-article') == "article-journal"
+    assert crossref_importer.map_release_type('asdf') is None
+    assert crossref_importer.map_release_type('component') is None
+    assert crossref_importer.map_release_type('standard') == 'standard'
+
 def test_crossref_importer_create(crossref_importer):
     crossref_importer.create_containers = True
     with open('tests/files/crossref-works.2018-01-21.badsample.json', 'r') as f:
@@ -33,7 +39,7 @@ def test_crossref_dict_parse(crossref_importer):
         assert r.publisher == "Wiley-Blackwell"
         print(extra)
         assert extra['container-title'] == ["International Journal of Quantum Chemistry"]
-        assert r.release_type == "journal-article"
+        assert r.release_type == "article-journal"
         assert r.release_status == "published"
         assert r.isbn13 == "978-3-16-148410-0"
         assert 'subtitle' not in extra

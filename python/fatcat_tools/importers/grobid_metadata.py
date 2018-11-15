@@ -67,7 +67,7 @@ class FatcatGrobidMetadataImporter(FatcatImporter):
             ref['extra'] = cite_extra
             refs.append(ref)
 
-        release_type = "journal-article"
+        release_type = "article-journal"
         release_date = None
         if obj.get('date'):
             # TODO: only returns year, ever? how to handle?

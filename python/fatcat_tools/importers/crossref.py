@@ -8,6 +8,28 @@ import fatcat_client
 from fatcat_tools.importers.common import FatcatImporter
 
 
+CROSSREF_TYPE_MAP = {
+    'book': 'book',
+    'book-chapter': 'chapter',
+    'book-part': 'chapter',
+    'book-section': 'chapter',
+    'component': None,
+    'dataset': 'dataset',
+    'dissertation': 'thesis',
+    'edited-book': 'book',
+    'journal-article': 'article-journal',
+    'monograph': 'monograph',
+    'other': None,
+    'peer-review': 'peer_review',
+    'posted-content': 'post',
+    'proceedings-article': 'paper-conference',
+    'reference-book': 'book',
+    'reference-entry': 'entry',
+    'report': 'report',
+    'standard': 'standard',
+}
+
+
 class FatcatCrossrefImporter(FatcatImporter):
 
     def __init__(self, host_url, issn_map_file, extid_map_file=None, create_containers=True):
@@ -35,6 +57,9 @@ class FatcatCrossrefImporter(FatcatImporter):
             pmcid=row[2],
             wikidata_qid=row[3])
 
+    def map_release_type(self, crossref_type):
+        return CROSSREF_TYPE_MAP.get(crossref_type)
+
     def parse_crossref_dict(self, obj):
         """
         obj is a python dict (parsed from json).
@@ -46,7 +71,10 @@ class FatcatCrossrefImporter(FatcatImporter):
             return None
 
         # Other ways to be out of scope (provisionally)
-        if (not 'type' in obj):
+        # journal-issue and journal-volume map to None, but allowed for now
+        if obj.get('type') in (None, 'journal', 'proceedings',
+                'standard-series', 'report-series', 'book-series', 'book-set',
+                'book-track', 'proceedings-series'):
             return None
 
         # contribs
@@ -76,6 +104,7 @@ class FatcatCrossrefImporter(FatcatImporter):
                     extra['sequence'] = am.get('sequence')
                 if not extra:
                     extra = None
+                assert(ctype in ("author", "editor", "translator"))
                 contribs.append(fatcat_client.ReleaseContrib(
                     creator_id=creator_id,
                     index=index,
@@ -216,7 +245,7 @@ class FatcatCrossrefImporter(FatcatImporter):
             refs=refs,
             container_id=container_id,
             publisher=publisher,
-            release_type=obj['type'],
+            release_type=self.map_release_type(obj['type']),
             release_status=release_status,
             doi=obj['DOI'].lower(),
             isbn13=isbn13,
