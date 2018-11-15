@@ -11,7 +11,21 @@ messages/second. Because this worker consumes from 8x partitions, I have a
 feeling it might be consumer group related. kafka-manager shows "0% coverage"
 for this topic. Note that this is a single worker process.
 
-_consumer_offsets is seeing about 36 messages/sec.
+`_consumer_offsets` is seeing about 36 messages/sec.
 
 Oh, looks like I just needed to enable auto_commit and tune parameters in
 pykafka!
+
+That helped reduce `_consumer_offsets` churn, significantly, but didn't
+increase throughput (or not much). Might want to switch to kafka connect
+(presuming it somehow does faster/bulk inserts/indexing), with a simple worker
+doing the transforms. Probably worth doing a `> /dev/null` version of the
+worker first (with a different consumer group) to make sure the bottlneck isn't
+somewhere else.
+
+Another thing to try is more kafka fetch threads.
+
+elastic-release python processing is at 66% (of one core) CPU! and elastic at
+~30%. Huh.
+
+But, in general, "seems to be working".
