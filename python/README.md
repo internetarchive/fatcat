@@ -54,4 +54,4 @@ To calculate code coverage (of python code):
 To run 'lint' on the code base (note that this is pretty noisy and isn't
 enforced by CI yet):
 
-    pipenv run pylint --disable bad-continuation,arguments-differ,unidiomatic-typecheck fatcat
+    pipenv run pylint fatcat*.py fatcat_tools fatcat_web

@@ -27,8 +27,8 @@ unified_test:
     - cd ../python
     - pipenv install --dev --deploy
     - pipenv run pytest --cov
-    # Still too rigorous
-    #- pipenv run pylint --disable bad-continuation,arguments-differ,unidiomatic-typecheck fatcat
+    # Just errors
+    - pipenv run -E fatcat*.py fatcat_tools fatcat_web
 
 rust_build_release:
   only:
