@@ -3,12 +3,18 @@ import re
 import sys
 import csv
 import json
+import time
 import requests
 import itertools
 import datetime
 from pykafka import KafkaClient
 
 from fatcat_tools.workers.worker_common import most_recent_message
+
+# Skip pylint due to:
+#   AttributeError: 'NoneType' object has no attribute 'scope'
+# in 'astroid/node_classes.py'
+# pylint: skip-file
 
 DATE_FMT = "%Y-%m-%d"
 
@@ -79,7 +85,7 @@ class HarvestCrossrefWorker:
             date_str, date_str)
         if self.is_update_filter is not None:
             filter_param += ',is_update:{}'.format(bool(self.is_update_filter))
-        params = {
+        return {
             'filter': filter_param,
             'rows': self.api_batch_size,
             'cursor': '*',
@@ -93,7 +99,7 @@ class HarvestCrossrefWorker:
 
         state_topic = self.kafka.topics[self.state_topic]
         produce_topic = self.kafka.topics[self.produce_topic]
- 
+
         date_str = date.strftime(DATE_FMT)
         params = self.params(date_str)
         headers = {
@@ -103,12 +109,12 @@ class HarvestCrossrefWorker:
         with produce_topic.get_producer() as producer:
             while True:
                 http_resp = requests.get(self.api_host_url, params, headers=headers)
-                if http_resp.status_code is 503:
+                if http_resp.status_code == 503:
                     # crud backoff
                     print("got HTTP {}, pausing for 30 seconds".format(http_resp.status_code))
                     time.sleep(30.0)
                     continue
-                assert http_resp.status_code is 200
+                assert http_resp.status_code == 200
                 resp = http_resp.json()
                 items = self.extract_items(resp)
                 count += len(items)
@@ -135,7 +141,7 @@ class HarvestCrossrefWorker:
         today_utc = datetime.datetime.utcnow().date()
         if self.start_date is None:
             self.start_date = self.get_latest_date()
-            if self.start_date: 
+            if self.start_date:
                 # if we are continuing, start day after last success
                 self.start_date = self.start_date + datetime.timedelta(days=1)
         if self.start_date is None:
@@ -167,7 +173,7 @@ class HarvestDataciteWorker(HarvestCrossrefWorker):
     """
     datacite has a REST API as well as OAI-PMH endpoint.
 
-    have about 8 million 
+    have about 8 million
 
     bulk export notes: https://github.com/datacite/datacite/issues/188
 
@@ -206,4 +212,3 @@ class HarvestDataciteWorker(HarvestCrossrefWorker):
     def update_params(self, params, resp):
         params['page[number]'] = resp['meta']['page'] + 1
         return params
-

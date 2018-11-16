@@ -17,6 +17,7 @@ def truthy(s):
     if s is None:
         return None
     s = s.lower()
+
     if s in ('true', 't', 'yes', 'y', '1'):
         return True
     elif s in ('false', 'f', 'no', 'n', '0'):
@@ -37,12 +38,12 @@ class IssnImporter(FatcatImporter):
     def parse_issn_row(self, row):
         """
         row is a python dict (parsed from CSV).
-        returns a ContainerEntity
+        returns a ContainerEntity (or None if invalid or couldn't parse)
         """
         title = or_none(row['title'])
         issnl = or_none(row['ISSN-L'])
         if title is None or issnl is None:
-            return
+            return None
         extra = dict(
             in_doaj=truthy(row['in_doaj']),
             in_road=truthy(row['in_road']),
@@ -72,7 +73,7 @@ class IssnImporter(FatcatImporter):
     def create_batch(self, batch, editgroup=None):
         """Reads and processes in batches (not API-call-per-line)"""
         objects = [self.parse_issn_row(l)
-                   for l in batch if l != None]
-        objects = [o for o in objects if o != None]
+                   for l in batch if (l is not None)]
+        objects = [o for o in objects if (o is not None)]
         self.api.create_container_batch(objects, autoaccept="true", editgroup=editgroup)
         self.counts['insert'] += len(objects)

@@ -112,7 +112,7 @@ class CrossrefImporter(FatcatImporter):
                     extra['sequence'] = am.get('sequence')
                 if not extra:
                     extra = None
-                assert(ctype in ("author", "editor", "translator"))
+                assert ctype in ("author", "editor", "translator")
                 contribs.append(fatcat_client.ReleaseContrib(
                     creator_id=creator_id,
                     index=index,
@@ -133,7 +133,7 @@ class CrossrefImporter(FatcatImporter):
         publisher = obj.get('publisher')
 
         ce = None
-        if (container_id is None and self.create_containers and issnl != None 
+        if (container_id is None and self.create_containers and (issnl is not None)
             and obj.get('container-title') and len(obj['container-title']) > 0):
             ce = fatcat_client.ContainerEntity(
                 issnl=issnl,

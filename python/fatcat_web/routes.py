@@ -50,11 +50,13 @@ def container_create_view():
 
 @app.route('/container/create', methods=['POST'])
 def container_create():
+    raise NotImplementedError
     params = dict()
     for k in request.form:
         if k.startswith('container_'):
             params[k[10:]] = request.form[k]
-    edit = api.create_container(params=params)
+    container = None
+    edit = api.create_container(container, params=params)
     return redirect("/container/{}".format(edit.ident))
 
 @app.route('/container/lookup', methods=['GET'])
@@ -174,11 +176,13 @@ def release_create_view():
 
 @app.route('/release/create', methods=['POST'])
 def release_create():
+    raise NotImplementedError
     params = dict()
     for k in request.form:
         if k.startswith('release_'):
             params[k[10:]] = request.form[k]
-    edit = api.create_release(params=params)
+    release = None
+    edit = api.create_release(release, params=params)
     return redirect("/release/{}".format(edit.ident))
 
 @app.route('/release/<ident>/history', methods=['GET'])
@@ -260,7 +264,7 @@ def work_view(ident):
 
 @app.route('/editgroup/current', methods=['GET'])
 def editgroup_current():
-    raise NotImplemented()
+    raise NotImplementedError
     #eg = api.get_or_create_editgroup()
     #return redirect('/editgroup/{}'.format(eg.id))
 

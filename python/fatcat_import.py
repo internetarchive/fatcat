@@ -3,7 +3,7 @@
 import sys
 import argparse
 from fatcat_tools.importers import CrossrefImporter, OrcidImporter, \
-    IssnImporter, MatchedImporter, GrobidMetadataImporter 
+    IssnImporter, MatchedImporter, GrobidMetadataImporter
 
 
 def run_crossref(args):

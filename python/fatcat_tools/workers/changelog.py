@@ -27,7 +27,7 @@ class ChangelogWorker(FatcatWorker):
         # topic
         if self.offset is None:
             print("Checking for most recent changelog offset...")
-            msg = self.most_recent_message(topic)
+            msg = most_recent_message(topic)
             if msg:
                 self.offset = json.loads(msg.decode('utf-8'))['index']
             else:

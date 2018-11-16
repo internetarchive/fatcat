@@ -21,7 +21,6 @@ class GrobidMetadataImporter(FatcatImporter):
         if not obj.get('title'):
             return None
 
-        release = dict()
         extra = dict()
 
         if obj.get('abstract') and len(obj.get('abstract')) < MAX_ABSTRACT_BYTES:
@@ -35,7 +34,6 @@ class GrobidMetadataImporter(FatcatImporter):
 
         contribs = []
         for i, a in enumerate(obj.get('authors', [])):
-            c = dict(raw_name=a['name'], role="author")
             contribs.append(fatcat_client.ReleaseContrib(
                 index=i,
                 raw_name=a['name'],
@@ -67,7 +65,6 @@ class GrobidMetadataImporter(FatcatImporter):
             ref['extra'] = cite_extra
             refs.append(ref)
 
-        release_type = "article-journal"
         release_date = None
         if obj.get('date'):
             # TODO: only returns year, ever? how to handle?
@@ -77,7 +74,7 @@ class GrobidMetadataImporter(FatcatImporter):
             extra['doi'] = obj['doi']
         if obj['journal'] and obj['journal'].get('name'):
             extra['container_name'] = obj['journal']['name']
-        
+
         extra['is_longtail_oa'] = True
 
         # TODO: ISSN/eISSN handling? or just journal name lookup?
@@ -89,6 +86,8 @@ class GrobidMetadataImporter(FatcatImporter):
 
         re = fatcat_client.ReleaseEntity(
             title=obj['title'].strip(),
+            release_type="article-journal",
+            release_date=release_date,
             contribs=contribs,
             refs=refs,
             publisher=obj['journal'].get('publisher'),
@@ -97,7 +96,7 @@ class GrobidMetadataImporter(FatcatImporter):
             abstracts=abstracts,
             extra=extra)
         return re
-    
+
     # TODO: make this a common function somewhere
     def make_url(self, raw):
         rel = self.default_link_rel
@@ -111,7 +110,7 @@ class GrobidMetadataImporter(FatcatImporter):
         return fatcat_client.FileEntityUrls(url=raw, rel=rel)
 
     def parse_file_metadata(self, sha1_key, cdx, mimetype, file_size):
-        
+
         sha1 = base64.b16encode(base64.b32decode(sha1_key.replace('sha1:', ''))).decode('ascii').lower()
 
         # lookup existing SHA1, or create new entity
@@ -141,7 +140,7 @@ class GrobidMetadataImporter(FatcatImporter):
         fe.urls.append(
             fatcat_client.FileEntityUrls(url=wayback, rel="webarchive"))
         original_url = self.make_url(original)
-        if original_url != None:
+        if original_url is not None:
             fe.urls.append(original_url)
 
         return fe

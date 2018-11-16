@@ -37,12 +37,21 @@ class FatcatImporter:
         print("Processed {} lines, inserted {}, updated {}.".format(
             self.counts['processed_lines'], self.counts['insert'], self.counts['update']))
 
+    def create_row(self, row, editgroup_id=None):
+        # sub-classes expected to implement this
+        raise NotImplementedError
+
+    def create_batch(self, rows, editgroup_id=None):
+        # sub-classes expected to implement this
+        raise NotImplementedError
+
     def process_source(self, source, group_size=100):
         """Creates and auto-accepts editgroup every group_size rows"""
         eg = self.api.create_editgroup(
             fatcat_client.Editgroup(editor_id='aaaaaaaaaaaabkvkaaaaaaaaae'))
+        i = 0
         for i, row in enumerate(source):
-            self.create_row(row, editgroup=eg.id)
+            self.create_row(row, editgroup_id=eg.id)
             if i > 0 and (i % group_size) == 0:
                 self.api.accept_editgroup(eg.id)
                 eg = self.api.create_editgroup(
@@ -57,7 +66,7 @@ class FatcatImporter:
             self.counts['processed_lines'] += len(rows)
             eg = self.api.create_editgroup(
                 fatcat_client.Editgroup(editor_id='aaaaaaaaaaaabkvkaaaaaaaaae'))
-            self.create_batch(rows, editgroup=eg.id)
+            self.create_batch(rows, editgroup_id=eg.id)
 
     def process_csv_source(self, source, group_size=100, delimiter=','):
         reader = csv.DictReader(source, delimiter=delimiter)
@@ -85,7 +94,7 @@ class FatcatImporter:
         return container_id
 
     def is_orcid(self, orcid):
-        return self._orcid_regex.match(orcid) != None
+        return self._orcid_regex.match(orcid) is not None
 
     def lookup_orcid(self, orcid):
         """Caches calls to the Orcid lookup API endpoint in a local dict"""
