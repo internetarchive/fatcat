@@ -1,0 +1,39 @@
+
+About 155 million DOIs total
+
+Crossref
+ => ~100 million total, ~80 million papers
+
+Datacite
+ => ~13 million total (or was is 8mil?)
+
+ISTIC
+ => 27 million journal DOIs (29 million total)
+
+CNKI
+ => 11 million?
+ => "China Academic Journals Full-text Database" => 11146 titles, 64222243 articles
+
+KISTI
+ => http://www.doi.or.kr/wordpress/
+ => http://www.doi.or.kr/wordpress/oai-pmh/ (requires registration)
+ => 7 million?
+
+JaLC (Japan Link Center)
+ => ~6.6 million
+ => started 2012
+
+
+### Other Random Stuff
+
+Open Access Korea
+  http://central.oak.go.kr/
+  "OAK Central is a full-text XML service based on Journal Article Tag Suite (JATS) for domestic OA scholarly papers."
+  10k articles
+
+http://koreascience.or.kr/MainPage.jsp
+  hundreds of thousands of records? maybe fulltext links?
+
+Korean Journal Publishing Service
+  http://kpubs.org/index.kpubs
+  some 88k articles
