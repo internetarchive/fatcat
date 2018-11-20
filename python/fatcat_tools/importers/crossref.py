@@ -20,7 +20,7 @@ CROSSREF_TYPE_MAP = {
     'dissertation': 'thesis',
     'edited-book': 'book',
     'journal-article': 'article-journal',
-    'monograph': 'monograph',
+    'monograph': 'book',
     'other': None,
     'peer-review': 'peer_review',
     'posted-content': 'post',

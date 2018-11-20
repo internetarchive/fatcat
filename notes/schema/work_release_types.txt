@@ -79,7 +79,7 @@ crossref work types (https://api.crossref.org/types):
 - dissertation => thesis
 - edited-book => book
 - journal-article => article-journal
-- monograph => monograph
+- monograph => book
 - other => <blank>
 - peer-review => peer_review (or blank)
 - posted-content => post (or more specific)
