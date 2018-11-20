@@ -46,7 +46,7 @@ class ChangelogWorker(FatcatWorker):
                         message=json.dumps(obj).encode('utf-8'),
                         partition_key=None,
                         timestamp=None,
-                        #XXX: timestamp=cle.timestamp,
+                        #NOTE could be (???): timestamp=cle.timestamp,
                     )
                     self.offset = i
                 print("Sleeping {} seconds...".format(self.poll_interval))
