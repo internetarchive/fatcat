@@ -10,8 +10,8 @@ from fatcat_tools.harvest import HarvestCrossrefWorker, HarvestDataciteWorker,\
 def run_crossref(args):
     worker = HarvestCrossrefWorker(
         kafka_hosts=args.kafka_hosts,
-        produce_topic="fatcat-{}.crossref".format(args.env),
-        state_topic="fatcat-{}.crossref-state".format(args.env),
+        produce_topic="fatcat-{}.api-crossref".format(args.env),
+        state_topic="fatcat-{}.api-crossref-state".format(args.env),
         contact_email=args.contact_email,
         start_date=args.start_date,
         end_date=args.end_date)
@@ -20,8 +20,8 @@ def run_crossref(args):
 def run_datacite(args):
     worker = HarvestDataciteWorker(
         kafka_hosts=args.kafka_hosts,
-        produce_topic="fatcat-{}.datacite".format(args.env),
-        state_topic="fatcat-{}.datacite-state".format(args.env),
+        produce_topic="fatcat-{}.api-datacite".format(args.env),
+        state_topic="fatcat-{}.api-datacite-state".format(args.env),
         contact_email=args.contact_email,
         start_date=args.start_date,
         end_date=args.end_date)
@@ -30,8 +30,8 @@ def run_datacite(args):
 def run_arxiv(args):
     worker = HarvestArxivWorker(
         kafka_hosts=args.kafka_hosts,
-        produce_topic="fatcat-{}.arxiv".format(args.env),
-        state_topic="fatcat-{}.arxiv-state".format(args.env),
+        produce_topic="fatcat-{}.oaipmh-arxiv".format(args.env),
+        state_topic="fatcat-{}.oaipmh-arxiv-state".format(args.env),
         start_date=args.start_date,
         end_date=args.end_date)
     worker.run()
@@ -39,8 +39,8 @@ def run_arxiv(args):
 def run_pubmed(args):
     worker = HarvestPubmedWorker(
         kafka_hosts=args.kafka_hosts,
-        produce_topic="fatcat-{}.pubmed".format(args.env),
-        state_topic="fatcat-{}.pubmed-state".format(args.env),
+        produce_topic="fatcat-{}.oaipmh-pubmed".format(args.env),
+        state_topic="fatcat-{}.oaipmh-pubmed-state".format(args.env),
         start_date=args.start_date,
         end_date=args.end_date)
     worker.run()
@@ -48,8 +48,8 @@ def run_pubmed(args):
 def run_doaj_article(args):
     worker = HarvestDoajArticleWorker(
         kafka_hosts=args.kafka_hosts,
-        produce_topic="fatcat-{}.doaj-article".format(args.env),
-        state_topic="fatcat-{}.doaj-article-state".format(args.env),
+        produce_topic="fatcat-{}.oaipmh-doaj-article".format(args.env),
+        state_topic="fatcat-{}.oaipmh-doaj-article-state".format(args.env),
         start_date=args.start_date,
         end_date=args.end_date)
     worker.run()
@@ -57,8 +57,8 @@ def run_doaj_article(args):
 def run_doaj_journal(args):
     worker = HarvestDoajJournalWorker(
         kafka_hosts=args.kafka_hosts,
-        produce_topic="fatcat-{}.doaj-journal".format(args.env),
-        state_topic="fatcat-{}.doaj-journal-state".format(args.env),
+        produce_topic="fatcat-{}.oaipmh-doaj-journal".format(args.env),
+        state_topic="fatcat-{}.oaipmh-doaj-journal-state".format(args.env),
         start_date=args.start_date,
         end_date=args.end_date)
     worker.run()

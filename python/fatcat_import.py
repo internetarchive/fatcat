@@ -11,7 +11,7 @@ def run_crossref(args):
         args.extid_map_file, create_containers=(not args.no_create_containers))
     if args.kafka_mode:
         consumer = make_kafka_consumer(
-            args.kafka_hosts, args.kafka_env, "crossref", "fatcat-import")
+            args.kafka_hosts, args.kafka_env, "api-crossref", "fatcat-import")
         fci.process_batch(consumer, size=args.batch_size, decode_kafka=True)
     else:
         fci.process_batch(args.json_file, size=args.batch_size)
