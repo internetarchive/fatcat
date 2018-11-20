@@ -5,15 +5,32 @@ import csv
 import json
 import itertools
 from collections import Counter
+import pykafka
 
 import fatcat_client
 from fatcat_client.rest import ApiException
+
 
 # from: https://docs.python.org/3/library/itertools.html
 def grouper(iterable, n, fillvalue=None):
     "Collect data into fixed-length chunks or blocks"
     args = [iter(iterable)] * n
     return itertools.zip_longest(*args, fillvalue=fillvalue)
+
+def make_kafka_consumer(hosts, env, topic_suffix, group):
+    topic_name = "fatcat-{}.{}".format(env, topic_suffix).encode('utf-8')
+    client = pykafka.KafkaClient(hosts=hosts, broker_version="1.0.0")
+    consume_topic = client.topics[topic_name]
+    print("Consuming from kafka topic {}, group {}".format(topic_name, group))
+
+    consumer = consume_topic.get_balanced_consumer(
+        consumer_group=group.encode('utf-8'),
+        managed=True,
+        auto_commit_enable=True,
+        auto_commit_interval_ms=30000, # 30 seconds
+        compacted_topic=True,
+    )
+    return consumer
 
 class FatcatImporter:
     """
