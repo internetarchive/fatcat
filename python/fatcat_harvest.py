@@ -13,7 +13,7 @@ def run_crossref(args):
         contact_email=args.contact_email,
         start_date=args.start_date,
         end_date=args.end_date)
-    worker.run_once()
+    worker.run()
 
 def run_datacite(args):
     worker = HarvestDataciteWorker(
@@ -23,7 +23,7 @@ def run_datacite(args):
         contact_email=args.contact_email,
         start_date=args.start_date,
         end_date=args.end_date)
-    worker.run_once()
+    worker.run()
 
 def mkdate(raw):
     return datetime.datetime.strptime(raw, "%Y-%m-%d").date()
@@ -48,6 +48,9 @@ def main():
     parser.add_argument('--contact-email',
         default="undefined",    # better?
         help="contact email to use in API header")
+    parser.add_argument('--continuous',
+        default=False,
+        help="continue harvesting indefinitely in a loop?")
     subparsers = parser.add_subparsers()
 
     sub_crossref = subparsers.add_parser('crossref')
