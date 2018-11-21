@@ -75,11 +75,11 @@ class CrossrefImporter(FatcatImporter):
         returns a ReleaseEntity
         """
 
-        # This work is out of scope if it doesn't have authors and a title
-        if (not 'author' in obj) or (not 'title' in obj):
-            return None
+        # Previously required the 'author' and 'title' keys to exsit, but now don't
+        #if (not 'author' in obj) or (not 'title' in obj):
+        #    return None
 
-        # Other ways to be out of scope (provisionally)
+        # Ways to be out of scope (provisionally)
         # journal-issue and journal-volume map to None, but allowed for now
         if obj.get('type') in (None, 'journal', 'proceedings',
                 'standard-series', 'report-series', 'book-series', 'book-set',
@@ -135,7 +135,7 @@ class CrossrefImporter(FatcatImporter):
                     role=ctype,
                     extra=extra))
             return contribs
-        contribs = do_contribs(obj['author'], "author")
+        contribs = do_contribs(obj.get('author', []), "author")
         contribs.extend(do_contribs(obj.get('editor', []), "editor"))
         contribs.extend(do_contribs(obj.get('translator', []), "translator"))
 
@@ -263,7 +263,7 @@ class CrossrefImporter(FatcatImporter):
 
         re = fatcat_client.ReleaseEntity(
             work_id=None,
-            title=obj['title'][0],
+            title=obj.get('title', [None])[0],
             contribs=contribs,
             refs=refs,
             container_id=container_id,
