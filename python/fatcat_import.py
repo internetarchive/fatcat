@@ -8,7 +8,8 @@ from fatcat_tools.importers import CrossrefImporter, OrcidImporter, \
 
 def run_crossref(args):
     fci = CrossrefImporter(args.host_url, args.issn_map_file,
-        args.extid_map_file, create_containers=(not args.no_create_containers))
+        args.extid_map_file, create_containers=(not args.no_create_containers),
+        check_existing=(not args.no_release_updates))
     if args.kafka_mode:
         consumer = make_kafka_consumer(
             args.kafka_hosts, args.kafka_env, "api-crossref", "fatcat-import")
@@ -29,7 +30,7 @@ def run_issn(args):
 
 def run_matched(args):
     fmi = MatchedImporter(args.host_url,
-        skip_file_update=args.no_file_update)
+        skip_file_updates=args.no_file_updates)
     fmi.process_batch(args.json_file, size=args.batch_size)
     fmi.describe_run()
 
@@ -74,6 +75,9 @@ def main():
     sub_crossref.add_argument('--kafka-mode',
         action='store_true',
         help="consume from kafka topic (not stdin)")
+    sub_crossref.add_argument('--no-release-updates',
+        action='store_true',
+        help="don't lookup existing DOIs, just insert (only for bootstrap)")
 
     sub_orcid = subparsers.add_parser('orcid')
     sub_orcid.set_defaults(func=run_orcid)
@@ -98,7 +102,7 @@ def main():
     sub_matched.add_argument('json_file',
         help="JSON file to import from (or stdin)",
         default=sys.stdin, type=argparse.FileType('r'))
-    sub_matched.add_argument('--no-file-update',
+    sub_matched.add_argument('--no-file-updates',
         action='store_true',
         help="don't lookup existing files, just insert (only for bootstrap)")
     sub_matched.add_argument('--batch-size',

@@ -7,7 +7,12 @@ from fatcat_tools.importers import CrossrefImporter
 @pytest.fixture(scope="function")
 def crossref_importer():
     with open('tests/files/ISSN-to-ISSN-L.snip.txt', 'r') as issn_file:
-        yield CrossrefImporter("http://localhost:9411/v0", issn_file, 'tests/files/example_map.sqlite3')
+        yield CrossrefImporter("http://localhost:9411/v0", issn_file, 'tests/files/example_map.sqlite3', check_existing=False)
+
+@pytest.fixture(scope="function")
+def crossref_importer_existing():
+    with open('tests/files/ISSN-to-ISSN-L.snip.txt', 'r') as issn_file:
+        yield CrossrefImporter("http://localhost:9411/v0", issn_file, 'tests/files/example_map.sqlite3', check_existing=True)
 
 def test_crossref_importer_batch(crossref_importer):
     with open('tests/files/crossref-works.2018-01-21.badsample.json', 'r') as f:
@@ -61,3 +66,12 @@ def test_crossref_dict_parse(crossref_importer):
         assert r.refs[0].container_name == "J. Chem. Phys."
         assert r.refs[0].extra['crossref'] == {"volume": "57", "author": "Swenson", "doi": "10.1063/1.1678462"}
         assert r.refs[3].container_name == "Large Order Perturbation Theory and Summation Methods in Quantum Mechanics, Lecture Notes in Chemistry"
+
+def test_stateful_checking(crossref_importer_existing):
+    with open('tests/files/crossref-works.single.json', 'r') as f:
+        # not a single line, a whole document
+        raw = json.loads(f.read())
+        # might not exist yet...
+        crossref_importer_existing.process_source([json.dumps(raw)])
+        # ok, make sure we get 'None' back
+        assert crossref_importer_existing.parse_crossref_dict(raw) is None

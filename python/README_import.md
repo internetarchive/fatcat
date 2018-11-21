@@ -57,7 +57,7 @@ Usually 24 hours or so on fast production machine.
 Unknown speed!
 
     # No file update for the first import...
-    zcat /srv/fatcat/datasets/ia_papers_manifest_2018-01-25.matched.json.gz | pv -l | time parallel -j12 --round-robin --pipe ./fatcat_import.py matched --no-file-update -
+    zcat /srv/fatcat/datasets/ia_papers_manifest_2018-01-25.matched.json.gz | pv -l | time parallel -j12 --round-robin --pipe ./fatcat_import.py matched --no-file-updates -
 
     # ... but do on the second
     zcat /srv/fatcat/datasets/2018-08-27-2352.17-matchcrossref.insertable.json.gz | pv -l | time parallel -j12 --round-robin --pipe ./fatcat_import.py matched -

@@ -40,7 +40,7 @@ class CrossrefImporter(FatcatImporter):
     See https://github.com/CrossRef/rest-api-doc for JSON schema notes
     """
 
-    def __init__(self, host_url, issn_map_file, extid_map_file=None, create_containers=True):
+    def __init__(self, host_url, issn_map_file, extid_map_file=None, create_containers=True, check_existing=True):
         super().__init__(host_url, issn_map_file)
         self.extid_map_db = None
         if extid_map_file:
@@ -50,6 +50,7 @@ class CrossrefImporter(FatcatImporter):
         else:
             print("Not using external ID map")
         self.create_containers = create_containers
+        self.check_existing = check_existing
 
     def lookup_ext_ids(self, doi):
         if self.extid_map_db is None:
@@ -83,6 +84,20 @@ class CrossrefImporter(FatcatImporter):
         if obj.get('type') in (None, 'journal', 'proceedings',
                 'standard-series', 'report-series', 'book-series', 'book-set',
                 'book-track', 'proceedings-series'):
+            return None
+
+        # lookup existing DOI
+        existing_release = None
+        if self.check_existing:
+            try:
+                existing_release = self.api.lookup_release(doi=obj['DOI'].lower())
+            except fatcat_client.rest.ApiException as err:
+                if err.status != 404:
+                    raise err
+
+        # eventually we'll want to support "updates", but for now just skip if
+        # entity already exists
+        if existing_release:
             return None
 
         # contribs

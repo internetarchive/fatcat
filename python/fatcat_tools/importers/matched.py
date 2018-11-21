@@ -37,12 +37,12 @@ class MatchedImporter(FatcatImporter):
     - core_id, wikidata_id, pmcid, pmid: not as lists
     """
 
-    def __init__(self, host_url, skip_file_update=False, default_mime=None,
+    def __init__(self, host_url, skip_file_updates=False, default_mime=None,
             default_link_rel="web"):
         super().__init__(host_url)
         self.default_mime = default_mime
         self.default_link_rel = default_link_rel
-        self.skip_file_update = skip_file_update
+        self.skip_file_updates = skip_file_updates
 
     def make_url(self, raw):
         rel = self.default_link_rel
@@ -61,7 +61,7 @@ class MatchedImporter(FatcatImporter):
 
         # lookup sha1, or create new entity
         fe = None
-        if not self.skip_file_update:
+        if not self.skip_file_updates:
             try:
                 fe = self.api.lookup_file(sha1=sha1)
             except fatcat_client.rest.ApiException as err:
