@@ -28,7 +28,7 @@ unified_test:
     - pipenv install --dev --deploy
     - pipenv run pytest --cov
     # Just errors
-    - pipenv run -E fatcat*.py fatcat_tools fatcat_web
+    - pipenv run pytest -E fatcat*.py fatcat_tools fatcat_web
 
 rust_build_release:
   only:
