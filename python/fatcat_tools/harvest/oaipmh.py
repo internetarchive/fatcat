@@ -94,11 +94,14 @@ class HarvestOaiPmhWorker:
 
         count = 0
         with produce_topic.get_producer() as producer:
-            for item in records:
-                count += 1
-                if count % 50 == 0:
-                    print("... up to {}".format(count))
-                producer.produce(item.raw.encode('utf-8'), partition_key=item.header.identifier.encode('utf-8'))
+            try:
+                for item in records:
+                    count += 1
+                    if count % 50 == 0:
+                        print("... up to {}".format(count))
+                    producer.produce(item.raw.encode('utf-8'), partition_key=item.header.identifier.encode('utf-8'))
+            except sickle.oaiexceptions.NoRecordsMatch:
+                print("WARN: no OAI-PMH records for this date: {} (UTC)".format(date_str))
 
     def run(self, continuous=False):
 
