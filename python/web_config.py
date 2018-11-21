@@ -24,14 +24,18 @@ class Config(object):
     ELASTICSEARCH_INDEX = os.environ.get("ELASTICSEARCH_INDEX", default="fatcat")
 
     try:
-        git_release = raven.fetch_git_sha(os.path.dirname(os.pardir))
+        GIT_RELEASE = raven.fetch_git_sha('..')
     except Exception as e:
         print("WARNING: couldn't set sentry git release automatically: " + str(e))
-        git_release = None
+        GIT_RELEASE = None
+
     SENTRY_CONFIG = {
         #'include_paths': ['fatcat_web', 'fatcat_client', 'fatcat_tools'],
-        'release': git_release,
-        'fatcat_domain': FATCAT_DOMAIN,
+        'enable-threads': True, # for uWSGI
+        'release': GIT_RELEASE,
+        'tags': {
+            'fatcat_domain': FATCAT_DOMAIN,
+        },
     }
 
     # "Event more verbose" debug options. SECRET_KEY is bogus.
