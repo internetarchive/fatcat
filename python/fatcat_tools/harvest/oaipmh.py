@@ -86,22 +86,23 @@ class HarvestOaiPmhWorker:
         produce_topic = self.kafka.topics[self.produce_topic]
         # this dict kwargs hack is to work around 'from' as a reserved python keyword
         # recommended by sickle docs
-        records = api.ListRecords(**{
-            'metadataPrefix': self.metadata_prefix,
-            'from': date_str,
-            'until': date_str,
-        })
+        try:
+            records = api.ListRecords(**{
+                'metadataPrefix': self.metadata_prefix,
+                'from': date_str,
+                'until': date_str,
+            })
+        except sickle.oaiexceptions.NoRecordsMatch:
+            print("WARN: no OAI-PMH records for this date: {} (UTC)".format(date_str))
+            return
 
         count = 0
         with produce_topic.get_producer() as producer:
-            try:
-                for item in records:
-                    count += 1
-                    if count % 50 == 0:
-                        print("... up to {}".format(count))
-                    producer.produce(item.raw.encode('utf-8'), partition_key=item.header.identifier.encode('utf-8'))
-            except sickle.oaiexceptions.NoRecordsMatch:
-                print("WARN: no OAI-PMH records for this date: {} (UTC)".format(date_str))
+            for item in records:
+                count += 1
+                if count % 50 == 0:
+                    print("... up to {}".format(count))
+                producer.produce(item.raw.encode('utf-8'), partition_key=item.header.identifier.encode('utf-8'))
 
     def run(self, continuous=False):
 
