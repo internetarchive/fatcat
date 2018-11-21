@@ -20,7 +20,7 @@ pg-view = "*"
 [packages]
 Flask = "*"
 requests = "*"
-raven = "*"
+raven = { extras = ['flask'], version = "*" }
 flask-uuid = "*"
 flask-debugtoolbar = "*"
 pykafka = "*"

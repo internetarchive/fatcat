@@ -10,6 +10,7 @@ import scripts.
 """
 
 import os
+import raven
 import subprocess
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -21,6 +22,17 @@ class Config(object):
     # can set this to https://search.fatcat.wiki for some experimentation
     ELASTICSEARCH_BACKEND = os.environ.get("ELASTICSEARCH_BACKEND", default="http://localhost:9200")
     ELASTICSEARCH_INDEX = os.environ.get("ELASTICSEARCH_INDEX", default="fatcat")
+
+    try:
+        git_release = raven.fetch_git_sha(os.path.dirname(os.pardir))
+    except Exception as e:
+        print("WARNING: couldn't set sentry git release automatically: " + str(e))
+        git_release = None
+    SENTRY_CONFIG = {
+        #'include_paths': ['fatcat_web', 'fatcat_client', 'fatcat_tools'],
+        'release': git_release,
+        'fatcat_domain': FATCAT_DOMAIN,
+    }
 
     # "Event more verbose" debug options. SECRET_KEY is bogus.
     #SQLALCHEMY_ECHO = True
