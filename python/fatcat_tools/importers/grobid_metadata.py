@@ -68,7 +68,7 @@ class GrobidMetadataImporter(FatcatImporter):
         release_date = None
         if obj.get('date'):
             # TODO: only returns year, ever? how to handle?
-            release_date = datetime.datetime(year=int(obj['date'][:4]), month=1, day=1)
+            release_date = datetime.datetime(year=int(obj['date'][:4]), month=1, day=1).date()
 
         if obj.get('doi'):
             extra['doi'] = obj['doi']
