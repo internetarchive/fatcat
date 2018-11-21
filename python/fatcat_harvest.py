@@ -88,7 +88,7 @@ def main():
         default="undefined",    # better?
         help="contact email to use in API header")
     parser.add_argument('--continuous',
-        default=False,
+        action='store_true',
         help="continue harvesting indefinitely in a loop?")
     subparsers = parser.add_subparsers()
 
