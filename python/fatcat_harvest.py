@@ -15,7 +15,7 @@ def run_crossref(args):
         contact_email=args.contact_email,
         start_date=args.start_date,
         end_date=args.end_date)
-    worker.run()
+    worker.run(continuous=args.continuous)
 
 def run_datacite(args):
     worker = HarvestDataciteWorker(
@@ -25,7 +25,7 @@ def run_datacite(args):
         contact_email=args.contact_email,
         start_date=args.start_date,
         end_date=args.end_date)
-    worker.run()
+    worker.run(continuous=args.continuous)
 
 def run_arxiv(args):
     worker = HarvestArxivWorker(
@@ -34,7 +34,7 @@ def run_arxiv(args):
         state_topic="fatcat-{}.oaipmh-arxiv-state".format(args.env),
         start_date=args.start_date,
         end_date=args.end_date)
-    worker.run()
+    worker.run(continuous=args.continuous)
 
 def run_pubmed(args):
     worker = HarvestPubmedWorker(
@@ -43,7 +43,7 @@ def run_pubmed(args):
         state_topic="fatcat-{}.oaipmh-pubmed-state".format(args.env),
         start_date=args.start_date,
         end_date=args.end_date)
-    worker.run()
+    worker.run(continuous=args.continuous)
 
 def run_doaj_article(args):
     worker = HarvestDoajArticleWorker(
@@ -52,7 +52,7 @@ def run_doaj_article(args):
         state_topic="fatcat-{}.oaipmh-doaj-article-state".format(args.env),
         start_date=args.start_date,
         end_date=args.end_date)
-    worker.run()
+    worker.run(continuous=args.continuous)
 
 def run_doaj_journal(args):
     worker = HarvestDoajJournalWorker(
@@ -61,7 +61,7 @@ def run_doaj_journal(args):
         state_topic="fatcat-{}.oaipmh-doaj-journal-state".format(args.env),
         start_date=args.start_date,
         end_date=args.end_date)
-    worker.run()
+    worker.run(continuous=args.continuous)
 
 
 def mkdate(raw):

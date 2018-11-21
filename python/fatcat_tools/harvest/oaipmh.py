@@ -75,6 +75,7 @@ class HarvestOaiPmhWorker:
 
         self.endpoint_url = None # needs override
         self.metadata_prefix = None  # needs override
+        self.name = "unnamed"
         self.state = HarvestState(start_date, end_date)
         self.state.initialize_from_kafka(self.kafka.topics[self.state_topic])
 
@@ -119,7 +120,7 @@ class HarvestOaiPmhWorker:
                 time.sleep(self.loop_sleep())
             else:
                 break
-        print("{} DOI ingest caught up".format(self.name))
+        print("{} OAI-PMH ingest caught up".format(self.name))
 
 
 class HarvestArxivWorker(HarvestOaiPmhWorker):
@@ -128,6 +129,7 @@ class HarvestArxivWorker(HarvestOaiPmhWorker):
         super().__init__(**kwargs) 
         self.endpoint_url = "https://export.arxiv.org/oai2"
         self.metadata_prefix = "arXiv"
+        self.name = "arxiv"
 
 
 class HarvestPubmedWorker(HarvestOaiPmhWorker):
@@ -136,6 +138,7 @@ class HarvestPubmedWorker(HarvestOaiPmhWorker):
         super().__init__(**kwargs) 
         self.endpoint_url = "https://www.ncbi.nlm.nih.gov/pmc/oai/oai.cgi"
         self.metadata_prefix = "pmc_fm"
+        self.name = "pubmed"
 
 
 class HarvestDoajJournalWorker(HarvestOaiPmhWorker):
@@ -147,6 +150,7 @@ class HarvestDoajJournalWorker(HarvestOaiPmhWorker):
         super().__init__(**kwargs) 
         self.endpoint_url = "https://www.doaj.org/oai"
         self.metadata_prefix = "oai_dc"
+        self.name = "doaj-journal"
 
 
 class HarvestDoajArticleWorker(HarvestOaiPmhWorker):
@@ -158,4 +162,5 @@ class HarvestDoajArticleWorker(HarvestOaiPmhWorker):
         super().__init__(**kwargs) 
         self.endpoint_url = "https://www.doaj.org/oai.article"
         self.metadata_prefix = "oai_doaj"
+        self.name = "doaj-article"
 
