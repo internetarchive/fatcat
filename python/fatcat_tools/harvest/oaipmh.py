@@ -53,7 +53,7 @@ from pykafka import KafkaClient
 import sickle
 
 from fatcat_tools.workers import most_recent_message
-from .harvest_common import HarvestState, DATE_FMT
+from .harvest_common import HarvestState
 
 
 class HarvestOaiPmhWorker:
@@ -83,7 +83,7 @@ class HarvestOaiPmhWorker:
     def fetch_date(self, date):
 
         api = sickle.Sickle(self.endpoint_url)
-        date_str = date.strftime(DATE_FMT)
+        date_str = date.isoformat()
         produce_topic = self.kafka.topics[self.produce_topic]
         # this dict kwargs hack is to work around 'from' as a reserved python keyword
         # recommended by sickle docs

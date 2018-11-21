@@ -10,7 +10,7 @@ import datetime
 from pykafka import KafkaClient
 
 from fatcat_tools.workers import most_recent_message
-from .harvest_common import HarvestState, DATE_FMT
+from .harvest_common import HarvestState
 
 # Skip pylint due to:
 #   AttributeError: 'NoneType' object has no attribute 'scope'
@@ -90,7 +90,7 @@ class HarvestCrossrefWorker:
 
         produce_topic = self.kafka.topics[self.produce_topic]
 
-        date_str = date.strftime(DATE_FMT)
+        date_str = date.isoformat()
         params = self.params(date_str)
         headers = {
             'User-Agent': 'fatcat_tools/0.1.0 (https://fatcat.wiki; mailto:{}) python-requests'.format(self.contact_email),

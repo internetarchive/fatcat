@@ -46,7 +46,8 @@ def release_to_elasticsearch(release):
     )
 
     if release.release_date:
-        t['release_date'] = release.release_date.strftime('%F')
+        # .isoformat() results in, eg, '2010-10-22' (YYYY-MM-DD)
+        t['release_date'] = release.release_date.isoformat()
 
     container = release.container
     container_is_kept = False
