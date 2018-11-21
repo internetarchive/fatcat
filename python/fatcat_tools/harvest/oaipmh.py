@@ -117,7 +117,7 @@ class HarvestOaiPmhWorker:
 
             if continuous:
                 print("Sleeping {} seconds...".format(self.loop_sleep))
-                time.sleep(self.loop_sleep())
+                time.sleep(self.loop_sleep)
             else:
                 break
         print("{} OAI-PMH ingest caught up".format(self.name))
