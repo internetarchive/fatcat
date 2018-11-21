@@ -182,7 +182,7 @@ class HarvestDataciteWorker(HarvestCrossrefWorker):
         return resp['meta']['total']
 
     def extract_key(self, obj):
-        return obj['doi'].encode('utf-8')
+        return obj['attributes']['doi'].encode('utf-8')
 
     def update_params(self, params, resp):
         params['page[number]'] = resp['meta']['page'] + 1
