@@ -65,6 +65,8 @@ new importers:
 
 ## Schema / Entity Fields
 
+- arxiv_id field (keep flip-flopping)
+- original_title field (?)
 - FileSet and WebSnapshot entities
 - `doi` field for containers (at least for "journal" type; maybe for "series"
   as well?)

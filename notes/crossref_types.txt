@@ -1,0 +1,16 @@
+
+https://www.crossref.org/services/content-registration/
+
+We store metadata and DOIs for many types of research-related content. The content types that we currently accept are below. If you have a content type that isn’t listed please contact us. At the moment we’re developing schemas for grants, conferences, and projects.
+
+- Journals and journal articles: at the journal title and article level and includes supplemental materials.
+- Books, chapters, and reference works: book title and/or chapter-level records, books can be deposited as a monograph, series, or set. Read our best practice for book content.
+- Conference proceedings: information about a single conference and records for each conference paper/proceeding.
+- Reports/working papers: this includes content that is formally published and is published with an ISSN or ISBN.
+- Standards: includes publications from Standards Development Organizations and Standards Setting Organizations.
+- Datasets: includes database records or collections. (See also DataCite.
+- Dissertations: includes single dissertations and theses - not collections.
+- Preprints: consists of preprints, eprints, working papers, reports, and other types of content that has been posted but not formally published.
+- Peer reviews: any number of reviews, reports, or comments attached to an associated article.
+- Components: typically assigned to parts of a whole, most commonly including figures, tables, and supplemental materials for a journal article or book chapter.
+

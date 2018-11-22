@@ -29,3 +29,19 @@ elastic-release python processing is at 66% (of one core) CPU! and elastic at
 ~30%. Huh.
 
 But, in general, "seems to be working".
+
+## End-To-End
+
+release-updates: 40/sec
+api-crossref: 40/sec
+api-datacite: 15/sec
+changelog: 11/sec
+consumer_offsets: 0.5/sec
+
+elastic indexing looks like only 8/sec or so. Probably need to batch.
+
+Tried running additional fatcat-elasticsearch-release-worker processes, and
+throughput goes linearly.
+
+Are consumer group names not actually topic-dependent? Hrm, might need to
+rename them all for prod/qa split.
