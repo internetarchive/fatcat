@@ -12,11 +12,6 @@ from pykafka import KafkaClient
 from fatcat_tools.workers import most_recent_message
 from .harvest_common import HarvestState
 
-# Skip pylint due to:
-#   AttributeError: 'NoneType' object has no attribute 'scope'
-# in 'astroid/node_classes.py'
-# pylint: skip-file
-
 
 class HarvestCrossrefWorker:
     """
@@ -187,3 +182,4 @@ class HarvestDataciteWorker(HarvestCrossrefWorker):
     def update_params(self, params, resp):
         params['page[number]'] = resp['meta']['page'] + 1
         return params
+

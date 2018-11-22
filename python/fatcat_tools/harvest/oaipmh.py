@@ -1,46 +1,4 @@
 
-"""
-OAI-PMH protocol:
-    https://sickle.readthedocs.io/en/latest/
-
-Pubmed
-    https://www.ncbi.nlm.nih.gov/pmc/tools/oai/
-    https://www.ncbi.nlm.nih.gov/pmc/oai/oai.cgi?verb=GetRecord&identifier=oai:pubmedcentral.nih.gov:152494&metadataPrefix=pmc_fm
-    https://github.com/titipata/pubmed_parser
-
-arxiv
-    some APIs work on a per-version basis, others do not
-
-    http://export.arxiv.org/oai2?verb=GetRecord&identifier=oai:arXiv.org:0804.2273&metadataPrefix=arXiv
-    http://export.arxiv.org/oai2?verb=GetRecord&identifier=oai:arXiv.org:0804.2273&metadataPrefix=arXivRaw
-
-doaj
-    https://github.com/miku/doajfetch
-
------
-
-actually, just going to re-use https://github.com/miku/metha for OAI-PMH stuff
-    => shell script from cronjob
-    => call metha-sync daily
-    => metha-cat -since <whenever> | kafkacat output
-    => echo "date" | kafkat state
-    => some shell trick (comm?) to find missing dates; for each, do metha-cat into kafka
-
-or, just skip kafka for this stuff for now? hrm.
-
-crossref-like stuff is far enough along to keep
-
-## More Miku Magic!
-
-wowa, JSTOR KBART files!
-    http://www.jstor.org/kbart/collections/all-archive-titles
-
-https://github.com/miku/ldjtab: faster than jq for just grabbing 
-
-sort can be told how much memory to use; eg: `sort -S50%`, and threads to use
-
-"""
-
 import re
 import sys
 import csv
@@ -58,9 +16,19 @@ from .harvest_common import HarvestState
 
 class HarvestOaiPmhWorker:
     """
-    Base class for OAI-PMH harvesters.
+    Base class for OAI-PMH harvesters. Uses the 'sickle' protocol library.
 
-    Based on Crossref importer
+    Typically run as a single process; harvests records and publishes in raw
+    (XML) format to a Kafka topic, one-message-per-document.
+
+    Based on Crossref importer, with the HarvestState internal class managing
+    progress with day-level granularity. Note that this depends on the OAI-PMH
+    endpoint being correct! In that it must be possible to poll for only
+    records updated on a particular date (typically "yesterday").
+
+    Was very tempted to re-use <https://github.com/miku/metha> for this OAI-PMH
+    stuff to save on dev time, but i'd already built the Crossref harvester and
+    would want something similar operationally. Oh well!
     """
 
 
@@ -124,6 +92,14 @@ class HarvestOaiPmhWorker:
 
 
 class HarvestArxivWorker(HarvestOaiPmhWorker):
+    """
+    Arxiv refs:
+    - http://export.arxiv.org/oai2?verb=GetRecord&identifier=oai:arXiv.org:0804.2273&metadataPrefix=arXiv
+    - http://export.arxiv.org/oai2?verb=GetRecord&identifier=oai:arXiv.org:0804.2273&metadataPrefix=arXivRaw
+
+    All records are work-level. Some metadata formats have internal info about
+    specific versions. The 'arXiv' format does, so i'm using that.
+    """
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs) 
@@ -133,6 +109,12 @@ class HarvestArxivWorker(HarvestOaiPmhWorker):
 
 
 class HarvestPubmedWorker(HarvestOaiPmhWorker):
+    """
+    Pubmed refs:
+    - https://www.ncbi.nlm.nih.gov/pmc/tools/oai/
+    - https://www.ncbi.nlm.nih.gov/pmc/oai/oai.cgi?verb=GetRecord&identifier=oai:pubmedcentral.nih.gov:152494&metadataPrefix=pmc_fm
+    - https://github.com/titipata/pubmed_parser
+    """
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs) 
@@ -144,6 +126,9 @@ class HarvestPubmedWorker(HarvestOaiPmhWorker):
 class HarvestDoajJournalWorker(HarvestOaiPmhWorker):
     """
     WARNING: DOAJ OAI-PMH doesn't seem to respect 'from' and 'until' params
+
+    As an alternative, could use:
+    - https://github.com/miku/doajfetch
     """
 
     def __init__(self, **kwargs):

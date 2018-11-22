@@ -4,7 +4,7 @@ import json
 import time
 import datetime
 
-
+# Used for parsing ISO date format (YYYY-MM-DD)
 DATE_FMT = "%Y-%m-%d"
 
 class HarvestState:
