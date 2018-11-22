@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 """
 This file started life as an ipython log file
+
+Ugh, it needs to be copied to ../../python (with ./files/) to actually run. Derp.
 """
 
 import datetime
 import fatcat_client
+from fatcat_client.rest import ApiException
 from fatcat_client import *
 from fatcat_tools import *
 
@@ -65,7 +68,7 @@ def upsert_container(issnl, fname):
         return c.ident
     except ApiException:
         pass
-    c = entity_from_json(open(fname, 'r').read(), ReleaseEntity)
+    c = entity_from_json(open(fname, 'r').read(), ContainerEntity)
     c.ident = None
     c.release_rev = None
     c.container_id = None
@@ -78,13 +81,17 @@ def upsert_container(issnl, fname):
     return resp.ident
 
 def math_universe():
-    c_ident = upsert_container("0015-9018", "files/foundations_physics.json")
+    c_ident = upsert_container("0015-9018", "files/foundations_of_physics.json")
     ident = upsert_release("10.1007/s10701-007-9186-9", "files/math_universe.json")
 
     base = api.get_release(ident, expand="files")
     base.container_id = c_ident
 
-    files = [api.get_file(f['ident']) for f in base.files]
+    files = [api.get_file(f.ident) for f in base.files]
+
+    if len(files) <= 1:
+        print("already updated math_universe, skipping")
+        return
 
     # create the pre-print version
     preprint = api.get_release(base.ident)
@@ -100,7 +107,7 @@ def math_universe():
     preprint.work_id = base.work_id
 
     eg = api.create_editgroup(Editgroup(editor_id=admin_id))
-    resp = api.create_release_batch(preprint, editgroup=eg.id)
+    resp = api.create_release(preprint, editgroup=eg.id)
     files[1].releases = [resp.ident]
     files[2].releases = [resp.ident]
     api.update_file(files[1].ident, files[1], editgroup=eg.id)
@@ -136,7 +143,7 @@ def distill_pub():
     api.create_file(momentum_page, editgroup=eg.id)
     api.accept_editgroup(eg.id)
 
-def dlib():
+def dlib_example():
     # and now a d-lib exammple
     c_ident = upsert_container("1082-9873", "files/dlib.json")
     ident = upsert_release("10.1045/november14-jahja", "files/dlib_example.json")
@@ -146,15 +153,16 @@ def dlib():
     authors = [api.create_creator(CreatorEntity(display_name=a.raw_name), editgroup=eg.id) for a in dlib.contribs]
     for i in range(3):
         dlib.contribs[i].creator_id = authors[i].ident
-
-    dlib.release_type = 'article-journal'
-    r = api.create_release(dlib, editgroup=eg.id)
-    dlib.ident = None
-    dlib.work_id = None
-    dlib.release_rev = None
-
     dlib.container_id = c_ident
     r = api.update_release(dlib.ident, dlib, editgroup=eg.id)
+    dlib_page = FileEntity(sha1='a637f1d27d9bcb237310ed29f19c07e1c8cf0aa5', mimetype='text/html')
+    dlib_page.urls = [FileEntityUrls(url="http://www.dlib.org/dlib/november14/jahja/11jahja.html", rel="publisher"), FileEntityUrls(url="http://web.archive.org/web/20180602033542/http://www.dlib.org/dlib/november14/jahja/11jahja.html", rel="webarchive")]
+    dlib_page.releases = [dlib.ident]
+    api.create_file(dlib_page, editgroup=eg.id)
     api.accept_editgroup(eg.id)
 
     # TODO: the actual web file here?
+
+math_universe()
+distill_pub()
+dlib_example()
