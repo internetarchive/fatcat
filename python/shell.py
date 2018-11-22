@@ -7,6 +7,7 @@ import argparse
 
 import fatcat_client
 from fatcat_client import *
+from fatcat_client.rest import ApiException
 from fatcat_tools import *
 
 if __name__ == '__main__':
