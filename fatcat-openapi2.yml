@@ -503,6 +503,11 @@ paths:
           type: string
           required: false
           description: "List of sub-entities to expand in response. For containers, none accepted (yet)."
+        - name: hide
+          in: query
+          type: string
+          required: false
+          description: "List of entity fields to elide in response. For containers, none accepted (yet)."
       responses:
         200:
           description: Found Entity
@@ -577,6 +582,11 @@ paths:
           in: query
           required: true
           <<: *FATCATISSN
+        - name: hide
+          in: query
+          type: string
+          required: false
+          description: "List of entity fields to elide in response. For container, none accepted (yet)."
       responses:
         200:
           description: Found Entity
@@ -651,6 +661,11 @@ paths:
           type: string
           required: false
           description: "List of sub-entities to expand in response. For creators, none accepted (yet)."
+        - name: hide
+          in: query
+          type: string
+          required: false
+          description: "List of entity fields to elide in response. For containers, none accepted (yet)."
       responses:
         200:
           description: Found Entity
@@ -721,6 +736,11 @@ paths:
         in: path
         type: string
         required: true
+      - name: hide
+        in: query
+        type: string
+        required: false
+        description: "List of entity fields to elide in response. For releases, 'abstracts', 'refs', and 'contribs' are valid."
     get:
       operationId: "get_creator_releases"
       tags: # TAGLINE
@@ -743,6 +763,11 @@ paths:
           in: query
           required: true
           <<: *FATCATORCID
+        - name: hide
+          in: query
+          type: string
+          required: false
+          description: "List of entity fields to elide in response. For creator, none accepted (yet)."
       responses:
         200:
           description: Found Entity
@@ -817,6 +842,11 @@ paths:
           type: string
           required: false
           description: "List of sub-entities to expand in response. For files, none accepted (yet)."
+        - name: hide
+          in: query
+          type: string
+          required: false
+          description: "List of entity fields to elide in response. For files, none accepted (yet)."
       responses:
         200:
           description: Found Entity
@@ -891,6 +921,11 @@ paths:
           in: query
           type: string
           required: true
+        - name: hide
+          in: query
+          type: string
+          required: false
+          description: "List of entity fields to elide in response. For files, none accepted (yet)."
       responses:
         200:
           description: Found Entity
@@ -965,6 +1000,11 @@ paths:
           type: string
           required: false
           description: "List of sub-entities to expand in response. For releases, 'files' and 'container' are valid."
+        - name: hide
+          in: query
+          type: string
+          required: false
+          description: "List of entity fields to elide in response. For releases, 'abstracts', 'refs', and 'contribs' are valid."
       responses:
         200:
           description: Found Entity
@@ -1035,6 +1075,11 @@ paths:
         in: path
         type: string
         required: true
+      - name: hide
+        in: query
+        type: string
+        required: false
+        description: "List of entity fields to elide in response. For files, none accepted (yet)."
     get:
       operationId: "get_release_files"
       tags: # TAGLINE
@@ -1057,6 +1102,11 @@ paths:
           in: query
           type: string
           required: true
+        - name: hide
+          in: query
+          type: string
+          required: false
+          description: "List of entity fields to elide in response. For releases, 'abstracts', 'refs', and 'contribs' are valid."
       responses:
         200:
           description: Found Entity
@@ -1131,6 +1181,11 @@ paths:
           type: string
           required: false
           description: "List of sub-entities to expand in response. For works, none accepted (yet)."
+        - name: hide
+          in: query
+          type: string
+          required: false
+          description: "List of entity fields to elide in response. For works, none accepted (yet)."
       responses:
         200:
           description: Found Entity
@@ -1201,6 +1256,11 @@ paths:
         in: path
         type: string
         required: true
+      - name: hide
+        in: query
+        type: string
+        required: false
+        description: "List of entity fields to elide in response. For releases, 'abstracts', 'refs', and 'contribs' are valid."
     get:
       operationId: "get_work_releases"
       tags: # TAGLINE
