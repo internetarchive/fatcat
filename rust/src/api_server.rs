@@ -53,7 +53,7 @@ pub struct Server {
     pub db_pool: ConnectionPool,
 }
 
-pub fn get_release_files(id: FatCatId, conn: &DbConn) -> Result<Vec<FileEntity>> {
+pub fn get_release_files(id: FatCatId, hide: HideFlags, conn: &DbConn) -> Result<Vec<FileEntity>> {
     let rows: Vec<(FileRevRow, FileIdentRow, FileReleaseRow)> = file_rev::table
         .inner_join(file_ident::table)
         .inner_join(file_release::table)
@@ -63,12 +63,13 @@ pub fn get_release_files(id: FatCatId, conn: &DbConn) -> Result<Vec<FileEntity>>
         .load(conn)?;
 
     rows.into_iter()
-        .map(|(rev, ident, _)| FileEntity::db_from_row(conn, rev, Some(ident)))
-        .collect()
+        .map(
+            |(rev, ident, _)| FileEntity::db_from_row(conn, rev, Some(ident), hide),
+        ).collect()
 }
 
 impl Server {
-    pub fn lookup_container_handler(&self, issnl: &str, conn: &DbConn) -> Result<ContainerEntity> {
+    pub fn lookup_container_handler(&self, issnl: &str, hide: HideFlags, conn: &DbConn) -> Result<ContainerEntity> {
         check_issn(issnl)?;
         let (ident, rev): (ContainerIdentRow, ContainerRevRow) = container_ident::table
             .inner_join(container_rev::table)
@@ -77,10 +78,10 @@ impl Server {
             .filter(container_ident::redirect_id.is_null())
             .first(conn)?;
 
-        ContainerEntity::db_from_row(conn, rev, Some(ident))
+        ContainerEntity::db_from_row(conn, rev, Some(ident), hide)
     }
 
-    pub fn lookup_creator_handler(&self, orcid: &str, conn: &DbConn) -> Result<CreatorEntity> {
+    pub fn lookup_creator_handler(&self, orcid: &str, hide: HideFlags, conn: &DbConn) -> Result<CreatorEntity> {
         check_orcid(orcid)?;
         let (ident, rev): (CreatorIdentRow, CreatorRevRow) = creator_ident::table
             .inner_join(creator_rev::table)
@@ -89,12 +90,13 @@ impl Server {
             .filter(creator_ident::redirect_id.is_null())
             .first(conn)?;
 
-        CreatorEntity::db_from_row(conn, rev, Some(ident))
+        CreatorEntity::db_from_row(conn, rev, Some(ident), hide)
     }
 
     pub fn get_creator_releases_handler(
         &self,
         id: FatCatId,
+        hide: HideFlags,
         conn: &DbConn,
     ) -> Result<Vec<ReleaseEntity>> {
         // TODO: some kind of unique or group-by?
@@ -108,11 +110,11 @@ impl Server {
 
         // TODO: from_rows, not from_row?
         rows.into_iter()
-            .map(|(rev, ident, _)| ReleaseEntity::db_from_row(conn, rev, Some(ident)))
+            .map(|(rev, ident, _)| ReleaseEntity::db_from_row(conn, rev, Some(ident), hide))
             .collect()
     }
 
-    pub fn lookup_file_handler(&self, sha1: &str, conn: &DbConn) -> Result<FileEntity> {
+    pub fn lookup_file_handler(&self, sha1: &str, hide: HideFlags, conn: &DbConn) -> Result<FileEntity> {
         let (ident, rev): (FileIdentRow, FileRevRow) = file_ident::table
             .inner_join(file_rev::table)
             .filter(file_rev::sha1.eq(sha1))
@@ -120,10 +122,15 @@ impl Server {
             .filter(file_ident::redirect_id.is_null())
             .first(conn)?;
 
-        FileEntity::db_from_row(conn, rev, Some(ident))
+        FileEntity::db_from_row(conn, rev, Some(ident), hide)
     }
 
-    pub fn lookup_release_handler(&self, doi: &str, conn: &DbConn) -> Result<ReleaseEntity> {
+    pub fn lookup_release_handler(
+        &self,
+        doi: &str,
+        hide: HideFlags,
+        conn: &DbConn,
+    ) -> Result<ReleaseEntity> {
         check_doi(doi)?;
         let (ident, rev): (ReleaseIdentRow, ReleaseRevRow) = release_ident::table
             .inner_join(release_rev::table)
@@ -132,20 +139,22 @@ impl Server {
             .filter(release_ident::redirect_id.is_null())
             .first(conn)?;
 
-        ReleaseEntity::db_from_row(conn, rev, Some(ident))
+        ReleaseEntity::db_from_row(conn, rev, Some(ident), hide)
     }
 
     pub fn get_release_files_handler(
         &self,
         id: FatCatId,
+        hide: HideFlags,
         conn: &DbConn,
     ) -> Result<Vec<FileEntity>> {
-        get_release_files(id, conn)
+        get_release_files(id, hide, conn)
     }
 
     pub fn get_work_releases_handler(
         &self,
         id: FatCatId,
+        hide: HideFlags,
         conn: &DbConn,
     ) -> Result<Vec<ReleaseEntity>> {
         let rows: Vec<(ReleaseRevRow, ReleaseIdentRow)> = release_rev::table
@@ -156,8 +165,9 @@ impl Server {
             .load(conn)?;
 
         rows.into_iter()
-            .map(|(rev, ident)| ReleaseEntity::db_from_row(conn, rev, Some(ident)))
-            .collect()
+            .map(|(rev, ident)| {
+                ReleaseEntity::db_from_row(conn, rev, Some(ident), hide)
+            }).collect()
     }
 
     pub fn accept_editgroup_handler(&self, id: FatCatId, conn: &DbConn) -> Result<()> {

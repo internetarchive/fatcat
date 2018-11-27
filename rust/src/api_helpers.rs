@@ -39,25 +39,11 @@ impl FromStr for ExpandFlags {
 
 impl ExpandFlags {
     pub fn from_str_list(list: &[&str]) -> ExpandFlags {
-        if list.contains(&"none") {
-            ExpandFlags::none()
-        } else if list.contains(&"all") {
-            ExpandFlags::all()
-        } else {
-            ExpandFlags {
-                files: list.contains(&"files"),
-                container: list.contains(&"container"),
-                releases: list.contains(&"releases"),
-                creators: list.contains(&"creators"),
-            }
-        }
-    }
-    pub fn all() -> ExpandFlags {
         ExpandFlags {
-            files: true,
-            container: true,
-            releases: true,
-            creators: true,
+            files: list.contains(&"files"),
+            container: list.contains(&"container"),
+            releases: list.contains(&"releases"),
+            creators: list.contains(&"creators"),
         }
     }
     pub fn none() -> ExpandFlags {
@@ -103,7 +89,70 @@ fn test_expand_flags() {
             creators: true
         }
     );
-    assert!(all == ExpandFlags::all());
+}
+
+#[derive(Clone, Copy, PartialEq)]
+pub struct HideFlags {
+    pub abstracts: bool,
+    pub refs: bool,
+    pub contribs: bool,
+}
+
+impl FromStr for HideFlags {
+    type Err = Error;
+    fn from_str(param: &str) -> Result<HideFlags> {
+        let list: Vec<&str> = param.split_terminator(",").collect();
+        Ok(HideFlags::from_str_list(&list))
+    }
+}
+
+impl HideFlags {
+    pub fn from_str_list(list: &[&str]) -> HideFlags {
+        HideFlags {
+            abstracts: list.contains(&"abstracts"),
+            refs: list.contains(&"refs"),
+            contribs: list.contains(&"contribs"),
+        }
+    }
+    pub fn none() -> HideFlags {
+        HideFlags {
+            abstracts: false,
+            refs: false,
+            contribs: false,
+        }
+    }
+}
+
+#[test]
+fn test_hide_flags() {
+    assert!(HideFlags::from_str_list(&vec![]).abstracts == false);
+    assert!(HideFlags::from_str_list(&vec!["abstracts"]).abstracts == true);
+    assert!(HideFlags::from_str_list(&vec!["abstract"]).abstracts == false);
+    let all = HideFlags::from_str_list(&vec!["abstracts", "refs", "other_thing", "contribs"]);
+    assert!(
+        all == HideFlags {
+            abstracts: true,
+            refs: true,
+            contribs: true,
+        }
+    );
+    assert!(HideFlags::from_str("").unwrap().abstracts == false);
+    assert!(HideFlags::from_str("abstracts").unwrap().abstracts == true);
+    assert!(
+        HideFlags::from_str("something,,abstracts")
+            .unwrap()
+            .abstracts
+            == true
+    );
+    assert!(HideFlags::from_str("file").unwrap().abstracts == false);
+    let all = HideFlags::from_str("abstracts,refs,other_thing,contribs").unwrap();
+    assert!(
+        all == HideFlags {
+            abstracts: true,
+            refs: true,
+            contribs: true,
+        }
+    );
 }
 
 pub fn make_edit_context(
@@ -320,7 +369,6 @@ fn test_check_orcid() {
 }
 
 pub fn check_release_type(raw: &str) -> Result<()> {
-
     let valid_types = vec![
         // Citation Style Language official types
         "article",
@@ -365,7 +413,7 @@ pub fn check_release_type(raw: &str) -> Result<()> {
     ];
     for good in valid_types {
         if raw == good {
-            return Ok(())
+            return Ok(());
         }
     }
     Err(ErrorKind::NotInControlledVocabulary(format!(
@@ -385,7 +433,6 @@ fn test_check_release_type() {
 }
 
 pub fn check_contrib_role(raw: &str) -> Result<()> {
-
     let valid_types = vec![
         // Citation Style Language official role types
         "author",
@@ -407,7 +454,7 @@ pub fn check_contrib_role(raw: &str) -> Result<()> {
     ];
     for good in valid_types {
         if raw == good {
-            return Ok(())
+            return Ok(());
         }
     }
     Err(ErrorKind::NotInControlledVocabulary(format!(

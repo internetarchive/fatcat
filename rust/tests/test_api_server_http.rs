@@ -81,12 +81,23 @@ fn test_entity_gets() {
     // expand keyword
     check_http_response(
         request::get(
-            "http://localhost:9411/v0/release/aaaaaaaaaaaaarceaaaaaaaaai?expand=all",
+            "http://localhost:9411/v0/release/aaaaaaaaaaaaarceaaaaaaaaai?expand=container",
             headers.clone(),
             &router,
         ),
         status::Ok,
         Some("MySpace Blog"),
+    );
+
+    // hide keyword
+    check_http_response(
+        request::get(
+            "http://localhost:9411/v0/release/aaaaaaaaaaaaarceaaaaaaaaai?hide=refs,container",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("bigger example"),
     );
 
     check_http_response(
@@ -463,8 +474,7 @@ fn test_post_release() {
         status::BadRequest,
         None,
     );
-    */
-}
+    */}
 
 #[test]
 fn test_post_work() {
