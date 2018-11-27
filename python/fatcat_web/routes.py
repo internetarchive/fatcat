@@ -278,13 +278,19 @@ def editgroup_view(ident):
 
 @app.route('/editor/<ident>', methods=['GET'])
 def editor_view(ident):
-    entity = api.get_editor(ident)
+    try:
+        entity = api.get_editor(ident)
+    except ApiException as ae:
+        abort(ae.status)
     return render_template('editor_view.html', editor=entity)
 
 @app.route('/editor/<ident>/changelog', methods=['GET'])
 def editor_changelog(ident):
-    editor = api.get_editor(ident)
-    changelog_entries = api.get_editor_changelog(ident)
+    try:
+        editor = api.get_editor(ident)
+        changelog_entries = api.get_editor_changelog(ident)
+    except ApiException as ae:
+        abort(ae.status)
     return render_template('editor_changelog.html', editor=editor,
         changelog_entries=changelog_entries)
 
@@ -306,7 +312,10 @@ def changelog_entry_view(index):
 
 @app.route('/stats', methods=['GET'])
 def stats_view():
-    stats = api.get_stats()
+    try:
+        stats = api.get_stats()
+    except ApiException as ae:
+        abort(ae.status)
     return render_template('stats.html', stats=stats.extra)
 
 ### Search ##################################################################
