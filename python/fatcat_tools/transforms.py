@@ -69,16 +69,16 @@ def release_to_elasticsearch(release):
     in_ia = False
     t['file_pdf_url'] = None
     for f in files:
-        is_pdf = 'pdf' in f.get('mimetype', '')
-        for url in f.get('urls', []):
-            if url.get('rel', '') == 'webarchive':
+        is_pdf = 'pdf' in (f.mimetype or '')
+        for url in (f.urls or []):
+            if url.rel == 'webarchive':
                 in_wa = True
-            if '//web.archive.org/' in url['url'] or '//archive.org/' in url['url']:
+            if '//web.archive.org/' in (url.url or '') or '//archive.org/' in (url.url or ''):
                 in_ia = True
                 if is_pdf:
-                    t['file_pdf_url'] = url['url']
+                    t['file_pdf_url'] = url.url
             if not t['file_pdf_url'] and is_pdf:
-                t['file_pdf_url'] = url['url']
+                t['file_pdf_url'] = url.url
     t['file_in_webarchive'] = in_wa
     t['file_in_ia'] = in_ia
 
