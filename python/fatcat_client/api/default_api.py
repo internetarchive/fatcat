@@ -1970,7 +1970,8 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
-        :param str expand: List of sub-entities to expand in response. For now, only 'all' accepted.
+        :param str expand: List of sub-entities to expand in response. For containers, none accepted (yet).
+        :param str hide: List of entity fields to elide in response. For containers, none accepted (yet).
         :return: ContainerEntity
                  If the method is called asynchronously,
                  returns the request thread.
@@ -1992,13 +1993,14 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
-        :param str expand: List of sub-entities to expand in response. For now, only 'all' accepted.
+        :param str expand: List of sub-entities to expand in response. For containers, none accepted (yet).
+        :param str hide: List of entity fields to elide in response. For containers, none accepted (yet).
         :return: ContainerEntity
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['id', 'expand']  # noqa: E501
+        all_params = ['id', 'expand', 'hide']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -2027,6 +2029,8 @@ class DefaultApi(object):
         query_params = []
         if 'expand' in params:
             query_params.append(('expand', params['expand']))  # noqa: E501
+        if 'hide' in params:
+            query_params.append(('hide', params['hide']))  # noqa: E501
 
         header_params = {}
 
@@ -2172,7 +2176,8 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
-        :param str expand: List of sub-entities to expand in response. For now, only 'all' accepted.
+        :param str expand: List of sub-entities to expand in response. For creators, none accepted (yet).
+        :param str hide: List of entity fields to elide in response. For containers, none accepted (yet).
         :return: CreatorEntity
                  If the method is called asynchronously,
                  returns the request thread.
@@ -2194,13 +2199,14 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
-        :param str expand: List of sub-entities to expand in response. For now, only 'all' accepted.
+        :param str expand: List of sub-entities to expand in response. For creators, none accepted (yet).
+        :param str hide: List of entity fields to elide in response. For containers, none accepted (yet).
         :return: CreatorEntity
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['id', 'expand']  # noqa: E501
+        all_params = ['id', 'expand', 'hide']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -2229,6 +2235,8 @@ class DefaultApi(object):
         query_params = []
         if 'expand' in params:
             query_params.append(('expand', params['expand']))  # noqa: E501
+        if 'hide' in params:
+            query_params.append(('hide', params['hide']))  # noqa: E501
 
         header_params = {}
 
@@ -2374,6 +2382,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
+        :param str hide: List of entity fields to elide in response. For releases, 'abstracts', 'refs', and 'contribs' are valid.
         :return: list[ReleaseEntity]
                  If the method is called asynchronously,
                  returns the request thread.
@@ -2395,12 +2404,13 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
+        :param str hide: List of entity fields to elide in response. For releases, 'abstracts', 'refs', and 'contribs' are valid.
         :return: list[ReleaseEntity]
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['id']  # noqa: E501
+        all_params = ['id', 'hide']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -2427,6 +2437,8 @@ class DefaultApi(object):
             path_params['id'] = params['id']  # noqa: E501
 
         query_params = []
+        if 'hide' in params:
+            query_params.append(('hide', params['hide']))  # noqa: E501
 
         header_params = {}
 
@@ -2770,7 +2782,8 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
-        :param str expand: List of sub-entities to expand in response. For now, only 'all' accepted.
+        :param str expand: List of sub-entities to expand in response. For files, none accepted (yet).
+        :param str hide: List of entity fields to elide in response. For files, none accepted (yet).
         :return: FileEntity
                  If the method is called asynchronously,
                  returns the request thread.
@@ -2792,13 +2805,14 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
-        :param str expand: List of sub-entities to expand in response. For now, only 'all' accepted.
+        :param str expand: List of sub-entities to expand in response. For files, none accepted (yet).
+        :param str hide: List of entity fields to elide in response. For files, none accepted (yet).
         :return: FileEntity
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['id', 'expand']  # noqa: E501
+        all_params = ['id', 'expand', 'hide']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -2827,6 +2841,8 @@ class DefaultApi(object):
         query_params = []
         if 'expand' in params:
             query_params.append(('expand', params['expand']))  # noqa: E501
+        if 'hide' in params:
+            query_params.append(('hide', params['hide']))  # noqa: E501
 
         header_params = {}
 
@@ -2972,7 +2988,8 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
-        :param str expand: List of sub-entities to expand in response. For now, only 'all' accepted.
+        :param str expand: List of sub-entities to expand in response. For releases, 'files' and 'container' are valid.
+        :param str hide: List of entity fields to elide in response. For releases, 'abstracts', 'refs', and 'contribs' are valid.
         :return: ReleaseEntity
                  If the method is called asynchronously,
                  returns the request thread.
@@ -2994,13 +3011,14 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
-        :param str expand: List of sub-entities to expand in response. For now, only 'all' accepted.
+        :param str expand: List of sub-entities to expand in response. For releases, 'files' and 'container' are valid.
+        :param str hide: List of entity fields to elide in response. For releases, 'abstracts', 'refs', and 'contribs' are valid.
         :return: ReleaseEntity
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['id', 'expand']  # noqa: E501
+        all_params = ['id', 'expand', 'hide']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -3029,6 +3047,8 @@ class DefaultApi(object):
         query_params = []
         if 'expand' in params:
             query_params.append(('expand', params['expand']))  # noqa: E501
+        if 'hide' in params:
+            query_params.append(('hide', params['hide']))  # noqa: E501
 
         header_params = {}
 
@@ -3073,6 +3093,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
+        :param str hide: List of entity fields to elide in response. For files, none accepted (yet).
         :return: list[FileEntity]
                  If the method is called asynchronously,
                  returns the request thread.
@@ -3094,12 +3115,13 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
+        :param str hide: List of entity fields to elide in response. For files, none accepted (yet).
         :return: list[FileEntity]
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['id']  # noqa: E501
+        all_params = ['id', 'hide']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -3126,6 +3148,8 @@ class DefaultApi(object):
             path_params['id'] = params['id']  # noqa: E501
 
         query_params = []
+        if 'hide' in params:
+            query_params.append(('hide', params['hide']))  # noqa: E501
 
         header_params = {}
 
@@ -3364,7 +3388,8 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
-        :param str expand: List of sub-entities to expand in response. For now, only 'all' accepted.
+        :param str expand: List of sub-entities to expand in response. For works, none accepted (yet).
+        :param str hide: List of entity fields to elide in response. For works, none accepted (yet).
         :return: WorkEntity
                  If the method is called asynchronously,
                  returns the request thread.
@@ -3386,13 +3411,14 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
-        :param str expand: List of sub-entities to expand in response. For now, only 'all' accepted.
+        :param str expand: List of sub-entities to expand in response. For works, none accepted (yet).
+        :param str hide: List of entity fields to elide in response. For works, none accepted (yet).
         :return: WorkEntity
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['id', 'expand']  # noqa: E501
+        all_params = ['id', 'expand', 'hide']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -3421,6 +3447,8 @@ class DefaultApi(object):
         query_params = []
         if 'expand' in params:
             query_params.append(('expand', params['expand']))  # noqa: E501
+        if 'hide' in params:
+            query_params.append(('hide', params['hide']))  # noqa: E501
 
         header_params = {}
 
@@ -3566,6 +3594,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
+        :param str hide: List of entity fields to elide in response. For releases, 'abstracts', 'refs', and 'contribs' are valid.
         :return: list[ReleaseEntity]
                  If the method is called asynchronously,
                  returns the request thread.
@@ -3587,12 +3616,13 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
+        :param str hide: List of entity fields to elide in response. For releases, 'abstracts', 'refs', and 'contribs' are valid.
         :return: list[ReleaseEntity]
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['id']  # noqa: E501
+        all_params = ['id', 'hide']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -3619,6 +3649,8 @@ class DefaultApi(object):
             path_params['id'] = params['id']  # noqa: E501
 
         query_params = []
+        if 'hide' in params:
+            query_params.append(('hide', params['hide']))  # noqa: E501
 
         header_params = {}
 
@@ -3663,6 +3695,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str issnl: (required)
+        :param str hide: List of entity fields to elide in response. For container, none accepted (yet).
         :return: ContainerEntity
                  If the method is called asynchronously,
                  returns the request thread.
@@ -3684,12 +3717,13 @@ class DefaultApi(object):
 
         :param async bool
         :param str issnl: (required)
+        :param str hide: List of entity fields to elide in response. For container, none accepted (yet).
         :return: ContainerEntity
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['issnl']  # noqa: E501
+        all_params = ['issnl', 'hide']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -3724,6 +3758,8 @@ class DefaultApi(object):
         query_params = []
         if 'issnl' in params:
             query_params.append(('issnl', params['issnl']))  # noqa: E501
+        if 'hide' in params:
+            query_params.append(('hide', params['hide']))  # noqa: E501
 
         header_params = {}
 
@@ -3768,6 +3804,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str orcid: (required)
+        :param str hide: List of entity fields to elide in response. For creator, none accepted (yet).
         :return: CreatorEntity
                  If the method is called asynchronously,
                  returns the request thread.
@@ -3789,12 +3826,13 @@ class DefaultApi(object):
 
         :param async bool
         :param str orcid: (required)
+        :param str hide: List of entity fields to elide in response. For creator, none accepted (yet).
         :return: CreatorEntity
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['orcid']  # noqa: E501
+        all_params = ['orcid', 'hide']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -3829,6 +3867,8 @@ class DefaultApi(object):
         query_params = []
         if 'orcid' in params:
             query_params.append(('orcid', params['orcid']))  # noqa: E501
+        if 'hide' in params:
+            query_params.append(('hide', params['hide']))  # noqa: E501
 
         header_params = {}
 
@@ -3873,6 +3913,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str sha1: (required)
+        :param str hide: List of entity fields to elide in response. For files, none accepted (yet).
         :return: FileEntity
                  If the method is called asynchronously,
                  returns the request thread.
@@ -3894,12 +3935,13 @@ class DefaultApi(object):
 
         :param async bool
         :param str sha1: (required)
+        :param str hide: List of entity fields to elide in response. For files, none accepted (yet).
         :return: FileEntity
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['sha1']  # noqa: E501
+        all_params = ['sha1', 'hide']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -3926,6 +3968,8 @@ class DefaultApi(object):
         query_params = []
         if 'sha1' in params:
             query_params.append(('sha1', params['sha1']))  # noqa: E501
+        if 'hide' in params:
+            query_params.append(('hide', params['hide']))  # noqa: E501
 
         header_params = {}
 
@@ -3970,6 +4014,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str doi: (required)
+        :param str hide: List of entity fields to elide in response. For releases, 'abstracts', 'refs', and 'contribs' are valid.
         :return: ReleaseEntity
                  If the method is called asynchronously,
                  returns the request thread.
@@ -3991,12 +4036,13 @@ class DefaultApi(object):
 
         :param async bool
         :param str doi: (required)
+        :param str hide: List of entity fields to elide in response. For releases, 'abstracts', 'refs', and 'contribs' are valid.
         :return: ReleaseEntity
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['doi']  # noqa: E501
+        all_params = ['doi', 'hide']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -4023,6 +4069,8 @@ class DefaultApi(object):
         query_params = []
         if 'doi' in params:
             query_params.append(('doi', params['doi']))  # noqa: E501
+        if 'hide' in params:
+            query_params.append(('hide', params['hide']))  # noqa: E501
 
         header_params = {}
 

@@ -437,8 +437,9 @@ where
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
                 let param_expand = query_params.get("expand").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.get_container(param_id, param_expand, context).wait() {
+                match api.get_container(param_id, param_expand, param_hide, context).wait() {
                     Ok(rsp) => match rsp {
                         GetContainerResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -614,8 +615,9 @@ where
                     .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter issnl was empty".to_string())))?
                     .parse::<String>()
                     .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter issnl - doesn't match schema: {}", e))))?;
+                let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.lookup_container(param_issnl, context).wait() {
+                match api.lookup_container(param_issnl, param_hide, context).wait() {
                     Ok(rsp) => match rsp {
                         LookupContainerResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -1146,8 +1148,9 @@ where
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
                 let param_expand = query_params.get("expand").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.get_creator(param_id, param_expand, context).wait() {
+                match api.get_creator(param_id, param_expand, param_hide, context).wait() {
                     Ok(rsp) => match rsp {
                         GetCreatorResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -1329,7 +1332,11 @@ where
                         .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
                 };
 
-                match api.get_creator_releases(param_id, context).wait() {
+                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
+                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
+                let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+
+                match api.get_creator_releases(param_id, param_hide, context).wait() {
                     Ok(rsp) => match rsp {
                         GetCreatorReleasesResponse::Found(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -1412,8 +1419,9 @@ where
                     .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter orcid was empty".to_string())))?
                     .parse::<String>()
                     .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter orcid - doesn't match schema: {}", e))))?;
+                let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.lookup_creator(param_orcid, context).wait() {
+                match api.lookup_creator(param_orcid, param_hide, context).wait() {
                     Ok(rsp) => match rsp {
                         LookupCreatorResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -2599,8 +2607,9 @@ where
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
                 let param_expand = query_params.get("expand").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.get_file(param_id, param_expand, context).wait() {
+                match api.get_file(param_id, param_expand, param_hide, context).wait() {
                     Ok(rsp) => match rsp {
                         GetFileResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -2776,8 +2785,9 @@ where
                     .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter sha1 was empty".to_string())))?
                     .parse::<String>()
                     .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter sha1 - doesn't match schema: {}", e))))?;
+                let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.lookup_file(param_sha1, context).wait() {
+                match api.lookup_file(param_sha1, param_hide, context).wait() {
                     Ok(rsp) => match rsp {
                         LookupFileResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -3418,8 +3428,9 @@ where
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
                 let param_expand = query_params.get("expand").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.get_release(param_id, param_expand, context).wait() {
+                match api.get_release(param_id, param_expand, param_hide, context).wait() {
                     Ok(rsp) => match rsp {
                         GetReleaseResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -3508,7 +3519,11 @@ where
                         .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
                 };
 
-                match api.get_release_files(param_id, context).wait() {
+                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
+                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
+                let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+
+                match api.get_release_files(param_id, param_hide, context).wait() {
                     Ok(rsp) => match rsp {
                         GetReleaseFilesResponse::Found(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -3684,8 +3699,9 @@ where
                     .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter doi was empty".to_string())))?
                     .parse::<String>()
                     .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter doi - doesn't match schema: {}", e))))?;
+                let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.lookup_release(param_doi, context).wait() {
+                match api.lookup_release(param_doi, param_hide, context).wait() {
                     Ok(rsp) => match rsp {
                         LookupReleaseResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -4106,8 +4122,9 @@ where
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
                 let param_expand = query_params.get("expand").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.get_work(param_id, param_expand, context).wait() {
+                match api.get_work(param_id, param_expand, param_hide, context).wait() {
                     Ok(rsp) => match rsp {
                         GetWorkResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -4289,7 +4306,11 @@ where
                         .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
                 };
 
-                match api.get_work_releases(param_id, context).wait() {
+                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
+                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
+                let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+
+                match api.get_work_releases(param_id, param_hide, context).wait() {
                     Ok(rsp) => match rsp {
                         GetWorkReleasesResponse::Found(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");

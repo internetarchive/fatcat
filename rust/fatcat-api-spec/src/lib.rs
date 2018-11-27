@@ -576,11 +576,11 @@ pub trait Api {
 
     fn delete_container(&self, id: String, editgroup: Option<String>, context: &Context) -> Box<Future<Item = DeleteContainerResponse, Error = ApiError> + Send>;
 
-    fn get_container(&self, id: String, expand: Option<String>, context: &Context) -> Box<Future<Item = GetContainerResponse, Error = ApiError> + Send>;
+    fn get_container(&self, id: String, expand: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = GetContainerResponse, Error = ApiError> + Send>;
 
     fn get_container_history(&self, id: String, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetContainerHistoryResponse, Error = ApiError> + Send>;
 
-    fn lookup_container(&self, issnl: String, context: &Context) -> Box<Future<Item = LookupContainerResponse, Error = ApiError> + Send>;
+    fn lookup_container(&self, issnl: String, hide: Option<String>, context: &Context) -> Box<Future<Item = LookupContainerResponse, Error = ApiError> + Send>;
 
     fn update_container(&self, id: String, entity: models::ContainerEntity, editgroup: Option<String>, context: &Context) -> Box<Future<Item = UpdateContainerResponse, Error = ApiError> + Send>;
 
@@ -596,13 +596,13 @@ pub trait Api {
 
     fn delete_creator(&self, id: String, editgroup: Option<String>, context: &Context) -> Box<Future<Item = DeleteCreatorResponse, Error = ApiError> + Send>;
 
-    fn get_creator(&self, id: String, expand: Option<String>, context: &Context) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send>;
+    fn get_creator(&self, id: String, expand: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send>;
 
     fn get_creator_history(&self, id: String, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetCreatorHistoryResponse, Error = ApiError> + Send>;
 
-    fn get_creator_releases(&self, id: String, context: &Context) -> Box<Future<Item = GetCreatorReleasesResponse, Error = ApiError> + Send>;
+    fn get_creator_releases(&self, id: String, hide: Option<String>, context: &Context) -> Box<Future<Item = GetCreatorReleasesResponse, Error = ApiError> + Send>;
 
-    fn lookup_creator(&self, orcid: String, context: &Context) -> Box<Future<Item = LookupCreatorResponse, Error = ApiError> + Send>;
+    fn lookup_creator(&self, orcid: String, hide: Option<String>, context: &Context) -> Box<Future<Item = LookupCreatorResponse, Error = ApiError> + Send>;
 
     fn update_creator(&self, id: String, entity: models::CreatorEntity, editgroup: Option<String>, context: &Context) -> Box<Future<Item = UpdateCreatorResponse, Error = ApiError> + Send>;
 
@@ -634,11 +634,11 @@ pub trait Api {
 
     fn delete_file(&self, id: String, editgroup: Option<String>, context: &Context) -> Box<Future<Item = DeleteFileResponse, Error = ApiError> + Send>;
 
-    fn get_file(&self, id: String, expand: Option<String>, context: &Context) -> Box<Future<Item = GetFileResponse, Error = ApiError> + Send>;
+    fn get_file(&self, id: String, expand: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = GetFileResponse, Error = ApiError> + Send>;
 
     fn get_file_history(&self, id: String, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetFileHistoryResponse, Error = ApiError> + Send>;
 
-    fn lookup_file(&self, sha1: String, context: &Context) -> Box<Future<Item = LookupFileResponse, Error = ApiError> + Send>;
+    fn lookup_file(&self, sha1: String, hide: Option<String>, context: &Context) -> Box<Future<Item = LookupFileResponse, Error = ApiError> + Send>;
 
     fn update_file(&self, id: String, entity: models::FileEntity, editgroup: Option<String>, context: &Context) -> Box<Future<Item = UpdateFileResponse, Error = ApiError> + Send>;
 
@@ -656,13 +656,13 @@ pub trait Api {
 
     fn delete_release(&self, id: String, editgroup: Option<String>, context: &Context) -> Box<Future<Item = DeleteReleaseResponse, Error = ApiError> + Send>;
 
-    fn get_release(&self, id: String, expand: Option<String>, context: &Context) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send>;
+    fn get_release(&self, id: String, expand: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send>;
 
-    fn get_release_files(&self, id: String, context: &Context) -> Box<Future<Item = GetReleaseFilesResponse, Error = ApiError> + Send>;
+    fn get_release_files(&self, id: String, hide: Option<String>, context: &Context) -> Box<Future<Item = GetReleaseFilesResponse, Error = ApiError> + Send>;
 
     fn get_release_history(&self, id: String, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetReleaseHistoryResponse, Error = ApiError> + Send>;
 
-    fn lookup_release(&self, doi: String, context: &Context) -> Box<Future<Item = LookupReleaseResponse, Error = ApiError> + Send>;
+    fn lookup_release(&self, doi: String, hide: Option<String>, context: &Context) -> Box<Future<Item = LookupReleaseResponse, Error = ApiError> + Send>;
 
     fn update_release(&self, id: String, entity: models::ReleaseEntity, editgroup: Option<String>, context: &Context) -> Box<Future<Item = UpdateReleaseResponse, Error = ApiError> + Send>;
 
@@ -676,11 +676,11 @@ pub trait Api {
 
     fn delete_work(&self, id: String, editgroup: Option<String>, context: &Context) -> Box<Future<Item = DeleteWorkResponse, Error = ApiError> + Send>;
 
-    fn get_work(&self, id: String, expand: Option<String>, context: &Context) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send>;
+    fn get_work(&self, id: String, expand: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send>;
 
     fn get_work_history(&self, id: String, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetWorkHistoryResponse, Error = ApiError> + Send>;
 
-    fn get_work_releases(&self, id: String, context: &Context) -> Box<Future<Item = GetWorkReleasesResponse, Error = ApiError> + Send>;
+    fn get_work_releases(&self, id: String, hide: Option<String>, context: &Context) -> Box<Future<Item = GetWorkReleasesResponse, Error = ApiError> + Send>;
 
     fn update_work(&self, id: String, entity: models::WorkEntity, editgroup: Option<String>, context: &Context) -> Box<Future<Item = UpdateWorkResponse, Error = ApiError> + Send>;
 }
@@ -698,11 +698,11 @@ pub trait ApiNoContext {
 
     fn delete_container(&self, id: String, editgroup: Option<String>) -> Box<Future<Item = DeleteContainerResponse, Error = ApiError> + Send>;
 
-    fn get_container(&self, id: String, expand: Option<String>) -> Box<Future<Item = GetContainerResponse, Error = ApiError> + Send>;
+    fn get_container(&self, id: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetContainerResponse, Error = ApiError> + Send>;
 
     fn get_container_history(&self, id: String, limit: Option<i64>) -> Box<Future<Item = GetContainerHistoryResponse, Error = ApiError> + Send>;
 
-    fn lookup_container(&self, issnl: String) -> Box<Future<Item = LookupContainerResponse, Error = ApiError> + Send>;
+    fn lookup_container(&self, issnl: String, hide: Option<String>) -> Box<Future<Item = LookupContainerResponse, Error = ApiError> + Send>;
 
     fn update_container(&self, id: String, entity: models::ContainerEntity, editgroup: Option<String>) -> Box<Future<Item = UpdateContainerResponse, Error = ApiError> + Send>;
 
@@ -717,13 +717,13 @@ pub trait ApiNoContext {
 
     fn delete_creator(&self, id: String, editgroup: Option<String>) -> Box<Future<Item = DeleteCreatorResponse, Error = ApiError> + Send>;
 
-    fn get_creator(&self, id: String, expand: Option<String>) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send>;
+    fn get_creator(&self, id: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send>;
 
     fn get_creator_history(&self, id: String, limit: Option<i64>) -> Box<Future<Item = GetCreatorHistoryResponse, Error = ApiError> + Send>;
 
-    fn get_creator_releases(&self, id: String) -> Box<Future<Item = GetCreatorReleasesResponse, Error = ApiError> + Send>;
+    fn get_creator_releases(&self, id: String, hide: Option<String>) -> Box<Future<Item = GetCreatorReleasesResponse, Error = ApiError> + Send>;
 
-    fn lookup_creator(&self, orcid: String) -> Box<Future<Item = LookupCreatorResponse, Error = ApiError> + Send>;
+    fn lookup_creator(&self, orcid: String, hide: Option<String>) -> Box<Future<Item = LookupCreatorResponse, Error = ApiError> + Send>;
 
     fn update_creator(&self, id: String, entity: models::CreatorEntity, editgroup: Option<String>) -> Box<Future<Item = UpdateCreatorResponse, Error = ApiError> + Send>;
 
@@ -749,11 +749,11 @@ pub trait ApiNoContext {
 
     fn delete_file(&self, id: String, editgroup: Option<String>) -> Box<Future<Item = DeleteFileResponse, Error = ApiError> + Send>;
 
-    fn get_file(&self, id: String, expand: Option<String>) -> Box<Future<Item = GetFileResponse, Error = ApiError> + Send>;
+    fn get_file(&self, id: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetFileResponse, Error = ApiError> + Send>;
 
     fn get_file_history(&self, id: String, limit: Option<i64>) -> Box<Future<Item = GetFileHistoryResponse, Error = ApiError> + Send>;
 
-    fn lookup_file(&self, sha1: String) -> Box<Future<Item = LookupFileResponse, Error = ApiError> + Send>;
+    fn lookup_file(&self, sha1: String, hide: Option<String>) -> Box<Future<Item = LookupFileResponse, Error = ApiError> + Send>;
 
     fn update_file(&self, id: String, entity: models::FileEntity, editgroup: Option<String>) -> Box<Future<Item = UpdateFileResponse, Error = ApiError> + Send>;
 
@@ -770,13 +770,13 @@ pub trait ApiNoContext {
 
     fn delete_release(&self, id: String, editgroup: Option<String>) -> Box<Future<Item = DeleteReleaseResponse, Error = ApiError> + Send>;
 
-    fn get_release(&self, id: String, expand: Option<String>) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send>;
+    fn get_release(&self, id: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send>;
 
-    fn get_release_files(&self, id: String) -> Box<Future<Item = GetReleaseFilesResponse, Error = ApiError> + Send>;
+    fn get_release_files(&self, id: String, hide: Option<String>) -> Box<Future<Item = GetReleaseFilesResponse, Error = ApiError> + Send>;
 
     fn get_release_history(&self, id: String, limit: Option<i64>) -> Box<Future<Item = GetReleaseHistoryResponse, Error = ApiError> + Send>;
 
-    fn lookup_release(&self, doi: String) -> Box<Future<Item = LookupReleaseResponse, Error = ApiError> + Send>;
+    fn lookup_release(&self, doi: String, hide: Option<String>) -> Box<Future<Item = LookupReleaseResponse, Error = ApiError> + Send>;
 
     fn update_release(&self, id: String, entity: models::ReleaseEntity, editgroup: Option<String>) -> Box<Future<Item = UpdateReleaseResponse, Error = ApiError> + Send>;
 
@@ -784,11 +784,11 @@ pub trait ApiNoContext {
 
     fn delete_work(&self, id: String, editgroup: Option<String>) -> Box<Future<Item = DeleteWorkResponse, Error = ApiError> + Send>;
 
-    fn get_work(&self, id: String, expand: Option<String>) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send>;
+    fn get_work(&self, id: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send>;
 
     fn get_work_history(&self, id: String, limit: Option<i64>) -> Box<Future<Item = GetWorkHistoryResponse, Error = ApiError> + Send>;
 
-    fn get_work_releases(&self, id: String) -> Box<Future<Item = GetWorkReleasesResponse, Error = ApiError> + Send>;
+    fn get_work_releases(&self, id: String, hide: Option<String>) -> Box<Future<Item = GetWorkReleasesResponse, Error = ApiError> + Send>;
 
     fn update_work(&self, id: String, entity: models::WorkEntity, editgroup: Option<String>) -> Box<Future<Item = UpdateWorkResponse, Error = ApiError> + Send>;
 }
@@ -826,16 +826,16 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().delete_container(id, editgroup, &self.context())
     }
 
-    fn get_container(&self, id: String, expand: Option<String>) -> Box<Future<Item = GetContainerResponse, Error = ApiError> + Send> {
-        self.api().get_container(id, expand, &self.context())
+    fn get_container(&self, id: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetContainerResponse, Error = ApiError> + Send> {
+        self.api().get_container(id, expand, hide, &self.context())
     }
 
     fn get_container_history(&self, id: String, limit: Option<i64>) -> Box<Future<Item = GetContainerHistoryResponse, Error = ApiError> + Send> {
         self.api().get_container_history(id, limit, &self.context())
     }
 
-    fn lookup_container(&self, issnl: String) -> Box<Future<Item = LookupContainerResponse, Error = ApiError> + Send> {
-        self.api().lookup_container(issnl, &self.context())
+    fn lookup_container(&self, issnl: String, hide: Option<String>) -> Box<Future<Item = LookupContainerResponse, Error = ApiError> + Send> {
+        self.api().lookup_container(issnl, hide, &self.context())
     }
 
     fn update_container(&self, id: String, entity: models::ContainerEntity, editgroup: Option<String>) -> Box<Future<Item = UpdateContainerResponse, Error = ApiError> + Send> {
@@ -859,20 +859,20 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().delete_creator(id, editgroup, &self.context())
     }
 
-    fn get_creator(&self, id: String, expand: Option<String>) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send> {
-        self.api().get_creator(id, expand, &self.context())
+    fn get_creator(&self, id: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send> {
+        self.api().get_creator(id, expand, hide, &self.context())
     }
 
     fn get_creator_history(&self, id: String, limit: Option<i64>) -> Box<Future<Item = GetCreatorHistoryResponse, Error = ApiError> + Send> {
         self.api().get_creator_history(id, limit, &self.context())
     }
 
-    fn get_creator_releases(&self, id: String) -> Box<Future<Item = GetCreatorReleasesResponse, Error = ApiError> + Send> {
-        self.api().get_creator_releases(id, &self.context())
+    fn get_creator_releases(&self, id: String, hide: Option<String>) -> Box<Future<Item = GetCreatorReleasesResponse, Error = ApiError> + Send> {
+        self.api().get_creator_releases(id, hide, &self.context())
     }
 
-    fn lookup_creator(&self, orcid: String) -> Box<Future<Item = LookupCreatorResponse, Error = ApiError> + Send> {
-        self.api().lookup_creator(orcid, &self.context())
+    fn lookup_creator(&self, orcid: String, hide: Option<String>) -> Box<Future<Item = LookupCreatorResponse, Error = ApiError> + Send> {
+        self.api().lookup_creator(orcid, hide, &self.context())
     }
 
     fn update_creator(&self, id: String, entity: models::CreatorEntity, editgroup: Option<String>) -> Box<Future<Item = UpdateCreatorResponse, Error = ApiError> + Send> {
@@ -923,16 +923,16 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().delete_file(id, editgroup, &self.context())
     }
 
-    fn get_file(&self, id: String, expand: Option<String>) -> Box<Future<Item = GetFileResponse, Error = ApiError> + Send> {
-        self.api().get_file(id, expand, &self.context())
+    fn get_file(&self, id: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetFileResponse, Error = ApiError> + Send> {
+        self.api().get_file(id, expand, hide, &self.context())
     }
 
     fn get_file_history(&self, id: String, limit: Option<i64>) -> Box<Future<Item = GetFileHistoryResponse, Error = ApiError> + Send> {
         self.api().get_file_history(id, limit, &self.context())
     }
 
-    fn lookup_file(&self, sha1: String) -> Box<Future<Item = LookupFileResponse, Error = ApiError> + Send> {
-        self.api().lookup_file(sha1, &self.context())
+    fn lookup_file(&self, sha1: String, hide: Option<String>) -> Box<Future<Item = LookupFileResponse, Error = ApiError> + Send> {
+        self.api().lookup_file(sha1, hide, &self.context())
     }
 
     fn update_file(&self, id: String, entity: models::FileEntity, editgroup: Option<String>) -> Box<Future<Item = UpdateFileResponse, Error = ApiError> + Send> {
@@ -960,20 +960,20 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().delete_release(id, editgroup, &self.context())
     }
 
-    fn get_release(&self, id: String, expand: Option<String>) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send> {
-        self.api().get_release(id, expand, &self.context())
+    fn get_release(&self, id: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send> {
+        self.api().get_release(id, expand, hide, &self.context())
     }
 
-    fn get_release_files(&self, id: String) -> Box<Future<Item = GetReleaseFilesResponse, Error = ApiError> + Send> {
-        self.api().get_release_files(id, &self.context())
+    fn get_release_files(&self, id: String, hide: Option<String>) -> Box<Future<Item = GetReleaseFilesResponse, Error = ApiError> + Send> {
+        self.api().get_release_files(id, hide, &self.context())
     }
 
     fn get_release_history(&self, id: String, limit: Option<i64>) -> Box<Future<Item = GetReleaseHistoryResponse, Error = ApiError> + Send> {
         self.api().get_release_history(id, limit, &self.context())
     }
 
-    fn lookup_release(&self, doi: String) -> Box<Future<Item = LookupReleaseResponse, Error = ApiError> + Send> {
-        self.api().lookup_release(doi, &self.context())
+    fn lookup_release(&self, doi: String, hide: Option<String>) -> Box<Future<Item = LookupReleaseResponse, Error = ApiError> + Send> {
+        self.api().lookup_release(doi, hide, &self.context())
     }
 
     fn update_release(&self, id: String, entity: models::ReleaseEntity, editgroup: Option<String>) -> Box<Future<Item = UpdateReleaseResponse, Error = ApiError> + Send> {
@@ -988,16 +988,16 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().delete_work(id, editgroup, &self.context())
     }
 
-    fn get_work(&self, id: String, expand: Option<String>) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send> {
-        self.api().get_work(id, expand, &self.context())
+    fn get_work(&self, id: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send> {
+        self.api().get_work(id, expand, hide, &self.context())
     }
 
     fn get_work_history(&self, id: String, limit: Option<i64>) -> Box<Future<Item = GetWorkHistoryResponse, Error = ApiError> + Send> {
         self.api().get_work_history(id, limit, &self.context())
     }
 
-    fn get_work_releases(&self, id: String) -> Box<Future<Item = GetWorkReleasesResponse, Error = ApiError> + Send> {
-        self.api().get_work_releases(id, &self.context())
+    fn get_work_releases(&self, id: String, hide: Option<String>) -> Box<Future<Item = GetWorkReleasesResponse, Error = ApiError> + Send> {
+        self.api().get_work_releases(id, hide, &self.context())
     }
 
     fn update_work(&self, id: String, entity: models::WorkEntity, editgroup: Option<String>) -> Box<Future<Item = UpdateWorkResponse, Error = ApiError> + Send> {

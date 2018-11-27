@@ -179,12 +179,20 @@ paths:
         example: "\"id_example\".to_string()"
       - name: "expand"
         in: "query"
-        description: "List of sub-entities to expand in response. For now, only 'all'\
-          \ accepted."
+        description: "List of sub-entities to expand in response. For containers,\
+          \ none accepted (yet)."
         required: false
         type: "string"
         formatString: "{:?}"
         example: "Some(\"expand_example\".to_string())"
+      - name: "hide"
+        in: "query"
+        description: "List of entity fields to elide in response. For containers,\
+          \ none accepted (yet)."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"hide_example\".to_string())"
       responses:
         200:
           description: "Found Entity"
@@ -436,6 +444,14 @@ paths:
         pattern: "\\d{4}-\\d{3}[0-9X]"
         formatString: "\\\"{}\\\""
         example: "\"issnl_example\".to_string()"
+      - name: "hide"
+        in: "query"
+        description: "List of entity fields to elide in response. For container, none\
+          \ accepted (yet)."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"hide_example\".to_string())"
       responses:
         200:
           description: "Found Entity"
@@ -637,12 +653,20 @@ paths:
         example: "\"id_example\".to_string()"
       - name: "expand"
         in: "query"
-        description: "List of sub-entities to expand in response. For now, only 'all'\
-          \ accepted."
+        description: "List of sub-entities to expand in response. For creators, none\
+          \ accepted (yet)."
         required: false
         type: "string"
         formatString: "{:?}"
         example: "Some(\"expand_example\".to_string())"
+      - name: "hide"
+        in: "query"
+        description: "List of entity fields to elide in response. For containers,\
+          \ none accepted (yet)."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"hide_example\".to_string())"
       responses:
         200:
           description: "Found Entity"
@@ -891,6 +915,14 @@ paths:
         type: "string"
         formatString: "\\\"{}\\\""
         example: "\"id_example\".to_string()"
+      - name: "hide"
+        in: "query"
+        description: "List of entity fields to elide in response. For releases, 'abstracts',\
+          \ 'refs', and 'contribs' are valid."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"hide_example\".to_string())"
       responses:
         200:
           description: "Found"
@@ -950,6 +982,14 @@ paths:
         pattern: "\\d{4}-\\d{4}-\\d{4}-\\d{3}[\\dX]"
         formatString: "\\\"{}\\\""
         example: "\"orcid_example\".to_string()"
+      - name: "hide"
+        in: "query"
+        description: "List of entity fields to elide in response. For creator, none\
+          \ accepted (yet)."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"hide_example\".to_string())"
       responses:
         200:
           description: "Found Entity"
@@ -1151,12 +1191,20 @@ paths:
         example: "\"id_example\".to_string()"
       - name: "expand"
         in: "query"
-        description: "List of sub-entities to expand in response. For now, only 'all'\
-          \ accepted."
+        description: "List of sub-entities to expand in response. For files, none\
+          \ accepted (yet)."
         required: false
         type: "string"
         formatString: "{:?}"
         example: "Some(\"expand_example\".to_string())"
+      - name: "hide"
+        in: "query"
+        description: "List of entity fields to elide in response. For files, none\
+          \ accepted (yet)."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"hide_example\".to_string())"
       responses:
         200:
           description: "Found Entity"
@@ -1405,6 +1453,14 @@ paths:
         type: "string"
         formatString: "\\\"{}\\\""
         example: "\"sha1_example\".to_string()"
+      - name: "hide"
+        in: "query"
+        description: "List of entity fields to elide in response. For files, none\
+          \ accepted (yet)."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"hide_example\".to_string())"
       responses:
         200:
           description: "Found Entity"
@@ -1606,12 +1662,20 @@ paths:
         example: "\"id_example\".to_string()"
       - name: "expand"
         in: "query"
-        description: "List of sub-entities to expand in response. For now, only 'all'\
-          \ accepted."
+        description: "List of sub-entities to expand in response. For releases, 'files'\
+          \ and 'container' are valid."
         required: false
         type: "string"
         formatString: "{:?}"
         example: "Some(\"expand_example\".to_string())"
+      - name: "hide"
+        in: "query"
+        description: "List of entity fields to elide in response. For releases, 'abstracts',\
+          \ 'refs', and 'contribs' are valid."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"hide_example\".to_string())"
       responses:
         200:
           description: "Found Entity"
@@ -1860,6 +1924,14 @@ paths:
         type: "string"
         formatString: "\\\"{}\\\""
         example: "\"id_example\".to_string()"
+      - name: "hide"
+        in: "query"
+        description: "List of entity fields to elide in response. For files, none\
+          \ accepted (yet)."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"hide_example\".to_string())"
       responses:
         200:
           description: "Found"
@@ -1916,6 +1988,14 @@ paths:
         type: "string"
         formatString: "\\\"{}\\\""
         example: "\"doi_example\".to_string()"
+      - name: "hide"
+        in: "query"
+        description: "List of entity fields to elide in response. For releases, 'abstracts',\
+          \ 'refs', and 'contribs' are valid."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"hide_example\".to_string())"
       responses:
         200:
           description: "Found Entity"
@@ -2117,12 +2197,20 @@ paths:
         example: "\"id_example\".to_string()"
       - name: "expand"
         in: "query"
-        description: "List of sub-entities to expand in response. For now, only 'all'\
-          \ accepted."
+        description: "List of sub-entities to expand in response. For works, none\
+          \ accepted (yet)."
         required: false
         type: "string"
         formatString: "{:?}"
         example: "Some(\"expand_example\".to_string())"
+      - name: "hide"
+        in: "query"
+        description: "List of entity fields to elide in response. For works, none\
+          \ accepted (yet)."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"hide_example\".to_string())"
       responses:
         200:
           description: "Found Entity"
@@ -2371,6 +2459,14 @@ paths:
         type: "string"
         formatString: "\\\"{}\\\""
         example: "\"id_example\".to_string()"
+      - name: "hide"
+        in: "query"
+        description: "List of entity fields to elide in response. For releases, 'abstracts',\
+          \ 'refs', and 'contribs' are valid."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"hide_example\".to_string())"
       responses:
         200:
           description: "Found"

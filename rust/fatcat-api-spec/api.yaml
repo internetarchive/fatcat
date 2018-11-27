@@ -14,19 +14,19 @@ consumes:
 produces:
   - application/json
 
-tags:
- - name: containers
-   descriptions: "Container entities: such as journals, conferences, book series"
- - name: creators
-   descriptions: "Creator entities: such as authors"
- - name: files
-   descriptions: "File entities"
- - name: releases
-   descriptions: "Release entities: individual articles, pre-prints, books"
- - name: works
-   descriptions: "Work entities: grouping releases which are variants of the same work"
- - name: edit-lifecycle
-   descriptions: "Endpoints relating to global edit submission and history"
+tags: # TAGLINE
+ - name: containers # TAGLINE
+   descriptions: "Container entities: such as journals, conferences, book series" # TAGLINE
+ - name: creators # TAGLINE
+   descriptions: "Creator entities: such as authors" # TAGLINE
+ - name: files # TAGLINE
+   descriptions: "File entities" # TAGLINE
+ - name: releases # TAGLINE
+   descriptions: "Release entities: individual articles, pre-prints, books" # TAGLINE
+ - name: works # TAGLINE
+   descriptions: "Work entities: grouping releases which are variants of the same work" # TAGLINE
+ - name: edit-lifecycle # TAGLINE
+   descriptions: "Endpoints relating to global edit submission and history" # TAGLINE
 
 # don't want these to be rust types (at least for now)
 x-fatcat-ident: &FATCATIDENT
@@ -438,8 +438,8 @@ paths:
   /container:
     post:
       operationId: "create_container"
-      tags:
-        - containers
+      tags: # TAGLINE
+        - containers # TAGLINE
       parameters:
         - name: entity
           in: body
@@ -459,8 +459,8 @@ paths:
   /container/batch:
     post:
       operationId: "create_container_batch"
-      tags:
-        - containers
+      tags: # TAGLINE
+        - containers # TAGLINE
       parameters:
         - name: autoaccept
           in: query
@@ -495,14 +495,19 @@ paths:
         required: true
     get:
       operationId: "get_container"
-      tags:
-        - containers
+      tags: # TAGLINE
+        - containers # TAGLINE
       parameters:
         - name: expand
           in: query
           type: string
           required: false
-          description: "List of sub-entities to expand in response. For now, only 'all' accepted."
+          description: "List of sub-entities to expand in response. For containers, none accepted (yet)."
+        - name: hide
+          in: query
+          type: string
+          required: false
+          description: "List of entity fields to elide in response. For containers, none accepted (yet)."
       responses:
         200:
           description: Found Entity
@@ -511,8 +516,8 @@ paths:
         <<: *ENTITYRESPONSES
     put:
       operationId: "update_container"
-      tags:
-        - containers
+      tags: # TAGLINE
+        - containers # TAGLINE
       parameters:
         - name: entity
           in: body
@@ -531,8 +536,8 @@ paths:
         <<: *ENTITYRESPONSES
     delete:
       operationId: "delete_container"
-      tags:
-        - containers
+      tags: # TAGLINE
+        - containers # TAGLINE
       parameters:
         - name: editgroup
           in: query
@@ -556,8 +561,8 @@ paths:
         format: int64
         required: false
     get:
-      tags:
-        - containers
+      tags: # TAGLINE
+        - containers # TAGLINE
       operationId: "get_container_history"
       responses:
         200:
@@ -570,13 +575,18 @@ paths:
   /container/lookup:
     get:
       operationId: "lookup_container"
-      tags:
-        - containers
+      tags: # TAGLINE
+        - containers # TAGLINE
       parameters:
         - name: issnl
           in: query
           required: true
           <<: *FATCATISSN
+        - name: hide
+          in: query
+          type: string
+          required: false
+          description: "List of entity fields to elide in response. For container, none accepted (yet)."
       responses:
         200:
           description: Found Entity
@@ -586,8 +596,8 @@ paths:
   /creator:
     post:
       operationId: "create_creator"
-      tags:
-        - creators
+      tags: # TAGLINE
+        - creators # TAGLINE
       parameters:
         - name: entity
           in: body
@@ -607,8 +617,8 @@ paths:
   /creator/batch:
     post:
       operationId: "create_creator_batch"
-      tags:
-        - creators
+      tags: # TAGLINE
+        - creators # TAGLINE
       parameters:
         - name: autoaccept
           in: query
@@ -643,14 +653,19 @@ paths:
         required: true
     get:
       operationId: "get_creator"
-      tags:
-        - creators
+      tags: # TAGLINE
+        - creators # TAGLINE
       parameters:
         - name: expand
           in: query
           type: string
           required: false
-          description: "List of sub-entities to expand in response. For now, only 'all' accepted."
+          description: "List of sub-entities to expand in response. For creators, none accepted (yet)."
+        - name: hide
+          in: query
+          type: string
+          required: false
+          description: "List of entity fields to elide in response. For containers, none accepted (yet)."
       responses:
         200:
           description: Found Entity
@@ -659,8 +674,8 @@ paths:
         <<: *ENTITYRESPONSES
     put:
       operationId: "update_creator"
-      tags:
-        - creators
+      tags: # TAGLINE
+        - creators # TAGLINE
       parameters:
         - name: entity
           in: body
@@ -679,8 +694,8 @@ paths:
         <<: *ENTITYRESPONSES
     delete:
       operationId: "delete_creator"
-      tags:
-        - creators
+      tags: # TAGLINE
+        - creators # TAGLINE
       parameters:
         - name: editgroup
           in: query
@@ -705,8 +720,8 @@ paths:
         required: false
     get:
       operationId: "get_creator_history"
-      tags:
-        - creators
+      tags: # TAGLINE
+        - creators # TAGLINE
       responses:
         200:
           description: Found Entity History
@@ -721,10 +736,15 @@ paths:
         in: path
         type: string
         required: true
+      - name: hide
+        in: query
+        type: string
+        required: false
+        description: "List of entity fields to elide in response. For releases, 'abstracts', 'refs', and 'contribs' are valid."
     get:
       operationId: "get_creator_releases"
-      tags:
-        - creators
+      tags: # TAGLINE
+        - creators # TAGLINE
       responses:
         200:
           description: Found
@@ -736,13 +756,18 @@ paths:
   /creator/lookup:
     get:
       operationId: "lookup_creator"
-      tags:
-        - creators
+      tags: # TAGLINE
+        - creators # TAGLINE
       parameters:
         - name: orcid
           in: query
           required: true
           <<: *FATCATORCID
+        - name: hide
+          in: query
+          type: string
+          required: false
+          description: "List of entity fields to elide in response. For creator, none accepted (yet)."
       responses:
         200:
           description: Found Entity
@@ -752,8 +777,8 @@ paths:
   /file:
     post:
       operationId: "create_file"
-      tags:
-        - files
+      tags: # TAGLINE
+        - files # TAGLINE
       parameters:
         - name: entity
           in: body
@@ -773,8 +798,8 @@ paths:
   /file/batch:
     post:
       operationId: "create_file_batch"
-      tags:
-        - files
+      tags: # TAGLINE
+        - files # TAGLINE
       parameters:
         - name: autoaccept
           in: query
@@ -809,14 +834,19 @@ paths:
         required: true
     get:
       operationId: "get_file"
-      tags:
-        - files
+      tags: # TAGLINE
+        - files # TAGLINE
       parameters:
         - name: expand
           in: query
           type: string
           required: false
-          description: "List of sub-entities to expand in response. For now, only 'all' accepted."
+          description: "List of sub-entities to expand in response. For files, none accepted (yet)."
+        - name: hide
+          in: query
+          type: string
+          required: false
+          description: "List of entity fields to elide in response. For files, none accepted (yet)."
       responses:
         200:
           description: Found Entity
@@ -825,8 +855,8 @@ paths:
         <<: *ENTITYRESPONSES
     put:
       operationId: "update_file"
-      tags:
-        - files
+      tags: # TAGLINE
+        - files # TAGLINE
       parameters:
         - name: entity
           in: body
@@ -845,8 +875,8 @@ paths:
         <<: *ENTITYRESPONSES
     delete:
       operationId: "delete_file"
-      tags:
-        - files
+      tags: # TAGLINE
+        - files # TAGLINE
       parameters:
         - name: editgroup
           in: query
@@ -871,8 +901,8 @@ paths:
         required: false
     get:
       operationId: "get_file_history"
-      tags:
-        - files
+      tags: # TAGLINE
+        - files # TAGLINE
       responses:
         200:
           description: Found Entity History
@@ -884,13 +914,18 @@ paths:
   /file/lookup:
     get:
       operationId: "lookup_file"
-      tags:
-        - files
+      tags: # TAGLINE
+        - files # TAGLINE
       parameters:
         - name: sha1
           in: query
           type: string
           required: true
+        - name: hide
+          in: query
+          type: string
+          required: false
+          description: "List of entity fields to elide in response. For files, none accepted (yet)."
       responses:
         200:
           description: Found Entity
@@ -900,8 +935,8 @@ paths:
   /release:
     post:
       operationId: "create_release"
-      tags:
-        - releases
+      tags: # TAGLINE
+        - releases # TAGLINE
       parameters:
         - name: entity
           in: body
@@ -921,8 +956,8 @@ paths:
   /release/batch:
     post:
       operationId: "create_release_batch"
-      tags:
-        - releases
+      tags: # TAGLINE
+        - releases # TAGLINE
       parameters:
         - name: autoaccept
           in: query
@@ -957,14 +992,19 @@ paths:
         required: true
     get:
       operationId: "get_release"
-      tags:
-        - releases
+      tags: # TAGLINE
+        - releases # TAGLINE
       parameters:
         - name: expand
           in: query
           type: string
           required: false
-          description: "List of sub-entities to expand in response. For now, only 'all' accepted."
+          description: "List of sub-entities to expand in response. For releases, 'files' and 'container' are valid."
+        - name: hide
+          in: query
+          type: string
+          required: false
+          description: "List of entity fields to elide in response. For releases, 'abstracts', 'refs', and 'contribs' are valid."
       responses:
         200:
           description: Found Entity
@@ -973,8 +1013,8 @@ paths:
         <<: *ENTITYRESPONSES
     put:
       operationId: "update_release"
-      tags:
-        - releases
+      tags: # TAGLINE
+        - releases # TAGLINE
       parameters:
         - name: entity
           in: body
@@ -993,8 +1033,8 @@ paths:
         <<: *ENTITYRESPONSES
     delete:
       operationId: "delete_release"
-      tags:
-        - releases
+      tags: # TAGLINE
+        - releases # TAGLINE
       parameters:
         - name: editgroup
           in: query
@@ -1019,8 +1059,8 @@ paths:
         required: false
     get:
       operationId: "get_release_history"
-      tags:
-        - releases
+      tags: # TAGLINE
+        - releases # TAGLINE
       responses:
         200:
           description: Found Entity History
@@ -1035,10 +1075,15 @@ paths:
         in: path
         type: string
         required: true
+      - name: hide
+        in: query
+        type: string
+        required: false
+        description: "List of entity fields to elide in response. For files, none accepted (yet)."
     get:
       operationId: "get_release_files"
-      tags:
-        - releases
+      tags: # TAGLINE
+        - releases # TAGLINE
       responses:
         200:
           description: Found
@@ -1050,13 +1095,18 @@ paths:
   /release/lookup:
     get:
       operationId: "lookup_release"
-      tags:
-        - releases
+      tags: # TAGLINE
+        - releases # TAGLINE
       parameters:
         - name: doi
           in: query
           type: string
           required: true
+        - name: hide
+          in: query
+          type: string
+          required: false
+          description: "List of entity fields to elide in response. For releases, 'abstracts', 'refs', and 'contribs' are valid."
       responses:
         200:
           description: Found Entity
@@ -1066,8 +1116,8 @@ paths:
   /work:
     post:
       operationId: "create_work"
-      tags:
-        - releases
+      tags: # TAGLINE
+        - releases # TAGLINE
       parameters:
         - name: entity
           in: body
@@ -1087,8 +1137,8 @@ paths:
   /work/batch:
     post:
       operationId: "create_work_batch"
-      tags:
-        - works
+      tags: # TAGLINE
+        - works # TAGLINE
       parameters:
         - name: autoaccept
           in: query
@@ -1123,14 +1173,19 @@ paths:
         required: true
     get:
       operationId: "get_work"
-      tags:
-        - works
+      tags: # TAGLINE
+        - works # TAGLINE
       parameters:
         - name: expand
           in: query
           type: string
           required: false
-          description: "List of sub-entities to expand in response. For now, only 'all' accepted."
+          description: "List of sub-entities to expand in response. For works, none accepted (yet)."
+        - name: hide
+          in: query
+          type: string
+          required: false
+          description: "List of entity fields to elide in response. For works, none accepted (yet)."
       responses:
         200:
           description: Found Entity
@@ -1139,8 +1194,8 @@ paths:
         <<: *ENTITYRESPONSES
     put:
       operationId: "update_work"
-      tags:
-        - works
+      tags: # TAGLINE
+        - works # TAGLINE
       parameters:
         - name: entity
           in: body
@@ -1159,8 +1214,8 @@ paths:
         <<: *ENTITYRESPONSES
     delete:
       operationId: "delete_work"
-      tags:
-        - works
+      tags: # TAGLINE
+        - works # TAGLINE
       parameters:
         - name: editgroup
           in: query
@@ -1185,8 +1240,8 @@ paths:
         required: false
     get:
       operationId: "get_work_history"
-      tags:
-        - works
+      tags: # TAGLINE
+        - works # TAGLINE
       responses:
         200:
           description: Found Entity History
@@ -1201,10 +1256,15 @@ paths:
         in: path
         type: string
         required: true
+      - name: hide
+        in: query
+        type: string
+        required: false
+        description: "List of entity fields to elide in response. For releases, 'abstracts', 'refs', and 'contribs' are valid."
     get:
       operationId: "get_work_releases"
-      tags:
-        - works
+      tags: # TAGLINE
+        - works # TAGLINE
       responses:
         200:
           description: Found
@@ -1268,8 +1328,8 @@ paths:
   /editgroup:
     post:
       operationId: "create_editgroup"
-      tags:
-        - edit-lifecycle
+      tags: # TAGLINE
+        - edit-lifecycle # TAGLINE
       parameters:
         - name: editgroup
           in: body
@@ -1297,8 +1357,8 @@ paths:
         <<: *FATCATIDENT
     get:
       operationId: "get_editgroup"
-      tags:
-        - edit-lifecycle
+      tags: # TAGLINE
+        - edit-lifecycle # TAGLINE
       responses:
         200:
           description: Found
@@ -1324,8 +1384,8 @@ paths:
         <<: *FATCATIDENT
     post:
       operationId: "accept_editgroup"
-      tags:
-        - edit-lifecycle
+      tags: # TAGLINE
+        - edit-lifecycle # TAGLINE
       responses:
         200:
           description: Merged Successfully
@@ -1356,8 +1416,8 @@ paths:
         required: false
     get:
       operationId: "get_changelog"
-      tags:
-        - edit-lifecycle
+      tags: # TAGLINE
+        - edit-lifecycle # TAGLINE
       responses:
         200:
           description: Success
@@ -1378,8 +1438,8 @@ paths:
         required: true
     get:
       operationId: "get_changelog_entry"
-      tags:
-        - edit-lifecycle
+      tags: # TAGLINE
+        - edit-lifecycle # TAGLINE
       responses:
         200:
           description: Found Changelog Entry
