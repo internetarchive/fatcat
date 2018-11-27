@@ -104,7 +104,9 @@ fn main() {
         }
 
         Some("GetContainer") => {
-            let result = client.get_container("id_example".to_string(), Some("expand_example".to_string())).wait();
+            let result = client
+                .get_container("id_example".to_string(), Some("expand_example".to_string()), Some("hide_example".to_string()))
+                .wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -114,7 +116,7 @@ fn main() {
         }
 
         Some("LookupContainer") => {
-            let result = client.lookup_container("issnl_example".to_string()).wait();
+            let result = client.lookup_container("issnl_example".to_string(), Some("hide_example".to_string())).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -140,7 +142,9 @@ fn main() {
         }
 
         Some("GetCreator") => {
-            let result = client.get_creator("id_example".to_string(), Some("expand_example".to_string())).wait();
+            let result = client
+                .get_creator("id_example".to_string(), Some("expand_example".to_string()), Some("hide_example".to_string()))
+                .wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -150,12 +154,12 @@ fn main() {
         }
 
         Some("GetCreatorReleases") => {
-            let result = client.get_creator_releases("id_example".to_string()).wait();
+            let result = client.get_creator_releases("id_example".to_string(), Some("hide_example".to_string())).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
         Some("LookupCreator") => {
-            let result = client.lookup_creator("orcid_example".to_string()).wait();
+            let result = client.lookup_creator("orcid_example".to_string(), Some("hide_example".to_string())).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -220,7 +224,7 @@ fn main() {
         }
 
         Some("GetFile") => {
-            let result = client.get_file("id_example".to_string(), Some("expand_example".to_string())).wait();
+            let result = client.get_file("id_example".to_string(), Some("expand_example".to_string()), Some("hide_example".to_string())).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -230,7 +234,7 @@ fn main() {
         }
 
         Some("LookupFile") => {
-            let result = client.lookup_file("sha1_example".to_string()).wait();
+            let result = client.lookup_file("sha1_example".to_string(), Some("hide_example".to_string())).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -261,12 +265,14 @@ fn main() {
         }
 
         Some("GetRelease") => {
-            let result = client.get_release("id_example".to_string(), Some("expand_example".to_string())).wait();
+            let result = client
+                .get_release("id_example".to_string(), Some("expand_example".to_string()), Some("hide_example".to_string()))
+                .wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
         Some("GetReleaseFiles") => {
-            let result = client.get_release_files("id_example".to_string()).wait();
+            let result = client.get_release_files("id_example".to_string(), Some("hide_example".to_string())).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -276,7 +282,7 @@ fn main() {
         }
 
         Some("LookupRelease") => {
-            let result = client.lookup_release("doi_example".to_string()).wait();
+            let result = client.lookup_release("doi_example".to_string(), Some("hide_example".to_string())).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -296,7 +302,7 @@ fn main() {
         }
 
         Some("GetWork") => {
-            let result = client.get_work("id_example".to_string(), Some("expand_example".to_string())).wait();
+            let result = client.get_work("id_example".to_string(), Some("expand_example".to_string()), Some("hide_example".to_string())).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -306,7 +312,7 @@ fn main() {
         }
 
         Some("GetWorkReleases") => {
-            let result = client.get_work_releases("id_example".to_string()).wait();
+            let result = client.get_work_releases("id_example".to_string(), Some("hide_example".to_string())).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 

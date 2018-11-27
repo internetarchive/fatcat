@@ -382,15 +382,17 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_container(&self, param_id: String, param_expand: Option<String>, context: &Context) -> Box<Future<Item = GetContainerResponse, Error = ApiError> + Send> {
+    fn get_container(&self, param_id: String, param_expand: Option<String>, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetContainerResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
+        let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
         let url = format!(
-            "{}/v0/container/{id}?{expand}",
+            "{}/v0/container/{id}?{expand}{hide}",
             self.base_path,
             id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
-            expand = utf8_percent_encode(&query_expand, QUERY_ENCODE_SET)
+            expand = utf8_percent_encode(&query_expand, QUERY_ENCODE_SET),
+            hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
         );
 
         let hyper_client = (self.hyper_client)();
@@ -518,11 +520,17 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn lookup_container(&self, param_issnl: String, context: &Context) -> Box<Future<Item = LookupContainerResponse, Error = ApiError> + Send> {
+    fn lookup_container(&self, param_issnl: String, param_hide: Option<String>, context: &Context) -> Box<Future<Item = LookupContainerResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_issnl = format!("issnl={issnl}&", issnl = param_issnl.to_string());
+        let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
-        let url = format!("{}/v0/container/lookup?{issnl}", self.base_path, issnl = utf8_percent_encode(&query_issnl, QUERY_ENCODE_SET));
+        let url = format!(
+            "{}/v0/container/lookup?{issnl}{hide}",
+            self.base_path,
+            issnl = utf8_percent_encode(&query_issnl, QUERY_ENCODE_SET),
+            hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
+        );
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Get, &url);
@@ -876,15 +884,17 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_creator(&self, param_id: String, param_expand: Option<String>, context: &Context) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send> {
+    fn get_creator(&self, param_id: String, param_expand: Option<String>, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
+        let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
         let url = format!(
-            "{}/v0/creator/{id}?{expand}",
+            "{}/v0/creator/{id}?{expand}{hide}",
             self.base_path,
             id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
-            expand = utf8_percent_encode(&query_expand, QUERY_ENCODE_SET)
+            expand = utf8_percent_encode(&query_expand, QUERY_ENCODE_SET),
+            hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
         );
 
         let hyper_client = (self.hyper_client)();
@@ -1012,8 +1022,16 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_creator_releases(&self, param_id: String, context: &Context) -> Box<Future<Item = GetCreatorReleasesResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/creator/{id}/releases", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
+    fn get_creator_releases(&self, param_id: String, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetCreatorReleasesResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
+
+        let url = format!(
+            "{}/v0/creator/{id}/releases?{hide}",
+            self.base_path,
+            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
+        );
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Get, &url);
@@ -1072,11 +1090,17 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn lookup_creator(&self, param_orcid: String, context: &Context) -> Box<Future<Item = LookupCreatorResponse, Error = ApiError> + Send> {
+    fn lookup_creator(&self, param_orcid: String, param_hide: Option<String>, context: &Context) -> Box<Future<Item = LookupCreatorResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_orcid = format!("orcid={orcid}&", orcid = param_orcid.to_string());
+        let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
-        let url = format!("{}/v0/creator/lookup?{orcid}", self.base_path, orcid = utf8_percent_encode(&query_orcid, QUERY_ENCODE_SET));
+        let url = format!(
+            "{}/v0/creator/lookup?{orcid}{hide}",
+            self.base_path,
+            orcid = utf8_percent_encode(&query_orcid, QUERY_ENCODE_SET),
+            hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
+        );
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Get, &url);
@@ -1886,15 +1910,17 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_file(&self, param_id: String, param_expand: Option<String>, context: &Context) -> Box<Future<Item = GetFileResponse, Error = ApiError> + Send> {
+    fn get_file(&self, param_id: String, param_expand: Option<String>, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetFileResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
+        let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
         let url = format!(
-            "{}/v0/file/{id}?{expand}",
+            "{}/v0/file/{id}?{expand}{hide}",
             self.base_path,
             id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
-            expand = utf8_percent_encode(&query_expand, QUERY_ENCODE_SET)
+            expand = utf8_percent_encode(&query_expand, QUERY_ENCODE_SET),
+            hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
         );
 
         let hyper_client = (self.hyper_client)();
@@ -2022,11 +2048,17 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn lookup_file(&self, param_sha1: String, context: &Context) -> Box<Future<Item = LookupFileResponse, Error = ApiError> + Send> {
+    fn lookup_file(&self, param_sha1: String, param_hide: Option<String>, context: &Context) -> Box<Future<Item = LookupFileResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_sha1 = format!("sha1={sha1}&", sha1 = param_sha1.to_string());
+        let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
-        let url = format!("{}/v0/file/lookup?{sha1}", self.base_path, sha1 = utf8_percent_encode(&query_sha1, QUERY_ENCODE_SET));
+        let url = format!(
+            "{}/v0/file/lookup?{sha1}{hide}",
+            self.base_path,
+            sha1 = utf8_percent_encode(&query_sha1, QUERY_ENCODE_SET),
+            hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
+        );
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Get, &url);
@@ -2442,15 +2474,17 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_release(&self, param_id: String, param_expand: Option<String>, context: &Context) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send> {
+    fn get_release(&self, param_id: String, param_expand: Option<String>, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
+        let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
         let url = format!(
-            "{}/v0/release/{id}?{expand}",
+            "{}/v0/release/{id}?{expand}{hide}",
             self.base_path,
             id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
-            expand = utf8_percent_encode(&query_expand, QUERY_ENCODE_SET)
+            expand = utf8_percent_encode(&query_expand, QUERY_ENCODE_SET),
+            hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
         );
 
         let hyper_client = (self.hyper_client)();
@@ -2510,8 +2544,16 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_release_files(&self, param_id: String, context: &Context) -> Box<Future<Item = GetReleaseFilesResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/release/{id}/files", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
+    fn get_release_files(&self, param_id: String, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetReleaseFilesResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
+
+        let url = format!(
+            "{}/v0/release/{id}/files?{hide}",
+            self.base_path,
+            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
+        );
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Get, &url);
@@ -2638,11 +2680,17 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn lookup_release(&self, param_doi: String, context: &Context) -> Box<Future<Item = LookupReleaseResponse, Error = ApiError> + Send> {
+    fn lookup_release(&self, param_doi: String, param_hide: Option<String>, context: &Context) -> Box<Future<Item = LookupReleaseResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_doi = format!("doi={doi}&", doi = param_doi.to_string());
+        let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
-        let url = format!("{}/v0/release/lookup?{doi}", self.base_path, doi = utf8_percent_encode(&query_doi, QUERY_ENCODE_SET));
+        let url = format!(
+            "{}/v0/release/lookup?{doi}{hide}",
+            self.base_path,
+            doi = utf8_percent_encode(&query_doi, QUERY_ENCODE_SET),
+            hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
+        );
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Get, &url);
@@ -2928,15 +2976,17 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_work(&self, param_id: String, param_expand: Option<String>, context: &Context) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send> {
+    fn get_work(&self, param_id: String, param_expand: Option<String>, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
+        let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
         let url = format!(
-            "{}/v0/work/{id}?{expand}",
+            "{}/v0/work/{id}?{expand}{hide}",
             self.base_path,
             id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
-            expand = utf8_percent_encode(&query_expand, QUERY_ENCODE_SET)
+            expand = utf8_percent_encode(&query_expand, QUERY_ENCODE_SET),
+            hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
         );
 
         let hyper_client = (self.hyper_client)();
@@ -3064,8 +3114,16 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_work_releases(&self, param_id: String, context: &Context) -> Box<Future<Item = GetWorkReleasesResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/work/{id}/releases", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
+    fn get_work_releases(&self, param_id: String, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetWorkReleasesResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
+
+        let url = format!(
+            "{}/v0/work/{id}/releases?{hide}",
+            self.base_path,
+            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
+        );
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Get, &url);
