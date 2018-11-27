@@ -73,7 +73,7 @@ macro_rules! generic_loop_work {
         fn $fn_name(row_receiver: channel::Receiver<IdentRow>, output_sender: channel::Sender<String>, db_conn: &DbConn, expand: Option<ExpandFlags>) {
             let result: Result<()> = (|| {
                 for row in row_receiver {
-                    let mut entity = $entity_model::db_get_rev(db_conn, row.rev_id.expect("valid, non-deleted row"))
+                    let mut entity = $entity_model::db_get_rev(db_conn, row.rev_id.expect("valid, non-deleted row"), HideFlags::none())
                         .chain_err(|| "reading entity from database")?;
                     //let mut entity = ReleaseEntity::db_get_rev(db_conn, row.rev_id.expect("valid, non-deleted row"))?;
                     entity.state = Some("active".to_string()); // XXX

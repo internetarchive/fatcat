@@ -103,7 +103,70 @@ fn test_expand_flags() {
             creators: true
         }
     );
-    assert!(all == ExpandFlags::all());
+}
+
+#[derive(Clone, Copy, PartialEq)]
+pub struct HideFlags {
+    pub abstracts: bool,
+    pub refs: bool,
+    pub contribs: bool,
+}
+
+impl FromStr for HideFlags {
+    type Err = Error;
+    fn from_str(param: &str) -> Result<HideFlags> {
+        let list: Vec<&str> = param.split_terminator(",").collect();
+        Ok(HideFlags::from_str_list(&list))
+    }
+}
+
+impl HideFlags {
+    pub fn from_str_list(list: &[&str]) -> HideFlags {
+        HideFlags {
+            abstracts: list.contains(&"abstracts"),
+            refs: list.contains(&"refs"),
+            contribs: list.contains(&"contribs"),
+        }
+    }
+    pub fn none() -> HideFlags {
+        HideFlags {
+            abstracts: false,
+            refs: false,
+            contribs: false,
+        }
+    }
+}
+
+#[test]
+fn test_hide_flags() {
+    assert!(HideFlags::from_str_list(&vec![]).abstracts == false);
+    assert!(HideFlags::from_str_list(&vec!["abstracts"]).abstracts == true);
+    assert!(HideFlags::from_str_list(&vec!["abstract"]).abstracts == false);
+    let all = HideFlags::from_str_list(&vec!["abstracts", "refs", "other_thing", "contribs"]);
+    assert!(
+        all == HideFlags {
+            abstracts: true,
+            refs: true,
+            contribs: true,
+        }
+    );
+    assert!(HideFlags::from_str("").unwrap().abstracts == false);
+    assert!(HideFlags::from_str("abstracts").unwrap().abstracts == true);
+    assert!(
+        HideFlags::from_str("something,,abstracts")
+            .unwrap()
+            .abstracts
+            == true
+    );
+    assert!(HideFlags::from_str("file").unwrap().abstracts == false);
+    let all = HideFlags::from_str("abstracts,refs,other_thing,contribs").unwrap();
+    assert!(
+        all == HideFlags {
+            abstracts: true,
+            refs: true,
+            contribs: true,
+        }
+    );
 }
 
 pub fn make_edit_context(

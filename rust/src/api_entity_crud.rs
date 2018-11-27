@@ -42,8 +42,8 @@ where
     type RevRow;
 
     // Generic Methods
-    fn db_get(conn: &DbConn, ident: FatCatId) -> Result<Self>;
-    fn db_get_rev(conn: &DbConn, rev_id: Uuid) -> Result<Self>;
+    fn db_get(conn: &DbConn, ident: FatCatId, hide: HideFlags) -> Result<Self>;
+    fn db_get_rev(conn: &DbConn, rev_id: Uuid, hide: HideFlags) -> Result<Self>;
     fn db_expand(&mut self, conn: &DbConn, expand: ExpandFlags) -> Result<()>;
     fn db_create(&self, conn: &DbConn, edit_context: &EditContext) -> Result<Self::EditRow>;
     fn db_create_batch(
@@ -74,6 +74,7 @@ where
         conn: &DbConn,
         rev_row: Self::RevRow,
         ident_row: Option<Self::IdentRow>,
+        hide: HideFlags,
     ) -> Result<Self>;
     fn db_insert_rev(&self, conn: &DbConn) -> Result<Uuid>;
     fn db_insert_revs(conn: &DbConn, models: &[&Self]) -> Result<Vec<Uuid>>;
@@ -81,23 +82,23 @@ where
 
 macro_rules! generic_db_get {
     ($ident_table:ident, $rev_table:ident) => {
-        fn db_get(conn: &DbConn, ident: FatCatId) -> Result<Self> {
+        fn db_get(conn: &DbConn, ident: FatCatId, hide: HideFlags) -> Result<Self> {
             let (ident, rev): (Self::IdentRow, Self::RevRow) = $ident_table::table
                 .find(ident.to_uuid())
                 .inner_join($rev_table::table)
                 .first(conn)?;
 
-            Self::db_from_row(conn, rev, Some(ident))
+            Self::db_from_row(conn, rev, Some(ident), hide)
         }
     };
 }
 
 macro_rules! generic_db_get_rev {
     ($rev_table:ident) => {
-        fn db_get_rev(conn: &DbConn, rev_id: Uuid) -> Result<Self> {
+        fn db_get_rev(conn: &DbConn, rev_id: Uuid, hide: HideFlags) -> Result<Self> {
             let rev = $rev_table::table.find(rev_id).first(conn)?;
 
-            Self::db_from_row(conn, rev, None)
+            Self::db_from_row(conn, rev, None, hide)
         }
     };
 }
@@ -389,6 +390,7 @@ impl EntityCrud for ContainerEntity {
         _conn: &DbConn,
         rev_row: Self::RevRow,
         ident_row: Option<Self::IdentRow>,
+        _hide: HideFlags,
     ) -> Result<Self> {
         let (state, ident_id, redirect_id) = match ident_row {
             Some(i) => (
@@ -467,6 +469,7 @@ impl EntityCrud for CreatorEntity {
         _conn: &DbConn,
         rev_row: Self::RevRow,
         ident_row: Option<Self::IdentRow>,
+        _hide: HideFlags,
     ) -> Result<Self> {
         let (state, ident_id, redirect_id) = match ident_row {
             Some(i) => (
@@ -542,6 +545,7 @@ impl EntityCrud for FileEntity {
         conn: &DbConn,
         rev_row: Self::RevRow,
         ident_row: Option<Self::IdentRow>,
+        _hide: HideFlags,
     ) -> Result<Self> {
         let (state, ident_id, redirect_id) = match ident_row {
             Some(i) => (
@@ -661,8 +665,6 @@ impl EntityCrud for ReleaseEntity {
 
     generic_db_get!(release_ident, release_rev);
     generic_db_get_rev!(release_rev);
-    //generic_db_create!(release_ident, release_edit);
-    //generic_db_create_batch!(release_ident, release_edit);
     generic_db_update!(release_ident, release_edit);
     generic_db_delete!(release_ident, release_edit);
     generic_db_get_history!(release_edit);
@@ -675,11 +677,11 @@ impl EntityCrud for ReleaseEntity {
                 None => bail!("Can't expand files on a non-concrete entity"),
                 Some(s) => FatCatId::from_str(&s)?,
             };
-            self.files = Some(get_release_files(ident, conn)?);
+            self.files = Some(get_release_files(ident, HideFlags::none(), conn)?);
         }
         if expand.container {
             if let Some(ref cid) = self.container_id {
-                self.container = Some(ContainerEntity::db_get(conn, FatCatId::from_str(&cid)?)?);
+                self.container = Some(ContainerEntity::db_get(conn, FatCatId::from_str(&cid)?, HideFlags::none())?);
             }
         }
         Ok(())
@@ -769,6 +771,7 @@ impl EntityCrud for ReleaseEntity {
         conn: &DbConn,
         rev_row: Self::RevRow,
         ident_row: Option<Self::IdentRow>,
+        hide: HideFlags,
     ) -> Result<Self> {
         let (state, ident_id, redirect_id) = match ident_row {
             Some(i) => (
@@ -779,55 +782,70 @@ impl EntityCrud for ReleaseEntity {
             None => (None, None, None),
         };
 
-        let refs: Vec<ReleaseRef> = release_ref::table
-            .filter(release_ref::release_rev.eq(rev_row.id))
-            .order(release_ref::index_val.asc())
-            .get_results(conn)?
-            .into_iter()
-            .map(|r: ReleaseRefRow| ReleaseRef {
-                index: r.index_val.map(|v| v as i64),
-                key: r.key,
-                extra: r.extra_json,
-                container_name: r.container_name,
-                year: r.year.map(|v| v as i64),
-                title: r.title,
-                locator: r.locator,
-                target_release_id: r
-                    .target_release_ident_id
-                    .map(|v| FatCatId::from_uuid(&v).to_string()),
-            }).collect();
+        let refs: Option<Vec<ReleaseRef>> = match hide.refs {
+            true => None,
+            false => Some(
+                release_ref::table
+                    .filter(release_ref::release_rev.eq(rev_row.id))
+                    .order(release_ref::index_val.asc())
+                    .get_results(conn)?
+                    .into_iter()
+                    .map(|r: ReleaseRefRow| ReleaseRef {
+                        index: r.index_val.map(|v| v as i64),
+                        key: r.key,
+                        extra: r.extra_json,
+                        container_name: r.container_name,
+                        year: r.year.map(|v| v as i64),
+                        title: r.title,
+                        locator: r.locator,
+                        target_release_id: r
+                            .target_release_ident_id
+                            .map(|v| FatCatId::from_uuid(&v).to_string()),
+                    }).collect(),
+            ),
+        };
 
-        let contribs: Vec<ReleaseContrib> = release_contrib::table
-            .filter(release_contrib::release_rev.eq(rev_row.id))
-            .order((
-                release_contrib::role.asc(),
-                release_contrib::index_val.asc(),
-            )).get_results(conn)?
-            .into_iter()
-            .map(|c: ReleaseContribRow| ReleaseContrib {
-                index: c.index_val.map(|v| v as i64),
-                raw_name: c.raw_name,
-                role: c.role,
-                extra: c.extra_json,
-                creator_id: c
-                    .creator_ident_id
-                    .map(|v| FatCatId::from_uuid(&v).to_string()),
-                creator: None,
-            }).collect();
+        let contribs: Option<Vec<ReleaseContrib>> = match hide.contribs {
+            true => None,
+            false => Some(
+                release_contrib::table
+                    .filter(release_contrib::release_rev.eq(rev_row.id))
+                    .order((
+                        release_contrib::role.asc(),
+                        release_contrib::index_val.asc(),
+                    )).get_results(conn)?
+                    .into_iter()
+                    .map(|c: ReleaseContribRow| ReleaseContrib {
+                        index: c.index_val.map(|v| v as i64),
+                        raw_name: c.raw_name,
+                        role: c.role,
+                        extra: c.extra_json,
+                        creator_id: c
+                            .creator_ident_id
+                            .map(|v| FatCatId::from_uuid(&v).to_string()),
+                        creator: None,
+                    }).collect(),
+            ),
+        };
 
-        let abstracts: Vec<ReleaseEntityAbstracts> = release_rev_abstract::table
-            .inner_join(abstracts::table)
-            .filter(release_rev_abstract::release_rev.eq(rev_row.id))
-            .get_results(conn)?
-            .into_iter()
-            .map(
-                |r: (ReleaseRevAbstractRow, AbstractsRow)| ReleaseEntityAbstracts {
-                    sha1: Some(r.0.abstract_sha1),
-                    mimetype: r.0.mimetype,
-                    lang: r.0.lang,
-                    content: Some(r.1.content),
-                },
-            ).collect();
+        let abstracts: Option<Vec<ReleaseEntityAbstracts>> = match hide.abstracts {
+            true => None,
+            false => Some(
+                release_rev_abstract::table
+                    .inner_join(abstracts::table)
+                    .filter(release_rev_abstract::release_rev.eq(rev_row.id))
+                    .get_results(conn)?
+                    .into_iter()
+                    .map(
+                        |r: (ReleaseRevAbstractRow, AbstractsRow)| ReleaseEntityAbstracts {
+                            sha1: Some(r.0.abstract_sha1),
+                            mimetype: r.0.mimetype,
+                            lang: r.0.lang,
+                            content: Some(r.1.content),
+                        },
+                    ).collect(),
+            ),
+        };
 
         Ok(ReleaseEntity {
             title: rev_row.title,
@@ -853,9 +871,9 @@ impl EntityCrud for ReleaseEntity {
             publisher: rev_row.publisher,
             language: rev_row.language,
             work_id: Some(FatCatId::from_uuid(&rev_row.work_ident_id).to_string()),
-            refs: Some(refs),
-            contribs: Some(contribs),
-            abstracts: Some(abstracts),
+            refs: refs,
+            contribs: contribs,
+            abstracts: abstracts,
             state: state,
             ident: ident_id,
             revision: Some(rev_row.id.to_string()),
@@ -1053,6 +1071,7 @@ impl EntityCrud for WorkEntity {
         _conn: &DbConn,
         rev_row: Self::RevRow,
         ident_row: Option<Self::IdentRow>,
+        _hide: HideFlags,
     ) -> Result<Self> {
         let (state, ident_id, redirect_id) = match ident_row {
             Some(i) => (

@@ -30,17 +30,22 @@ macro_rules! wrap_entity_handlers {
             &self,
             id: String,
             expand: Option<String>,
+            hide: Option<String>,
             _context: &Context,
         ) -> Box<Future<Item = $get_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             // No transaction for GET
             let ret = match conn.transaction(|| {
                 let entity_id = FatCatId::from_str(&id)?;
+                let hide_flags = match hide {
+                    None => HideFlags::none(),
+                    Some(param) => HideFlags::from_str(&param)?,
+                };
                 match expand {
-                    None => $model::db_get(&conn, entity_id),
+                    None => $model::db_get(&conn, entity_id, hide_flags),
                     Some(param) => {
                         let expand_flags = ExpandFlags::from_str(&param)?;
-                        let mut entity = $model::db_get(&conn, entity_id)?;
+                        let mut entity = $model::db_get(&conn, entity_id, hide_flags)?;
                         entity.db_expand(&conn, expand_flags)?;
                         Ok(entity)
                     },
@@ -241,11 +246,16 @@ macro_rules! wrap_lookup_handler {
         fn $get_fn(
             &self,
             $idname: $idtype,
+            hide: Option<String>,
             _context: &Context,
         ) -> Box<Future<Item = $get_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
+            let hide_flags = match hide {
+                None => HideFlags::none(),
+                Some(param) => HideFlags::from_str(&param).unwrap(),
+            };
             // No transaction for GET
-            let ret = match self.$get_handler(&$idname, &conn) {
+            let ret = match self.$get_handler(&$idname, hide_flags, &conn) {
                 Ok(entity) =>
                     $get_resp::FoundEntity(entity),
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
@@ -274,6 +284,40 @@ macro_rules! wrap_fcid_handler {
             let ret = match (|| {
                 let fcid = FatCatId::from_str(&id)?;
                 self.$get_handler(fcid, &conn)
+            })() {
+                Ok(entity) =>
+                    $get_resp::Found(entity),
+                Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
+                    $get_resp::NotFound(ErrorResponse { message: format!("Not found: {}", id) }),
+                Err(Error(ErrorKind::MalformedExternalId(e), _)) =>
+                    $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(e) => {
+                    error!("{}", e);
+                    $get_resp::BadRequest(ErrorResponse { message: e.to_string() })
+                },
+            };
+            Box::new(futures::done(Ok(ret)))
+        }
+    }
+}
+
+macro_rules! wrap_fcid_hide_handler {
+    ($get_fn:ident, $get_handler:ident, $get_resp:ident) => {
+        fn $get_fn(
+            &self,
+            id: String,
+            hide: Option<String>,
+            _context: &Context,
+        ) -> Box<Future<Item = $get_resp, Error = ApiError> + Send> {
+            let conn = self.db_pool.get().expect("db_pool error");
+            // No transaction for GET
+            let ret = match (|| {
+                let fcid = FatCatId::from_str(&id)?;
+                let hide_flags = match hide {
+                    None => HideFlags::none(),
+                    Some(param) => HideFlags::from_str(&param)?,
+                };
+                self.$get_handler(fcid, hide_flags, &conn)
             })() {
                 Ok(entity) =>
                     $get_resp::Found(entity),
@@ -403,17 +447,17 @@ impl Api for Server {
         String
     );
 
-    wrap_fcid_handler!(
+    wrap_fcid_hide_handler!(
         get_release_files,
         get_release_files_handler,
         GetReleaseFilesResponse
     );
-    wrap_fcid_handler!(
+    wrap_fcid_hide_handler!(
         get_work_releases,
         get_work_releases_handler,
         GetWorkReleasesResponse
     );
-    wrap_fcid_handler!(
+    wrap_fcid_hide_handler!(
         get_creator_releases,
         get_creator_releases_handler,
         GetCreatorReleasesResponse
