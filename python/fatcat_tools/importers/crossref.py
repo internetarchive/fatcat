@@ -75,9 +75,9 @@ class CrossrefImporter(FatcatImporter):
         returns a ReleaseEntity
         """
 
-        # Previously required the 'author' and 'title' keys to exsit, but now don't
-        #if (not 'author' in obj) or (not 'title' in obj):
-        #    return None
+        # Do require the 'title' keys to exsit, as release entities do
+        if (not 'title' in obj) or (not obj['title']):
+            return None
 
         # Ways to be out of scope (provisionally)
         # journal-issue and journal-volume map to None, but allowed for now
