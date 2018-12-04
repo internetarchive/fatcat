@@ -77,6 +77,7 @@ new importers:
 
 ## Other / Backburner
 
+- look at: https://ftfy.readthedocs.io/en/latest/
 - refactor openapi schema to use shared response types
 - consider using "HTTP 202: Accepted" for entity-mutating calls
 - basic python hbase/elastic matcher
