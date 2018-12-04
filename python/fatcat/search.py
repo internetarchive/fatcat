@@ -18,7 +18,6 @@ def do_search(q, limit=50, fulltext_only=True):
         "query": {
             "query_string": {
             "query": q,
-            "analyzer": "textIcuSearch",
             "default_operator": "AND",
             "analyze_wildcard": True,
             "lenient": True,
