@@ -56,10 +56,10 @@ Raw Object:
 {% if container.issnl != None %}
   <b>ISSN-L<sup><a href="https://en.wikipedia.org/wiki/International_Standard_Serial_Number#Linking_ISSN">?</a></sup></b> 
   &nbsp;<code>{{ container.issnl }}</code>
-  {% if container.extra != None and (container.extra.ISSNp|length > 0) %}
+  {% if container.extra != None and container.extra.ISSNp != None and (container.extra.ISSNp|length > 0) %}
     <br><i class="icon paperclip"></i>Print: &nbsp;<code>{{ container.extra.ISSNp }}</code>
   {% endif %}
-  {% if container.extra != None and (container.extra.ISSNe|length > 0) %}
+  {% if container.extra != None and container.extra.ISSNe != None and (container.extra.ISSNe|length > 0) %}
     <br><i class="icon plug"></i>Electronic: &nbsp;<code>{{ container.extra.ISSNe }}</code>
   {% endif %}
   </div><div class="ui segment attached">
