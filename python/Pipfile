@@ -26,6 +26,7 @@ flask-debugtoolbar = "*"
 pykafka = "*"
 python-dateutil = "*"
 sickle = "*"
+python-snappy = "*"
 
 [requires]
 # Python 3.5 is the bundled (system) version of python for Ubuntu 16.04
