@@ -148,7 +148,11 @@ fn test_api_rich_create() {
     };
 
     // test that foreign key relations worked
-    let re = match client.get_release(release_id.clone(), None, None).wait().unwrap() {
+    let re = match client
+        .get_release(release_id.clone(), None, None)
+        .wait()
+        .unwrap()
+    {
         GetReleaseResponse::FoundEntity(e) => e,
         _ => unreachable!(),
     };
