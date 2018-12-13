@@ -63,32 +63,75 @@ pub fn get_release_files(id: FatCatId, hide: HideFlags, conn: &DbConn) -> Result
         .load(conn)?;
 
     rows.into_iter()
-        .map(
-            |(rev, ident, _)| FileEntity::db_from_row(conn, rev, Some(ident), hide),
-        ).collect()
+        .map(|(rev, ident, _)| FileEntity::db_from_row(conn, rev, Some(ident), hide))
+        .collect()
 }
 
 impl Server {
-    pub fn lookup_container_handler(&self, issnl: &str, hide: HideFlags, conn: &DbConn) -> Result<ContainerEntity> {
-        check_issn(issnl)?;
-        let (ident, rev): (ContainerIdentRow, ContainerRevRow) = container_ident::table
-            .inner_join(container_rev::table)
-            .filter(container_rev::issnl.eq(issnl))
-            .filter(container_ident::is_live.eq(true))
-            .filter(container_ident::redirect_id.is_null())
-            .first(conn)?;
+    pub fn lookup_container_handler(
+        &self,
+        issnl: &Option<String>,
+        wikidata_qid: &Option<String>,
+        hide: HideFlags,
+        conn: &DbConn,
+    ) -> Result<ContainerEntity> {
+        let (ident, rev): (ContainerIdentRow, ContainerRevRow) = match (issnl, wikidata_qid) {
+            (Some(issnl), None) => {
+                check_issn(issnl)?;
+                container_ident::table
+                    .inner_join(container_rev::table)
+                    .filter(container_rev::issnl.eq(&issnl))
+                    .filter(container_ident::is_live.eq(true))
+                    .filter(container_ident::redirect_id.is_null())
+                    .first(conn)?
+            }
+            (None, Some(wikidata_qid)) => {
+                check_issn(wikidata_qid)?;
+                container_ident::table
+                    .inner_join(container_rev::table)
+                    .filter(container_rev::wikidata_qid.eq(&wikidata_qid))
+                    .filter(container_ident::is_live.eq(true))
+                    .filter(container_ident::redirect_id.is_null())
+                    .first(conn)?
+            }
+            _ => {
+                return Err(ErrorKind::MissingOrMultipleExternalId("in lookup".to_string()).into());
+            }
+        };
 
         ContainerEntity::db_from_row(conn, rev, Some(ident), hide)
     }
 
-    pub fn lookup_creator_handler(&self, orcid: &str, hide: HideFlags, conn: &DbConn) -> Result<CreatorEntity> {
-        check_orcid(orcid)?;
-        let (ident, rev): (CreatorIdentRow, CreatorRevRow) = creator_ident::table
-            .inner_join(creator_rev::table)
-            .filter(creator_rev::orcid.eq(orcid))
-            .filter(creator_ident::is_live.eq(true))
-            .filter(creator_ident::redirect_id.is_null())
-            .first(conn)?;
+    pub fn lookup_creator_handler(
+        &self,
+        orcid: &Option<String>,
+        wikidata_qid: &Option<String>,
+        hide: HideFlags,
+        conn: &DbConn,
+    ) -> Result<CreatorEntity> {
+        let (ident, rev): (CreatorIdentRow, CreatorRevRow) = match (orcid, wikidata_qid) {
+            (Some(orcid), None) => {
+                check_orcid(orcid)?;
+                creator_ident::table
+                    .inner_join(creator_rev::table)
+                    .filter(creator_rev::orcid.eq(orcid))
+                    .filter(creator_ident::is_live.eq(true))
+                    .filter(creator_ident::redirect_id.is_null())
+                    .first(conn)?
+            }
+            (None, Some(wikidata_qid)) => {
+                check_wikidata_qid(wikidata_qid)?;
+                creator_ident::table
+                    .inner_join(creator_rev::table)
+                    .filter(creator_rev::wikidata_qid.eq(wikidata_qid))
+                    .filter(creator_ident::is_live.eq(true))
+                    .filter(creator_ident::redirect_id.is_null())
+                    .first(conn)?
+            }
+            _ => {
+                return Err(ErrorKind::MissingOrMultipleExternalId("in lookup".to_string()).into());
+            }
+        };
 
         CreatorEntity::db_from_row(conn, rev, Some(ident), hide)
     }
@@ -114,30 +157,104 @@ impl Server {
             .collect()
     }
 
-    pub fn lookup_file_handler(&self, sha1: &str, hide: HideFlags, conn: &DbConn) -> Result<FileEntity> {
-        let (ident, rev): (FileIdentRow, FileRevRow) = file_ident::table
-            .inner_join(file_rev::table)
-            .filter(file_rev::sha1.eq(sha1))
-            .filter(file_ident::is_live.eq(true))
-            .filter(file_ident::redirect_id.is_null())
-            .first(conn)?;
+    pub fn lookup_file_handler(
+        &self,
+        md5: &Option<String>,
+        sha1: &Option<String>,
+        sha256: &Option<String>,
+        hide: HideFlags,
+        conn: &DbConn,
+    ) -> Result<FileEntity> {
+        let (ident, rev): (FileIdentRow, FileRevRow) = match (md5, sha1, sha256) {
+            (Some(md5), None, None) => file_ident::table
+                .inner_join(file_rev::table)
+                .filter(file_rev::md5.eq(md5))
+                .filter(file_ident::is_live.eq(true))
+                .filter(file_ident::redirect_id.is_null())
+                .first(conn)?,
+            (None, Some(sha1), None) => file_ident::table
+                .inner_join(file_rev::table)
+                .filter(file_rev::sha1.eq(sha1))
+                .filter(file_ident::is_live.eq(true))
+                .filter(file_ident::redirect_id.is_null())
+                .first(conn)?,
+            (None, None, Some(sha256)) => file_ident::table
+                .inner_join(file_rev::table)
+                .filter(file_rev::sha256.eq(sha256))
+                .filter(file_ident::is_live.eq(true))
+                .filter(file_ident::redirect_id.is_null())
+                .first(conn)?,
+            _ => {
+                return Err(ErrorKind::MissingOrMultipleExternalId("in lookup".to_string()).into());
+            }
+        };
 
         FileEntity::db_from_row(conn, rev, Some(ident), hide)
     }
 
     pub fn lookup_release_handler(
         &self,
-        doi: &str,
+        doi: &Option<String>,
+        wikidata_qid: &Option<String>,
+        isbn13: &Option<String>,
+        pmid: &Option<String>,
+        pmcid: &Option<String>,
         hide: HideFlags,
         conn: &DbConn,
     ) -> Result<ReleaseEntity> {
-        check_doi(doi)?;
-        let (ident, rev): (ReleaseIdentRow, ReleaseRevRow) = release_ident::table
-            .inner_join(release_rev::table)
-            .filter(release_rev::doi.eq(doi))
-            .filter(release_ident::is_live.eq(true))
-            .filter(release_ident::redirect_id.is_null())
-            .first(conn)?;
+        let (ident, rev): (ReleaseIdentRow, ReleaseRevRow) =
+            match (doi, wikidata_qid, isbn13, pmid, pmcid) {
+                (Some(doi), None, None, None, None) => {
+                    check_doi(doi)?;
+                    release_ident::table
+                        .inner_join(release_rev::table)
+                        .filter(release_rev::doi.eq(doi))
+                        .filter(release_ident::is_live.eq(true))
+                        .filter(release_ident::redirect_id.is_null())
+                        .first(conn)?
+                }
+                (None, Some(wikidata_qid), None, None, None) => {
+                    check_wikidata_qid(wikidata_qid)?;
+                    release_ident::table
+                        .inner_join(release_rev::table)
+                        .filter(release_rev::wikidata_qid.eq(wikidata_qid))
+                        .filter(release_ident::is_live.eq(true))
+                        .filter(release_ident::redirect_id.is_null())
+                        .first(conn)?
+                }
+                (None, None, Some(isbn13), None, None) => {
+                    // TODO: check_isbn13(isbn13)?;
+                    release_ident::table
+                        .inner_join(release_rev::table)
+                        .filter(release_rev::isbn13.eq(isbn13))
+                        .filter(release_ident::is_live.eq(true))
+                        .filter(release_ident::redirect_id.is_null())
+                        .first(conn)?
+                }
+                (None, None, None, Some(pmid), None) => {
+                    check_pmid(pmid)?;
+                    release_ident::table
+                        .inner_join(release_rev::table)
+                        .filter(release_rev::pmid.eq(pmid))
+                        .filter(release_ident::is_live.eq(true))
+                        .filter(release_ident::redirect_id.is_null())
+                        .first(conn)?
+                }
+                (None, None, None, None, Some(pmcid)) => {
+                    check_pmcid(pmcid)?;
+                    release_ident::table
+                        .inner_join(release_rev::table)
+                        .filter(release_rev::pmcid.eq(pmcid))
+                        .filter(release_ident::is_live.eq(true))
+                        .filter(release_ident::redirect_id.is_null())
+                        .first(conn)?
+                }
+                _ => {
+                    return Err(
+                        ErrorKind::MissingOrMultipleExternalId("in lookup".to_string()).into(),
+                    );
+                }
+            };
 
         ReleaseEntity::db_from_row(conn, rev, Some(ident), hide)
     }
@@ -165,9 +282,8 @@ impl Server {
             .load(conn)?;
 
         rows.into_iter()
-            .map(|(rev, ident)| {
-                ReleaseEntity::db_from_row(conn, rev, Some(ident), hide)
-            }).collect()
+            .map(|(rev, ident)| ReleaseEntity::db_from_row(conn, rev, Some(ident), hide))
+            .collect()
     }
 
     pub fn accept_editgroup_handler(&self, id: FatCatId, conn: &DbConn) -> Result<()> {

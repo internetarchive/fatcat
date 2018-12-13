@@ -11,6 +11,7 @@ use fatcat_api_spec::models::*;
 use fatcat_api_spec::*;
 use futures::{self, Future};
 use std::str::FromStr;
+use uuid::Uuid;
 
 /// Helper for generating wrappers (which return "Box::new(futures::done(Ok(BLAH)))" like the
 /// codegen fatcat-api-spec code wants) that call through to actual helpers (which have simple
@@ -20,11 +21,12 @@ macro_rules! wrap_entity_handlers {
     // stable doesn't have a mechanism to "concat" or generate new identifiers in macros, at least
     // in the context of defining new functions.
     // The only stable approach I know of would be: https://github.com/dtolnay/mashup
-    ($get_fn:ident, $get_resp:ident, $post_fn:ident,
-            $post_resp:ident, $post_batch_fn:ident, $post_batch_handler:ident,
-            $post_batch_resp:ident, $update_fn:ident, $update_resp:ident,
-            $delete_fn:ident, $delete_resp:ident, $get_history_fn:ident,
-            $get_history_resp:ident, $model:ident) => {
+    ($get_fn:ident, $get_resp:ident, $post_fn:ident, $post_resp:ident, $post_batch_fn:ident,
+    $post_batch_handler:ident, $post_batch_resp:ident, $update_fn:ident, $update_resp:ident,
+    $delete_fn:ident, $delete_resp:ident, $get_history_fn:ident, $get_history_resp:ident,
+    $get_edit_fn:ident, $get_edit_resp:ident, $delete_edit_fn:ident, $delete_edit_resp:ident,
+    $get_rev_fn:ident, $get_rev_resp:ident, $get_redirects_fn:ident, $get_redirects_resp:ident,
+    $model:ident) => {
 
         fn $get_fn(
             &self,
@@ -244,14 +246,131 @@ macro_rules! wrap_entity_handlers {
             };
             Box::new(futures::done(Ok(ret)))
         }
+
+        fn $get_rev_fn(
+            &self,
+            id: String,
+            expand: Option<String>,
+            hide: Option<String>,
+            _context: &Context,
+        ) -> Box<Future<Item = $get_rev_resp, Error = ApiError> + Send> {
+            let conn = self.db_pool.get().expect("db_pool error");
+            // No transaction for GET
+            let ret = match conn.transaction(|| {
+                let rev_id = Uuid::from_str(&id)?;
+                let hide_flags = match hide {
+                    None => HideFlags::none(),
+                    Some(param) => HideFlags::from_str(&param)?,
+                };
+                match expand {
+                    None => $model::db_get_rev(&conn, rev_id, hide_flags),
+                    Some(param) => {
+                        let expand_flags = ExpandFlags::from_str(&param)?;
+                        let mut entity = $model::db_get_rev(&conn, rev_id, hide_flags)?;
+                        entity.db_expand(&conn, expand_flags)?;
+                        Ok(entity)
+                    },
+                }
+            }) {
+                Ok(entity) =>
+                    $get_rev_resp::FoundEntityRevision(entity),
+                Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
+                    $get_rev_resp::NotFound(ErrorResponse { message: format!("No such entity {}: {}", stringify!($model), id) }),
+                Err(Error(ErrorKind::Uuid(e), _)) =>
+                    $get_rev_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::MalformedExternalId(e), _)) =>
+                    $get_rev_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(e) => {
+                    error!("{}", e);
+                    $get_rev_resp::GenericError(ErrorResponse { message: e.to_string() })
+                },
+            };
+            Box::new(futures::done(Ok(ret)))
+        }
+
+        fn $get_edit_fn(
+            &self,
+            edit_id: i64,
+            _context: &Context,
+        ) -> Box<Future<Item = $get_edit_resp, Error = ApiError> + Send> {
+            let conn = self.db_pool.get().expect("db_pool error");
+            // No transaction for GET
+            let ret = match conn.transaction(|| {
+                $model::db_get_edit(&conn, edit_id)?.into_model()
+            }) {
+                Ok(edit) =>
+                    $get_edit_resp::FoundEdit(edit),
+                Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
+                    $get_edit_resp::NotFound(ErrorResponse { message: format!("No such {} entity edit: {}", stringify!($model), edit_id) }),
+                Err(e) => {
+                    error!("{}", e);
+                    $get_edit_resp::GenericError(ErrorResponse { message: e.to_string() })
+                },
+            };
+            Box::new(futures::done(Ok(ret)))
+        }
+
+        fn $delete_edit_fn(
+            &self,
+            edit_id: i64,
+            _context: &Context,
+        ) -> Box<Future<Item = $delete_edit_resp, Error = ApiError> + Send> {
+            let conn = self.db_pool.get().expect("db_pool error");
+            let ret = match conn.transaction(|| {
+                $model::db_delete_edit(&conn, edit_id)
+            }) {
+                Ok(()) =>
+                    $delete_edit_resp::DeletedEdit(Success { message: format!("Successfully deleted work-in-progress {} edit: {}", stringify!($model), edit_id) } ),
+                Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
+                    $delete_edit_resp::NotFound(ErrorResponse { message: format!("No such {} edit: {}", stringify!($model), edit_id) }),
+                Err(Error(ErrorKind::Diesel(e), _)) =>
+                    $delete_edit_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(e) => {
+                    error!("{}", e);
+                    $delete_edit_resp::GenericError(ErrorResponse { message: e.to_string() })
+                },
+            };
+            Box::new(futures::done(Ok(ret)))
+        }
+
+        fn $get_redirects_fn(
+            &self,
+            id: String,
+            _context: &Context,
+        ) -> Box<Future<Item = $get_redirects_resp, Error = ApiError> + Send> {
+            let conn = self.db_pool.get().expect("db_pool error");
+            // No transaction for GET
+            let ret = match conn.transaction(|| {
+                let entity_id = FatCatId::from_str(&id)?;
+                let redirects: Vec<FatCatId> = $model::db_get_redirects(&conn, entity_id)?;
+                Ok(redirects.into_iter().map(|fcid| fcid.to_string()).collect())
+            }) {
+                Ok(redirects) =>
+                    $get_redirects_resp::FoundEntityRedirects(redirects),
+                Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
+                    $get_redirects_resp::NotFound(ErrorResponse { message: format!("No such entity {}: {}", stringify!($model), id) }),
+                Err(Error(ErrorKind::Uuid(e), _)) =>
+                    $get_redirects_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::InvalidFatcatId(e), _)) =>
+                    $get_redirects_resp::BadRequest(ErrorResponse {
+                        message: ErrorKind::InvalidFatcatId(e).to_string() }),
+                Err(e) => {
+                    error!("{}", e);
+                    $get_redirects_resp::GenericError(ErrorResponse { message: e.to_string() })
+                },
+            };
+            Box::new(futures::done(Ok(ret)))
+        }
+
     }
 }
 
 macro_rules! wrap_lookup_handler {
-    ($get_fn:ident, $get_handler:ident, $get_resp:ident, $idname:ident, $idtype:ident) => {
+    ($get_fn:ident, $get_handler:ident, $get_resp:ident, $idname:ident) => {
         fn $get_fn(
             &self,
-            $idname: $idtype,
+            $idname: Option<String>,
+            wikidata_qid: Option<String>,
             hide: Option<String>,
             _context: &Context,
         ) -> Box<Future<Item = $get_resp, Error = ApiError> + Send> {
@@ -261,11 +380,11 @@ macro_rules! wrap_lookup_handler {
                 Some(param) => HideFlags::from_str(&param).unwrap(),
             };
             // No transaction for GET
-            let ret = match self.$get_handler(&$idname, hide_flags, &conn) {
+            let ret = match self.$get_handler(&$idname, &wikidata_qid, hide_flags, &conn) {
                 Ok(entity) =>
                     $get_resp::FoundEntity(entity),
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
-                    $get_resp::NotFound(ErrorResponse { message: format!("Not found: {}", $idname) }),
+                    $get_resp::NotFound(ErrorResponse { message: format!("Not found: {:?} / {:?}", $idname, wikidata_qid) }),
                 Err(Error(ErrorKind::MalformedExternalId(e), _)) =>
                     $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
@@ -360,6 +479,14 @@ impl Api for Server {
         DeleteContainerResponse,
         get_container_history,
         GetContainerHistoryResponse,
+        get_container_edit,
+        GetContainerEditResponse,
+        delete_container_edit,
+        DeleteContainerEditResponse,
+        get_container_revision,
+        GetContainerRevisionResponse,
+        get_container_redirects,
+        GetContainerRedirectsResponse,
         ContainerEntity
     );
 
@@ -377,6 +504,14 @@ impl Api for Server {
         DeleteCreatorResponse,
         get_creator_history,
         GetCreatorHistoryResponse,
+        get_creator_edit,
+        GetCreatorEditResponse,
+        delete_creator_edit,
+        DeleteCreatorEditResponse,
+        get_creator_revision,
+        GetCreatorRevisionResponse,
+        get_creator_redirects,
+        GetCreatorRedirectsResponse,
         CreatorEntity
     );
     wrap_entity_handlers!(
@@ -393,6 +528,14 @@ impl Api for Server {
         DeleteFileResponse,
         get_file_history,
         GetFileHistoryResponse,
+        get_file_edit,
+        GetFileEditResponse,
+        delete_file_edit,
+        DeleteFileEditResponse,
+        get_file_revision,
+        GetFileRevisionResponse,
+        get_file_redirects,
+        GetFileRedirectsResponse,
         FileEntity
     );
     wrap_entity_handlers!(
@@ -409,6 +552,14 @@ impl Api for Server {
         DeleteReleaseResponse,
         get_release_history,
         GetReleaseHistoryResponse,
+        get_release_edit,
+        GetReleaseEditResponse,
+        delete_release_edit,
+        DeleteReleaseEditResponse,
+        get_release_revision,
+        GetReleaseRevisionResponse,
+        get_release_redirects,
+        GetReleaseRedirectsResponse,
         ReleaseEntity
     );
     wrap_entity_handlers!(
@@ -425,6 +576,14 @@ impl Api for Server {
         DeleteWorkResponse,
         get_work_history,
         GetWorkHistoryResponse,
+        get_work_edit,
+        GetWorkEditResponse,
+        delete_work_edit,
+        DeleteWorkEditResponse,
+        get_work_revision,
+        GetWorkRevisionResponse,
+        get_work_redirects,
+        GetWorkRedirectsResponse,
         WorkEntity
     );
 
@@ -432,29 +591,13 @@ impl Api for Server {
         lookup_container,
         lookup_container_handler,
         LookupContainerResponse,
-        issnl,
-        String
+        issnl
     );
     wrap_lookup_handler!(
         lookup_creator,
         lookup_creator_handler,
         LookupCreatorResponse,
-        orcid,
-        String
-    );
-    wrap_lookup_handler!(
-        lookup_file,
-        lookup_file_handler,
-        LookupFileResponse,
-        sha1,
-        String
-    );
-    wrap_lookup_handler!(
-        lookup_release,
-        lookup_release_handler,
-        LookupReleaseResponse,
-        doi,
-        String
+        orcid
     );
 
     wrap_fcid_hide_handler!(
@@ -478,6 +621,91 @@ impl Api for Server {
         get_editor_changelog_handler,
         GetEditorChangelogResponse
     );
+
+    fn lookup_file(
+        &self,
+        md5: Option<String>,
+        sha1: Option<String>,
+        sha256: Option<String>,
+        hide: Option<String>,
+        _context: &Context,
+    ) -> Box<Future<Item = LookupFileResponse, Error = ApiError> + Send> {
+        let conn = self.db_pool.get().expect("db_pool error");
+        let hide_flags = match hide {
+            None => HideFlags::none(),
+            Some(param) => HideFlags::from_str(&param).unwrap(),
+        };
+        // No transaction for GET
+        let ret = match self.lookup_file_handler(&md5, &sha1, &sha256, hide_flags, &conn) {
+            Ok(entity) => LookupFileResponse::FoundEntity(entity),
+            Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
+                LookupFileResponse::NotFound(ErrorResponse {
+                    message: format!("Not found: {:?} / {:?} / {:?}", md5, sha1, sha256),
+                })
+            }
+            Err(Error(ErrorKind::MalformedExternalId(e), _)) => {
+                LookupFileResponse::BadRequest(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(e) => {
+                error!("{}", e);
+                LookupFileResponse::BadRequest(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+        };
+        Box::new(futures::done(Ok(ret)))
+    }
+
+    fn lookup_release(
+        &self,
+        doi: Option<String>,
+        wikidata_qid: Option<String>,
+        isbn13: Option<String>,
+        pmid: Option<String>,
+        pmcid: Option<String>,
+        hide: Option<String>,
+        _context: &Context,
+    ) -> Box<Future<Item = LookupReleaseResponse, Error = ApiError> + Send> {
+        let conn = self.db_pool.get().expect("db_pool error");
+        let hide_flags = match hide {
+            None => HideFlags::none(),
+            Some(param) => HideFlags::from_str(&param).unwrap(),
+        };
+        // No transaction for GET
+        let ret = match self.lookup_release_handler(
+            &doi,
+            &wikidata_qid,
+            &isbn13,
+            &pmid,
+            &pmcid,
+            hide_flags,
+            &conn,
+        ) {
+            Ok(entity) => LookupReleaseResponse::FoundEntity(entity),
+            Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
+                LookupReleaseResponse::NotFound(ErrorResponse {
+                    message: format!(
+                        "Not found: {:?} / {:?} / {:?} / {:?} / {:?}",
+                        doi, wikidata_qid, isbn13, pmid, pmcid
+                    ),
+                })
+            }
+            Err(Error(ErrorKind::MalformedExternalId(e), _)) => {
+                LookupReleaseResponse::BadRequest(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(e) => {
+                error!("{}", e);
+                LookupReleaseResponse::BadRequest(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+        };
+        Box::new(futures::done(Ok(ret)))
+    }
 
     fn accept_editgroup(
         &self,

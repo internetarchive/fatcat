@@ -58,6 +58,10 @@ pub mod errors {
                 description("editgroup was already accepted")
                 display("attempted to accept an editgroup which was already accepted: {}", id)
             }
+            MissingOrMultipleExternalId(message: String) {
+                description("external identifiers missing or multiple specified")
+                display("external identifiers missing or multiple specified; please supply exactly one")
+            }
         }
     }
 }

@@ -23,6 +23,9 @@ use uuid::Uuid;
  *   db_update
  *   db_delete
  *   db_get_history
+ *   db_get_edit
+ *   db_delete_edit
+ *   db_get_redirects
  *
  * For now, these will probably be macros, until we can level up our trait/generics foo.
  */
@@ -66,6 +69,9 @@ where
         ident: FatCatId,
         limit: Option<i64>,
     ) -> Result<Vec<EntityHistoryEntry>>;
+    fn db_get_edit(conn: &DbConn, edit_id: i64) -> Result<Self::EditRow>;
+    fn db_delete_edit(conn: &DbConn, edit_id: i64) -> Result<()>;
+    fn db_get_redirects(conn: &DbConn, ident: FatCatId) -> Result<Vec<FatCatId>>;
     fn db_accept_edits(conn: &DbConn, editgroup_id: FatCatId) -> Result<u64>;
 
     // Entity-specific Methods
@@ -260,6 +266,47 @@ macro_rules! generic_db_get_history {
     };
 }
 
+macro_rules! generic_db_get_edit {
+    ($edit_table:ident) => {
+        fn db_get_edit(conn: &DbConn, edit_id: i64) -> Result<Self::EditRow> {
+            Ok($edit_table::table.find(edit_id).first(conn)?)
+        }
+    };
+}
+
+macro_rules! generic_db_delete_edit {
+    ($edit_table:ident) => {
+        /// This method assumes the connection is already in a transaction
+        fn db_delete_edit(conn: &DbConn, edit_id: i64) -> Result<()> {
+            // ensure that edit hasn't been accepted
+            let accepted_rows: Vec<(EditgroupRow, ChangelogRow, Self::EditRow)> = editgroup::table
+                .inner_join(changelog::table)
+                .inner_join($edit_table::table)
+                .filter($edit_table::id.eq(edit_id))
+                .limit(1)
+                .get_results(conn)?;
+            if accepted_rows.len() != 0 {
+                // TODO: should be a 4xx, not a 5xx
+                bail!("attempted to delete an already accepted edit")
+            }
+            diesel::delete($edit_table::table.filter($edit_table::id.eq(edit_id))).execute(conn)?;
+            Ok(())
+        }
+    };
+}
+
+macro_rules! generic_db_get_redirects {
+    ($ident_table:ident) => {
+        fn db_get_redirects(conn: &DbConn, ident: FatCatId) -> Result<Vec<FatCatId>> {
+            let res: Vec<Uuid> = $ident_table::table
+                .select($ident_table::id)
+                .filter($ident_table::redirect_id.eq(ident.to_uuid()))
+                .get_results(conn)?;
+            Ok(res.iter().map(|u| FatCatId::from_uuid(u)).collect())
+        }
+    };
+}
+
 /*
 // This would be the clean and efficient way, but see:
 // https://github.com/diesel-rs/diesel/issues/1478
@@ -382,6 +429,9 @@ impl EntityCrud for ContainerEntity {
     generic_db_update!(container_ident, container_edit);
     generic_db_delete!(container_ident, container_edit);
     generic_db_get_history!(container_edit);
+    generic_db_get_edit!(container_edit);
+    generic_db_delete_edit!(container_edit);
+    generic_db_get_redirects!(container_ident);
     generic_db_accept_edits_batch!("container");
     generic_db_insert_rev!();
 
@@ -404,7 +454,7 @@ impl EntityCrud for ContainerEntity {
             issnl: rev_row.issnl,
             wikidata_qid: rev_row.wikidata_qid,
             publisher: rev_row.publisher,
-            name: rev_row.name,
+            name: Some(rev_row.name),
             abbrev: rev_row.abbrev,
             coden: rev_row.coden,
             state: state,
@@ -432,7 +482,7 @@ impl EntityCrud for ContainerEntity {
                 models
                     .iter()
                     .map(|model| ContainerRevNewRow {
-                        name: model.name.clone(),
+                        name: model.name.clone().unwrap(), // XXX: unwrap
                         publisher: model.publisher.clone(),
                         issnl: model.issnl.clone(),
                         wikidata_qid: model.wikidata_qid.clone(),
@@ -461,6 +511,9 @@ impl EntityCrud for CreatorEntity {
     generic_db_update!(creator_ident, creator_edit);
     generic_db_delete!(creator_ident, creator_edit);
     generic_db_get_history!(creator_edit);
+    generic_db_get_edit!(creator_edit);
+    generic_db_delete_edit!(creator_edit);
+    generic_db_get_redirects!(creator_ident);
     generic_db_accept_edits_batch!("creator");
     generic_db_insert_rev!();
 
@@ -479,7 +532,7 @@ impl EntityCrud for CreatorEntity {
             None => (None, None, None),
         };
         Ok(CreatorEntity {
-            display_name: rev_row.display_name,
+            display_name: Some(rev_row.display_name),
             given_name: rev_row.given_name,
             surname: rev_row.surname,
             orcid: rev_row.orcid,
@@ -509,7 +562,7 @@ impl EntityCrud for CreatorEntity {
                 models
                     .iter()
                     .map(|model| CreatorRevNewRow {
-                        display_name: model.display_name.clone(),
+                        display_name: model.display_name.clone().unwrap(), // XXX: unwrap
                         given_name: model.given_name.clone(),
                         surname: model.surname.clone(),
                         orcid: model.orcid.clone(),
@@ -537,6 +590,9 @@ impl EntityCrud for FileEntity {
     generic_db_update!(file_ident, file_edit);
     generic_db_delete!(file_ident, file_edit);
     generic_db_get_history!(file_edit);
+    generic_db_get_edit!(file_edit);
+    generic_db_delete_edit!(file_edit);
+    generic_db_get_redirects!(file_ident);
     generic_db_accept_edits_batch!("file");
     generic_db_insert_rev!();
 
@@ -667,6 +723,9 @@ impl EntityCrud for ReleaseEntity {
     generic_db_update!(release_ident, release_edit);
     generic_db_delete!(release_ident, release_edit);
     generic_db_get_history!(release_edit);
+    generic_db_get_edit!(release_edit);
+    generic_db_delete_edit!(release_edit);
+    generic_db_get_redirects!(release_ident);
     generic_db_accept_edits_batch!("release");
     generic_db_insert_rev!();
 
@@ -680,7 +739,11 @@ impl EntityCrud for ReleaseEntity {
         }
         if expand.container {
             if let Some(ref cid) = self.container_id {
-                self.container = Some(ContainerEntity::db_get(conn, FatCatId::from_str(&cid)?, HideFlags::none())?);
+                self.container = Some(ContainerEntity::db_get(
+                    conn,
+                    FatCatId::from_str(&cid)?,
+                    HideFlags::none(),
+                )?);
             }
         }
         Ok(())
@@ -847,7 +910,7 @@ impl EntityCrud for ReleaseEntity {
         };
 
         Ok(ReleaseEntity {
-            title: rev_row.title,
+            title: Some(rev_row.title),
             release_type: rev_row.release_type,
             release_status: rev_row.release_status,
             release_date: rev_row.release_date,
@@ -913,7 +976,7 @@ impl EntityCrud for ReleaseEntity {
                     .iter()
                     .map(|model| {
                         Ok(ReleaseRevNewRow {
-                    title: model.title.clone(),
+                    title: model.title.clone().unwrap(), // XXX: unwrap()
                     release_type: model.release_type.clone(),
                     release_status: model.release_status.clone(),
                     release_date: model.release_date,
@@ -1071,6 +1134,9 @@ impl EntityCrud for WorkEntity {
     generic_db_update!(work_ident, work_edit);
     generic_db_delete!(work_ident, work_edit);
     generic_db_get_history!(work_edit);
+    generic_db_get_edit!(work_edit);
+    generic_db_delete_edit!(work_edit);
+    generic_db_get_redirects!(work_ident);
     generic_db_accept_edits_batch!("work");
     generic_db_insert_rev!();
 

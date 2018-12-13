@@ -30,7 +30,8 @@ fn test_api_rich_create() {
         _ => unreachable!(),
     };
 
-    let mut new_container = ContainerEntity::new("schmournal".to_string());
+    let mut new_container = ContainerEntity::new();
+    new_container.name = Some("schmournal".to_string());
     new_container.publisher = Some("society of authors".to_string());
     new_container.issnl = Some("2222-3333".to_string());
     // extra=dict(a=2, i="zing"))),
@@ -43,7 +44,8 @@ fn test_api_rich_create() {
         _ => unreachable!(),
     };
 
-    let mut new_creator = CreatorEntity::new("anon y. mouse".to_string());
+    let mut new_creator = CreatorEntity::new();
+    new_creator.display_name = Some("anon y. mouse".to_string());
     new_creator.orcid = Some("0000-0002-1825-0097".to_string());
     // extra=dict(a=2, i="zing"))),
     let resp = client
@@ -67,7 +69,8 @@ fn test_api_rich_create() {
     };
 
     // this stub work will be referenced
-    let mut new_release = ReleaseEntity::new("derivative work".to_string());
+    let mut new_release = ReleaseEntity::new();
+    new_release.title = Some("derivative work".to_string());
     new_release.release_type = Some("article-journal".to_string());
     new_release.work_id = Some(work_id.clone());
     let mut contrib = ReleaseContrib::new();
@@ -87,7 +90,8 @@ fn test_api_rich_create() {
         _ => unreachable!(),
     };
 
-    let mut new_release = ReleaseEntity::new("dummy work".to_string());
+    let mut new_release = ReleaseEntity::new();
+    new_release.title = Some("dummy work".to_string());
     new_release.release_type = Some("book".to_string());
     new_release.work_id = Some(work_id.clone());
     new_release.container_id = Some(container_id.clone());
