@@ -135,14 +135,14 @@ definitions:
         type: integer
         example: 1048576
         format: int64
-      sha1:
-        type: string
-        #format: custom
-        example: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
       md5:
         type: string
         #format: custom
         example: "d41efcc592d1e40ac13905377399eb9b"
+      sha1:
+        type: string
+        #format: custom
+        example: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
       sha256:
         type: string
         #format: custom
@@ -673,7 +673,7 @@ paths:
         200:
           description: Deleted Edit
           schema:
-            $ref: "#/definitions/entity_edit"
+            $ref: "#/definitions/success"
         <<: *ENTITYRESPONSES
   /creator:
     post:
@@ -863,7 +863,7 @@ paths:
             items:
               $ref: "#/definitions/release_entity"
         <<: *ENTITYRESPONSES
-  /release/{id}/redirects:
+  /creator/{id}/redirects:
     parameters:
       - name: id
         in: path
@@ -871,8 +871,8 @@ paths:
         required: true
     get:
       tags: # TAGLINE
-        - releases # TAGLINE
-      operationId: "get_release_redirects"
+        - creators # TAGLINE
+      operationId: "get_creator_redirects"
       responses:
         200:
           description: Found Entity Redirects
@@ -937,7 +937,7 @@ paths:
         200:
           description: Deleted Edit
           schema:
-            $ref: "#/definitions/entity_edit"
+            $ref: "#/definitions/success"
         <<: *ENTITYRESPONSES
   /file:
     post:
@@ -1129,11 +1129,11 @@ paths:
       tags: # TAGLINE
         - files # TAGLINE
       parameters:
-        - name: sha1
+        - name: md5
           in: query
           type: string
           required: false
-        - name: md5
+        - name: sha1
           in: query
           type: string
           required: false
@@ -1183,7 +1183,7 @@ paths:
         200:
           description: Deleted Edit
           schema:
-            $ref: "#/definitions/entity_edit"
+            $ref: "#/definitions/success"
         <<: *ENTITYRESPONSES
   /release:
     post:
@@ -1460,7 +1460,7 @@ paths:
         200:
           description: Deleted Edit
           schema:
-            $ref: "#/definitions/entity_edit"
+            $ref: "#/definitions/success"
         <<: *ENTITYRESPONSES
   /work:
     post:
@@ -1700,7 +1700,7 @@ paths:
         200:
           description: Deleted Edit
           schema:
-            $ref: "#/definitions/entity_edit"
+            $ref: "#/definitions/success"
         <<: *ENTITYRESPONSES
   /editor/{id}:
     parameters:

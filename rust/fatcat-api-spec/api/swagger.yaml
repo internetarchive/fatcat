@@ -367,6 +367,76 @@ paths:
       path: "/container/:id"
       HttpMethod: "Delete"
       httpmethod: "delete"
+  /container/rev/{id}:
+    get:
+      tags:
+      - "containers"
+      operationId: "get_container_revision"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      - name: "expand"
+        in: "query"
+        description: "List of sub-entities to expand in response. For containers,\
+          \ none accepted (yet)."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"expand_example\".to_string())"
+      - name: "hide"
+        in: "query"
+        description: "List of entity fields to elide in response. For containers,\
+          \ none accepted (yet)."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"hide_example\".to_string())"
+      responses:
+        200:
+          description: "Found Entity Revision"
+          schema:
+            $ref: "#/definitions/container_entity"
+          x-responseId: "FoundEntityRevision"
+          x-uppercaseResponseId: "FOUND_ENTITY_REVISION"
+          uppercase_operation_id: "GET_CONTAINER_REVISION"
+          uppercase_data_type: "CONTAINERENTITY"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_CONTAINER_REVISION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_CONTAINER_REVISION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_CONTAINER_REVISION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_container_revision"
+      uppercase_operation_id: "GET_CONTAINER_REVISION"
+      path: "/container/rev/:id"
+      HttpMethod: "Get"
+      httpmethod: "get"
   /container/{id}/history:
     get:
       tags:
@@ -430,6 +500,62 @@ paths:
       path: "/container/:id/history"
       HttpMethod: "Get"
       httpmethod: "get"
+  /container/{id}/redirects:
+    get:
+      tags:
+      - "containers"
+      operationId: "get_container_redirects"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      responses:
+        200:
+          description: "Found Entity Redirects"
+          schema:
+            type: "array"
+            items:
+              type: "string"
+          x-responseId: "FoundEntityRedirects"
+          x-uppercaseResponseId: "FOUND_ENTITY_REDIRECTS"
+          uppercase_operation_id: "GET_CONTAINER_REDIRECTS"
+          uppercase_data_type: "VEC<STRING>"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_CONTAINER_REDIRECTS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_CONTAINER_REDIRECTS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_CONTAINER_REDIRECTS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_container_redirects"
+      uppercase_operation_id: "GET_CONTAINER_REDIRECTS"
+      path: "/container/:id/redirects"
+      HttpMethod: "Get"
+      httpmethod: "get"
   /container/lookup:
     get:
       tags:
@@ -438,13 +564,18 @@ paths:
       parameters:
       - name: "issnl"
         in: "query"
-        required: true
+        required: false
         type: "string"
         maxLength: 9
         minLength: 9
         pattern: "\\d{4}-\\d{3}[0-9X]"
-        formatString: "\\\"{}\\\""
-        example: "\"issnl_example\".to_string()"
+        formatString: "{:?}"
+        example: "Some(\"issnl_example\".to_string())"
+      - name: "wikidata_qid"
+        in: "query"
+        required: false
+        formatString: "{:?}"
+        example: "Some(\"wikidata_qid_example\".to_string())"
       - name: "hide"
         in: "query"
         description: "List of entity fields to elide in response. For container, none\
@@ -495,6 +626,115 @@ paths:
       path: "/container/lookup"
       HttpMethod: "Get"
       httpmethod: "get"
+  /container/edit/{edit_id}:
+    get:
+      tags:
+      - "containers"
+      operationId: "get_container_edit"
+      parameters:
+      - name: "edit_id"
+        in: "path"
+        required: true
+        type: "integer"
+        format: "int64"
+        formatString: "{}"
+        example: "789"
+      responses:
+        200:
+          description: "Found Edit"
+          schema:
+            $ref: "#/definitions/entity_edit"
+          x-responseId: "FoundEdit"
+          x-uppercaseResponseId: "FOUND_EDIT"
+          uppercase_operation_id: "GET_CONTAINER_EDIT"
+          uppercase_data_type: "ENTITYEDIT"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_CONTAINER_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_CONTAINER_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_CONTAINER_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_container_edit"
+      uppercase_operation_id: "GET_CONTAINER_EDIT"
+      path: "/container/edit/:edit_id"
+      HttpMethod: "Get"
+      httpmethod: "get"
+    delete:
+      tags:
+      - "containers"
+      operationId: "delete_container_edit"
+      parameters:
+      - name: "edit_id"
+        in: "path"
+        required: true
+        type: "integer"
+        format: "int64"
+        formatString: "{}"
+        example: "789"
+      responses:
+        200:
+          description: "Deleted Edit"
+          schema:
+            $ref: "#/definitions/success"
+          x-responseId: "DeletedEdit"
+          x-uppercaseResponseId: "DELETED_EDIT"
+          uppercase_operation_id: "DELETE_CONTAINER_EDIT"
+          uppercase_data_type: "SUCCESS"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "DELETE_CONTAINER_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "DELETE_CONTAINER_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "DELETE_CONTAINER_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "delete_container_edit"
+      uppercase_operation_id: "DELETE_CONTAINER_EDIT"
+      path: "/container/edit/:edit_id"
+      HttpMethod: "Delete"
+      httpmethod: "delete"
   /creator:
     post:
       tags:
@@ -841,6 +1081,76 @@ paths:
       path: "/creator/:id"
       HttpMethod: "Delete"
       httpmethod: "delete"
+  /creator/rev/{id}:
+    get:
+      tags:
+      - "creators"
+      operationId: "get_creator_revision"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      - name: "expand"
+        in: "query"
+        description: "List of sub-entities to expand in response. For creators, none\
+          \ accepted (yet)."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"expand_example\".to_string())"
+      - name: "hide"
+        in: "query"
+        description: "List of entity fields to elide in response. For creators, none\
+          \ accepted (yet)."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"hide_example\".to_string())"
+      responses:
+        200:
+          description: "Found Entity Revision"
+          schema:
+            $ref: "#/definitions/creator_entity"
+          x-responseId: "FoundEntityRevision"
+          x-uppercaseResponseId: "FOUND_ENTITY_REVISION"
+          uppercase_operation_id: "GET_CREATOR_REVISION"
+          uppercase_data_type: "CREATORENTITY"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_CREATOR_REVISION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_CREATOR_REVISION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_CREATOR_REVISION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_creator_revision"
+      uppercase_operation_id: "GET_CREATOR_REVISION"
+      path: "/creator/rev/:id"
+      HttpMethod: "Get"
+      httpmethod: "get"
   /creator/{id}/history:
     get:
       tags:
@@ -968,6 +1278,62 @@ paths:
       path: "/creator/:id/releases"
       HttpMethod: "Get"
       httpmethod: "get"
+  /creator/{id}/redirects:
+    get:
+      tags:
+      - "creators"
+      operationId: "get_creator_redirects"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      responses:
+        200:
+          description: "Found Entity Redirects"
+          schema:
+            type: "array"
+            items:
+              type: "string"
+          x-responseId: "FoundEntityRedirects"
+          x-uppercaseResponseId: "FOUND_ENTITY_REDIRECTS"
+          uppercase_operation_id: "GET_CREATOR_REDIRECTS"
+          uppercase_data_type: "VEC<STRING>"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_CREATOR_REDIRECTS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_CREATOR_REDIRECTS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_CREATOR_REDIRECTS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_creator_redirects"
+      uppercase_operation_id: "GET_CREATOR_REDIRECTS"
+      path: "/creator/:id/redirects"
+      HttpMethod: "Get"
+      httpmethod: "get"
   /creator/lookup:
     get:
       tags:
@@ -976,13 +1342,18 @@ paths:
       parameters:
       - name: "orcid"
         in: "query"
-        required: true
+        required: false
         type: "string"
         maxLength: 19
         minLength: 19
         pattern: "\\d{4}-\\d{4}-\\d{4}-\\d{3}[\\dX]"
-        formatString: "\\\"{}\\\""
-        example: "\"orcid_example\".to_string()"
+        formatString: "{:?}"
+        example: "Some(\"orcid_example\".to_string())"
+      - name: "wikidata_qid"
+        in: "query"
+        required: false
+        formatString: "{:?}"
+        example: "Some(\"wikidata_qid_example\".to_string())"
       - name: "hide"
         in: "query"
         description: "List of entity fields to elide in response. For creator, none\
@@ -1033,6 +1404,115 @@ paths:
       path: "/creator/lookup"
       HttpMethod: "Get"
       httpmethod: "get"
+  /creator/edit/{edit_id}:
+    get:
+      tags:
+      - "creators"
+      operationId: "get_creator_edit"
+      parameters:
+      - name: "edit_id"
+        in: "path"
+        required: true
+        type: "integer"
+        format: "int64"
+        formatString: "{}"
+        example: "789"
+      responses:
+        200:
+          description: "Found Edit"
+          schema:
+            $ref: "#/definitions/entity_edit"
+          x-responseId: "FoundEdit"
+          x-uppercaseResponseId: "FOUND_EDIT"
+          uppercase_operation_id: "GET_CREATOR_EDIT"
+          uppercase_data_type: "ENTITYEDIT"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_CREATOR_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_CREATOR_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_CREATOR_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_creator_edit"
+      uppercase_operation_id: "GET_CREATOR_EDIT"
+      path: "/creator/edit/:edit_id"
+      HttpMethod: "Get"
+      httpmethod: "get"
+    delete:
+      tags:
+      - "creators"
+      operationId: "delete_creator_edit"
+      parameters:
+      - name: "edit_id"
+        in: "path"
+        required: true
+        type: "integer"
+        format: "int64"
+        formatString: "{}"
+        example: "789"
+      responses:
+        200:
+          description: "Deleted Edit"
+          schema:
+            $ref: "#/definitions/success"
+          x-responseId: "DeletedEdit"
+          x-uppercaseResponseId: "DELETED_EDIT"
+          uppercase_operation_id: "DELETE_CREATOR_EDIT"
+          uppercase_data_type: "SUCCESS"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "DELETE_CREATOR_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "DELETE_CREATOR_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "DELETE_CREATOR_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "delete_creator_edit"
+      uppercase_operation_id: "DELETE_CREATOR_EDIT"
+      path: "/creator/edit/:edit_id"
+      HttpMethod: "Delete"
+      httpmethod: "delete"
   /file:
     post:
       tags:
@@ -1379,6 +1859,76 @@ paths:
       path: "/file/:id"
       HttpMethod: "Delete"
       httpmethod: "delete"
+  /file/rev/{id}:
+    get:
+      tags:
+      - "files"
+      operationId: "get_file_revision"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      - name: "expand"
+        in: "query"
+        description: "List of sub-entities to expand in response. For files, none\
+          \ accepted (yet)."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"expand_example\".to_string())"
+      - name: "hide"
+        in: "query"
+        description: "List of entity fields to elide in response. For files, none\
+          \ accepted (yet)."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"hide_example\".to_string())"
+      responses:
+        200:
+          description: "Found Entity Revision"
+          schema:
+            $ref: "#/definitions/file_entity"
+          x-responseId: "FoundEntityRevision"
+          x-uppercaseResponseId: "FOUND_ENTITY_REVISION"
+          uppercase_operation_id: "GET_FILE_REVISION"
+          uppercase_data_type: "FILEENTITY"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_FILE_REVISION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_FILE_REVISION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_FILE_REVISION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_file_revision"
+      uppercase_operation_id: "GET_FILE_REVISION"
+      path: "/file/rev/:id"
+      HttpMethod: "Get"
+      httpmethod: "get"
   /file/{id}/history:
     get:
       tags:
@@ -1442,18 +1992,86 @@ paths:
       path: "/file/:id/history"
       HttpMethod: "Get"
       httpmethod: "get"
+  /file/{id}/redirects:
+    get:
+      tags:
+      - "files"
+      operationId: "get_file_redirects"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      responses:
+        200:
+          description: "Found Entity Redirects"
+          schema:
+            type: "array"
+            items:
+              type: "string"
+          x-responseId: "FoundEntityRedirects"
+          x-uppercaseResponseId: "FOUND_ENTITY_REDIRECTS"
+          uppercase_operation_id: "GET_FILE_REDIRECTS"
+          uppercase_data_type: "VEC<STRING>"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_FILE_REDIRECTS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_FILE_REDIRECTS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_FILE_REDIRECTS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_file_redirects"
+      uppercase_operation_id: "GET_FILE_REDIRECTS"
+      path: "/file/:id/redirects"
+      HttpMethod: "Get"
+      httpmethod: "get"
   /file/lookup:
     get:
       tags:
       - "files"
       operationId: "lookup_file"
       parameters:
+      - name: "md5"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"md5_example\".to_string())"
       - name: "sha1"
         in: "query"
-        required: true
+        required: false
         type: "string"
-        formatString: "\\\"{}\\\""
-        example: "\"sha1_example\".to_string()"
+        formatString: "{:?}"
+        example: "Some(\"sha1_example\".to_string())"
+      - name: "sha256"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"sha256_example\".to_string())"
       - name: "hide"
         in: "query"
         description: "List of entity fields to elide in response. For files, none\
@@ -1504,6 +2122,115 @@ paths:
       path: "/file/lookup"
       HttpMethod: "Get"
       httpmethod: "get"
+  /file/edit/{edit_id}:
+    get:
+      tags:
+      - "files"
+      operationId: "get_file_edit"
+      parameters:
+      - name: "edit_id"
+        in: "path"
+        required: true
+        type: "integer"
+        format: "int64"
+        formatString: "{}"
+        example: "789"
+      responses:
+        200:
+          description: "Found Edit"
+          schema:
+            $ref: "#/definitions/entity_edit"
+          x-responseId: "FoundEdit"
+          x-uppercaseResponseId: "FOUND_EDIT"
+          uppercase_operation_id: "GET_FILE_EDIT"
+          uppercase_data_type: "ENTITYEDIT"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_FILE_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_FILE_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_FILE_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_file_edit"
+      uppercase_operation_id: "GET_FILE_EDIT"
+      path: "/file/edit/:edit_id"
+      HttpMethod: "Get"
+      httpmethod: "get"
+    delete:
+      tags:
+      - "files"
+      operationId: "delete_file_edit"
+      parameters:
+      - name: "edit_id"
+        in: "path"
+        required: true
+        type: "integer"
+        format: "int64"
+        formatString: "{}"
+        example: "789"
+      responses:
+        200:
+          description: "Deleted Edit"
+          schema:
+            $ref: "#/definitions/success"
+          x-responseId: "DeletedEdit"
+          x-uppercaseResponseId: "DELETED_EDIT"
+          uppercase_operation_id: "DELETE_FILE_EDIT"
+          uppercase_data_type: "SUCCESS"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "DELETE_FILE_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "DELETE_FILE_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "DELETE_FILE_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "delete_file_edit"
+      uppercase_operation_id: "DELETE_FILE_EDIT"
+      path: "/file/edit/:edit_id"
+      HttpMethod: "Delete"
+      httpmethod: "delete"
   /release:
     post:
       tags:
@@ -1850,6 +2577,76 @@ paths:
       path: "/release/:id"
       HttpMethod: "Delete"
       httpmethod: "delete"
+  /release/rev/{id}:
+    get:
+      tags:
+      - "releases"
+      operationId: "get_release_revision"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      - name: "expand"
+        in: "query"
+        description: "List of sub-entities to expand in response. For releases, none\
+          \ accepted (yet)."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"expand_example\".to_string())"
+      - name: "hide"
+        in: "query"
+        description: "List of entity fields to elide in response. For releases, none\
+          \ accepted (yet)."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"hide_example\".to_string())"
+      responses:
+        200:
+          description: "Found Entity Revision"
+          schema:
+            $ref: "#/definitions/release_entity"
+          x-responseId: "FoundEntityRevision"
+          x-uppercaseResponseId: "FOUND_ENTITY_REVISION"
+          uppercase_operation_id: "GET_RELEASE_REVISION"
+          uppercase_data_type: "RELEASEENTITY"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_RELEASE_REVISION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_RELEASE_REVISION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_RELEASE_REVISION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_release_revision"
+      uppercase_operation_id: "GET_RELEASE_REVISION"
+      path: "/release/rev/:id"
+      HttpMethod: "Get"
+      httpmethod: "get"
   /release/{id}/history:
     get:
       tags:
@@ -1977,6 +2774,62 @@ paths:
       path: "/release/:id/files"
       HttpMethod: "Get"
       httpmethod: "get"
+  /release/{id}/redirects:
+    get:
+      tags:
+      - "releases"
+      operationId: "get_release_redirects"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      responses:
+        200:
+          description: "Found Entity Redirects"
+          schema:
+            type: "array"
+            items:
+              type: "string"
+          x-responseId: "FoundEntityRedirects"
+          x-uppercaseResponseId: "FOUND_ENTITY_REDIRECTS"
+          uppercase_operation_id: "GET_RELEASE_REDIRECTS"
+          uppercase_data_type: "VEC<STRING>"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_RELEASE_REDIRECTS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_RELEASE_REDIRECTS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_RELEASE_REDIRECTS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_release_redirects"
+      uppercase_operation_id: "GET_RELEASE_REDIRECTS"
+      path: "/release/:id/redirects"
+      HttpMethod: "Get"
+      httpmethod: "get"
   /release/lookup:
     get:
       tags:
@@ -1985,10 +2838,34 @@ paths:
       parameters:
       - name: "doi"
         in: "query"
-        required: true
+        required: false
         type: "string"
-        formatString: "\\\"{}\\\""
-        example: "\"doi_example\".to_string()"
+        formatString: "{:?}"
+        example: "Some(\"doi_example\".to_string())"
+      - name: "wikidata_qid"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"wikidata_qid_example\".to_string())"
+      - name: "isbn13"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"isbn13_example\".to_string())"
+      - name: "pmid"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"pmid_example\".to_string())"
+      - name: "pmcid"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"pmcid_example\".to_string())"
       - name: "hide"
         in: "query"
         description: "List of entity fields to elide in response. For releases, 'abstracts',\
@@ -2039,6 +2916,115 @@ paths:
       path: "/release/lookup"
       HttpMethod: "Get"
       httpmethod: "get"
+  /release/edit/{edit_id}:
+    get:
+      tags:
+      - "releases"
+      operationId: "get_release_edit"
+      parameters:
+      - name: "edit_id"
+        in: "path"
+        required: true
+        type: "integer"
+        format: "int64"
+        formatString: "{}"
+        example: "789"
+      responses:
+        200:
+          description: "Found Edit"
+          schema:
+            $ref: "#/definitions/entity_edit"
+          x-responseId: "FoundEdit"
+          x-uppercaseResponseId: "FOUND_EDIT"
+          uppercase_operation_id: "GET_RELEASE_EDIT"
+          uppercase_data_type: "ENTITYEDIT"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_RELEASE_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_RELEASE_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_RELEASE_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_release_edit"
+      uppercase_operation_id: "GET_RELEASE_EDIT"
+      path: "/release/edit/:edit_id"
+      HttpMethod: "Get"
+      httpmethod: "get"
+    delete:
+      tags:
+      - "releases"
+      operationId: "delete_release_edit"
+      parameters:
+      - name: "edit_id"
+        in: "path"
+        required: true
+        type: "integer"
+        format: "int64"
+        formatString: "{}"
+        example: "789"
+      responses:
+        200:
+          description: "Deleted Edit"
+          schema:
+            $ref: "#/definitions/success"
+          x-responseId: "DeletedEdit"
+          x-uppercaseResponseId: "DELETED_EDIT"
+          uppercase_operation_id: "DELETE_RELEASE_EDIT"
+          uppercase_data_type: "SUCCESS"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "DELETE_RELEASE_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "DELETE_RELEASE_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "DELETE_RELEASE_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "delete_release_edit"
+      uppercase_operation_id: "DELETE_RELEASE_EDIT"
+      path: "/release/edit/:edit_id"
+      HttpMethod: "Delete"
+      httpmethod: "delete"
   /work:
     post:
       tags:
@@ -2385,6 +3371,76 @@ paths:
       path: "/work/:id"
       HttpMethod: "Delete"
       httpmethod: "delete"
+  /work/rev/{id}:
+    get:
+      tags:
+      - "works"
+      operationId: "get_work_revision"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      - name: "expand"
+        in: "query"
+        description: "List of sub-entities to expand in response. For works, none\
+          \ accepted (yet)."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"expand_example\".to_string())"
+      - name: "hide"
+        in: "query"
+        description: "List of entity fields to elide in response. For works, none\
+          \ accepted (yet)."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"hide_example\".to_string())"
+      responses:
+        200:
+          description: "Found Entity Revision"
+          schema:
+            $ref: "#/definitions/work_entity"
+          x-responseId: "FoundEntityRevision"
+          x-uppercaseResponseId: "FOUND_ENTITY_REVISION"
+          uppercase_operation_id: "GET_WORK_REVISION"
+          uppercase_data_type: "WORKENTITY"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_WORK_REVISION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_WORK_REVISION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_WORK_REVISION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_work_revision"
+      uppercase_operation_id: "GET_WORK_REVISION"
+      path: "/work/rev/:id"
+      HttpMethod: "Get"
+      httpmethod: "get"
   /work/{id}/history:
     get:
       tags:
@@ -2446,6 +3502,62 @@ paths:
       operation_id: "get_work_history"
       uppercase_operation_id: "GET_WORK_HISTORY"
       path: "/work/:id/history"
+      HttpMethod: "Get"
+      httpmethod: "get"
+  /work/{id}/redirects:
+    get:
+      tags:
+      - "works"
+      operationId: "get_work_redirects"
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"id_example\".to_string()"
+      responses:
+        200:
+          description: "Found Entity Redirects"
+          schema:
+            type: "array"
+            items:
+              type: "string"
+          x-responseId: "FoundEntityRedirects"
+          x-uppercaseResponseId: "FOUND_ENTITY_REDIRECTS"
+          uppercase_operation_id: "GET_WORK_REDIRECTS"
+          uppercase_data_type: "VEC<STRING>"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_WORK_REDIRECTS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_WORK_REDIRECTS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_WORK_REDIRECTS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_work_redirects"
+      uppercase_operation_id: "GET_WORK_REDIRECTS"
+      path: "/work/:id/redirects"
       HttpMethod: "Get"
       httpmethod: "get"
   /work/{id}/releases:
@@ -2512,6 +3624,115 @@ paths:
       path: "/work/:id/releases"
       HttpMethod: "Get"
       httpmethod: "get"
+  /work/edit/{edit_id}:
+    get:
+      tags:
+      - "works"
+      operationId: "get_work_edit"
+      parameters:
+      - name: "edit_id"
+        in: "path"
+        required: true
+        type: "integer"
+        format: "int64"
+        formatString: "{}"
+        example: "789"
+      responses:
+        200:
+          description: "Found Edit"
+          schema:
+            $ref: "#/definitions/entity_edit"
+          x-responseId: "FoundEdit"
+          x-uppercaseResponseId: "FOUND_EDIT"
+          uppercase_operation_id: "GET_WORK_EDIT"
+          uppercase_data_type: "ENTITYEDIT"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_WORK_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_WORK_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_WORK_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_work_edit"
+      uppercase_operation_id: "GET_WORK_EDIT"
+      path: "/work/edit/:edit_id"
+      HttpMethod: "Get"
+      httpmethod: "get"
+    delete:
+      tags:
+      - "works"
+      operationId: "delete_work_edit"
+      parameters:
+      - name: "edit_id"
+        in: "path"
+        required: true
+        type: "integer"
+        format: "int64"
+        formatString: "{}"
+        example: "789"
+      responses:
+        200:
+          description: "Deleted Edit"
+          schema:
+            $ref: "#/definitions/success"
+          x-responseId: "DeletedEdit"
+          x-uppercaseResponseId: "DELETED_EDIT"
+          uppercase_operation_id: "DELETE_WORK_EDIT"
+          uppercase_data_type: "SUCCESS"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "DELETE_WORK_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "DELETE_WORK_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "DELETE_WORK_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "delete_work_edit"
+      uppercase_operation_id: "DELETE_WORK_EDIT"
+      path: "/work/edit/:edit_id"
+      HttpMethod: "Delete"
+      httpmethod: "delete"
   /editor/{id}:
     get:
       operationId: "get_editor"
@@ -2937,8 +4158,6 @@ definitions:
     upperCaseName: "SUCCESS"
   container_entity:
     type: "object"
-    required:
-    - "name"
     properties:
       coden:
         type: "string"
@@ -2958,6 +4177,7 @@ definitions:
       name:
         type: "string"
         example: "Journal of Important Results"
+        description: "Required for valid entities"
       edit_extra:
         type: "object"
       extra:
@@ -3006,8 +4226,6 @@ definitions:
     upperCaseName: "CONTAINER_ENTITY"
   creator_entity:
     type: "object"
-    required:
-    - "display_name"
     properties:
       wikidata_qid:
         type: "string"
@@ -3024,6 +4242,7 @@ definitions:
       display_name:
         type: "string"
         example: "Grace Hopper"
+        description: "Required for valid entities"
       state:
         type: "string"
         enum:
@@ -3086,12 +4305,12 @@ definitions:
       sha256:
         type: "string"
         example: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
-      md5:
-        type: "string"
-        example: "d41efcc592d1e40ac13905377399eb9b"
       sha1:
         type: "string"
         example: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
+      md5:
+        type: "string"
+        example: "d41efcc592d1e40ac13905377399eb9b"
       size:
         type: "integer"
         format: "int64"
@@ -3151,8 +4370,6 @@ definitions:
     upperCaseName: "FILE_ENTITY"
   release_entity:
     type: "object"
-    required:
-    - "title"
     properties:
       abstracts:
         type: "array"
@@ -3216,6 +4433,7 @@ definitions:
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
       title:
         type: "string"
+        description: "Required for valid entities"
       state:
         type: "string"
         enum:

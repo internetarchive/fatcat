@@ -13,11 +13,14 @@ use clap::{App, Arg};
 #[allow(unused_imports)]
 use fatcat::{
     AcceptEditgroupResponse, ApiError, ApiNoContext, ContextWrapperExt, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse,
-    CreateEditgroupResponse, CreateFileBatchResponse, CreateFileResponse, CreateReleaseBatchResponse, CreateReleaseResponse, CreateWorkBatchResponse, CreateWorkResponse, DeleteContainerResponse,
-    DeleteCreatorResponse, DeleteFileResponse, DeleteReleaseResponse, DeleteWorkResponse, GetChangelogEntryResponse, GetChangelogResponse, GetContainerHistoryResponse, GetContainerResponse,
-    GetCreatorHistoryResponse, GetCreatorReleasesResponse, GetCreatorResponse, GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileHistoryResponse, GetFileResponse,
-    GetReleaseFilesResponse, GetReleaseHistoryResponse, GetReleaseResponse, GetStatsResponse, GetWorkHistoryResponse, GetWorkReleasesResponse, GetWorkResponse, LookupContainerResponse,
-    LookupCreatorResponse, LookupFileResponse, LookupReleaseResponse, UpdateContainerResponse, UpdateCreatorResponse, UpdateFileResponse, UpdateReleaseResponse, UpdateWorkResponse,
+    CreateEditgroupResponse, CreateFileBatchResponse, CreateFileResponse, CreateReleaseBatchResponse, CreateReleaseResponse, CreateWorkBatchResponse, CreateWorkResponse, DeleteContainerEditResponse,
+    DeleteContainerResponse, DeleteCreatorEditResponse, DeleteCreatorResponse, DeleteFileEditResponse, DeleteFileResponse, DeleteReleaseEditResponse, DeleteReleaseResponse, DeleteWorkEditResponse,
+    DeleteWorkResponse, GetChangelogEntryResponse, GetChangelogResponse, GetContainerEditResponse, GetContainerHistoryResponse, GetContainerRedirectsResponse, GetContainerResponse,
+    GetContainerRevisionResponse, GetCreatorEditResponse, GetCreatorHistoryResponse, GetCreatorRedirectsResponse, GetCreatorReleasesResponse, GetCreatorResponse, GetCreatorRevisionResponse,
+    GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileEditResponse, GetFileHistoryResponse, GetFileRedirectsResponse, GetFileResponse, GetFileRevisionResponse,
+    GetReleaseEditResponse, GetReleaseFilesResponse, GetReleaseHistoryResponse, GetReleaseRedirectsResponse, GetReleaseResponse, GetReleaseRevisionResponse, GetStatsResponse, GetWorkEditResponse,
+    GetWorkHistoryResponse, GetWorkRedirectsResponse, GetWorkReleasesResponse, GetWorkResponse, GetWorkRevisionResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse,
+    LookupReleaseResponse, UpdateContainerResponse, UpdateCreatorResponse, UpdateFileResponse, UpdateReleaseResponse, UpdateWorkResponse,
 };
 #[allow(unused_imports)]
 use futures::{future, stream, Future, Stream};
@@ -30,14 +33,22 @@ fn main() {
                 .possible_values(&[
                     "CreateContainerBatch",
                     "DeleteContainer",
+                    "DeleteContainerEdit",
                     "GetContainer",
+                    "GetContainerEdit",
                     "GetContainerHistory",
+                    "GetContainerRedirects",
+                    "GetContainerRevision",
                     "LookupContainer",
                     "CreateCreatorBatch",
                     "DeleteCreator",
+                    "DeleteCreatorEdit",
                     "GetCreator",
+                    "GetCreatorEdit",
                     "GetCreatorHistory",
+                    "GetCreatorRedirects",
                     "GetCreatorReleases",
+                    "GetCreatorRevision",
                     "LookupCreator",
                     "GetEditor",
                     "GetEditorChangelog",
@@ -48,20 +59,32 @@ fn main() {
                     "GetEditgroup",
                     "CreateFileBatch",
                     "DeleteFile",
+                    "DeleteFileEdit",
                     "GetFile",
+                    "GetFileEdit",
                     "GetFileHistory",
+                    "GetFileRedirects",
+                    "GetFileRevision",
                     "LookupFile",
                     "CreateReleaseBatch",
                     "DeleteRelease",
+                    "DeleteReleaseEdit",
                     "GetRelease",
+                    "GetReleaseEdit",
                     "GetReleaseFiles",
                     "GetReleaseHistory",
+                    "GetReleaseRedirects",
+                    "GetReleaseRevision",
                     "LookupRelease",
                     "CreateWorkBatch",
                     "DeleteWork",
+                    "DeleteWorkEdit",
                     "GetWork",
+                    "GetWorkEdit",
                     "GetWorkHistory",
+                    "GetWorkRedirects",
                     "GetWorkReleases",
+                    "GetWorkRevision",
                 ]).required(true)
                 .index(1),
         ).arg(Arg::with_name("https").long("https").help("Whether to use HTTPS or not"))
@@ -103,10 +126,20 @@ fn main() {
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
+        Some("DeleteContainerEdit") => {
+            let result = client.delete_container_edit(789).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
         Some("GetContainer") => {
             let result = client
                 .get_container("id_example".to_string(), Some("expand_example".to_string()), Some("hide_example".to_string()))
                 .wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("GetContainerEdit") => {
+            let result = client.get_container_edit(789).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -115,8 +148,22 @@ fn main() {
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
+        Some("GetContainerRedirects") => {
+            let result = client.get_container_redirects("id_example".to_string()).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("GetContainerRevision") => {
+            let result = client
+                .get_container_revision("id_example".to_string(), Some("expand_example".to_string()), Some("hide_example".to_string()))
+                .wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
         Some("LookupContainer") => {
-            let result = client.lookup_container("issnl_example".to_string(), Some("hide_example".to_string())).wait();
+            let result = client
+                .lookup_container(Some("issnl_example".to_string()), Some("wikidata_qid_example".to_string()), Some("hide_example".to_string()))
+                .wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -141,10 +188,20 @@ fn main() {
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
+        Some("DeleteCreatorEdit") => {
+            let result = client.delete_creator_edit(789).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
         Some("GetCreator") => {
             let result = client
                 .get_creator("id_example".to_string(), Some("expand_example".to_string()), Some("hide_example".to_string()))
                 .wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("GetCreatorEdit") => {
+            let result = client.get_creator_edit(789).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -153,13 +210,27 @@ fn main() {
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
+        Some("GetCreatorRedirects") => {
+            let result = client.get_creator_redirects("id_example".to_string()).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
         Some("GetCreatorReleases") => {
             let result = client.get_creator_releases("id_example".to_string(), Some("hide_example".to_string())).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
+        Some("GetCreatorRevision") => {
+            let result = client
+                .get_creator_revision("id_example".to_string(), Some("expand_example".to_string()), Some("hide_example".to_string()))
+                .wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
         Some("LookupCreator") => {
-            let result = client.lookup_creator("orcid_example".to_string(), Some("hide_example".to_string())).wait();
+            let result = client
+                .lookup_creator(Some("orcid_example".to_string()), Some("wikidata_qid_example".to_string()), Some("hide_example".to_string()))
+                .wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -223,8 +294,18 @@ fn main() {
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
+        Some("DeleteFileEdit") => {
+            let result = client.delete_file_edit(789).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
         Some("GetFile") => {
             let result = client.get_file("id_example".to_string(), Some("expand_example".to_string()), Some("hide_example".to_string())).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("GetFileEdit") => {
+            let result = client.get_file_edit(789).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -233,8 +314,26 @@ fn main() {
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
+        Some("GetFileRedirects") => {
+            let result = client.get_file_redirects("id_example".to_string()).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("GetFileRevision") => {
+            let result = client
+                .get_file_revision("id_example".to_string(), Some("expand_example".to_string()), Some("hide_example".to_string()))
+                .wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
         Some("LookupFile") => {
-            let result = client.lookup_file("sha1_example".to_string(), Some("hide_example".to_string())).wait();
+            let result = client
+                .lookup_file(
+                    Some("md5_example".to_string()),
+                    Some("sha1_example".to_string()),
+                    Some("sha256_example".to_string()),
+                    Some("hide_example".to_string()),
+                ).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -264,10 +363,20 @@ fn main() {
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
+        Some("DeleteReleaseEdit") => {
+            let result = client.delete_release_edit(789).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
         Some("GetRelease") => {
             let result = client
                 .get_release("id_example".to_string(), Some("expand_example".to_string()), Some("hide_example".to_string()))
                 .wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("GetReleaseEdit") => {
+            let result = client.get_release_edit(789).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -281,8 +390,28 @@ fn main() {
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
+        Some("GetReleaseRedirects") => {
+            let result = client.get_release_redirects("id_example".to_string()).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("GetReleaseRevision") => {
+            let result = client
+                .get_release_revision("id_example".to_string(), Some("expand_example".to_string()), Some("hide_example".to_string()))
+                .wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
         Some("LookupRelease") => {
-            let result = client.lookup_release("doi_example".to_string(), Some("hide_example".to_string())).wait();
+            let result = client
+                .lookup_release(
+                    Some("doi_example".to_string()),
+                    Some("wikidata_qid_example".to_string()),
+                    Some("isbn13_example".to_string()),
+                    Some("pmid_example".to_string()),
+                    Some("pmcid_example".to_string()),
+                    Some("hide_example".to_string()),
+                ).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -301,8 +430,18 @@ fn main() {
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
+        Some("DeleteWorkEdit") => {
+            let result = client.delete_work_edit(789).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
         Some("GetWork") => {
             let result = client.get_work("id_example".to_string(), Some("expand_example".to_string()), Some("hide_example".to_string())).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("GetWorkEdit") => {
+            let result = client.get_work_edit(789).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -311,8 +450,20 @@ fn main() {
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
+        Some("GetWorkRedirects") => {
+            let result = client.get_work_redirects("id_example".to_string()).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
         Some("GetWorkReleases") => {
             let result = client.get_work_releases("id_example".to_string(), Some("hide_example".to_string())).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("GetWorkRevision") => {
+            let result = client
+                .get_work_revision("id_example".to_string(), Some("expand_example".to_string()), Some("hide_example".to_string()))
+                .wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 

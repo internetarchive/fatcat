@@ -58,8 +58,10 @@ pub struct ContainerEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub publisher: Option<String>,
 
+    /// Required for valid entities
     #[serde(rename = "name")]
-    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
 
     #[serde(rename = "edit_extra")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -91,14 +93,14 @@ pub struct ContainerEntity {
 }
 
 impl ContainerEntity {
-    pub fn new(name: String) -> ContainerEntity {
+    pub fn new() -> ContainerEntity {
         ContainerEntity {
             coden: None,
             abbrev: None,
             wikidata_qid: None,
             issnl: None,
             publisher: None,
-            name: name,
+            name: None,
             edit_extra: None,
             extra: None,
             redirect: None,
@@ -127,8 +129,10 @@ pub struct CreatorEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub given_name: Option<String>,
 
+    /// Required for valid entities
     #[serde(rename = "display_name")]
-    pub display_name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub display_name: Option<String>,
 
     // Note: inline enums are not fully supported by swagger-codegen
     #[serde(rename = "state")]
@@ -160,13 +164,13 @@ pub struct CreatorEntity {
 }
 
 impl CreatorEntity {
-    pub fn new(display_name: String) -> CreatorEntity {
+    pub fn new() -> CreatorEntity {
         CreatorEntity {
             wikidata_qid: None,
             orcid: None,
             surname: None,
             given_name: None,
-            display_name: display_name,
+            display_name: None,
             state: None,
             ident: None,
             revision: None,
@@ -358,13 +362,13 @@ pub struct FileEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub sha256: Option<String>,
 
-    #[serde(rename = "md5")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub md5: Option<String>,
-
     #[serde(rename = "sha1")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub sha1: Option<String>,
+
+    #[serde(rename = "md5")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub md5: Option<String>,
 
     #[serde(rename = "size")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -406,8 +410,8 @@ impl FileEntity {
             mimetype: None,
             urls: None,
             sha256: None,
-            md5: None,
             sha1: None,
+            md5: None,
             size: None,
             edit_extra: None,
             extra: None,
@@ -564,8 +568,10 @@ pub struct ReleaseEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub work_id: Option<String>,
 
+    /// Required for valid entities
     #[serde(rename = "title")]
-    pub title: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub title: Option<String>,
 
     // Note: inline enums are not fully supported by swagger-codegen
     #[serde(rename = "state")]
@@ -597,7 +603,7 @@ pub struct ReleaseEntity {
 }
 
 impl ReleaseEntity {
-    pub fn new(title: String) -> ReleaseEntity {
+    pub fn new() -> ReleaseEntity {
         ReleaseEntity {
             abstracts: None,
             refs: None,
@@ -620,7 +626,7 @@ impl ReleaseEntity {
             files: None,
             container: None,
             work_id: None,
-            title: title,
+            title: None,
             state: None,
             ident: None,
             revision: None,
