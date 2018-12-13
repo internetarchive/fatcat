@@ -92,13 +92,13 @@ definitions:
         example: "The computers did the thing successfully!"
   container_entity:
     type: object
-    required:
-      - name
+    # required for creation: name
     properties:
       <<: *ENTITYPROPS
       name:
         type: string
         example: "Journal of Important Results"
+        description: "Required for valid entities"
       publisher:
         type: string
         example: "Society of Curious Students"
@@ -112,13 +112,13 @@ definitions:
         type: string
   creator_entity:
     type: object
-    required:
-      - display_name
+    # required for creation: display_name
     properties:
       <<: *ENTITYPROPS
       display_name:
         type: string
         example: "Grace Hopper"
+        description: "Required for valid entities"
       given_name:
         type: string
       surname:
@@ -172,12 +172,12 @@ definitions:
           #format: uuid
   release_entity:
     type: object
-    required:
-      - title
+    # required for creation: title
     properties:
       <<: *ENTITYPROPS
       title:
         type: string
+        description: "Required for valid entities"
       work_id:
         type: string
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -548,6 +548,34 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+  /container/rev/{id}:
+    parameters:
+      - name: id
+        in: path
+        type: string
+        #format: uuid
+        required: true
+    get:
+      operationId: "get_container_revision"
+      tags: # TAGLINE
+        - containers # TAGLINE
+      parameters:
+        - name: expand
+          in: query
+          type: string
+          required: false
+          description: "List of sub-entities to expand in response. For containers, none accepted (yet)."
+        - name: hide
+          in: query
+          type: string
+          required: false
+          description: "List of entity fields to elide in response. For containers, none accepted (yet)."
+      responses:
+        200:
+          description: Found Entity Revision
+          schema:
+            $ref: "#/definitions/container_entity"
+        <<: *ENTITYRESPONSES
   /container/{id}/history:
     parameters:
       - name: id
@@ -571,6 +599,25 @@ paths:
             items:
               $ref: "#/definitions/entity_history_entry"
         <<: *ENTITYRESPONSES
+  /container/{id}/redirects:
+    parameters:
+      - name: id
+        in: path
+        type: string
+        required: true
+    get:
+      tags: # TAGLINE
+        - containers # TAGLINE
+      operationId: "get_container_redirects"
+      responses:
+        200:
+          description: Found Entity Redirects
+          schema:
+            type: array
+            items:
+              type: string
+              #format: ident
+        <<: *ENTITYRESPONSES
   /container/lookup:
     get:
       operationId: "lookup_container"
@@ -579,8 +626,11 @@ paths:
       parameters:
         - name: issnl
           in: query
-          required: true
+          required: false
           <<: *FATCATISSN
+        - name: wikidata_qid
+          in: query
+          required: false
         - name: hide
           in: query
           type: string
@@ -591,6 +641,39 @@ paths:
           description: Found Entity
           schema:
             $ref: "#/definitions/container_entity"
+        <<: *ENTITYRESPONSES
+  /container/edit/{edit_id}:
+    get:
+      operationId: "get_container_edit"
+      tags: # TAGLINE
+        - containers # TAGLINE
+      parameters:
+        - name: edit_id
+          in: path
+          type: integer
+          format: int64
+          required: true
+      responses:
+        200:
+          description: Found Edit
+          schema:
+            $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+    delete:
+      operationId: "delete_container_edit"
+      tags: # TAGLINE
+        - containers # TAGLINE
+      parameters:
+        - name: edit_id
+          in: path
+          type: integer
+          format: int64
+          required: true
+      responses:
+        200:
+          description: Deleted Edit
+          schema:
+            $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
   /creator:
     post:
@@ -706,6 +789,34 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+  /creator/rev/{id}:
+    parameters:
+      - name: id
+        in: path
+        type: string
+        #format: uuid
+        required: true
+    get:
+      operationId: "get_creator_revision"
+      tags: # TAGLINE
+        - creators # TAGLINE
+      parameters:
+        - name: expand
+          in: query
+          type: string
+          required: false
+          description: "List of sub-entities to expand in response. For creators, none accepted (yet)."
+        - name: hide
+          in: query
+          type: string
+          required: false
+          description: "List of entity fields to elide in response. For creators, none accepted (yet)."
+      responses:
+        200:
+          description: Found Entity Revision
+          schema:
+            $ref: "#/definitions/creator_entity"
+        <<: *ENTITYRESPONSES
   /creator/{id}/history:
     parameters:
       - name: id
@@ -752,6 +863,25 @@ paths:
             items:
               $ref: "#/definitions/release_entity"
         <<: *ENTITYRESPONSES
+  /release/{id}/redirects:
+    parameters:
+      - name: id
+        in: path
+        type: string
+        required: true
+    get:
+      tags: # TAGLINE
+        - releases # TAGLINE
+      operationId: "get_release_redirects"
+      responses:
+        200:
+          description: Found Entity Redirects
+          schema:
+            type: array
+            items:
+              type: string
+              #format: ident
+        <<: *ENTITYRESPONSES
   /creator/lookup:
     get:
       operationId: "lookup_creator"
@@ -760,8 +890,11 @@ paths:
       parameters:
         - name: orcid
           in: query
-          required: true
+          required: false
           <<: *FATCATORCID
+        - name: wikidata_qid
+          in: query
+          required: false
         - name: hide
           in: query
           type: string
@@ -772,6 +905,39 @@ paths:
           description: Found Entity
           schema:
             $ref: "#/definitions/creator_entity"
+        <<: *ENTITYRESPONSES
+  /creator/edit/{edit_id}:
+    get:
+      operationId: "get_creator_edit"
+      tags: # TAGLINE
+        - creators # TAGLINE
+      parameters:
+        - name: edit_id
+          in: path
+          type: integer
+          format: int64
+          required: true
+      responses:
+        200:
+          description: Found Edit
+          schema:
+            $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+    delete:
+      operationId: "delete_creator_edit"
+      tags: # TAGLINE
+        - creators # TAGLINE
+      parameters:
+        - name: edit_id
+          in: path
+          type: integer
+          format: int64
+          required: true
+      responses:
+        200:
+          description: Deleted Edit
+          schema:
+            $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
   /file:
     post:
@@ -887,6 +1053,34 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+  /file/rev/{id}:
+    parameters:
+      - name: id
+        in: path
+        type: string
+        #format: uuid
+        required: true
+    get:
+      operationId: "get_file_revision"
+      tags: # TAGLINE
+        - files # TAGLINE
+      parameters:
+        - name: expand
+          in: query
+          type: string
+          required: false
+          description: "List of sub-entities to expand in response. For files, none accepted (yet)."
+        - name: hide
+          in: query
+          type: string
+          required: false
+          description: "List of entity fields to elide in response. For files, none accepted (yet)."
+      responses:
+        200:
+          description: Found Entity Revision
+          schema:
+            $ref: "#/definitions/file_entity"
+        <<: *ENTITYRESPONSES
   /file/{id}/history:
     parameters:
       - name: id
@@ -910,6 +1104,25 @@ paths:
             items:
               $ref: "#/definitions/entity_history_entry"
         <<: *ENTITYRESPONSES
+  /file/{id}/redirects:
+    parameters:
+      - name: id
+        in: path
+        type: string
+        required: true
+    get:
+      tags: # TAGLINE
+        - files # TAGLINE
+      operationId: "get_file_redirects"
+      responses:
+        200:
+          description: Found Entity Redirects
+          schema:
+            type: array
+            items:
+              type: string
+              #format: ident
+        <<: *ENTITYRESPONSES
   /file/lookup:
     get:
       operationId: "lookup_file"
@@ -919,7 +1132,15 @@ paths:
         - name: sha1
           in: query
           type: string
-          required: true
+          required: false
+        - name: md5
+          in: query
+          type: string
+          required: false
+        - name: sha256
+          in: query
+          type: string
+          required: false
         - name: hide
           in: query
           type: string
@@ -930,6 +1151,39 @@ paths:
           description: Found Entity
           schema:
             $ref: "#/definitions/file_entity"
+        <<: *ENTITYRESPONSES
+  /file/edit/{edit_id}:
+    get:
+      operationId: "get_file_edit"
+      tags: # TAGLINE
+        - files # TAGLINE
+      parameters:
+        - name: edit_id
+          in: path
+          type: integer
+          format: int64
+          required: true
+      responses:
+        200:
+          description: Found Edit
+          schema:
+            $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+    delete:
+      operationId: "delete_file_edit"
+      tags: # TAGLINE
+        - files # TAGLINE
+      parameters:
+        - name: edit_id
+          in: path
+          type: integer
+          format: int64
+          required: true
+      responses:
+        200:
+          description: Deleted Edit
+          schema:
+            $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
   /release:
     post:
@@ -1045,6 +1299,34 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+  /release/rev/{id}:
+    parameters:
+      - name: id
+        in: path
+        type: string
+        #format: uuid
+        required: true
+    get:
+      operationId: "get_release_revision"
+      tags: # TAGLINE
+        - releases # TAGLINE
+      parameters:
+        - name: expand
+          in: query
+          type: string
+          required: false
+          description: "List of sub-entities to expand in response. For releases, none accepted (yet)."
+        - name: hide
+          in: query
+          type: string
+          required: false
+          description: "List of entity fields to elide in response. For releases, none accepted (yet)."
+      responses:
+        200:
+          description: Found Entity Revision
+          schema:
+            $ref: "#/definitions/release_entity"
+        <<: *ENTITYRESPONSES
   /release/{id}/history:
     parameters:
       - name: id
@@ -1091,6 +1373,25 @@ paths:
             items:
               $ref: "#/definitions/file_entity"
         <<: *ENTITYRESPONSES
+  /release/{id}/redirects:
+    parameters:
+      - name: id
+        in: path
+        type: string
+        required: true
+    get:
+      tags: # TAGLINE
+        - releases # TAGLINE
+      operationId: "get_release_redirects"
+      responses:
+        200:
+          description: Found Entity Redirects
+          schema:
+            type: array
+            items:
+              type: string
+              #format: ident
+        <<: *ENTITYRESPONSES
   /release/lookup:
     get:
       operationId: "lookup_release"
@@ -1100,7 +1401,23 @@ paths:
         - name: doi
           in: query
           type: string
-          required: true
+          required: false
+        - name: wikidata_qid
+          in: query
+          type: string
+          required: false
+        - name: isbn13
+          in: query
+          type: string
+          required: false
+        - name: pmid
+          in: query
+          type: string
+          required: false
+        - name: pmcid
+          in: query
+          type: string
+          required: false
         - name: hide
           in: query
           type: string
@@ -1111,6 +1428,39 @@ paths:
           description: Found Entity
           schema:
             $ref: "#/definitions/release_entity"
+        <<: *ENTITYRESPONSES
+  /release/edit/{edit_id}:
+    get:
+      operationId: "get_release_edit"
+      tags: # TAGLINE
+        - releases # TAGLINE
+      parameters:
+        - name: edit_id
+          in: path
+          type: integer
+          format: int64
+          required: true
+      responses:
+        200:
+          description: Found Edit
+          schema:
+            $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+    delete:
+      operationId: "delete_release_edit"
+      tags: # TAGLINE
+        - releases # TAGLINE
+      parameters:
+        - name: edit_id
+          in: path
+          type: integer
+          format: int64
+          required: true
+      responses:
+        200:
+          description: Deleted Edit
+          schema:
+            $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
   /work:
     post:
@@ -1226,6 +1576,34 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+  /work/rev/{id}:
+    parameters:
+      - name: id
+        in: path
+        type: string
+        #format: uuid
+        required: true
+    get:
+      operationId: "get_work_revision"
+      tags: # TAGLINE
+        - works # TAGLINE
+      parameters:
+        - name: expand
+          in: query
+          type: string
+          required: false
+          description: "List of sub-entities to expand in response. For works, none accepted (yet)."
+        - name: hide
+          in: query
+          type: string
+          required: false
+          description: "List of entity fields to elide in response. For works, none accepted (yet)."
+      responses:
+        200:
+          description: Found Entity Revision
+          schema:
+            $ref: "#/definitions/work_entity"
+        <<: *ENTITYRESPONSES
   /work/{id}/history:
     parameters:
       - name: id
@@ -1249,6 +1627,25 @@ paths:
             items:
               $ref: "#/definitions/entity_history_entry"
         <<: *ENTITYRESPONSES
+  /work/{id}/redirects:
+    parameters:
+      - name: id
+        in: path
+        type: string
+        required: true
+    get:
+      tags: # TAGLINE
+        - works # TAGLINE
+      operationId: "get_work_redirects"
+      responses:
+        200:
+          description: Found Entity Redirects
+          schema:
+            type: array
+            items:
+              type: string
+              #format: ident
+        <<: *ENTITYRESPONSES
   /work/{id}/releases:
     parameters:
       - name: id
@@ -1271,6 +1668,39 @@ paths:
             type: array
             items:
               $ref: "#/definitions/release_entity"
+        <<: *ENTITYRESPONSES
+  /work/edit/{edit_id}:
+    get:
+      operationId: "get_work_edit"
+      tags: # TAGLINE
+        - works # TAGLINE
+      parameters:
+        - name: edit_id
+          in: path
+          type: integer
+          format: int64
+          required: true
+      responses:
+        200:
+          description: Found Edit
+          schema:
+            $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+    delete:
+      operationId: "delete_work_edit"
+      tags: # TAGLINE
+        - works # TAGLINE
+      parameters:
+        - name: edit_id
+          in: path
+          type: integer
+          format: int64
+          required: true
+      responses:
+        200:
+          description: Deleted Edit
+          schema:
+            $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
   /editor/{id}:
     parameters:
