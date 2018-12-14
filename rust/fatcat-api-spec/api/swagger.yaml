@@ -576,6 +576,13 @@ paths:
         required: false
         formatString: "{:?}"
         example: "Some(\"wikidata_qid_example\".to_string())"
+      - name: "expand"
+        in: "query"
+        description: "List of sub-entities to expand in response."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"expand_example\".to_string())"
       - name: "hide"
         in: "query"
         description: "List of entity fields to elide in response. For container, none\
@@ -1354,6 +1361,13 @@ paths:
         required: false
         formatString: "{:?}"
         example: "Some(\"wikidata_qid_example\".to_string())"
+      - name: "expand"
+        in: "query"
+        description: "List of sub-entities to expand in response."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"expand_example\".to_string())"
       - name: "hide"
         in: "query"
         description: "List of entity fields to elide in response. For creator, none\
@@ -2072,6 +2086,13 @@ paths:
         type: "string"
         formatString: "{:?}"
         example: "Some(\"sha256_example\".to_string())"
+      - name: "expand"
+        in: "query"
+        description: "List of sub-entities to expand in response."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"expand_example\".to_string())"
       - name: "hide"
         in: "query"
         description: "List of entity fields to elide in response. For files, none\
@@ -2866,6 +2887,19 @@ paths:
         type: "string"
         formatString: "{:?}"
         example: "Some(\"pmcid_example\".to_string())"
+      - name: "core_id"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"core_id_example\".to_string())"
+      - name: "expand"
+        in: "query"
+        description: "List of sub-entities to expand in response."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"expand_example\".to_string())"
       - name: "hide"
         in: "query"
         description: "List of entity fields to elide in response. For releases, 'abstracts',\
@@ -4395,15 +4429,15 @@ definitions:
         example: "12"
       volume:
         type: "string"
-      wikidata_qid:
+      core_id:
         type: "string"
       pmcid:
         type: "string"
       pmid:
         type: "string"
-      core_id:
-        type: "string"
       isbn13:
+        type: "string"
+      wikidata_qid:
         type: "string"
       doi:
         type: "string"

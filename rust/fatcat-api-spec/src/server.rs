@@ -128,7 +128,8 @@ where
                     let param_entity: Option<models::ContainerEntity> = serde_ignored::deserialize(deserializer, |path| {
                         warn!("Ignoring unknown field in body: {}", path);
                         unused_elements.push(path.to_string());
-                    }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - doesn't match schema: {}", e))))?;
+                    })
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - doesn't match schema: {}", e))))?;
 
                     param_entity
                 } else {
@@ -239,7 +240,8 @@ where
                     let param_entity_list: Option<Vec<models::ContainerEntity>> = serde_ignored::deserialize(deserializer, |path| {
                         warn!("Ignoring unknown field in body: {}", path);
                         unused_elements.push(path.to_string());
-                    }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity_list - doesn't match schema: {}", e))))?;
+                    })
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity_list - doesn't match schema: {}", e))))?;
 
                     param_entity_list
                 } else {
@@ -974,9 +976,10 @@ where
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
                 let param_issnl = query_params.get("issnl").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_wikidata_qid = query_params.get("wikidata_qid").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_expand = query_params.get("expand").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.lookup_container(param_issnl, param_wikidata_qid, param_hide, context).wait() {
+                match api.lookup_container(param_issnl, param_wikidata_qid, param_expand, param_hide, context).wait() {
                     Ok(rsp) => match rsp {
                         LookupContainerResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -1085,7 +1088,8 @@ where
                     let param_entity: Option<models::ContainerEntity> = serde_ignored::deserialize(deserializer, |path| {
                         warn!("Ignoring unknown field in body: {}", path);
                         unused_elements.push(path.to_string());
-                    }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - doesn't match schema: {}", e))))?;
+                    })
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - doesn't match schema: {}", e))))?;
 
                     param_entity
                 } else {
@@ -1195,7 +1199,8 @@ where
                     let param_entity: Option<models::CreatorEntity> = serde_ignored::deserialize(deserializer, |path| {
                         warn!("Ignoring unknown field in body: {}", path);
                         unused_elements.push(path.to_string());
-                    }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - doesn't match schema: {}", e))))?;
+                    })
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - doesn't match schema: {}", e))))?;
 
                     param_entity
                 } else {
@@ -1306,7 +1311,8 @@ where
                     let param_entity_list: Option<Vec<models::CreatorEntity>> = serde_ignored::deserialize(deserializer, |path| {
                         warn!("Ignoring unknown field in body: {}", path);
                         unused_elements.push(path.to_string());
-                    }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity_list - doesn't match schema: {}", e))))?;
+                    })
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity_list - doesn't match schema: {}", e))))?;
 
                     param_entity_list
                 } else {
@@ -2134,9 +2140,10 @@ where
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
                 let param_orcid = query_params.get("orcid").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_wikidata_qid = query_params.get("wikidata_qid").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_expand = query_params.get("expand").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.lookup_creator(param_orcid, param_wikidata_qid, param_hide, context).wait() {
+                match api.lookup_creator(param_orcid, param_wikidata_qid, param_expand, param_hide, context).wait() {
                     Ok(rsp) => match rsp {
                         LookupCreatorResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -2245,7 +2252,8 @@ where
                     let param_entity: Option<models::CreatorEntity> = serde_ignored::deserialize(deserializer, |path| {
                         warn!("Ignoring unknown field in body: {}", path);
                         unused_elements.push(path.to_string());
-                    }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - doesn't match schema: {}", e))))?;
+                    })
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - doesn't match schema: {}", e))))?;
 
                     param_entity
                 } else {
@@ -2686,7 +2694,8 @@ where
                     let param_editgroup: Option<models::Editgroup> = serde_ignored::deserialize(deserializer, |path| {
                         warn!("Ignoring unknown field in body: {}", path);
                         unused_elements.push(path.to_string());
-                    }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter editgroup - doesn't match schema: {}", e))))?;
+                    })
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter editgroup - doesn't match schema: {}", e))))?;
 
                     param_editgroup
                 } else {
@@ -3010,7 +3019,8 @@ where
                     let param_entity: Option<models::FileEntity> = serde_ignored::deserialize(deserializer, |path| {
                         warn!("Ignoring unknown field in body: {}", path);
                         unused_elements.push(path.to_string());
-                    }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - doesn't match schema: {}", e))))?;
+                    })
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - doesn't match schema: {}", e))))?;
 
                     param_entity
                 } else {
@@ -3121,7 +3131,8 @@ where
                     let param_entity_list: Option<Vec<models::FileEntity>> = serde_ignored::deserialize(deserializer, |path| {
                         warn!("Ignoring unknown field in body: {}", path);
                         unused_elements.push(path.to_string());
-                    }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity_list - doesn't match schema: {}", e))))?;
+                    })
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity_list - doesn't match schema: {}", e))))?;
 
                     param_entity_list
                 } else {
@@ -3857,9 +3868,10 @@ where
                 let param_md5 = query_params.get("md5").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_sha1 = query_params.get("sha1").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_sha256 = query_params.get("sha256").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_expand = query_params.get("expand").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.lookup_file(param_md5, param_sha1, param_sha256, param_hide, context).wait() {
+                match api.lookup_file(param_md5, param_sha1, param_sha256, param_expand, param_hide, context).wait() {
                     Ok(rsp) => match rsp {
                         LookupFileResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -3968,7 +3980,8 @@ where
                     let param_entity: Option<models::FileEntity> = serde_ignored::deserialize(deserializer, |path| {
                         warn!("Ignoring unknown field in body: {}", path);
                         unused_elements.push(path.to_string());
-                    }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - doesn't match schema: {}", e))))?;
+                    })
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - doesn't match schema: {}", e))))?;
 
                     param_entity
                 } else {
@@ -4078,7 +4091,8 @@ where
                     let param_entity: Option<models::ReleaseEntity> = serde_ignored::deserialize(deserializer, |path| {
                         warn!("Ignoring unknown field in body: {}", path);
                         unused_elements.push(path.to_string());
-                    }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - doesn't match schema: {}", e))))?;
+                    })
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - doesn't match schema: {}", e))))?;
 
                     param_entity
                 } else {
@@ -4189,7 +4203,8 @@ where
                     let param_entity_list: Option<Vec<models::ReleaseEntity>> = serde_ignored::deserialize(deserializer, |path| {
                         warn!("Ignoring unknown field in body: {}", path);
                         unused_elements.push(path.to_string());
-                    }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity_list - doesn't match schema: {}", e))))?;
+                    })
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity_list - doesn't match schema: {}", e))))?;
 
                     param_entity_list
                 } else {
@@ -4299,7 +4314,8 @@ where
                     let param_entity: Option<models::WorkEntity> = serde_ignored::deserialize(deserializer, |path| {
                         warn!("Ignoring unknown field in body: {}", path);
                         unused_elements.push(path.to_string());
-                    }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - doesn't match schema: {}", e))))?;
+                    })
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - doesn't match schema: {}", e))))?;
 
                     param_entity
                 } else {
@@ -5130,9 +5146,14 @@ where
                 let param_isbn13 = query_params.get("isbn13").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_pmid = query_params.get("pmid").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_pmcid = query_params.get("pmcid").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_core_id = query_params.get("core_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_expand = query_params.get("expand").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.lookup_release(param_doi, param_wikidata_qid, param_isbn13, param_pmid, param_pmcid, param_hide, context).wait() {
+                match api
+                    .lookup_release(param_doi, param_wikidata_qid, param_isbn13, param_pmid, param_pmcid, param_core_id, param_expand, param_hide, context)
+                    .wait()
+                {
                     Ok(rsp) => match rsp {
                         LookupReleaseResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -5241,7 +5262,8 @@ where
                     let param_entity: Option<models::ReleaseEntity> = serde_ignored::deserialize(deserializer, |path| {
                         warn!("Ignoring unknown field in body: {}", path);
                         unused_elements.push(path.to_string());
-                    }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - doesn't match schema: {}", e))))?;
+                    })
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - doesn't match schema: {}", e))))?;
 
                     param_entity
                 } else {
@@ -5352,7 +5374,8 @@ where
                     let param_entity_list: Option<Vec<models::WorkEntity>> = serde_ignored::deserialize(deserializer, |path| {
                         warn!("Ignoring unknown field in body: {}", path);
                         unused_elements.push(path.to_string());
-                    }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity_list - doesn't match schema: {}", e))))?;
+                    })
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity_list - doesn't match schema: {}", e))))?;
 
                     param_entity_list
                 } else {
@@ -6211,7 +6234,8 @@ where
                     let param_entity: Option<models::WorkEntity> = serde_ignored::deserialize(deserializer, |path| {
                         warn!("Ignoring unknown field in body: {}", path);
                         unused_elements.push(path.to_string());
-                    }).map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - doesn't match schema: {}", e))))?;
+                    })
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity - doesn't match schema: {}", e))))?;
 
                     param_entity
                 } else {

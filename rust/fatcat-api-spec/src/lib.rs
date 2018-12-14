@@ -828,7 +828,14 @@ pub trait Api {
 
     fn get_container_revision(&self, id: String, expand: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = GetContainerRevisionResponse, Error = ApiError> + Send>;
 
-    fn lookup_container(&self, issnl: Option<String>, wikidata_qid: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = LookupContainerResponse, Error = ApiError> + Send>;
+    fn lookup_container(
+        &self,
+        issnl: Option<String>,
+        wikidata_qid: Option<String>,
+        expand: Option<String>,
+        hide: Option<String>,
+        context: &Context,
+    ) -> Box<Future<Item = LookupContainerResponse, Error = ApiError> + Send>;
 
     fn update_container(&self, id: String, entity: models::ContainerEntity, editgroup: Option<String>, context: &Context) -> Box<Future<Item = UpdateContainerResponse, Error = ApiError> + Send>;
 
@@ -858,7 +865,14 @@ pub trait Api {
 
     fn get_creator_revision(&self, id: String, expand: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = GetCreatorRevisionResponse, Error = ApiError> + Send>;
 
-    fn lookup_creator(&self, orcid: Option<String>, wikidata_qid: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = LookupCreatorResponse, Error = ApiError> + Send>;
+    fn lookup_creator(
+        &self,
+        orcid: Option<String>,
+        wikidata_qid: Option<String>,
+        expand: Option<String>,
+        hide: Option<String>,
+        context: &Context,
+    ) -> Box<Future<Item = LookupCreatorResponse, Error = ApiError> + Send>;
 
     fn update_creator(&self, id: String, entity: models::CreatorEntity, editgroup: Option<String>, context: &Context) -> Box<Future<Item = UpdateCreatorResponse, Error = ApiError> + Send>;
 
@@ -907,6 +921,7 @@ pub trait Api {
         md5: Option<String>,
         sha1: Option<String>,
         sha256: Option<String>,
+        expand: Option<String>,
         hide: Option<String>,
         context: &Context,
     ) -> Box<Future<Item = LookupFileResponse, Error = ApiError> + Send>;
@@ -948,6 +963,8 @@ pub trait Api {
         isbn13: Option<String>,
         pmid: Option<String>,
         pmcid: Option<String>,
+        core_id: Option<String>,
+        expand: Option<String>,
         hide: Option<String>,
         context: &Context,
     ) -> Box<Future<Item = LookupReleaseResponse, Error = ApiError> + Send>;
@@ -1006,7 +1023,13 @@ pub trait ApiNoContext {
 
     fn get_container_revision(&self, id: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetContainerRevisionResponse, Error = ApiError> + Send>;
 
-    fn lookup_container(&self, issnl: Option<String>, wikidata_qid: Option<String>, hide: Option<String>) -> Box<Future<Item = LookupContainerResponse, Error = ApiError> + Send>;
+    fn lookup_container(
+        &self,
+        issnl: Option<String>,
+        wikidata_qid: Option<String>,
+        expand: Option<String>,
+        hide: Option<String>,
+    ) -> Box<Future<Item = LookupContainerResponse, Error = ApiError> + Send>;
 
     fn update_container(&self, id: String, entity: models::ContainerEntity, editgroup: Option<String>) -> Box<Future<Item = UpdateContainerResponse, Error = ApiError> + Send>;
 
@@ -1035,7 +1058,7 @@ pub trait ApiNoContext {
 
     fn get_creator_revision(&self, id: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetCreatorRevisionResponse, Error = ApiError> + Send>;
 
-    fn lookup_creator(&self, orcid: Option<String>, wikidata_qid: Option<String>, hide: Option<String>) -> Box<Future<Item = LookupCreatorResponse, Error = ApiError> + Send>;
+    fn lookup_creator(&self, orcid: Option<String>, wikidata_qid: Option<String>, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = LookupCreatorResponse, Error = ApiError> + Send>;
 
     fn update_creator(&self, id: String, entity: models::CreatorEntity, editgroup: Option<String>) -> Box<Future<Item = UpdateCreatorResponse, Error = ApiError> + Send>;
 
@@ -1073,7 +1096,14 @@ pub trait ApiNoContext {
 
     fn get_file_revision(&self, id: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetFileRevisionResponse, Error = ApiError> + Send>;
 
-    fn lookup_file(&self, md5: Option<String>, sha1: Option<String>, sha256: Option<String>, hide: Option<String>) -> Box<Future<Item = LookupFileResponse, Error = ApiError> + Send>;
+    fn lookup_file(
+        &self,
+        md5: Option<String>,
+        sha1: Option<String>,
+        sha256: Option<String>,
+        expand: Option<String>,
+        hide: Option<String>,
+    ) -> Box<Future<Item = LookupFileResponse, Error = ApiError> + Send>;
 
     fn update_file(&self, id: String, entity: models::FileEntity, editgroup: Option<String>) -> Box<Future<Item = UpdateFileResponse, Error = ApiError> + Send>;
 
@@ -1111,6 +1141,8 @@ pub trait ApiNoContext {
         isbn13: Option<String>,
         pmid: Option<String>,
         pmcid: Option<String>,
+        core_id: Option<String>,
+        expand: Option<String>,
         hide: Option<String>,
     ) -> Box<Future<Item = LookupReleaseResponse, Error = ApiError> + Send>;
 
@@ -1194,8 +1226,14 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().get_container_revision(id, expand, hide, &self.context())
     }
 
-    fn lookup_container(&self, issnl: Option<String>, wikidata_qid: Option<String>, hide: Option<String>) -> Box<Future<Item = LookupContainerResponse, Error = ApiError> + Send> {
-        self.api().lookup_container(issnl, wikidata_qid, hide, &self.context())
+    fn lookup_container(
+        &self,
+        issnl: Option<String>,
+        wikidata_qid: Option<String>,
+        expand: Option<String>,
+        hide: Option<String>,
+    ) -> Box<Future<Item = LookupContainerResponse, Error = ApiError> + Send> {
+        self.api().lookup_container(issnl, wikidata_qid, expand, hide, &self.context())
     }
 
     fn update_container(&self, id: String, entity: models::ContainerEntity, editgroup: Option<String>) -> Box<Future<Item = UpdateContainerResponse, Error = ApiError> + Send> {
@@ -1247,8 +1285,8 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().get_creator_revision(id, expand, hide, &self.context())
     }
 
-    fn lookup_creator(&self, orcid: Option<String>, wikidata_qid: Option<String>, hide: Option<String>) -> Box<Future<Item = LookupCreatorResponse, Error = ApiError> + Send> {
-        self.api().lookup_creator(orcid, wikidata_qid, hide, &self.context())
+    fn lookup_creator(&self, orcid: Option<String>, wikidata_qid: Option<String>, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = LookupCreatorResponse, Error = ApiError> + Send> {
+        self.api().lookup_creator(orcid, wikidata_qid, expand, hide, &self.context())
     }
 
     fn update_creator(&self, id: String, entity: models::CreatorEntity, editgroup: Option<String>) -> Box<Future<Item = UpdateCreatorResponse, Error = ApiError> + Send> {
@@ -1323,8 +1361,15 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().get_file_revision(id, expand, hide, &self.context())
     }
 
-    fn lookup_file(&self, md5: Option<String>, sha1: Option<String>, sha256: Option<String>, hide: Option<String>) -> Box<Future<Item = LookupFileResponse, Error = ApiError> + Send> {
-        self.api().lookup_file(md5, sha1, sha256, hide, &self.context())
+    fn lookup_file(
+        &self,
+        md5: Option<String>,
+        sha1: Option<String>,
+        sha256: Option<String>,
+        expand: Option<String>,
+        hide: Option<String>,
+    ) -> Box<Future<Item = LookupFileResponse, Error = ApiError> + Send> {
+        self.api().lookup_file(md5, sha1, sha256, expand, hide, &self.context())
     }
 
     fn update_file(&self, id: String, entity: models::FileEntity, editgroup: Option<String>) -> Box<Future<Item = UpdateFileResponse, Error = ApiError> + Send> {
@@ -1387,9 +1432,11 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         isbn13: Option<String>,
         pmid: Option<String>,
         pmcid: Option<String>,
+        core_id: Option<String>,
+        expand: Option<String>,
         hide: Option<String>,
     ) -> Box<Future<Item = LookupReleaseResponse, Error = ApiError> + Send> {
-        self.api().lookup_release(doi, wikidata_qid, isbn13, pmid, pmcid, hide, &self.context())
+        self.api().lookup_release(doi, wikidata_qid, isbn13, pmid, pmcid, core_id, expand, hide, &self.context())
     }
 
     fn update_release(&self, id: String, entity: models::ReleaseEntity, editgroup: Option<String>) -> Box<Future<Item = UpdateReleaseResponse, Error = ApiError> + Send> {

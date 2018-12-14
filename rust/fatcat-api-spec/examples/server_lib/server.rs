@@ -119,12 +119,20 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn lookup_container(&self, issnl: Option<String>, wikidata_qid: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = LookupContainerResponse, Error = ApiError> + Send> {
+    fn lookup_container(
+        &self,
+        issnl: Option<String>,
+        wikidata_qid: Option<String>,
+        expand: Option<String>,
+        hide: Option<String>,
+        context: &Context,
+    ) -> Box<Future<Item = LookupContainerResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "lookup_container({:?}, {:?}, {:?}) - X-Span-ID: {:?}",
+            "lookup_container({:?}, {:?}, {:?}, {:?}) - X-Span-ID: {:?}",
             issnl,
             wikidata_qid,
+            expand,
             hide,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
         );
@@ -247,12 +255,20 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn lookup_creator(&self, orcid: Option<String>, wikidata_qid: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = LookupCreatorResponse, Error = ApiError> + Send> {
+    fn lookup_creator(
+        &self,
+        orcid: Option<String>,
+        wikidata_qid: Option<String>,
+        expand: Option<String>,
+        hide: Option<String>,
+        context: &Context,
+    ) -> Box<Future<Item = LookupCreatorResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "lookup_creator({:?}, {:?}, {:?}) - X-Span-ID: {:?}",
+            "lookup_creator({:?}, {:?}, {:?}, {:?}) - X-Span-ID: {:?}",
             orcid,
             wikidata_qid,
+            expand,
             hide,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
         );
@@ -417,15 +433,17 @@ impl Api for Server {
         md5: Option<String>,
         sha1: Option<String>,
         sha256: Option<String>,
+        expand: Option<String>,
         hide: Option<String>,
         context: &Context,
     ) -> Box<Future<Item = LookupFileResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "lookup_file({:?}, {:?}, {:?}, {:?}) - X-Span-ID: {:?}",
+            "lookup_file({:?}, {:?}, {:?}, {:?}, {:?}) - X-Span-ID: {:?}",
             md5,
             sha1,
             sha256,
+            expand,
             hide,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
         );
@@ -566,17 +584,21 @@ impl Api for Server {
         isbn13: Option<String>,
         pmid: Option<String>,
         pmcid: Option<String>,
+        core_id: Option<String>,
+        expand: Option<String>,
         hide: Option<String>,
         context: &Context,
     ) -> Box<Future<Item = LookupReleaseResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "lookup_release({:?}, {:?}, {:?}, {:?}, {:?}, {:?}) - X-Span-ID: {:?}",
+            "lookup_release({:?}, {:?}, {:?}, {:?}, {:?}, {:?}, {:?}, {:?}) - X-Span-ID: {:?}",
             doi,
             wikidata_qid,
             isbn13,
             pmid,
             pmcid,
+            core_id,
+            expand,
             hide,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
         );

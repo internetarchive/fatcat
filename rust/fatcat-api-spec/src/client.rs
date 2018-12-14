@@ -795,19 +795,22 @@ impl Api for Client {
         &self,
         param_issnl: Option<String>,
         param_wikidata_qid: Option<String>,
+        param_expand: Option<String>,
         param_hide: Option<String>,
         context: &Context,
     ) -> Box<Future<Item = LookupContainerResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_issnl = param_issnl.map_or_else(String::new, |query| format!("issnl={issnl}&", issnl = query.to_string()));
         let query_wikidata_qid = param_wikidata_qid.map_or_else(String::new, |query| format!("wikidata_qid={wikidata_qid}&", wikidata_qid = query.to_string()));
+        let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
         let url = format!(
-            "{}/v0/container/lookup?{issnl}{wikidata_qid}{hide}",
+            "{}/v0/container/lookup?{issnl}{wikidata_qid}{expand}{hide}",
             self.base_path,
             issnl = utf8_percent_encode(&query_issnl, QUERY_ENCODE_SET),
             wikidata_qid = utf8_percent_encode(&query_wikidata_qid, QUERY_ENCODE_SET),
+            expand = utf8_percent_encode(&query_expand, QUERY_ENCODE_SET),
             hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
         );
 
@@ -1637,19 +1640,22 @@ impl Api for Client {
         &self,
         param_orcid: Option<String>,
         param_wikidata_qid: Option<String>,
+        param_expand: Option<String>,
         param_hide: Option<String>,
         context: &Context,
     ) -> Box<Future<Item = LookupCreatorResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_orcid = param_orcid.map_or_else(String::new, |query| format!("orcid={orcid}&", orcid = query.to_string()));
         let query_wikidata_qid = param_wikidata_qid.map_or_else(String::new, |query| format!("wikidata_qid={wikidata_qid}&", wikidata_qid = query.to_string()));
+        let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
         let url = format!(
-            "{}/v0/creator/lookup?{orcid}{wikidata_qid}{hide}",
+            "{}/v0/creator/lookup?{orcid}{wikidata_qid}{expand}{hide}",
             self.base_path,
             orcid = utf8_percent_encode(&query_orcid, QUERY_ENCODE_SET),
             wikidata_qid = utf8_percent_encode(&query_wikidata_qid, QUERY_ENCODE_SET),
+            expand = utf8_percent_encode(&query_expand, QUERY_ENCODE_SET),
             hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
         );
 
@@ -2862,6 +2868,7 @@ impl Api for Client {
         param_md5: Option<String>,
         param_sha1: Option<String>,
         param_sha256: Option<String>,
+        param_expand: Option<String>,
         param_hide: Option<String>,
         context: &Context,
     ) -> Box<Future<Item = LookupFileResponse, Error = ApiError> + Send> {
@@ -2869,14 +2876,16 @@ impl Api for Client {
         let query_md5 = param_md5.map_or_else(String::new, |query| format!("md5={md5}&", md5 = query.to_string()));
         let query_sha1 = param_sha1.map_or_else(String::new, |query| format!("sha1={sha1}&", sha1 = query.to_string()));
         let query_sha256 = param_sha256.map_or_else(String::new, |query| format!("sha256={sha256}&", sha256 = query.to_string()));
+        let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
         let url = format!(
-            "{}/v0/file/lookup?{md5}{sha1}{sha256}{hide}",
+            "{}/v0/file/lookup?{md5}{sha1}{sha256}{expand}{hide}",
             self.base_path,
             md5 = utf8_percent_encode(&query_md5, QUERY_ENCODE_SET),
             sha1 = utf8_percent_encode(&query_sha1, QUERY_ENCODE_SET),
             sha256 = utf8_percent_encode(&query_sha256, QUERY_ENCODE_SET),
+            expand = utf8_percent_encode(&query_expand, QUERY_ENCODE_SET),
             hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
         );
 
@@ -3771,6 +3780,8 @@ impl Api for Client {
         param_isbn13: Option<String>,
         param_pmid: Option<String>,
         param_pmcid: Option<String>,
+        param_core_id: Option<String>,
+        param_expand: Option<String>,
         param_hide: Option<String>,
         context: &Context,
     ) -> Box<Future<Item = LookupReleaseResponse, Error = ApiError> + Send> {
@@ -3780,16 +3791,20 @@ impl Api for Client {
         let query_isbn13 = param_isbn13.map_or_else(String::new, |query| format!("isbn13={isbn13}&", isbn13 = query.to_string()));
         let query_pmid = param_pmid.map_or_else(String::new, |query| format!("pmid={pmid}&", pmid = query.to_string()));
         let query_pmcid = param_pmcid.map_or_else(String::new, |query| format!("pmcid={pmcid}&", pmcid = query.to_string()));
+        let query_core_id = param_core_id.map_or_else(String::new, |query| format!("core_id={core_id}&", core_id = query.to_string()));
+        let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
         let url = format!(
-            "{}/v0/release/lookup?{doi}{wikidata_qid}{isbn13}{pmid}{pmcid}{hide}",
+            "{}/v0/release/lookup?{doi}{wikidata_qid}{isbn13}{pmid}{pmcid}{core_id}{expand}{hide}",
             self.base_path,
             doi = utf8_percent_encode(&query_doi, QUERY_ENCODE_SET),
             wikidata_qid = utf8_percent_encode(&query_wikidata_qid, QUERY_ENCODE_SET),
             isbn13 = utf8_percent_encode(&query_isbn13, QUERY_ENCODE_SET),
             pmid = utf8_percent_encode(&query_pmid, QUERY_ENCODE_SET),
             pmcid = utf8_percent_encode(&query_pmcid, QUERY_ENCODE_SET),
+            core_id = utf8_percent_encode(&query_core_id, QUERY_ENCODE_SET),
+            expand = utf8_percent_encode(&query_expand, QUERY_ENCODE_SET),
             hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
         );
 

@@ -85,9 +85,11 @@ fn main() {
                     "GetWorkRedirects",
                     "GetWorkReleases",
                     "GetWorkRevision",
-                ]).required(true)
+                ])
+                .required(true)
                 .index(1),
-        ).arg(Arg::with_name("https").long("https").help("Whether to use HTTPS or not"))
+        )
+        .arg(Arg::with_name("https").long("https").help("Whether to use HTTPS or not"))
         .arg(Arg::with_name("host").long("host").takes_value(true).default_value("api.fatcat.wiki").help("Hostname to contact"))
         .arg(Arg::with_name("port").long("port").takes_value(true).default_value("8080").help("Port to contact"))
         .get_matches();
@@ -162,7 +164,12 @@ fn main() {
 
         Some("LookupContainer") => {
             let result = client
-                .lookup_container(Some("issnl_example".to_string()), Some("wikidata_qid_example".to_string()), Some("hide_example".to_string()))
+                .lookup_container(
+                    Some("issnl_example".to_string()),
+                    Some("wikidata_qid_example".to_string()),
+                    Some("expand_example".to_string()),
+                    Some("hide_example".to_string()),
+                )
                 .wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
@@ -229,7 +236,12 @@ fn main() {
 
         Some("LookupCreator") => {
             let result = client
-                .lookup_creator(Some("orcid_example".to_string()), Some("wikidata_qid_example".to_string()), Some("hide_example".to_string()))
+                .lookup_creator(
+                    Some("orcid_example".to_string()),
+                    Some("wikidata_qid_example".to_string()),
+                    Some("expand_example".to_string()),
+                    Some("hide_example".to_string()),
+                )
                 .wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
@@ -332,8 +344,10 @@ fn main() {
                     Some("md5_example".to_string()),
                     Some("sha1_example".to_string()),
                     Some("sha256_example".to_string()),
+                    Some("expand_example".to_string()),
                     Some("hide_example".to_string()),
-                ).wait();
+                )
+                .wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -410,8 +424,11 @@ fn main() {
                     Some("isbn13_example".to_string()),
                     Some("pmid_example".to_string()),
                     Some("pmcid_example".to_string()),
+                    Some("core_id_example".to_string()),
+                    Some("expand_example".to_string()),
                     Some("hide_example".to_string()),
-                ).wait();
+                )
+                .wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 

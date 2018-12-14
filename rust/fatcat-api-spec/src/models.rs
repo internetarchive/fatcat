@@ -514,9 +514,9 @@ pub struct ReleaseEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub volume: Option<String>,
 
-    #[serde(rename = "wikidata_qid")]
+    #[serde(rename = "core_id")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub wikidata_qid: Option<String>,
+    pub core_id: Option<String>,
 
     #[serde(rename = "pmcid")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -526,13 +526,13 @@ pub struct ReleaseEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pmid: Option<String>,
 
-    #[serde(rename = "core_id")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub core_id: Option<String>,
-
     #[serde(rename = "isbn13")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub isbn13: Option<String>,
+
+    #[serde(rename = "wikidata_qid")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub wikidata_qid: Option<String>,
 
     #[serde(rename = "doi")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -613,11 +613,11 @@ impl ReleaseEntity {
             pages: None,
             issue: None,
             volume: None,
-            wikidata_qid: None,
+            core_id: None,
             pmcid: None,
             pmid: None,
-            core_id: None,
             isbn13: None,
+            wikidata_qid: None,
             doi: None,
             release_date: None,
             release_status: None,

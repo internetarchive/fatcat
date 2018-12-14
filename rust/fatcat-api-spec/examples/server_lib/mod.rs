@@ -3,7 +3,7 @@
 mod server;
 
 mod errors {
-    error_chain!{}
+    error_chain! {}
 }
 
 pub use self::errors::*;
