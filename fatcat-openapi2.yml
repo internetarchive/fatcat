@@ -205,18 +205,18 @@ definitions:
         type: string
         #format: custom
         example: "10.1234/abcde.789"
-      isbn13:
+      wikidata_qid:
         type: string
-        #format: custom
-      core_id:
+      isbn13:
         type: string
         #format: custom
       pmid:
         type: string
       pmcid:
         type: string
-      wikidata_qid:
+      core_id:
         type: string
+        #format: custom
       volume:
         type: string
       issue:
@@ -631,6 +631,11 @@ paths:
         - name: wikidata_qid
           in: query
           required: false
+        - name: expand
+          in: query
+          type: string
+          required: false
+          description: "List of sub-entities to expand in response."
         - name: hide
           in: query
           type: string
@@ -895,6 +900,11 @@ paths:
         - name: wikidata_qid
           in: query
           required: false
+        - name: expand
+          in: query
+          type: string
+          required: false
+          description: "List of sub-entities to expand in response."
         - name: hide
           in: query
           type: string
@@ -1141,6 +1151,11 @@ paths:
           in: query
           type: string
           required: false
+        - name: expand
+          in: query
+          type: string
+          required: false
+          description: "List of sub-entities to expand in response."
         - name: hide
           in: query
           type: string
@@ -1418,6 +1433,15 @@ paths:
           in: query
           type: string
           required: false
+        - name: core_id
+          in: query
+          type: string
+          required: false
+        - name: expand
+          in: query
+          type: string
+          required: false
+          description: "List of sub-entities to expand in response."
         - name: hide
           in: query
           type: string
