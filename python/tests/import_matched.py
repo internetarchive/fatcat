@@ -25,8 +25,10 @@ def test_matched_dict_parse(matched_importer):
         assert f.md5 == "f4de91152c7ab9fdc2a128f962faebff"
         assert f.mimetype == "application/pdf"
         assert f.size == 255629
-        assert f.urls[1].url.startswith("http://journals.plos.org")
-        assert f.urls[1].rel == "web"
-        assert f.urls[0].url.startswith("https://web.archive.org/")
-        assert f.urls[0].rel == "webarchive"
+        assert len(f.urls) == 2
+        for u in f.urls:
+            if u.rel == "web":
+                assert u.url.startswith("http://journals.plos.org")
+            if u.rel == "webarchive":
+                assert u.url.startswith("https://web.archive.org/")
         assert len(f.releases) == 1
