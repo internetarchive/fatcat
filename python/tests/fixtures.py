@@ -5,6 +5,7 @@ import json
 import signal
 import pytest
 import fatcat_web
+import fatcat_client
 
 
 @pytest.fixture
@@ -16,6 +17,13 @@ def full_app():
 @pytest.fixture
 def app(full_app):
     return full_app.test_client()
+
+@pytest.fixture
+def api():
+    conf = fatcat_client.Configuration()
+    conf.host = "http://localhost:9411/v0"
+    api_client = fatcat_client.DefaultApi(fatcat_client.ApiClient(conf))
+    return api_client
 
 
 ## Helpers ##################################################################
