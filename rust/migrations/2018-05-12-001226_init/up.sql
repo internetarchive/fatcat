@@ -425,10 +425,10 @@ INSERT INTO work_edit (ident_id, rev_id, redirect_id, editgroup_id, prev_rev) VA
     ('00000000-0000-0000-5555-000000000002', '00000000-0000-0000-5555-FFF000000002', null, '00000000-0000-0000-BBBB-000000000004', null),
     ('00000000-0000-0000-5555-000000000002', '00000000-0000-0000-5555-FFF000000003', null, '00000000-0000-0000-BBBB-000000000005', '00000000-0000-0000-5555-FFF000000002');
 
-INSERT INTO release_rev (id, work_ident_id, container_ident_id, title, release_type, release_status, release_date, doi, isbn13, core_id, volume, issue, pages, publisher, language) VALUES
-    ('00000000-0000-0000-4444-FFF000000001', '00000000-0000-0000-5555-000000000001',                                   null,  'example title',              null, null,        null,         null,            null,       null, null, null,  null,                     null, null),
-    ('00000000-0000-0000-4444-FFF000000002', '00000000-0000-0000-5555-000000000002', '00000000-0000-0000-1111-000000000001', 'bigger example', 'article-journal', null,'2018-01-01', '10.123/abc', '978-3-16-148410-0', '42022773', '12', 'IV', '5-9', 'bogus publishing group', 'cn'),
-    ('00000000-0000-0000-4444-FFF000000003', '00000000-0000-0000-5555-000000000003', '00000000-0000-0000-1111-000000000003', 'Why Most Published Research Findings Are False', 'article-journal', 'published', '2005-08-30', '10.1371/journal.pmed.0020124',  null, null, '2', '8', 'e124', 'Public Library of Science', 'en');
+INSERT INTO release_rev (id, work_ident_id, container_ident_id, title, release_type, release_status, release_date, doi, wikidata_qid, pmid, pmcid, isbn13, core_id, volume, issue, pages, publisher, language) VALUES
+    ('00000000-0000-0000-4444-FFF000000001', '00000000-0000-0000-5555-000000000001',                                   null,                                  'example title',             null,         null,         null,                          null,      null,    null,     null,               null,       null, null, null,  null, null, null),
+    ('00000000-0000-0000-4444-FFF000000002', '00000000-0000-0000-5555-000000000002', '00000000-0000-0000-1111-000000000001',                                 'bigger example', 'article-journal',        null, '2018-01-01',                   '10.123/abc', 'Q55555', '54321', 'PMC555','978-3-16-148410-0', '42022773', '12', 'IV', '5-9', 'bogus publishing group', 'cn'),
+    ('00000000-0000-0000-4444-FFF000000003', '00000000-0000-0000-5555-000000000003', '00000000-0000-0000-1111-000000000003', 'Why Most Published Research Findings Are False', 'article-journal', 'published', '2005-08-30', '10.1371/journal.pmed.0020124',     null,    null,     null,               null,       null, '2', '8', 'e124', 'Public Library of Science', 'en');
 
 INSERT INTO release_ident (id, is_live, rev_id, redirect_id) VALUES
     ('00000000-0000-0000-4444-000000000001', true, '00000000-0000-0000-4444-FFF000000001', null), -- aaaaaaaaaaaaarceaaaaaaaaae

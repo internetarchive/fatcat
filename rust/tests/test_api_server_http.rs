@@ -197,12 +197,62 @@ fn test_lookups() {
 
     check_http_response(
         request::get(
+            "http://localhost:9411/v0/container/lookup?issnl=1234",
+            headers.clone(),
+            &router,
+        ),
+        status::BadRequest,
+        None,
+    );
+
+    check_http_response(
+        request::get(
+            "http://localhost:9411/v0/container/lookup?wikidata_qid=Q84913959359",
+            headers.clone(),
+            &router,
+        ),
+        status::NotFound,
+        None,
+    );
+
+    check_http_response(
+        request::get(
+            "http://localhost:9411/v0/container/lookup?wikidata_qid=84913959359",
+            headers.clone(),
+            &router,
+        ),
+        status::BadRequest,
+        None,
+    );
+
+    check_http_response(
+        request::get(
+            "http://localhost:9411/v0/container/lookup?wikidata_qid=Q84913959359&issnl=1234-0000",
+            headers.clone(),
+            &router,
+        ),
+        status::BadRequest,
+        None,
+    );
+
+    check_http_response(
+        request::get(
             "http://localhost:9411/v0/creator/lookup?orcid=0000-0003-2088-7465",
             headers.clone(),
             &router,
         ),
         status::Ok,
         Some("Christine Moran"),
+    );
+
+    check_http_response(
+        request::get(
+            "http://localhost:9411/v0/creator/lookup?wikidata_qid=Q5678",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("John P. A. Ioannidis"),
     );
 
     check_http_response(
@@ -217,12 +267,39 @@ fn test_lookups() {
 
     check_http_response(
         request::get(
+            "http://localhost:9411/v0/file/lookup?md5=7d97e98f8af710c7e7fe703abc8f639e0ee507c4",
+            headers.clone(),
+            &router,
+        ),
+        status::NotFound,
+        None,
+    );
+    check_http_response(
+        request::get(
+            "http://localhost:9411/v0/file/lookup?md5=f4de91152c7ab9fdc2a128f962faebff",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("0020124&type=printable"),
+    );
+    check_http_response(
+        request::get(
             "http://localhost:9411/v0/file/lookup?sha1=7d97e98f8af710c7e7fe703abc8f639e0ee507c4",
             headers.clone(),
             &router,
         ),
         status::Ok,
         Some("robots.txt"),
+    );
+    check_http_response(
+        request::get(
+            "http://localhost:9411/v0/file/lookup?sha256=ffc1005680cb620eec4c913437dfabbf311b535cfe16cbaeb2faec1f92afc362",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("0020124&type=printable"),
     );
 
     check_http_response(
@@ -233,6 +310,78 @@ fn test_lookups() {
         ),
         status::NotFound,
         None,
+    );
+
+    // not URL encoded
+    check_http_response(
+        request::get(
+            "http://localhost:9411/v0/release/lookup?doi=10.123/abc",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("bigger example"),
+    );
+
+    // URL encoded
+    check_http_response(
+        request::get(
+            "http://localhost:9411/v0/release/lookup?doi=10.123%2Fabc",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("bigger example"),
+    );
+
+    check_http_response(
+        request::get(
+            "http://localhost:9411/v0/release/lookup?wikidata_qid=Q55555",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("bigger example"),
+    );
+
+    check_http_response(
+        request::get(
+            "http://localhost:9411/v0/release/lookup?pmid=54321",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("bigger example"),
+    );
+
+    check_http_response(
+        request::get(
+            "http://localhost:9411/v0/release/lookup?pmcid=PMC555",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("bigger example"),
+    );
+
+    check_http_response(
+        request::get(
+            "http://localhost:9411/v0/release/lookup?isbn13=978-3-16-148410-0",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("bigger example"),
+    );
+
+    check_http_response(
+        request::get(
+            "http://localhost:9411/v0/release/lookup?core_id=42022773",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("bigger example"),
     );
 }
 
@@ -474,7 +623,8 @@ fn test_post_release() {
         status::BadRequest,
         None,
     );
-    */}
+    */
+}
 
 #[test]
 fn test_post_work() {

@@ -53,7 +53,7 @@ pub struct Server {
     pub db_pool: ConnectionPool,
 }
 
-pub fn get_release_files(id: FatCatId, hide: HideFlags, conn: &DbConn) -> Result<Vec<FileEntity>> {
+pub fn get_release_files(id: FatCatId, hide_flags: HideFlags, conn: &DbConn) -> Result<Vec<FileEntity>> {
     let rows: Vec<(FileRevRow, FileIdentRow, FileReleaseRow)> = file_rev::table
         .inner_join(file_ident::table)
         .inner_join(file_release::table)
@@ -63,7 +63,7 @@ pub fn get_release_files(id: FatCatId, hide: HideFlags, conn: &DbConn) -> Result
         .load(conn)?;
 
     rows.into_iter()
-        .map(|(rev, ident, _)| FileEntity::db_from_row(conn, rev, Some(ident), hide))
+        .map(|(rev, ident, _)| FileEntity::db_from_row(conn, rev, Some(ident), hide_flags))
         .collect()
 }
 
@@ -72,7 +72,8 @@ impl Server {
         &self,
         issnl: &Option<String>,
         wikidata_qid: &Option<String>,
-        hide: HideFlags,
+        expand_flags: ExpandFlags,
+        hide_flags: HideFlags,
         conn: &DbConn,
     ) -> Result<ContainerEntity> {
         let (ident, rev): (ContainerIdentRow, ContainerRevRow) = match (issnl, wikidata_qid) {
@@ -86,7 +87,7 @@ impl Server {
                     .first(conn)?
             }
             (None, Some(wikidata_qid)) => {
-                check_issn(wikidata_qid)?;
+                check_wikidata_qid(wikidata_qid)?;
                 container_ident::table
                     .inner_join(container_rev::table)
                     .filter(container_rev::wikidata_qid.eq(&wikidata_qid))
@@ -99,14 +100,17 @@ impl Server {
             }
         };
 
-        ContainerEntity::db_from_row(conn, rev, Some(ident), hide)
+        let mut entity = ContainerEntity::db_from_row(conn, rev, Some(ident), hide_flags)?;
+        entity.db_expand(&conn, expand_flags)?;
+        Ok(entity)
     }
 
     pub fn lookup_creator_handler(
         &self,
         orcid: &Option<String>,
         wikidata_qid: &Option<String>,
-        hide: HideFlags,
+        expand_flags: ExpandFlags,
+        hide_flags: HideFlags,
         conn: &DbConn,
     ) -> Result<CreatorEntity> {
         let (ident, rev): (CreatorIdentRow, CreatorRevRow) = match (orcid, wikidata_qid) {
@@ -133,13 +137,15 @@ impl Server {
             }
         };
 
-        CreatorEntity::db_from_row(conn, rev, Some(ident), hide)
+        let mut entity = CreatorEntity::db_from_row(conn, rev, Some(ident), hide_flags)?;
+        entity.db_expand(&conn, expand_flags)?;
+        Ok(entity)
     }
 
     pub fn get_creator_releases_handler(
         &self,
         id: FatCatId,
-        hide: HideFlags,
+        hide_flags: HideFlags,
         conn: &DbConn,
     ) -> Result<Vec<ReleaseEntity>> {
         // TODO: some kind of unique or group-by?
@@ -153,7 +159,7 @@ impl Server {
 
         // TODO: from_rows, not from_row?
         rows.into_iter()
-            .map(|(rev, ident, _)| ReleaseEntity::db_from_row(conn, rev, Some(ident), hide))
+            .map(|(rev, ident, _)| ReleaseEntity::db_from_row(conn, rev, Some(ident), hide_flags))
             .collect()
     }
 
@@ -162,7 +168,8 @@ impl Server {
         md5: &Option<String>,
         sha1: &Option<String>,
         sha256: &Option<String>,
-        hide: HideFlags,
+        expand_flags: ExpandFlags,
+        hide_flags: HideFlags,
         conn: &DbConn,
     ) -> Result<FileEntity> {
         let (ident, rev): (FileIdentRow, FileRevRow) = match (md5, sha1, sha256) {
@@ -189,7 +196,9 @@ impl Server {
             }
         };
 
-        FileEntity::db_from_row(conn, rev, Some(ident), hide)
+        let mut entity = FileEntity::db_from_row(conn, rev, Some(ident), hide_flags)?;
+        entity.db_expand(&conn, expand_flags)?;
+        Ok(entity)
     }
 
     pub fn lookup_release_handler(
@@ -199,12 +208,14 @@ impl Server {
         isbn13: &Option<String>,
         pmid: &Option<String>,
         pmcid: &Option<String>,
-        hide: HideFlags,
+        core_id: &Option<String>,
+        expand_flags: ExpandFlags,
+        hide_flags: HideFlags,
         conn: &DbConn,
     ) -> Result<ReleaseEntity> {
         let (ident, rev): (ReleaseIdentRow, ReleaseRevRow) =
-            match (doi, wikidata_qid, isbn13, pmid, pmcid) {
-                (Some(doi), None, None, None, None) => {
+            match (doi, wikidata_qid, isbn13, pmid, pmcid, core_id) {
+                (Some(doi), None, None, None, None, None) => {
                     check_doi(doi)?;
                     release_ident::table
                         .inner_join(release_rev::table)
@@ -213,7 +224,7 @@ impl Server {
                         .filter(release_ident::redirect_id.is_null())
                         .first(conn)?
                 }
-                (None, Some(wikidata_qid), None, None, None) => {
+                (None, Some(wikidata_qid), None, None, None, None) => {
                     check_wikidata_qid(wikidata_qid)?;
                     release_ident::table
                         .inner_join(release_rev::table)
@@ -222,7 +233,7 @@ impl Server {
                         .filter(release_ident::redirect_id.is_null())
                         .first(conn)?
                 }
-                (None, None, Some(isbn13), None, None) => {
+                (None, None, Some(isbn13), None, None, None) => {
                     // TODO: check_isbn13(isbn13)?;
                     release_ident::table
                         .inner_join(release_rev::table)
@@ -231,7 +242,7 @@ impl Server {
                         .filter(release_ident::redirect_id.is_null())
                         .first(conn)?
                 }
-                (None, None, None, Some(pmid), None) => {
+                (None, None, None, Some(pmid), None, None) => {
                     check_pmid(pmid)?;
                     release_ident::table
                         .inner_join(release_rev::table)
@@ -240,11 +251,20 @@ impl Server {
                         .filter(release_ident::redirect_id.is_null())
                         .first(conn)?
                 }
-                (None, None, None, None, Some(pmcid)) => {
+                (None, None, None, None, Some(pmcid), None) => {
                     check_pmcid(pmcid)?;
                     release_ident::table
                         .inner_join(release_rev::table)
                         .filter(release_rev::pmcid.eq(pmcid))
+                        .filter(release_ident::is_live.eq(true))
+                        .filter(release_ident::redirect_id.is_null())
+                        .first(conn)?
+                }
+                (None, None, None, None, None, Some(core_id)) => {
+                    // TODO: check_core_id(core_id)?;
+                    release_ident::table
+                        .inner_join(release_rev::table)
+                        .filter(release_rev::core_id.eq(core_id))
                         .filter(release_ident::is_live.eq(true))
                         .filter(release_ident::redirect_id.is_null())
                         .first(conn)?
@@ -256,22 +276,24 @@ impl Server {
                 }
             };
 
-        ReleaseEntity::db_from_row(conn, rev, Some(ident), hide)
+        let mut entity = ReleaseEntity::db_from_row(conn, rev, Some(ident), hide_flags)?;
+        entity.db_expand(&conn, expand_flags)?;
+        Ok(entity)
     }
 
     pub fn get_release_files_handler(
         &self,
         id: FatCatId,
-        hide: HideFlags,
+        hide_flags: HideFlags,
         conn: &DbConn,
     ) -> Result<Vec<FileEntity>> {
-        get_release_files(id, hide, conn)
+        get_release_files(id, hide_flags, conn)
     }
 
     pub fn get_work_releases_handler(
         &self,
         id: FatCatId,
-        hide: HideFlags,
+        hide_flags: HideFlags,
         conn: &DbConn,
     ) -> Result<Vec<ReleaseEntity>> {
         let rows: Vec<(ReleaseRevRow, ReleaseIdentRow)> = release_rev::table
@@ -282,7 +304,7 @@ impl Server {
             .load(conn)?;
 
         rows.into_iter()
-            .map(|(rev, ident)| ReleaseEntity::db_from_row(conn, rev, Some(ident), hide))
+            .map(|(rev, ident)| ReleaseEntity::db_from_row(conn, rev, Some(ident), hide_flags))
             .collect()
     }
 
@@ -301,7 +323,8 @@ impl Server {
                 editgroup::editor_id.eq(FatCatId::from_str(&entity.editor_id)?.to_uuid()),
                 editgroup::description.eq(entity.description),
                 editgroup::extra_json.eq(entity.extra),
-            )).get_result(conn)?;
+            ))
+            .get_result(conn)?;
 
         Ok(Editgroup {
             id: Some(uuid2fcid(&row.id)),
@@ -397,7 +420,8 @@ impl Server {
                 editgroup: Some(eg_row.into_model_partial()),
                 editgroup_id: uuid2fcid(&cl_row.editgroup_id),
                 timestamp: chrono::DateTime::from_utc(cl_row.timestamp, chrono::Utc),
-            }).collect();
+            })
+            .collect();
         Ok(entries)
     }
 
@@ -421,7 +445,8 @@ impl Server {
                 editgroup: Some(eg_row.into_model_partial()),
                 editgroup_id: uuid2fcid(&cl_row.editgroup_id),
                 timestamp: chrono::DateTime::from_utc(cl_row.timestamp, chrono::Utc),
-            }).collect();
+            })
+            .collect();
         Ok(entries)
     }
 

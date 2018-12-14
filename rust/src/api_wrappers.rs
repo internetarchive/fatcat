@@ -371,22 +371,29 @@ macro_rules! wrap_lookup_handler {
             &self,
             $idname: Option<String>,
             wikidata_qid: Option<String>,
+            expand: Option<String>,
             hide: Option<String>,
             _context: &Context,
         ) -> Box<Future<Item = $get_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
+            let expand_flags = match expand {
+                None => ExpandFlags::none(),
+                Some(param) => ExpandFlags::from_str(&param).unwrap(),
+            };
             let hide_flags = match hide {
                 None => HideFlags::none(),
                 Some(param) => HideFlags::from_str(&param).unwrap(),
             };
             // No transaction for GET
-            let ret = match self.$get_handler(&$idname, &wikidata_qid, hide_flags, &conn) {
+            let ret = match self.$get_handler(&$idname, &wikidata_qid, expand_flags, hide_flags, &conn) {
                 Ok(entity) =>
                     $get_resp::FoundEntity(entity),
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
                     $get_resp::NotFound(ErrorResponse { message: format!("Not found: {:?} / {:?}", $idname, wikidata_qid) }),
                 Err(Error(ErrorKind::MalformedExternalId(e), _)) =>
                     $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::MissingOrMultipleExternalId(e), _)) => {
+                    $get_resp::BadRequest(ErrorResponse { message: e.to_string(), }) },
                 Err(e) => {
                     error!("{}", e);
                     $get_resp::BadRequest(ErrorResponse { message: e.to_string() })
@@ -627,16 +634,21 @@ impl Api for Server {
         md5: Option<String>,
         sha1: Option<String>,
         sha256: Option<String>,
+        expand: Option<String>,
         hide: Option<String>,
         _context: &Context,
     ) -> Box<Future<Item = LookupFileResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
+        let expand_flags = match expand {
+            None => ExpandFlags::none(),
+            Some(param) => ExpandFlags::from_str(&param).unwrap(),
+        };
         let hide_flags = match hide {
             None => HideFlags::none(),
             Some(param) => HideFlags::from_str(&param).unwrap(),
         };
         // No transaction for GET
-        let ret = match self.lookup_file_handler(&md5, &sha1, &sha256, hide_flags, &conn) {
+        let ret = match self.lookup_file_handler(&md5, &sha1, &sha256, expand_flags, hide_flags, &conn) {
             Ok(entity) => LookupFileResponse::FoundEntity(entity),
             Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
                 LookupFileResponse::NotFound(ErrorResponse {
@@ -644,6 +656,11 @@ impl Api for Server {
                 })
             }
             Err(Error(ErrorKind::MalformedExternalId(e), _)) => {
+                LookupFileResponse::BadRequest(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(Error(ErrorKind::MissingOrMultipleExternalId(e), _)) => {
                 LookupFileResponse::BadRequest(ErrorResponse {
                     message: e.to_string(),
                 })
@@ -665,10 +682,16 @@ impl Api for Server {
         isbn13: Option<String>,
         pmid: Option<String>,
         pmcid: Option<String>,
+        core_id: Option<String>,
+        expand: Option<String>,
         hide: Option<String>,
         _context: &Context,
     ) -> Box<Future<Item = LookupReleaseResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
+        let expand_flags = match expand {
+            None => ExpandFlags::none(),
+            Some(param) => ExpandFlags::from_str(&param).unwrap(),
+        };
         let hide_flags = match hide {
             None => HideFlags::none(),
             Some(param) => HideFlags::from_str(&param).unwrap(),
@@ -680,6 +703,8 @@ impl Api for Server {
             &isbn13,
             &pmid,
             &pmcid,
+            &core_id,
+            expand_flags,
             hide_flags,
             &conn,
         ) {
@@ -687,12 +712,17 @@ impl Api for Server {
             Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
                 LookupReleaseResponse::NotFound(ErrorResponse {
                     message: format!(
-                        "Not found: {:?} / {:?} / {:?} / {:?} / {:?}",
-                        doi, wikidata_qid, isbn13, pmid, pmcid
+                        "Not found: {:?} / {:?} / {:?} / {:?} / {:?} / {:?}",
+                        doi, wikidata_qid, isbn13, pmid, pmcid, core_id
                     ),
                 })
             }
             Err(Error(ErrorKind::MalformedExternalId(e), _)) => {
+                LookupReleaseResponse::BadRequest(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(Error(ErrorKind::MissingOrMultipleExternalId(e), _)) => {
                 LookupReleaseResponse::BadRequest(ErrorResponse {
                     message: e.to_string(),
                 })
