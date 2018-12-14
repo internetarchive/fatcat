@@ -153,8 +153,10 @@ macro_rules! generic_db_create_batch {
                             rev_id: Some(rev_id.clone()),
                             is_live: edit_context.autoaccept,
                             redirect_id: None,
-                        }).collect::<Vec<Self::IdentNewRow>>(),
-                ).returning($ident_table::id)
+                        })
+                        .collect::<Vec<Self::IdentNewRow>>(),
+                )
+                .returning($ident_table::id)
                 .get_results(conn)?;
             let edits: Vec<Self::EditRow> = insert_into($edit_table::table)
                 .values(
@@ -168,8 +170,10 @@ macro_rules! generic_db_create_batch {
                             redirect_id: None,
                             prev_rev: None,
                             extra_json: edit_context.extra_json.clone(),
-                        }).collect::<Vec<Self::EditNewRow>>(),
-                ).get_results(conn)?;
+                        })
+                        .collect::<Vec<Self::EditNewRow>>(),
+                )
+                .get_results(conn)?;
             Ok(edits)
         }
     };
@@ -228,7 +232,8 @@ macro_rules! generic_db_delete {
                     $edit_table::redirect_id.eq(None::<Uuid>),
                     $edit_table::prev_rev.eq(current.rev_id),
                     $edit_table::extra_json.eq(&edit_context.extra_json),
-                )).get_result(conn)?;
+                ))
+                .get_result(conn)?;
 
             Ok(edit)
         }
@@ -260,7 +265,8 @@ macro_rules! generic_db_get_history {
                         editgroup: eg_row.into_model_partial(),
                         changelog_entry: cl_row.into_model(),
                     })
-                }).collect();
+                })
+                .collect();
             history
         }
     };
@@ -360,7 +366,8 @@ macro_rules! generic_db_accept_edits_batch {
                         {entity}_ident.id = {entity}_edit.ident_id
                         AND {entity}_edit.editgroup_id = $1",
                 entity = $entity_name_str
-            )).bind::<diesel::sql_types::Uuid, _>(editgroup_id.to_uuid())
+            ))
+            .bind::<diesel::sql_types::Uuid, _>(editgroup_id.to_uuid())
             .execute(conn)?;
             Ok(count as u64)
         }
@@ -388,14 +395,14 @@ macro_rules! generic_db_accept_edits_each {
                 })
                 .collect();
             /*
-                                    // 3. upsert ident rows (in sql)
-                                    let count: u64 = diesel::insert_into($ident_table::table)
-                                        .values(ident_rows)
-                                        .on_conflict()
-                                        .do_update()
-                                        .set(ident_rows)
-                                        .execute(conn)?;
-                                    */
+            // 3. upsert ident rows (in sql)
+            let count: u64 = diesel::insert_into($ident_table::table)
+                .values(ident_rows)
+                .on_conflict()
+                .do_update()
+                .set(ident_rows)
+                .execute(conn)?;
+            */
             // 3. update every row individually
             let count = ident_rows.len() as u64;
             for row in ident_rows {
@@ -489,8 +496,10 @@ impl EntityCrud for ContainerEntity {
                         abbrev: model.abbrev.clone(),
                         coden: model.coden.clone(),
                         extra_json: model.extra.clone(),
-                    }).collect::<Vec<ContainerRevNewRow>>(),
-            ).returning(container_rev::id)
+                    })
+                    .collect::<Vec<ContainerRevNewRow>>(),
+            )
+            .returning(container_rev::id)
             .get_results(conn)?;
         Ok(rev_ids)
     }
@@ -568,8 +577,10 @@ impl EntityCrud for CreatorEntity {
                         orcid: model.orcid.clone(),
                         wikidata_qid: model.wikidata_qid.clone(),
                         extra_json: model.extra.clone(),
-                    }).collect::<Vec<CreatorRevNewRow>>(),
-            ).returning(creator_rev::id)
+                    })
+                    .collect::<Vec<CreatorRevNewRow>>(),
+            )
+            .returning(creator_rev::id)
             .get_results(conn)?;
         Ok(rev_ids)
     }
@@ -625,7 +636,8 @@ impl EntityCrud for FileEntity {
             .map(|r: FileRevUrlRow| FileEntityUrls {
                 rel: r.rel,
                 url: r.url,
-            }).collect();
+            })
+            .collect();
 
         Ok(FileEntity {
             sha1: rev_row.sha1,
@@ -656,8 +668,10 @@ impl EntityCrud for FileEntity {
                         md5: model.md5.clone(),
                         mimetype: model.mimetype.clone(),
                         extra_json: model.extra.clone(),
-                    }).collect::<Vec<FileRevNewRow>>(),
-            ).returning(file_rev::id)
+                    })
+                    .collect::<Vec<FileRevNewRow>>(),
+            )
+            .returning(file_rev::id)
             .get_results(conn)?;
 
         let mut file_release_rows: Vec<FileReleaseRow> = vec![];
@@ -674,7 +688,8 @@ impl EntityCrud for FileEntity {
                                 file_rev: *rev_id,
                                 target_release_ident_id: FatCatId::from_str(r)?.to_uuid(),
                             })
-                        }).collect();
+                        })
+                        .collect();
                     file_release_rows.extend(these_release_rows?);
                 }
             };
@@ -688,7 +703,8 @@ impl EntityCrud for FileEntity {
                             file_rev: *rev_id,
                             rel: u.rel.clone(),
                             url: u.url.clone(),
-                        }).collect();
+                        })
+                        .collect();
                     file_url_rows.extend(these_url_rows);
                 }
             };
@@ -795,7 +811,8 @@ impl EntityCrud for ReleaseEntity {
                         Some(FatCatId::from_uuid(&new_work_ids.pop().unwrap()).to_string())
                 }
                 model
-            }).collect();
+            })
+            .collect();
         let model_refs: Vec<&Self> = models_with_work_ids.iter().map(|s| s).collect();
         let models = model_refs.as_slice();
 
@@ -809,8 +826,10 @@ impl EntityCrud for ReleaseEntity {
                         rev_id: Some(*rev_id),
                         is_live: edit_context.autoaccept,
                         redirect_id: None,
-                    }).collect::<Vec<Self::IdentNewRow>>(),
-            ).returning(release_ident::id)
+                    })
+                    .collect::<Vec<Self::IdentNewRow>>(),
+            )
+            .returning(release_ident::id)
             .get_results(conn)?;
         let edits: Vec<Self::EditRow> = insert_into(release_edit::table)
             .values(
@@ -824,8 +843,10 @@ impl EntityCrud for ReleaseEntity {
                         redirect_id: None,
                         prev_rev: None,
                         extra_json: edit_context.extra_json.clone(),
-                    }).collect::<Vec<Self::EditNewRow>>(),
-            ).get_results(conn)?;
+                    })
+                    .collect::<Vec<Self::EditNewRow>>(),
+            )
+            .get_results(conn)?;
         Ok(edits)
     }
 
@@ -863,7 +884,8 @@ impl EntityCrud for ReleaseEntity {
                         target_release_id: r
                             .target_release_ident_id
                             .map(|v| FatCatId::from_uuid(&v).to_string()),
-                    }).collect(),
+                    })
+                    .collect(),
             ),
         };
 
@@ -875,7 +897,8 @@ impl EntityCrud for ReleaseEntity {
                     .order((
                         release_contrib::role.asc(),
                         release_contrib::index_val.asc(),
-                    )).get_results(conn)?
+                    ))
+                    .get_results(conn)?
                     .into_iter()
                     .map(|c: ReleaseContribRow| ReleaseContrib {
                         index: c.index_val.map(|v| v as i64),
@@ -886,7 +909,8 @@ impl EntityCrud for ReleaseEntity {
                             .creator_ident_id
                             .map(|v| FatCatId::from_uuid(&v).to_string()),
                         creator: None,
-                    }).collect(),
+                    })
+                    .collect(),
             ),
         };
 
@@ -905,7 +929,8 @@ impl EntityCrud for ReleaseEntity {
                             lang: r.0.lang,
                             content: Some(r.1.content),
                         },
-                    ).collect(),
+                    )
+                    .collect(),
             ),
         };
 
@@ -1033,7 +1058,8 @@ impl EntityCrud for ReleaseEntity {
                                 locator: r.locator.clone(),
                                 extra_json: r.extra.clone(),
                             })
-                        }).collect::<Result<Vec<ReleaseRefNewRow>>>()?;
+                        })
+                        .collect::<Result<Vec<ReleaseRefNewRow>>>()?;
                     release_ref_rows.extend(these_ref_rows);
                 }
             };
@@ -1055,7 +1081,8 @@ impl EntityCrud for ReleaseEntity {
                                 role: c.role.clone(),
                                 extra_json: c.extra.clone(),
                             })
-                        }).collect::<Result<Vec<ReleaseContribNewRow>>>()?;
+                        })
+                        .collect::<Result<Vec<ReleaseContribNewRow>>>()?;
                     release_contrib_rows.extend(these_contrib_rows);
                 }
             };
@@ -1069,7 +1096,8 @@ impl EntityCrud for ReleaseEntity {
                     .map(|c| AbstractsRow {
                         sha1: Sha1::from(c.content.clone().unwrap()).hexdigest(),
                         content: c.content.clone().unwrap(),
-                    }).collect();
+                    })
+                    .collect();
                 abstract_rows.extend(new_abstracts);
                 let new_release_abstract_rows: Vec<ReleaseRevAbstractNewRow> = abstract_list
                     .into_iter()
@@ -1086,7 +1114,8 @@ impl EntityCrud for ReleaseEntity {
                             lang: c.lang.clone(),
                             mimetype: c.mimetype.clone(),
                         })
-                    }).collect::<Result<Vec<ReleaseRevAbstractNewRow>>>()?;
+                    })
+                    .collect::<Result<Vec<ReleaseRevAbstractNewRow>>>()?;
                 release_abstract_rows.extend(new_release_abstract_rows);
             }
         }
@@ -1172,8 +1201,10 @@ impl EntityCrud for WorkEntity {
                     .iter()
                     .map(|model| WorkRevNewRow {
                         extra_json: model.extra.clone(),
-                    }).collect::<Vec<WorkRevNewRow>>(),
-            ).returning(work_rev::id)
+                    })
+                    .collect::<Vec<WorkRevNewRow>>(),
+            )
+            .returning(work_rev::id)
             .get_results(conn)?;
         Ok(rev_ids)
     }

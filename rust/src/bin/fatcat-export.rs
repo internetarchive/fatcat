@@ -40,7 +40,7 @@ use std::io::{BufReader, BufWriter};
 
 const CHANNEL_BUFFER_LEN: usize = 200;
 
-arg_enum!{
+arg_enum! {
     #[derive(PartialEq, Debug, Clone, Copy)]
     pub enum ExportEntityType {
         Creator,
@@ -70,16 +70,26 @@ pub fn database_worker_pool() -> Result<ConnectionPool> {
 
 macro_rules! generic_loop_work {
     ($fn_name:ident, $entity_model:ident) => {
-        fn $fn_name(row_receiver: channel::Receiver<IdentRow>, output_sender: channel::Sender<String>, db_conn: &DbConn, expand: Option<ExpandFlags>) {
+        fn $fn_name(
+            row_receiver: channel::Receiver<IdentRow>,
+            output_sender: channel::Sender<String>,
+            db_conn: &DbConn,
+            expand: Option<ExpandFlags>,
+        ) {
             let result: Result<()> = (|| {
                 for row in row_receiver {
-                    let mut entity = $entity_model::db_get_rev(db_conn, row.rev_id.expect("valid, non-deleted row"), HideFlags::none())
-                        .chain_err(|| "reading entity from database")?;
+                    let mut entity = $entity_model::db_get_rev(
+                        db_conn,
+                        row.rev_id.expect("valid, non-deleted row"),
+                        HideFlags::none(),
+                    )
+                    .chain_err(|| "reading entity from database")?;
                     //let mut entity = ReleaseEntity::db_get_rev(db_conn, row.rev_id.expect("valid, non-deleted row"))?;
                     entity.state = Some("active".to_string()); // XXX
                     entity.ident = Some(row.ident_id.to_string());
                     if let Some(expand) = expand {
-                        entity.db_expand(db_conn, expand)
+                        entity
+                            .db_expand(db_conn, expand)
                             .chain_err(|| "expanding sub-entities from database")?;
                     }
                     output_sender.send(serde_json::to_string(&entity)?);
@@ -91,7 +101,7 @@ macro_rules! generic_loop_work {
             }
             result.unwrap()
         }
-    }
+    };
 }
 
 generic_loop_work!(loop_work_container, ContainerEntity);
@@ -137,14 +147,14 @@ fn parse_line(s: &str) -> Result<IdentRow> {
 
 #[test]
 fn test_parse_line() {
-    assert!(
-        parse_line("00000000-0000-0000-3333-000000000001\t00000000-0000-0000-3333-fff000000001\t")
-            .is_ok()
-    );
-    assert!(
-        parse_line("00000-0000-0000-3333-000000000001\t00000000-0000-0000-3333-fff000000001\t")
-            .is_err()
-    );
+    assert!(parse_line(
+        "00000000-0000-0000-3333-000000000001\t00000000-0000-0000-3333-fff000000001\t"
+    )
+    .is_ok());
+    assert!(parse_line(
+        "00000-0000-0000-3333-000000000001\t00000000-0000-0000-3333-fff000000001\t"
+    )
+    .is_err());
     assert!(
         parse_line("00000-0000-0000-3333-000000000001\t00000000-0000-0000-3333-fff000000001")
             .is_err()

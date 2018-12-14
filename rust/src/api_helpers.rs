@@ -286,7 +286,8 @@ pub fn check_pmcid(raw: &str) -> Result<()> {
         Err(ErrorKind::MalformedExternalId(format!(
             "not a valid PubMed Central ID (PMCID): '{}' (expected, eg, 'PMC12345')",
             raw
-        )).into())
+        ))
+        .into())
     }
 }
 
@@ -300,7 +301,8 @@ pub fn check_pmid(raw: &str) -> Result<()> {
         Err(ErrorKind::MalformedExternalId(format!(
             "not a valid PubMed ID (PMID): '{}' (expected, eg, '1234')",
             raw
-        )).into())
+        ))
+        .into())
     }
 }
 
@@ -314,7 +316,8 @@ pub fn check_wikidata_qid(raw: &str) -> Result<()> {
         Err(ErrorKind::MalformedExternalId(format!(
             "not a valid Wikidata QID: '{}' (expected, eg, 'Q1234')",
             raw
-        )).into())
+        ))
+        .into())
     }
 }
 
@@ -328,7 +331,8 @@ pub fn check_doi(raw: &str) -> Result<()> {
         Err(ErrorKind::MalformedExternalId(format!(
             "not a valid DOI: '{}' (expected, eg, '10.1234/aksjdfh')",
             raw
-        )).into())
+        ))
+        .into())
     }
 }
 
@@ -342,7 +346,8 @@ pub fn check_issn(raw: &str) -> Result<()> {
         Err(ErrorKind::MalformedExternalId(format!(
             "not a valid ISSN: '{}' (expected, eg, '1234-5678')",
             raw
-        )).into())
+        ))
+        .into())
     }
 }
 
@@ -356,7 +361,8 @@ pub fn check_orcid(raw: &str) -> Result<()> {
         Err(ErrorKind::MalformedExternalId(format!(
             "not a valid ORCID: '{}' (expected, eg, '0123-4567-3456-6789')",
             raw
-        )).into())
+        ))
+        .into())
     }
 }
 
@@ -419,7 +425,8 @@ pub fn check_release_type(raw: &str) -> Result<()> {
     Err(ErrorKind::NotInControlledVocabulary(format!(
         "not a valid release_type: '{}' (expected a CSL type, eg, 'article-journal', 'book')",
         raw
-    )).into())
+    ))
+    .into())
 }
 
 #[test]
@@ -460,7 +467,8 @@ pub fn check_contrib_role(raw: &str) -> Result<()> {
     Err(ErrorKind::NotInControlledVocabulary(format!(
         "not a valid contrib.role: '{}' (expected a CSL type, eg, 'author', 'editor')",
         raw
-    )).into())
+    ))
+    .into())
 }
 
 #[test]

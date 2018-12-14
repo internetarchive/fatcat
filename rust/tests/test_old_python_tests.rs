@@ -277,20 +277,19 @@ fn test_merge_works() {
     // merge works
     client.merge_works(work_a_id, work_b_id)
 */
+// check results
+let work_a = match client.get_work(work_a_id.clone(), None).wait().unwrap() {
+GetWorkResponse::FoundEntity(e) => e,
+_ => unreachable!(),
+};
+let _work_b = match client.get_work(work_b_id.clone(), None).wait().unwrap() {
+GetWorkResponse::FoundEntity(e) => e,
+_ => unreachable!(),
+};
+// TODO: assert_eq!(work_a.revision.unwrap(), work_b.revision.unwrap());
+assert_eq!(work_a.redirect, None);
+// TODO: assert_eq!(work_b.redirect, Some(work_a_id));
 
-    // check results
-    let work_a = match client.get_work(work_a_id.clone(), None).wait().unwrap() {
-        GetWorkResponse::FoundEntity(e) => e,
-        _ => unreachable!(),
-    };
-    let _work_b = match client.get_work(work_b_id.clone(), None).wait().unwrap() {
-        GetWorkResponse::FoundEntity(e) => e,
-        _ => unreachable!(),
-    };
-    // TODO: assert_eq!(work_a.revision.unwrap(), work_b.revision.unwrap());
-    assert_eq!(work_a.redirect, None);
-    // TODO: assert_eq!(work_b.redirect, Some(work_a_id));
-
-    server.close().unwrap()
+server.close().unwrap()
 }
 */

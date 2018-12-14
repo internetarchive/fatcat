@@ -25,7 +25,8 @@ impl EntityState {
             EntityState::Active(_) => "active",
             EntityState::Redirect(_, _) => "redirect",
             EntityState::Deleted => "deleted",
-        }.to_string()
+        }
+        .to_string()
     }
 }
 
