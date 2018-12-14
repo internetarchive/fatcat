@@ -87,7 +87,8 @@ class ContainerEntity(object):
             self.issnl = issnl
         if publisher is not None:
             self.publisher = publisher
-        self.name = name
+        if name is not None:
+            self.name = name
         if edit_extra is not None:
             self.edit_extra = edit_extra
         if extra is not None:
@@ -216,6 +217,7 @@ class ContainerEntity(object):
     def name(self):
         """Gets the name of this ContainerEntity.  # noqa: E501
 
+        Required for valid entities  # noqa: E501
 
         :return: The name of this ContainerEntity.  # noqa: E501
         :rtype: str
@@ -226,12 +228,11 @@ class ContainerEntity(object):
     def name(self, name):
         """Sets the name of this ContainerEntity.
 
+        Required for valid entities  # noqa: E501
 
         :param name: The name of this ContainerEntity.  # noqa: E501
         :type: str
         """
-        if name is None:
-            raise ValueError("Invalid value for `name`, must not be `None`")  # noqa: E501
 
         self._name = name
 

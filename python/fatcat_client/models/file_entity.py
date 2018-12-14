@@ -37,8 +37,8 @@ class FileEntity(object):
         'mimetype': 'str',
         'urls': 'list[FileEntityUrls]',
         'sha256': 'str',
-        'md5': 'str',
         'sha1': 'str',
+        'md5': 'str',
         'size': 'int',
         'edit_extra': 'object',
         'extra': 'object',
@@ -53,8 +53,8 @@ class FileEntity(object):
         'mimetype': 'mimetype',
         'urls': 'urls',
         'sha256': 'sha256',
-        'md5': 'md5',
         'sha1': 'sha1',
+        'md5': 'md5',
         'size': 'size',
         'edit_extra': 'edit_extra',
         'extra': 'extra',
@@ -64,15 +64,15 @@ class FileEntity(object):
         'state': 'state'
     }
 
-    def __init__(self, releases=None, mimetype=None, urls=None, sha256=None, md5=None, sha1=None, size=None, edit_extra=None, extra=None, redirect=None, revision=None, ident=None, state=None):  # noqa: E501
+    def __init__(self, releases=None, mimetype=None, urls=None, sha256=None, sha1=None, md5=None, size=None, edit_extra=None, extra=None, redirect=None, revision=None, ident=None, state=None):  # noqa: E501
         """FileEntity - a model defined in Swagger"""  # noqa: E501
 
         self._releases = None
         self._mimetype = None
         self._urls = None
         self._sha256 = None
-        self._md5 = None
         self._sha1 = None
+        self._md5 = None
         self._size = None
         self._edit_extra = None
         self._extra = None
@@ -90,10 +90,10 @@ class FileEntity(object):
             self.urls = urls
         if sha256 is not None:
             self.sha256 = sha256
-        if md5 is not None:
-            self.md5 = md5
         if sha1 is not None:
             self.sha1 = sha1
+        if md5 is not None:
+            self.md5 = md5
         if size is not None:
             self.size = size
         if edit_extra is not None:
@@ -194,27 +194,6 @@ class FileEntity(object):
         self._sha256 = sha256
 
     @property
-    def md5(self):
-        """Gets the md5 of this FileEntity.  # noqa: E501
-
-
-        :return: The md5 of this FileEntity.  # noqa: E501
-        :rtype: str
-        """
-        return self._md5
-
-    @md5.setter
-    def md5(self, md5):
-        """Sets the md5 of this FileEntity.
-
-
-        :param md5: The md5 of this FileEntity.  # noqa: E501
-        :type: str
-        """
-
-        self._md5 = md5
-
-    @property
     def sha1(self):
         """Gets the sha1 of this FileEntity.  # noqa: E501
 
@@ -234,6 +213,27 @@ class FileEntity(object):
         """
 
         self._sha1 = sha1
+
+    @property
+    def md5(self):
+        """Gets the md5 of this FileEntity.  # noqa: E501
+
+
+        :return: The md5 of this FileEntity.  # noqa: E501
+        :rtype: str
+        """
+        return self._md5
+
+    @md5.setter
+    def md5(self, md5):
+        """Sets the md5 of this FileEntity.
+
+
+        :param md5: The md5 of this FileEntity.  # noqa: E501
+        :type: str
+        """
+
+        self._md5 = md5
 
     @property
     def size(self):

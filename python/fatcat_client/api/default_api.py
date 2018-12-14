@@ -1366,6 +1366,103 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
+    def delete_container_edit(self, edit_id, **kwargs):  # noqa: E501
+        """delete_container_edit  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.delete_container_edit(edit_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int edit_id: (required)
+        :return: Success
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.delete_container_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.delete_container_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+            return data
+
+    def delete_container_edit_with_http_info(self, edit_id, **kwargs):  # noqa: E501
+        """delete_container_edit  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.delete_container_edit_with_http_info(edit_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int edit_id: (required)
+        :return: Success
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['edit_id']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method delete_container_edit" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'edit_id' is set
+        if ('edit_id' not in params or
+                params['edit_id'] is None):
+            raise ValueError("Missing the required parameter `edit_id` when calling `delete_container_edit`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'edit_id' in params:
+            path_params['edit_id'] = params['edit_id']  # noqa: E501
+
+        query_params = []
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/container/edit/{edit_id}', 'DELETE',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='Success',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
     def delete_creator(self, id, **kwargs):  # noqa: E501
         """delete_creator  # noqa: E501
 
@@ -1460,6 +1557,103 @@ class DefaultApi(object):
             post_params=form_params,
             files=local_var_files,
             response_type='EntityEdit',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def delete_creator_edit(self, edit_id, **kwargs):  # noqa: E501
+        """delete_creator_edit  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.delete_creator_edit(edit_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int edit_id: (required)
+        :return: Success
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.delete_creator_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.delete_creator_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+            return data
+
+    def delete_creator_edit_with_http_info(self, edit_id, **kwargs):  # noqa: E501
+        """delete_creator_edit  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.delete_creator_edit_with_http_info(edit_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int edit_id: (required)
+        :return: Success
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['edit_id']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method delete_creator_edit" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'edit_id' is set
+        if ('edit_id' not in params or
+                params['edit_id'] is None):
+            raise ValueError("Missing the required parameter `edit_id` when calling `delete_creator_edit`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'edit_id' in params:
+            path_params['edit_id'] = params['edit_id']  # noqa: E501
+
+        query_params = []
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/creator/edit/{edit_id}', 'DELETE',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='Success',  # noqa: E501
             auth_settings=auth_settings,
             async=params.get('async'),
             _return_http_data_only=params.get('_return_http_data_only'),
@@ -1568,6 +1762,103 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
+    def delete_file_edit(self, edit_id, **kwargs):  # noqa: E501
+        """delete_file_edit  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.delete_file_edit(edit_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int edit_id: (required)
+        :return: Success
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.delete_file_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.delete_file_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+            return data
+
+    def delete_file_edit_with_http_info(self, edit_id, **kwargs):  # noqa: E501
+        """delete_file_edit  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.delete_file_edit_with_http_info(edit_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int edit_id: (required)
+        :return: Success
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['edit_id']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method delete_file_edit" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'edit_id' is set
+        if ('edit_id' not in params or
+                params['edit_id'] is None):
+            raise ValueError("Missing the required parameter `edit_id` when calling `delete_file_edit`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'edit_id' in params:
+            path_params['edit_id'] = params['edit_id']  # noqa: E501
+
+        query_params = []
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/file/edit/{edit_id}', 'DELETE',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='Success',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
     def delete_release(self, id, **kwargs):  # noqa: E501
         """delete_release  # noqa: E501
 
@@ -1669,6 +1960,103 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
+    def delete_release_edit(self, edit_id, **kwargs):  # noqa: E501
+        """delete_release_edit  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.delete_release_edit(edit_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int edit_id: (required)
+        :return: Success
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.delete_release_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.delete_release_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+            return data
+
+    def delete_release_edit_with_http_info(self, edit_id, **kwargs):  # noqa: E501
+        """delete_release_edit  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.delete_release_edit_with_http_info(edit_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int edit_id: (required)
+        :return: Success
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['edit_id']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method delete_release_edit" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'edit_id' is set
+        if ('edit_id' not in params or
+                params['edit_id'] is None):
+            raise ValueError("Missing the required parameter `edit_id` when calling `delete_release_edit`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'edit_id' in params:
+            path_params['edit_id'] = params['edit_id']  # noqa: E501
+
+        query_params = []
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/release/edit/{edit_id}', 'DELETE',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='Success',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
     def delete_work(self, id, **kwargs):  # noqa: E501
         """delete_work  # noqa: E501
 
@@ -1763,6 +2151,103 @@ class DefaultApi(object):
             post_params=form_params,
             files=local_var_files,
             response_type='EntityEdit',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def delete_work_edit(self, edit_id, **kwargs):  # noqa: E501
+        """delete_work_edit  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.delete_work_edit(edit_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int edit_id: (required)
+        :return: Success
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.delete_work_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.delete_work_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+            return data
+
+    def delete_work_edit_with_http_info(self, edit_id, **kwargs):  # noqa: E501
+        """delete_work_edit  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.delete_work_edit_with_http_info(edit_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int edit_id: (required)
+        :return: Success
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['edit_id']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method delete_work_edit" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'edit_id' is set
+        if ('edit_id' not in params or
+                params['edit_id'] is None):
+            raise ValueError("Missing the required parameter `edit_id` when calling `delete_work_edit`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'edit_id' in params:
+            path_params['edit_id'] = params['edit_id']  # noqa: E501
+
+        query_params = []
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/work/edit/{edit_id}', 'DELETE',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='Success',  # noqa: E501
             auth_settings=auth_settings,
             async=params.get('async'),
             _return_http_data_only=params.get('_return_http_data_only'),
@@ -2065,6 +2550,103 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
+    def get_container_edit(self, edit_id, **kwargs):  # noqa: E501
+        """get_container_edit  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_container_edit(edit_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int edit_id: (required)
+        :return: EntityEdit
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.get_container_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.get_container_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+            return data
+
+    def get_container_edit_with_http_info(self, edit_id, **kwargs):  # noqa: E501
+        """get_container_edit  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_container_edit_with_http_info(edit_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int edit_id: (required)
+        :return: EntityEdit
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['edit_id']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method get_container_edit" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'edit_id' is set
+        if ('edit_id' not in params or
+                params['edit_id'] is None):
+            raise ValueError("Missing the required parameter `edit_id` when calling `get_container_edit`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'edit_id' in params:
+            path_params['edit_id'] = params['edit_id']  # noqa: E501
+
+        query_params = []
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/container/edit/{edit_id}', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='EntityEdit',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
     def get_container_history(self, id, **kwargs):  # noqa: E501
         """get_container_history  # noqa: E501
 
@@ -2159,6 +2741,208 @@ class DefaultApi(object):
             post_params=form_params,
             files=local_var_files,
             response_type='list[EntityHistoryEntry]',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def get_container_redirects(self, id, **kwargs):  # noqa: E501
+        """get_container_redirects  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_container_redirects(id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str id: (required)
+        :return: list[str]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.get_container_redirects_with_http_info(id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.get_container_redirects_with_http_info(id, **kwargs)  # noqa: E501
+            return data
+
+    def get_container_redirects_with_http_info(self, id, **kwargs):  # noqa: E501
+        """get_container_redirects  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_container_redirects_with_http_info(id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str id: (required)
+        :return: list[str]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['id']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method get_container_redirects" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'id' is set
+        if ('id' not in params or
+                params['id'] is None):
+            raise ValueError("Missing the required parameter `id` when calling `get_container_redirects`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'id' in params:
+            path_params['id'] = params['id']  # noqa: E501
+
+        query_params = []
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/container/{id}/redirects', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='list[str]',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def get_container_revision(self, id, **kwargs):  # noqa: E501
+        """get_container_revision  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_container_revision(id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str id: (required)
+        :param str expand: List of sub-entities to expand in response. For containers, none accepted (yet).
+        :param str hide: List of entity fields to elide in response. For containers, none accepted (yet).
+        :return: ContainerEntity
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.get_container_revision_with_http_info(id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.get_container_revision_with_http_info(id, **kwargs)  # noqa: E501
+            return data
+
+    def get_container_revision_with_http_info(self, id, **kwargs):  # noqa: E501
+        """get_container_revision  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_container_revision_with_http_info(id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str id: (required)
+        :param str expand: List of sub-entities to expand in response. For containers, none accepted (yet).
+        :param str hide: List of entity fields to elide in response. For containers, none accepted (yet).
+        :return: ContainerEntity
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['id', 'expand', 'hide']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method get_container_revision" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'id' is set
+        if ('id' not in params or
+                params['id'] is None):
+            raise ValueError("Missing the required parameter `id` when calling `get_container_revision`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'id' in params:
+            path_params['id'] = params['id']  # noqa: E501
+
+        query_params = []
+        if 'expand' in params:
+            query_params.append(('expand', params['expand']))  # noqa: E501
+        if 'hide' in params:
+            query_params.append(('hide', params['hide']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/container/rev/{id}', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='ContainerEntity',  # noqa: E501
             auth_settings=auth_settings,
             async=params.get('async'),
             _return_http_data_only=params.get('_return_http_data_only'),
@@ -2271,6 +3055,103 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
+    def get_creator_edit(self, edit_id, **kwargs):  # noqa: E501
+        """get_creator_edit  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_creator_edit(edit_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int edit_id: (required)
+        :return: EntityEdit
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.get_creator_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.get_creator_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+            return data
+
+    def get_creator_edit_with_http_info(self, edit_id, **kwargs):  # noqa: E501
+        """get_creator_edit  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_creator_edit_with_http_info(edit_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int edit_id: (required)
+        :return: EntityEdit
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['edit_id']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method get_creator_edit" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'edit_id' is set
+        if ('edit_id' not in params or
+                params['edit_id'] is None):
+            raise ValueError("Missing the required parameter `edit_id` when calling `get_creator_edit`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'edit_id' in params:
+            path_params['edit_id'] = params['edit_id']  # noqa: E501
+
+        query_params = []
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/creator/edit/{edit_id}', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='EntityEdit',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
     def get_creator_history(self, id, **kwargs):  # noqa: E501
         """get_creator_history  # noqa: E501
 
@@ -2372,6 +3253,103 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
+    def get_creator_redirects(self, id, **kwargs):  # noqa: E501
+        """get_creator_redirects  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_creator_redirects(id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str id: (required)
+        :return: list[str]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.get_creator_redirects_with_http_info(id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.get_creator_redirects_with_http_info(id, **kwargs)  # noqa: E501
+            return data
+
+    def get_creator_redirects_with_http_info(self, id, **kwargs):  # noqa: E501
+        """get_creator_redirects  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_creator_redirects_with_http_info(id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str id: (required)
+        :return: list[str]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['id']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method get_creator_redirects" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'id' is set
+        if ('id' not in params or
+                params['id'] is None):
+            raise ValueError("Missing the required parameter `id` when calling `get_creator_redirects`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'id' in params:
+            path_params['id'] = params['id']  # noqa: E501
+
+        query_params = []
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/creator/{id}/redirects', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='list[str]',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
     def get_creator_releases(self, id, **kwargs):  # noqa: E501
         """get_creator_releases  # noqa: E501
 
@@ -2466,6 +3444,111 @@ class DefaultApi(object):
             post_params=form_params,
             files=local_var_files,
             response_type='list[ReleaseEntity]',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def get_creator_revision(self, id, **kwargs):  # noqa: E501
+        """get_creator_revision  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_creator_revision(id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str id: (required)
+        :param str expand: List of sub-entities to expand in response. For creators, none accepted (yet).
+        :param str hide: List of entity fields to elide in response. For creators, none accepted (yet).
+        :return: CreatorEntity
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.get_creator_revision_with_http_info(id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.get_creator_revision_with_http_info(id, **kwargs)  # noqa: E501
+            return data
+
+    def get_creator_revision_with_http_info(self, id, **kwargs):  # noqa: E501
+        """get_creator_revision  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_creator_revision_with_http_info(id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str id: (required)
+        :param str expand: List of sub-entities to expand in response. For creators, none accepted (yet).
+        :param str hide: List of entity fields to elide in response. For creators, none accepted (yet).
+        :return: CreatorEntity
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['id', 'expand', 'hide']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method get_creator_revision" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'id' is set
+        if ('id' not in params or
+                params['id'] is None):
+            raise ValueError("Missing the required parameter `id` when calling `get_creator_revision`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'id' in params:
+            path_params['id'] = params['id']  # noqa: E501
+
+        query_params = []
+        if 'expand' in params:
+            query_params.append(('expand', params['expand']))  # noqa: E501
+        if 'hide' in params:
+            query_params.append(('hide', params['hide']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/creator/rev/{id}', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='CreatorEntity',  # noqa: E501
             auth_settings=auth_settings,
             async=params.get('async'),
             _return_http_data_only=params.get('_return_http_data_only'),
@@ -2877,6 +3960,103 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
+    def get_file_edit(self, edit_id, **kwargs):  # noqa: E501
+        """get_file_edit  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_file_edit(edit_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int edit_id: (required)
+        :return: EntityEdit
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.get_file_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.get_file_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+            return data
+
+    def get_file_edit_with_http_info(self, edit_id, **kwargs):  # noqa: E501
+        """get_file_edit  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_file_edit_with_http_info(edit_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int edit_id: (required)
+        :return: EntityEdit
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['edit_id']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method get_file_edit" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'edit_id' is set
+        if ('edit_id' not in params or
+                params['edit_id'] is None):
+            raise ValueError("Missing the required parameter `edit_id` when calling `get_file_edit`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'edit_id' in params:
+            path_params['edit_id'] = params['edit_id']  # noqa: E501
+
+        query_params = []
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/file/edit/{edit_id}', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='EntityEdit',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
     def get_file_history(self, id, **kwargs):  # noqa: E501
         """get_file_history  # noqa: E501
 
@@ -2971,6 +4151,208 @@ class DefaultApi(object):
             post_params=form_params,
             files=local_var_files,
             response_type='list[EntityHistoryEntry]',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def get_file_redirects(self, id, **kwargs):  # noqa: E501
+        """get_file_redirects  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_file_redirects(id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str id: (required)
+        :return: list[str]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.get_file_redirects_with_http_info(id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.get_file_redirects_with_http_info(id, **kwargs)  # noqa: E501
+            return data
+
+    def get_file_redirects_with_http_info(self, id, **kwargs):  # noqa: E501
+        """get_file_redirects  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_file_redirects_with_http_info(id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str id: (required)
+        :return: list[str]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['id']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method get_file_redirects" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'id' is set
+        if ('id' not in params or
+                params['id'] is None):
+            raise ValueError("Missing the required parameter `id` when calling `get_file_redirects`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'id' in params:
+            path_params['id'] = params['id']  # noqa: E501
+
+        query_params = []
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/file/{id}/redirects', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='list[str]',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def get_file_revision(self, id, **kwargs):  # noqa: E501
+        """get_file_revision  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_file_revision(id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str id: (required)
+        :param str expand: List of sub-entities to expand in response. For files, none accepted (yet).
+        :param str hide: List of entity fields to elide in response. For files, none accepted (yet).
+        :return: FileEntity
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.get_file_revision_with_http_info(id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.get_file_revision_with_http_info(id, **kwargs)  # noqa: E501
+            return data
+
+    def get_file_revision_with_http_info(self, id, **kwargs):  # noqa: E501
+        """get_file_revision  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_file_revision_with_http_info(id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str id: (required)
+        :param str expand: List of sub-entities to expand in response. For files, none accepted (yet).
+        :param str hide: List of entity fields to elide in response. For files, none accepted (yet).
+        :return: FileEntity
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['id', 'expand', 'hide']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method get_file_revision" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'id' is set
+        if ('id' not in params or
+                params['id'] is None):
+            raise ValueError("Missing the required parameter `id` when calling `get_file_revision`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'id' in params:
+            path_params['id'] = params['id']  # noqa: E501
+
+        query_params = []
+        if 'expand' in params:
+            query_params.append(('expand', params['expand']))  # noqa: E501
+        if 'hide' in params:
+            query_params.append(('hide', params['hide']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/file/rev/{id}', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='FileEntity',  # noqa: E501
             auth_settings=auth_settings,
             async=params.get('async'),
             _return_http_data_only=params.get('_return_http_data_only'),
@@ -3076,6 +4458,103 @@ class DefaultApi(object):
             post_params=form_params,
             files=local_var_files,
             response_type='ReleaseEntity',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def get_release_edit(self, edit_id, **kwargs):  # noqa: E501
+        """get_release_edit  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_release_edit(edit_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int edit_id: (required)
+        :return: EntityEdit
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.get_release_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.get_release_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+            return data
+
+    def get_release_edit_with_http_info(self, edit_id, **kwargs):  # noqa: E501
+        """get_release_edit  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_release_edit_with_http_info(edit_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int edit_id: (required)
+        :return: EntityEdit
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['edit_id']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method get_release_edit" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'edit_id' is set
+        if ('edit_id' not in params or
+                params['edit_id'] is None):
+            raise ValueError("Missing the required parameter `edit_id` when calling `get_release_edit`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'edit_id' in params:
+            path_params['edit_id'] = params['edit_id']  # noqa: E501
+
+        query_params = []
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/release/edit/{edit_id}', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='EntityEdit',  # noqa: E501
             auth_settings=auth_settings,
             async=params.get('async'),
             _return_http_data_only=params.get('_return_http_data_only'),
@@ -3285,6 +4764,208 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
+    def get_release_redirects(self, id, **kwargs):  # noqa: E501
+        """get_release_redirects  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_release_redirects(id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str id: (required)
+        :return: list[str]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.get_release_redirects_with_http_info(id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.get_release_redirects_with_http_info(id, **kwargs)  # noqa: E501
+            return data
+
+    def get_release_redirects_with_http_info(self, id, **kwargs):  # noqa: E501
+        """get_release_redirects  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_release_redirects_with_http_info(id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str id: (required)
+        :return: list[str]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['id']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method get_release_redirects" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'id' is set
+        if ('id' not in params or
+                params['id'] is None):
+            raise ValueError("Missing the required parameter `id` when calling `get_release_redirects`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'id' in params:
+            path_params['id'] = params['id']  # noqa: E501
+
+        query_params = []
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/release/{id}/redirects', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='list[str]',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def get_release_revision(self, id, **kwargs):  # noqa: E501
+        """get_release_revision  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_release_revision(id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str id: (required)
+        :param str expand: List of sub-entities to expand in response. For releases, none accepted (yet).
+        :param str hide: List of entity fields to elide in response. For releases, none accepted (yet).
+        :return: ReleaseEntity
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.get_release_revision_with_http_info(id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.get_release_revision_with_http_info(id, **kwargs)  # noqa: E501
+            return data
+
+    def get_release_revision_with_http_info(self, id, **kwargs):  # noqa: E501
+        """get_release_revision  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_release_revision_with_http_info(id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str id: (required)
+        :param str expand: List of sub-entities to expand in response. For releases, none accepted (yet).
+        :param str hide: List of entity fields to elide in response. For releases, none accepted (yet).
+        :return: ReleaseEntity
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['id', 'expand', 'hide']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method get_release_revision" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'id' is set
+        if ('id' not in params or
+                params['id'] is None):
+            raise ValueError("Missing the required parameter `id` when calling `get_release_revision`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'id' in params:
+            path_params['id'] = params['id']  # noqa: E501
+
+        query_params = []
+        if 'expand' in params:
+            query_params.append(('expand', params['expand']))  # noqa: E501
+        if 'hide' in params:
+            query_params.append(('hide', params['hide']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/release/rev/{id}', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='ReleaseEntity',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
     def get_stats(self, **kwargs):  # noqa: E501
         """get_stats  # noqa: E501
 
@@ -3483,6 +5164,103 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
+    def get_work_edit(self, edit_id, **kwargs):  # noqa: E501
+        """get_work_edit  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_work_edit(edit_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int edit_id: (required)
+        :return: EntityEdit
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.get_work_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.get_work_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+            return data
+
+    def get_work_edit_with_http_info(self, edit_id, **kwargs):  # noqa: E501
+        """get_work_edit  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_work_edit_with_http_info(edit_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int edit_id: (required)
+        :return: EntityEdit
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['edit_id']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method get_work_edit" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'edit_id' is set
+        if ('edit_id' not in params or
+                params['edit_id'] is None):
+            raise ValueError("Missing the required parameter `edit_id` when calling `get_work_edit`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'edit_id' in params:
+            path_params['edit_id'] = params['edit_id']  # noqa: E501
+
+        query_params = []
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/work/edit/{edit_id}', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='EntityEdit',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
     def get_work_history(self, id, **kwargs):  # noqa: E501
         """get_work_history  # noqa: E501
 
@@ -3577,6 +5355,103 @@ class DefaultApi(object):
             post_params=form_params,
             files=local_var_files,
             response_type='list[EntityHistoryEntry]',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def get_work_redirects(self, id, **kwargs):  # noqa: E501
+        """get_work_redirects  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_work_redirects(id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str id: (required)
+        :return: list[str]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.get_work_redirects_with_http_info(id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.get_work_redirects_with_http_info(id, **kwargs)  # noqa: E501
+            return data
+
+    def get_work_redirects_with_http_info(self, id, **kwargs):  # noqa: E501
+        """get_work_redirects  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_work_redirects_with_http_info(id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str id: (required)
+        :return: list[str]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['id']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method get_work_redirects" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'id' is set
+        if ('id' not in params or
+                params['id'] is None):
+            raise ValueError("Missing the required parameter `id` when calling `get_work_redirects`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'id' in params:
+            path_params['id'] = params['id']  # noqa: E501
+
+        query_params = []
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/work/{id}/redirects', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='list[str]',  # noqa: E501
             auth_settings=auth_settings,
             async=params.get('async'),
             _return_http_data_only=params.get('_return_http_data_only'),
@@ -3685,16 +5560,123 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def lookup_container(self, issnl, **kwargs):  # noqa: E501
+    def get_work_revision(self, id, **kwargs):  # noqa: E501
+        """get_work_revision  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_work_revision(id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str id: (required)
+        :param str expand: List of sub-entities to expand in response. For works, none accepted (yet).
+        :param str hide: List of entity fields to elide in response. For works, none accepted (yet).
+        :return: WorkEntity
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.get_work_revision_with_http_info(id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.get_work_revision_with_http_info(id, **kwargs)  # noqa: E501
+            return data
+
+    def get_work_revision_with_http_info(self, id, **kwargs):  # noqa: E501
+        """get_work_revision  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_work_revision_with_http_info(id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str id: (required)
+        :param str expand: List of sub-entities to expand in response. For works, none accepted (yet).
+        :param str hide: List of entity fields to elide in response. For works, none accepted (yet).
+        :return: WorkEntity
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['id', 'expand', 'hide']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method get_work_revision" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'id' is set
+        if ('id' not in params or
+                params['id'] is None):
+            raise ValueError("Missing the required parameter `id` when calling `get_work_revision`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'id' in params:
+            path_params['id'] = params['id']  # noqa: E501
+
+        query_params = []
+        if 'expand' in params:
+            query_params.append(('expand', params['expand']))  # noqa: E501
+        if 'hide' in params:
+            query_params.append(('hide', params['hide']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/work/rev/{id}', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='WorkEntity',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def lookup_container(self, **kwargs):  # noqa: E501
         """lookup_container  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.lookup_container(issnl, async=True)
+        >>> thread = api.lookup_container(async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str issnl: (required)
+        :param str issnl:
+        :param str wikidata_qid:
+        :param str expand: List of sub-entities to expand in response.
         :param str hide: List of entity fields to elide in response. For container, none accepted (yet).
         :return: ContainerEntity
                  If the method is called asynchronously,
@@ -3702,28 +5684,30 @@ class DefaultApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.lookup_container_with_http_info(issnl, **kwargs)  # noqa: E501
+            return self.lookup_container_with_http_info(**kwargs)  # noqa: E501
         else:
-            (data) = self.lookup_container_with_http_info(issnl, **kwargs)  # noqa: E501
+            (data) = self.lookup_container_with_http_info(**kwargs)  # noqa: E501
             return data
 
-    def lookup_container_with_http_info(self, issnl, **kwargs):  # noqa: E501
+    def lookup_container_with_http_info(self, **kwargs):  # noqa: E501
         """lookup_container  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.lookup_container_with_http_info(issnl, async=True)
+        >>> thread = api.lookup_container_with_http_info(async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str issnl: (required)
+        :param str issnl:
+        :param str wikidata_qid:
+        :param str expand: List of sub-entities to expand in response.
         :param str hide: List of entity fields to elide in response. For container, none accepted (yet).
         :return: ContainerEntity
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['issnl', 'hide']  # noqa: E501
+        all_params = ['issnl', 'wikidata_qid', 'expand', 'hide']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -3738,10 +5722,6 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
-        # verify the required parameter 'issnl' is set
-        if ('issnl' not in params or
-                params['issnl'] is None):
-            raise ValueError("Missing the required parameter `issnl` when calling `lookup_container`")  # noqa: E501
 
         if ('issnl' in params and
                 len(params['issnl']) > 9):
@@ -3758,6 +5738,10 @@ class DefaultApi(object):
         query_params = []
         if 'issnl' in params:
             query_params.append(('issnl', params['issnl']))  # noqa: E501
+        if 'wikidata_qid' in params:
+            query_params.append(('wikidata_qid', params['wikidata_qid']))  # noqa: E501
+        if 'expand' in params:
+            query_params.append(('expand', params['expand']))  # noqa: E501
         if 'hide' in params:
             query_params.append(('hide', params['hide']))  # noqa: E501
 
@@ -3794,16 +5778,18 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def lookup_creator(self, orcid, **kwargs):  # noqa: E501
+    def lookup_creator(self, **kwargs):  # noqa: E501
         """lookup_creator  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.lookup_creator(orcid, async=True)
+        >>> thread = api.lookup_creator(async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str orcid: (required)
+        :param str orcid:
+        :param str wikidata_qid:
+        :param str expand: List of sub-entities to expand in response.
         :param str hide: List of entity fields to elide in response. For creator, none accepted (yet).
         :return: CreatorEntity
                  If the method is called asynchronously,
@@ -3811,28 +5797,30 @@ class DefaultApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.lookup_creator_with_http_info(orcid, **kwargs)  # noqa: E501
+            return self.lookup_creator_with_http_info(**kwargs)  # noqa: E501
         else:
-            (data) = self.lookup_creator_with_http_info(orcid, **kwargs)  # noqa: E501
+            (data) = self.lookup_creator_with_http_info(**kwargs)  # noqa: E501
             return data
 
-    def lookup_creator_with_http_info(self, orcid, **kwargs):  # noqa: E501
+    def lookup_creator_with_http_info(self, **kwargs):  # noqa: E501
         """lookup_creator  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.lookup_creator_with_http_info(orcid, async=True)
+        >>> thread = api.lookup_creator_with_http_info(async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str orcid: (required)
+        :param str orcid:
+        :param str wikidata_qid:
+        :param str expand: List of sub-entities to expand in response.
         :param str hide: List of entity fields to elide in response. For creator, none accepted (yet).
         :return: CreatorEntity
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['orcid', 'hide']  # noqa: E501
+        all_params = ['orcid', 'wikidata_qid', 'expand', 'hide']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -3847,10 +5835,6 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
-        # verify the required parameter 'orcid' is set
-        if ('orcid' not in params or
-                params['orcid'] is None):
-            raise ValueError("Missing the required parameter `orcid` when calling `lookup_creator`")  # noqa: E501
 
         if ('orcid' in params and
                 len(params['orcid']) > 19):
@@ -3867,6 +5851,10 @@ class DefaultApi(object):
         query_params = []
         if 'orcid' in params:
             query_params.append(('orcid', params['orcid']))  # noqa: E501
+        if 'wikidata_qid' in params:
+            query_params.append(('wikidata_qid', params['wikidata_qid']))  # noqa: E501
+        if 'expand' in params:
+            query_params.append(('expand', params['expand']))  # noqa: E501
         if 'hide' in params:
             query_params.append(('hide', params['hide']))  # noqa: E501
 
@@ -3903,16 +5891,19 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def lookup_file(self, sha1, **kwargs):  # noqa: E501
+    def lookup_file(self, **kwargs):  # noqa: E501
         """lookup_file  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.lookup_file(sha1, async=True)
+        >>> thread = api.lookup_file(async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str sha1: (required)
+        :param str md5:
+        :param str sha1:
+        :param str sha256:
+        :param str expand: List of sub-entities to expand in response.
         :param str hide: List of entity fields to elide in response. For files, none accepted (yet).
         :return: FileEntity
                  If the method is called asynchronously,
@@ -3920,28 +5911,31 @@ class DefaultApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.lookup_file_with_http_info(sha1, **kwargs)  # noqa: E501
+            return self.lookup_file_with_http_info(**kwargs)  # noqa: E501
         else:
-            (data) = self.lookup_file_with_http_info(sha1, **kwargs)  # noqa: E501
+            (data) = self.lookup_file_with_http_info(**kwargs)  # noqa: E501
             return data
 
-    def lookup_file_with_http_info(self, sha1, **kwargs):  # noqa: E501
+    def lookup_file_with_http_info(self, **kwargs):  # noqa: E501
         """lookup_file  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.lookup_file_with_http_info(sha1, async=True)
+        >>> thread = api.lookup_file_with_http_info(async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str sha1: (required)
+        :param str md5:
+        :param str sha1:
+        :param str sha256:
+        :param str expand: List of sub-entities to expand in response.
         :param str hide: List of entity fields to elide in response. For files, none accepted (yet).
         :return: FileEntity
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['sha1', 'hide']  # noqa: E501
+        all_params = ['md5', 'sha1', 'sha256', 'expand', 'hide']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -3956,18 +5950,20 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
-        # verify the required parameter 'sha1' is set
-        if ('sha1' not in params or
-                params['sha1'] is None):
-            raise ValueError("Missing the required parameter `sha1` when calling `lookup_file`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
 
         query_params = []
+        if 'md5' in params:
+            query_params.append(('md5', params['md5']))  # noqa: E501
         if 'sha1' in params:
             query_params.append(('sha1', params['sha1']))  # noqa: E501
+        if 'sha256' in params:
+            query_params.append(('sha256', params['sha256']))  # noqa: E501
+        if 'expand' in params:
+            query_params.append(('expand', params['expand']))  # noqa: E501
         if 'hide' in params:
             query_params.append(('hide', params['hide']))  # noqa: E501
 
@@ -4004,16 +6000,22 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def lookup_release(self, doi, **kwargs):  # noqa: E501
+    def lookup_release(self, **kwargs):  # noqa: E501
         """lookup_release  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.lookup_release(doi, async=True)
+        >>> thread = api.lookup_release(async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str doi: (required)
+        :param str doi:
+        :param str wikidata_qid:
+        :param str isbn13:
+        :param str pmid:
+        :param str pmcid:
+        :param str core_id:
+        :param str expand: List of sub-entities to expand in response.
         :param str hide: List of entity fields to elide in response. For releases, 'abstracts', 'refs', and 'contribs' are valid.
         :return: ReleaseEntity
                  If the method is called asynchronously,
@@ -4021,28 +6023,34 @@ class DefaultApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.lookup_release_with_http_info(doi, **kwargs)  # noqa: E501
+            return self.lookup_release_with_http_info(**kwargs)  # noqa: E501
         else:
-            (data) = self.lookup_release_with_http_info(doi, **kwargs)  # noqa: E501
+            (data) = self.lookup_release_with_http_info(**kwargs)  # noqa: E501
             return data
 
-    def lookup_release_with_http_info(self, doi, **kwargs):  # noqa: E501
+    def lookup_release_with_http_info(self, **kwargs):  # noqa: E501
         """lookup_release  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.lookup_release_with_http_info(doi, async=True)
+        >>> thread = api.lookup_release_with_http_info(async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str doi: (required)
+        :param str doi:
+        :param str wikidata_qid:
+        :param str isbn13:
+        :param str pmid:
+        :param str pmcid:
+        :param str core_id:
+        :param str expand: List of sub-entities to expand in response.
         :param str hide: List of entity fields to elide in response. For releases, 'abstracts', 'refs', and 'contribs' are valid.
         :return: ReleaseEntity
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['doi', 'hide']  # noqa: E501
+        all_params = ['doi', 'wikidata_qid', 'isbn13', 'pmid', 'pmcid', 'core_id', 'expand', 'hide']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -4057,10 +6065,6 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
-        # verify the required parameter 'doi' is set
-        if ('doi' not in params or
-                params['doi'] is None):
-            raise ValueError("Missing the required parameter `doi` when calling `lookup_release`")  # noqa: E501
 
         collection_formats = {}
 
@@ -4069,6 +6073,18 @@ class DefaultApi(object):
         query_params = []
         if 'doi' in params:
             query_params.append(('doi', params['doi']))  # noqa: E501
+        if 'wikidata_qid' in params:
+            query_params.append(('wikidata_qid', params['wikidata_qid']))  # noqa: E501
+        if 'isbn13' in params:
+            query_params.append(('isbn13', params['isbn13']))  # noqa: E501
+        if 'pmid' in params:
+            query_params.append(('pmid', params['pmid']))  # noqa: E501
+        if 'pmcid' in params:
+            query_params.append(('pmcid', params['pmcid']))  # noqa: E501
+        if 'core_id' in params:
+            query_params.append(('core_id', params['core_id']))  # noqa: E501
+        if 'expand' in params:
+            query_params.append(('expand', params['expand']))  # noqa: E501
         if 'hide' in params:
             query_params.append(('hide', params['hide']))  # noqa: E501
 

@@ -45,11 +45,11 @@ class ReleaseEntity(object):
         'pages': 'str',
         'issue': 'str',
         'volume': 'str',
-        'wikidata_qid': 'str',
+        'core_id': 'str',
         'pmcid': 'str',
         'pmid': 'str',
-        'core_id': 'str',
         'isbn13': 'str',
+        'wikidata_qid': 'str',
         'doi': 'str',
         'release_date': 'date',
         'release_status': 'str',
@@ -76,11 +76,11 @@ class ReleaseEntity(object):
         'pages': 'pages',
         'issue': 'issue',
         'volume': 'volume',
-        'wikidata_qid': 'wikidata_qid',
+        'core_id': 'core_id',
         'pmcid': 'pmcid',
         'pmid': 'pmid',
-        'core_id': 'core_id',
         'isbn13': 'isbn13',
+        'wikidata_qid': 'wikidata_qid',
         'doi': 'doi',
         'release_date': 'release_date',
         'release_status': 'release_status',
@@ -98,7 +98,7 @@ class ReleaseEntity(object):
         'edit_extra': 'edit_extra'
     }
 
-    def __init__(self, abstracts=None, refs=None, contribs=None, language=None, publisher=None, pages=None, issue=None, volume=None, wikidata_qid=None, pmcid=None, pmid=None, core_id=None, isbn13=None, doi=None, release_date=None, release_status=None, release_type=None, container_id=None, files=None, container=None, work_id=None, title=None, state=None, ident=None, revision=None, redirect=None, extra=None, edit_extra=None):  # noqa: E501
+    def __init__(self, abstracts=None, refs=None, contribs=None, language=None, publisher=None, pages=None, issue=None, volume=None, core_id=None, pmcid=None, pmid=None, isbn13=None, wikidata_qid=None, doi=None, release_date=None, release_status=None, release_type=None, container_id=None, files=None, container=None, work_id=None, title=None, state=None, ident=None, revision=None, redirect=None, extra=None, edit_extra=None):  # noqa: E501
         """ReleaseEntity - a model defined in Swagger"""  # noqa: E501
 
         self._abstracts = None
@@ -109,11 +109,11 @@ class ReleaseEntity(object):
         self._pages = None
         self._issue = None
         self._volume = None
-        self._wikidata_qid = None
+        self._core_id = None
         self._pmcid = None
         self._pmid = None
-        self._core_id = None
         self._isbn13 = None
+        self._wikidata_qid = None
         self._doi = None
         self._release_date = None
         self._release_status = None
@@ -147,16 +147,16 @@ class ReleaseEntity(object):
             self.issue = issue
         if volume is not None:
             self.volume = volume
-        if wikidata_qid is not None:
-            self.wikidata_qid = wikidata_qid
+        if core_id is not None:
+            self.core_id = core_id
         if pmcid is not None:
             self.pmcid = pmcid
         if pmid is not None:
             self.pmid = pmid
-        if core_id is not None:
-            self.core_id = core_id
         if isbn13 is not None:
             self.isbn13 = isbn13
+        if wikidata_qid is not None:
+            self.wikidata_qid = wikidata_qid
         if doi is not None:
             self.doi = doi
         if release_date is not None:
@@ -173,7 +173,8 @@ class ReleaseEntity(object):
             self.container = container
         if work_id is not None:
             self.work_id = work_id
-        self.title = title
+        if title is not None:
+            self.title = title
         if state is not None:
             self.state = state
         if ident is not None:
@@ -358,25 +359,25 @@ class ReleaseEntity(object):
         self._volume = volume
 
     @property
-    def wikidata_qid(self):
-        """Gets the wikidata_qid of this ReleaseEntity.  # noqa: E501
+    def core_id(self):
+        """Gets the core_id of this ReleaseEntity.  # noqa: E501
 
 
-        :return: The wikidata_qid of this ReleaseEntity.  # noqa: E501
+        :return: The core_id of this ReleaseEntity.  # noqa: E501
         :rtype: str
         """
-        return self._wikidata_qid
+        return self._core_id
 
-    @wikidata_qid.setter
-    def wikidata_qid(self, wikidata_qid):
-        """Sets the wikidata_qid of this ReleaseEntity.
+    @core_id.setter
+    def core_id(self, core_id):
+        """Sets the core_id of this ReleaseEntity.
 
 
-        :param wikidata_qid: The wikidata_qid of this ReleaseEntity.  # noqa: E501
+        :param core_id: The core_id of this ReleaseEntity.  # noqa: E501
         :type: str
         """
 
-        self._wikidata_qid = wikidata_qid
+        self._core_id = core_id
 
     @property
     def pmcid(self):
@@ -421,27 +422,6 @@ class ReleaseEntity(object):
         self._pmid = pmid
 
     @property
-    def core_id(self):
-        """Gets the core_id of this ReleaseEntity.  # noqa: E501
-
-
-        :return: The core_id of this ReleaseEntity.  # noqa: E501
-        :rtype: str
-        """
-        return self._core_id
-
-    @core_id.setter
-    def core_id(self, core_id):
-        """Sets the core_id of this ReleaseEntity.
-
-
-        :param core_id: The core_id of this ReleaseEntity.  # noqa: E501
-        :type: str
-        """
-
-        self._core_id = core_id
-
-    @property
     def isbn13(self):
         """Gets the isbn13 of this ReleaseEntity.  # noqa: E501
 
@@ -461,6 +441,27 @@ class ReleaseEntity(object):
         """
 
         self._isbn13 = isbn13
+
+    @property
+    def wikidata_qid(self):
+        """Gets the wikidata_qid of this ReleaseEntity.  # noqa: E501
+
+
+        :return: The wikidata_qid of this ReleaseEntity.  # noqa: E501
+        :rtype: str
+        """
+        return self._wikidata_qid
+
+    @wikidata_qid.setter
+    def wikidata_qid(self, wikidata_qid):
+        """Sets the wikidata_qid of this ReleaseEntity.
+
+
+        :param wikidata_qid: The wikidata_qid of this ReleaseEntity.  # noqa: E501
+        :type: str
+        """
+
+        self._wikidata_qid = wikidata_qid
 
     @property
     def doi(self):
@@ -638,6 +639,7 @@ class ReleaseEntity(object):
     def title(self):
         """Gets the title of this ReleaseEntity.  # noqa: E501
 
+        Required for valid entities  # noqa: E501
 
         :return: The title of this ReleaseEntity.  # noqa: E501
         :rtype: str
@@ -648,12 +650,11 @@ class ReleaseEntity(object):
     def title(self, title):
         """Sets the title of this ReleaseEntity.
 
+        Required for valid entities  # noqa: E501
 
         :param title: The title of this ReleaseEntity.  # noqa: E501
         :type: str
         """
-        if title is None:
-            raise ValueError("Invalid value for `title`, must not be `None`")  # noqa: E501
 
         self._title = title
 

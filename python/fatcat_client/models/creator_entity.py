@@ -82,7 +82,8 @@ class CreatorEntity(object):
             self.surname = surname
         if given_name is not None:
             self.given_name = given_name
-        self.display_name = display_name
+        if display_name is not None:
+            self.display_name = display_name
         if state is not None:
             self.state = state
         if ident is not None:
@@ -190,6 +191,7 @@ class CreatorEntity(object):
     def display_name(self):
         """Gets the display_name of this CreatorEntity.  # noqa: E501
 
+        Required for valid entities  # noqa: E501
 
         :return: The display_name of this CreatorEntity.  # noqa: E501
         :rtype: str
@@ -200,12 +202,11 @@ class CreatorEntity(object):
     def display_name(self, display_name):
         """Sets the display_name of this CreatorEntity.
 
+        Required for valid entities  # noqa: E501
 
         :param display_name: The display_name of this CreatorEntity.  # noqa: E501
         :type: str
         """
-        if display_name is None:
-            raise ValueError("Invalid value for `display_name`, must not be `None`")  # noqa: E501
 
         self._display_name = display_name
 
