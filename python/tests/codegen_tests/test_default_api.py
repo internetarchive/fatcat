@@ -107,8 +107,20 @@ class TestDefaultApi(unittest.TestCase):
         """
         pass
 
+    def test_delete_container_edit(self):
+        """Test case for delete_container_edit
+
+        """
+        pass
+
     def test_delete_creator(self):
         """Test case for delete_creator
+
+        """
+        pass
+
+    def test_delete_creator_edit(self):
+        """Test case for delete_creator_edit
 
         """
         pass
@@ -119,14 +131,32 @@ class TestDefaultApi(unittest.TestCase):
         """
         pass
 
+    def test_delete_file_edit(self):
+        """Test case for delete_file_edit
+
+        """
+        pass
+
     def test_delete_release(self):
         """Test case for delete_release
 
         """
         pass
 
+    def test_delete_release_edit(self):
+        """Test case for delete_release_edit
+
+        """
+        pass
+
     def test_delete_work(self):
         """Test case for delete_work
+
+        """
+        pass
+
+    def test_delete_work_edit(self):
+        """Test case for delete_work_edit
 
         """
         pass
@@ -149,8 +179,26 @@ class TestDefaultApi(unittest.TestCase):
         """
         pass
 
+    def test_get_container_edit(self):
+        """Test case for get_container_edit
+
+        """
+        pass
+
     def test_get_container_history(self):
         """Test case for get_container_history
+
+        """
+        pass
+
+    def test_get_container_redirects(self):
+        """Test case for get_container_redirects
+
+        """
+        pass
+
+    def test_get_container_revision(self):
+        """Test case for get_container_revision
 
         """
         pass
@@ -161,14 +209,32 @@ class TestDefaultApi(unittest.TestCase):
         """
         pass
 
+    def test_get_creator_edit(self):
+        """Test case for get_creator_edit
+
+        """
+        pass
+
     def test_get_creator_history(self):
         """Test case for get_creator_history
 
         """
         pass
 
+    def test_get_creator_redirects(self):
+        """Test case for get_creator_redirects
+
+        """
+        pass
+
     def test_get_creator_releases(self):
         """Test case for get_creator_releases
+
+        """
+        pass
+
+    def test_get_creator_revision(self):
+        """Test case for get_creator_revision
 
         """
         pass
@@ -197,14 +263,38 @@ class TestDefaultApi(unittest.TestCase):
         """
         pass
 
+    def test_get_file_edit(self):
+        """Test case for get_file_edit
+
+        """
+        pass
+
     def test_get_file_history(self):
         """Test case for get_file_history
 
         """
         pass
 
+    def test_get_file_redirects(self):
+        """Test case for get_file_redirects
+
+        """
+        pass
+
+    def test_get_file_revision(self):
+        """Test case for get_file_revision
+
+        """
+        pass
+
     def test_get_release(self):
         """Test case for get_release
+
+        """
+        pass
+
+    def test_get_release_edit(self):
+        """Test case for get_release_edit
 
         """
         pass
@@ -221,6 +311,18 @@ class TestDefaultApi(unittest.TestCase):
         """
         pass
 
+    def test_get_release_redirects(self):
+        """Test case for get_release_redirects
+
+        """
+        pass
+
+    def test_get_release_revision(self):
+        """Test case for get_release_revision
+
+        """
+        pass
+
     def test_get_stats(self):
         """Test case for get_stats
 
@@ -233,14 +335,32 @@ class TestDefaultApi(unittest.TestCase):
         """
         pass
 
+    def test_get_work_edit(self):
+        """Test case for get_work_edit
+
+        """
+        pass
+
     def test_get_work_history(self):
         """Test case for get_work_history
 
         """
         pass
 
+    def test_get_work_redirects(self):
+        """Test case for get_work_redirects
+
+        """
+        pass
+
     def test_get_work_releases(self):
         """Test case for get_work_releases
+
+        """
+        pass
+
+    def test_get_work_revision(self):
+        """Test case for get_work_revision
 
         """
         pass
