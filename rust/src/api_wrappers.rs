@@ -64,6 +64,8 @@ macro_rules! wrap_entity_handlers {
                         message: ErrorKind::InvalidFatcatId(e).to_string() }),
                 Err(Error(ErrorKind::MalformedExternalId(e), _)) =>
                     $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::EditgroupAlreadyAccepted(e), _)) =>
+                    $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
                     $get_resp::GenericError(ErrorResponse { message: e.to_string() })
@@ -99,6 +101,8 @@ macro_rules! wrap_entity_handlers {
                     $post_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::NotInControlledVocabulary(e), _)) =>
                     $post_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::EditgroupAlreadyAccepted(e), _)) =>
+                    $post_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
                     $post_resp::GenericError(ErrorResponse { message: e.to_string() })
@@ -133,6 +137,8 @@ macro_rules! wrap_entity_handlers {
                 Err(Error(ErrorKind::MalformedExternalId(e), _)) =>
                     $post_batch_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::NotInControlledVocabulary(e), _)) =>
+                    $post_batch_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::EditgroupAlreadyAccepted(e), _)) =>
                     $post_batch_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
@@ -173,6 +179,10 @@ macro_rules! wrap_entity_handlers {
                     $update_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::NotInControlledVocabulary(e), _)) =>
                     $update_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::EditgroupAlreadyAccepted(e), _)) =>
+                    $update_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::InvalidEntityStateTransform(e), _)) =>
+                    $update_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
                     $update_resp::GenericError(ErrorResponse { message: e.to_string() })
@@ -209,6 +219,10 @@ macro_rules! wrap_entity_handlers {
                     $delete_resp::BadRequest(ErrorResponse {
                         message: ErrorKind::InvalidFatcatId(e).to_string() }),
                 Err(Error(ErrorKind::MalformedExternalId(e), _)) =>
+                    $delete_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::EditgroupAlreadyAccepted(e), _)) =>
+                    $delete_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::InvalidEntityStateTransform(e), _)) =>
                     $delete_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
@@ -324,6 +338,8 @@ macro_rules! wrap_entity_handlers {
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
                     $delete_edit_resp::NotFound(ErrorResponse { message: format!("No such {} edit: {}", stringify!($model), edit_id) }),
                 Err(Error(ErrorKind::Diesel(e), _)) =>
+                    $delete_edit_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::EditgroupAlreadyAccepted(e), _)) =>
                     $delete_edit_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);

@@ -183,13 +183,10 @@ macro_rules! generic_db_update {
     ($ident_table: ident, $edit_table: ident) => {
         fn db_update(&self, conn: &DbConn, edit_context: &EditContext, ident: FatCatId) -> Result<Self::EditRow> {
             let current: Self::IdentRow = $ident_table::table.find(ident.to_uuid()).first(conn)?;
+            // TODO: is this actually true? or should we allow updates in the same editgroup?
             if current.is_live != true {
-                // TODO: what if isn't live? 4xx not 5xx
-                bail!("can't delete an entity that doesn't exist yet");
-            }
-            if current.rev_id.is_none() {
-                // TODO: what if it's already deleted? 4xx not 5xx
-                bail!("entity was already deleted");
+                return Err(ErrorKind::InvalidEntityStateTransform(
+                    "can't update an entity that doesn't exist yet".to_string()).into());
             }
 
             let rev_id = self.db_insert_rev(conn)?;
@@ -217,12 +214,12 @@ macro_rules! generic_db_delete {
         ) -> Result<Self::EditRow> {
             let current: Self::IdentRow = $ident_table::table.find(ident.to_uuid()).first(conn)?;
             if current.is_live != true {
-                // TODO: what if isn't live? 4xx not 5xx
-                bail!("can't delete an entity that doesn't exist yet");
+                return Err(ErrorKind::InvalidEntityStateTransform(
+                    "can't update an entity that doesn't exist yet; delete edit object instead".to_string()).into());
             }
             if current.rev_id.is_none() {
-                // TODO: what if it's already deleted? 4xx not 5xx
-                bail!("entity was already deleted");
+                return Err(ErrorKind::InvalidEntityStateTransform(
+                    "entity was already deleted".to_string()).into());
             }
             let edit: Self::EditRow = insert_into($edit_table::table)
                 .values((
@@ -292,8 +289,8 @@ macro_rules! generic_db_delete_edit {
                 .limit(1)
                 .get_results(conn)?;
             if accepted_rows.len() != 0 {
-                // TODO: should be a 4xx, not a 5xx
-                bail!("attempted to delete an already accepted edit")
+                return Err(ErrorKind::EditgroupAlreadyAccepted(
+                    "attempted to delete an already accepted edit".to_string()).into());
             }
             diesel::delete($edit_table::table.filter($edit_table::id.eq(edit_id))).execute(conn)?;
             Ok(())

@@ -1,4 +1,5 @@
 #![allow(proc_macro_derive_resolution_fallback)]
+#![recursion_limit="128"]
 
 extern crate chrono;
 extern crate fatcat_api_spec;
@@ -56,11 +57,15 @@ pub mod errors {
             }
             EditgroupAlreadyAccepted(id: String) {
                 description("editgroup was already accepted")
-                display("attempted to accept an editgroup which was already accepted: {}", id)
+                display("attempted to accept or mutate an editgroup which was already accepted: {}", id)
             }
             MissingOrMultipleExternalId(message: String) {
                 description("external identifiers missing or multiple specified")
                 display("external identifiers missing or multiple specified; please supply exactly one")
+            }
+            InvalidEntityStateTransform(message: String) {
+                description("Invalid Entity State Transform")
+                display("tried to mutate an entity which was not in an appropriate state: {}", message)
             }
         }
     }
