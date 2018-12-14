@@ -61,11 +61,15 @@ def container_create():
 
 @app.route('/container/lookup', methods=['GET'])
 def container_lookup():
-    issnl = request.args.get('issnl')
-    if issnl is None:
+    extid = None
+    for key in ('issnl', 'wikidata_qid'):
+        if request.args.get(key):
+            extid = key
+            break
+    if extid is None:
         abort(400)
     try:
-        resp = api.lookup_container(issnl)
+        resp = api.lookup_container(**{extid: request.args.get(extid)})
     except ApiException as ae:
         abort(ae.status)
     return redirect('/container/{}'.format(resp.ident))
@@ -101,11 +105,14 @@ def creator_edit_view(ident):
 
 @app.route('/creator/lookup', methods=['GET'])
 def creator_lookup():
-    orcid = request.args.get('orcid')
-    if orcid is None:
+    for key in ('orcid', 'wikidata_qid'):
+        if request.args.get(key):
+            extid = key
+            break
+    if extid is None:
         abort(400)
     try:
-        resp = api.lookup_creator(orcid)
+        resp = api.lookup_creator(**{extid: request.args.get(extid)})
     except ApiException as ae:
         abort(ae.status)
     return redirect('/creator/{}'.format(resp.ident))
@@ -142,11 +149,14 @@ def file_edit_view(ident):
 
 @app.route('/file/lookup', methods=['GET'])
 def file_lookup():
-    sha1 = request.args.get('sha1')
-    if sha1 is None:
+    for key in ('md5', 'sha1', 'sha256'):
+        if request.args.get(key):
+            extid = key
+            break
+    if extid is None:
         abort(400)
     try:
-        resp = api.lookup_file(sha1)
+        resp = api.lookup_file(**{extid: request.args.get(extid)})
     except ApiException as ae:
         abort(ae.status)
     return redirect('/file/{}'.format(resp.ident))
@@ -161,11 +171,14 @@ def file_view(ident):
 
 @app.route('/release/lookup', methods=['GET'])
 def release_lookup():
-    doi = request.args.get('doi')
-    if doi is None:
+    for key in ('doi', 'wikidata_qid', 'pmid', 'pmcid', 'isbn13', 'core_id'):
+        if request.args.get(key):
+            extid = key
+            break
+    if extid is None:
         abort(400)
     try:
-        resp = api.lookup_release(doi)
+        resp = api.lookup_release(**{extid: request.args.get(extid)})
     except ApiException as ae:
         abort(ae.status)
     return redirect('/release/{}'.format(resp.ident))
