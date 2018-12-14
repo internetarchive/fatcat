@@ -44,6 +44,7 @@ where
     type RevRow;
 
     // Generic Methods
+    fn from_deleted_row(ident_row: Self::IdentRow) -> Result<Self>;
     fn db_get(conn: &DbConn, ident: FatCatId, hide: HideFlags) -> Result<Self>;
     fn db_get_rev(conn: &DbConn, rev_id: Uuid, hide: HideFlags) -> Result<Self>;
     fn db_expand(&mut self, conn: &DbConn, expand: ExpandFlags) -> Result<()>;
@@ -88,12 +89,26 @@ where
 macro_rules! generic_db_get {
     ($ident_table:ident, $rev_table:ident) => {
         fn db_get(conn: &DbConn, ident: FatCatId, hide: HideFlags) -> Result<Self> {
-            let (ident, rev): (Self::IdentRow, Self::RevRow) = $ident_table::table
+            let res: Option<(Self::IdentRow, Self::RevRow)> = $ident_table::table
                 .find(ident.to_uuid())
                 .inner_join($rev_table::table)
-                .first(conn)?;
+                .first(conn)
+                .optional()?;
 
-            Self::db_from_row(conn, rev, Some(ident), hide)
+            match res {
+                Some((ident, rev)) => {
+                    Self::db_from_row(conn, rev, Some(ident), hide)
+                },
+                None => {
+                    // return a stub (deleted) entity if it's just deleted state
+                    let ident_row: Self::IdentRow = $ident_table::table.find(ident.to_uuid()).first(conn)?;
+                    if ident_row.rev_id.is_none() {
+                        Self::from_deleted_row(ident_row)
+                    } else {
+                        bail!("unexpected condition: entity ident/rev join failed, yet row isn't in deleted state")
+                    }
+                },
+            }
         }
     };
 }
@@ -183,23 +198,77 @@ macro_rules! generic_db_update {
     ($ident_table: ident, $edit_table: ident) => {
         fn db_update(&self, conn: &DbConn, edit_context: &EditContext, ident: FatCatId) -> Result<Self::EditRow> {
             let current: Self::IdentRow = $ident_table::table.find(ident.to_uuid()).first(conn)?;
+            let no_redirect: Option<Uuid> = None;
             // TODO: is this actually true? or should we allow updates in the same editgroup?
             if current.is_live != true {
                 return Err(ErrorKind::InvalidEntityStateTransform(
                     "can't update an entity that doesn't exist yet".to_string()).into());
             }
 
+            if self.state.is_none() {
+                // special case: redirect to another entity
+                if let Some(ref redirect_ident) = self.redirect {
+                    let redirect_ident = FatCatId::from_str(&redirect_ident)?.to_uuid();
+                    if Some(redirect_ident) == current.redirect_id {
+                        return Err(ErrorKind::OtherBadRequest(
+                            "redundantly redirecting entity to it's current target currently isn't supported".to_string()).into());
+                    }
+                    // TODO: if we get a diesel not-found here, should be a special error response?
+                    let target: Self::IdentRow = $ident_table::table.find(redirect_ident).first(conn)?;
+                    if target.is_live == false {
+                        // there is no race condition on this check because WIP -> is_live=true is
+                        // a one-way operation
+                        return Err(ErrorKind::OtherBadRequest(
+                            "attempted to redirect to a WIP entity".to_string()).into());
+                    }
+                    // Note: there is a condition where the target is already a redirect, but we
+                    // don't handle that here because the state of the redirect could change before
+                    // we accept this editgroup
+                    let edit: Self::EditRow = insert_into($edit_table::table)
+                        .values((
+                            $edit_table::editgroup_id.eq(edit_context.editgroup_id.to_uuid()),
+                            $edit_table::ident_id.eq(&ident.to_uuid()),
+                            $edit_table::rev_id.eq(target.rev_id),
+                            $edit_table::redirect_id.eq(redirect_ident),
+                            $edit_table::prev_rev.eq(current.rev_id),
+                            $edit_table::extra_json.eq(&self.edit_extra),
+                        ))
+                        .get_result(conn)?;
+                    return Ok(edit)
+                }
+                // special case: revert to point to an existing revision
+                if let Some(ref rev_id) = self.revision {
+                    let rev_id = Uuid::from_str(&rev_id)?;
+                    if Some(rev_id) == current.rev_id {
+                        return Err(ErrorKind::OtherBadRequest(
+                            "reverted entity to it's current state; this isn't currently supported".to_string()).into());
+                    }
+                    let edit: Self::EditRow = insert_into($edit_table::table)
+                        .values((
+                            $edit_table::editgroup_id.eq(edit_context.editgroup_id.to_uuid()),
+                            $edit_table::ident_id.eq(&ident.to_uuid()),
+                            $edit_table::rev_id.eq(&rev_id),
+                            $edit_table::redirect_id.eq(no_redirect),
+                            $edit_table::prev_rev.eq(current.rev_id),
+                            $edit_table::extra_json.eq(&self.edit_extra),
+                        ))
+                        .get_result(conn)?;
+                    return Ok(edit)
+                }
+            }
+
+            // regular insert/update
             let rev_id = self.db_insert_rev(conn)?;
             let edit: Self::EditRow = insert_into($edit_table::table)
                 .values((
                     $edit_table::editgroup_id.eq(edit_context.editgroup_id.to_uuid()),
                     $edit_table::ident_id.eq(&ident.to_uuid()),
                     $edit_table::rev_id.eq(&rev_id),
-                    $edit_table::prev_rev.eq(current.rev_id.unwrap()),
-                    $edit_table::extra_json.eq(&self.extra),
+                    $edit_table::redirect_id.eq(no_redirect),
+                    $edit_table::prev_rev.eq(current.rev_id),
+                    $edit_table::extra_json.eq(&self.edit_extra),
                 ))
                 .get_result(conn)?;
-
             Ok(edit)
         }
     }
@@ -215,11 +284,16 @@ macro_rules! generic_db_delete {
             let current: Self::IdentRow = $ident_table::table.find(ident.to_uuid()).first(conn)?;
             if current.is_live != true {
                 return Err(ErrorKind::InvalidEntityStateTransform(
-                    "can't update an entity that doesn't exist yet; delete edit object instead".to_string()).into());
+                    "can't update an entity that doesn't exist yet; delete edit object instead"
+                        .to_string(),
+                )
+                .into());
             }
             if current.rev_id.is_none() {
                 return Err(ErrorKind::InvalidEntityStateTransform(
-                    "entity was already deleted".to_string()).into());
+                    "entity was already deleted".to_string(),
+                )
+                .into());
             }
             let edit: Self::EditRow = insert_into($edit_table::table)
                 .values((
@@ -290,7 +364,9 @@ macro_rules! generic_db_delete_edit {
                 .get_results(conn)?;
             if accepted_rows.len() != 0 {
                 return Err(ErrorKind::EditgroupAlreadyAccepted(
-                    "attempted to delete an already accepted edit".to_string()).into());
+                    "attempted to delete an already accepted edit".to_string(),
+                )
+                .into());
             }
             diesel::delete($edit_table::table.filter($edit_table::id.eq(edit_id))).execute(conn)?;
             Ok(())
@@ -366,6 +442,29 @@ macro_rules! generic_db_accept_edits_batch {
             ))
             .bind::<diesel::sql_types::Uuid, _>(editgroup_id.to_uuid())
             .execute(conn)?;
+            // NOTE: all the following can be skipped for accepts that are all inserts (which I
+            // guess we only know for batch inserts with auto-accept?)
+
+            // update any/all redirects for updated entities
+            let _redir_count = diesel::sql_query(format!(
+                "
+                    UPDATE {entity}_ident
+                    SET
+                        rev_id = {entity}_edit.rev_id
+                    FROM {entity}_edit
+                    WHERE
+                        {entity}_ident.redirect_id = {entity}_edit.ident_id
+                        AND {entity}_edit.editgroup_id = $1",
+                entity = $entity_name_str
+            ))
+            .bind::<diesel::sql_types::Uuid, _>(editgroup_id.to_uuid())
+            .execute(conn)?;
+            // TODO: backwards multiple redirect: if we redirected any entities to targets in this
+            // edit, then we need to update any redirects to *current* entities to *target*
+            // entities
+            // TODO: forward multiple redirect: if we redirected any entities to targets in this
+            // edit, and those targets are themselves redirects, we should point to the "final"
+            // targets
             Ok(count as u64)
         }
     };
@@ -438,6 +537,29 @@ impl EntityCrud for ContainerEntity {
     generic_db_get_redirects!(container_ident);
     generic_db_accept_edits_batch!("container");
     generic_db_insert_rev!();
+
+    fn from_deleted_row(ident_row: Self::IdentRow) -> Result<Self> {
+        if ident_row.rev_id.is_some() {
+            bail!("called from_deleted_row with a non-deleted-state row")
+        }
+
+        Ok(ContainerEntity {
+            issnl: None,
+            wikidata_qid: None,
+            publisher: None,
+            name: None,
+            abbrev: None,
+            coden: None,
+            state: Some(ident_row.state().unwrap().shortname()),
+            ident: Some(FatCatId::from_uuid(&ident_row.id).to_string()),
+            revision: ident_row.rev_id.map(|u| u.to_string()),
+            redirect: ident_row
+                .redirect_id
+                .map(|u| FatCatId::from_uuid(&u).to_string()),
+            extra: None,
+            edit_extra: None,
+        })
+    }
 
     fn db_from_row(
         _conn: &DbConn,
@@ -523,6 +645,28 @@ impl EntityCrud for CreatorEntity {
     generic_db_accept_edits_batch!("creator");
     generic_db_insert_rev!();
 
+    fn from_deleted_row(ident_row: Self::IdentRow) -> Result<Self> {
+        if ident_row.rev_id.is_some() {
+            bail!("called from_deleted_row with a non-deleted-state row")
+        }
+
+        Ok(CreatorEntity {
+            extra: None,
+            edit_extra: None,
+            display_name: None,
+            given_name: None,
+            surname: None,
+            orcid: None,
+            wikidata_qid: None,
+            state: Some(ident_row.state().unwrap().shortname()),
+            ident: Some(FatCatId::from_uuid(&ident_row.id).to_string()),
+            revision: ident_row.rev_id.map(|u| u.to_string()),
+            redirect: ident_row
+                .redirect_id
+                .map(|u| FatCatId::from_uuid(&u).to_string()),
+        })
+    }
+
     fn db_from_row(
         _conn: &DbConn,
         rev_row: Self::RevRow,
@@ -603,6 +747,30 @@ impl EntityCrud for FileEntity {
     generic_db_get_redirects!(file_ident);
     generic_db_accept_edits_batch!("file");
     generic_db_insert_rev!();
+
+    fn from_deleted_row(ident_row: Self::IdentRow) -> Result<Self> {
+        if ident_row.rev_id.is_some() {
+            bail!("called from_deleted_row with a non-deleted-state row")
+        }
+
+        Ok(FileEntity {
+            sha1: None,
+            sha256: None,
+            md5: None,
+            size: None,
+            urls: None,
+            mimetype: None,
+            releases: None,
+            state: Some(ident_row.state().unwrap().shortname()),
+            ident: Some(FatCatId::from_uuid(&ident_row.id).to_string()),
+            revision: ident_row.rev_id.map(|u| u.to_string()),
+            redirect: ident_row
+                .redirect_id
+                .map(|u| FatCatId::from_uuid(&u).to_string()),
+            extra: None,
+            edit_extra: None,
+        })
+    }
 
     fn db_from_row(
         conn: &DbConn,
@@ -741,6 +909,46 @@ impl EntityCrud for ReleaseEntity {
     generic_db_get_redirects!(release_ident);
     generic_db_accept_edits_batch!("release");
     generic_db_insert_rev!();
+
+    fn from_deleted_row(ident_row: Self::IdentRow) -> Result<Self> {
+        if ident_row.rev_id.is_some() {
+            bail!("called from_deleted_row with a non-deleted-state row")
+        }
+
+        Ok(ReleaseEntity {
+            title: None,
+            release_type: None,
+            release_status: None,
+            release_date: None,
+            doi: None,
+            pmid: None,
+            pmcid: None,
+            isbn13: None,
+            core_id: None,
+            wikidata_qid: None,
+            volume: None,
+            issue: None,
+            pages: None,
+            files: None,
+            container: None,
+            container_id: None,
+            publisher: None,
+            language: None,
+            work_id: None,
+            refs: None,
+            contribs: None,
+            abstracts: None,
+
+            state: Some(ident_row.state().unwrap().shortname()),
+            ident: Some(FatCatId::from_uuid(&ident_row.id).to_string()),
+            revision: ident_row.rev_id.map(|u| u.to_string()),
+            redirect: ident_row
+                .redirect_id
+                .map(|u| FatCatId::from_uuid(&u).to_string()),
+            extra: None,
+            edit_extra: None,
+        })
+    }
 
     fn db_expand(&mut self, conn: &DbConn, expand: ExpandFlags) -> Result<()> {
         if expand.files {
@@ -1165,6 +1373,23 @@ impl EntityCrud for WorkEntity {
     generic_db_get_redirects!(work_ident);
     generic_db_accept_edits_batch!("work");
     generic_db_insert_rev!();
+
+    fn from_deleted_row(ident_row: Self::IdentRow) -> Result<Self> {
+        if ident_row.rev_id.is_some() {
+            bail!("called from_deleted_row with a non-deleted-state row")
+        }
+
+        Ok(WorkEntity {
+            state: Some(ident_row.state().unwrap().shortname()),
+            ident: Some(FatCatId::from_uuid(&ident_row.id).to_string()),
+            revision: ident_row.rev_id.map(|u| u.to_string()),
+            redirect: ident_row
+                .redirect_id
+                .map(|u| FatCatId::from_uuid(&u).to_string()),
+            extra: None,
+            edit_extra: None,
+        })
+    }
 
     fn db_from_row(
         _conn: &DbConn,

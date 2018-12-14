@@ -1,5 +1,5 @@
 #![allow(proc_macro_derive_resolution_fallback)]
-#![recursion_limit="128"]
+#![recursion_limit = "128"]
 
 extern crate chrono;
 extern crate fatcat_api_spec;
@@ -66,6 +66,10 @@ pub mod errors {
             InvalidEntityStateTransform(message: String) {
                 description("Invalid Entity State Transform")
                 display("tried to mutate an entity which was not in an appropriate state: {}", message)
+            }
+            OtherBadRequest(message: String) {
+                description("catch-all error for bad or unallowed requests")
+                display("broke a constraint or made an otherwise invalid request: {}", message)
             }
         }
     }

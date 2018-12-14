@@ -53,7 +53,11 @@ pub struct Server {
     pub db_pool: ConnectionPool,
 }
 
-pub fn get_release_files(id: FatCatId, hide_flags: HideFlags, conn: &DbConn) -> Result<Vec<FileEntity>> {
+pub fn get_release_files(
+    id: FatCatId,
+    hide_flags: HideFlags,
+    conn: &DbConn,
+) -> Result<Vec<FileEntity>> {
     let rows: Vec<(FileRevRow, FileIdentRow, FileReleaseRow)> = file_rev::table
         .inner_join(file_ident::table)
         .inner_join(file_release::table)

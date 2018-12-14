@@ -14,7 +14,7 @@ use uuid::Uuid;
 pub enum EntityState {
     WorkInProgress,
     Active(Uuid),
-    Redirect(Uuid, Uuid),
+    Redirect(Uuid, Option<Uuid>),
     Deleted,
 }
 
@@ -111,7 +111,7 @@ macro_rules! entity_structs {
                 }
                 match (self.redirect_id, self.rev_id) {
                     (None, None) => Ok(EntityState::Deleted),
-                    (Some(redir), Some(rev)) => Ok(EntityState::Redirect(redir, rev)),
+                    (Some(redir), rev) => Ok(EntityState::Redirect(redir, rev)),
                     (None, Some(rev)) => Ok(EntityState::Active(rev)),
                     _ => bail!("Invalid EntityIdentRow state"),
                 }

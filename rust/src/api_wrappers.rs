@@ -664,30 +664,31 @@ impl Api for Server {
             Some(param) => HideFlags::from_str(&param).unwrap(),
         };
         // No transaction for GET
-        let ret = match self.lookup_file_handler(&md5, &sha1, &sha256, expand_flags, hide_flags, &conn) {
-            Ok(entity) => LookupFileResponse::FoundEntity(entity),
-            Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
-                LookupFileResponse::NotFound(ErrorResponse {
-                    message: format!("Not found: {:?} / {:?} / {:?}", md5, sha1, sha256),
-                })
-            }
-            Err(Error(ErrorKind::MalformedExternalId(e), _)) => {
-                LookupFileResponse::BadRequest(ErrorResponse {
-                    message: e.to_string(),
-                })
-            }
-            Err(Error(ErrorKind::MissingOrMultipleExternalId(e), _)) => {
-                LookupFileResponse::BadRequest(ErrorResponse {
-                    message: e.to_string(),
-                })
-            }
-            Err(e) => {
-                error!("{}", e);
-                LookupFileResponse::BadRequest(ErrorResponse {
-                    message: e.to_string(),
-                })
-            }
-        };
+        let ret =
+            match self.lookup_file_handler(&md5, &sha1, &sha256, expand_flags, hide_flags, &conn) {
+                Ok(entity) => LookupFileResponse::FoundEntity(entity),
+                Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
+                    LookupFileResponse::NotFound(ErrorResponse {
+                        message: format!("Not found: {:?} / {:?} / {:?}", md5, sha1, sha256),
+                    })
+                }
+                Err(Error(ErrorKind::MalformedExternalId(e), _)) => {
+                    LookupFileResponse::BadRequest(ErrorResponse {
+                        message: e.to_string(),
+                    })
+                }
+                Err(Error(ErrorKind::MissingOrMultipleExternalId(e), _)) => {
+                    LookupFileResponse::BadRequest(ErrorResponse {
+                        message: e.to_string(),
+                    })
+                }
+                Err(e) => {
+                    error!("{}", e);
+                    LookupFileResponse::BadRequest(ErrorResponse {
+                        message: e.to_string(),
+                    })
+                }
+            };
         Box::new(futures::done(Ok(ret)))
     }
 
