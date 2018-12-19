@@ -1,7 +1,95 @@
 
 ## Next Up
+PLAN:
+x update openapi schema with all the below
+x python tests (that fail)
+x rust stubs (to compile)
+- rust tests
+    => get and delete edits
+    => redirect an entity (via PUT)
+    => un-delete an entity (via PUT)
+- implement until rust tests pass
+- implement until python tests pass
 
+- nomination form/thing for long-tail fatcat targets
+- check on LOCKSS
+- ask adam for nagios/ansible setup
+- arxiv.org mirror
+
+
+DOCUMENT/TEST EDGE CASES:
+- PUT updating entities in an editgroup: overwrite edit, or require previous
+  edit to be deleted first?
+- prev_revision flag: must always be set as a sanity check for edits? what
+  about when previous state was deleted?
+- when a redirect has the redirect target deleted, what happens? decision:
+  "state" shouldn't change without an update to the entity, though revision_id
+  and redirect_id *can* change
+- "redirect to redirect" condition. decision: leaf should have redirect_id set
+  to end of chain... but need to worry about the delete/undelete states in that
+  case
+- edit to redirect A to B is started. B is updated and/or redirected and/or
+  deleted. then A edit is merged. ensure that editgroup accept process handles
+  this correctly
+- auto-accpet behavior when there were other edits in same group already (or
+  should we just disallow that?)
+- "current editgroup" behavior, which should probably just disallow
+- use of "state" in entities as a flag for redirects and direct revision
+  updates
+- reverting to current version isn't allowed
+- get of "wip" entities; make sure to check status? hrmpf.
+
+- consider dropping CORE identifier
+
+NOTE: maybe in the future we can make it easier on ourselves by just saying
+    that if an entity has redirects to it, it can't be deleted or redirected
+
+x TODO: don't allow redirect to "wip" rows
+    => needs test (python)
+- TODO: fix returned error messages; should return type (shortname), and then
+    actual message/description
+- TODO: maybe better success return message?
+- allow 'expand' in lookups (particularly for releases/files)
+    => needs test (python or rust)
+- idea: allow users to generate their own editgroup UUIDs, to reduce a round
+  trips and "hanging" editgroups (created but never edited)
+- API: deletion of empty, un-accepted editgroups
+- TODO: elastic inserter should handle deletions and redirects; if state isn't
+  active, delete the document
+    => and an end-to-end test of this behavior. hoo-boy.
+
+- test/read: fetching deleted and redirected entities via API and web interface
+- large refactor: make many endpoints entity-agnostic (passing entity-type as a param)
+
+- redirecting and reverting endpoints
+    => in PUT, path for handling redirect_ident or revision
+    => this means can't have any required fields for any entities in API schema
+- insertion of entity edit rows should be postgres upserts based on ident and editgroup
+    => need UNIQ constraint?
+- python test: re-deleting a deleted entity should be 4xx, not 5xx
+- python test: can't delete an accepted edit
+
+x API endpoints (GET, DELETE) for entity edits
+    => to allow removing individual edit from editgroup
+x API endpoints (GET) for entity revisions
+x API endpoints to find entities that redirect to an ident
+- what to do with redirect-to-redirect, or deletion of redirect?
+    => for redirect-to-redirect, point to new redirect
+    => for deletion of redirect, keep redirect, but remove revision
+x API endpoints additional lookup params
+
+- enforce "no editing if editgroup accepted" behavior
+- require and enforce "previous_rev" required in updates
+- redirect rev_id needs to be updated when primary changes
+- redirect/delete/update/lifecycle tests and completeness
 - basic webface creation, editing, merging, editgroup approval
+
+- refactor API schema for some entity-generic methos (eg, history, edit
+  operations) to take entity type as a URL path param. greatly reduce macro
+  foolery and method count/complexity, and ease creation of new entities
+    => /{entity}/edit/{edit_id}
+    => /{entity}/{ident}/redirects
+    => /{entity}/{ident}/history
 
 ## Production blockers
 
