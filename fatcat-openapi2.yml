@@ -170,6 +170,129 @@ definitions:
         items:
           type: string
           #format: uuid
+  fileset_entity:
+    type: object
+    properties:
+      <<: *ENTITYPROPS
+      manifest:
+        # limit of 200 files, at least to start
+        type: array
+        items:
+          type: object
+          required:
+            - path
+            - size
+          properties:
+            path:
+              type: string
+              example: "img/cat.png"
+            size:
+              type: integer
+              example: 1048576
+              format: int64
+            md5:
+              type: string
+              #format: custom
+              example: "d41efcc592d1e40ac13905377399eb9b"
+            sha1:
+              type: string
+              #format: custom
+              example: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
+            sha256:
+              type: string
+              #format: custom
+              example: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+            extra:
+              type: object
+              additionalProperties: {}
+      urls:
+        type: array
+        items:
+          type: object
+          required:
+            - url
+            - rel
+          properties:
+            url:
+              type: string
+              format: url
+              example: "https://example.edu/~frau/prcding.pdf"
+            rel:
+              type: string
+              example: "webarchive"
+      releases:
+        type: array
+        items:
+          type: string
+          #format: uuid
+  webcapture_entity:
+    type: object
+    properties:
+      <<: *ENTITYPROPS
+      cdx:
+        # limit of 200 CDX lines, at least to start
+        type: array
+        items:
+          type: object
+          required:
+            - surt
+            - timestamp
+            - url
+            - status_code
+            - sha1
+          properties:
+            surt:
+              type: string
+              example: "org,asheesh)/apus/ch1/node15.html"
+            timestamp:
+              type: integer
+              example: 20020429162520
+              format: int64
+            url:
+              type: string
+              example: "http://www.asheesh.org:80/APUS/ch1/node15.html"
+            status_code:
+              type: integer
+              example: 200
+              format: int64
+            mimetype:
+              type: string
+              example: "text/html"
+            sha1:
+              type: string
+              #format: custom
+              example: "3f242a192acc258bdfdb151943419437f440c313"
+            sha256:
+              type: string
+              #format: custom
+              example: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+      archive_urls:
+        type: array
+        items:
+          type: object
+          required:
+            - url
+            - rel
+          properties:
+            url:
+              type: string
+              format: url
+              example: "https://web.archive.org/web/"
+            rel:
+              type: string
+              example: "wayback"
+      original_url:
+        type: string
+        #format: url
+        example: "http://www.asheesh.org"
+      timestamp:
+        type: string
+        format: date-time
+      releases:
+        type: array
+        items:
+          type: string
+          #format: uuid
   release_entity:
     type: object
     # required for creation: title
