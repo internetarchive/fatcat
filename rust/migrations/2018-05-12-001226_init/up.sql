@@ -185,6 +185,109 @@ CREATE TABLE file_edit (
     UNIQUE (editgroup_id, ident_id)
 );
 
+-------------------- Fileset -----------------------------------------------
+CREATE TABLE fileset_rev (
+    id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    extra_json          JSONB
+);
+
+CREATE TABLE fileset_rev_url (
+    id                  BIGSERIAL PRIMARY KEY,
+    fileset_rev         UUID REFERENCES fileset_rev(id) NOT NULL,
+    rel                 TEXT NOT NULL, -- TODO: enum? web, webarchive, repo, etc TODO: default web?
+    url                 TEXT NOT NULL
+);
+
+CREATE INDEX fileset_rev_url_rev_idx ON fileset_rev_url(fileset_rev);
+
+CREATE TABLE fileset_rev_manifest (
+    id                  BIGSERIAL PRIMARY KEY,
+    fileset_rev         UUID REFERENCES fileset_rev(id) NOT NULL,
+    surt                TEXT NOT NULL,
+    url                 TEXT NOT NULL,
+    timestamp           BIGINT NOT NULL,
+    status_code         BIGINT NOT NULL,
+    mimetype            TEXT,
+    sha1                TEXT CHECK(octet_length(sha1) = 40) NOT NULL,
+    sha256              TEXT CHECK(octet_length(sha256) = 64),
+    extra_json          JSONB
+);
+
+CREATE INDEX fileset_rev_manifest_rev_idx ON fileset_rev_manifest(fileset_rev);
+
+CREATE TABLE fileset_ident (
+    id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    is_live             BOOL NOT NULL DEFAULT false,
+    rev_id              UUID REFERENCES fileset_rev(id),
+    redirect_id         UUID REFERENCES fileset_ident(id)
+);
+
+CREATE INDEX fileset_ident_rev_idx ON fileset_ident(rev_id);
+
+CREATE TABLE fileset_edit (
+    id                  BIGSERIAL PRIMARY KEY,
+    editgroup_id        UUID REFERENCES editgroup(id) NOT NULL,
+    updated             TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
+    ident_id            UUID REFERENCES fileset_ident(id) NOT NULL,
+    rev_id              UUID REFERENCES fileset_rev(id),
+    redirect_id         UUID REFERENCES fileset_ident(id),
+    prev_rev            UUID REFERENCES fileset_rev(id),
+    extra_json          JSONB,
+    UNIQUE (editgroup_id, ident_id)
+);
+
+-------------------- Webcapture -----------------------------------------------
+CREATE TABLE webcapture_rev (
+    id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    extra_json          JSONB,
+
+    original_url        TEXT NOT NULL,
+    timestamp           TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
+CREATE TABLE webcapture_rev_archive_url (
+    id                  BIGSERIAL PRIMARY KEY,
+    webcapture_rev      UUID REFERENCES webcapture_rev(id) NOT NULL,
+    rel                 TEXT NOT NULL, -- TODO: enum? web, webarchive, repo, etc TODO: default web?
+    url                 TEXT NOT NULL
+);
+
+CREATE INDEX webcapture_rev_url_archive_rev_idx ON webcapture_rev_archive_url(webcapture_rev);
+
+CREATE TABLE webcapture_rev_cdx (
+    id                  BIGSERIAL PRIMARY KEY,
+    webcapture_rev      UUID REFERENCES webcapture_rev(id) NOT NULL,
+    path_name           TEXT NOT NULL,
+    size_bytes          BIGINT NOT NULL,
+    md5                 TEXT CHECK(octet_length(md5) = 32),
+    sha1                TEXT CHECK(octet_length(sha1) = 40),
+    sha256              TEXT CHECK(octet_length(sha256) = 64)
+    -- could extend with: language (detection), simhash, redirect
+);
+
+CREATE INDEX webcapture_rev_cdx_rev_idx ON webcapture_rev_cdx(webcapture_rev);
+
+CREATE TABLE webcapture_ident (
+    id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    is_live             BOOL NOT NULL DEFAULT false,
+    rev_id              UUID REFERENCES webcapture_rev(id),
+    redirect_id         UUID REFERENCES webcapture_ident(id)
+);
+
+CREATE INDEX webcapture_ident_rev_idx ON webcapture_ident(rev_id);
+
+CREATE TABLE webcapture_edit (
+    id                  BIGSERIAL PRIMARY KEY,
+    editgroup_id        UUID REFERENCES editgroup(id) NOT NULL,
+    updated             TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
+    ident_id            UUID REFERENCES webcapture_ident(id) NOT NULL,
+    rev_id              UUID REFERENCES webcapture_rev(id),
+    redirect_id         UUID REFERENCES webcapture_ident(id),
+    prev_rev            UUID REFERENCES webcapture_rev(id),
+    extra_json          JSONB,
+    UNIQUE (editgroup_id, ident_id)
+);
+
 -------------------- Release -----------------------------------------------
 CREATE TABLE release_rev (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -323,8 +426,19 @@ CREATE TABLE file_release (
     target_release_ident_id UUID REFERENCES release_ident(id) NOT NULL,
     PRIMARY KEY (file_rev, target_release_ident_id)
 );
-
 CREATE INDEX file_release_target_release_idx ON file_release(target_release_ident_id);
+CREATE TABLE fileset_release (
+    fileset_rev             UUID REFERENCES fileset_rev(id) NOT NULL,
+    target_release_ident_id UUID REFERENCES release_ident(id) NOT NULL,
+    PRIMARY KEY (fileset_rev, target_release_ident_id)
+);
+CREATE INDEX fileset_release_target_release_idx ON fileset_release(target_release_ident_id);
+CREATE TABLE webcapture_release (
+    webcapture_rev          UUID REFERENCES webcapture_rev(id) NOT NULL,
+    target_release_ident_id UUID REFERENCES release_ident(id) NOT NULL,
+    PRIMARY KEY (webcapture_rev, target_release_ident_id)
+);
+CREATE INDEX webcapture_release_target_release_idx ON webcapture_release(target_release_ident_id);
 
 ---------------------------------------------------------------------------
 ---------------------------------------------------------------------------
