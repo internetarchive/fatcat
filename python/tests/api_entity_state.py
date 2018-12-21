@@ -37,15 +37,26 @@ def test_redirect_entity(api):
 
     # create two creators
     eg = quick_eg(api)
-    c1 = api.get_creator(api.create_creator(c1, editgroup=eg.id).ident)
-    c2 = api.get_creator(api.create_creator(c2, editgroup=eg.id).ident)
+    c1_edit = api.create_creator(c1, editgroup=eg.id)
+    c2_edit = api.create_creator(c2, editgroup=eg.id)
+    c1 = api.get_creator(c1_edit.ident)
+    c2 = api.get_creator(c2_edit.ident)
+    assert c1_edit.prev_revision is None
+    assert c2_edit.prev_revision is None
     api.accept_editgroup(eg.id)
+    redirs = api.get_creator_redirects(c1.ident)
+    assert redirs == []
 
     # merge second into first
     c2_redirect = CreatorEntity(redirect=c1.ident)
     eg = quick_eg(api)
     merge_edit = api.update_creator(c2.ident, c2_redirect, editgroup=eg.id)
+    assert merge_edit.prev_revision == c2.revision
+    redirs = api.get_creator_redirects(c1.ident)
+    assert redirs == []
     api.accept_editgroup(eg.id)
+    redirs = api.get_creator_redirects(c1.ident)
+    assert redirs == [c2.ident, ]
 
     # get both by ident
     res = api.get_creator(c1.ident)
@@ -65,7 +76,8 @@ def test_redirect_entity(api):
     # update first; check that get on second updates
     c1.display_name = "test one one"
     eg = quick_eg(api)
-    api.update_creator(c1.ident, c1, editgroup=eg.id)
+    update_edit = api.update_creator(c1.ident, c1, editgroup=eg.id)
+    assert update_edit.prev_revision == c1.revision
     api.accept_editgroup(eg.id)
     res = api.get_creator(c2.ident)
     assert res.state == "redirect"
@@ -73,7 +85,8 @@ def test_redirect_entity(api):
 
     # delete first; check that second is deleted (but state is redirect)
     eg = quick_eg(api)
-    api.delete_creator(c1.ident, editgroup=eg.id)
+    del_edit = api.delete_creator(c1.ident, editgroup=eg.id)
+    assert del_edit.prev_revision == update_edit.revision
     api.accept_editgroup(eg.id)
     res = api.get_creator(c1.ident)
     assert res.state == "deleted"
@@ -82,26 +95,37 @@ def test_redirect_entity(api):
     assert res.state == "redirect"
     assert res.display_name is None
     assert res.revision is None
+    redirs = api.get_creator_redirects(c1.ident)
+    assert redirs == [c2.ident, ]
 
     # undelete first; check that second is a redirect
     eg = quick_eg(api)
-    api.update_creator(c1.ident, c1, editgroup=eg.id)
+    undelete_edit = api.update_creator(c1.ident, c1, editgroup=eg.id)
+    assert undelete_edit.prev_revision is None
     api.accept_editgroup(eg.id)
     res = api.get_creator(c2.ident)
     assert res.state == "redirect"
     assert res.display_name == "test one one"
+    redirs = api.get_creator_redirects(c1.ident)
+    assert redirs == [c2.ident, ]
 
     # split second entity back out
     assert c2.revision
     assert c2.redirect is None
     eg = quick_eg(api)
-    api.update_creator(c2.ident, c2, editgroup=eg.id)
+    update_edit = api.update_creator(c2.ident, c2, editgroup=eg.id)
+    # prev_revision should be none after an un-redirect
+    assert update_edit.prev_revision is None
+    redirs = api.get_creator_redirects(c1.ident)
+    assert redirs == [c2.ident, ]
     api.accept_editgroup(eg.id)
     res = api.get_creator(c2.ident)
     assert res.state == "active"
     assert res.display_name == "test two"
     res = api.lookup_creator(orcid=o2)
     assert res.display_name == "test two"
+    redirs = api.get_creator_redirects(c1.ident)
+    assert redirs == []
 
     # cleanup
     eg = quick_eg(api)

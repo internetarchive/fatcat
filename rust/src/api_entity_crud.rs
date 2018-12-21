@@ -213,6 +213,11 @@ macro_rules! generic_db_update {
                 return Err(ErrorKind::InvalidEntityStateTransform(
                     "can't update an entity that doesn't exist yet".to_string()).into());
             }
+            // Don't set prev_rev if current status is redirect
+            let prev_rev = match current.redirect_id {
+                Some(_) => None,
+                None => current.rev_id,
+            };
 
             if self.state.is_none() {
 
@@ -245,7 +250,7 @@ macro_rules! generic_db_update {
                             $edit_table::ident_id.eq(&ident.to_uuid()),
                             $edit_table::rev_id.eq(target.rev_id),
                             $edit_table::redirect_id.eq(redirect_ident),
-                            $edit_table::prev_rev.eq(current.rev_id),
+                            $edit_table::prev_rev.eq(prev_rev),
                             $edit_table::extra_json.eq(&self.edit_extra),
                         ))
                         .get_result(conn)?;
@@ -264,7 +269,7 @@ macro_rules! generic_db_update {
                             $edit_table::ident_id.eq(&ident.to_uuid()),
                             $edit_table::rev_id.eq(&rev_id),
                             $edit_table::redirect_id.eq(no_redirect),
-                            $edit_table::prev_rev.eq(current.rev_id),
+                            $edit_table::prev_rev.eq(prev_rev),
                             $edit_table::extra_json.eq(&self.edit_extra),
                         ))
                         .get_result(conn)?;
@@ -280,7 +285,7 @@ macro_rules! generic_db_update {
                     $edit_table::ident_id.eq(&ident.to_uuid()),
                     $edit_table::rev_id.eq(&rev_id),
                     $edit_table::redirect_id.eq(no_redirect),
-                    $edit_table::prev_rev.eq(current.rev_id),
+                    $edit_table::prev_rev.eq(prev_rev),
                     $edit_table::extra_json.eq(&self.edit_extra),
                 ))
                 .get_result(conn)?;
