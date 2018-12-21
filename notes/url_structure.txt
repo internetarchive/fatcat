@@ -6,7 +6,7 @@
 /work/:id/history   chain of revisions
 /work/:id/edit      modify work (edit group)
 /work/:id/delete    delete (edit group)
-/work/:id/merge     merge (edit group)
+/work/:id/merge     merge (edit group) (works only?)
 /work/:id/redirect  point to another revision (edit group)
 /work/rev/:rev      view
 /work/rev/:rev/edit modify; only before submission
