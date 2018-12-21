@@ -25,10 +25,19 @@ def api():
     api_client = fatcat_client.DefaultApi(fatcat_client.ApiClient(conf))
     return api_client
 
+def test_get_changelog_entry(api):
+    """Check that fixture is working"""
+    cl = api.get_changelog_entry(1)
+    assert cl
 
 ## Helpers ##################################################################
-# TODO: what are these even here for?
 
+def quick_eg(api_inst):
+    eg = api_inst.create_editgroup(
+        fatcat_client.Editgroup(editor_id='aaaaaaaaaaaabkvkaaaaaaaaae'))
+    return eg
+
+# TODO: what are these even here for?
 def check_entity_fields(e):
     for key in ('rev', 'is_live', 'redirect_id'):
         assert key in e

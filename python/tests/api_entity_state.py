@@ -1,23 +1,10 @@
 
-import json
 import pytest
-from copy import copy
 
 from fatcat_client import *
 from fatcat_client.rest import ApiException
 from fixtures import *
 
-def test_get_changelog_entry(api):
-    """
-    Basically just to check that fixture is working
-    """
-    cl = api.get_changelog_entry(1)
-    assert cl
-
-def quick_eg(api_inst):
-    eg = api_inst.create_editgroup(
-        fatcat_client.Editgroup(editor_id='aaaaaaaaaaaabkvkaaaaaaaaae'))
-    return eg
 
 def test_redirect_entity(api):
     """
@@ -122,6 +109,7 @@ def test_redirect_entity(api):
     api.delete_creator(c2.ident)
     api.accept_editgroup(eg.id)
 
+
 def test_delete_entity(api):
 
     offset = 0
@@ -169,9 +157,7 @@ def test_delete_entity(api):
         #api.accept_editgroup(eg.id)
         assert False
     except fatcat_client.rest.ApiException as e:
-        # error is 4xx
-        print(e)
-        assert 400 <= e.status < 500
+        assert 400 <= e.status < 500 # error is 4xx
 
     # undelete
     eg = quick_eg(api)
@@ -189,72 +175,6 @@ def test_delete_entity(api):
     api.delete_creator(c1.ident)
     api.accept_editgroup(eg.id)
 
-def test_multiple_edits_same_group(api):
-
-    c1 = CreatorEntity(display_name="test updates")
-
-    # create
-    eg = quick_eg(api)
-    c1 = api.get_creator(api.create_creator(c1, editgroup=eg.id).ident)
-    api.accept_editgroup(eg.id)
-
-    # try multiple edits in the same group
-    eg = quick_eg(api)
-    c2 = CreatorEntity(display_name="left")
-    c3 = CreatorEntity(display_name="right")
-    edit = api.update_creator(c1.ident, c2, editgroup=eg.id)
-    # should fail with existing
-    with pytest.raises(fatcat_client.rest.ApiException):
-        api.update_creator(c1.ident, c3, editgroup=eg.id)
-    # ... but succeed after deleting
-    api.delete_creator_edit(edit.edit_id)
-    api.update_creator(c1.ident, c3, editgroup=eg.id)
-    api.accept_editgroup(eg.id)
-    res = api.get_creator(c1.ident)
-    assert res.display_name == "right"
-    eg = api.get_editgroup(eg.id)
-    assert len(eg.edits.creators) == 1
-
-    # cleanup
-    eg = quick_eg(api)
-    api.delete_creator(c1.ident)
-    api.accept_editgroup(eg.id)
-
-def test_edit_deletion(api):
-
-    c1 = CreatorEntity(display_name="test edit updates")
-
-    # create
-    eg = quick_eg(api)
-    c1 = api.get_creator(api.create_creator(c1, editgroup=eg.id).ident)
-    api.accept_editgroup(eg.id)
-
-    # try multiple edits in the same group
-    c2 = CreatorEntity(display_name="update one")
-    eg = quick_eg(api)
-    eg = api.get_editgroup(eg.id)
-    assert len(eg.edits.creators) == 0
-    edit = api.update_creator(c1.ident, c2, editgroup=eg.id)
-    eg = api.get_editgroup(eg.id)
-    assert len(eg.edits.creators) == 1
-    api.delete_creator_edit(edit.edit_id)
-    eg = api.get_editgroup(eg.id)
-    assert len(eg.edits.creators) == 0
-
-    api.accept_editgroup(eg.id)
-    res = api.get_creator(c1.ident)
-    assert res.display_name == "test edit updates"
-    eg = api.get_editgroup(eg.id)
-    assert len(eg.edits.creators) == 0
-
-    # cleanup
-    eg = quick_eg(api)
-    api.delete_creator(c1.ident)
-    api.accept_editgroup(eg.id)
-
-def test_empty_editgroup(api):
-    eg = quick_eg(api)
-    api.accept_editgroup(eg.id)
 
 def test_recursive_redirects_entity(api):
 
@@ -401,6 +321,7 @@ def test_recursive_redirects_entity(api):
     # c3 already deleted
     api.accept_editgroup(eg.id)
 
+
 def test_self_redirect(api):
 
     c1 = CreatorEntity(display_name="test self-redirect")
@@ -415,3 +336,93 @@ def test_self_redirect(api):
     eg = quick_eg(api)
     with pytest.raises(fatcat_client.rest.ApiException):
         merge_edit = api.update_creator(c1.ident, c1_redirect, editgroup=eg.id)
+
+
+def test_wip_redirect(api):
+
+    # create first
+    c1 = CreatorEntity(display_name="test one")
+    eg = quick_eg(api)
+    c1 = api.get_creator(api.create_creator(c1, editgroup=eg.id).ident)
+    api.accept_editgroup(eg.id)
+
+    # start creating second entity
+    c2 = CreatorEntity(display_name="test two")
+    eg = quick_eg(api)
+    c2 = api.get_creator(api.create_creator(c2, editgroup=eg.id).ident)
+    assert c2.state == "wip"
+
+    # redirect first to second (should fail)
+    eg = quick_eg(api)
+    c1_redirect = CreatorEntity(redirect=c2.ident)
+    try:
+        api.update_creator(c1.ident, c1_redirect, editgroup=eg.id)
+        assert False
+    except fatcat_client.rest.ApiException as e:
+        assert 400 <= e.status < 500
+        assert "WIP" in e.body
+
+
+def test_create_redirect(api):
+
+    # create first
+    c1 = CreatorEntity(display_name="test one")
+    eg = quick_eg(api)
+    c1 = api.get_creator(api.create_creator(c1, editgroup=eg.id).ident)
+    api.accept_editgroup(eg.id)
+
+    # create second
+    c2 = CreatorEntity(display_name="blah", redirect=c1.ident)
+    eg = quick_eg(api)
+    try:
+        api.create_creator(c2, editgroup=eg.id)
+        assert False
+    except fatcat_client.rest.ApiException as e:
+        assert 400 <= e.status < 500
+        assert "redirect" in e.body
+
+    # again with releases
+    r1 = ReleaseEntity(title="test one")
+    eg = quick_eg(api)
+    r1 = api.get_release(api.create_release(r1, editgroup=eg.id).ident)
+    api.accept_editgroup(eg.id)
+    r2 = ReleaseEntity(title="blah", redirect=c1.ident)
+    eg = quick_eg(api)
+    try:
+        api.create_release(r2, editgroup=eg.id)
+        assert False
+    except fatcat_client.rest.ApiException as e:
+        assert 400 <= e.status < 500
+        assert "redirect" in e.body
+
+
+def test_required_entity_fields(api):
+    eg = quick_eg(api)
+
+    # Creator
+    try:
+        c1 = CreatorEntity()
+        api.create_creator(c1, editgroup=eg.id)
+        assert False
+    except fatcat_client.rest.ApiException as e:
+        assert 400 <= e.status < 500
+        assert "display_name" in e.body
+
+    # Container
+    try:
+        c1 = ContainerEntity()
+        api.create_container(c1, editgroup=eg.id)
+        assert False
+    except fatcat_client.rest.ApiException as e:
+        assert 400 <= e.status < 500
+        assert "name" in e.body
+
+    # Release
+    try:
+        c1 = ReleaseEntity()
+        api.create_release(c1, editgroup=eg.id)
+        assert False
+    except fatcat_client.rest.ApiException as e:
+        assert 400 <= e.status < 500
+        assert "title" in e.body
+

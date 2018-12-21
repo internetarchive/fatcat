@@ -66,6 +66,8 @@ macro_rules! wrap_entity_handlers {
                     $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::EditgroupAlreadyAccepted(e), _)) =>
                     $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::OtherBadRequest(e), _)) =>
+                    $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
                     $get_resp::GenericError(ErrorResponse { message: e.to_string() })
@@ -103,6 +105,8 @@ macro_rules! wrap_entity_handlers {
                     $post_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::EditgroupAlreadyAccepted(e), _)) =>
                     $post_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::OtherBadRequest(e), _)) =>
+                    $post_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
                     $post_resp::GenericError(ErrorResponse { message: e.to_string() })
@@ -139,6 +143,8 @@ macro_rules! wrap_entity_handlers {
                 Err(Error(ErrorKind::NotInControlledVocabulary(e), _)) =>
                     $post_batch_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::EditgroupAlreadyAccepted(e), _)) =>
+                    $post_batch_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::OtherBadRequest(e), _)) =>
                     $post_batch_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
@@ -183,6 +189,8 @@ macro_rules! wrap_entity_handlers {
                     $update_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::InvalidEntityStateTransform(e), _)) =>
                     $update_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::OtherBadRequest(e), _)) =>
+                    $update_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
                     $update_resp::GenericError(ErrorResponse { message: e.to_string() })
@@ -224,6 +232,8 @@ macro_rules! wrap_entity_handlers {
                     $delete_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::InvalidEntityStateTransform(e), _)) =>
                     $delete_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::OtherBadRequest(e), _)) =>
+                    $delete_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
                     $delete_resp::GenericError(ErrorResponse { message: e.to_string() })
@@ -253,6 +263,8 @@ macro_rules! wrap_entity_handlers {
                 Err(Error(ErrorKind::InvalidFatcatId(e), _)) =>
                     $get_history_resp::BadRequest(ErrorResponse {
                         message: ErrorKind::InvalidFatcatId(e).to_string() }),
+                Err(Error(ErrorKind::OtherBadRequest(e), _)) =>
+                    $get_history_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
                     $get_history_resp::GenericError(ErrorResponse { message: e.to_string() })
@@ -294,6 +306,8 @@ macro_rules! wrap_entity_handlers {
                     $get_rev_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::MalformedExternalId(e), _)) =>
                     $get_rev_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::OtherBadRequest(e), _)) =>
+                    $get_rev_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
                     $get_rev_resp::GenericError(ErrorResponse { message: e.to_string() })
@@ -316,6 +330,8 @@ macro_rules! wrap_entity_handlers {
                     $get_edit_resp::FoundEdit(edit),
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
                     $get_edit_resp::NotFound(ErrorResponse { message: format!("No such {} entity edit: {}", stringify!($model), edit_id) }),
+                Err(Error(ErrorKind::OtherBadRequest(e), _)) =>
+                    $get_edit_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
                     $get_edit_resp::GenericError(ErrorResponse { message: e.to_string() })
@@ -340,6 +356,8 @@ macro_rules! wrap_entity_handlers {
                 Err(Error(ErrorKind::Diesel(e), _)) =>
                     $delete_edit_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::EditgroupAlreadyAccepted(e), _)) =>
+                    $delete_edit_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::OtherBadRequest(e), _)) =>
                     $delete_edit_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
@@ -370,6 +388,8 @@ macro_rules! wrap_entity_handlers {
                 Err(Error(ErrorKind::InvalidFatcatId(e), _)) =>
                     $get_redirects_resp::BadRequest(ErrorResponse {
                         message: ErrorKind::InvalidFatcatId(e).to_string() }),
+                Err(Error(ErrorKind::OtherBadRequest(e), _)) =>
+                    $get_redirects_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
                     $get_redirects_resp::GenericError(ErrorResponse { message: e.to_string() })
@@ -410,6 +430,8 @@ macro_rules! wrap_lookup_handler {
                     $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::MissingOrMultipleExternalId(e), _)) => {
                     $get_resp::BadRequest(ErrorResponse { message: e.to_string(), }) },
+                Err(Error(ErrorKind::OtherBadRequest(e), _)) =>
+                    $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
                     $get_resp::BadRequest(ErrorResponse { message: e.to_string() })
@@ -440,6 +462,8 @@ macro_rules! wrap_fcid_handler {
                 Err(Error(ErrorKind::MalformedExternalId(e), _)) =>
                     $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::NotInControlledVocabulary(e), _)) =>
+                    $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::OtherBadRequest(e), _)) =>
                     $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
@@ -476,6 +500,8 @@ macro_rules! wrap_fcid_hide_handler {
                 Err(Error(ErrorKind::MalformedExternalId(e), _)) =>
                     $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::NotInControlledVocabulary(e), _)) =>
+                    $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::OtherBadRequest(e), _)) =>
                     $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);

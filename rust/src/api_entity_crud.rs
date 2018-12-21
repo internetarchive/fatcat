@@ -136,6 +136,10 @@ macro_rules! generic_db_create {
     // TODO: this path should call generic_db_create_batch
     ($ident_table: ident, $edit_table: ident) => {
         fn db_create(&self, conn: &DbConn, edit_context: &EditContext) -> Result<Self::EditRow> {
+            if self.redirect.is_some() {
+                return Err(ErrorKind::OtherBadRequest(
+                    "can't create an entity that redirects from the start".to_string()).into());
+            }
             let rev_id = self.db_insert_rev(conn)?;
             let ident: Uuid = insert_into($ident_table::table)
                 .values($ident_table::rev_id.eq(&rev_id))
@@ -160,6 +164,10 @@ macro_rules! generic_db_create_batch {
             edit_context: &EditContext,
             models: &[&Self],
         ) -> Result<Vec<Self::EditRow>> {
+            if models.iter().any(|m| m.redirect.is_some()) {
+                return Err(ErrorKind::OtherBadRequest(
+                    "can't create an entity that redirects from the start".to_string()).into());
+            }
             let rev_ids: Vec<Uuid> = Self::db_insert_revs(conn, models)?;
             let ident_ids: Vec<Uuid> = insert_into($ident_table::table)
                 .values(
@@ -221,9 +229,10 @@ macro_rules! generic_db_update {
                     }
                     // TODO: if we get a diesel not-found here, should be a special error response?
                     let target: Self::IdentRow = $ident_table::table.find(redirect_ident).first(conn)?;
-                    if target.is_live == false {
+                    if target.is_live != true {
                         // there is no race condition on this check because WIP -> is_live=true is
                         // a one-way operation
+                        // XXX:
                         return Err(ErrorKind::OtherBadRequest(
                             "attempted to redirect to a WIP entity".to_string()).into());
                     }
@@ -642,12 +651,17 @@ impl EntityCrud for ContainerEntity {
             }
         }
 
+        if models.iter().any(|m| m.name.is_none()) {
+            return Err(ErrorKind::OtherBadRequest(
+                "name is required for all Container entities".to_string()).into());
+        }
+
         let rev_ids: Vec<Uuid> = insert_into(container_rev::table)
             .values(
                 models
                     .iter()
                     .map(|model| ContainerRevNewRow {
-                        name: model.name.clone().unwrap(), // XXX: unwrap
+                        name: model.name.clone().unwrap(), // unwrap checked above
                         publisher: model.publisher.clone(),
                         issnl: model.issnl.clone(),
                         wikidata_qid: model.wikidata_qid.clone(),
@@ -746,12 +760,17 @@ impl EntityCrud for CreatorEntity {
             }
         }
 
+        if models.iter().any(|m| m.display_name.is_none()) {
+            return Err(ErrorKind::OtherBadRequest(
+                "display_name is required for all Creator entities".to_string()).into());
+        }
+
         let rev_ids: Vec<Uuid> = insert_into(creator_rev::table)
             .values(
                 models
                     .iter()
-                    .map(|model| CreatorRevNewRow {
-                        display_name: model.display_name.clone().unwrap(), // XXX: unwrap
+                    .map(|model|CreatorRevNewRow {
+                        display_name: model.display_name.clone().unwrap(), // unwrapped checked above
                         given_name: model.given_name.clone(),
                         surname: model.surname.clone(),
                         orcid: model.orcid.clone(),
@@ -1010,6 +1029,10 @@ impl EntityCrud for ReleaseEntity {
     }
 
     fn db_create(&self, conn: &DbConn, edit_context: &EditContext) -> Result<Self::EditRow> {
+        if self.redirect.is_some() {
+            return Err(ErrorKind::OtherBadRequest(
+                "can't create an entity that redirects from the start".to_string()).into());
+        }
         let mut edits = Self::db_create_batch(conn, edit_context, &[self])?;
         // probably a more elegant way to destroy the vec and take first element
         Ok(edits.pop().unwrap())
@@ -1022,6 +1045,10 @@ impl EntityCrud for ReleaseEntity {
     ) -> Result<Vec<Self::EditRow>> {
         // This isn't the generic implementation because we need to create Work entities for each
         // of the release entities passed (at least in the common case)
+        if models.iter().any(|m| m.redirect.is_some()) {
+            return Err(ErrorKind::OtherBadRequest(
+                "can't create an entity that redirects from the start".to_string()).into());
+        }
 
         // Generate the set of new work entities to insert (usually one for each release, but some
         // releases might be pointed to a work already)
@@ -1239,13 +1266,18 @@ impl EntityCrud for ReleaseEntity {
             }
         }
 
+        if models.iter().any(|m| m.title.is_none()) {
+            return Err(ErrorKind::OtherBadRequest(
+                "title is required for all Release entities".to_string()).into());
+        }
+
         let rev_ids: Vec<Uuid> = insert_into(release_rev::table)
             .values(
                 models
                     .iter()
                     .map(|model| {
                         Ok(ReleaseRevNewRow {
-                    title: model.title.clone().unwrap(), // XXX: unwrap()
+                    title: model.title.clone().unwrap(), // titles checked above
                     release_type: model.release_type.clone(),
                     release_status: model.release_status.clone(),
                     release_date: model.release_date,
