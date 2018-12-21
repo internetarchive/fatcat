@@ -123,7 +123,7 @@ Raw Object:
   </thead>
   <tbody>
   {% for file in files %}
-  <tr><td><small><code><a href="/file/{{ file.ident }}">{{ file.sha1[:16] + "..." }}</a></code></small>
+  <tr><td><small><code><a href="/file/{{ file.ident }}">{% if file.sha1 != None %}{{ file.sha1[:16] + "..." }}{% else %}N/A{% endif %}</a></code></small>
       <td>{% if file.size != None %}{{ file.size }}{% endif %}
       <td>{% if file.mimetype != None %}{{ file.mimetype }}{% endif %}
       <td>{% for url in file.urls %}
