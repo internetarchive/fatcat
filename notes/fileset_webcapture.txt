@@ -1,0 +1,29 @@
+
+## fileset
+
+Constraints:
+- limit to 200 files per set, to start. This to work around very large metadata
+  sizes and >1 MByte JSON API blobs
+- must have a complete manifest for at least one hash type (of md5, sha1,
+  sha256)
+
+Could end up separating manifest into a separate redirect, like abstracts, to
+reduce database size. Could also store as a single giant JSONB blob, like
+planned for citations, to get better compression. These denormlization steps
+can happen later as performance/resource optimizations.
+
+Would like to handle things like git repositories of code, git-annex datasets,
+dat archives, and torrents. Some options:
+
+- store git URL + commit in release metadata, with no file/fileset. This ties
+  release with a specific version well, but breaks semantics of data model
+  (artifact/metadata separation)
+- store a full file manifest (or just the important files) and full URLs; maybe
+  version/commit as extra but not in URL?
+- store "stub" FileSet with no manifest, git version/commit in extra (or as a
+  new column?), and locations in URL list
+
+## webcapture
+
+Constraints
+- also limit to 200 lines, same as with fileset
