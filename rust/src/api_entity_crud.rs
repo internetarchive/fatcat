@@ -433,23 +433,8 @@ macro_rules! generic_db_get_redirects {
 macro_rules! generic_db_accept_edits_batch {
     ($entity_name_str:expr, $ident_table:ident, $edit_table:ident) => {
         fn db_accept_edits(conn: &DbConn, editgroup_id: FatCatId) -> Result<u64> {
-            let count = diesel::sql_query(format!(
-                "
-                    UPDATE {entity}_ident
-                    SET
-                        is_live = true,
-                        rev_id = {entity}_edit.rev_id,
-                        redirect_id = {entity}_edit.redirect_id
-                    FROM {entity}_edit
-                    WHERE
-                        {entity}_ident.id = {entity}_edit.ident_id
-                        AND {entity}_edit.editgroup_id = $1",
-                entity = $entity_name_str
-            ))
-            .bind::<diesel::sql_types::Uuid, _>(editgroup_id.to_uuid())
-            .execute(conn)?;
-            // NOTE: all the following can be skipped for accepts that are all inserts (which I
-            // guess we only know for batch inserts with auto-accept?)
+            // NOTE: the checks and redirects can be skipped for accepts that are all inserts
+            // (which I guess we only know for batch inserts with auto-accept?)
 
             // assert that we aren't redirecting to anything which is a redirect already
             let forward_recursive_redirects: i64 = $edit_table::table
@@ -463,6 +448,7 @@ macro_rules! generic_db_accept_edits_batch {
                 .count()
                 .get_result(conn)?;
             if forward_recursive_redirects != 0 {
+                // TODO: revert transaction?
                 return Err(ErrorKind::OtherBadRequest(
                     "one or more (forward) recurisve redirects".to_string(),
                 )
@@ -481,11 +467,28 @@ macro_rules! generic_db_accept_edits_batch {
                 .count()
                 .get_result(conn)?;
             if backward_recursive_redirects != 0 {
+                // TODO: revert transaction?
                 return Err(ErrorKind::OtherBadRequest(
                     "one or more (backward) recurisve redirects".to_string(),
                 )
                 .into());
             }
+
+            let count = diesel::sql_query(format!(
+                "
+                    UPDATE {entity}_ident
+                    SET
+                        is_live = true,
+                        rev_id = {entity}_edit.rev_id,
+                        redirect_id = {entity}_edit.redirect_id
+                    FROM {entity}_edit
+                    WHERE
+                        {entity}_ident.id = {entity}_edit.ident_id
+                        AND {entity}_edit.editgroup_id = $1",
+                entity = $entity_name_str
+            ))
+            .bind::<diesel::sql_types::Uuid, _>(editgroup_id.to_uuid())
+            .execute(conn)?;
 
             // update any/all redirects for updated entities
             let _redir_count = diesel::sql_query(format!(
