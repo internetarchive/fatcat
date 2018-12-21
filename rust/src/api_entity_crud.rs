@@ -1030,6 +1030,18 @@ impl EntityCrud for ReleaseEntity {
                 )?);
             }
         }
+        if expand.creators {
+            if let Some(ref mut contribs) = self.contribs {
+                for contrib in contribs {
+                    if let Some(ref creator_id) = contrib.creator_id {
+                        contrib.creator = Some(CreatorEntity::db_get(
+                            conn,
+                            FatCatId::from_str(creator_id)?,
+                            HideFlags::none())?);
+                    }
+                }
+            }
+        }
         Ok(())
     }
 

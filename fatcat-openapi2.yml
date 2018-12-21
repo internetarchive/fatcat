@@ -1267,7 +1267,7 @@ paths:
           in: query
           type: string
           required: false
-          description: "List of sub-entities to expand in response. For releases, 'files' and 'container' are valid."
+          description: "List of sub-entities to expand in response. For releases, 'files', 'container', and 'creators' are valid."
         - name: hide
           in: query
           type: string
