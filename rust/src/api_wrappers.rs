@@ -36,8 +36,8 @@ macro_rules! wrap_entity_handlers {
             _context: &Context,
         ) -> Box<Future<Item = $get_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
-            // No transaction for GET
-            let ret = match conn.transaction(|| {
+            // No transaction for GET?
+            let ret = match (|| {
                 let entity_id = FatCatId::from_str(&id)?;
                 let hide_flags = match hide {
                     None => HideFlags::none(),
@@ -52,7 +52,7 @@ macro_rules! wrap_entity_handlers {
                         Ok(entity)
                     },
                 }
-            }) {
+            })() {
                 Ok(entity) =>
                     $get_resp::FoundEntity(entity),
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
@@ -239,11 +239,11 @@ macro_rules! wrap_entity_handlers {
             _context: &Context,
         ) -> Box<Future<Item = $get_history_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
-            // No transaction for GET
-            let ret = match conn.transaction(|| {
+            // No transaction for GET?
+            let ret = match (|| {
                 let entity_id = FatCatId::from_str(&id)?;
                 $model::db_get_history(&conn, entity_id, limit)
-            }) {
+            })() {
                 Ok(history) =>
                     $get_history_resp::FoundEntityHistory(history),
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
@@ -269,8 +269,8 @@ macro_rules! wrap_entity_handlers {
             _context: &Context,
         ) -> Box<Future<Item = $get_rev_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
-            // No transaction for GET
-            let ret = match conn.transaction(|| {
+            // No transaction for GET?
+            let ret = match (|| {
                 let rev_id = Uuid::from_str(&id)?;
                 let hide_flags = match hide {
                     None => HideFlags::none(),
@@ -285,7 +285,7 @@ macro_rules! wrap_entity_handlers {
                         Ok(entity)
                     },
                 }
-            }) {
+            })() {
                 Ok(entity) =>
                     $get_rev_resp::FoundEntityRevision(entity),
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
@@ -308,10 +308,10 @@ macro_rules! wrap_entity_handlers {
             _context: &Context,
         ) -> Box<Future<Item = $get_edit_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
-            // No transaction for GET
-            let ret = match conn.transaction(|| {
+            // No transaction for GET?
+            let ret = match (|| {
                 $model::db_get_edit(&conn, edit_id)?.into_model()
-            }) {
+            })() {
                 Ok(edit) =>
                     $get_edit_resp::FoundEdit(edit),
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
@@ -355,12 +355,12 @@ macro_rules! wrap_entity_handlers {
             _context: &Context,
         ) -> Box<Future<Item = $get_redirects_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
-            // No transaction for GET
-            let ret = match conn.transaction(|| {
+            // No transaction for GET?
+            let ret = match (|| {
                 let entity_id = FatCatId::from_str(&id)?;
                 let redirects: Vec<FatCatId> = $model::db_get_redirects(&conn, entity_id)?;
                 Ok(redirects.into_iter().map(|fcid| fcid.to_string()).collect())
-            }) {
+            })() {
                 Ok(redirects) =>
                     $get_redirects_resp::FoundEntityRedirects(redirects),
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
