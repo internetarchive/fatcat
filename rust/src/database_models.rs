@@ -11,6 +11,7 @@ use uuid::Uuid;
 // Ugh. I thought the whole point was to *not* do this, but:
 // https://github.com/diesel-rs/diesel/issues/1589
 
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum EntityState {
     WorkInProgress,
     Active(Uuid),
@@ -113,7 +114,7 @@ macro_rules! entity_structs {
                     (None, None) => Ok(EntityState::Deleted),
                     (Some(redir), rev) => Ok(EntityState::Redirect(redir, rev)),
                     (None, Some(rev)) => Ok(EntityState::Active(rev)),
-                    _ => bail!("Invalid EntityIdentRow state"),
+                    //_ => bail!("Invalid EntityIdentRow state"),
                 }
             }
         }

@@ -289,7 +289,7 @@ macro_rules! generic_db_delete {
                 )
                 .into());
             }
-            if current.rev_id.is_none() {
+            if current.state()? == EntityState::Deleted {
                 return Err(ErrorKind::InvalidEntityStateTransform(
                     "entity was already deleted".to_string(),
                 )
