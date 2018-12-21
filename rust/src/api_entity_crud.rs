@@ -26,6 +26,7 @@ use uuid::Uuid;
  *   db_get_edit
  *   db_delete_edit
  *   db_get_redirects
+ *   db_accept_edits
  *
  * For now, these will probably be macros, until we can level up our trait/generics foo.
  */
@@ -425,7 +426,7 @@ macro_rules! generic_db_get_redirects {
 // Works with Postgres, not Cockroach
 #[allow(unused_macros)]
 macro_rules! generic_db_accept_edits_batch {
-    ($entity_name_str:expr) => {
+    ($entity_name_str:expr, $ident_table:ident, $edit_table:ident) => {
         fn db_accept_edits(conn: &DbConn, editgroup_id: FatCatId) -> Result<u64> {
             let count = diesel::sql_query(format!(
                 "
@@ -445,6 +446,38 @@ macro_rules! generic_db_accept_edits_batch {
             // NOTE: all the following can be skipped for accepts that are all inserts (which I
             // guess we only know for batch inserts with auto-accept?)
 
+            // assert that we aren't redirecting to anything which is a redirect already
+            let forward_recursive_redirects: i64 = $edit_table::table
+                .inner_join(
+                    $ident_table::table
+                        .on($edit_table::redirect_id.eq($ident_table::id.nullable())),
+                )
+                .filter($edit_table::redirect_id.is_not_null())
+                .filter($edit_table::editgroup_id.eq(&editgroup_id.to_uuid()))
+                .filter($ident_table::redirect_id.is_not_null())
+                .count()
+                .get_result(conn)?;
+            if forward_recursive_redirects != 0 {
+                // TODO: error type
+                bail!("forward recurisve redirects")
+            }
+
+            // assert that we aren't redirecting while something already redirects to us
+            let backward_recursive_redirects: i64 = $ident_table::table
+                .inner_join(
+                    $edit_table::table
+                        .on($ident_table::redirect_id.eq($edit_table::ident_id.nullable())),
+                )
+                .filter($ident_table::redirect_id.is_not_null())
+                .filter($edit_table::editgroup_id.eq(editgroup_id.to_uuid()))
+                .filter($edit_table::redirect_id.is_not_null())
+                .count()
+                .get_result(conn)?;
+            if backward_recursive_redirects != 0 {
+                // TODO: error type
+                bail!("backward recursive redirects")
+            }
+
             // update any/all redirects for updated entities
             let _redir_count = diesel::sql_query(format!(
                 "
@@ -459,12 +492,6 @@ macro_rules! generic_db_accept_edits_batch {
             ))
             .bind::<diesel::sql_types::Uuid, _>(editgroup_id.to_uuid())
             .execute(conn)?;
-            // TODO: backwards multiple redirect: if we redirected any entities to targets in this
-            // edit, then we need to update any redirects to *current* entities to *target*
-            // entities
-            // TODO: forward multiple redirect: if we redirected any entities to targets in this
-            // edit, and those targets are themselves redirects, we should point to the "final"
-            // targets
             Ok(count as u64)
         }
     };
@@ -535,7 +562,7 @@ impl EntityCrud for ContainerEntity {
     generic_db_get_edit!(container_edit);
     generic_db_delete_edit!(container_edit);
     generic_db_get_redirects!(container_ident);
-    generic_db_accept_edits_batch!("container");
+    generic_db_accept_edits_batch!("container", container_ident, container_edit);
     generic_db_insert_rev!();
 
     fn from_deleted_row(ident_row: Self::IdentRow) -> Result<Self> {
@@ -642,7 +669,7 @@ impl EntityCrud for CreatorEntity {
     generic_db_get_edit!(creator_edit);
     generic_db_delete_edit!(creator_edit);
     generic_db_get_redirects!(creator_ident);
-    generic_db_accept_edits_batch!("creator");
+    generic_db_accept_edits_batch!("creator", creator_ident, creator_edit);
     generic_db_insert_rev!();
 
     fn from_deleted_row(ident_row: Self::IdentRow) -> Result<Self> {
@@ -745,7 +772,7 @@ impl EntityCrud for FileEntity {
     generic_db_get_edit!(file_edit);
     generic_db_delete_edit!(file_edit);
     generic_db_get_redirects!(file_ident);
-    generic_db_accept_edits_batch!("file");
+    generic_db_accept_edits_batch!("file", file_ident, file_edit);
     generic_db_insert_rev!();
 
     fn from_deleted_row(ident_row: Self::IdentRow) -> Result<Self> {
@@ -907,7 +934,7 @@ impl EntityCrud for ReleaseEntity {
     generic_db_get_edit!(release_edit);
     generic_db_delete_edit!(release_edit);
     generic_db_get_redirects!(release_ident);
-    generic_db_accept_edits_batch!("release");
+    generic_db_accept_edits_batch!("release", release_ident, release_edit);
     generic_db_insert_rev!();
 
     fn from_deleted_row(ident_row: Self::IdentRow) -> Result<Self> {
@@ -1371,7 +1398,7 @@ impl EntityCrud for WorkEntity {
     generic_db_get_edit!(work_edit);
     generic_db_delete_edit!(work_edit);
     generic_db_get_redirects!(work_ident);
-    generic_db_accept_edits_batch!("work");
+    generic_db_accept_edits_batch!("work", work_ident, work_edit);
     generic_db_insert_rev!();
 
     fn from_deleted_row(ident_row: Self::IdentRow) -> Result<Self> {
