@@ -151,12 +151,27 @@ def test_delete_entity(api):
     # delete
     eg = quick_eg(api)
     api.delete_creator(c1.ident, editgroup=eg.id)
+    with pytest.raises(fatcat_client.rest.ApiException):
+        # can't re-delete in same editgroup
+        api.delete_creator(c1.ident, editgroup=eg.id)
     api.accept_editgroup(eg.id)
     res = api.get_creator(c1.ident)
     assert res.state == "deleted"
     assert res.display_name is None
     with pytest.raises(fatcat_client.rest.ApiException):
         res = api.lookup_creator(orcid=c1.orcid)
+
+    # re-delete
+    eg = quick_eg(api)
+    try:
+        # can't re-delete an entity
+        api.delete_creator(c1.ident, editgroup=eg.id)
+        #api.accept_editgroup(eg.id)
+        assert False
+    except fatcat_client.rest.ApiException as e:
+        # error is 4xx
+        print(e)
+        assert 400 <= e.status < 500
 
     # undelete
     eg = quick_eg(api)
