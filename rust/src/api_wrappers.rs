@@ -36,7 +36,7 @@ macro_rules! wrap_entity_handlers {
             _context: &Context,
         ) -> Box<Future<Item = $get_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
-            // No transaction for GET?
+            // No transaction for GET
             let ret = match (|| {
                 let entity_id = FatCatId::from_str(&id)?;
                 let hide_flags = match hide {
@@ -88,6 +88,7 @@ macro_rules! wrap_entity_handlers {
                     Some(FatCatId::from_str(&s)?)
                 } else { None };
                 let edit_context = make_edit_context(&conn, editgroup_id, false)?;
+                edit_context.check(&conn)?;
                 entity.db_create(&conn, &edit_context)?.into_model()
             }) {
                 Ok(edit) =>
@@ -168,6 +169,7 @@ macro_rules! wrap_entity_handlers {
                     Some(FatCatId::from_str(&s)?)
                 } else { None };
                 let edit_context = make_edit_context(&conn, editgroup_id, false)?;
+                edit_context.check(&conn)?;
                 entity.db_update(&conn, &edit_context, entity_id)?.into_model()
             }) {
                 Ok(edit) =>
@@ -213,6 +215,7 @@ macro_rules! wrap_entity_handlers {
                     None => None,
                 };
                 let edit_context = make_edit_context(&conn, editgroup_id, false)?;
+                edit_context.check(&conn)?;
                 $model::db_delete(&conn, &edit_context, entity_id)?.into_model()
             }) {
                 Ok(edit) =>

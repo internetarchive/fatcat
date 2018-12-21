@@ -426,3 +426,21 @@ def test_required_entity_fields(api):
         assert 400 <= e.status < 500
         assert "title" in e.body
 
+def test_revert_current_status(api):
+
+    c1 = CreatorEntity(display_name="test updates")
+
+    # create
+    eg = quick_eg(api)
+    c1 = api.get_creator(api.create_creator(c1, editgroup=eg.id).ident)
+    api.accept_editgroup(eg.id)
+
+    # try to "revert" to current revision
+    eg = quick_eg(api)
+    c1_revert = CreatorEntity(revision=c1.revision)
+    try:
+        api.update_creator(c1.ident, c1_revert, editgroup=eg.id)
+        assert False
+    except fatcat_client.rest.ApiException as e:
+        assert 400 <= e.status < 500
+        assert "current" in e.body

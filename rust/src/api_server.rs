@@ -24,6 +24,7 @@ macro_rules! entity_batch_handler {
         ) -> Result<Vec<EntityEdit>> {
 
             let edit_context = make_edit_context(conn, editgroup_id, autoaccept)?;
+            edit_context.check(&conn)?;
             let model_list: Vec<&models::$model> = entity_list.iter().map(|e| e).collect();
             let edits = $model::db_create_batch(conn, &edit_context, model_list.as_slice())?;
 

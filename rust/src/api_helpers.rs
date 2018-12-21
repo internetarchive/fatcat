@@ -21,6 +21,22 @@ pub struct EditContext {
     pub autoaccept: bool,
 }
 
+impl EditContext {
+
+    /// This function should always be run within a transaction
+    pub fn check(&self, conn: &DbConn) -> Result<()> {
+        let count: i64 = changelog::table
+            .filter(changelog::editgroup_id.eq(&self.editgroup_id.to_uuid()))
+            .count()
+            .get_result(conn)?;
+        if count > 0 {
+            return Err(ErrorKind::EditgroupAlreadyAccepted(self.editgroup_id.to_string()).into());
+        }
+        return Ok(());
+    }
+}
+
+
 #[derive(Clone, Copy, PartialEq)]
 pub struct ExpandFlags {
     pub files: bool,
@@ -202,6 +218,7 @@ pub fn get_or_create_editgroup(editor_id: Uuid, conn: &DbConn) -> Result<Uuid> {
 pub fn accept_editgroup(editgroup_id: FatCatId, conn: &DbConn) -> Result<ChangelogRow> {
     // check that we haven't accepted already (in changelog)
     // NB: could leave this to a UNIQUE constraint
+    // TODO: redundant with check_edit_context
     let count: i64 = changelog::table
         .filter(changelog::editgroup_id.eq(editgroup_id.to_uuid()))
         .count()

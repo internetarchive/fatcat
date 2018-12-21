@@ -40,6 +40,31 @@ def test_multiple_edits_same_group(api):
     api.accept_editgroup(eg.id)
 
 
+def test_edit_after_accept(api):
+
+    c1 = CreatorEntity(display_name="test updates")
+
+    # create
+    eg = quick_eg(api)
+    c1 = api.get_creator(api.create_creator(c1, editgroup=eg.id).ident)
+    api.accept_editgroup(eg.id)
+
+    # should be unable to create an edit on an old editgroup
+    c2 = CreatorEntity(display_name="left")
+    try:
+        api.create_creator(c2, editgroup=eg.id)
+        assert False
+    except fatcat_client.rest.ApiException as e:
+        assert 400 <= e.status < 500
+        # TODO: need better message
+        #assert "accepted" in e.body
+
+    # cleanup
+    eg = quick_eg(api)
+    api.delete_creator(c1.ident)
+    api.accept_editgroup(eg.id)
+
+
 def test_edit_deletion(api):
 
     c1 = CreatorEntity(display_name="test edit updates")
@@ -88,6 +113,32 @@ def test_delete_accepted_edit(api):
     api.accept_editgroup(eg.id)
 
     # try to delete
-    with pytest.raises(fatcat_client.rest.ApiException):
+    try:
         api.delete_creator_edit(edit.edit_id)
+        assert False
+    except fatcat_client.rest.ApiException as e:
+        assert 400 <= e.status < 500
+        assert "accepted" in e.body
+
+
+def test_wip_revision(api):
+
+    c1 = CreatorEntity(display_name="test edit nugget")
+
+    # fetch revision before accepting
+    eg = quick_eg(api)
+    c1 = api.get_creator(api.create_creator(c1, editgroup=eg.id).ident)
+    rev = api.get_creator_revision(c1.revision)
+    assert "nugget" in rev.display_name
+    assert rev.state is None
+    assert rev.ident is None
+    assert rev.revision == c1.revision
+
+    # fetch revision after accepting
+    api.accept_editgroup(eg.id)
+    rev = api.get_creator_revision(c1.revision)
+    assert "nugget" in rev.display_name
+    assert rev.state is None
+    assert rev.ident is None
+    assert rev.revision == c1.revision
 
