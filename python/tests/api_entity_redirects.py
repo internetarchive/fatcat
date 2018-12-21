@@ -295,6 +295,10 @@ def test_recursive_redirects_entity(api):
         api.accept_editgroup(eg.id)
     res = api.get_creator(c2.ident)
     assert res.display_name == "test two"
+    with pytest.raises(fatcat_client.rest.ApiException):
+        res = api.lookup_creator(orcid=o3)
+    res = api.lookup_creator(orcid=o2)
+    assert res.ident == c2.ident
 
     # redirect first to third: should be an error at merge time
     c1_redirect = CreatorEntity(redirect=c3.ident)
@@ -316,6 +320,8 @@ def test_recursive_redirects_entity(api):
     res = api.get_creator(c3.ident)
     assert res.display_name == "test two updated"
     assert res.state == "redirect"
+    res = api.lookup_creator(orcid=o2)
+    assert res.ident == c2.ident
 
     # delete second; check that third updated
     eg = quick_eg(api)
@@ -326,6 +332,8 @@ def test_recursive_redirects_entity(api):
     res = api.get_creator(c3.ident)
     assert res.state == "redirect"
     assert res.display_name is None
+    with pytest.raises(fatcat_client.rest.ApiException):
+        res = api.lookup_creator(orcid=o2)
 
     # undelete second; check that third updated
     eg = quick_eg(api)
@@ -362,6 +370,8 @@ def test_recursive_redirects_entity(api):
     res = api.get_creator(c3.ident)
     assert res.state == "redirect"
     assert res.display_name is None
+    with pytest.raises(fatcat_client.rest.ApiException):
+        res = api.lookup_creator(orcid=o2)
     eg = quick_eg(api)
     api.delete_creator(c3.ident, editgroup=eg.id)
     api.accept_editgroup(eg.id)
@@ -376,3 +386,17 @@ def test_recursive_redirects_entity(api):
     # c3 already deleted
     api.accept_editgroup(eg.id)
 
+def test_self_redirect(api):
+
+    c1 = CreatorEntity(display_name="test self-redirect")
+
+    # create creator
+    eg = quick_eg(api)
+    c1 = api.get_creator(api.create_creator(c1, editgroup=eg.id).ident)
+    api.accept_editgroup(eg.id)
+
+    # redirect first to itself; should error on PUT
+    c1_redirect = CreatorEntity(redirect=c1.ident)
+    eg = quick_eg(api)
+    with pytest.raises(fatcat_client.rest.ApiException):
+        merge_edit = api.update_creator(c1.ident, c1_redirect, editgroup=eg.id)

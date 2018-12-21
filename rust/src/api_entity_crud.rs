@@ -207,6 +207,11 @@ macro_rules! generic_db_update {
             }
 
             if self.state.is_none() {
+
+                if Some(ident.to_string()) == self.redirect {
+                    return Err(ErrorKind::OtherBadRequest(
+                        "tried to redirect entity to itself".to_string()).into());
+                }
                 // special case: redirect to another entity
                 if let Some(ref redirect_ident) = self.redirect {
                     let redirect_ident = FatCatId::from_str(&redirect_ident)?.to_uuid();
@@ -458,8 +463,10 @@ macro_rules! generic_db_accept_edits_batch {
                 .count()
                 .get_result(conn)?;
             if forward_recursive_redirects != 0 {
-                // TODO: error type
-                bail!("forward recurisve redirects")
+                return Err(ErrorKind::OtherBadRequest(
+                    "one or more (forward) recurisve redirects".to_string(),
+                )
+                .into());
             }
 
             // assert that we aren't redirecting while something already redirects to us
@@ -474,8 +481,10 @@ macro_rules! generic_db_accept_edits_batch {
                 .count()
                 .get_result(conn)?;
             if backward_recursive_redirects != 0 {
-                // TODO: error type
-                bail!("backward recursive redirects")
+                return Err(ErrorKind::OtherBadRequest(
+                    "one or more (backward) recurisve redirects".to_string(),
+                )
+                .into());
             }
 
             // update any/all redirects for updated entities
