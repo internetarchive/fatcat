@@ -82,6 +82,7 @@ CREATE TABLE creator_ident (
 );
 
 CREATE INDEX creator_ident_rev_idx ON creator_ident(rev_id);
+CREATE INDEX creator_ident_redirect_idx ON creator_ident(redirect_id);
 
 CREATE TABLE creator_edit (
     id                  BIGSERIAL PRIMARY KEY,
@@ -122,6 +123,7 @@ CREATE TABLE container_ident (
 );
 
 CREATE INDEX container_ident_rev_idx ON container_ident(rev_id);
+CREATE INDEX container_ident_redirect_idx ON container_ident(redirect_id);
 
 CREATE TABLE container_edit (
     id                  BIGSERIAL PRIMARY KEY,
@@ -169,6 +171,7 @@ CREATE TABLE file_ident (
 );
 
 CREATE INDEX file_ident_rev_idx ON file_ident(rev_id);
+CREATE INDEX file_ident_redirect_idx ON file_ident(redirect_id);
 
 CREATE TABLE file_edit (
     id                  BIGSERIAL PRIMARY KEY,
@@ -236,6 +239,7 @@ CREATE TABLE release_ident (
 );
 
 CREATE INDEX release_ident_rev_idx ON release_ident(rev_id);
+CREATE INDEX release_ident_redirect_idx ON release_ident(redirect_id);
 
 CREATE TABLE release_edit (
     id                  BIGSERIAL PRIMARY KEY,
@@ -263,6 +267,7 @@ CREATE TABLE work_ident (
 );
 
 CREATE INDEX work_ident_rev_idx ON work_ident(rev_id);
+CREATE INDEX work_ident_redirect_idx ON work_ident(redirect_id);
 
 CREATE TABLE work_edit (
     id                  BIGSERIAL PRIMARY KEY,
