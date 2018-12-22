@@ -49,7 +49,11 @@ pub mod errors {
             }
             MalformedExternalId(id: String) {
                 description("external identifier doesn't match required pattern")
-                display("external identifier doesn't match required pattern")
+                display("external identifier doesn't match required pattern: {}", id)
+            }
+            MalformedChecksum(hash: String) {
+                description("checksum doesn't match required pattern (hex encoding)")
+                display("checksum doesn't match required pattern (hex encoding): {}", hash)
             }
             NotInControlledVocabulary(word: String) {
                 description("word or type not correct for controlled vocabulary")

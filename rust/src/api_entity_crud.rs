@@ -885,6 +885,19 @@ impl EntityCrud for FileEntity {
     }
 
     fn db_insert_revs(conn: &DbConn, models: &[&Self]) -> Result<Vec<Uuid>> {
+        // first verify hash syntax
+        for entity in models {
+            if let Some(ref hash) = entity.md5 {
+                check_md5(hash)?;
+            }
+            if let Some(ref hash) = entity.sha1 {
+                check_sha1(hash)?;
+            }
+            if let Some(ref hash) = entity.sha256 {
+                check_sha256(hash)?;
+            }
+        }
+
         let rev_ids: Vec<Uuid> = insert_into(file_rev::table)
             .values(
                 models

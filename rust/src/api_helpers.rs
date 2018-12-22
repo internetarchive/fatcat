@@ -391,6 +391,78 @@ fn test_check_orcid() {
     assert!(check_orcid("0x23-4567-3456-6780").is_err());
 }
 
+pub fn check_md5(raw: &str) -> Result<()> {
+    lazy_static! {
+        static ref RE: Regex = Regex::new(r"^[a-f0-9]{32}$").unwrap();
+    }
+    if RE.is_match(raw) {
+        Ok(())
+    } else {
+        Err(ErrorKind::MalformedChecksum(format!(
+            "not a valid MD5: '{}' (expected lower-case hex, eg, '1b39813549077b2347c0f370c3864b40')",
+            raw
+        ))
+        .into())
+    }
+}
+
+#[test]
+fn test_check_md5() {
+    assert!(check_md5("1b39813549077b2347c0f370c3864b40").is_ok());
+    assert!(check_md5("1g39813549077b2347c0f370c3864b40").is_err());
+    assert!(check_md5("1B39813549077B2347C0F370c3864b40").is_err());
+    assert!(check_md5("1b39813549077b2347c0f370c3864b4").is_err());
+    assert!(check_md5("1b39813549077b2347c0f370c3864b411").is_err());
+}
+
+pub fn check_sha1(raw: &str) -> Result<()> {
+    lazy_static! {
+        static ref RE: Regex = Regex::new(r"^[a-f0-9]{40}$").unwrap();
+    }
+    if RE.is_match(raw) {
+        Ok(())
+    } else {
+        Err(ErrorKind::MalformedChecksum(format!(
+            "not a valid SHA-1: '{}' (expected lower-case hex, eg, 'e9dd75237c94b209dc3ccd52722de6931a310ba3')",
+            raw
+        ))
+        .into())
+    }
+}
+
+#[test]
+fn test_check_sha1() {
+    assert!(check_sha1("e9dd75237c94b209dc3ccd52722de6931a310ba3").is_ok());
+    assert!(check_sha1("g9dd75237c94b209dc3ccd52722de6931a310ba3").is_err());
+    assert!(check_sha1("e9DD75237C94B209DC3CCD52722de6931a310ba3").is_err());
+    assert!(check_sha1("e9dd75237c94b209dc3ccd52722de6931a310ba").is_err());
+    assert!(check_sha1("e9dd75237c94b209dc3ccd52722de6931a310ba33").is_err());
+}
+
+pub fn check_sha256(raw: &str) -> Result<()> {
+    lazy_static! {
+        static ref RE: Regex = Regex::new(r"^[a-f0-9]{64}$").unwrap();
+    }
+    if RE.is_match(raw) {
+        Ok(())
+    } else {
+        Err(ErrorKind::MalformedChecksum(format!(
+            "not a valid SHA-256: '{}' (expected lower-case hex, eg, 'cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452')",
+            raw
+        ))
+        .into())
+    }
+}
+
+#[test]
+fn test_check_sha256() {
+    assert!(check_sha256("cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452").is_ok());
+    assert!(check_sha256("gb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452").is_err());
+    assert!(check_sha256("UB1C378F464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452").is_err());
+    assert!(check_sha256("cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e45").is_err());
+    assert!(check_sha256("cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e4522").is_err());
+}
+
 pub fn check_release_type(raw: &str) -> Result<()> {
     let valid_types = vec![
         // Citation Style Language official types
@@ -499,4 +571,3 @@ fn test_check_contrib_role() {
 
 // TODO: make the above checks "more correct"
 // TODO: check ISBN-13
-// TODO: check hashes (SHA-1, etc)

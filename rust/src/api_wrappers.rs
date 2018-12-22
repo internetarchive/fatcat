@@ -102,6 +102,8 @@ macro_rules! wrap_entity_handlers {
                         message: ErrorKind::InvalidFatcatId(e).to_string() }),
                 Err(Error(ErrorKind::MalformedExternalId(e), _)) =>
                     $post_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::MalformedChecksum(e), _)) =>
+                    $post_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::NotInControlledVocabulary(e), _)) =>
                     $post_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::EditgroupAlreadyAccepted(e), _)) =>
@@ -140,6 +142,8 @@ macro_rules! wrap_entity_handlers {
                     $post_batch_resp::BadRequest(ErrorResponse {
                         message: ErrorKind::InvalidFatcatId(e).to_string() }),
                 Err(Error(ErrorKind::MalformedExternalId(e), _)) =>
+                    $post_batch_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::MalformedChecksum(e), _)) =>
                     $post_batch_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::NotInControlledVocabulary(e), _)) =>
                     $post_batch_resp::BadRequest(ErrorResponse { message: e.to_string() }),
@@ -184,6 +188,8 @@ macro_rules! wrap_entity_handlers {
                     $update_resp::BadRequest(ErrorResponse {
                         message: ErrorKind::InvalidFatcatId(e).to_string() }),
                 Err(Error(ErrorKind::MalformedExternalId(e), _)) =>
+                    $update_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::MalformedChecksum(e), _)) =>
                     $update_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::NotInControlledVocabulary(e), _)) =>
                     $update_resp::BadRequest(ErrorResponse { message: e.to_string() }),
@@ -430,6 +436,8 @@ macro_rules! wrap_lookup_handler {
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
                     $get_resp::NotFound(ErrorResponse { message: format!("Not found: {:?} / {:?}", $idname, wikidata_qid) }),
                 Err(Error(ErrorKind::MalformedExternalId(e), _)) =>
+                    $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::MalformedChecksum(e), _)) =>
                     $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::MissingOrMultipleExternalId(e), _)) => {
                     $get_resp::BadRequest(ErrorResponse { message: e.to_string(), }) },
@@ -702,6 +710,11 @@ impl Api for Server {
                     })
                 }
                 Err(Error(ErrorKind::MalformedExternalId(e), _)) => {
+                    LookupFileResponse::BadRequest(ErrorResponse {
+                        message: e.to_string(),
+                    })
+                }
+                Err(Error(ErrorKind::MalformedChecksum(e), _)) => {
                     LookupFileResponse::BadRequest(ErrorResponse {
                         message: e.to_string(),
                     })

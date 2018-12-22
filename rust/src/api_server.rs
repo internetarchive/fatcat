@@ -178,24 +178,33 @@ impl Server {
         conn: &DbConn,
     ) -> Result<FileEntity> {
         let (ident, rev): (FileIdentRow, FileRevRow) = match (md5, sha1, sha256) {
-            (Some(md5), None, None) => file_ident::table
-                .inner_join(file_rev::table)
-                .filter(file_rev::md5.eq(md5))
-                .filter(file_ident::is_live.eq(true))
-                .filter(file_ident::redirect_id.is_null())
-                .first(conn)?,
-            (None, Some(sha1), None) => file_ident::table
-                .inner_join(file_rev::table)
-                .filter(file_rev::sha1.eq(sha1))
-                .filter(file_ident::is_live.eq(true))
-                .filter(file_ident::redirect_id.is_null())
-                .first(conn)?,
-            (None, None, Some(sha256)) => file_ident::table
-                .inner_join(file_rev::table)
-                .filter(file_rev::sha256.eq(sha256))
-                .filter(file_ident::is_live.eq(true))
-                .filter(file_ident::redirect_id.is_null())
-                .first(conn)?,
+            (Some(md5), None, None) => {
+                check_md5(md5)?;
+                file_ident::table
+                    .inner_join(file_rev::table)
+                    .filter(file_rev::md5.eq(md5))
+                    .filter(file_ident::is_live.eq(true))
+                    .filter(file_ident::redirect_id.is_null())
+                    .first(conn)?
+            },
+            (None, Some(sha1), None) => {
+                check_sha1(sha1)?;
+                file_ident::table
+                    .inner_join(file_rev::table)
+                    .filter(file_rev::sha1.eq(sha1))
+                    .filter(file_ident::is_live.eq(true))
+                    .filter(file_ident::redirect_id.is_null())
+                    .first(conn)?
+            },
+            (None, None, Some(sha256)) => {
+                check_sha256(sha256)?;
+                file_ident::table
+                    .inner_join(file_rev::table)
+                    .filter(file_rev::sha256.eq(sha256))
+                    .filter(file_ident::is_live.eq(true))
+                    .filter(file_ident::redirect_id.is_null())
+                    .first(conn)?
+            },
             _ => {
                 return Err(ErrorKind::MissingOrMultipleExternalId("in lookup".to_string()).into());
             }

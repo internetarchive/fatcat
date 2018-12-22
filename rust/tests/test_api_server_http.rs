@@ -267,11 +267,20 @@ fn test_lookups() {
 
     check_http_response(
         request::get(
-            "http://localhost:9411/v0/file/lookup?md5=7d97e98f8af710c7e7fe703abc8f639e0ee507c4",
+            "http://localhost:9411/v0/file/lookup?md5=00000000000ab9fdc2a128f962faebff",
             headers.clone(),
             &router,
         ),
         status::NotFound,
+        None,
+    );
+    check_http_response(
+        request::get(
+            "http://localhost:9411/v0/file/lookup?md5=00000000000ab9fdc2a128f962faebfff",
+            headers.clone(),
+            &router,
+        ),
+        status::BadRequest,
         None,
     );
     check_http_response(
@@ -304,7 +313,7 @@ fn test_lookups() {
 
     check_http_response(
         request::get(
-            "http://localhost:9411/v0/file/lookup?sha1=7d97e98f8af710c7e7fe703abc8f000000000000",
+            "http://localhost:9411/v0/file/lookup?sha1=00000000000000c7e7fe703abc8f639e0ee507c4",
             headers.clone(),
             &router,
         ),
