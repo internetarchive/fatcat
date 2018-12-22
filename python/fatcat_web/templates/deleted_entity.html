@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block fullbody %}
+
+<div class="ui stackable mobile reversed grid centered">
+<div class="one wide column"></div>
+<div class="fifteen wide column">
+  <h1 class="ui header">Deleted Entity
+  <div class="sub header"><code>{{ entity_type }}{{ entity.ident }}</code></div></h1>
+</div>
+</div>
+
+<div class="ui stackable mobile reversed grid centered">
+<div class="one wide column"></div>
+<div class="ten wide column" style="font-size: 16px;">
+
+<p>There used to be an entity here, but is has been deleted!
+
+<p>You can view history or revert the change using links to the right.
+
+<br>
+
+</div>
+<div class="five wide column">
+<div class="ui segment top attached">
+
+<b>Entity Type:</b> {{ entity_type }}
+</div><div class="ui segment attached">
+
+<b>Fatcat Bits</b>
+<p>State is "{{ entity.state }}". Revision:
+<br><small><code>{{ entity.revision }}</code></small>
+<br><a href="https://api.{{ config.FATCAT_DOMAIN }}/v0/{{ entity_type }}/{{ entity.ident }}">As JSON object via API</a>
+
+</div>
+<div class="two ui buttons bottom attached">
+  <a href="/entity/{{ entity.ident }}/edit" class="ui blue button">Edit Metadata</a>
+  <a href="/entity/{{ entity.ident }}/history" class="ui button">View History</a>
+</div>
+
+</div>
+</div>
+
+{% endblock %}

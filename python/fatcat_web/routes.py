@@ -80,6 +80,10 @@ def container_view(ident):
         entity = api.get_container(ident)
     except ApiException as ae:
         abort(ae.status)
+    if entity.state == "redirect":
+        return redirect('/container/{}'.format(entity.redirect))
+    if entity.state == "deleted":
+        return render_template('deleted_entity.html', entity=entity)
     return render_template('container_view.html', container=entity)
 
 @app.route('/creator/<ident>/history', methods=['GET'])
@@ -124,6 +128,10 @@ def creator_view(ident):
         releases = api.get_creator_releases(ident)
     except ApiException as ae:
         abort(ae.status)
+    if entity.state == "redirect":
+        return redirect('/creator/{}'.format(entity.redirect))
+    if entity.state == "deleted":
+        return render_template('deleted_entity.html', entity=entity)
     return render_template('creator_view.html', creator=entity, releases=releases)
 
 @app.route('/file/<ident>/history', methods=['GET'])
@@ -167,6 +175,10 @@ def file_view(ident):
         entity = api.get_file(ident)
     except ApiException as ae:
         abort(ae.status)
+    if entity.state == "redirect":
+        return redirect('/file/{}'.format(entity.redirect))
+    if entity.state == "deleted":
+        return render_template('deleted_entity.html', entity=entity)
     return render_template('file_view.html', file=entity)
 
 @app.route('/release/lookup', methods=['GET'])
@@ -229,6 +241,10 @@ def release_view(ident):
             container = api.get_container(entity.container_id)
     except ApiException as ae:
         abort(ae.status)
+    if entity.state == "redirect":
+        return redirect('/release/{}'.format(entity.redirect))
+    if entity.state == "deleted":
+        return render_template('deleted_entity.html', entity=entity)
     authors = [c for c in entity.contribs if c.role in ('author', None)]
     authors = sorted(authors, key=lambda c: c.index)
     for fe in files:
@@ -273,6 +289,10 @@ def work_view(ident):
         releases = api.get_work_releases(ident)
     except ApiException as ae:
         abort(ae.status)
+    if entity.state == "redirect":
+        return redirect('/work/{}'.format(entity.redirect))
+    if entity.state == "deleted":
+        return render_template('deleted_entity.html', entity=entity)
     return render_template('work_view.html', work=entity, releases=releases)
 
 @app.route('/editgroup/current', methods=['GET'])
