@@ -1018,9 +1018,12 @@ impl EntityCrud for ReleaseEntity {
         if self.state == Some("deleted".to_string()) {
             return Ok(())
         }
-        if expand.files {
+        // TODO: should clarify behavior here. Would hit this path, eg, expanding files on a
+        // release revision (not ident). Should we fail (Bad Request), or silently just not include
+        // any files?
+        if expand.files && self.ident.is_some() {
             let ident = match &self.ident {
-                None => bail!("Can't expand files on a non-concrete entity"),
+                None => bail!("Can't expand files on a non-concrete entity"), // redundant with above is_some()
                 Some(ident) => match &self.redirect {
                     // If we're a redirect, then expand for the *target* identifier, not *our*
                     // identifier. Tricky!
