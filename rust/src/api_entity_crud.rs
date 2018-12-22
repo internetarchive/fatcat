@@ -1021,7 +1021,12 @@ impl EntityCrud for ReleaseEntity {
         if expand.files {
             let ident = match &self.ident {
                 None => bail!("Can't expand files on a non-concrete entity"),
-                Some(s) => FatCatId::from_str(&s)?,
+                Some(ident) => match &self.redirect {
+                    // If we're a redirect, then expand for the *target* identifier, not *our*
+                    // identifier. Tricky!
+                    None => FatCatId::from_str(&ident)?,
+                    Some(redir) => FatCatId::from_str(&redir)?,
+                },
             };
             self.files = Some(get_release_files(ident, HideFlags::none(), conn)?);
         }
