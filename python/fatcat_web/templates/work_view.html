@@ -34,7 +34,9 @@ still reference the same underlying "work".
 {% if releases != [] %}
 <ul>
   {% for release in releases %}
-  <li>"{{ release.title }}", a {{ release.release_type }} published {{ release.release_date }} as <code>{{ release.release_status }}</code>.
+  <li>"{{ release.title }}", a {{ release.release_type }} published
+    {% if release.release_year != None %}in {{ release.release_year }}{% endif %}
+    as <code>{{ release.release_status or "(unknown)" }}</code>.
     <br><a href="/release/{{ release.ident }}"><code>{{ release.ident }}</code></a>
   {% endfor %}
 </ul>

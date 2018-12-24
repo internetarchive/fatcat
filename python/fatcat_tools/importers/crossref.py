@@ -250,16 +250,18 @@ class CrossrefImporter(FatcatImporter):
             return None
 
         # release date parsing is amazingly complex
-        release_date = obj['issued']['date-parts'][0]
-        if not release_date or not release_date[0]:
+        raw_date = obj['issued']['date-parts'][0]
+        if not raw_date or not raw_date[0]:
             # got some NoneType, even though at least year is supposed to be set
+            release_year = None
             release_date = None
-        elif len(release_date) == 3:
-            release_date = datetime.date(year=release_date[0], month=release_date[1], day=release_date[2])
+        elif len(raw_date) == 3:
+            release_year = raw_date[0]
+            release_date = datetime.date(year=raw_date[0], month=raw_date[1], day=raw_date[2])
         else:
-            # only the year is actually required; mangle to first day for date
-            # (TODO: something better?)
-            release_date = datetime.date(year=release_date[0], month=1, day=1)
+            # sometimes only the year is included, not the full date
+            release_year = raw_date[0]
+            release_date = None
 
         re = fatcat_client.ReleaseEntity(
             work_id=None,
@@ -277,6 +279,7 @@ class CrossrefImporter(FatcatImporter):
             pmcid=extids['pmcid'],
             wikidata_qid=extids['wikidata_qid'],
             release_date=release_date,
+            release_year=release_year,
             issue=obj.get('issue'),
             volume=obj.get('volume'),
             pages=obj.get('page'),

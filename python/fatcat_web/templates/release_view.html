@@ -22,7 +22,11 @@
 <div class="one wide column"></div>
 <div class="ten wide column" style="font-size: 16px;">
 
-{% if release.release_date != None %}<p><b>Date (published):</b> {{ release.release_date }}{% endif %}
+{% if release.release_date != None %}
+  <p><b>Date (published):</b> {{ release.release_date }}
+{% elif release.release_year != None %}
+  <p><b>Date (published):</b> {{ release.release_year }}
+{% endif %}
 {% if release.pmid != None %}
 <br><b>PubMed:</b> <a href="https://www.ncbi.nlm.nih.gov/pubmed/{{ release.pmid }}">&nbsp;<code>{{ release.pmid }}</code></a>
 {% endif %}

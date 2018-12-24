@@ -66,9 +66,10 @@ class GrobidMetadataImporter(FatcatImporter):
             refs.append(ref)
 
         release_date = None
+        release_year = None
         if obj.get('date'):
-            # TODO: only returns year, ever? how to handle?
-            release_date = datetime.datetime(year=int(obj['date'][:4]), month=1, day=1).date()
+            # only returns year, ever?
+            release_year = int(obj['date'][:4])
 
         if obj.get('doi'):
             extra['doi'] = obj['doi']
@@ -88,6 +89,7 @@ class GrobidMetadataImporter(FatcatImporter):
             title=obj['title'].strip(),
             release_type="article-journal",
             release_date=release_date,
+            release_year=release_year,
             contribs=contribs,
             refs=refs,
             publisher=obj['journal'].get('publisher'),

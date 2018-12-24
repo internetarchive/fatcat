@@ -186,7 +186,7 @@ impl Server {
                     .filter(file_ident::is_live.eq(true))
                     .filter(file_ident::redirect_id.is_null())
                     .first(conn)?
-            },
+            }
             (None, Some(sha1), None) => {
                 check_sha1(sha1)?;
                 file_ident::table
@@ -195,7 +195,7 @@ impl Server {
                     .filter(file_ident::is_live.eq(true))
                     .filter(file_ident::redirect_id.is_null())
                     .first(conn)?
-            },
+            }
             (None, None, Some(sha256)) => {
                 check_sha256(sha256)?;
                 file_ident::table
@@ -204,7 +204,7 @@ impl Server {
                     .filter(file_ident::is_live.eq(true))
                     .filter(file_ident::redirect_id.is_null())
                     .first(conn)?
-            },
+            }
             _ => {
                 return Err(ErrorKind::MissingOrMultipleExternalId("in lookup".to_string()).into());
             }

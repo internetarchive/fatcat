@@ -22,7 +22,6 @@ pub struct EditContext {
 }
 
 impl EditContext {
-
     /// This function should always be run within a transaction
     pub fn check(&self, conn: &DbConn) -> Result<()> {
         let count: i64 = changelog::table
@@ -35,7 +34,6 @@ impl EditContext {
         return Ok(());
     }
 }
-
 
 #[derive(Clone, Copy, PartialEq)]
 pub struct ExpandFlags {
@@ -456,11 +454,21 @@ pub fn check_sha256(raw: &str) -> Result<()> {
 
 #[test]
 fn test_check_sha256() {
-    assert!(check_sha256("cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452").is_ok());
-    assert!(check_sha256("gb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452").is_err());
-    assert!(check_sha256("UB1C378F464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452").is_err());
-    assert!(check_sha256("cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e45").is_err());
-    assert!(check_sha256("cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e4522").is_err());
+    assert!(
+        check_sha256("cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452").is_ok()
+    );
+    assert!(
+        check_sha256("gb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452").is_err()
+    );
+    assert!(
+        check_sha256("UB1C378F464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452").is_err()
+    );
+    assert!(
+        check_sha256("cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e45").is_err()
+    );
+    assert!(
+        check_sha256("cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e4522").is_err()
+    );
 }
 
 pub fn check_release_type(raw: &str) -> Result<()> {

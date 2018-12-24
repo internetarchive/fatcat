@@ -48,6 +48,10 @@ def release_to_elasticsearch(release):
     if release.release_date:
         # .isoformat() results in, eg, '2010-10-22' (YYYY-MM-DD)
         t['release_date'] = release.release_date.isoformat()
+        if release.release_year is None:
+            t['release_year'] = release.release_date.year
+    if release.release_year is not None:
+        t['release_year'] = release.release_year
 
     container = release.container
     container_is_kept = False

@@ -166,7 +166,9 @@ macro_rules! generic_db_create_batch {
         ) -> Result<Vec<Self::EditRow>> {
             if models.iter().any(|m| m.redirect.is_some()) {
                 return Err(ErrorKind::OtherBadRequest(
-                    "can't create an entity that redirects from the start".to_string()).into());
+                    "can't create an entity that redirects from the start".to_string(),
+                )
+                .into());
             }
             let rev_ids: Vec<Uuid> = Self::db_insert_revs(conn, models)?;
             let ident_ids: Vec<Uuid> = insert_into($ident_table::table)
@@ -658,7 +660,9 @@ impl EntityCrud for ContainerEntity {
 
         if models.iter().any(|m| m.name.is_none()) {
             return Err(ErrorKind::OtherBadRequest(
-                "name is required for all Container entities".to_string()).into());
+                "name is required for all Container entities".to_string(),
+            )
+            .into());
         }
 
         let rev_ids: Vec<Uuid> = insert_into(container_rev::table)
@@ -767,14 +771,16 @@ impl EntityCrud for CreatorEntity {
 
         if models.iter().any(|m| m.display_name.is_none()) {
             return Err(ErrorKind::OtherBadRequest(
-                "display_name is required for all Creator entities".to_string()).into());
+                "display_name is required for all Creator entities".to_string(),
+            )
+            .into());
         }
 
         let rev_ids: Vec<Uuid> = insert_into(creator_rev::table)
             .values(
                 models
                     .iter()
-                    .map(|model|CreatorRevNewRow {
+                    .map(|model| CreatorRevNewRow {
                         display_name: model.display_name.clone().unwrap(), // unwrapped checked above
                         given_name: model.given_name.clone(),
                         surname: model.surname.clone(),
@@ -996,6 +1002,7 @@ impl EntityCrud for ReleaseEntity {
             release_type: None,
             release_status: None,
             release_date: None,
+            release_year: None,
             doi: None,
             pmid: None,
             pmcid: None,
@@ -1029,7 +1036,7 @@ impl EntityCrud for ReleaseEntity {
     fn db_expand(&mut self, conn: &DbConn, expand: ExpandFlags) -> Result<()> {
         // Don't expand deleted entities
         if self.state == Some("deleted".to_string()) {
-            return Ok(())
+            return Ok(());
         }
         // TODO: should clarify behavior here. Would hit this path, eg, expanding files on a
         // release revision (not ident). Should we fail (Bad Request), or silently just not include
@@ -1062,7 +1069,8 @@ impl EntityCrud for ReleaseEntity {
                         contrib.creator = Some(CreatorEntity::db_get(
                             conn,
                             FatCatId::from_str(creator_id)?,
-                            HideFlags::none())?);
+                            HideFlags::none(),
+                        )?);
                     }
                 }
             }
@@ -1073,7 +1081,9 @@ impl EntityCrud for ReleaseEntity {
     fn db_create(&self, conn: &DbConn, edit_context: &EditContext) -> Result<Self::EditRow> {
         if self.redirect.is_some() {
             return Err(ErrorKind::OtherBadRequest(
-                "can't create an entity that redirects from the start".to_string()).into());
+                "can't create an entity that redirects from the start".to_string(),
+            )
+            .into());
         }
         let mut edits = Self::db_create_batch(conn, edit_context, &[self])?;
         // probably a more elegant way to destroy the vec and take first element
@@ -1089,7 +1099,9 @@ impl EntityCrud for ReleaseEntity {
         // of the release entities passed (at least in the common case)
         if models.iter().any(|m| m.redirect.is_some()) {
             return Err(ErrorKind::OtherBadRequest(
-                "can't create an entity that redirects from the start".to_string()).into());
+                "can't create an entity that redirects from the start".to_string(),
+            )
+            .into());
         }
 
         // Generate the set of new work entities to insert (usually one for each release, but some
@@ -1252,6 +1264,7 @@ impl EntityCrud for ReleaseEntity {
             release_type: rev_row.release_type,
             release_status: rev_row.release_status,
             release_date: rev_row.release_date,
+            release_year: rev_row.release_year,
             doi: rev_row.doi,
             pmid: rev_row.pmid,
             pmcid: rev_row.pmcid,
@@ -1310,7 +1323,9 @@ impl EntityCrud for ReleaseEntity {
 
         if models.iter().any(|m| m.title.is_none()) {
             return Err(ErrorKind::OtherBadRequest(
-                "title is required for all Release entities".to_string()).into());
+                "title is required for all Release entities".to_string(),
+            )
+            .into());
         }
 
         let rev_ids: Vec<Uuid> = insert_into(release_rev::table)
@@ -1323,6 +1338,7 @@ impl EntityCrud for ReleaseEntity {
                     release_type: model.release_type.clone(),
                     release_status: model.release_status.clone(),
                     release_date: model.release_date,
+                    release_year: model.release_year,
                     doi: model.doi.clone(),
                     pmid: model.pmid.clone(),
                     pmcid: model.pmcid.clone(),

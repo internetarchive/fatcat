@@ -34,8 +34,9 @@
 <p>This creator has contributed to:
 <ul>
   {% for release in releases %}
-  <li>"{{ release.title }}", a {{ release.release_type }} published {{ release.release_date }}
-      {% if release.release_status != None %}(status: <code>{{ release.release_status }})</code>{% endif %}.
+  <li>"{{ release.title }}", a {{ release.release_type }}
+      {% if release.release_year != None %}published in {{ release.release_year }}{% endif %}
+      {% if release.release_status != None %}(status: <code>{{ release.release_status or "(unknown)" }})</code>{% endif %}.
     <br>Fatcat ID: <a href="/release/{{ release.ident }}"><code>{{ release.ident }}</code></a>
   {% endfor %}
 </ul>

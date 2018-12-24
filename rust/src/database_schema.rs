@@ -211,6 +211,7 @@ table! {
         release_type -> Nullable<Text>,
         release_status -> Nullable<Text>,
         release_date -> Nullable<Date>,
+        release_year -> Nullable<Int8>,
         doi -> Nullable<Text>,
         pmid -> Nullable<Text>,
         pmcid -> Nullable<Text>,

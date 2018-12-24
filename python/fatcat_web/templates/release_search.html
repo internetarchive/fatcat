@@ -31,8 +31,8 @@
   {% if paper.doi %}
   DOI: <a href="https://doi.org/{{paper.doi }}" style="color: green;">{{ paper.doi }}</a>
   - {{ paper.release_type }}
-    {% if paper.release_date %}
-    - {{ paper.release_date[:4] }}
+    {% if paper.release_year %}
+    - {{ paper.release_year }}
     {% endif %}
   <br>
   {% endif %}

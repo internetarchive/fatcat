@@ -586,6 +586,7 @@ fn test_post_release() {
             r#"{"title": "secret paper",
                 "release_type": "article-journal",
                 "release_date": "2000-01-02",
+                "release_year": 2000,
                 "doi": "10.1234/abcde.781231231239",
                 "pmid": "54321",
                 "pmcid": "PMC12345",
@@ -1223,6 +1224,81 @@ fn test_release_dates() {
             r#"{"title": "secret minimal paper",
                 "release_type": "article-journal",
                 "release_date": "2000-01-02"
+                }"#,
+            &router,
+        ),
+        status::Created,
+        None,
+    );
+
+    // Ok
+    check_http_response(
+        request::post(
+            "http://localhost:9411/v0/release",
+            headers.clone(),
+            r#"{"title": "secret minimal paper",
+                "release_type": "article-journal",
+                "release_year": 2000
+                }"#,
+            &router,
+        ),
+        status::Created,
+        None,
+    );
+
+    // Ok; ISO 8601
+    check_http_response(
+        request::post(
+            "http://localhost:9411/v0/release",
+            headers.clone(),
+            r#"{"title": "secret minimal paper",
+                "release_type": "article-journal",
+                "release_year": -100
+                }"#,
+            &router,
+        ),
+        status::Created,
+        None,
+    );
+    check_http_response(
+        request::post(
+            "http://localhost:9411/v0/release",
+            headers.clone(),
+            r#"{"title": "secret minimal paper",
+                "release_type": "article-journal",
+                "release_year": 0
+                }"#,
+            &router,
+        ),
+        status::Created,
+        None,
+    );
+
+    // Ok
+    check_http_response(
+        request::post(
+            "http://localhost:9411/v0/release",
+            headers.clone(),
+            r#"{"title": "secret minimal paper",
+                "release_type": "article-journal",
+                "release_date": "2000-01-02",
+                "release_year": 2000
+                }"#,
+            &router,
+        ),
+        status::Created,
+        None,
+    );
+
+    // Ok for now, but may be excluded later
+    check_http_response(
+        request::post(
+            "http://localhost:9411/v0/release",
+            headers.clone(),
+            r#"{"title": "secret minimal paper",
+                "release_type": "article-journal",
+                "release_date": "2000-01-02",
+                "release_year": 1999
                 }"#,
             &router,
         ),
