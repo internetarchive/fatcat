@@ -201,6 +201,10 @@ definitions:
       release_date:
         type: string
         format: date
+      release_year:
+        type: integer
+        example: 2014
+        format: int64
       doi:
         type: string
         #format: custom
