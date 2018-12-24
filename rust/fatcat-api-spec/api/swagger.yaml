@@ -2411,8 +2411,8 @@ paths:
         example: "\"id_example\".to_string()"
       - name: "expand"
         in: "query"
-        description: "List of sub-entities to expand in response. For releases, 'files'\
-          \ and 'container' are valid."
+        description: "List of sub-entities to expand in response. For releases, 'files',\
+          \ 'container', and 'creators' are valid."
         required: false
         type: "string"
         formatString: "{:?}"
@@ -4442,6 +4442,10 @@ definitions:
       doi:
         type: "string"
         example: "10.1234/abcde.789"
+      release_year:
+        type: "integer"
+        format: "int64"
+        example: 2014
       release_date:
         type: "string"
         format: "date"
@@ -4569,6 +4573,7 @@ definitions:
         mimetype: "application/xml+jats"
         lang: "en"
         content: "<jats:p>Some abstract thing goes here</jats:p>"
+      release_year: 2014
       release_type: "book"
       wikidata_qid: "wikidata_qid"
       pmid: "pmid"

@@ -51,6 +51,7 @@ class ReleaseEntity(object):
         'isbn13': 'str',
         'wikidata_qid': 'str',
         'doi': 'str',
+        'release_year': 'int',
         'release_date': 'date',
         'release_status': 'str',
         'release_type': 'str',
@@ -82,6 +83,7 @@ class ReleaseEntity(object):
         'isbn13': 'isbn13',
         'wikidata_qid': 'wikidata_qid',
         'doi': 'doi',
+        'release_year': 'release_year',
         'release_date': 'release_date',
         'release_status': 'release_status',
         'release_type': 'release_type',
@@ -98,7 +100,7 @@ class ReleaseEntity(object):
         'edit_extra': 'edit_extra'
     }
 
-    def __init__(self, abstracts=None, refs=None, contribs=None, language=None, publisher=None, pages=None, issue=None, volume=None, core_id=None, pmcid=None, pmid=None, isbn13=None, wikidata_qid=None, doi=None, release_date=None, release_status=None, release_type=None, container_id=None, files=None, container=None, work_id=None, title=None, state=None, ident=None, revision=None, redirect=None, extra=None, edit_extra=None):  # noqa: E501
+    def __init__(self, abstracts=None, refs=None, contribs=None, language=None, publisher=None, pages=None, issue=None, volume=None, core_id=None, pmcid=None, pmid=None, isbn13=None, wikidata_qid=None, doi=None, release_year=None, release_date=None, release_status=None, release_type=None, container_id=None, files=None, container=None, work_id=None, title=None, state=None, ident=None, revision=None, redirect=None, extra=None, edit_extra=None):  # noqa: E501
         """ReleaseEntity - a model defined in Swagger"""  # noqa: E501
 
         self._abstracts = None
@@ -115,6 +117,7 @@ class ReleaseEntity(object):
         self._isbn13 = None
         self._wikidata_qid = None
         self._doi = None
+        self._release_year = None
         self._release_date = None
         self._release_status = None
         self._release_type = None
@@ -159,6 +162,8 @@ class ReleaseEntity(object):
             self.wikidata_qid = wikidata_qid
         if doi is not None:
             self.doi = doi
+        if release_year is not None:
+            self.release_year = release_year
         if release_date is not None:
             self.release_date = release_date
         if release_status is not None:
@@ -483,6 +488,27 @@ class ReleaseEntity(object):
         """
 
         self._doi = doi
+
+    @property
+    def release_year(self):
+        """Gets the release_year of this ReleaseEntity.  # noqa: E501
+
+
+        :return: The release_year of this ReleaseEntity.  # noqa: E501
+        :rtype: int
+        """
+        return self._release_year
+
+    @release_year.setter
+    def release_year(self, release_year):
+        """Sets the release_year of this ReleaseEntity.
+
+
+        :param release_year: The release_year of this ReleaseEntity.  # noqa: E501
+        :type: int
+        """
+
+        self._release_year = release_year
 
     @property
     def release_date(self):

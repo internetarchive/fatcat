@@ -4370,7 +4370,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
-        :param str expand: List of sub-entities to expand in response. For releases, 'files' and 'container' are valid.
+        :param str expand: List of sub-entities to expand in response. For releases, 'files', 'container', and 'creators' are valid.
         :param str hide: List of entity fields to elide in response. For releases, 'abstracts', 'refs', and 'contribs' are valid.
         :return: ReleaseEntity
                  If the method is called asynchronously,
@@ -4393,7 +4393,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str id: (required)
-        :param str expand: List of sub-entities to expand in response. For releases, 'files' and 'container' are valid.
+        :param str expand: List of sub-entities to expand in response. For releases, 'files', 'container', and 'creators' are valid.
         :param str hide: List of entity fields to elide in response. For releases, 'abstracts', 'refs', and 'contribs' are valid.
         :return: ReleaseEntity
                  If the method is called asynchronously,

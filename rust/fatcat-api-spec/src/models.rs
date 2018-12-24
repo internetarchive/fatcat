@@ -538,6 +538,10 @@ pub struct ReleaseEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub doi: Option<String>,
 
+    #[serde(rename = "release_year")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub release_year: Option<i64>,
+
     #[serde(rename = "release_date")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub release_date: Option<chrono::NaiveDate>,
@@ -619,6 +623,7 @@ impl ReleaseEntity {
             isbn13: None,
             wikidata_qid: None,
             doi: None,
+            release_year: None,
             release_date: None,
             release_status: None,
             release_type: None,
