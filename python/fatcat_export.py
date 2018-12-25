@@ -12,7 +12,8 @@ import json
 import argparse
 import fatcat_client
 from fatcat_client.rest import ApiException
-from fatcat_tools import uuid2fcid
+from fatcat_client import ReleaseEntity
+from fatcat_tools import uuid2fcid, entity_from_json, release_to_elasticsearch
 
 def run_export_releases(args):
     conf = fatcat_client.Configuration()
@@ -23,6 +24,15 @@ def run_export_releases(args):
         ident = uuid2fcid(line.split()[0])
         release = api.get_release(id=ident, expand="all")
         args.json_output.write(json.dumps(release.to_dict()) + "\n")
+
+def run_transform_releases(args):
+    for line in args.json_input:
+        line = line.strip()
+        if not line:
+            continue
+        release = entity_from_json(line, ReleaseEntity)
+        args.json_output.write(
+            json.dumps(release_to_elasticsearch(release)) + '\n')
 
 def run_export_changelog(args):
     conf = fatcat_client.Configuration()
@@ -54,6 +64,15 @@ def main():
         help="TSV list of fatcat release idents to dump",
         default=sys.stdin, type=argparse.FileType('r'))
     sub_releases.add_argument('json_output',
+        help="where to send output",
+        default=sys.stdout, type=argparse.FileType('w'))
+
+    sub_transform_releases = subparsers.add_parser('transform-releases')
+    sub_transform_releases.set_defaults(func=run_transform_releases)
+    sub_transform_releases.add_argument('json_input',
+        help="JSON-per-line of release entities",
+        default=sys.stdin, type=argparse.FileType('r'))
+    sub_transform_releases.add_argument('json_output',
         help="where to send output",
         default=sys.stdout, type=argparse.FileType('w'))
 
