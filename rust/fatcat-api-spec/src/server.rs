@@ -110,7 +110,7 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup = query_params.get("editgroup").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -137,7 +137,7 @@ where
                 };
                 let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
 
-                match api.create_container(param_entity, param_editgroup, context).wait() {
+                match api.create_container(param_entity, param_editgroup_id, context).wait() {
                     Ok(rsp) => match rsp {
                         CreateContainerResponse::CreatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -222,7 +222,7 @@ where
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
                 let param_autoaccept = query_params.get("autoaccept").and_then(|list| list.first()).and_then(|x| x.parse::<bool>().ok());
-                let param_editgroup = query_params.get("editgroup").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -249,7 +249,7 @@ where
                 };
                 let param_entity_list = param_entity_list.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity_list".to_string())))?;
 
-                match api.create_container_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup, context).wait() {
+                match api.create_container_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup_id, context).wait() {
                     Ok(rsp) => match rsp {
                         CreateContainerBatchResponse::CreatedEntities(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -318,7 +318,7 @@ where
 
     let api_clone = api.clone();
     router.delete(
-        "/v0/container/:id",
+        "/v0/container/:ident",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -332,25 +332,25 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_ident = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("ident")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter ident".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup = query_params.get("editgroup").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.delete_container(param_id, param_editgroup, context).wait() {
+                match api.delete_container(param_ident, param_editgroup_id, context).wait() {
                     Ok(rsp) => match rsp {
                         DeleteContainerResponse::DeletedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -500,7 +500,7 @@ where
 
     let api_clone = api.clone();
     router.get(
-        "/v0/container/:id",
+        "/v0/container/:ident",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -514,18 +514,18 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_ident = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("ident")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter ident".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
@@ -533,7 +533,7 @@ where
                 let param_expand = query_params.get("expand").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.get_container(param_id, param_expand, param_hide, context).wait() {
+                match api.get_container(param_ident, param_expand, param_hide, context).wait() {
                     Ok(rsp) => match rsp {
                         GetContainerResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -683,7 +683,7 @@ where
 
     let api_clone = api.clone();
     router.get(
-        "/v0/container/:id/history",
+        "/v0/container/:ident/history",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -697,25 +697,25 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_ident = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("ident")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter ident".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
                 let param_limit = query_params.get("limit").and_then(|list| list.first()).and_then(|x| x.parse::<i64>().ok());
 
-                match api.get_container_history(param_id, param_limit, context).wait() {
+                match api.get_container_history(param_ident, param_limit, context).wait() {
                     Ok(rsp) => match rsp {
                         GetContainerHistoryResponse::FoundEntityHistory(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -776,7 +776,7 @@ where
 
     let api_clone = api.clone();
     router.get(
-        "/v0/container/:id/redirects",
+        "/v0/container/:ident/redirects",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -790,21 +790,21 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_ident = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("ident")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter ident".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
-                match api.get_container_redirects(param_id, context).wait() {
+                match api.get_container_redirects(param_ident, context).wait() {
                     Ok(rsp) => match rsp {
                         GetContainerRedirectsResponse::FoundEntityRedirects(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -865,7 +865,7 @@ where
 
     let api_clone = api.clone();
     router.get(
-        "/v0/container/rev/:id",
+        "/v0/container/rev/:rev_id",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -879,18 +879,18 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_rev_id = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("rev_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter rev_id".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter rev_id: {}", e))))?
                 };
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
@@ -898,7 +898,7 @@ where
                 let param_expand = query_params.get("expand").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.get_container_revision(param_id, param_expand, param_hide, context).wait() {
+                match api.get_container_revision(param_rev_id, param_expand, param_hide, context).wait() {
                     Ok(rsp) => match rsp {
                         GetContainerRevisionResponse::FoundEntityRevision(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -1040,7 +1040,7 @@ where
 
     let api_clone = api.clone();
     router.put(
-        "/v0/container/:id",
+        "/v0/container/:ident",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -1054,23 +1054,23 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_ident = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("ident")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter ident".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup = query_params.get("editgroup").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -1097,7 +1097,7 @@ where
                 };
                 let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
 
-                match api.update_container(param_id, param_entity, param_editgroup, context).wait() {
+                match api.update_container(param_ident, param_entity, param_editgroup_id, context).wait() {
                     Ok(rsp) => match rsp {
                         UpdateContainerResponse::UpdatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -1181,7 +1181,7 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup = query_params.get("editgroup").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -1208,7 +1208,7 @@ where
                 };
                 let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
 
-                match api.create_creator(param_entity, param_editgroup, context).wait() {
+                match api.create_creator(param_entity, param_editgroup_id, context).wait() {
                     Ok(rsp) => match rsp {
                         CreateCreatorResponse::CreatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -1293,7 +1293,7 @@ where
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
                 let param_autoaccept = query_params.get("autoaccept").and_then(|list| list.first()).and_then(|x| x.parse::<bool>().ok());
-                let param_editgroup = query_params.get("editgroup").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -1320,7 +1320,7 @@ where
                 };
                 let param_entity_list = param_entity_list.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity_list".to_string())))?;
 
-                match api.create_creator_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup, context).wait() {
+                match api.create_creator_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup_id, context).wait() {
                     Ok(rsp) => match rsp {
                         CreateCreatorBatchResponse::CreatedEntities(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -1389,7 +1389,7 @@ where
 
     let api_clone = api.clone();
     router.delete(
-        "/v0/creator/:id",
+        "/v0/creator/:ident",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -1403,25 +1403,25 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_ident = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("ident")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter ident".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup = query_params.get("editgroup").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.delete_creator(param_id, param_editgroup, context).wait() {
+                match api.delete_creator(param_ident, param_editgroup_id, context).wait() {
                     Ok(rsp) => match rsp {
                         DeleteCreatorResponse::DeletedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -1571,7 +1571,7 @@ where
 
     let api_clone = api.clone();
     router.get(
-        "/v0/creator/:id",
+        "/v0/creator/:ident",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -1585,18 +1585,18 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_ident = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("ident")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter ident".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
@@ -1604,7 +1604,7 @@ where
                 let param_expand = query_params.get("expand").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.get_creator(param_id, param_expand, param_hide, context).wait() {
+                match api.get_creator(param_ident, param_expand, param_hide, context).wait() {
                     Ok(rsp) => match rsp {
                         GetCreatorResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -1754,7 +1754,7 @@ where
 
     let api_clone = api.clone();
     router.get(
-        "/v0/creator/:id/history",
+        "/v0/creator/:ident/history",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -1768,25 +1768,25 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_ident = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("ident")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter ident".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
                 let param_limit = query_params.get("limit").and_then(|list| list.first()).and_then(|x| x.parse::<i64>().ok());
 
-                match api.get_creator_history(param_id, param_limit, context).wait() {
+                match api.get_creator_history(param_ident, param_limit, context).wait() {
                     Ok(rsp) => match rsp {
                         GetCreatorHistoryResponse::FoundEntityHistory(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -1847,7 +1847,7 @@ where
 
     let api_clone = api.clone();
     router.get(
-        "/v0/creator/:id/redirects",
+        "/v0/creator/:ident/redirects",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -1861,21 +1861,21 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_ident = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("ident")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter ident".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
-                match api.get_creator_redirects(param_id, context).wait() {
+                match api.get_creator_redirects(param_ident, context).wait() {
                     Ok(rsp) => match rsp {
                         GetCreatorRedirectsResponse::FoundEntityRedirects(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -1936,7 +1936,7 @@ where
 
     let api_clone = api.clone();
     router.get(
-        "/v0/creator/:id/releases",
+        "/v0/creator/:ident/releases",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -1950,25 +1950,25 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_ident = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("ident")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter ident".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
                 let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.get_creator_releases(param_id, param_hide, context).wait() {
+                match api.get_creator_releases(param_ident, param_hide, context).wait() {
                     Ok(rsp) => match rsp {
                         GetCreatorReleasesResponse::Found(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -2029,7 +2029,7 @@ where
 
     let api_clone = api.clone();
     router.get(
-        "/v0/creator/rev/:id",
+        "/v0/creator/rev/:rev_id",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -2043,18 +2043,18 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_rev_id = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("rev_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter rev_id".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter rev_id: {}", e))))?
                 };
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
@@ -2062,7 +2062,7 @@ where
                 let param_expand = query_params.get("expand").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.get_creator_revision(param_id, param_expand, param_hide, context).wait() {
+                match api.get_creator_revision(param_rev_id, param_expand, param_hide, context).wait() {
                     Ok(rsp) => match rsp {
                         GetCreatorRevisionResponse::FoundEntityRevision(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -2204,7 +2204,7 @@ where
 
     let api_clone = api.clone();
     router.put(
-        "/v0/creator/:id",
+        "/v0/creator/:ident",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -2218,23 +2218,23 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_ident = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("ident")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter ident".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup = query_params.get("editgroup").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -2261,7 +2261,7 @@ where
                 };
                 let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
 
-                match api.update_creator(param_id, param_entity, param_editgroup, context).wait() {
+                match api.update_creator(param_ident, param_entity, param_editgroup_id, context).wait() {
                     Ok(rsp) => match rsp {
                         UpdateCreatorResponse::UpdatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -2330,7 +2330,7 @@ where
 
     let api_clone = api.clone();
     router.get(
-        "/v0/editor/:id",
+        "/v0/editor/:editor_id",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -2344,21 +2344,21 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_editor_id = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("editor_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter editor_id".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter editor_id: {}", e))))?
                 };
 
-                match api.get_editor(param_id, context).wait() {
+                match api.get_editor(param_editor_id, context).wait() {
                     Ok(rsp) => match rsp {
                         GetEditorResponse::Found(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -2419,7 +2419,7 @@ where
 
     let api_clone = api.clone();
     router.get(
-        "/v0/editor/:id/changelog",
+        "/v0/editor/:editor_id/changelog",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -2433,21 +2433,21 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_editor_id = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("editor_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter editor_id".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter editor_id: {}", e))))?
                 };
 
-                match api.get_editor_changelog(param_id, context).wait() {
+                match api.get_editor_changelog(param_editor_id, context).wait() {
                     Ok(rsp) => match rsp {
                         GetEditorChangelogResponse::Found(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -2566,7 +2566,7 @@ where
 
     let api_clone = api.clone();
     router.post(
-        "/v0/editgroup/:id/accept",
+        "/v0/editgroup/:editgroup_id/accept",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -2580,21 +2580,21 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_editgroup_id = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("editgroup_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter editgroup_id".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter editgroup_id: {}", e))))?
                 };
 
-                match api.accept_editgroup(param_id, context).wait() {
+                match api.accept_editgroup(param_editgroup_id, context).wait() {
                     Ok(rsp) => match rsp {
                         AcceptEditgroupResponse::MergedSuccessfully(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -2818,7 +2818,7 @@ where
 
     let api_clone = api.clone();
     router.get(
-        "/v0/changelog/:id",
+        "/v0/changelog/:index",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -2832,21 +2832,21 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_index = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("index")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter index".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter index: {}", e))))?
                 };
 
-                match api.get_changelog_entry(param_id, context).wait() {
+                match api.get_changelog_entry(param_index, context).wait() {
                     Ok(rsp) => match rsp {
                         GetChangelogEntryResponse::FoundChangelogEntry(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -2897,7 +2897,7 @@ where
 
     let api_clone = api.clone();
     router.get(
-        "/v0/editgroup/:id",
+        "/v0/editgroup/:editgroup_id",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -2911,21 +2911,21 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_editgroup_id = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("editgroup_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter editgroup_id".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter editgroup_id: {}", e))))?
                 };
 
-                match api.get_editgroup(param_id, context).wait() {
+                match api.get_editgroup(param_editgroup_id, context).wait() {
                     Ok(rsp) => match rsp {
                         GetEditgroupResponse::Found(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -3001,7 +3001,7 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup = query_params.get("editgroup").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -3028,7 +3028,7 @@ where
                 };
                 let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
 
-                match api.create_file(param_entity, param_editgroup, context).wait() {
+                match api.create_file(param_entity, param_editgroup_id, context).wait() {
                     Ok(rsp) => match rsp {
                         CreateFileResponse::CreatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -3113,7 +3113,7 @@ where
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
                 let param_autoaccept = query_params.get("autoaccept").and_then(|list| list.first()).and_then(|x| x.parse::<bool>().ok());
-                let param_editgroup = query_params.get("editgroup").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -3140,7 +3140,7 @@ where
                 };
                 let param_entity_list = param_entity_list.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity_list".to_string())))?;
 
-                match api.create_file_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup, context).wait() {
+                match api.create_file_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup_id, context).wait() {
                     Ok(rsp) => match rsp {
                         CreateFileBatchResponse::CreatedEntities(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -3209,7 +3209,7 @@ where
 
     let api_clone = api.clone();
     router.delete(
-        "/v0/file/:id",
+        "/v0/file/:ident",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -3223,25 +3223,25 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_ident = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("ident")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter ident".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup = query_params.get("editgroup").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.delete_file(param_id, param_editgroup, context).wait() {
+                match api.delete_file(param_ident, param_editgroup_id, context).wait() {
                     Ok(rsp) => match rsp {
                         DeleteFileResponse::DeletedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -3391,7 +3391,7 @@ where
 
     let api_clone = api.clone();
     router.get(
-        "/v0/file/:id",
+        "/v0/file/:ident",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -3405,18 +3405,18 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_ident = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("ident")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter ident".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
@@ -3424,7 +3424,7 @@ where
                 let param_expand = query_params.get("expand").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.get_file(param_id, param_expand, param_hide, context).wait() {
+                match api.get_file(param_ident, param_expand, param_hide, context).wait() {
                     Ok(rsp) => match rsp {
                         GetFileResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -3574,7 +3574,7 @@ where
 
     let api_clone = api.clone();
     router.get(
-        "/v0/file/:id/history",
+        "/v0/file/:ident/history",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -3588,25 +3588,25 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_ident = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("ident")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter ident".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
                 let param_limit = query_params.get("limit").and_then(|list| list.first()).and_then(|x| x.parse::<i64>().ok());
 
-                match api.get_file_history(param_id, param_limit, context).wait() {
+                match api.get_file_history(param_ident, param_limit, context).wait() {
                     Ok(rsp) => match rsp {
                         GetFileHistoryResponse::FoundEntityHistory(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -3667,7 +3667,7 @@ where
 
     let api_clone = api.clone();
     router.get(
-        "/v0/file/:id/redirects",
+        "/v0/file/:ident/redirects",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -3681,21 +3681,21 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_ident = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("ident")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter ident".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
-                match api.get_file_redirects(param_id, context).wait() {
+                match api.get_file_redirects(param_ident, context).wait() {
                     Ok(rsp) => match rsp {
                         GetFileRedirectsResponse::FoundEntityRedirects(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -3756,7 +3756,7 @@ where
 
     let api_clone = api.clone();
     router.get(
-        "/v0/file/rev/:id",
+        "/v0/file/rev/:rev_id",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -3770,18 +3770,18 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_rev_id = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("rev_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter rev_id".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter rev_id: {}", e))))?
                 };
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
@@ -3789,7 +3789,7 @@ where
                 let param_expand = query_params.get("expand").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.get_file_revision(param_id, param_expand, param_hide, context).wait() {
+                match api.get_file_revision(param_rev_id, param_expand, param_hide, context).wait() {
                     Ok(rsp) => match rsp {
                         GetFileRevisionResponse::FoundEntityRevision(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -3932,7 +3932,7 @@ where
 
     let api_clone = api.clone();
     router.put(
-        "/v0/file/:id",
+        "/v0/file/:ident",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -3946,23 +3946,23 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_ident = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("ident")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter ident".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup = query_params.get("editgroup").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -3989,7 +3989,7 @@ where
                 };
                 let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
 
-                match api.update_file(param_id, param_entity, param_editgroup, context).wait() {
+                match api.update_file(param_ident, param_entity, param_editgroup_id, context).wait() {
                     Ok(rsp) => match rsp {
                         UpdateFileResponse::UpdatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -4073,7 +4073,7 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup = query_params.get("editgroup").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -4100,7 +4100,7 @@ where
                 };
                 let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
 
-                match api.create_release(param_entity, param_editgroup, context).wait() {
+                match api.create_release(param_entity, param_editgroup_id, context).wait() {
                     Ok(rsp) => match rsp {
                         CreateReleaseResponse::CreatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -4185,7 +4185,7 @@ where
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
                 let param_autoaccept = query_params.get("autoaccept").and_then(|list| list.first()).and_then(|x| x.parse::<bool>().ok());
-                let param_editgroup = query_params.get("editgroup").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -4212,7 +4212,7 @@ where
                 };
                 let param_entity_list = param_entity_list.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity_list".to_string())))?;
 
-                match api.create_release_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup, context).wait() {
+                match api.create_release_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup_id, context).wait() {
                     Ok(rsp) => match rsp {
                         CreateReleaseBatchResponse::CreatedEntities(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -4296,7 +4296,7 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup = query_params.get("editgroup").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -4323,7 +4323,7 @@ where
                 };
                 let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
 
-                match api.create_work(param_entity, param_editgroup, context).wait() {
+                match api.create_work(param_entity, param_editgroup_id, context).wait() {
                     Ok(rsp) => match rsp {
                         CreateWorkResponse::CreatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -4392,7 +4392,7 @@ where
 
     let api_clone = api.clone();
     router.delete(
-        "/v0/release/:id",
+        "/v0/release/:ident",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -4406,25 +4406,25 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_ident = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("ident")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter ident".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup = query_params.get("editgroup").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.delete_release(param_id, param_editgroup, context).wait() {
+                match api.delete_release(param_ident, param_editgroup_id, context).wait() {
                     Ok(rsp) => match rsp {
                         DeleteReleaseResponse::DeletedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -4574,7 +4574,7 @@ where
 
     let api_clone = api.clone();
     router.get(
-        "/v0/release/:id",
+        "/v0/release/:ident",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -4588,18 +4588,18 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_ident = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("ident")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter ident".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
@@ -4607,7 +4607,7 @@ where
                 let param_expand = query_params.get("expand").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.get_release(param_id, param_expand, param_hide, context).wait() {
+                match api.get_release(param_ident, param_expand, param_hide, context).wait() {
                     Ok(rsp) => match rsp {
                         GetReleaseResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -4757,7 +4757,7 @@ where
 
     let api_clone = api.clone();
     router.get(
-        "/v0/release/:id/files",
+        "/v0/release/:ident/files",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -4771,25 +4771,25 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_ident = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("ident")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter ident".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
                 let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.get_release_files(param_id, param_hide, context).wait() {
+                match api.get_release_files(param_ident, param_hide, context).wait() {
                     Ok(rsp) => match rsp {
                         GetReleaseFilesResponse::Found(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -4850,7 +4850,7 @@ where
 
     let api_clone = api.clone();
     router.get(
-        "/v0/release/:id/history",
+        "/v0/release/:ident/history",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -4864,25 +4864,25 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_ident = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("ident")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter ident".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
                 let param_limit = query_params.get("limit").and_then(|list| list.first()).and_then(|x| x.parse::<i64>().ok());
 
-                match api.get_release_history(param_id, param_limit, context).wait() {
+                match api.get_release_history(param_ident, param_limit, context).wait() {
                     Ok(rsp) => match rsp {
                         GetReleaseHistoryResponse::FoundEntityHistory(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -4943,7 +4943,7 @@ where
 
     let api_clone = api.clone();
     router.get(
-        "/v0/release/:id/redirects",
+        "/v0/release/:ident/redirects",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -4957,21 +4957,21 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_ident = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("ident")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter ident".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
-                match api.get_release_redirects(param_id, context).wait() {
+                match api.get_release_redirects(param_ident, context).wait() {
                     Ok(rsp) => match rsp {
                         GetReleaseRedirectsResponse::FoundEntityRedirects(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -5032,7 +5032,7 @@ where
 
     let api_clone = api.clone();
     router.get(
-        "/v0/release/rev/:id",
+        "/v0/release/rev/:rev_id",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -5046,18 +5046,18 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_rev_id = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("rev_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter rev_id".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter rev_id: {}", e))))?
                 };
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
@@ -5065,7 +5065,7 @@ where
                 let param_expand = query_params.get("expand").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.get_release_revision(param_id, param_expand, param_hide, context).wait() {
+                match api.get_release_revision(param_rev_id, param_expand, param_hide, context).wait() {
                     Ok(rsp) => match rsp {
                         GetReleaseRevisionResponse::FoundEntityRevision(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -5214,7 +5214,7 @@ where
 
     let api_clone = api.clone();
     router.put(
-        "/v0/release/:id",
+        "/v0/release/:ident",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -5228,23 +5228,23 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_ident = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("ident")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter ident".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup = query_params.get("editgroup").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -5271,7 +5271,7 @@ where
                 };
                 let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
 
-                match api.update_release(param_id, param_entity, param_editgroup, context).wait() {
+                match api.update_release(param_ident, param_entity, param_editgroup_id, context).wait() {
                     Ok(rsp) => match rsp {
                         UpdateReleaseResponse::UpdatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -5356,7 +5356,7 @@ where
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
                 let param_autoaccept = query_params.get("autoaccept").and_then(|list| list.first()).and_then(|x| x.parse::<bool>().ok());
-                let param_editgroup = query_params.get("editgroup").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -5383,7 +5383,7 @@ where
                 };
                 let param_entity_list = param_entity_list.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity_list".to_string())))?;
 
-                match api.create_work_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup, context).wait() {
+                match api.create_work_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup_id, context).wait() {
                     Ok(rsp) => match rsp {
                         CreateWorkBatchResponse::CreatedEntities(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -5452,7 +5452,7 @@ where
 
     let api_clone = api.clone();
     router.delete(
-        "/v0/work/:id",
+        "/v0/work/:ident",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -5466,25 +5466,25 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_ident = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("ident")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter ident".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup = query_params.get("editgroup").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.delete_work(param_id, param_editgroup, context).wait() {
+                match api.delete_work(param_ident, param_editgroup_id, context).wait() {
                     Ok(rsp) => match rsp {
                         DeleteWorkResponse::DeletedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -5634,7 +5634,7 @@ where
 
     let api_clone = api.clone();
     router.get(
-        "/v0/work/:id",
+        "/v0/work/:ident",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -5648,18 +5648,18 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_ident = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("ident")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter ident".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
@@ -5667,7 +5667,7 @@ where
                 let param_expand = query_params.get("expand").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.get_work(param_id, param_expand, param_hide, context).wait() {
+                match api.get_work(param_ident, param_expand, param_hide, context).wait() {
                     Ok(rsp) => match rsp {
                         GetWorkResponse::FoundEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -5817,7 +5817,7 @@ where
 
     let api_clone = api.clone();
     router.get(
-        "/v0/work/:id/history",
+        "/v0/work/:ident/history",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -5831,25 +5831,25 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_ident = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("ident")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter ident".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
                 let param_limit = query_params.get("limit").and_then(|list| list.first()).and_then(|x| x.parse::<i64>().ok());
 
-                match api.get_work_history(param_id, param_limit, context).wait() {
+                match api.get_work_history(param_ident, param_limit, context).wait() {
                     Ok(rsp) => match rsp {
                         GetWorkHistoryResponse::FoundEntityHistory(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -5910,7 +5910,7 @@ where
 
     let api_clone = api.clone();
     router.get(
-        "/v0/work/:id/redirects",
+        "/v0/work/:ident/redirects",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -5924,21 +5924,21 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_ident = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("ident")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter ident".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
-                match api.get_work_redirects(param_id, context).wait() {
+                match api.get_work_redirects(param_ident, context).wait() {
                     Ok(rsp) => match rsp {
                         GetWorkRedirectsResponse::FoundEntityRedirects(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -5999,7 +5999,7 @@ where
 
     let api_clone = api.clone();
     router.get(
-        "/v0/work/:id/releases",
+        "/v0/work/:ident/releases",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -6013,25 +6013,25 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_ident = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("ident")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter ident".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
                 let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.get_work_releases(param_id, param_hide, context).wait() {
+                match api.get_work_releases(param_ident, param_hide, context).wait() {
                     Ok(rsp) => match rsp {
                         GetWorkReleasesResponse::Found(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -6092,7 +6092,7 @@ where
 
     let api_clone = api.clone();
     router.get(
-        "/v0/work/rev/:id",
+        "/v0/work/rev/:rev_id",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -6106,18 +6106,18 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_rev_id = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("rev_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter rev_id".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter rev_id: {}", e))))?
                 };
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
@@ -6125,7 +6125,7 @@ where
                 let param_expand = query_params.get("expand").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
-                match api.get_work_revision(param_id, param_expand, param_hide, context).wait() {
+                match api.get_work_revision(param_rev_id, param_expand, param_hide, context).wait() {
                     Ok(rsp) => match rsp {
                         GetWorkRevisionResponse::FoundEntityRevision(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -6186,7 +6186,7 @@ where
 
     let api_clone = api.clone();
     router.put(
-        "/v0/work/:id",
+        "/v0/work/:ident",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -6200,23 +6200,23 @@ where
                 context.authorization = req.extensions.remove::<Authorization>();
 
                 // Path parameters
-                let param_id = {
+                let param_ident = {
                     let param = req
                         .extensions
                         .get::<Router>()
                         .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
-                        .find("id")
-                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter id".to_string())))?;
+                        .find("ident")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter ident".to_string())))?;
                     percent_decode(param.as_bytes())
                         .decode_utf8()
                         .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
                         .parse()
-                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter id: {}", e))))?
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup = query_params.get("editgroup").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -6243,7 +6243,7 @@ where
                 };
                 let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
 
-                match api.update_work(param_id, param_entity, param_editgroup, context).wait() {
+                match api.update_work(param_ident, param_entity, param_editgroup_id, context).wait() {
                     Ok(rsp) => match rsp {
                         UpdateWorkResponse::UpdatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");

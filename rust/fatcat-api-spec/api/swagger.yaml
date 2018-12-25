@@ -39,12 +39,12 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "CREATE_CONTAINER"
         consumesJson: true
-      - name: "editgroup"
+      - name: "editgroup_id"
         in: "query"
         required: false
         type: "string"
         formatString: "{:?}"
-        example: "Some(\"editgroup_example\".to_string())"
+        example: "Some(\"editgroup_id_example\".to_string())"
       responses:
         201:
           description: "Created Entity"
@@ -102,14 +102,14 @@ paths:
         type: "boolean"
         formatString: "{:?}"
         example: "Some(true)"
-      - name: "editgroup"
+      - name: "editgroup_id"
         in: "query"
         description: "Editgroup to auto-accept and apply to all entities (required\
           \ if 'autoaccept' is True)"
         required: false
         type: "string"
         formatString: "{:?}"
-        example: "Some(\"editgroup_example\".to_string())"
+        example: "Some(\"editgroup_id_example\".to_string())"
       - in: "body"
         name: "entity_list"
         required: true
@@ -166,18 +166,18 @@ paths:
       path: "/container/batch"
       HttpMethod: "Post"
       httpmethod: "post"
-  /container/{id}:
+  /container/{ident}:
     get:
       tags:
       - "containers"
       operationId: "get_container"
       parameters:
-      - name: "id"
+      - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
+        example: "\"ident_example\".to_string()"
       - name: "expand"
         in: "query"
         description: "List of sub-entities to expand in response. For containers,\
@@ -233,7 +233,7 @@ paths:
           producesJson: true
       operation_id: "get_container"
       uppercase_operation_id: "GET_CONTAINER"
-      path: "/container/:id"
+      path: "/container/:ident"
       HttpMethod: "Get"
       httpmethod: "get"
     put:
@@ -241,12 +241,12 @@ paths:
       - "containers"
       operationId: "update_container"
       parameters:
-      - name: "id"
+      - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
+        example: "\"ident_example\".to_string()"
       - in: "body"
         name: "entity"
         required: true
@@ -259,12 +259,12 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "UPDATE_CONTAINER"
         consumesJson: true
-      - name: "editgroup"
+      - name: "editgroup_id"
         in: "query"
         required: false
         type: "string"
         formatString: "{:?}"
-        example: "Some(\"editgroup_example\".to_string())"
+        example: "Some(\"editgroup_id_example\".to_string())"
       responses:
         200:
           description: "Updated Entity"
@@ -304,7 +304,7 @@ paths:
           producesJson: true
       operation_id: "update_container"
       uppercase_operation_id: "UPDATE_CONTAINER"
-      path: "/container/:id"
+      path: "/container/:ident"
       HttpMethod: "Put"
       httpmethod: "put"
       noClientExample: true
@@ -313,18 +313,18 @@ paths:
       - "containers"
       operationId: "delete_container"
       parameters:
-      - name: "id"
+      - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
-      - name: "editgroup"
+        example: "\"ident_example\".to_string()"
+      - name: "editgroup_id"
         in: "query"
         required: false
         type: "string"
         formatString: "{:?}"
-        example: "Some(\"editgroup_example\".to_string())"
+        example: "Some(\"editgroup_id_example\".to_string())"
       responses:
         200:
           description: "Deleted Entity"
@@ -364,21 +364,21 @@ paths:
           producesJson: true
       operation_id: "delete_container"
       uppercase_operation_id: "DELETE_CONTAINER"
-      path: "/container/:id"
+      path: "/container/:ident"
       HttpMethod: "Delete"
       httpmethod: "delete"
-  /container/rev/{id}:
+  /container/rev/{rev_id}:
     get:
       tags:
       - "containers"
       operationId: "get_container_revision"
       parameters:
-      - name: "id"
+      - name: "rev_id"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
+        example: "\"rev_id_example\".to_string()"
       - name: "expand"
         in: "query"
         description: "List of sub-entities to expand in response. For containers,\
@@ -434,21 +434,21 @@ paths:
           producesJson: true
       operation_id: "get_container_revision"
       uppercase_operation_id: "GET_CONTAINER_REVISION"
-      path: "/container/rev/:id"
+      path: "/container/rev/:rev_id"
       HttpMethod: "Get"
       httpmethod: "get"
-  /container/{id}/history:
+  /container/{ident}/history:
     get:
       tags:
       - "containers"
       operationId: "get_container_history"
       parameters:
-      - name: "id"
+      - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
+        example: "\"ident_example\".to_string()"
       - name: "limit"
         in: "query"
         required: false
@@ -497,21 +497,21 @@ paths:
           producesJson: true
       operation_id: "get_container_history"
       uppercase_operation_id: "GET_CONTAINER_HISTORY"
-      path: "/container/:id/history"
+      path: "/container/:ident/history"
       HttpMethod: "Get"
       httpmethod: "get"
-  /container/{id}/redirects:
+  /container/{ident}/redirects:
     get:
       tags:
       - "containers"
       operationId: "get_container_redirects"
       parameters:
-      - name: "id"
+      - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
+        example: "\"ident_example\".to_string()"
       responses:
         200:
           description: "Found Entity Redirects"
@@ -553,7 +553,7 @@ paths:
           producesJson: true
       operation_id: "get_container_redirects"
       uppercase_operation_id: "GET_CONTAINER_REDIRECTS"
-      path: "/container/:id/redirects"
+      path: "/container/:ident/redirects"
       HttpMethod: "Get"
       httpmethod: "get"
   /container/lookup:
@@ -760,12 +760,12 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "CREATE_CREATOR"
         consumesJson: true
-      - name: "editgroup"
+      - name: "editgroup_id"
         in: "query"
         required: false
         type: "string"
         formatString: "{:?}"
-        example: "Some(\"editgroup_example\".to_string())"
+        example: "Some(\"editgroup_id_example\".to_string())"
       responses:
         201:
           description: "Created Entity"
@@ -823,14 +823,14 @@ paths:
         type: "boolean"
         formatString: "{:?}"
         example: "Some(true)"
-      - name: "editgroup"
+      - name: "editgroup_id"
         in: "query"
         description: "Editgroup to auto-accept and apply to all entities (required\
           \ if 'autoaccept' is True)"
         required: false
         type: "string"
         formatString: "{:?}"
-        example: "Some(\"editgroup_example\".to_string())"
+        example: "Some(\"editgroup_id_example\".to_string())"
       - in: "body"
         name: "entity_list"
         required: true
@@ -887,18 +887,18 @@ paths:
       path: "/creator/batch"
       HttpMethod: "Post"
       httpmethod: "post"
-  /creator/{id}:
+  /creator/{ident}:
     get:
       tags:
       - "creators"
       operationId: "get_creator"
       parameters:
-      - name: "id"
+      - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
+        example: "\"ident_example\".to_string()"
       - name: "expand"
         in: "query"
         description: "List of sub-entities to expand in response. For creators, none\
@@ -954,7 +954,7 @@ paths:
           producesJson: true
       operation_id: "get_creator"
       uppercase_operation_id: "GET_CREATOR"
-      path: "/creator/:id"
+      path: "/creator/:ident"
       HttpMethod: "Get"
       httpmethod: "get"
     put:
@@ -962,12 +962,12 @@ paths:
       - "creators"
       operationId: "update_creator"
       parameters:
-      - name: "id"
+      - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
+        example: "\"ident_example\".to_string()"
       - in: "body"
         name: "entity"
         required: true
@@ -980,12 +980,12 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "UPDATE_CREATOR"
         consumesJson: true
-      - name: "editgroup"
+      - name: "editgroup_id"
         in: "query"
         required: false
         type: "string"
         formatString: "{:?}"
-        example: "Some(\"editgroup_example\".to_string())"
+        example: "Some(\"editgroup_id_example\".to_string())"
       responses:
         200:
           description: "Updated Entity"
@@ -1025,7 +1025,7 @@ paths:
           producesJson: true
       operation_id: "update_creator"
       uppercase_operation_id: "UPDATE_CREATOR"
-      path: "/creator/:id"
+      path: "/creator/:ident"
       HttpMethod: "Put"
       httpmethod: "put"
       noClientExample: true
@@ -1034,18 +1034,18 @@ paths:
       - "creators"
       operationId: "delete_creator"
       parameters:
-      - name: "id"
+      - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
-      - name: "editgroup"
+        example: "\"ident_example\".to_string()"
+      - name: "editgroup_id"
         in: "query"
         required: false
         type: "string"
         formatString: "{:?}"
-        example: "Some(\"editgroup_example\".to_string())"
+        example: "Some(\"editgroup_id_example\".to_string())"
       responses:
         200:
           description: "Deleted Entity"
@@ -1085,21 +1085,21 @@ paths:
           producesJson: true
       operation_id: "delete_creator"
       uppercase_operation_id: "DELETE_CREATOR"
-      path: "/creator/:id"
+      path: "/creator/:ident"
       HttpMethod: "Delete"
       httpmethod: "delete"
-  /creator/rev/{id}:
+  /creator/rev/{rev_id}:
     get:
       tags:
       - "creators"
       operationId: "get_creator_revision"
       parameters:
-      - name: "id"
+      - name: "rev_id"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
+        example: "\"rev_id_example\".to_string()"
       - name: "expand"
         in: "query"
         description: "List of sub-entities to expand in response. For creators, none\
@@ -1155,21 +1155,21 @@ paths:
           producesJson: true
       operation_id: "get_creator_revision"
       uppercase_operation_id: "GET_CREATOR_REVISION"
-      path: "/creator/rev/:id"
+      path: "/creator/rev/:rev_id"
       HttpMethod: "Get"
       httpmethod: "get"
-  /creator/{id}/history:
+  /creator/{ident}/history:
     get:
       tags:
       - "creators"
       operationId: "get_creator_history"
       parameters:
-      - name: "id"
+      - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
+        example: "\"ident_example\".to_string()"
       - name: "limit"
         in: "query"
         required: false
@@ -1218,21 +1218,21 @@ paths:
           producesJson: true
       operation_id: "get_creator_history"
       uppercase_operation_id: "GET_CREATOR_HISTORY"
-      path: "/creator/:id/history"
+      path: "/creator/:ident/history"
       HttpMethod: "Get"
       httpmethod: "get"
-  /creator/{id}/releases:
+  /creator/{ident}/releases:
     get:
       tags:
       - "creators"
       operationId: "get_creator_releases"
       parameters:
-      - name: "id"
+      - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
+        example: "\"ident_example\".to_string()"
       - name: "hide"
         in: "query"
         description: "List of entity fields to elide in response. For releases, 'abstracts',\
@@ -1282,21 +1282,21 @@ paths:
           producesJson: true
       operation_id: "get_creator_releases"
       uppercase_operation_id: "GET_CREATOR_RELEASES"
-      path: "/creator/:id/releases"
+      path: "/creator/:ident/releases"
       HttpMethod: "Get"
       httpmethod: "get"
-  /creator/{id}/redirects:
+  /creator/{ident}/redirects:
     get:
       tags:
       - "creators"
       operationId: "get_creator_redirects"
       parameters:
-      - name: "id"
+      - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
+        example: "\"ident_example\".to_string()"
       responses:
         200:
           description: "Found Entity Redirects"
@@ -1338,7 +1338,7 @@ paths:
           producesJson: true
       operation_id: "get_creator_redirects"
       uppercase_operation_id: "GET_CREATOR_REDIRECTS"
-      path: "/creator/:id/redirects"
+      path: "/creator/:ident/redirects"
       HttpMethod: "Get"
       httpmethod: "get"
   /creator/lookup:
@@ -1545,12 +1545,12 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "CREATE_FILE"
         consumesJson: true
-      - name: "editgroup"
+      - name: "editgroup_id"
         in: "query"
         required: false
         type: "string"
         formatString: "{:?}"
-        example: "Some(\"editgroup_example\".to_string())"
+        example: "Some(\"editgroup_id_example\".to_string())"
       responses:
         201:
           description: "Created Entity"
@@ -1608,14 +1608,14 @@ paths:
         type: "boolean"
         formatString: "{:?}"
         example: "Some(true)"
-      - name: "editgroup"
+      - name: "editgroup_id"
         in: "query"
         description: "Editgroup to auto-accept and apply to all entities (required\
           \ if 'autoaccept' is True)"
         required: false
         type: "string"
         formatString: "{:?}"
-        example: "Some(\"editgroup_example\".to_string())"
+        example: "Some(\"editgroup_id_example\".to_string())"
       - in: "body"
         name: "entity_list"
         required: true
@@ -1672,18 +1672,18 @@ paths:
       path: "/file/batch"
       HttpMethod: "Post"
       httpmethod: "post"
-  /file/{id}:
+  /file/{ident}:
     get:
       tags:
       - "files"
       operationId: "get_file"
       parameters:
-      - name: "id"
+      - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
+        example: "\"ident_example\".to_string()"
       - name: "expand"
         in: "query"
         description: "List of sub-entities to expand in response. For files, none\
@@ -1739,7 +1739,7 @@ paths:
           producesJson: true
       operation_id: "get_file"
       uppercase_operation_id: "GET_FILE"
-      path: "/file/:id"
+      path: "/file/:ident"
       HttpMethod: "Get"
       httpmethod: "get"
     put:
@@ -1747,12 +1747,12 @@ paths:
       - "files"
       operationId: "update_file"
       parameters:
-      - name: "id"
+      - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
+        example: "\"ident_example\".to_string()"
       - in: "body"
         name: "entity"
         required: true
@@ -1765,12 +1765,12 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "UPDATE_FILE"
         consumesJson: true
-      - name: "editgroup"
+      - name: "editgroup_id"
         in: "query"
         required: false
         type: "string"
         formatString: "{:?}"
-        example: "Some(\"editgroup_example\".to_string())"
+        example: "Some(\"editgroup_id_example\".to_string())"
       responses:
         200:
           description: "Updated Entity"
@@ -1810,7 +1810,7 @@ paths:
           producesJson: true
       operation_id: "update_file"
       uppercase_operation_id: "UPDATE_FILE"
-      path: "/file/:id"
+      path: "/file/:ident"
       HttpMethod: "Put"
       httpmethod: "put"
       noClientExample: true
@@ -1819,18 +1819,18 @@ paths:
       - "files"
       operationId: "delete_file"
       parameters:
-      - name: "id"
+      - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
-      - name: "editgroup"
+        example: "\"ident_example\".to_string()"
+      - name: "editgroup_id"
         in: "query"
         required: false
         type: "string"
         formatString: "{:?}"
-        example: "Some(\"editgroup_example\".to_string())"
+        example: "Some(\"editgroup_id_example\".to_string())"
       responses:
         200:
           description: "Deleted Entity"
@@ -1870,21 +1870,21 @@ paths:
           producesJson: true
       operation_id: "delete_file"
       uppercase_operation_id: "DELETE_FILE"
-      path: "/file/:id"
+      path: "/file/:ident"
       HttpMethod: "Delete"
       httpmethod: "delete"
-  /file/rev/{id}:
+  /file/rev/{rev_id}:
     get:
       tags:
       - "files"
       operationId: "get_file_revision"
       parameters:
-      - name: "id"
+      - name: "rev_id"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
+        example: "\"rev_id_example\".to_string()"
       - name: "expand"
         in: "query"
         description: "List of sub-entities to expand in response. For files, none\
@@ -1940,21 +1940,21 @@ paths:
           producesJson: true
       operation_id: "get_file_revision"
       uppercase_operation_id: "GET_FILE_REVISION"
-      path: "/file/rev/:id"
+      path: "/file/rev/:rev_id"
       HttpMethod: "Get"
       httpmethod: "get"
-  /file/{id}/history:
+  /file/{ident}/history:
     get:
       tags:
       - "files"
       operationId: "get_file_history"
       parameters:
-      - name: "id"
+      - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
+        example: "\"ident_example\".to_string()"
       - name: "limit"
         in: "query"
         required: false
@@ -2003,21 +2003,21 @@ paths:
           producesJson: true
       operation_id: "get_file_history"
       uppercase_operation_id: "GET_FILE_HISTORY"
-      path: "/file/:id/history"
+      path: "/file/:ident/history"
       HttpMethod: "Get"
       httpmethod: "get"
-  /file/{id}/redirects:
+  /file/{ident}/redirects:
     get:
       tags:
       - "files"
       operationId: "get_file_redirects"
       parameters:
-      - name: "id"
+      - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
+        example: "\"ident_example\".to_string()"
       responses:
         200:
           description: "Found Entity Redirects"
@@ -2059,7 +2059,7 @@ paths:
           producesJson: true
       operation_id: "get_file_redirects"
       uppercase_operation_id: "GET_FILE_REDIRECTS"
-      path: "/file/:id/redirects"
+      path: "/file/:ident/redirects"
       HttpMethod: "Get"
       httpmethod: "get"
   /file/lookup:
@@ -2270,12 +2270,12 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "CREATE_RELEASE"
         consumesJson: true
-      - name: "editgroup"
+      - name: "editgroup_id"
         in: "query"
         required: false
         type: "string"
         formatString: "{:?}"
-        example: "Some(\"editgroup_example\".to_string())"
+        example: "Some(\"editgroup_id_example\".to_string())"
       responses:
         201:
           description: "Created Entity"
@@ -2333,14 +2333,14 @@ paths:
         type: "boolean"
         formatString: "{:?}"
         example: "Some(true)"
-      - name: "editgroup"
+      - name: "editgroup_id"
         in: "query"
         description: "Editgroup to auto-accept and apply to all entities (required\
           \ if 'autoaccept' is True)"
         required: false
         type: "string"
         formatString: "{:?}"
-        example: "Some(\"editgroup_example\".to_string())"
+        example: "Some(\"editgroup_id_example\".to_string())"
       - in: "body"
         name: "entity_list"
         required: true
@@ -2397,18 +2397,18 @@ paths:
       path: "/release/batch"
       HttpMethod: "Post"
       httpmethod: "post"
-  /release/{id}:
+  /release/{ident}:
     get:
       tags:
       - "releases"
       operationId: "get_release"
       parameters:
-      - name: "id"
+      - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
+        example: "\"ident_example\".to_string()"
       - name: "expand"
         in: "query"
         description: "List of sub-entities to expand in response. For releases, 'files',\
@@ -2464,7 +2464,7 @@ paths:
           producesJson: true
       operation_id: "get_release"
       uppercase_operation_id: "GET_RELEASE"
-      path: "/release/:id"
+      path: "/release/:ident"
       HttpMethod: "Get"
       httpmethod: "get"
     put:
@@ -2472,12 +2472,12 @@ paths:
       - "releases"
       operationId: "update_release"
       parameters:
-      - name: "id"
+      - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
+        example: "\"ident_example\".to_string()"
       - in: "body"
         name: "entity"
         required: true
@@ -2490,12 +2490,12 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "UPDATE_RELEASE"
         consumesJson: true
-      - name: "editgroup"
+      - name: "editgroup_id"
         in: "query"
         required: false
         type: "string"
         formatString: "{:?}"
-        example: "Some(\"editgroup_example\".to_string())"
+        example: "Some(\"editgroup_id_example\".to_string())"
       responses:
         200:
           description: "Updated Entity"
@@ -2535,7 +2535,7 @@ paths:
           producesJson: true
       operation_id: "update_release"
       uppercase_operation_id: "UPDATE_RELEASE"
-      path: "/release/:id"
+      path: "/release/:ident"
       HttpMethod: "Put"
       httpmethod: "put"
       noClientExample: true
@@ -2544,18 +2544,18 @@ paths:
       - "releases"
       operationId: "delete_release"
       parameters:
-      - name: "id"
+      - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
-      - name: "editgroup"
+        example: "\"ident_example\".to_string()"
+      - name: "editgroup_id"
         in: "query"
         required: false
         type: "string"
         formatString: "{:?}"
-        example: "Some(\"editgroup_example\".to_string())"
+        example: "Some(\"editgroup_id_example\".to_string())"
       responses:
         200:
           description: "Deleted Entity"
@@ -2595,21 +2595,21 @@ paths:
           producesJson: true
       operation_id: "delete_release"
       uppercase_operation_id: "DELETE_RELEASE"
-      path: "/release/:id"
+      path: "/release/:ident"
       HttpMethod: "Delete"
       httpmethod: "delete"
-  /release/rev/{id}:
+  /release/rev/{rev_id}:
     get:
       tags:
       - "releases"
       operationId: "get_release_revision"
       parameters:
-      - name: "id"
+      - name: "rev_id"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
+        example: "\"rev_id_example\".to_string()"
       - name: "expand"
         in: "query"
         description: "List of sub-entities to expand in response. For releases, none\
@@ -2665,21 +2665,21 @@ paths:
           producesJson: true
       operation_id: "get_release_revision"
       uppercase_operation_id: "GET_RELEASE_REVISION"
-      path: "/release/rev/:id"
+      path: "/release/rev/:rev_id"
       HttpMethod: "Get"
       httpmethod: "get"
-  /release/{id}/history:
+  /release/{ident}/history:
     get:
       tags:
       - "releases"
       operationId: "get_release_history"
       parameters:
-      - name: "id"
+      - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
+        example: "\"ident_example\".to_string()"
       - name: "limit"
         in: "query"
         required: false
@@ -2728,21 +2728,21 @@ paths:
           producesJson: true
       operation_id: "get_release_history"
       uppercase_operation_id: "GET_RELEASE_HISTORY"
-      path: "/release/:id/history"
+      path: "/release/:ident/history"
       HttpMethod: "Get"
       httpmethod: "get"
-  /release/{id}/files:
+  /release/{ident}/files:
     get:
       tags:
       - "releases"
       operationId: "get_release_files"
       parameters:
-      - name: "id"
+      - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
+        example: "\"ident_example\".to_string()"
       - name: "hide"
         in: "query"
         description: "List of entity fields to elide in response. For files, none\
@@ -2792,21 +2792,21 @@ paths:
           producesJson: true
       operation_id: "get_release_files"
       uppercase_operation_id: "GET_RELEASE_FILES"
-      path: "/release/:id/files"
+      path: "/release/:ident/files"
       HttpMethod: "Get"
       httpmethod: "get"
-  /release/{id}/redirects:
+  /release/{ident}/redirects:
     get:
       tags:
       - "releases"
       operationId: "get_release_redirects"
       parameters:
-      - name: "id"
+      - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
+        example: "\"ident_example\".to_string()"
       responses:
         200:
           description: "Found Entity Redirects"
@@ -2848,7 +2848,7 @@ paths:
           producesJson: true
       operation_id: "get_release_redirects"
       uppercase_operation_id: "GET_RELEASE_REDIRECTS"
-      path: "/release/:id/redirects"
+      path: "/release/:ident/redirects"
       HttpMethod: "Get"
       httpmethod: "get"
   /release/lookup:
@@ -3077,12 +3077,12 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "CREATE_WORK"
         consumesJson: true
-      - name: "editgroup"
+      - name: "editgroup_id"
         in: "query"
         required: false
         type: "string"
         formatString: "{:?}"
-        example: "Some(\"editgroup_example\".to_string())"
+        example: "Some(\"editgroup_id_example\".to_string())"
       responses:
         201:
           description: "Created Entity"
@@ -3140,14 +3140,14 @@ paths:
         type: "boolean"
         formatString: "{:?}"
         example: "Some(true)"
-      - name: "editgroup"
+      - name: "editgroup_id"
         in: "query"
         description: "Editgroup to auto-accept and apply to all entities (required\
           \ if 'autoaccept' is True)"
         required: false
         type: "string"
         formatString: "{:?}"
-        example: "Some(\"editgroup_example\".to_string())"
+        example: "Some(\"editgroup_id_example\".to_string())"
       - in: "body"
         name: "entity_list"
         required: true
@@ -3204,18 +3204,18 @@ paths:
       path: "/work/batch"
       HttpMethod: "Post"
       httpmethod: "post"
-  /work/{id}:
+  /work/{ident}:
     get:
       tags:
       - "works"
       operationId: "get_work"
       parameters:
-      - name: "id"
+      - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
+        example: "\"ident_example\".to_string()"
       - name: "expand"
         in: "query"
         description: "List of sub-entities to expand in response. For works, none\
@@ -3271,7 +3271,7 @@ paths:
           producesJson: true
       operation_id: "get_work"
       uppercase_operation_id: "GET_WORK"
-      path: "/work/:id"
+      path: "/work/:ident"
       HttpMethod: "Get"
       httpmethod: "get"
     put:
@@ -3279,12 +3279,12 @@ paths:
       - "works"
       operationId: "update_work"
       parameters:
-      - name: "id"
+      - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
+        example: "\"ident_example\".to_string()"
       - in: "body"
         name: "entity"
         required: true
@@ -3297,12 +3297,12 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "UPDATE_WORK"
         consumesJson: true
-      - name: "editgroup"
+      - name: "editgroup_id"
         in: "query"
         required: false
         type: "string"
         formatString: "{:?}"
-        example: "Some(\"editgroup_example\".to_string())"
+        example: "Some(\"editgroup_id_example\".to_string())"
       responses:
         200:
           description: "Updated Entity"
@@ -3342,7 +3342,7 @@ paths:
           producesJson: true
       operation_id: "update_work"
       uppercase_operation_id: "UPDATE_WORK"
-      path: "/work/:id"
+      path: "/work/:ident"
       HttpMethod: "Put"
       httpmethod: "put"
       noClientExample: true
@@ -3351,18 +3351,18 @@ paths:
       - "works"
       operationId: "delete_work"
       parameters:
-      - name: "id"
+      - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
-      - name: "editgroup"
+        example: "\"ident_example\".to_string()"
+      - name: "editgroup_id"
         in: "query"
         required: false
         type: "string"
         formatString: "{:?}"
-        example: "Some(\"editgroup_example\".to_string())"
+        example: "Some(\"editgroup_id_example\".to_string())"
       responses:
         200:
           description: "Deleted Entity"
@@ -3402,21 +3402,21 @@ paths:
           producesJson: true
       operation_id: "delete_work"
       uppercase_operation_id: "DELETE_WORK"
-      path: "/work/:id"
+      path: "/work/:ident"
       HttpMethod: "Delete"
       httpmethod: "delete"
-  /work/rev/{id}:
+  /work/rev/{rev_id}:
     get:
       tags:
       - "works"
       operationId: "get_work_revision"
       parameters:
-      - name: "id"
+      - name: "rev_id"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
+        example: "\"rev_id_example\".to_string()"
       - name: "expand"
         in: "query"
         description: "List of sub-entities to expand in response. For works, none\
@@ -3472,21 +3472,21 @@ paths:
           producesJson: true
       operation_id: "get_work_revision"
       uppercase_operation_id: "GET_WORK_REVISION"
-      path: "/work/rev/:id"
+      path: "/work/rev/:rev_id"
       HttpMethod: "Get"
       httpmethod: "get"
-  /work/{id}/history:
+  /work/{ident}/history:
     get:
       tags:
       - "works"
       operationId: "get_work_history"
       parameters:
-      - name: "id"
+      - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
+        example: "\"ident_example\".to_string()"
       - name: "limit"
         in: "query"
         required: false
@@ -3535,21 +3535,21 @@ paths:
           producesJson: true
       operation_id: "get_work_history"
       uppercase_operation_id: "GET_WORK_HISTORY"
-      path: "/work/:id/history"
+      path: "/work/:ident/history"
       HttpMethod: "Get"
       httpmethod: "get"
-  /work/{id}/redirects:
+  /work/{ident}/redirects:
     get:
       tags:
       - "works"
       operationId: "get_work_redirects"
       parameters:
-      - name: "id"
+      - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
+        example: "\"ident_example\".to_string()"
       responses:
         200:
           description: "Found Entity Redirects"
@@ -3591,21 +3591,21 @@ paths:
           producesJson: true
       operation_id: "get_work_redirects"
       uppercase_operation_id: "GET_WORK_REDIRECTS"
-      path: "/work/:id/redirects"
+      path: "/work/:ident/redirects"
       HttpMethod: "Get"
       httpmethod: "get"
-  /work/{id}/releases:
+  /work/{ident}/releases:
     get:
       tags:
       - "works"
       operationId: "get_work_releases"
       parameters:
-      - name: "id"
+      - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
+        example: "\"ident_example\".to_string()"
       - name: "hide"
         in: "query"
         description: "List of entity fields to elide in response. For releases, 'abstracts',\
@@ -3655,7 +3655,7 @@ paths:
           producesJson: true
       operation_id: "get_work_releases"
       uppercase_operation_id: "GET_WORK_RELEASES"
-      path: "/work/:id/releases"
+      path: "/work/:ident/releases"
       HttpMethod: "Get"
       httpmethod: "get"
   /work/edit/{edit_id}:
@@ -3767,16 +3767,16 @@ paths:
       path: "/work/edit/:edit_id"
       HttpMethod: "Delete"
       httpmethod: "delete"
-  /editor/{id}:
+  /editor/{editor_id}:
     get:
       operationId: "get_editor"
       parameters:
-      - name: "id"
+      - name: "editor_id"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
+        example: "\"editor_id_example\".to_string()"
       responses:
         200:
           description: "Found"
@@ -3816,19 +3816,19 @@ paths:
           producesJson: true
       operation_id: "get_editor"
       uppercase_operation_id: "GET_EDITOR"
-      path: "/editor/:id"
+      path: "/editor/:editor_id"
       HttpMethod: "Get"
       httpmethod: "get"
-  /editor/{id}/changelog:
+  /editor/{editor_id}/changelog:
     get:
       operationId: "get_editor_changelog"
       parameters:
-      - name: "id"
+      - name: "editor_id"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
+        example: "\"editor_id_example\".to_string()"
       responses:
         200:
           description: "Found"
@@ -3870,7 +3870,7 @@ paths:
           producesJson: true
       operation_id: "get_editor_changelog"
       uppercase_operation_id: "GET_EDITOR_CHANGELOG"
-      path: "/editor/:id/changelog"
+      path: "/editor/:editor_id/changelog"
       HttpMethod: "Get"
       httpmethod: "get"
   /editgroup:
@@ -3925,13 +3925,13 @@ paths:
       HttpMethod: "Post"
       httpmethod: "post"
       noClientExample: true
-  /editgroup/{id}:
+  /editgroup/{editgroup_id}:
     get:
       tags:
       - "edit-lifecycle"
       operationId: "get_editgroup"
       parameters:
-      - name: "id"
+      - name: "editgroup_id"
         in: "path"
         description: "base32-encoded unique identifier"
         required: true
@@ -3940,7 +3940,7 @@ paths:
         minLength: 26
         pattern: "[a-zA-Z2-7]{26}"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
+        example: "\"editgroup_id_example\".to_string()"
       responses:
         200:
           description: "Found"
@@ -3980,16 +3980,16 @@ paths:
           producesJson: true
       operation_id: "get_editgroup"
       uppercase_operation_id: "GET_EDITGROUP"
-      path: "/editgroup/:id"
+      path: "/editgroup/:editgroup_id"
       HttpMethod: "Get"
       httpmethod: "get"
-  /editgroup/{id}/accept:
+  /editgroup/{editgroup_id}/accept:
     post:
       tags:
       - "edit-lifecycle"
       operationId: "accept_editgroup"
       parameters:
-      - name: "id"
+      - name: "editgroup_id"
         in: "path"
         description: "base32-encoded unique identifier"
         required: true
@@ -3998,7 +3998,7 @@ paths:
         minLength: 26
         pattern: "[a-zA-Z2-7]{26}"
         formatString: "\\\"{}\\\""
-        example: "\"id_example\".to_string()"
+        example: "\"editgroup_id_example\".to_string()"
       responses:
         200:
           description: "Merged Successfully"
@@ -4047,7 +4047,7 @@ paths:
           producesJson: true
       operation_id: "accept_editgroup"
       uppercase_operation_id: "ACCEPT_EDITGROUP"
-      path: "/editgroup/:id/accept"
+      path: "/editgroup/:editgroup_id/accept"
       HttpMethod: "Post"
       httpmethod: "post"
   /changelog:
@@ -4089,13 +4089,13 @@ paths:
       path: "/changelog"
       HttpMethod: "Get"
       httpmethod: "get"
-  /changelog/{id}:
+  /changelog/{index}:
     get:
       tags:
       - "edit-lifecycle"
       operationId: "get_changelog_entry"
       parameters:
-      - name: "id"
+      - name: "index"
         in: "path"
         required: true
         type: "integer"
@@ -4132,7 +4132,7 @@ paths:
           producesJson: true
       operation_id: "get_changelog_entry"
       uppercase_operation_id: "GET_CHANGELOG_ENTRY"
-      path: "/changelog/:id"
+      path: "/changelog/:index"
       HttpMethod: "Get"
       httpmethod: "get"
   /stats:
@@ -4325,7 +4325,7 @@ definitions:
   file_entity:
     type: "object"
     properties:
-      releases:
+      release_ids:
         type: "array"
         items:
           type: "string"
@@ -4385,9 +4385,6 @@ definitions:
       redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
       sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
       ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-      releases:
-      - "releases"
-      - "releases"
       revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       sha1: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
       urls:
@@ -4399,6 +4396,9 @@ definitions:
       extra: "{}"
       mimetype: "application/pdf"
       state: "wip"
+      release_ids:
+      - "release_ids"
+      - "release_ids"
       edit_extra: "{}"
       md5: "d41efcc592d1e40ac13905377399eb9b"
     upperCaseName: "FILE_ENTITY"
@@ -4604,9 +4604,6 @@ definitions:
       - redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
         sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
         ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-        releases:
-        - "releases"
-        - "releases"
         revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         sha1: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
         urls:
@@ -4618,14 +4615,14 @@ definitions:
         extra: "{}"
         mimetype: "application/pdf"
         state: "wip"
+        release_ids:
+        - "release_ids"
+        - "release_ids"
         edit_extra: "{}"
         md5: "d41efcc592d1e40ac13905377399eb9b"
       - redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
         sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
         ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-        releases:
-        - "releases"
-        - "releases"
         revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         sha1: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
         urls:
@@ -4637,6 +4634,9 @@ definitions:
         extra: "{}"
         mimetype: "application/pdf"
         state: "wip"
+        release_ids:
+        - "release_ids"
+        - "release_ids"
         edit_extra: "{}"
         md5: "d41efcc592d1e40ac13905377399eb9b"
       pmcid: "pmcid"
@@ -4778,9 +4778,9 @@ definitions:
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
             prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+        editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
         description: "description"
         editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
-        id: "q3nouwy3nnbsvo3h5klxsx4a7y"
       edit:
         ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
         edit_id: 847
@@ -4868,9 +4868,9 @@ definitions:
               editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
               prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
               revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+          editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
           description: "description"
           editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
-          id: "q3nouwy3nnbsvo3h5klxsx4a7y"
         index: 0
         editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
         timestamp: "2000-01-23T04:56:07.000+00:00"
@@ -4917,14 +4917,14 @@ definitions:
     required:
     - "username"
     properties:
-      id:
+      editor_id:
         type: "string"
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
       username:
         type: "string"
         example: "zerocool93"
     example:
-      id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+      editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
       username: "zerocool93"
     upperCaseName: "EDITOR"
   editgroup:
@@ -4932,7 +4932,7 @@ definitions:
     required:
     - "editor_id"
     properties:
-      id:
+      editgroup_id:
         type: "string"
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
         description: "base32-encoded unique identifier"
@@ -5030,9 +5030,9 @@ definitions:
           editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
           prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+      editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
       description: "description"
       editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
-      id: "q3nouwy3nnbsvo3h5klxsx4a7y"
     upperCaseName: "EDITGROUP"
   changelog_entry:
     type: "object"
@@ -5131,9 +5131,9 @@ definitions:
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
             prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+        editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
         description: "description"
         editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
-        id: "q3nouwy3nnbsvo3h5klxsx4a7y"
       index: 0
       editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
       timestamp: "2000-01-23T04:56:07.000+00:00"

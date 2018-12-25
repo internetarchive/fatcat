@@ -33,7 +33,7 @@ class FileEntity(object):
                             and the value is json key in definition.
     """
     swagger_types = {
-        'releases': 'list[str]',
+        'release_ids': 'list[str]',
         'mimetype': 'str',
         'urls': 'list[FileEntityUrls]',
         'sha256': 'str',
@@ -49,7 +49,7 @@ class FileEntity(object):
     }
 
     attribute_map = {
-        'releases': 'releases',
+        'release_ids': 'release_ids',
         'mimetype': 'mimetype',
         'urls': 'urls',
         'sha256': 'sha256',
@@ -64,10 +64,10 @@ class FileEntity(object):
         'state': 'state'
     }
 
-    def __init__(self, releases=None, mimetype=None, urls=None, sha256=None, sha1=None, md5=None, size=None, edit_extra=None, extra=None, redirect=None, revision=None, ident=None, state=None):  # noqa: E501
+    def __init__(self, release_ids=None, mimetype=None, urls=None, sha256=None, sha1=None, md5=None, size=None, edit_extra=None, extra=None, redirect=None, revision=None, ident=None, state=None):  # noqa: E501
         """FileEntity - a model defined in Swagger"""  # noqa: E501
 
-        self._releases = None
+        self._release_ids = None
         self._mimetype = None
         self._urls = None
         self._sha256 = None
@@ -82,8 +82,8 @@ class FileEntity(object):
         self._state = None
         self.discriminator = None
 
-        if releases is not None:
-            self.releases = releases
+        if release_ids is not None:
+            self.release_ids = release_ids
         if mimetype is not None:
             self.mimetype = mimetype
         if urls is not None:
@@ -110,25 +110,25 @@ class FileEntity(object):
             self.state = state
 
     @property
-    def releases(self):
-        """Gets the releases of this FileEntity.  # noqa: E501
+    def release_ids(self):
+        """Gets the release_ids of this FileEntity.  # noqa: E501
 
 
-        :return: The releases of this FileEntity.  # noqa: E501
+        :return: The release_ids of this FileEntity.  # noqa: E501
         :rtype: list[str]
         """
-        return self._releases
+        return self._release_ids
 
-    @releases.setter
-    def releases(self, releases):
-        """Sets the releases of this FileEntity.
+    @release_ids.setter
+    def release_ids(self, release_ids):
+        """Sets the release_ids of this FileEntity.
 
 
-        :param releases: The releases of this FileEntity.  # noqa: E501
+        :param release_ids: The release_ids of this FileEntity.  # noqa: E501
         :type: list[str]
         """
 
-        self._releases = releases
+        self._release_ids = release_ids
 
     @property
     def mimetype(self):

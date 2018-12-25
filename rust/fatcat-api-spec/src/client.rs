@@ -169,11 +169,15 @@ impl Client {
 }
 
 impl Api for Client {
-    fn create_container(&self, param_entity: models::ContainerEntity, param_editgroup: Option<String>, context: &Context) -> Box<Future<Item = CreateContainerResponse, Error = ApiError> + Send> {
+    fn create_container(&self, param_entity: models::ContainerEntity, param_editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = CreateContainerResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
 
-        let url = format!("{}/v0/container?{editgroup}", self.base_path, editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET));
+        let url = format!(
+            "{}/v0/container?{editgroup_id}",
+            self.base_path,
+            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
+        );
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
 
@@ -241,18 +245,18 @@ impl Api for Client {
         &self,
         param_entity_list: &Vec<models::ContainerEntity>,
         param_autoaccept: Option<bool>,
-        param_editgroup: Option<String>,
+        param_editgroup_id: Option<String>,
         context: &Context,
     ) -> Box<Future<Item = CreateContainerBatchResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_autoaccept = param_autoaccept.map_or_else(String::new, |query| format!("autoaccept={autoaccept}&", autoaccept = query.to_string()));
-        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
 
         let url = format!(
-            "{}/v0/container/batch?{autoaccept}{editgroup}",
+            "{}/v0/container/batch?{autoaccept}{editgroup_id}",
             self.base_path,
             autoaccept = utf8_percent_encode(&query_autoaccept, QUERY_ENCODE_SET),
-            editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET)
+            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
         );
 
         let body = serde_json::to_string(&param_entity_list).expect("impossible to fail to serialize");
@@ -317,15 +321,15 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_container(&self, param_id: String, param_editgroup: Option<String>, context: &Context) -> Box<Future<Item = DeleteContainerResponse, Error = ApiError> + Send> {
+    fn delete_container(&self, param_ident: String, param_editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = DeleteContainerResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
 
         let url = format!(
-            "{}/v0/container/{id}?{editgroup}",
+            "{}/v0/container/{ident}?{editgroup_id}",
             self.base_path,
-            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
-            editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET)
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
+            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
         );
 
         let hyper_client = (self.hyper_client)();
@@ -449,15 +453,15 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_container(&self, param_id: String, param_expand: Option<String>, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetContainerResponse, Error = ApiError> + Send> {
+    fn get_container(&self, param_ident: String, param_expand: Option<String>, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetContainerResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
         let url = format!(
-            "{}/v0/container/{id}?{expand}{hide}",
+            "{}/v0/container/{ident}?{expand}{hide}",
             self.base_path,
-            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
             expand = utf8_percent_encode(&query_expand, QUERY_ENCODE_SET),
             hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
         );
@@ -583,14 +587,14 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_container_history(&self, param_id: String, param_limit: Option<i64>, context: &Context) -> Box<Future<Item = GetContainerHistoryResponse, Error = ApiError> + Send> {
+    fn get_container_history(&self, param_ident: String, param_limit: Option<i64>, context: &Context) -> Box<Future<Item = GetContainerHistoryResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_limit = param_limit.map_or_else(String::new, |query| format!("limit={limit}&", limit = query.to_string()));
 
         let url = format!(
-            "{}/v0/container/{id}/history?{limit}",
+            "{}/v0/container/{ident}/history?{limit}",
             self.base_path,
-            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
             limit = utf8_percent_encode(&query_limit, QUERY_ENCODE_SET)
         );
 
@@ -651,11 +655,11 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_container_redirects(&self, param_id: String, context: &Context) -> Box<Future<Item = GetContainerRedirectsResponse, Error = ApiError> + Send> {
+    fn get_container_redirects(&self, param_ident: String, context: &Context) -> Box<Future<Item = GetContainerRedirectsResponse, Error = ApiError> + Send> {
         let url = format!(
-            "{}/v0/container/{id}/redirects",
+            "{}/v0/container/{ident}/redirects",
             self.base_path,
-            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET)
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET)
         );
 
         let hyper_client = (self.hyper_client)();
@@ -717,7 +721,7 @@ impl Api for Client {
 
     fn get_container_revision(
         &self,
-        param_id: String,
+        param_rev_id: String,
         param_expand: Option<String>,
         param_hide: Option<String>,
         context: &Context,
@@ -727,9 +731,9 @@ impl Api for Client {
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
         let url = format!(
-            "{}/v0/container/rev/{id}?{expand}{hide}",
+            "{}/v0/container/rev/{rev_id}?{expand}{hide}",
             self.base_path,
-            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            rev_id = utf8_percent_encode(&param_rev_id.to_string(), PATH_SEGMENT_ENCODE_SET),
             expand = utf8_percent_encode(&query_expand, QUERY_ENCODE_SET),
             hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
         );
@@ -873,19 +877,19 @@ impl Api for Client {
 
     fn update_container(
         &self,
-        param_id: String,
+        param_ident: String,
         param_entity: models::ContainerEntity,
-        param_editgroup: Option<String>,
+        param_editgroup_id: Option<String>,
         context: &Context,
     ) -> Box<Future<Item = UpdateContainerResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
 
         let url = format!(
-            "{}/v0/container/{id}?{editgroup}",
+            "{}/v0/container/{ident}?{editgroup_id}",
             self.base_path,
-            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
-            editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET)
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
+            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
         );
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
@@ -950,11 +954,15 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_creator(&self, param_entity: models::CreatorEntity, param_editgroup: Option<String>, context: &Context) -> Box<Future<Item = CreateCreatorResponse, Error = ApiError> + Send> {
+    fn create_creator(&self, param_entity: models::CreatorEntity, param_editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = CreateCreatorResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
 
-        let url = format!("{}/v0/creator?{editgroup}", self.base_path, editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET));
+        let url = format!(
+            "{}/v0/creator?{editgroup_id}",
+            self.base_path,
+            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
+        );
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
 
@@ -1022,18 +1030,18 @@ impl Api for Client {
         &self,
         param_entity_list: &Vec<models::CreatorEntity>,
         param_autoaccept: Option<bool>,
-        param_editgroup: Option<String>,
+        param_editgroup_id: Option<String>,
         context: &Context,
     ) -> Box<Future<Item = CreateCreatorBatchResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_autoaccept = param_autoaccept.map_or_else(String::new, |query| format!("autoaccept={autoaccept}&", autoaccept = query.to_string()));
-        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
 
         let url = format!(
-            "{}/v0/creator/batch?{autoaccept}{editgroup}",
+            "{}/v0/creator/batch?{autoaccept}{editgroup_id}",
             self.base_path,
             autoaccept = utf8_percent_encode(&query_autoaccept, QUERY_ENCODE_SET),
-            editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET)
+            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
         );
 
         let body = serde_json::to_string(&param_entity_list).expect("impossible to fail to serialize");
@@ -1098,15 +1106,15 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_creator(&self, param_id: String, param_editgroup: Option<String>, context: &Context) -> Box<Future<Item = DeleteCreatorResponse, Error = ApiError> + Send> {
+    fn delete_creator(&self, param_ident: String, param_editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = DeleteCreatorResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
 
         let url = format!(
-            "{}/v0/creator/{id}?{editgroup}",
+            "{}/v0/creator/{ident}?{editgroup_id}",
             self.base_path,
-            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
-            editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET)
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
+            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
         );
 
         let hyper_client = (self.hyper_client)();
@@ -1230,15 +1238,15 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_creator(&self, param_id: String, param_expand: Option<String>, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send> {
+    fn get_creator(&self, param_ident: String, param_expand: Option<String>, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
         let url = format!(
-            "{}/v0/creator/{id}?{expand}{hide}",
+            "{}/v0/creator/{ident}?{expand}{hide}",
             self.base_path,
-            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
             expand = utf8_percent_encode(&query_expand, QUERY_ENCODE_SET),
             hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
         );
@@ -1364,14 +1372,14 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_creator_history(&self, param_id: String, param_limit: Option<i64>, context: &Context) -> Box<Future<Item = GetCreatorHistoryResponse, Error = ApiError> + Send> {
+    fn get_creator_history(&self, param_ident: String, param_limit: Option<i64>, context: &Context) -> Box<Future<Item = GetCreatorHistoryResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_limit = param_limit.map_or_else(String::new, |query| format!("limit={limit}&", limit = query.to_string()));
 
         let url = format!(
-            "{}/v0/creator/{id}/history?{limit}",
+            "{}/v0/creator/{ident}/history?{limit}",
             self.base_path,
-            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
             limit = utf8_percent_encode(&query_limit, QUERY_ENCODE_SET)
         );
 
@@ -1432,8 +1440,12 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_creator_redirects(&self, param_id: String, context: &Context) -> Box<Future<Item = GetCreatorRedirectsResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/creator/{id}/redirects", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
+    fn get_creator_redirects(&self, param_ident: String, context: &Context) -> Box<Future<Item = GetCreatorRedirectsResponse, Error = ApiError> + Send> {
+        let url = format!(
+            "{}/v0/creator/{ident}/redirects",
+            self.base_path,
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET)
+        );
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Get, &url);
@@ -1492,14 +1504,14 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_creator_releases(&self, param_id: String, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetCreatorReleasesResponse, Error = ApiError> + Send> {
+    fn get_creator_releases(&self, param_ident: String, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetCreatorReleasesResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
         let url = format!(
-            "{}/v0/creator/{id}/releases?{hide}",
+            "{}/v0/creator/{ident}/releases?{hide}",
             self.base_path,
-            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
             hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
         );
 
@@ -1562,7 +1574,7 @@ impl Api for Client {
 
     fn get_creator_revision(
         &self,
-        param_id: String,
+        param_rev_id: String,
         param_expand: Option<String>,
         param_hide: Option<String>,
         context: &Context,
@@ -1572,9 +1584,9 @@ impl Api for Client {
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
         let url = format!(
-            "{}/v0/creator/rev/{id}?{expand}{hide}",
+            "{}/v0/creator/rev/{rev_id}?{expand}{hide}",
             self.base_path,
-            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            rev_id = utf8_percent_encode(&param_rev_id.to_string(), PATH_SEGMENT_ENCODE_SET),
             expand = utf8_percent_encode(&query_expand, QUERY_ENCODE_SET),
             hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
         );
@@ -1718,19 +1730,19 @@ impl Api for Client {
 
     fn update_creator(
         &self,
-        param_id: String,
+        param_ident: String,
         param_entity: models::CreatorEntity,
-        param_editgroup: Option<String>,
+        param_editgroup_id: Option<String>,
         context: &Context,
     ) -> Box<Future<Item = UpdateCreatorResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
 
         let url = format!(
-            "{}/v0/creator/{id}?{editgroup}",
+            "{}/v0/creator/{ident}?{editgroup_id}",
             self.base_path,
-            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
-            editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET)
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
+            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
         );
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
@@ -1795,8 +1807,12 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_editor(&self, param_id: String, context: &Context) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/editor/{id}", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
+    fn get_editor(&self, param_editor_id: String, context: &Context) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send> {
+        let url = format!(
+            "{}/v0/editor/{editor_id}",
+            self.base_path,
+            editor_id = utf8_percent_encode(&param_editor_id.to_string(), PATH_SEGMENT_ENCODE_SET)
+        );
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Get, &url);
@@ -1855,8 +1871,12 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_editor_changelog(&self, param_id: String, context: &Context) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/editor/{id}/changelog", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
+    fn get_editor_changelog(&self, param_editor_id: String, context: &Context) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send> {
+        let url = format!(
+            "{}/v0/editor/{editor_id}/changelog",
+            self.base_path,
+            editor_id = utf8_percent_encode(&param_editor_id.to_string(), PATH_SEGMENT_ENCODE_SET)
+        );
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Get, &url);
@@ -1964,8 +1984,12 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn accept_editgroup(&self, param_id: String, context: &Context) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/editgroup/{id}/accept", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
+    fn accept_editgroup(&self, param_editgroup_id: String, context: &Context) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send> {
+        let url = format!(
+            "{}/v0/editgroup/{editgroup_id}/accept",
+            self.base_path,
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET)
+        );
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Post, &url);
@@ -2138,8 +2162,12 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_changelog_entry(&self, param_id: i64, context: &Context) -> Box<Future<Item = GetChangelogEntryResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/changelog/{id}", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
+    fn get_changelog_entry(&self, param_index: i64, context: &Context) -> Box<Future<Item = GetChangelogEntryResponse, Error = ApiError> + Send> {
+        let url = format!(
+            "{}/v0/changelog/{index}",
+            self.base_path,
+            index = utf8_percent_encode(&param_index.to_string(), PATH_SEGMENT_ENCODE_SET)
+        );
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Get, &url);
@@ -2191,8 +2219,12 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_editgroup(&self, param_id: String, context: &Context) -> Box<Future<Item = GetEditgroupResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/editgroup/{id}", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
+    fn get_editgroup(&self, param_editgroup_id: String, context: &Context) -> Box<Future<Item = GetEditgroupResponse, Error = ApiError> + Send> {
+        let url = format!(
+            "{}/v0/editgroup/{editgroup_id}",
+            self.base_path,
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET)
+        );
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Get, &url);
@@ -2251,11 +2283,11 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_file(&self, param_entity: models::FileEntity, param_editgroup: Option<String>, context: &Context) -> Box<Future<Item = CreateFileResponse, Error = ApiError> + Send> {
+    fn create_file(&self, param_entity: models::FileEntity, param_editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = CreateFileResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
 
-        let url = format!("{}/v0/file?{editgroup}", self.base_path, editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET));
+        let url = format!("{}/v0/file?{editgroup_id}", self.base_path, editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET));
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
 
@@ -2323,18 +2355,18 @@ impl Api for Client {
         &self,
         param_entity_list: &Vec<models::FileEntity>,
         param_autoaccept: Option<bool>,
-        param_editgroup: Option<String>,
+        param_editgroup_id: Option<String>,
         context: &Context,
     ) -> Box<Future<Item = CreateFileBatchResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_autoaccept = param_autoaccept.map_or_else(String::new, |query| format!("autoaccept={autoaccept}&", autoaccept = query.to_string()));
-        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
 
         let url = format!(
-            "{}/v0/file/batch?{autoaccept}{editgroup}",
+            "{}/v0/file/batch?{autoaccept}{editgroup_id}",
             self.base_path,
             autoaccept = utf8_percent_encode(&query_autoaccept, QUERY_ENCODE_SET),
-            editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET)
+            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
         );
 
         let body = serde_json::to_string(&param_entity_list).expect("impossible to fail to serialize");
@@ -2399,15 +2431,15 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_file(&self, param_id: String, param_editgroup: Option<String>, context: &Context) -> Box<Future<Item = DeleteFileResponse, Error = ApiError> + Send> {
+    fn delete_file(&self, param_ident: String, param_editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = DeleteFileResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
 
         let url = format!(
-            "{}/v0/file/{id}?{editgroup}",
+            "{}/v0/file/{ident}?{editgroup_id}",
             self.base_path,
-            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
-            editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET)
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
+            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
         );
 
         let hyper_client = (self.hyper_client)();
@@ -2531,15 +2563,15 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_file(&self, param_id: String, param_expand: Option<String>, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetFileResponse, Error = ApiError> + Send> {
+    fn get_file(&self, param_ident: String, param_expand: Option<String>, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetFileResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
         let url = format!(
-            "{}/v0/file/{id}?{expand}{hide}",
+            "{}/v0/file/{ident}?{expand}{hide}",
             self.base_path,
-            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
             expand = utf8_percent_encode(&query_expand, QUERY_ENCODE_SET),
             hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
         );
@@ -2665,14 +2697,14 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_file_history(&self, param_id: String, param_limit: Option<i64>, context: &Context) -> Box<Future<Item = GetFileHistoryResponse, Error = ApiError> + Send> {
+    fn get_file_history(&self, param_ident: String, param_limit: Option<i64>, context: &Context) -> Box<Future<Item = GetFileHistoryResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_limit = param_limit.map_or_else(String::new, |query| format!("limit={limit}&", limit = query.to_string()));
 
         let url = format!(
-            "{}/v0/file/{id}/history?{limit}",
+            "{}/v0/file/{ident}/history?{limit}",
             self.base_path,
-            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
             limit = utf8_percent_encode(&query_limit, QUERY_ENCODE_SET)
         );
 
@@ -2733,8 +2765,12 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_file_redirects(&self, param_id: String, context: &Context) -> Box<Future<Item = GetFileRedirectsResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/file/{id}/redirects", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
+    fn get_file_redirects(&self, param_ident: String, context: &Context) -> Box<Future<Item = GetFileRedirectsResponse, Error = ApiError> + Send> {
+        let url = format!(
+            "{}/v0/file/{ident}/redirects",
+            self.base_path,
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET)
+        );
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Get, &url);
@@ -2793,15 +2829,21 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_file_revision(&self, param_id: String, param_expand: Option<String>, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetFileRevisionResponse, Error = ApiError> + Send> {
+    fn get_file_revision(
+        &self,
+        param_rev_id: String,
+        param_expand: Option<String>,
+        param_hide: Option<String>,
+        context: &Context,
+    ) -> Box<Future<Item = GetFileRevisionResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
         let url = format!(
-            "{}/v0/file/rev/{id}?{expand}{hide}",
+            "{}/v0/file/rev/{rev_id}?{expand}{hide}",
             self.base_path,
-            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            rev_id = utf8_percent_encode(&param_rev_id.to_string(), PATH_SEGMENT_ENCODE_SET),
             expand = utf8_percent_encode(&query_expand, QUERY_ENCODE_SET),
             hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
         );
@@ -2946,15 +2988,21 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn update_file(&self, param_id: String, param_entity: models::FileEntity, param_editgroup: Option<String>, context: &Context) -> Box<Future<Item = UpdateFileResponse, Error = ApiError> + Send> {
+    fn update_file(
+        &self,
+        param_ident: String,
+        param_entity: models::FileEntity,
+        param_editgroup_id: Option<String>,
+        context: &Context,
+    ) -> Box<Future<Item = UpdateFileResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
 
         let url = format!(
-            "{}/v0/file/{id}?{editgroup}",
+            "{}/v0/file/{ident}?{editgroup_id}",
             self.base_path,
-            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
-            editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET)
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
+            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
         );
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
@@ -3019,11 +3067,15 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_release(&self, param_entity: models::ReleaseEntity, param_editgroup: Option<String>, context: &Context) -> Box<Future<Item = CreateReleaseResponse, Error = ApiError> + Send> {
+    fn create_release(&self, param_entity: models::ReleaseEntity, param_editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = CreateReleaseResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
 
-        let url = format!("{}/v0/release?{editgroup}", self.base_path, editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET));
+        let url = format!(
+            "{}/v0/release?{editgroup_id}",
+            self.base_path,
+            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
+        );
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
 
@@ -3091,18 +3143,18 @@ impl Api for Client {
         &self,
         param_entity_list: &Vec<models::ReleaseEntity>,
         param_autoaccept: Option<bool>,
-        param_editgroup: Option<String>,
+        param_editgroup_id: Option<String>,
         context: &Context,
     ) -> Box<Future<Item = CreateReleaseBatchResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_autoaccept = param_autoaccept.map_or_else(String::new, |query| format!("autoaccept={autoaccept}&", autoaccept = query.to_string()));
-        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
 
         let url = format!(
-            "{}/v0/release/batch?{autoaccept}{editgroup}",
+            "{}/v0/release/batch?{autoaccept}{editgroup_id}",
             self.base_path,
             autoaccept = utf8_percent_encode(&query_autoaccept, QUERY_ENCODE_SET),
-            editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET)
+            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
         );
 
         let body = serde_json::to_string(&param_entity_list).expect("impossible to fail to serialize");
@@ -3167,11 +3219,11 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_work(&self, param_entity: models::WorkEntity, param_editgroup: Option<String>, context: &Context) -> Box<Future<Item = CreateWorkResponse, Error = ApiError> + Send> {
+    fn create_work(&self, param_entity: models::WorkEntity, param_editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = CreateWorkResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
 
-        let url = format!("{}/v0/work?{editgroup}", self.base_path, editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET));
+        let url = format!("{}/v0/work?{editgroup_id}", self.base_path, editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET));
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
 
@@ -3235,15 +3287,15 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_release(&self, param_id: String, param_editgroup: Option<String>, context: &Context) -> Box<Future<Item = DeleteReleaseResponse, Error = ApiError> + Send> {
+    fn delete_release(&self, param_ident: String, param_editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = DeleteReleaseResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
 
         let url = format!(
-            "{}/v0/release/{id}?{editgroup}",
+            "{}/v0/release/{ident}?{editgroup_id}",
             self.base_path,
-            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
-            editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET)
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
+            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
         );
 
         let hyper_client = (self.hyper_client)();
@@ -3367,15 +3419,15 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_release(&self, param_id: String, param_expand: Option<String>, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send> {
+    fn get_release(&self, param_ident: String, param_expand: Option<String>, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
         let url = format!(
-            "{}/v0/release/{id}?{expand}{hide}",
+            "{}/v0/release/{ident}?{expand}{hide}",
             self.base_path,
-            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
             expand = utf8_percent_encode(&query_expand, QUERY_ENCODE_SET),
             hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
         );
@@ -3501,14 +3553,14 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_release_files(&self, param_id: String, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetReleaseFilesResponse, Error = ApiError> + Send> {
+    fn get_release_files(&self, param_ident: String, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetReleaseFilesResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
         let url = format!(
-            "{}/v0/release/{id}/files?{hide}",
+            "{}/v0/release/{ident}/files?{hide}",
             self.base_path,
-            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
             hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
         );
 
@@ -3569,14 +3621,14 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_release_history(&self, param_id: String, param_limit: Option<i64>, context: &Context) -> Box<Future<Item = GetReleaseHistoryResponse, Error = ApiError> + Send> {
+    fn get_release_history(&self, param_ident: String, param_limit: Option<i64>, context: &Context) -> Box<Future<Item = GetReleaseHistoryResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_limit = param_limit.map_or_else(String::new, |query| format!("limit={limit}&", limit = query.to_string()));
 
         let url = format!(
-            "{}/v0/release/{id}/history?{limit}",
+            "{}/v0/release/{ident}/history?{limit}",
             self.base_path,
-            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
             limit = utf8_percent_encode(&query_limit, QUERY_ENCODE_SET)
         );
 
@@ -3637,8 +3689,12 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_release_redirects(&self, param_id: String, context: &Context) -> Box<Future<Item = GetReleaseRedirectsResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/release/{id}/redirects", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
+    fn get_release_redirects(&self, param_ident: String, context: &Context) -> Box<Future<Item = GetReleaseRedirectsResponse, Error = ApiError> + Send> {
+        let url = format!(
+            "{}/v0/release/{ident}/redirects",
+            self.base_path,
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET)
+        );
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Get, &url);
@@ -3699,7 +3755,7 @@ impl Api for Client {
 
     fn get_release_revision(
         &self,
-        param_id: String,
+        param_rev_id: String,
         param_expand: Option<String>,
         param_hide: Option<String>,
         context: &Context,
@@ -3709,9 +3765,9 @@ impl Api for Client {
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
         let url = format!(
-            "{}/v0/release/rev/{id}?{expand}{hide}",
+            "{}/v0/release/rev/{rev_id}?{expand}{hide}",
             self.base_path,
-            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            rev_id = utf8_percent_encode(&param_rev_id.to_string(), PATH_SEGMENT_ENCODE_SET),
             expand = utf8_percent_encode(&query_expand, QUERY_ENCODE_SET),
             hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
         );
@@ -3867,19 +3923,19 @@ impl Api for Client {
 
     fn update_release(
         &self,
-        param_id: String,
+        param_ident: String,
         param_entity: models::ReleaseEntity,
-        param_editgroup: Option<String>,
+        param_editgroup_id: Option<String>,
         context: &Context,
     ) -> Box<Future<Item = UpdateReleaseResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
 
         let url = format!(
-            "{}/v0/release/{id}?{editgroup}",
+            "{}/v0/release/{ident}?{editgroup_id}",
             self.base_path,
-            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
-            editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET)
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
+            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
         );
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
@@ -3948,18 +4004,18 @@ impl Api for Client {
         &self,
         param_entity_list: &Vec<models::WorkEntity>,
         param_autoaccept: Option<bool>,
-        param_editgroup: Option<String>,
+        param_editgroup_id: Option<String>,
         context: &Context,
     ) -> Box<Future<Item = CreateWorkBatchResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_autoaccept = param_autoaccept.map_or_else(String::new, |query| format!("autoaccept={autoaccept}&", autoaccept = query.to_string()));
-        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
 
         let url = format!(
-            "{}/v0/work/batch?{autoaccept}{editgroup}",
+            "{}/v0/work/batch?{autoaccept}{editgroup_id}",
             self.base_path,
             autoaccept = utf8_percent_encode(&query_autoaccept, QUERY_ENCODE_SET),
-            editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET)
+            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
         );
 
         let body = serde_json::to_string(&param_entity_list).expect("impossible to fail to serialize");
@@ -4024,15 +4080,15 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_work(&self, param_id: String, param_editgroup: Option<String>, context: &Context) -> Box<Future<Item = DeleteWorkResponse, Error = ApiError> + Send> {
+    fn delete_work(&self, param_ident: String, param_editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = DeleteWorkResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
 
         let url = format!(
-            "{}/v0/work/{id}?{editgroup}",
+            "{}/v0/work/{ident}?{editgroup_id}",
             self.base_path,
-            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
-            editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET)
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
+            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
         );
 
         let hyper_client = (self.hyper_client)();
@@ -4156,15 +4212,15 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_work(&self, param_id: String, param_expand: Option<String>, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send> {
+    fn get_work(&self, param_ident: String, param_expand: Option<String>, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
         let url = format!(
-            "{}/v0/work/{id}?{expand}{hide}",
+            "{}/v0/work/{ident}?{expand}{hide}",
             self.base_path,
-            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
             expand = utf8_percent_encode(&query_expand, QUERY_ENCODE_SET),
             hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
         );
@@ -4290,14 +4346,14 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_work_history(&self, param_id: String, param_limit: Option<i64>, context: &Context) -> Box<Future<Item = GetWorkHistoryResponse, Error = ApiError> + Send> {
+    fn get_work_history(&self, param_ident: String, param_limit: Option<i64>, context: &Context) -> Box<Future<Item = GetWorkHistoryResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_limit = param_limit.map_or_else(String::new, |query| format!("limit={limit}&", limit = query.to_string()));
 
         let url = format!(
-            "{}/v0/work/{id}/history?{limit}",
+            "{}/v0/work/{ident}/history?{limit}",
             self.base_path,
-            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
             limit = utf8_percent_encode(&query_limit, QUERY_ENCODE_SET)
         );
 
@@ -4358,8 +4414,12 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_work_redirects(&self, param_id: String, context: &Context) -> Box<Future<Item = GetWorkRedirectsResponse, Error = ApiError> + Send> {
-        let url = format!("{}/v0/work/{id}/redirects", self.base_path, id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET));
+    fn get_work_redirects(&self, param_ident: String, context: &Context) -> Box<Future<Item = GetWorkRedirectsResponse, Error = ApiError> + Send> {
+        let url = format!(
+            "{}/v0/work/{ident}/redirects",
+            self.base_path,
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET)
+        );
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Get, &url);
@@ -4418,14 +4478,14 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_work_releases(&self, param_id: String, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetWorkReleasesResponse, Error = ApiError> + Send> {
+    fn get_work_releases(&self, param_ident: String, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetWorkReleasesResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
         let url = format!(
-            "{}/v0/work/{id}/releases?{hide}",
+            "{}/v0/work/{ident}/releases?{hide}",
             self.base_path,
-            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
             hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
         );
 
@@ -4486,15 +4546,21 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_work_revision(&self, param_id: String, param_expand: Option<String>, param_hide: Option<String>, context: &Context) -> Box<Future<Item = GetWorkRevisionResponse, Error = ApiError> + Send> {
+    fn get_work_revision(
+        &self,
+        param_rev_id: String,
+        param_expand: Option<String>,
+        param_hide: Option<String>,
+        context: &Context,
+    ) -> Box<Future<Item = GetWorkRevisionResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
         let url = format!(
-            "{}/v0/work/rev/{id}?{expand}{hide}",
+            "{}/v0/work/rev/{rev_id}?{expand}{hide}",
             self.base_path,
-            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            rev_id = utf8_percent_encode(&param_rev_id.to_string(), PATH_SEGMENT_ENCODE_SET),
             expand = utf8_percent_encode(&query_expand, QUERY_ENCODE_SET),
             hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
         );
@@ -4556,15 +4622,21 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn update_work(&self, param_id: String, param_entity: models::WorkEntity, param_editgroup: Option<String>, context: &Context) -> Box<Future<Item = UpdateWorkResponse, Error = ApiError> + Send> {
+    fn update_work(
+        &self,
+        param_ident: String,
+        param_entity: models::WorkEntity,
+        param_editgroup_id: Option<String>,
+        context: &Context,
+    ) -> Box<Future<Item = UpdateWorkResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup = param_editgroup.map_or_else(String::new, |query| format!("editgroup={editgroup}&", editgroup = query.to_string()));
+        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
 
         let url = format!(
-            "{}/v0/work/{id}?{editgroup}",
+            "{}/v0/work/{ident}?{editgroup_id}",
             self.base_path,
-            id = utf8_percent_encode(&param_id.to_string(), PATH_SEGMENT_ENCODE_SET),
-            editgroup = utf8_percent_encode(&query_editgroup, QUERY_ENCODE_SET)
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
+            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
         );
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");

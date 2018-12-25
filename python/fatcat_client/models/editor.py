@@ -31,46 +31,46 @@ class Editor(object):
                             and the value is json key in definition.
     """
     swagger_types = {
-        'id': 'str',
+        'editor_id': 'str',
         'username': 'str'
     }
 
     attribute_map = {
-        'id': 'id',
+        'editor_id': 'editor_id',
         'username': 'username'
     }
 
-    def __init__(self, id=None, username=None):  # noqa: E501
+    def __init__(self, editor_id=None, username=None):  # noqa: E501
         """Editor - a model defined in Swagger"""  # noqa: E501
 
-        self._id = None
+        self._editor_id = None
         self._username = None
         self.discriminator = None
 
-        if id is not None:
-            self.id = id
+        if editor_id is not None:
+            self.editor_id = editor_id
         self.username = username
 
     @property
-    def id(self):
-        """Gets the id of this Editor.  # noqa: E501
+    def editor_id(self):
+        """Gets the editor_id of this Editor.  # noqa: E501
 
 
-        :return: The id of this Editor.  # noqa: E501
+        :return: The editor_id of this Editor.  # noqa: E501
         :rtype: str
         """
-        return self._id
+        return self._editor_id
 
-    @id.setter
-    def id(self, id):
-        """Sets the id of this Editor.
+    @editor_id.setter
+    def editor_id(self, editor_id):
+        """Sets the editor_id of this Editor.
 
 
-        :param id: The id of this Editor.  # noqa: E501
+        :param editor_id: The editor_id of this Editor.  # noqa: E501
         :type: str
         """
 
-        self._id = id
+        self._editor_id = editor_id
 
     @property
     def username(self):

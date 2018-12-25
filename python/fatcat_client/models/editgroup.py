@@ -33,7 +33,7 @@ class Editgroup(object):
                             and the value is json key in definition.
     """
     swagger_types = {
-        'id': 'str',
+        'editgroup_id': 'str',
         'editor_id': 'str',
         'description': 'str',
         'extra': 'object',
@@ -41,25 +41,25 @@ class Editgroup(object):
     }
 
     attribute_map = {
-        'id': 'id',
+        'editgroup_id': 'editgroup_id',
         'editor_id': 'editor_id',
         'description': 'description',
         'extra': 'extra',
         'edits': 'edits'
     }
 
-    def __init__(self, id=None, editor_id=None, description=None, extra=None, edits=None):  # noqa: E501
+    def __init__(self, editgroup_id=None, editor_id=None, description=None, extra=None, edits=None):  # noqa: E501
         """Editgroup - a model defined in Swagger"""  # noqa: E501
 
-        self._id = None
+        self._editgroup_id = None
         self._editor_id = None
         self._description = None
         self._extra = None
         self._edits = None
         self.discriminator = None
 
-        if id is not None:
-            self.id = id
+        if editgroup_id is not None:
+            self.editgroup_id = editgroup_id
         self.editor_id = editor_id
         if description is not None:
             self.description = description
@@ -69,33 +69,33 @@ class Editgroup(object):
             self.edits = edits
 
     @property
-    def id(self):
-        """Gets the id of this Editgroup.  # noqa: E501
+    def editgroup_id(self):
+        """Gets the editgroup_id of this Editgroup.  # noqa: E501
 
         base32-encoded unique identifier  # noqa: E501
 
-        :return: The id of this Editgroup.  # noqa: E501
+        :return: The editgroup_id of this Editgroup.  # noqa: E501
         :rtype: str
         """
-        return self._id
+        return self._editgroup_id
 
-    @id.setter
-    def id(self, id):
-        """Sets the id of this Editgroup.
+    @editgroup_id.setter
+    def editgroup_id(self, editgroup_id):
+        """Sets the editgroup_id of this Editgroup.
 
         base32-encoded unique identifier  # noqa: E501
 
-        :param id: The id of this Editgroup.  # noqa: E501
+        :param editgroup_id: The editgroup_id of this Editgroup.  # noqa: E501
         :type: str
         """
-        if id is not None and len(id) > 26:
-            raise ValueError("Invalid value for `id`, length must be less than or equal to `26`")  # noqa: E501
-        if id is not None and len(id) < 26:
-            raise ValueError("Invalid value for `id`, length must be greater than or equal to `26`")  # noqa: E501
-        if id is not None and not re.search('[a-zA-Z2-7]{26}', id):  # noqa: E501
-            raise ValueError("Invalid value for `id`, must be a follow pattern or equal to `/[a-zA-Z2-7]{26}/`")  # noqa: E501
+        if editgroup_id is not None and len(editgroup_id) > 26:
+            raise ValueError("Invalid value for `editgroup_id`, length must be less than or equal to `26`")  # noqa: E501
+        if editgroup_id is not None and len(editgroup_id) < 26:
+            raise ValueError("Invalid value for `editgroup_id`, length must be greater than or equal to `26`")  # noqa: E501
+        if editgroup_id is not None and not re.search('[a-zA-Z2-7]{26}', editgroup_id):  # noqa: E501
+            raise ValueError("Invalid value for `editgroup_id`, must be a follow pattern or equal to `/[a-zA-Z2-7]{26}/`")  # noqa: E501
 
-        self._id = id
+        self._editgroup_id = editgroup_id
 
     @property
     def editor_id(self):

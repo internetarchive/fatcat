@@ -52,10 +52,10 @@ from fatcat_client.rest import ApiException
 from pprint import pprint
 # create an instance of the API class
 api_instance = fatcat_client.DefaultApi()
-id = 'id_example' # str | base32-encoded unique identifier
+editgroup_id = 'editgroup_id_example' # str | base32-encoded unique identifier
 
 try:
-    api_response = api_instance.accept_editgroup(id)
+    api_response = api_instance.accept_editgroup(editgroup_id)
     pprint(api_response)
 except ApiException as e:
     print("Exception when calling DefaultApi->accept_editgroup: %s\n" % e)
@@ -68,7 +68,7 @@ All URIs are relative to *https://api.fatcat.wiki/v0*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*DefaultApi* | [**accept_editgroup**](docs/DefaultApi.md#accept_editgroup) | **POST** /editgroup/{id}/accept | 
+*DefaultApi* | [**accept_editgroup**](docs/DefaultApi.md#accept_editgroup) | **POST** /editgroup/{editgroup_id}/accept | 
 *DefaultApi* | [**create_container**](docs/DefaultApi.md#create_container) | **POST** /container | 
 *DefaultApi* | [**create_container_batch**](docs/DefaultApi.md#create_container_batch) | **POST** /container/batch | 
 *DefaultApi* | [**create_creator**](docs/DefaultApi.md#create_creator) | **POST** /creator | 
@@ -80,59 +80,59 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**create_release_batch**](docs/DefaultApi.md#create_release_batch) | **POST** /release/batch | 
 *DefaultApi* | [**create_work**](docs/DefaultApi.md#create_work) | **POST** /work | 
 *DefaultApi* | [**create_work_batch**](docs/DefaultApi.md#create_work_batch) | **POST** /work/batch | 
-*DefaultApi* | [**delete_container**](docs/DefaultApi.md#delete_container) | **DELETE** /container/{id} | 
+*DefaultApi* | [**delete_container**](docs/DefaultApi.md#delete_container) | **DELETE** /container/{ident} | 
 *DefaultApi* | [**delete_container_edit**](docs/DefaultApi.md#delete_container_edit) | **DELETE** /container/edit/{edit_id} | 
-*DefaultApi* | [**delete_creator**](docs/DefaultApi.md#delete_creator) | **DELETE** /creator/{id} | 
+*DefaultApi* | [**delete_creator**](docs/DefaultApi.md#delete_creator) | **DELETE** /creator/{ident} | 
 *DefaultApi* | [**delete_creator_edit**](docs/DefaultApi.md#delete_creator_edit) | **DELETE** /creator/edit/{edit_id} | 
-*DefaultApi* | [**delete_file**](docs/DefaultApi.md#delete_file) | **DELETE** /file/{id} | 
+*DefaultApi* | [**delete_file**](docs/DefaultApi.md#delete_file) | **DELETE** /file/{ident} | 
 *DefaultApi* | [**delete_file_edit**](docs/DefaultApi.md#delete_file_edit) | **DELETE** /file/edit/{edit_id} | 
-*DefaultApi* | [**delete_release**](docs/DefaultApi.md#delete_release) | **DELETE** /release/{id} | 
+*DefaultApi* | [**delete_release**](docs/DefaultApi.md#delete_release) | **DELETE** /release/{ident} | 
 *DefaultApi* | [**delete_release_edit**](docs/DefaultApi.md#delete_release_edit) | **DELETE** /release/edit/{edit_id} | 
-*DefaultApi* | [**delete_work**](docs/DefaultApi.md#delete_work) | **DELETE** /work/{id} | 
+*DefaultApi* | [**delete_work**](docs/DefaultApi.md#delete_work) | **DELETE** /work/{ident} | 
 *DefaultApi* | [**delete_work_edit**](docs/DefaultApi.md#delete_work_edit) | **DELETE** /work/edit/{edit_id} | 
 *DefaultApi* | [**get_changelog**](docs/DefaultApi.md#get_changelog) | **GET** /changelog | 
-*DefaultApi* | [**get_changelog_entry**](docs/DefaultApi.md#get_changelog_entry) | **GET** /changelog/{id} | 
-*DefaultApi* | [**get_container**](docs/DefaultApi.md#get_container) | **GET** /container/{id} | 
+*DefaultApi* | [**get_changelog_entry**](docs/DefaultApi.md#get_changelog_entry) | **GET** /changelog/{index} | 
+*DefaultApi* | [**get_container**](docs/DefaultApi.md#get_container) | **GET** /container/{ident} | 
 *DefaultApi* | [**get_container_edit**](docs/DefaultApi.md#get_container_edit) | **GET** /container/edit/{edit_id} | 
-*DefaultApi* | [**get_container_history**](docs/DefaultApi.md#get_container_history) | **GET** /container/{id}/history | 
-*DefaultApi* | [**get_container_redirects**](docs/DefaultApi.md#get_container_redirects) | **GET** /container/{id}/redirects | 
-*DefaultApi* | [**get_container_revision**](docs/DefaultApi.md#get_container_revision) | **GET** /container/rev/{id} | 
-*DefaultApi* | [**get_creator**](docs/DefaultApi.md#get_creator) | **GET** /creator/{id} | 
+*DefaultApi* | [**get_container_history**](docs/DefaultApi.md#get_container_history) | **GET** /container/{ident}/history | 
+*DefaultApi* | [**get_container_redirects**](docs/DefaultApi.md#get_container_redirects) | **GET** /container/{ident}/redirects | 
+*DefaultApi* | [**get_container_revision**](docs/DefaultApi.md#get_container_revision) | **GET** /container/rev/{rev_id} | 
+*DefaultApi* | [**get_creator**](docs/DefaultApi.md#get_creator) | **GET** /creator/{ident} | 
 *DefaultApi* | [**get_creator_edit**](docs/DefaultApi.md#get_creator_edit) | **GET** /creator/edit/{edit_id} | 
-*DefaultApi* | [**get_creator_history**](docs/DefaultApi.md#get_creator_history) | **GET** /creator/{id}/history | 
-*DefaultApi* | [**get_creator_redirects**](docs/DefaultApi.md#get_creator_redirects) | **GET** /creator/{id}/redirects | 
-*DefaultApi* | [**get_creator_releases**](docs/DefaultApi.md#get_creator_releases) | **GET** /creator/{id}/releases | 
-*DefaultApi* | [**get_creator_revision**](docs/DefaultApi.md#get_creator_revision) | **GET** /creator/rev/{id} | 
-*DefaultApi* | [**get_editgroup**](docs/DefaultApi.md#get_editgroup) | **GET** /editgroup/{id} | 
-*DefaultApi* | [**get_editor**](docs/DefaultApi.md#get_editor) | **GET** /editor/{id} | 
-*DefaultApi* | [**get_editor_changelog**](docs/DefaultApi.md#get_editor_changelog) | **GET** /editor/{id}/changelog | 
-*DefaultApi* | [**get_file**](docs/DefaultApi.md#get_file) | **GET** /file/{id} | 
+*DefaultApi* | [**get_creator_history**](docs/DefaultApi.md#get_creator_history) | **GET** /creator/{ident}/history | 
+*DefaultApi* | [**get_creator_redirects**](docs/DefaultApi.md#get_creator_redirects) | **GET** /creator/{ident}/redirects | 
+*DefaultApi* | [**get_creator_releases**](docs/DefaultApi.md#get_creator_releases) | **GET** /creator/{ident}/releases | 
+*DefaultApi* | [**get_creator_revision**](docs/DefaultApi.md#get_creator_revision) | **GET** /creator/rev/{rev_id} | 
+*DefaultApi* | [**get_editgroup**](docs/DefaultApi.md#get_editgroup) | **GET** /editgroup/{editgroup_id} | 
+*DefaultApi* | [**get_editor**](docs/DefaultApi.md#get_editor) | **GET** /editor/{editor_id} | 
+*DefaultApi* | [**get_editor_changelog**](docs/DefaultApi.md#get_editor_changelog) | **GET** /editor/{editor_id}/changelog | 
+*DefaultApi* | [**get_file**](docs/DefaultApi.md#get_file) | **GET** /file/{ident} | 
 *DefaultApi* | [**get_file_edit**](docs/DefaultApi.md#get_file_edit) | **GET** /file/edit/{edit_id} | 
-*DefaultApi* | [**get_file_history**](docs/DefaultApi.md#get_file_history) | **GET** /file/{id}/history | 
-*DefaultApi* | [**get_file_redirects**](docs/DefaultApi.md#get_file_redirects) | **GET** /file/{id}/redirects | 
-*DefaultApi* | [**get_file_revision**](docs/DefaultApi.md#get_file_revision) | **GET** /file/rev/{id} | 
-*DefaultApi* | [**get_release**](docs/DefaultApi.md#get_release) | **GET** /release/{id} | 
+*DefaultApi* | [**get_file_history**](docs/DefaultApi.md#get_file_history) | **GET** /file/{ident}/history | 
+*DefaultApi* | [**get_file_redirects**](docs/DefaultApi.md#get_file_redirects) | **GET** /file/{ident}/redirects | 
+*DefaultApi* | [**get_file_revision**](docs/DefaultApi.md#get_file_revision) | **GET** /file/rev/{rev_id} | 
+*DefaultApi* | [**get_release**](docs/DefaultApi.md#get_release) | **GET** /release/{ident} | 
 *DefaultApi* | [**get_release_edit**](docs/DefaultApi.md#get_release_edit) | **GET** /release/edit/{edit_id} | 
-*DefaultApi* | [**get_release_files**](docs/DefaultApi.md#get_release_files) | **GET** /release/{id}/files | 
-*DefaultApi* | [**get_release_history**](docs/DefaultApi.md#get_release_history) | **GET** /release/{id}/history | 
-*DefaultApi* | [**get_release_redirects**](docs/DefaultApi.md#get_release_redirects) | **GET** /release/{id}/redirects | 
-*DefaultApi* | [**get_release_revision**](docs/DefaultApi.md#get_release_revision) | **GET** /release/rev/{id} | 
+*DefaultApi* | [**get_release_files**](docs/DefaultApi.md#get_release_files) | **GET** /release/{ident}/files | 
+*DefaultApi* | [**get_release_history**](docs/DefaultApi.md#get_release_history) | **GET** /release/{ident}/history | 
+*DefaultApi* | [**get_release_redirects**](docs/DefaultApi.md#get_release_redirects) | **GET** /release/{ident}/redirects | 
+*DefaultApi* | [**get_release_revision**](docs/DefaultApi.md#get_release_revision) | **GET** /release/rev/{rev_id} | 
 *DefaultApi* | [**get_stats**](docs/DefaultApi.md#get_stats) | **GET** /stats | 
-*DefaultApi* | [**get_work**](docs/DefaultApi.md#get_work) | **GET** /work/{id} | 
+*DefaultApi* | [**get_work**](docs/DefaultApi.md#get_work) | **GET** /work/{ident} | 
 *DefaultApi* | [**get_work_edit**](docs/DefaultApi.md#get_work_edit) | **GET** /work/edit/{edit_id} | 
-*DefaultApi* | [**get_work_history**](docs/DefaultApi.md#get_work_history) | **GET** /work/{id}/history | 
-*DefaultApi* | [**get_work_redirects**](docs/DefaultApi.md#get_work_redirects) | **GET** /work/{id}/redirects | 
-*DefaultApi* | [**get_work_releases**](docs/DefaultApi.md#get_work_releases) | **GET** /work/{id}/releases | 
-*DefaultApi* | [**get_work_revision**](docs/DefaultApi.md#get_work_revision) | **GET** /work/rev/{id} | 
+*DefaultApi* | [**get_work_history**](docs/DefaultApi.md#get_work_history) | **GET** /work/{ident}/history | 
+*DefaultApi* | [**get_work_redirects**](docs/DefaultApi.md#get_work_redirects) | **GET** /work/{ident}/redirects | 
+*DefaultApi* | [**get_work_releases**](docs/DefaultApi.md#get_work_releases) | **GET** /work/{ident}/releases | 
+*DefaultApi* | [**get_work_revision**](docs/DefaultApi.md#get_work_revision) | **GET** /work/rev/{rev_id} | 
 *DefaultApi* | [**lookup_container**](docs/DefaultApi.md#lookup_container) | **GET** /container/lookup | 
 *DefaultApi* | [**lookup_creator**](docs/DefaultApi.md#lookup_creator) | **GET** /creator/lookup | 
 *DefaultApi* | [**lookup_file**](docs/DefaultApi.md#lookup_file) | **GET** /file/lookup | 
 *DefaultApi* | [**lookup_release**](docs/DefaultApi.md#lookup_release) | **GET** /release/lookup | 
-*DefaultApi* | [**update_container**](docs/DefaultApi.md#update_container) | **PUT** /container/{id} | 
-*DefaultApi* | [**update_creator**](docs/DefaultApi.md#update_creator) | **PUT** /creator/{id} | 
-*DefaultApi* | [**update_file**](docs/DefaultApi.md#update_file) | **PUT** /file/{id} | 
-*DefaultApi* | [**update_release**](docs/DefaultApi.md#update_release) | **PUT** /release/{id} | 
-*DefaultApi* | [**update_work**](docs/DefaultApi.md#update_work) | **PUT** /work/{id} | 
+*DefaultApi* | [**update_container**](docs/DefaultApi.md#update_container) | **PUT** /container/{ident} | 
+*DefaultApi* | [**update_creator**](docs/DefaultApi.md#update_creator) | **PUT** /creator/{ident} | 
+*DefaultApi* | [**update_file**](docs/DefaultApi.md#update_file) | **PUT** /file/{ident} | 
+*DefaultApi* | [**update_release**](docs/DefaultApi.md#update_release) | **PUT** /release/{ident} | 
+*DefaultApi* | [**update_work**](docs/DefaultApi.md#update_work) | **PUT** /work/{ident} | 
 
 
 ## Documentation For Models

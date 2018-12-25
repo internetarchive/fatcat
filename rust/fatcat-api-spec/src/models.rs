@@ -184,9 +184,9 @@ impl CreatorEntity {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Editgroup {
     /// base32-encoded unique identifier
-    #[serde(rename = "id")]
+    #[serde(rename = "editgroup_id")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub id: Option<String>,
+    pub editgroup_id: Option<String>,
 
     /// base32-encoded unique identifier
     #[serde(rename = "editor_id")]
@@ -208,7 +208,7 @@ pub struct Editgroup {
 impl Editgroup {
     pub fn new(editor_id: String) -> Editgroup {
         Editgroup {
-            id: None,
+            editgroup_id: None,
             editor_id: editor_id,
             description: None,
             extra: None,
@@ -254,9 +254,9 @@ impl EditgroupEdits {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Editor {
-    #[serde(rename = "id")]
+    #[serde(rename = "editor_id")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub id: Option<String>,
+    pub editor_id: Option<String>,
 
     #[serde(rename = "username")]
     pub username: String,
@@ -264,7 +264,7 @@ pub struct Editor {
 
 impl Editor {
     pub fn new(username: String) -> Editor {
-        Editor { id: None, username: username }
+        Editor { editor_id: None, username: username }
     }
 }
 
@@ -346,9 +346,9 @@ impl ErrorResponse {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct FileEntity {
-    #[serde(rename = "releases")]
+    #[serde(rename = "release_ids")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub releases: Option<Vec<String>>,
+    pub release_ids: Option<Vec<String>>,
 
     #[serde(rename = "mimetype")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -406,7 +406,7 @@ pub struct FileEntity {
 impl FileEntity {
     pub fn new() -> FileEntity {
         FileEntity {
-            releases: None,
+            release_ids: None,
             mimetype: None,
             urls: None,
             sha256: None,
