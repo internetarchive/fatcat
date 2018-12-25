@@ -287,7 +287,7 @@ class CrossrefImporter(FatcatImporter):
             extra=dict(crossref=extra))
         return (re, ce)
 
-    def create_row(self, row, editgroup=None):
+    def create_row(self, row, editgroup_id=None):
         if row is None:
             return
         obj = json.loads(row)
@@ -295,13 +295,13 @@ class CrossrefImporter(FatcatImporter):
         if entities is not None:
             (re, ce) = entities
             if ce is not None:
-                container = self.api.create_container(ce, editgroup=editgroup)
+                container = self.api.create_container(ce, editgroup_id=editgroup_id)
                 re.container_id = container.ident
                 self._issnl_id_map[ce.issnl] = container.ident
-            self.api.create_release(re, editgroup=editgroup)
+            self.api.create_release(re, editgroup_id=editgroup_id)
             self.counts['insert'] += 1
 
-    def create_batch(self, batch, editgroup=None):
+    def create_batch(self, batch, editgroup_id=None):
         """Current work/release pairing disallows batch creation of releases.
         Could do batch work creation and then match against releases, but meh."""
         release_batch = []
@@ -315,10 +315,10 @@ class CrossrefImporter(FatcatImporter):
                 if ce is not None:
                     ce_eg = self.api.create_editgroup(
                         fatcat_client.Editgroup(editor_id='aaaaaaaaaaaabkvkaaaaaaaaae'))
-                    container = self.api.create_container(ce, editgroup=ce_eg.id)
-                    self.api.accept_editgroup(ce_eg.id)
+                    container = self.api.create_container(ce, editgroup_id=ce_eg.editgroup_id)
+                    self.api.accept_editgroup(ce_eg.editgroup_id)
                     re.container_id = container.ident
                     self._issnl_id_map[ce.issnl] = container.ident
                 release_batch.append(re)
-        self.api.create_release_batch(release_batch, autoaccept="true", editgroup=editgroup)
+        self.api.create_release_batch(release_batch, autoaccept="true", editgroup_id=editgroup_id)
         self.counts['insert'] += len(release_batch)

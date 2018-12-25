@@ -49,7 +49,7 @@ def test_file_metadata_parse(grobid_metadata_importer):
         assert fe.urls[1].rel == "web"
         assert fe.urls[0].url.startswith("https://web.archive.org/")
         assert fe.urls[0].rel == "webarchive"
-        assert len(fe.releases) == 0
+        assert len(fe.release_ids) == 0
 
 def test_grobid_metadata_importer(grobid_metadata_importer):
     with open('tests/files/example_grobid_metadata_lines.tsv', 'r') as f:

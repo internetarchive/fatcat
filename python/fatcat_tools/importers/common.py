@@ -54,11 +54,11 @@ class FatcatImporter:
         print("Processed {} lines, inserted {}, updated {}.".format(
             self.counts['processed_lines'], self.counts['insert'], self.counts['update']))
 
-    def create_row(self, row, editgroup=None):
+    def create_row(self, row, editgroup_id=None):
         # sub-classes expected to implement this
         raise NotImplementedError
 
-    def create_batch(self, rows, editgroup=None):
+    def create_batch(self, rows, editgroup_id=None):
         # sub-classes expected to implement this
         raise NotImplementedError
 
@@ -68,14 +68,14 @@ class FatcatImporter:
             fatcat_client.Editgroup(editor_id='aaaaaaaaaaaabkvkaaaaaaaaae'))
         i = 0
         for i, row in enumerate(source):
-            self.create_row(row, editgroup=eg.id)
+            self.create_row(row, editgroup_id=eg.editgroup_id)
             if i > 0 and (i % group_size) == 0:
-                self.api.accept_editgroup(eg.id)
+                self.api.accept_editgroup(eg.editgroup_id)
                 eg = self.api.create_editgroup(
                     fatcat_client.Editgroup(editor_id='aaaaaaaaaaaabkvkaaaaaaaaae'))
             self.counts['processed_lines'] += 1
         if i == 0 or (i % group_size) != 0:
-            self.api.accept_editgroup(eg.id)
+            self.api.accept_editgroup(eg.editgroup_id)
 
     def process_batch(self, source, size=50, decode_kafka=False):
         """Reads and processes in batches (not API-call-per-)"""
@@ -85,7 +85,7 @@ class FatcatImporter:
             self.counts['processed_lines'] += len(rows)
             eg = self.api.create_editgroup(
                 fatcat_client.Editgroup(editor_id='aaaaaaaaaaaabkvkaaaaaaaaae'))
-            self.create_batch(rows, editgroup=eg.id)
+            self.create_batch(rows, editgroup_id=eg.editgroup_id)
 
     def process_csv_source(self, source, group_size=100, delimiter=','):
         reader = csv.DictReader(source, delimiter=delimiter)

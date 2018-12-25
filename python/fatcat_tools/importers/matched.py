@@ -70,7 +70,7 @@ class MatchedImporter(FatcatImporter):
         if fe is None:
             fe = fatcat_client.FileEntity(
                 sha1=sha1,
-                releases=[],
+                release_ids=[],
                 urls=[],
             )
 
@@ -89,10 +89,10 @@ class MatchedImporter(FatcatImporter):
                 re_list.add(re.ident)
         if len(re_list) == 0:
             return None
-        if fe.releases == set(re_list):
+        if fe.release_ids == set(re_list):
             return None
-        re_list.update(fe.releases)
-        fe.releases = list(re_list)
+        re_list.update(fe.release_ids)
+        fe.release_ids = list(re_list)
 
         # parse URLs and CDX
         existing_urls = [feu.url for feu in fe.urls]
@@ -125,26 +125,26 @@ class MatchedImporter(FatcatImporter):
             fe.mimetype = obj.get('mimetype')
         return fe
 
-    def create_row(self, row, editgroup=None):
+    def create_row(self, row, editgroup_id=None):
         obj = json.loads(row)
         fe = self.parse_matched_dict(obj)
         if fe is not None:
             if fe.ident is None:
-                self.api.create_file(fe, editgroup=editgroup)
+                self.api.create_file(fe, editgroup_id=editgroup_id)
                 self.counts['insert'] += 1
             else:
-                self.api.update_file(fe.ident, fe, editgroup=editgroup)
+                self.api.update_file(fe.ident, fe, editgroup_id=editgroup_id)
                 self.counts['update'] += 1
 
-    def create_batch(self, batch, editgroup=None):
+    def create_batch(self, batch, editgroup_id=None):
         """Reads and processes in batches (not API-call-per-line)"""
         objects = [self.parse_matched_dict(json.loads(l))
                    for l in batch if l != None]
         new_objects = [o for o in objects if o != None and o.ident == None]
         update_objects = [o for o in objects if o != None and o.ident != None]
         for obj in update_objects:
-            self.api.update_file(obj.ident, obj, editgroup=editgroup)
+            self.api.update_file(obj.ident, obj, editgroup_id=editgroup_id)
         if len(new_objects) > 0:
-            self.api.create_file_batch(new_objects, autoaccept="true", editgroup=editgroup)
+            self.api.create_file_batch(new_objects, autoaccept="true", editgroup_id=editgroup_id)
         self.counts['update'] += len(update_objects)
         self.counts['insert'] += len(new_objects)

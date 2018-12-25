@@ -130,7 +130,7 @@ class GrobidMetadataImporter(FatcatImporter):
             sha1=sha1,
             size=int(file_size),
             mimetype=mimetype,
-            releases=[],
+            release_ids=[],
             urls=[],
         )
 
@@ -147,7 +147,7 @@ class GrobidMetadataImporter(FatcatImporter):
 
         return fe
 
-    def create_row(self, row, editgroup=None):
+    def create_row(self, row, editgroup_id=None):
         if not row:
             return
         fields = row.split('\t')
@@ -159,11 +159,11 @@ class GrobidMetadataImporter(FatcatImporter):
         fe = self.parse_file_metadata(sha1_key, cdx, mimetype, file_size)
         re = self.parse_grobid_json(grobid_meta)
         if fe and re:
-            release_entity = self.api.create_release(re, editgroup=editgroup)
+            release_entity = self.api.create_release(re, editgroup_id=editgroup_id)
             # release ident can't already be in release list because we just
             # created it
-            fe.releases.append(release_entity.ident)
-            file_entity = self.api.create_file(fe, editgroup=editgroup)
+            fe.release_ids.append(release_entity.ident)
+            file_entity = self.api.create_file(fe, editgroup_id=editgroup_id)
             self.counts['insert'] += 1
 
     # NB: batch mode not implemented

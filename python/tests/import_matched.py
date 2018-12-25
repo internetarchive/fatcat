@@ -31,4 +31,4 @@ def test_matched_dict_parse(matched_importer):
                 assert u.url.startswith("http://journals.plos.org")
             if u.rel == "webarchive":
                 assert u.url.startswith("https://web.archive.org/")
-        assert len(f.releases) == 1
+        assert len(f.release_ids) == 1
