@@ -349,7 +349,11 @@ impl Server {
         })
     }
 
-    pub fn get_editgroup_handler(&self, editgroup_id: FatCatId, conn: &DbConn) -> Result<Editgroup> {
+    pub fn get_editgroup_handler(
+        &self,
+        editgroup_id: FatCatId,
+        conn: &DbConn,
+    ) -> Result<Editgroup> {
         let row: EditgroupRow = editgroup::table.find(editgroup_id.to_uuid()).first(conn)?;
 
         let edits = EditgroupEdits {
@@ -472,84 +476,6 @@ impl Server {
         let mut entry = cl_row.into_model();
         entry.editgroup = Some(editgroup);
         Ok(entry)
-    }
-
-    pub fn get_stats_handler(&self, more: &Option<String>, conn: &DbConn) -> Result<StatsResponse> {
-        let merged_editgroups: i64 = changelog::table
-            .select(diesel::dsl::count_star())
-            .first(conn)?;
-        let releases_with_dois: i64 = release_rev::table
-            .inner_join(release_ident::table)
-            .filter(release_rev::doi.is_not_null())
-            .filter(release_ident::is_live.eq(true))
-            .filter(release_ident::redirect_id.is_null())
-            .select(diesel::dsl::count_star())
-            .first(conn)?;
-        let creators_with_orcids: i64 = creator_rev::table
-            .inner_join(creator_ident::table)
-            .filter(creator_rev::orcid.is_not_null())
-            .filter(creator_ident::is_live.eq(true))
-            .filter(creator_ident::redirect_id.is_null())
-            .select(diesel::dsl::count_star())
-            .first(conn)?;
-        let containers_with_issnls: i64 = container_rev::table
-            .inner_join(container_ident::table)
-            .filter(container_rev::issnl.is_not_null())
-            .filter(container_ident::is_live.eq(true))
-            .filter(container_ident::redirect_id.is_null())
-            .count()
-            .first(conn)?;
-
-        let files_with_releases: Option<i64> = if more.is_some() {
-            // this query is slightly inaccurate and over-counts: it includes files that have release
-            // links only to inactive releases
-            Some(
-                file_rev::table
-                    .inner_join(file_ident::table)
-                    .inner_join(file_release::table)
-                    .filter(file_ident::is_live.eq(true))
-                    .filter(file_ident::redirect_id.is_null())
-                    .select(file_ident::id)
-                    .distinct()
-                    .count()
-                    .first(conn)?,
-            )
-        } else {
-            None
-        };
-        let releases_with_files: Option<i64> = if more.is_some() {
-            // this slightly overcounts also: it will include releases which are only linked to from
-            // inactive files
-            Some(
-                release_ident::table
-                    .inner_join(file_release::table)
-                    .filter(release_ident::is_live.eq(true))
-                    .filter(release_ident::redirect_id.is_null())
-                    .select(file_release::target_release_ident_id)
-                    .distinct()
-                    .count()
-                    .first(conn)?,
-            )
-        } else {
-            None
-        };
-
-        let val = json!({
-            "entity_counts": {
-                "container": count_entity!(container_ident, conn),
-                "creator": count_entity!(creator_ident, conn),
-                "file": count_entity!(file_ident, conn),
-                "release": count_entity!(release_ident, conn),
-                "work": count_entity!(work_ident, conn),
-            },
-            "merged_editgroups": merged_editgroups,
-            "releases_with_dois": releases_with_dois,
-            "creators_with_orcids": creators_with_orcids,
-            "containers_with_issnls": containers_with_issnls,
-            "files_with_releases": files_with_releases,
-            "releases_with_files": releases_with_files,
-        });
-        Ok(StatsResponse { extra: Some(val) })
     }
 
     entity_batch_handler!(create_container_batch_handler, ContainerEntity);

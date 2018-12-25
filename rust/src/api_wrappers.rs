@@ -914,23 +914,4 @@ impl Api for Server {
         };
         Box::new(futures::done(Ok(ret)))
     }
-
-    fn get_stats(
-        &self,
-        more: Option<String>,
-        _context: &Context,
-    ) -> Box<Future<Item = GetStatsResponse, Error = ApiError> + Send> {
-        let conn = self.db_pool.get().expect("db_pool error");
-        // No transaction for GET
-        let ret = match self.get_stats_handler(&more, &conn) {
-            Ok(stats) => GetStatsResponse::Success(stats),
-            Err(e) => {
-                error!("{}", e);
-                GetStatsResponse::GenericError(ErrorResponse {
-                    message: e.to_string(),
-                })
-            }
-        };
-        Box::new(futures::done(Ok(ret)))
-    }
 }

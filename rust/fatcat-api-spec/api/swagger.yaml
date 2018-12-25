@@ -4135,40 +4135,6 @@ paths:
       path: "/changelog/:index"
       HttpMethod: "Get"
       httpmethod: "get"
-  /stats:
-    get:
-      operationId: "get_stats"
-      parameters:
-      - name: "more"
-        in: "query"
-        required: false
-        type: "string"
-        formatString: "{:?}"
-        example: "Some(\"more_example\".to_string())"
-      responses:
-        200:
-          description: "Success"
-          schema:
-            $ref: "#/definitions/stats_response"
-          x-responseId: "Success"
-          x-uppercaseResponseId: "SUCCESS"
-          uppercase_operation_id: "GET_STATS"
-          uppercase_data_type: "STATSRESPONSE"
-          producesJson: true
-        500:
-          description: "Generic Error"
-          schema:
-            $ref: "#/definitions/error_response"
-          x-responseId: "GenericError"
-          x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "GET_STATS"
-          uppercase_data_type: "ERRORRESPONSE"
-          producesJson: true
-      operation_id: "get_stats"
-      uppercase_operation_id: "GET_STATS"
-      path: "/stats"
-      HttpMethod: "Get"
-      httpmethod: "get"
 definitions:
   error_response:
     type: "object"
@@ -5206,14 +5172,6 @@ definitions:
       creator_id: "creator_id"
       index: 1
     upperCaseName: "RELEASE_CONTRIB"
-  stats_response:
-    type: "object"
-    properties:
-      extra:
-        type: "object"
-    example:
-      extra: "{}"
-    upperCaseName: "STATS_RESPONSE"
   file_entity_urls:
     required:
     - "rel"

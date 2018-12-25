@@ -343,14 +343,6 @@ def changelog_entry_view(index):
         abort(ae.status)
     return render_template('changelog_view.html', entry=entry, editgroup=entry.editgroup)
 
-@app.route('/stats', methods=['GET'])
-def stats_view():
-    try:
-        stats = api.get_stats()
-    except ApiException as ae:
-        abort(ae.status)
-    return render_template('stats.html', stats=stats.extra)
-
 ### Search ##################################################################
 
 @app.route('/release/search', methods=['GET', 'POST'])

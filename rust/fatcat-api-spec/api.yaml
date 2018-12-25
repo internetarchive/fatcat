@@ -416,12 +416,6 @@ definitions:
         additionalProperties: {}
       role:
         type: string
-  stats_response:
-    type: object
-    properties:
-      extra:
-        type: object
-        additionalProperties: {}
 
 x-entity-responses: &ENTITYRESPONSES
   400:
@@ -1906,23 +1900,6 @@ paths:
           description: Not Found
           schema:
             $ref: "#/definitions/error_response"
-        500:
-          description: Generic Error
-          schema:
-            $ref: "#/definitions/error_response"
-  /stats:
-    get:
-      operationId: "get_stats"
-      parameters:
-        - name: more
-          in: query
-          type: string
-          required: false
-      responses:
-        200:
-          description: Success
-          schema:
-            $ref: "#/definitions/stats_response"
         500:
           description: Generic Error
           schema:

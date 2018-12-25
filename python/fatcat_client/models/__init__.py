@@ -30,6 +30,5 @@ from fatcat_client.models.release_contrib import ReleaseContrib
 from fatcat_client.models.release_entity import ReleaseEntity
 from fatcat_client.models.release_entity_abstracts import ReleaseEntityAbstracts
 from fatcat_client.models.release_ref import ReleaseRef
-from fatcat_client.models.stats_response import StatsResponse
 from fatcat_client.models.success import Success
 from fatcat_client.models.work_entity import WorkEntity

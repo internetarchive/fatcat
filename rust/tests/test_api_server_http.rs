@@ -841,26 +841,6 @@ fn test_changelog() {
 }
 
 #[test]
-fn test_stats() {
-    let (headers, router, _conn) = setup_http();
-
-    check_http_response(
-        request::get("http://localhost:9411/v0/stats", headers.clone(), &router),
-        status::Ok,
-        Some("merged_editgroups"),
-    );
-    check_http_response(
-        request::get(
-            "http://localhost:9411/v0/stats?more=yes",
-            headers.clone(),
-            &router,
-        ),
-        status::Ok,
-        Some("merged_editgroups"),
-    );
-}
-
-#[test]
 fn test_400() {
     let (headers, router, _conn) = setup_http();
 

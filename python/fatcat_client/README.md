@@ -117,7 +117,6 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**get_release_history**](docs/DefaultApi.md#get_release_history) | **GET** /release/{ident}/history | 
 *DefaultApi* | [**get_release_redirects**](docs/DefaultApi.md#get_release_redirects) | **GET** /release/{ident}/redirects | 
 *DefaultApi* | [**get_release_revision**](docs/DefaultApi.md#get_release_revision) | **GET** /release/rev/{rev_id} | 
-*DefaultApi* | [**get_stats**](docs/DefaultApi.md#get_stats) | **GET** /stats | 
 *DefaultApi* | [**get_work**](docs/DefaultApi.md#get_work) | **GET** /work/{ident} | 
 *DefaultApi* | [**get_work_edit**](docs/DefaultApi.md#get_work_edit) | **GET** /work/edit/{edit_id} | 
 *DefaultApi* | [**get_work_history**](docs/DefaultApi.md#get_work_history) | **GET** /work/{ident}/history | 
@@ -152,7 +151,6 @@ Class | Method | HTTP request | Description
  - [ReleaseEntity](docs/ReleaseEntity.md)
  - [ReleaseEntityAbstracts](docs/ReleaseEntityAbstracts.md)
  - [ReleaseRef](docs/ReleaseRef.md)
- - [StatsResponse](docs/StatsResponse.md)
  - [Success](docs/Success.md)
  - [WorkEntity](docs/WorkEntity.md)
 

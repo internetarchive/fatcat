@@ -333,14 +333,6 @@ pub enum GetEditorChangelogResponse {
 }
 
 #[derive(Debug, PartialEq)]
-pub enum GetStatsResponse {
-    /// Success
-    Success(models::StatsResponse),
-    /// Generic Error
-    GenericError(models::ErrorResponse),
-}
-
-#[derive(Debug, PartialEq)]
 pub enum AcceptEditgroupResponse {
     /// Merged Successfully
     MergedSuccessfully(models::Success),
@@ -881,8 +873,6 @@ pub trait Api {
 
     fn get_editor_changelog(&self, editor_id: String, context: &Context) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send>;
 
-    fn get_stats(&self, more: Option<String>, context: &Context) -> Box<Future<Item = GetStatsResponse, Error = ApiError> + Send>;
-
     fn accept_editgroup(&self, editgroup_id: String, context: &Context) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send>;
 
     fn create_editgroup(&self, editgroup: models::Editgroup, context: &Context) -> Box<Future<Item = CreateEditgroupResponse, Error = ApiError> + Send>;
@@ -1066,8 +1056,6 @@ pub trait ApiNoContext {
     fn get_editor(&self, editor_id: String) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send>;
 
     fn get_editor_changelog(&self, editor_id: String) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send>;
-
-    fn get_stats(&self, more: Option<String>) -> Box<Future<Item = GetStatsResponse, Error = ApiError> + Send>;
 
     fn accept_editgroup(&self, editgroup_id: String) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send>;
 
@@ -1300,10 +1288,6 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
 
     fn get_editor_changelog(&self, editor_id: String) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send> {
         self.api().get_editor_changelog(editor_id, &self.context())
-    }
-
-    fn get_stats(&self, more: Option<String>) -> Box<Future<Item = GetStatsResponse, Error = ApiError> + Send> {
-        self.api().get_stats(more, &self.context())
     }
 
     fn accept_editgroup(&self, editgroup_id: String) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send> {
