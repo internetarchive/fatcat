@@ -1,12 +1,9 @@
 
 correctness
 - extra or typo-d fields in requests don't seem to be errors (silently accepted)
-- enforce "previous_rev" required in updates
 - reread/review editgroup accept code
-- enforce "no editing if editgroup accepted" behavior
 - changelog sequence without gaps
 - batch insert editgroup behavior; always a new editgroup?
-- redirect rev_id needs to be updated when primary changes
 
 edit lifecycle
 - editgroup: state to track review status?
@@ -20,6 +17,7 @@ account helper tool
 - test/validate tokens
 
 later:
+- "prev_rev" required in updates
 - tried using sync::Once to wrap test database initilization (so it would only
   run migrations once), but it didn't seem to work, maybe I had a bug or it
   didn't compile?
@@ -32,9 +30,3 @@ later:
 - test using hash indexes for some UUID column indexes, or at least sha1 and
   other hashes (abstracts, file lookups)
 
-schema/api questions:
-- url table (for files)
-- get works/releases by creator
-- "types"
-- define release field stuff
-- what should entity POST return? include both the entity and the edit?

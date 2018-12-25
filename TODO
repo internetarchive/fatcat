@@ -1,29 +1,20 @@
 
+## In Progress
+
 ## Next Up
 
-- all errors should result in transaction rollback
-- test: re-deleting a deleted entity should be 4xx, not 5xx
-- test: can't delete an accepted edit
-- test: redirect to a WIP row
-- test: revert to current version (should be disallowed)
-- test: hide/expand in lookups
-- test: python get revision endpoint, whether accepted or now
-- test: GET redirects endpoint
-- test: additional edits, editgroup already accepted
-- test: prev_rev in various cases
-- test: release pointing to a collection that has been deleted/redirected (etc)
-- many webface tests:
-    => entity redirects, wip, deletions
-    => sub-entity redirects, wip, deletions
-- test: new release points to new container; then container deleted from
-    editgroup and editgroup accepted
-    => also web UI
-- handle wip, deleted, redirects in web UI
-- remove the concept of "active editgroup"
+- fileset/webcapture entities
+- authentication
+- remove the concept of "active editgroup", and simplify autoaccept batch path
+- fix returned error messages; should return type (shortname), and then actual
+  message/description
+- handle wip entities in web UI
 - elastic inserter should handle deletions and redirects; if state isn't
   active, delete the document
-    => and an end-to-end test of this behavior. hoo-boy.
-- release_year (in addition to date)
+    => don't delete, just store state. but need to "blank" redirects and WIP so
+       they don't show up in results
+    => refactor inserter to be a class (eg, for command line use)
+    => end-to-end test of this behavior?
 
 ## Ideas
 
@@ -31,8 +22,6 @@
 - when getting "wip" entities, require a parameter ("allow_wip"), else get a
   404
 - consider dropping CORE identifier
-- fix returned error messages; should return type (shortname), and then actual
-  message/description
 - maybe better 'success' return message? eg, "success: true" flag
 - idea: allow users to generate their own editgroup UUIDs, to reduce a round
   trips and "hanging" editgroups (created but never edited)
@@ -55,6 +44,7 @@
 
 ## Metadata Import
 
+- cleaning/matching: https://ftfy.readthedocs.io/en/latest/
 - manifest: multiple URLs per SHA1
 - crossref: relations ("is-preprint-of")
 - crossref: two phase: no citations, then matched citations (via DOI table)
@@ -64,7 +54,7 @@
     => title length and title/slug blacklist
     => at least one author (?)
     => make this a method on Release object
-    => or just set release_stub as "stub"?
+    => or just set release_type as "stub"?
 
 new importers:
 - pubmed (medline) (filtered)
@@ -76,7 +66,6 @@ new importers:
 
 ## Entity/Edit Lifecycle
 
-- redirects and merges (webface, etc)
 - commenting and accepting editgroups
 - editgroup state machine?
 
@@ -101,7 +90,7 @@ new importers:
 
 - arxiv_id field (keep flip-flopping)
 - original_title field (?)
-- FileSet and WebSnapshot entities
+- FileSet and WebCapture entities
 - `doi` field for containers (at least for "journal" type; maybe for "series"
   as well?)
 - `retracted`, `translation`, and perhaps `corrected` as flags on releases,
@@ -111,7 +100,6 @@ new importers:
 
 ## Other / Backburner
 
-- look at: https://ftfy.readthedocs.io/en/latest/
 - refactor openapi schema to use shared response types
 - consider using "HTTP 202: Accepted" for entity-mutating calls
 - basic python hbase/elastic matcher
