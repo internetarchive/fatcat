@@ -165,7 +165,7 @@ definitions:
       mimetype:
         type: string
         example: "application/pdf"
-      releases:
+      release_ids:
         type: array
         items:
           type: string
@@ -312,7 +312,7 @@ definitions:
     required:
       - username
     properties:
-      id:
+      editor_id:
         type: string
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
       username:
@@ -323,7 +323,7 @@ definitions:
     required:
       - editor_id
     properties:
-      id:
+      editgroup_id:
         <<: *FATCATIDENT
       editor_id:
         <<: *FATCATIDENT
@@ -449,7 +449,7 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/container_entity"
-        - name: editgroup
+        - name: editgroup_id
           in: query
           required: false
           type: string
@@ -470,7 +470,7 @@ paths:
           type: boolean
           required: false
           description: "If true, and editor is authorized, batch is accepted all at once"
-        - name: editgroup
+        - name: editgroup_id
           in: query
           type: string
           required: false
@@ -490,9 +490,9 @@ paths:
             items:
               $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
-  /container/{id}:
+  /container/{ident}:
     parameters:
-      - name: id
+      - name: ident
         in: path
         type: string
         required: true
@@ -527,7 +527,7 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/container_entity"
-        - name: editgroup
+        - name: editgroup_id
           in: query
           required: false
           type: string
@@ -542,7 +542,7 @@ paths:
       tags: # TAGLINE
         - containers # TAGLINE
       parameters:
-        - name: editgroup
+        - name: editgroup_id
           in: query
           required: false
           type: string
@@ -552,9 +552,9 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
-  /container/rev/{id}:
+  /container/rev/{rev_id}:
     parameters:
-      - name: id
+      - name: rev_id
         in: path
         type: string
         #format: uuid
@@ -580,9 +580,9 @@ paths:
           schema:
             $ref: "#/definitions/container_entity"
         <<: *ENTITYRESPONSES
-  /container/{id}/history:
+  /container/{ident}/history:
     parameters:
-      - name: id
+      - name: ident
         in: path
         type: string
         required: true
@@ -603,9 +603,9 @@ paths:
             items:
               $ref: "#/definitions/entity_history_entry"
         <<: *ENTITYRESPONSES
-  /container/{id}/redirects:
+  /container/{ident}/redirects:
     parameters:
-      - name: id
+      - name: ident
         in: path
         type: string
         required: true
@@ -695,7 +695,7 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/creator_entity"
-        - name: editgroup
+        - name: editgroup_id
           in: query
           required: false
           type: string
@@ -716,7 +716,7 @@ paths:
           type: boolean
           required: false
           description: "If true, and editor is authorized, batch is accepted all at once"
-        - name: editgroup
+        - name: editgroup_id
           in: query
           type: string
           required: false
@@ -736,9 +736,9 @@ paths:
             items:
               $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
-  /creator/{id}:
+  /creator/{ident}:
     parameters:
-      - name: id
+      - name: ident
         in: path
         type: string
         required: true
@@ -773,7 +773,7 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/creator_entity"
-        - name: editgroup
+        - name: editgroup_id
           in: query
           required: false
           type: string
@@ -788,7 +788,7 @@ paths:
       tags: # TAGLINE
         - creators # TAGLINE
       parameters:
-        - name: editgroup
+        - name: editgroup_id
           in: query
           required: false
           type: string
@@ -798,9 +798,9 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
-  /creator/rev/{id}:
+  /creator/rev/{rev_id}:
     parameters:
-      - name: id
+      - name: rev_id
         in: path
         type: string
         #format: uuid
@@ -826,9 +826,9 @@ paths:
           schema:
             $ref: "#/definitions/creator_entity"
         <<: *ENTITYRESPONSES
-  /creator/{id}/history:
+  /creator/{ident}/history:
     parameters:
-      - name: id
+      - name: ident
         in: path
         type: string
         required: true
@@ -849,9 +849,9 @@ paths:
             items:
               $ref: "#/definitions/entity_history_entry"
         <<: *ENTITYRESPONSES
-  /creator/{id}/releases:
+  /creator/{ident}/releases:
     parameters:
-      - name: id
+      - name: ident
         in: path
         type: string
         required: true
@@ -872,9 +872,9 @@ paths:
             items:
               $ref: "#/definitions/release_entity"
         <<: *ENTITYRESPONSES
-  /creator/{id}/redirects:
+  /creator/{ident}/redirects:
     parameters:
-      - name: id
+      - name: ident
         in: path
         type: string
         required: true
@@ -964,7 +964,7 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/file_entity"
-        - name: editgroup
+        - name: editgroup_id
           in: query
           required: false
           type: string
@@ -985,7 +985,7 @@ paths:
           type: boolean
           required: false
           description: "If true, and editor is authorized, batch is accepted all at once"
-        - name: editgroup
+        - name: editgroup_id
           in: query
           type: string
           required: false
@@ -1005,9 +1005,9 @@ paths:
             items:
               $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
-  /file/{id}:
+  /file/{ident}:
     parameters:
-      - name: id
+      - name: ident
         in: path
         type: string
         required: true
@@ -1042,7 +1042,7 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/file_entity"
-        - name: editgroup
+        - name: editgroup_id
           in: query
           required: false
           type: string
@@ -1057,7 +1057,7 @@ paths:
       tags: # TAGLINE
         - files # TAGLINE
       parameters:
-        - name: editgroup
+        - name: editgroup_id
           in: query
           required: false
           type: string
@@ -1067,9 +1067,9 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
-  /file/rev/{id}:
+  /file/rev/{rev_id}:
     parameters:
-      - name: id
+      - name: rev_id
         in: path
         type: string
         #format: uuid
@@ -1095,9 +1095,9 @@ paths:
           schema:
             $ref: "#/definitions/file_entity"
         <<: *ENTITYRESPONSES
-  /file/{id}/history:
+  /file/{ident}/history:
     parameters:
-      - name: id
+      - name: ident
         in: path
         type: string
         required: true
@@ -1118,9 +1118,9 @@ paths:
             items:
               $ref: "#/definitions/entity_history_entry"
         <<: *ENTITYRESPONSES
-  /file/{id}/redirects:
+  /file/{ident}/redirects:
     parameters:
-      - name: id
+      - name: ident
         in: path
         type: string
         required: true
@@ -1215,7 +1215,7 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/release_entity"
-        - name: editgroup
+        - name: editgroup_id
           in: query
           required: false
           type: string
@@ -1236,7 +1236,7 @@ paths:
           type: boolean
           required: false
           description: "If true, and editor is authorized, batch is accepted all at once"
-        - name: editgroup
+        - name: editgroup_id
           in: query
           type: string
           required: false
@@ -1256,9 +1256,9 @@ paths:
             items:
               $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
-  /release/{id}:
+  /release/{ident}:
     parameters:
-      - name: id
+      - name: ident
         in: path
         type: string
         required: true
@@ -1293,7 +1293,7 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/release_entity"
-        - name: editgroup
+        - name: editgroup_id
           in: query
           required: false
           type: string
@@ -1308,7 +1308,7 @@ paths:
       tags: # TAGLINE
         - releases # TAGLINE
       parameters:
-        - name: editgroup
+        - name: editgroup_id
           in: query
           required: false
           type: string
@@ -1318,9 +1318,9 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
-  /release/rev/{id}:
+  /release/rev/{rev_id}:
     parameters:
-      - name: id
+      - name: rev_id
         in: path
         type: string
         #format: uuid
@@ -1346,9 +1346,9 @@ paths:
           schema:
             $ref: "#/definitions/release_entity"
         <<: *ENTITYRESPONSES
-  /release/{id}/history:
+  /release/{ident}/history:
     parameters:
-      - name: id
+      - name: ident
         in: path
         type: string
         required: true
@@ -1369,9 +1369,9 @@ paths:
             items:
               $ref: "#/definitions/entity_history_entry"
         <<: *ENTITYRESPONSES
-  /release/{id}/files:
+  /release/{ident}/files:
     parameters:
-      - name: id
+      - name: ident
         in: path
         type: string
         required: true
@@ -1392,9 +1392,9 @@ paths:
             items:
               $ref: "#/definitions/file_entity"
         <<: *ENTITYRESPONSES
-  /release/{id}/redirects:
+  /release/{ident}/redirects:
     parameters:
-      - name: id
+      - name: ident
         in: path
         type: string
         required: true
@@ -1501,7 +1501,7 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/work_entity"
-        - name: editgroup
+        - name: editgroup_id
           in: query
           required: false
           type: string
@@ -1522,7 +1522,7 @@ paths:
           type: boolean
           required: false
           description: "If true, and editor is authorized, batch is accepted all at once"
-        - name: editgroup
+        - name: editgroup_id
           in: query
           type: string
           required: false
@@ -1542,9 +1542,9 @@ paths:
             items:
               $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
-  /work/{id}:
+  /work/{ident}:
     parameters:
-      - name: id
+      - name: ident
         in: path
         type: string
         required: true
@@ -1579,7 +1579,7 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/work_entity"
-        - name: editgroup
+        - name: editgroup_id
           in: query
           required: false
           type: string
@@ -1594,7 +1594,7 @@ paths:
       tags: # TAGLINE
         - works # TAGLINE
       parameters:
-        - name: editgroup
+        - name: editgroup_id
           in: query
           required: false
           type: string
@@ -1604,9 +1604,9 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
-  /work/rev/{id}:
+  /work/rev/{rev_id}:
     parameters:
-      - name: id
+      - name: rev_id
         in: path
         type: string
         #format: uuid
@@ -1632,9 +1632,9 @@ paths:
           schema:
             $ref: "#/definitions/work_entity"
         <<: *ENTITYRESPONSES
-  /work/{id}/history:
+  /work/{ident}/history:
     parameters:
-      - name: id
+      - name: ident
         in: path
         type: string
         required: true
@@ -1655,9 +1655,9 @@ paths:
             items:
               $ref: "#/definitions/entity_history_entry"
         <<: *ENTITYRESPONSES
-  /work/{id}/redirects:
+  /work/{ident}/redirects:
     parameters:
-      - name: id
+      - name: ident
         in: path
         type: string
         required: true
@@ -1674,9 +1674,9 @@ paths:
               type: string
               #format: ident
         <<: *ENTITYRESPONSES
-  /work/{id}/releases:
+  /work/{ident}/releases:
     parameters:
-      - name: id
+      - name: ident
         in: path
         type: string
         required: true
@@ -1730,9 +1730,9 @@ paths:
           schema:
             $ref: "#/definitions/success"
         <<: *ENTITYRESPONSES
-  /editor/{id}:
+  /editor/{editor_id}:
     parameters:
-      - name: id
+      - name: editor_id
         in: path
         type: string
         required: true
@@ -1755,9 +1755,9 @@ paths:
           description: Generic Error
           schema:
             $ref: "#/definitions/error_response"
-  /editor/{id}/changelog:
+  /editor/{editor_id}/changelog:
     parameters:
-      - name: id
+      - name: editor_id
         in: path
         type: string
         required: true
@@ -1806,9 +1806,9 @@ paths:
           description: Generic Error
           schema:
             $ref: "#/definitions/error_response"
-  /editgroup/{id}:
+  /editgroup/{editgroup_id}:
     parameters:
-      - name: id
+      - name: editgroup_id
         in: path
         required: true
         <<: *FATCATIDENT
@@ -1833,9 +1833,9 @@ paths:
           description: Generic Error
           schema:
             $ref: "#/definitions/error_response"
-  /editgroup/{id}/accept:
+  /editgroup/{editgroup_id}/accept:
     parameters:
-      - name: id
+      - name: editgroup_id
         in: path
         required: true
         <<: *FATCATIDENT
@@ -1886,9 +1886,9 @@ paths:
           description: Generic Error
           schema:
             $ref: "#/definitions/error_response"
-  /changelog/{id}:
+  /changelog/{index}:
     parameters:
-      - name: id
+      - name: index
         in: path
         type: integer
         format: int64
