@@ -30,7 +30,7 @@ macro_rules! wrap_entity_handlers {
 
         fn $get_fn(
             &self,
-            id: String,
+            ident: String,
             expand: Option<String>,
             hide: Option<String>,
             _context: &Context,
@@ -38,7 +38,7 @@ macro_rules! wrap_entity_handlers {
             let conn = self.db_pool.get().expect("db_pool error");
             // No transaction for GET
             let ret = match (|| {
-                let entity_id = FatCatId::from_str(&id)?;
+                let entity_id = FatCatId::from_str(&ident)?;
                 let hide_flags = match hide {
                     None => HideFlags::none(),
                     Some(param) => HideFlags::from_str(&param)?,
@@ -56,7 +56,7 @@ macro_rules! wrap_entity_handlers {
                 Ok(entity) =>
                     $get_resp::FoundEntity(entity),
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
-                    $get_resp::NotFound(ErrorResponse { message: format!("No such entity {}: {}", stringify!($model), id) }),
+                    $get_resp::NotFound(ErrorResponse { message: format!("No such entity {}: {}", stringify!($model), ident) }),
                 Err(Error(ErrorKind::Uuid(e), _)) =>
                     $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::InvalidFatcatId(e), _)) =>
@@ -79,12 +79,12 @@ macro_rules! wrap_entity_handlers {
         fn $post_fn(
             &self,
             entity: models::$model,
-            editgroup: Option<String>,
+            editgroup_id: Option<String>,
             _context: &Context,
         ) -> Box<Future<Item = $post_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             let ret = match conn.transaction(|| {
-                let editgroup_id = if let Some(s) = editgroup {
+                let editgroup_id = if let Some(s) = editgroup_id {
                     Some(FatCatId::from_str(&s)?)
                 } else { None };
                 let edit_context = make_edit_context(&conn, editgroup_id, false)?;
@@ -122,12 +122,12 @@ macro_rules! wrap_entity_handlers {
             &self,
             entity_list: &Vec<models::$model>,
             autoaccept: Option<bool>,
-            editgroup: Option<String>,
+            editgroup_id: Option<String>,
             _context: &Context,
         ) -> Box<Future<Item = $post_batch_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             let ret = match conn.transaction(|| {
-                let editgroup_id = if let Some(s) = editgroup {
+                let editgroup_id = if let Some(s) = editgroup_id {
                     Some(FatCatId::from_str(&s)?)
                 } else { None };
                 self.$post_batch_handler(entity_list, autoaccept.unwrap_or(false), editgroup_id, &conn)
@@ -161,15 +161,15 @@ macro_rules! wrap_entity_handlers {
 
         fn $update_fn(
             &self,
-            id: String,
+            ident: String,
             entity: models::$model,
-            editgroup: Option<String>,
+            editgroup_id: Option<String>,
             _context: &Context,
         ) -> Box<Future<Item = $update_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             let ret = match conn.transaction(|| {
-                let entity_id = FatCatId::from_str(&id)?;
-                let editgroup_id = if let Some(s) = editgroup {
+                let entity_id = FatCatId::from_str(&ident)?;
+                let editgroup_id = if let Some(s) = editgroup_id {
                     Some(FatCatId::from_str(&s)?)
                 } else { None };
                 let edit_context = make_edit_context(&conn, editgroup_id, false)?;
@@ -179,7 +179,7 @@ macro_rules! wrap_entity_handlers {
                 Ok(edit) =>
                     $update_resp::UpdatedEntity(edit),
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
-                    $update_resp::NotFound(ErrorResponse { message: format!("No such entity {}: {}", stringify!($model), id) }),
+                    $update_resp::NotFound(ErrorResponse { message: format!("No such entity {}: {}", stringify!($model), ident) }),
                 Err(Error(ErrorKind::Diesel(e), _)) =>
                     $update_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::Uuid(e), _)) =>
@@ -209,13 +209,13 @@ macro_rules! wrap_entity_handlers {
 
         fn $delete_fn(
             &self,
-            id: String,
+            ident: String,
             editgroup_id: Option<String>,
             _context: &Context,
         ) -> Box<Future<Item = $delete_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             let ret = match conn.transaction(|| {
-                let entity_id = FatCatId::from_str(&id)?;
+                let entity_id = FatCatId::from_str(&ident)?;
                 let editgroup_id: Option<FatCatId> = match editgroup_id {
                     Some(s) => Some(FatCatId::from_str(&s)?),
                     None => None,
@@ -227,7 +227,7 @@ macro_rules! wrap_entity_handlers {
                 Ok(edit) =>
                     $delete_resp::DeletedEntity(edit),
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
-                    $delete_resp::NotFound(ErrorResponse { message: format!("No such entity {}: {}", stringify!($model), id) }),
+                    $delete_resp::NotFound(ErrorResponse { message: format!("No such entity {}: {}", stringify!($model), ident) }),
                 Err(Error(ErrorKind::Diesel(e), _)) =>
                     $delete_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::Uuid(e), _)) =>
@@ -253,20 +253,20 @@ macro_rules! wrap_entity_handlers {
 
         fn $get_history_fn(
             &self,
-            id: String,
+            ident: String,
             limit: Option<i64>,
             _context: &Context,
         ) -> Box<Future<Item = $get_history_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             // No transaction for GET?
             let ret = match (|| {
-                let entity_id = FatCatId::from_str(&id)?;
+                let entity_id = FatCatId::from_str(&ident)?;
                 $model::db_get_history(&conn, entity_id, limit)
             })() {
                 Ok(history) =>
                     $get_history_resp::FoundEntityHistory(history),
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
-                    $get_history_resp::NotFound(ErrorResponse { message: format!("No such entity {}: {}", stringify!($model), id) }),
+                    $get_history_resp::NotFound(ErrorResponse { message: format!("No such entity {}: {}", stringify!($model), ident) }),
                 Err(Error(ErrorKind::Uuid(e), _)) =>
                     $get_history_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::InvalidFatcatId(e), _)) =>
@@ -284,7 +284,7 @@ macro_rules! wrap_entity_handlers {
 
         fn $get_rev_fn(
             &self,
-            id: String,
+            rev_id: String,
             expand: Option<String>,
             hide: Option<String>,
             _context: &Context,
@@ -292,7 +292,7 @@ macro_rules! wrap_entity_handlers {
             let conn = self.db_pool.get().expect("db_pool error");
             // No transaction for GET?
             let ret = match (|| {
-                let rev_id = Uuid::from_str(&id)?;
+                let rev_id = Uuid::from_str(&rev_id)?;
                 let hide_flags = match hide {
                     None => HideFlags::none(),
                     Some(param) => HideFlags::from_str(&param)?,
@@ -310,7 +310,7 @@ macro_rules! wrap_entity_handlers {
                 Ok(entity) =>
                     $get_rev_resp::FoundEntityRevision(entity),
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
-                    $get_rev_resp::NotFound(ErrorResponse { message: format!("No such entity {}: {}", stringify!($model), id) }),
+                    $get_rev_resp::NotFound(ErrorResponse { message: format!("No such entity revision {}: {}", stringify!($model), rev_id) }),
                 Err(Error(ErrorKind::Uuid(e), _)) =>
                     $get_rev_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::MalformedExternalId(e), _)) =>
@@ -378,20 +378,20 @@ macro_rules! wrap_entity_handlers {
 
         fn $get_redirects_fn(
             &self,
-            id: String,
+            ident: String,
             _context: &Context,
         ) -> Box<Future<Item = $get_redirects_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             // No transaction for GET?
             let ret = match (|| {
-                let entity_id = FatCatId::from_str(&id)?;
+                let entity_id = FatCatId::from_str(&ident)?;
                 let redirects: Vec<FatCatId> = $model::db_get_redirects(&conn, entity_id)?;
                 Ok(redirects.into_iter().map(|fcid| fcid.to_string()).collect())
             })() {
                 Ok(redirects) =>
                     $get_redirects_resp::FoundEntityRedirects(redirects),
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
-                    $get_redirects_resp::NotFound(ErrorResponse { message: format!("No such entity {}: {}", stringify!($model), id) }),
+                    $get_redirects_resp::NotFound(ErrorResponse { message: format!("No such entity {}: {}", stringify!($model), ident) }),
                 Err(Error(ErrorKind::Uuid(e), _)) =>
                     $get_redirects_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::InvalidFatcatId(e), _)) =>
@@ -798,20 +798,20 @@ impl Api for Server {
 
     fn accept_editgroup(
         &self,
-        id: String,
+        editgroup_id: String,
         _context: &Context,
     ) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
         let ret = match conn.transaction(|| {
-            let id = FatCatId::from_str(&id)?;
-            self.accept_editgroup_handler(id, &conn)
+            let editgroup_id = FatCatId::from_str(&editgroup_id)?;
+            self.accept_editgroup_handler(editgroup_id, &conn)
         }) {
             Ok(()) => AcceptEditgroupResponse::MergedSuccessfully(Success {
                 message: "horray!".to_string(),
             }),
             Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
                 AcceptEditgroupResponse::NotFound(ErrorResponse {
-                    message: format!("No such editgroup: {}", id),
+                    message: format!("No such editgroup: {}", editgroup_id),
                 })
             }
             Err(Error(ErrorKind::EditgroupAlreadyAccepted(e), _)) => {
@@ -828,18 +828,18 @@ impl Api for Server {
 
     fn get_editgroup(
         &self,
-        id: String,
+        editgroup_id: String,
         _context: &Context,
     ) -> Box<Future<Item = GetEditgroupResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
         let ret = match conn.transaction(|| {
-            let id = FatCatId::from_str(&id)?;
-            self.get_editgroup_handler(id, &conn)
+            let editgroup_id = FatCatId::from_str(&editgroup_id)?;
+            self.get_editgroup_handler(editgroup_id, &conn)
         }) {
             Ok(entity) => GetEditgroupResponse::Found(entity),
             Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
                 GetEditgroupResponse::NotFound(ErrorResponse {
-                    message: format!("No such editgroup: {}", id),
+                    message: format!("No such editgroup: {}", editgroup_id),
                 })
             }
             Err(e) =>

@@ -55,14 +55,14 @@ pub struct Server {
 }
 
 pub fn get_release_files(
-    id: FatCatId,
+    ident: FatCatId,
     hide_flags: HideFlags,
     conn: &DbConn,
 ) -> Result<Vec<FileEntity>> {
     let rows: Vec<(FileRevRow, FileIdentRow, FileReleaseRow)> = file_rev::table
         .inner_join(file_ident::table)
         .inner_join(file_release::table)
-        .filter(file_release::target_release_ident_id.eq(&id.to_uuid()))
+        .filter(file_release::target_release_ident_id.eq(&ident.to_uuid()))
         .filter(file_ident::is_live.eq(true))
         .filter(file_ident::redirect_id.is_null())
         .load(conn)?;
@@ -149,7 +149,7 @@ impl Server {
 
     pub fn get_creator_releases_handler(
         &self,
-        id: FatCatId,
+        ident: FatCatId,
         hide_flags: HideFlags,
         conn: &DbConn,
     ) -> Result<Vec<ReleaseEntity>> {
@@ -157,7 +157,7 @@ impl Server {
         let rows: Vec<(ReleaseRevRow, ReleaseIdentRow, ReleaseContribRow)> = release_rev::table
             .inner_join(release_ident::table)
             .inner_join(release_contrib::table)
-            .filter(release_contrib::creator_ident_id.eq(&id.to_uuid()))
+            .filter(release_contrib::creator_ident_id.eq(&ident.to_uuid()))
             .filter(release_ident::is_live.eq(true))
             .filter(release_ident::redirect_id.is_null())
             .load(conn)?;
@@ -297,22 +297,22 @@ impl Server {
 
     pub fn get_release_files_handler(
         &self,
-        id: FatCatId,
+        ident: FatCatId,
         hide_flags: HideFlags,
         conn: &DbConn,
     ) -> Result<Vec<FileEntity>> {
-        get_release_files(id, hide_flags, conn)
+        get_release_files(ident, hide_flags, conn)
     }
 
     pub fn get_work_releases_handler(
         &self,
-        id: FatCatId,
+        ident: FatCatId,
         hide_flags: HideFlags,
         conn: &DbConn,
     ) -> Result<Vec<ReleaseEntity>> {
         let rows: Vec<(ReleaseRevRow, ReleaseIdentRow)> = release_rev::table
             .inner_join(release_ident::table)
-            .filter(release_rev::work_ident_id.eq(&id.to_uuid()))
+            .filter(release_rev::work_ident_id.eq(&ident.to_uuid()))
             .filter(release_ident::is_live.eq(true))
             .filter(release_ident::redirect_id.is_null())
             .load(conn)?;
@@ -322,8 +322,8 @@ impl Server {
             .collect()
     }
 
-    pub fn accept_editgroup_handler(&self, id: FatCatId, conn: &DbConn) -> Result<()> {
-        accept_editgroup(id, conn)?;
+    pub fn accept_editgroup_handler(&self, editgroup_id: FatCatId, conn: &DbConn) -> Result<()> {
+        accept_editgroup(editgroup_id, conn)?;
         Ok(())
     }
 
@@ -341,7 +341,7 @@ impl Server {
             .get_result(conn)?;
 
         Ok(Editgroup {
-            id: Some(uuid2fcid(&row.id)),
+            editgroup_id: Some(uuid2fcid(&row.id)),
             editor_id: uuid2fcid(&row.editor_id),
             description: row.description,
             edits: None,
@@ -349,13 +349,13 @@ impl Server {
         })
     }
 
-    pub fn get_editgroup_handler(&self, id: FatCatId, conn: &DbConn) -> Result<Editgroup> {
-        let row: EditgroupRow = editgroup::table.find(id.to_uuid()).first(conn)?;
+    pub fn get_editgroup_handler(&self, editgroup_id: FatCatId, conn: &DbConn) -> Result<Editgroup> {
+        let row: EditgroupRow = editgroup::table.find(editgroup_id.to_uuid()).first(conn)?;
 
         let edits = EditgroupEdits {
             containers: Some(
                 container_edit::table
-                    .filter(container_edit::editgroup_id.eq(id.to_uuid()))
+                    .filter(container_edit::editgroup_id.eq(editgroup_id.to_uuid()))
                     .get_results(conn)?
                     .into_iter()
                     .map(|e: ContainerEditRow| e.into_model().unwrap())
@@ -363,7 +363,7 @@ impl Server {
             ),
             creators: Some(
                 creator_edit::table
-                    .filter(creator_edit::editgroup_id.eq(id.to_uuid()))
+                    .filter(creator_edit::editgroup_id.eq(editgroup_id.to_uuid()))
                     .get_results(conn)?
                     .into_iter()
                     .map(|e: CreatorEditRow| e.into_model().unwrap())
@@ -371,7 +371,7 @@ impl Server {
             ),
             files: Some(
                 file_edit::table
-                    .filter(file_edit::editgroup_id.eq(id.to_uuid()))
+                    .filter(file_edit::editgroup_id.eq(editgroup_id.to_uuid()))
                     .get_results(conn)?
                     .into_iter()
                     .map(|e: FileEditRow| e.into_model().unwrap())
@@ -379,7 +379,7 @@ impl Server {
             ),
             releases: Some(
                 release_edit::table
-                    .filter(release_edit::editgroup_id.eq(id.to_uuid()))
+                    .filter(release_edit::editgroup_id.eq(editgroup_id.to_uuid()))
                     .get_results(conn)?
                     .into_iter()
                     .map(|e: ReleaseEditRow| e.into_model().unwrap())
@@ -387,7 +387,7 @@ impl Server {
             ),
             works: Some(
                 work_edit::table
-                    .filter(work_edit::editgroup_id.eq(id.to_uuid()))
+                    .filter(work_edit::editgroup_id.eq(editgroup_id.to_uuid()))
                     .get_results(conn)?
                     .into_iter()
                     .map(|e: WorkEditRow| e.into_model().unwrap())
@@ -396,7 +396,7 @@ impl Server {
         };
 
         let eg = Editgroup {
-            id: Some(uuid2fcid(&row.id)),
+            editgroup_id: Some(uuid2fcid(&row.id)),
             editor_id: uuid2fcid(&row.editor_id),
             description: row.description,
             edits: Some(edits),
@@ -405,11 +405,11 @@ impl Server {
         Ok(eg)
     }
 
-    pub fn get_editor_handler(&self, id: FatCatId, conn: &DbConn) -> Result<Editor> {
-        let row: EditorRow = editor::table.find(id.to_uuid()).first(conn)?;
+    pub fn get_editor_handler(&self, editor_id: FatCatId, conn: &DbConn) -> Result<Editor> {
+        let row: EditorRow = editor::table.find(editor_id.to_uuid()).first(conn)?;
 
         let ed = Editor {
-            id: Some(uuid2fcid(&row.id)),
+            editor_id: Some(uuid2fcid(&row.id)),
             username: row.username,
         };
         Ok(ed)
@@ -417,11 +417,11 @@ impl Server {
 
     pub fn get_editor_changelog_handler(
         &self,
-        id: FatCatId,
+        editor_id: FatCatId,
         conn: &DbConn,
     ) -> Result<Vec<ChangelogEntry>> {
         // TODO: single query
-        let editor: EditorRow = editor::table.find(id.to_uuid()).first(conn)?;
+        let editor: EditorRow = editor::table.find(editor_id.to_uuid()).first(conn)?;
         let changes: Vec<(ChangelogRow, EditgroupRow)> = changelog::table
             .inner_join(editgroup::table)
             .filter(editgroup::editor_id.eq(editor.id))
@@ -464,8 +464,8 @@ impl Server {
         Ok(entries)
     }
 
-    pub fn get_changelog_entry_handler(&self, id: i64, conn: &DbConn) -> Result<ChangelogEntry> {
-        let cl_row: ChangelogRow = changelog::table.find(id).first(conn)?;
+    pub fn get_changelog_entry_handler(&self, index: i64, conn: &DbConn) -> Result<ChangelogEntry> {
+        let cl_row: ChangelogRow = changelog::table.find(index).first(conn)?;
         let editgroup =
             self.get_editgroup_handler(FatCatId::from_uuid(&cl_row.editgroup_id), conn)?;
 

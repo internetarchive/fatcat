@@ -829,7 +829,7 @@ impl EntityCrud for FileEntity {
             size: None,
             urls: None,
             mimetype: None,
-            releases: None,
+            release_ids: None,
             state: Some(ident_row.state().unwrap().shortname()),
             ident: Some(FatCatId::from_uuid(&ident_row.id).to_string()),
             revision: ident_row.rev_id.map(|u| u.to_string()),
@@ -880,7 +880,7 @@ impl EntityCrud for FileEntity {
             size: rev_row.size.map(|v| v as i64),
             urls: Some(urls),
             mimetype: rev_row.mimetype,
-            releases: Some(releases.iter().map(|fcid| fcid.to_string()).collect()),
+            release_ids: Some(releases.iter().map(|fcid| fcid.to_string()).collect()),
             state: state,
             ident: ident_id,
             revision: Some(rev_row.id.to_string()),
@@ -925,7 +925,7 @@ impl EntityCrud for FileEntity {
         let mut file_url_rows: Vec<FileRevUrlNewRow> = vec![];
 
         for (model, rev_id) in models.iter().zip(rev_ids.iter()) {
-            match &model.releases {
+            match &model.release_ids {
                 None => (),
                 Some(release_list) => {
                     let these_release_rows: Result<Vec<FileReleaseRow>> = release_list

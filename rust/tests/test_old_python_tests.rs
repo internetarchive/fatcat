@@ -26,7 +26,7 @@ fn test_api_rich_create() {
     new_eg.description = Some("a unit test edit".to_string());
     let resp = client.create_editgroup(new_eg).wait().unwrap();
     let editgroup_id = match resp {
-        CreateEditgroupResponse::SuccessfullyCreated(eg) => eg.id.unwrap(),
+        CreateEditgroupResponse::SuccessfullyCreated(eg) => eg.editgroup_id.unwrap(),
         _ => unreachable!(),
     };
 
@@ -116,7 +116,7 @@ fn test_api_rich_create() {
     let mut new_file = FileEntity::new();
     new_file.sha1 = Some("7d97e98f8af710c7e7fe703abc8f639e0ee507c4".to_string());
     new_file.size = Some(1234);
-    new_file.releases = Some(vec![release_id.clone()]);
+    new_file.release_ids = Some(vec![release_id.clone()]);
     // extra=dict(f=4, b="zing"))),
     let resp = client
         .create_file(new_file, Some(editgroup_id.clone()))
@@ -178,7 +178,7 @@ fn test_api_rich_create() {
         GetFileResponse::FoundEntity(e) => e,
         _ => unreachable!(),
     };
-    assert_eq!(fe.releases.unwrap()[0], release_id.clone());
+    assert_eq!(fe.release_ids.unwrap()[0], release_id.clone());
 
     // had a test for active_editgroup here, but that's soon-to-be-deprecated
 

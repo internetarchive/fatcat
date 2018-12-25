@@ -1202,7 +1202,7 @@ fn test_post_batch_autoaccept() {
     // editgroup
     check_http_response(
         request::post(
-            "http://localhost:9411/v0/container/batch?autoaccept=yes&editgroup=asdf",
+            "http://localhost:9411/v0/container/batch?autoaccept=yes&editgroup_id=asdf",
             headers.clone(),
             r#"[{"name": "test journal"}, {"name": "another test journal"}]"#,
             &router,
