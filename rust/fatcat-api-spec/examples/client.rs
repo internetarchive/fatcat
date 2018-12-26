@@ -13,14 +13,17 @@ use clap::{App, Arg};
 #[allow(unused_imports)]
 use fatcat::{
     AcceptEditgroupResponse, ApiError, ApiNoContext, ContextWrapperExt, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse,
-    CreateEditgroupResponse, CreateFileBatchResponse, CreateFileResponse, CreateReleaseBatchResponse, CreateReleaseResponse, CreateWorkBatchResponse, CreateWorkResponse, DeleteContainerEditResponse,
-    DeleteContainerResponse, DeleteCreatorEditResponse, DeleteCreatorResponse, DeleteFileEditResponse, DeleteFileResponse, DeleteReleaseEditResponse, DeleteReleaseResponse, DeleteWorkEditResponse,
-    DeleteWorkResponse, GetChangelogEntryResponse, GetChangelogResponse, GetContainerEditResponse, GetContainerHistoryResponse, GetContainerRedirectsResponse, GetContainerResponse,
-    GetContainerRevisionResponse, GetCreatorEditResponse, GetCreatorHistoryResponse, GetCreatorRedirectsResponse, GetCreatorReleasesResponse, GetCreatorResponse, GetCreatorRevisionResponse,
-    GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileEditResponse, GetFileHistoryResponse, GetFileRedirectsResponse, GetFileResponse, GetFileRevisionResponse,
-    GetReleaseEditResponse, GetReleaseFilesResponse, GetReleaseHistoryResponse, GetReleaseRedirectsResponse, GetReleaseResponse, GetReleaseRevisionResponse, GetWorkEditResponse,
+    CreateEditgroupResponse, CreateFileBatchResponse, CreateFileResponse, CreateFilesetBatchResponse, CreateFilesetResponse, CreateReleaseBatchResponse, CreateReleaseResponse,
+    CreateWebcaptureBatchResponse, CreateWebcaptureResponse, CreateWorkBatchResponse, CreateWorkResponse, DeleteContainerEditResponse, DeleteContainerResponse, DeleteCreatorEditResponse,
+    DeleteCreatorResponse, DeleteFileEditResponse, DeleteFileResponse, DeleteFilesetEditResponse, DeleteFilesetResponse, DeleteReleaseEditResponse, DeleteReleaseResponse,
+    DeleteWebcaptureEditResponse, DeleteWebcaptureResponse, DeleteWorkEditResponse, DeleteWorkResponse, GetChangelogEntryResponse, GetChangelogResponse, GetContainerEditResponse,
+    GetContainerHistoryResponse, GetContainerRedirectsResponse, GetContainerResponse, GetContainerRevisionResponse, GetCreatorEditResponse, GetCreatorHistoryResponse, GetCreatorRedirectsResponse,
+    GetCreatorReleasesResponse, GetCreatorResponse, GetCreatorRevisionResponse, GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileEditResponse, GetFileHistoryResponse,
+    GetFileRedirectsResponse, GetFileResponse, GetFileRevisionResponse, GetFilesetEditResponse, GetFilesetHistoryResponse, GetFilesetRedirectsResponse, GetFilesetResponse, GetFilesetRevisionResponse,
+    GetReleaseEditResponse, GetReleaseFilesResponse, GetReleaseFilesetsResponse, GetReleaseHistoryResponse, GetReleaseRedirectsResponse, GetReleaseResponse, GetReleaseRevisionResponse,
+    GetReleaseWebcapturesResponse, GetWebcaptureEditResponse, GetWebcaptureHistoryResponse, GetWebcaptureRedirectsResponse, GetWebcaptureResponse, GetWebcaptureRevisionResponse, GetWorkEditResponse,
     GetWorkHistoryResponse, GetWorkRedirectsResponse, GetWorkReleasesResponse, GetWorkResponse, GetWorkRevisionResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse,
-    LookupReleaseResponse, UpdateContainerResponse, UpdateCreatorResponse, UpdateFileResponse, UpdateReleaseResponse, UpdateWorkResponse,
+    LookupReleaseResponse, UpdateContainerResponse, UpdateCreatorResponse, UpdateFileResponse, UpdateFilesetResponse, UpdateReleaseResponse, UpdateWebcaptureResponse, UpdateWorkResponse,
 };
 #[allow(unused_imports)]
 use futures::{future, stream, Future, Stream};
@@ -65,16 +68,34 @@ fn main() {
                     "GetFileRedirects",
                     "GetFileRevision",
                     "LookupFile",
+                    "CreateFilesetBatch",
+                    "DeleteFileset",
+                    "DeleteFilesetEdit",
+                    "GetFileset",
+                    "GetFilesetEdit",
+                    "GetFilesetHistory",
+                    "GetFilesetRedirects",
+                    "GetFilesetRevision",
                     "CreateReleaseBatch",
                     "DeleteRelease",
                     "DeleteReleaseEdit",
                     "GetRelease",
                     "GetReleaseEdit",
                     "GetReleaseFiles",
+                    "GetReleaseFilesets",
                     "GetReleaseHistory",
                     "GetReleaseRedirects",
                     "GetReleaseRevision",
+                    "GetReleaseWebcaptures",
                     "LookupRelease",
+                    "CreateWebcaptureBatch",
+                    "DeleteWebcapture",
+                    "DeleteWebcaptureEdit",
+                    "GetWebcapture",
+                    "GetWebcaptureEdit",
+                    "GetWebcaptureHistory",
+                    "GetWebcaptureRedirects",
+                    "GetWebcaptureRevision",
                     "CreateWorkBatch",
                     "DeleteWork",
                     "DeleteWorkEdit",
@@ -354,6 +375,61 @@ fn main() {
         //  },
 
         // Disabled because there's no example.
+        // Some("CreateFileset") => {
+        //     let result = client.create_fileset(???, Some("editgroup_id_example".to_string())).wait();
+        //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        //  },
+        Some("CreateFilesetBatch") => {
+            let result = client.create_fileset_batch(&Vec::new(), Some(true), Some("editgroup_id_example".to_string())).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("DeleteFileset") => {
+            let result = client.delete_fileset("ident_example".to_string(), Some("editgroup_id_example".to_string())).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("DeleteFilesetEdit") => {
+            let result = client.delete_fileset_edit(789).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("GetFileset") => {
+            let result = client
+                .get_fileset("ident_example".to_string(), Some("expand_example".to_string()), Some("hide_example".to_string()))
+                .wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("GetFilesetEdit") => {
+            let result = client.get_fileset_edit(789).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("GetFilesetHistory") => {
+            let result = client.get_fileset_history("ident_example".to_string(), Some(789)).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("GetFilesetRedirects") => {
+            let result = client.get_fileset_redirects("ident_example".to_string()).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("GetFilesetRevision") => {
+            let result = client
+                .get_fileset_revision("rev_id_example".to_string(), Some("expand_example".to_string()), Some("hide_example".to_string()))
+                .wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        // Disabled because there's no example.
+        // Some("UpdateFileset") => {
+        //     let result = client.update_fileset("ident_example".to_string(), ???, Some("editgroup_id_example".to_string())).wait();
+        //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        //  },
+
+        // Disabled because there's no example.
         // Some("CreateRelease") => {
         //     let result = client.create_release(???, Some("editgroup_id_example".to_string())).wait();
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
@@ -395,6 +471,11 @@ fn main() {
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
+        Some("GetReleaseFilesets") => {
+            let result = client.get_release_filesets("ident_example".to_string(), Some("hide_example".to_string())).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
         Some("GetReleaseHistory") => {
             let result = client.get_release_history("ident_example".to_string(), Some(789)).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
@@ -409,6 +490,11 @@ fn main() {
             let result = client
                 .get_release_revision("rev_id_example".to_string(), Some("expand_example".to_string()), Some("hide_example".to_string()))
                 .wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("GetReleaseWebcaptures") => {
+            let result = client.get_release_webcaptures("ident_example".to_string(), Some("hide_example".to_string())).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -431,6 +517,61 @@ fn main() {
         // Disabled because there's no example.
         // Some("UpdateRelease") => {
         //     let result = client.update_release("ident_example".to_string(), ???, Some("editgroup_id_example".to_string())).wait();
+        //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        //  },
+
+        // Disabled because there's no example.
+        // Some("CreateWebcapture") => {
+        //     let result = client.create_webcapture(???, Some("editgroup_id_example".to_string())).wait();
+        //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        //  },
+        Some("CreateWebcaptureBatch") => {
+            let result = client.create_webcapture_batch(&Vec::new(), Some(true), Some("editgroup_id_example".to_string())).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("DeleteWebcapture") => {
+            let result = client.delete_webcapture("ident_example".to_string(), Some("editgroup_id_example".to_string())).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("DeleteWebcaptureEdit") => {
+            let result = client.delete_webcapture_edit(789).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("GetWebcapture") => {
+            let result = client
+                .get_webcapture("ident_example".to_string(), Some("expand_example".to_string()), Some("hide_example".to_string()))
+                .wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("GetWebcaptureEdit") => {
+            let result = client.get_webcapture_edit(789).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("GetWebcaptureHistory") => {
+            let result = client.get_webcapture_history("ident_example".to_string(), Some(789)).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("GetWebcaptureRedirects") => {
+            let result = client.get_webcapture_redirects("ident_example".to_string()).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        Some("GetWebcaptureRevision") => {
+            let result = client
+                .get_webcapture_revision("rev_id_example".to_string(), Some("expand_example".to_string()), Some("hide_example".to_string()))
+                .wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        // Disabled because there's no example.
+        // Some("UpdateWebcapture") => {
+        //     let result = client.update_webcapture("ident_example".to_string(), ???, Some("editgroup_id_example".to_string())).wait();
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         //  },
         Some("CreateWorkBatch") => {

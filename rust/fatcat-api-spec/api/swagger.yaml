@@ -1235,8 +1235,8 @@ paths:
         example: "\"ident_example\".to_string()"
       - name: "hide"
         in: "query"
-        description: "List of entity fields to elide in response. For releases, 'abstracts',\
-          \ 'refs', and 'contribs' are valid."
+        description: "List of entity fields to elide in response. For creators, none\
+          \ implemented yet."
         required: false
         type: "string"
         formatString: "{:?}"
@@ -2252,6 +2252,1294 @@ paths:
       path: "/file/edit/:edit_id"
       HttpMethod: "Delete"
       httpmethod: "delete"
+  /fileset:
+    post:
+      tags:
+      - "filesets"
+      operationId: "create_fileset"
+      parameters:
+      - in: "body"
+        name: "entity"
+        required: true
+        schema:
+          $ref: "#/definitions/fileset_entity"
+        uppercase_data_type: "FILESETENTITY"
+        refName: "fileset_entity"
+        formatString: "{:?}"
+        example: "???"
+        model_key: "editgroup_edits"
+        uppercase_operation_id: "CREATE_FILESET"
+        consumesJson: true
+      - name: "editgroup_id"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"editgroup_id_example\".to_string())"
+      responses:
+        201:
+          description: "Created Entity"
+          schema:
+            $ref: "#/definitions/entity_edit"
+          x-responseId: "CreatedEntity"
+          x-uppercaseResponseId: "CREATED_ENTITY"
+          uppercase_operation_id: "CREATE_FILESET"
+          uppercase_data_type: "ENTITYEDIT"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "CREATE_FILESET"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "CREATE_FILESET"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "CREATE_FILESET"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "create_fileset"
+      uppercase_operation_id: "CREATE_FILESET"
+      path: "/fileset"
+      HttpMethod: "Post"
+      httpmethod: "post"
+      noClientExample: true
+  /fileset/batch:
+    post:
+      tags:
+      - "filesets"
+      operationId: "create_fileset_batch"
+      parameters:
+      - name: "autoaccept"
+        in: "query"
+        description: "If true, and editor is authorized, batch is accepted all at\
+          \ once"
+        required: false
+        type: "boolean"
+        formatString: "{:?}"
+        example: "Some(true)"
+      - name: "editgroup_id"
+        in: "query"
+        description: "Editgroup to auto-accept and apply to all entities (required\
+          \ if 'autoaccept' is True)"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"editgroup_id_example\".to_string())"
+      - in: "body"
+        name: "entity_list"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/fileset_entity"
+        formatString: "{:?}"
+        example: "&Vec::new()"
+        model_key: "editgroup_edits"
+        uppercase_operation_id: "CREATE_FILESET_BATCH"
+        consumesJson: true
+      responses:
+        201:
+          description: "Created Entities"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/entity_edit"
+          x-responseId: "CreatedEntities"
+          x-uppercaseResponseId: "CREATED_ENTITIES"
+          uppercase_operation_id: "CREATE_FILESET_BATCH"
+          uppercase_data_type: "VEC<ENTITYEDIT>"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "CREATE_FILESET_BATCH"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "CREATE_FILESET_BATCH"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "CREATE_FILESET_BATCH"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "create_fileset_batch"
+      uppercase_operation_id: "CREATE_FILESET_BATCH"
+      path: "/fileset/batch"
+      HttpMethod: "Post"
+      httpmethod: "post"
+  /fileset/{ident}:
+    get:
+      tags:
+      - "filesets"
+      operationId: "get_fileset"
+      parameters:
+      - name: "ident"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"ident_example\".to_string()"
+      - name: "expand"
+        in: "query"
+        description: "List of sub-entities to expand in response. For filesets, none\
+          \ accepted (yet)."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"expand_example\".to_string())"
+      - name: "hide"
+        in: "query"
+        description: "List of entity fields to elide in response. For filesets, 'manifest'\
+          \ is accepted."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"hide_example\".to_string())"
+      responses:
+        200:
+          description: "Found Entity"
+          schema:
+            $ref: "#/definitions/fileset_entity"
+          x-responseId: "FoundEntity"
+          x-uppercaseResponseId: "FOUND_ENTITY"
+          uppercase_operation_id: "GET_FILESET"
+          uppercase_data_type: "FILESETENTITY"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_FILESET"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_FILESET"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_FILESET"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_fileset"
+      uppercase_operation_id: "GET_FILESET"
+      path: "/fileset/:ident"
+      HttpMethod: "Get"
+      httpmethod: "get"
+    put:
+      tags:
+      - "filesets"
+      operationId: "update_fileset"
+      parameters:
+      - name: "ident"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"ident_example\".to_string()"
+      - in: "body"
+        name: "entity"
+        required: true
+        schema:
+          $ref: "#/definitions/fileset_entity"
+        uppercase_data_type: "FILESETENTITY"
+        refName: "fileset_entity"
+        formatString: "{:?}"
+        example: "???"
+        model_key: "editgroup_edits"
+        uppercase_operation_id: "UPDATE_FILESET"
+        consumesJson: true
+      - name: "editgroup_id"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"editgroup_id_example\".to_string())"
+      responses:
+        200:
+          description: "Updated Entity"
+          schema:
+            $ref: "#/definitions/entity_edit"
+          x-responseId: "UpdatedEntity"
+          x-uppercaseResponseId: "UPDATED_ENTITY"
+          uppercase_operation_id: "UPDATE_FILESET"
+          uppercase_data_type: "ENTITYEDIT"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "UPDATE_FILESET"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "UPDATE_FILESET"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "UPDATE_FILESET"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "update_fileset"
+      uppercase_operation_id: "UPDATE_FILESET"
+      path: "/fileset/:ident"
+      HttpMethod: "Put"
+      httpmethod: "put"
+      noClientExample: true
+    delete:
+      tags:
+      - "filesets"
+      operationId: "delete_fileset"
+      parameters:
+      - name: "ident"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"ident_example\".to_string()"
+      - name: "editgroup_id"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"editgroup_id_example\".to_string())"
+      responses:
+        200:
+          description: "Deleted Entity"
+          schema:
+            $ref: "#/definitions/entity_edit"
+          x-responseId: "DeletedEntity"
+          x-uppercaseResponseId: "DELETED_ENTITY"
+          uppercase_operation_id: "DELETE_FILESET"
+          uppercase_data_type: "ENTITYEDIT"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "DELETE_FILESET"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "DELETE_FILESET"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "DELETE_FILESET"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "delete_fileset"
+      uppercase_operation_id: "DELETE_FILESET"
+      path: "/fileset/:ident"
+      HttpMethod: "Delete"
+      httpmethod: "delete"
+  /fileset/rev/{rev_id}:
+    get:
+      tags:
+      - "filesets"
+      operationId: "get_fileset_revision"
+      parameters:
+      - name: "rev_id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"rev_id_example\".to_string()"
+      - name: "expand"
+        in: "query"
+        description: "List of sub-entities to expand in response. For filesets, none\
+          \ accepted (yet)."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"expand_example\".to_string())"
+      - name: "hide"
+        in: "query"
+        description: "List of entity fields to elide in response. For filesets, 'manifest'\
+          \ is accepted."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"hide_example\".to_string())"
+      responses:
+        200:
+          description: "Found Entity Revision"
+          schema:
+            $ref: "#/definitions/fileset_entity"
+          x-responseId: "FoundEntityRevision"
+          x-uppercaseResponseId: "FOUND_ENTITY_REVISION"
+          uppercase_operation_id: "GET_FILESET_REVISION"
+          uppercase_data_type: "FILESETENTITY"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_FILESET_REVISION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_FILESET_REVISION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_FILESET_REVISION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_fileset_revision"
+      uppercase_operation_id: "GET_FILESET_REVISION"
+      path: "/fileset/rev/:rev_id"
+      HttpMethod: "Get"
+      httpmethod: "get"
+  /fileset/{ident}/history:
+    get:
+      tags:
+      - "filesets"
+      operationId: "get_fileset_history"
+      parameters:
+      - name: "ident"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"ident_example\".to_string()"
+      - name: "limit"
+        in: "query"
+        required: false
+        type: "integer"
+        format: "int64"
+        formatString: "{:?}"
+        example: "Some(789)"
+      responses:
+        200:
+          description: "Found Entity History"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/entity_history_entry"
+          x-responseId: "FoundEntityHistory"
+          x-uppercaseResponseId: "FOUND_ENTITY_HISTORY"
+          uppercase_operation_id: "GET_FILESET_HISTORY"
+          uppercase_data_type: "VEC<ENTITYHISTORYENTRY>"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_FILESET_HISTORY"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_FILESET_HISTORY"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_FILESET_HISTORY"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_fileset_history"
+      uppercase_operation_id: "GET_FILESET_HISTORY"
+      path: "/fileset/:ident/history"
+      HttpMethod: "Get"
+      httpmethod: "get"
+  /fileset/{ident}/redirects:
+    get:
+      tags:
+      - "filesets"
+      operationId: "get_fileset_redirects"
+      parameters:
+      - name: "ident"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"ident_example\".to_string()"
+      responses:
+        200:
+          description: "Found Entity Redirects"
+          schema:
+            type: "array"
+            items:
+              type: "string"
+          x-responseId: "FoundEntityRedirects"
+          x-uppercaseResponseId: "FOUND_ENTITY_REDIRECTS"
+          uppercase_operation_id: "GET_FILESET_REDIRECTS"
+          uppercase_data_type: "VEC<STRING>"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_FILESET_REDIRECTS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_FILESET_REDIRECTS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_FILESET_REDIRECTS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_fileset_redirects"
+      uppercase_operation_id: "GET_FILESET_REDIRECTS"
+      path: "/fileset/:ident/redirects"
+      HttpMethod: "Get"
+      httpmethod: "get"
+  /fileset/edit/{edit_id}:
+    get:
+      tags:
+      - "filesets"
+      operationId: "get_fileset_edit"
+      parameters:
+      - name: "edit_id"
+        in: "path"
+        required: true
+        type: "integer"
+        format: "int64"
+        formatString: "{}"
+        example: "789"
+      responses:
+        200:
+          description: "Found Edit"
+          schema:
+            $ref: "#/definitions/entity_edit"
+          x-responseId: "FoundEdit"
+          x-uppercaseResponseId: "FOUND_EDIT"
+          uppercase_operation_id: "GET_FILESET_EDIT"
+          uppercase_data_type: "ENTITYEDIT"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_FILESET_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_FILESET_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_FILESET_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_fileset_edit"
+      uppercase_operation_id: "GET_FILESET_EDIT"
+      path: "/fileset/edit/:edit_id"
+      HttpMethod: "Get"
+      httpmethod: "get"
+    delete:
+      tags:
+      - "filesets"
+      operationId: "delete_fileset_edit"
+      parameters:
+      - name: "edit_id"
+        in: "path"
+        required: true
+        type: "integer"
+        format: "int64"
+        formatString: "{}"
+        example: "789"
+      responses:
+        200:
+          description: "Deleted Edit"
+          schema:
+            $ref: "#/definitions/success"
+          x-responseId: "DeletedEdit"
+          x-uppercaseResponseId: "DELETED_EDIT"
+          uppercase_operation_id: "DELETE_FILESET_EDIT"
+          uppercase_data_type: "SUCCESS"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "DELETE_FILESET_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "DELETE_FILESET_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "DELETE_FILESET_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "delete_fileset_edit"
+      uppercase_operation_id: "DELETE_FILESET_EDIT"
+      path: "/fileset/edit/:edit_id"
+      HttpMethod: "Delete"
+      httpmethod: "delete"
+  /webcapture:
+    post:
+      tags:
+      - "webcaptures"
+      operationId: "create_webcapture"
+      parameters:
+      - in: "body"
+        name: "entity"
+        required: true
+        schema:
+          $ref: "#/definitions/webcapture_entity"
+        uppercase_data_type: "WEBCAPTUREENTITY"
+        refName: "webcapture_entity"
+        formatString: "{:?}"
+        example: "???"
+        model_key: "editgroup_edits"
+        uppercase_operation_id: "CREATE_WEBCAPTURE"
+        consumesJson: true
+      - name: "editgroup_id"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"editgroup_id_example\".to_string())"
+      responses:
+        201:
+          description: "Created Entity"
+          schema:
+            $ref: "#/definitions/entity_edit"
+          x-responseId: "CreatedEntity"
+          x-uppercaseResponseId: "CREATED_ENTITY"
+          uppercase_operation_id: "CREATE_WEBCAPTURE"
+          uppercase_data_type: "ENTITYEDIT"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "CREATE_WEBCAPTURE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "CREATE_WEBCAPTURE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "CREATE_WEBCAPTURE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "create_webcapture"
+      uppercase_operation_id: "CREATE_WEBCAPTURE"
+      path: "/webcapture"
+      HttpMethod: "Post"
+      httpmethod: "post"
+      noClientExample: true
+  /webcapture/batch:
+    post:
+      tags:
+      - "webcaptures"
+      operationId: "create_webcapture_batch"
+      parameters:
+      - name: "autoaccept"
+        in: "query"
+        description: "If true, and editor is authorized, batch is accepted all at\
+          \ once"
+        required: false
+        type: "boolean"
+        formatString: "{:?}"
+        example: "Some(true)"
+      - name: "editgroup_id"
+        in: "query"
+        description: "Editgroup to auto-accept and apply to all entities (required\
+          \ if 'autoaccept' is True)"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"editgroup_id_example\".to_string())"
+      - in: "body"
+        name: "entity_list"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/webcapture_entity"
+        formatString: "{:?}"
+        example: "&Vec::new()"
+        model_key: "editgroup_edits"
+        uppercase_operation_id: "CREATE_WEBCAPTURE_BATCH"
+        consumesJson: true
+      responses:
+        201:
+          description: "Created Entities"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/entity_edit"
+          x-responseId: "CreatedEntities"
+          x-uppercaseResponseId: "CREATED_ENTITIES"
+          uppercase_operation_id: "CREATE_WEBCAPTURE_BATCH"
+          uppercase_data_type: "VEC<ENTITYEDIT>"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "CREATE_WEBCAPTURE_BATCH"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "CREATE_WEBCAPTURE_BATCH"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "CREATE_WEBCAPTURE_BATCH"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "create_webcapture_batch"
+      uppercase_operation_id: "CREATE_WEBCAPTURE_BATCH"
+      path: "/webcapture/batch"
+      HttpMethod: "Post"
+      httpmethod: "post"
+  /webcapture/{ident}:
+    get:
+      tags:
+      - "webcaptures"
+      operationId: "get_webcapture"
+      parameters:
+      - name: "ident"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"ident_example\".to_string()"
+      - name: "expand"
+        in: "query"
+        description: "List of sub-entities to expand in response. For webcaptures,\
+          \ none accepted (yet)."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"expand_example\".to_string())"
+      - name: "hide"
+        in: "query"
+        description: "List of entity fields to elide in response. For webcaptures,\
+          \ 'cdx' is accepted."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"hide_example\".to_string())"
+      responses:
+        200:
+          description: "Found Entity"
+          schema:
+            $ref: "#/definitions/webcapture_entity"
+          x-responseId: "FoundEntity"
+          x-uppercaseResponseId: "FOUND_ENTITY"
+          uppercase_operation_id: "GET_WEBCAPTURE"
+          uppercase_data_type: "WEBCAPTUREENTITY"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_WEBCAPTURE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_WEBCAPTURE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_WEBCAPTURE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_webcapture"
+      uppercase_operation_id: "GET_WEBCAPTURE"
+      path: "/webcapture/:ident"
+      HttpMethod: "Get"
+      httpmethod: "get"
+    put:
+      tags:
+      - "webcaptures"
+      operationId: "update_webcapture"
+      parameters:
+      - name: "ident"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"ident_example\".to_string()"
+      - in: "body"
+        name: "entity"
+        required: true
+        schema:
+          $ref: "#/definitions/webcapture_entity"
+        uppercase_data_type: "WEBCAPTUREENTITY"
+        refName: "webcapture_entity"
+        formatString: "{:?}"
+        example: "???"
+        model_key: "editgroup_edits"
+        uppercase_operation_id: "UPDATE_WEBCAPTURE"
+        consumesJson: true
+      - name: "editgroup_id"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"editgroup_id_example\".to_string())"
+      responses:
+        200:
+          description: "Updated Entity"
+          schema:
+            $ref: "#/definitions/entity_edit"
+          x-responseId: "UpdatedEntity"
+          x-uppercaseResponseId: "UPDATED_ENTITY"
+          uppercase_operation_id: "UPDATE_WEBCAPTURE"
+          uppercase_data_type: "ENTITYEDIT"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "UPDATE_WEBCAPTURE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "UPDATE_WEBCAPTURE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "UPDATE_WEBCAPTURE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "update_webcapture"
+      uppercase_operation_id: "UPDATE_WEBCAPTURE"
+      path: "/webcapture/:ident"
+      HttpMethod: "Put"
+      httpmethod: "put"
+      noClientExample: true
+    delete:
+      tags:
+      - "webcaptures"
+      operationId: "delete_webcapture"
+      parameters:
+      - name: "ident"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"ident_example\".to_string()"
+      - name: "editgroup_id"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"editgroup_id_example\".to_string())"
+      responses:
+        200:
+          description: "Deleted Entity"
+          schema:
+            $ref: "#/definitions/entity_edit"
+          x-responseId: "DeletedEntity"
+          x-uppercaseResponseId: "DELETED_ENTITY"
+          uppercase_operation_id: "DELETE_WEBCAPTURE"
+          uppercase_data_type: "ENTITYEDIT"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "DELETE_WEBCAPTURE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "DELETE_WEBCAPTURE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "DELETE_WEBCAPTURE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "delete_webcapture"
+      uppercase_operation_id: "DELETE_WEBCAPTURE"
+      path: "/webcapture/:ident"
+      HttpMethod: "Delete"
+      httpmethod: "delete"
+  /webcapture/rev/{rev_id}:
+    get:
+      tags:
+      - "webcaptures"
+      operationId: "get_webcapture_revision"
+      parameters:
+      - name: "rev_id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"rev_id_example\".to_string()"
+      - name: "expand"
+        in: "query"
+        description: "List of sub-entities to expand in response. For webcaptures,\
+          \ none accepted (yet)."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"expand_example\".to_string())"
+      - name: "hide"
+        in: "query"
+        description: "List of entity fields to elide in response. For webcaptures,\
+          \ 'cdx' is accepted."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"hide_example\".to_string())"
+      responses:
+        200:
+          description: "Found Entity Revision"
+          schema:
+            $ref: "#/definitions/webcapture_entity"
+          x-responseId: "FoundEntityRevision"
+          x-uppercaseResponseId: "FOUND_ENTITY_REVISION"
+          uppercase_operation_id: "GET_WEBCAPTURE_REVISION"
+          uppercase_data_type: "WEBCAPTUREENTITY"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_WEBCAPTURE_REVISION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_WEBCAPTURE_REVISION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_WEBCAPTURE_REVISION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_webcapture_revision"
+      uppercase_operation_id: "GET_WEBCAPTURE_REVISION"
+      path: "/webcapture/rev/:rev_id"
+      HttpMethod: "Get"
+      httpmethod: "get"
+  /webcapture/{ident}/history:
+    get:
+      tags:
+      - "webcaptures"
+      operationId: "get_webcapture_history"
+      parameters:
+      - name: "ident"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"ident_example\".to_string()"
+      - name: "limit"
+        in: "query"
+        required: false
+        type: "integer"
+        format: "int64"
+        formatString: "{:?}"
+        example: "Some(789)"
+      responses:
+        200:
+          description: "Found Entity History"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/entity_history_entry"
+          x-responseId: "FoundEntityHistory"
+          x-uppercaseResponseId: "FOUND_ENTITY_HISTORY"
+          uppercase_operation_id: "GET_WEBCAPTURE_HISTORY"
+          uppercase_data_type: "VEC<ENTITYHISTORYENTRY>"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_WEBCAPTURE_HISTORY"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_WEBCAPTURE_HISTORY"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_WEBCAPTURE_HISTORY"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_webcapture_history"
+      uppercase_operation_id: "GET_WEBCAPTURE_HISTORY"
+      path: "/webcapture/:ident/history"
+      HttpMethod: "Get"
+      httpmethod: "get"
+  /webcapture/{ident}/redirects:
+    get:
+      tags:
+      - "webcaptures"
+      operationId: "get_webcapture_redirects"
+      parameters:
+      - name: "ident"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"ident_example\".to_string()"
+      responses:
+        200:
+          description: "Found Entity Redirects"
+          schema:
+            type: "array"
+            items:
+              type: "string"
+          x-responseId: "FoundEntityRedirects"
+          x-uppercaseResponseId: "FOUND_ENTITY_REDIRECTS"
+          uppercase_operation_id: "GET_WEBCAPTURE_REDIRECTS"
+          uppercase_data_type: "VEC<STRING>"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_WEBCAPTURE_REDIRECTS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_WEBCAPTURE_REDIRECTS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_WEBCAPTURE_REDIRECTS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_webcapture_redirects"
+      uppercase_operation_id: "GET_WEBCAPTURE_REDIRECTS"
+      path: "/webcapture/:ident/redirects"
+      HttpMethod: "Get"
+      httpmethod: "get"
+  /webcapture/edit/{edit_id}:
+    get:
+      tags:
+      - "webcaptures"
+      operationId: "get_webcapture_edit"
+      parameters:
+      - name: "edit_id"
+        in: "path"
+        required: true
+        type: "integer"
+        format: "int64"
+        formatString: "{}"
+        example: "789"
+      responses:
+        200:
+          description: "Found Edit"
+          schema:
+            $ref: "#/definitions/entity_edit"
+          x-responseId: "FoundEdit"
+          x-uppercaseResponseId: "FOUND_EDIT"
+          uppercase_operation_id: "GET_WEBCAPTURE_EDIT"
+          uppercase_data_type: "ENTITYEDIT"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_WEBCAPTURE_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_WEBCAPTURE_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_WEBCAPTURE_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_webcapture_edit"
+      uppercase_operation_id: "GET_WEBCAPTURE_EDIT"
+      path: "/webcapture/edit/:edit_id"
+      HttpMethod: "Get"
+      httpmethod: "get"
+    delete:
+      tags:
+      - "webcaptures"
+      operationId: "delete_webcapture_edit"
+      parameters:
+      - name: "edit_id"
+        in: "path"
+        required: true
+        type: "integer"
+        format: "int64"
+        formatString: "{}"
+        example: "789"
+      responses:
+        200:
+          description: "Deleted Edit"
+          schema:
+            $ref: "#/definitions/success"
+          x-responseId: "DeletedEdit"
+          x-uppercaseResponseId: "DELETED_EDIT"
+          uppercase_operation_id: "DELETE_WEBCAPTURE_EDIT"
+          uppercase_data_type: "SUCCESS"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "DELETE_WEBCAPTURE_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "DELETE_WEBCAPTURE_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "DELETE_WEBCAPTURE_EDIT"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "delete_webcapture_edit"
+      uppercase_operation_id: "DELETE_WEBCAPTURE_EDIT"
+      path: "/webcapture/edit/:edit_id"
+      HttpMethod: "Delete"
+      httpmethod: "delete"
   /release:
     post:
       tags:
@@ -2412,7 +3700,7 @@ paths:
       - name: "expand"
         in: "query"
         description: "List of sub-entities to expand in response. For releases, 'files',\
-          \ 'container', and 'creators' are valid."
+          \ 'filesets, 'webcaptures', 'container', and 'creators' are valid."
         required: false
         type: "string"
         formatString: "{:?}"
@@ -2795,6 +4083,134 @@ paths:
       path: "/release/:ident/files"
       HttpMethod: "Get"
       httpmethod: "get"
+  /release/{ident}/filesets:
+    get:
+      tags:
+      - "releases"
+      operationId: "get_release_filesets"
+      parameters:
+      - name: "ident"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"ident_example\".to_string()"
+      - name: "hide"
+        in: "query"
+        description: "List of entity fields to elide in response. For filesets, 'manifest'\
+          \ is valid."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"hide_example\".to_string())"
+      responses:
+        200:
+          description: "Found"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/fileset_entity"
+          x-responseId: "Found"
+          x-uppercaseResponseId: "FOUND"
+          uppercase_operation_id: "GET_RELEASE_FILESETS"
+          uppercase_data_type: "VEC<FILESETENTITY>"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_RELEASE_FILESETS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_RELEASE_FILESETS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_RELEASE_FILESETS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_release_filesets"
+      uppercase_operation_id: "GET_RELEASE_FILESETS"
+      path: "/release/:ident/filesets"
+      HttpMethod: "Get"
+      httpmethod: "get"
+  /release/{ident}/webcaptures:
+    get:
+      tags:
+      - "releases"
+      operationId: "get_release_webcaptures"
+      parameters:
+      - name: "ident"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"ident_example\".to_string()"
+      - name: "hide"
+        in: "query"
+        description: "List of entity fields to elide in response. For webcaptures,\
+          \ 'cdx' is valid."
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"hide_example\".to_string())"
+      responses:
+        200:
+          description: "Found"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/webcapture_entity"
+          x-responseId: "Found"
+          x-uppercaseResponseId: "FOUND"
+          uppercase_operation_id: "GET_RELEASE_WEBCAPTURES"
+          uppercase_data_type: "VEC<WEBCAPTUREENTITY>"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_RELEASE_WEBCAPTURES"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_RELEASE_WEBCAPTURES"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_RELEASE_WEBCAPTURES"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_release_webcaptures"
+      uppercase_operation_id: "GET_RELEASE_WEBCAPTURES"
+      path: "/release/:ident/webcaptures"
+      HttpMethod: "Get"
+      httpmethod: "get"
   /release/{ident}/redirects:
     get:
       tags:
@@ -2902,8 +4318,8 @@ paths:
         example: "Some(\"expand_example\".to_string())"
       - name: "hide"
         in: "query"
-        description: "List of entity fields to elide in response. For releases, 'abstracts',\
-          \ 'refs', and 'contribs' are valid."
+        description: "List of sub-entities to expand in response. For releases, 'files',\
+          \ 'filesets, 'webcaptures', 'container', and 'creators' are valid."
         required: false
         type: "string"
         formatString: "{:?}"
@@ -3608,8 +5024,8 @@ paths:
         example: "\"ident_example\".to_string()"
       - name: "hide"
         in: "query"
-        description: "List of entity fields to elide in response. For releases, 'abstracts',\
-          \ 'refs', and 'contribs' are valid."
+        description: "List of entity fields to elide in response. For works, none\
+          \ implemented yet."
         required: false
         type: "string"
         formatString: "{:?}"
@@ -4368,6 +5784,168 @@ definitions:
       edit_extra: "{}"
       md5: "d41efcc592d1e40ac13905377399eb9b"
     upperCaseName: "FILE_ENTITY"
+  fileset_entity:
+    type: "object"
+    properties:
+      release_ids:
+        type: "array"
+        items:
+          type: "string"
+      urls:
+        type: "array"
+        items:
+          $ref: "#/definitions/file_entity_urls"
+      manifest:
+        type: "array"
+        items:
+          $ref: "#/definitions/fileset_entity_manifest"
+      state:
+        type: "string"
+        enum:
+        - "wip"
+        - "active"
+        - "redirect"
+        - "deleted"
+      ident:
+        type: "string"
+        example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        description: "base32-encoded unique identifier"
+        minLength: 26
+        maxLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
+      revision:
+        type: "string"
+        example: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+        description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
+        minLength: 36
+        maxLength: 36
+        pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+      redirect:
+        type: "string"
+        example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        description: "base32-encoded unique identifier"
+        minLength: 26
+        maxLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
+      extra:
+        type: "object"
+      edit_extra:
+        type: "object"
+    example:
+      redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
+      urls:
+      - rel: "webarchive"
+        url: "https://example.edu/~frau/prcding.pdf"
+      - rel: "webarchive"
+        url: "https://example.edu/~frau/prcding.pdf"
+      manifest:
+      - sha1: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
+        path: "img/cat.png"
+        size: 1048576
+        sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+        extra: "{}"
+        md5: "d41efcc592d1e40ac13905377399eb9b"
+      - sha1: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
+        path: "img/cat.png"
+        size: 1048576
+        sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+        extra: "{}"
+        md5: "d41efcc592d1e40ac13905377399eb9b"
+      ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+      extra: "{}"
+      state: "wip"
+      release_ids:
+      - "release_ids"
+      - "release_ids"
+      edit_extra: "{}"
+      revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+    upperCaseName: "FILESET_ENTITY"
+  webcapture_entity:
+    type: "object"
+    properties:
+      release_ids:
+        type: "array"
+        items:
+          type: "string"
+      timestamp:
+        type: "string"
+        format: "date-time"
+      original_url:
+        type: "string"
+        example: "http://asheesh.org"
+      archive_urls:
+        type: "array"
+        items:
+          $ref: "#/definitions/webcapture_entity_archive_urls"
+      cdx:
+        type: "array"
+        items:
+          $ref: "#/definitions/webcapture_entity_cdx"
+      edit_extra:
+        type: "object"
+      extra:
+        type: "object"
+      redirect:
+        type: "string"
+        example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        description: "base32-encoded unique identifier"
+        minLength: 26
+        maxLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
+      revision:
+        type: "string"
+        example: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+        description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
+        minLength: 36
+        maxLength: 36
+        pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+      ident:
+        type: "string"
+        example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        description: "base32-encoded unique identifier"
+        minLength: 26
+        maxLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
+      state:
+        type: "string"
+        enum:
+        - "wip"
+        - "active"
+        - "redirect"
+        - "deleted"
+    example:
+      redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
+      archive_urls:
+      - rel: "wayback"
+        url: "https://web.archive.org/web/"
+      - rel: "wayback"
+        url: "https://web.archive.org/web/"
+      original_url: "http://asheesh.org"
+      cdx:
+      - sha1: "3f242a192acc258bdfdb151943419437f440c313"
+        surt: "org,asheesh)/apus/ch1/node15.html"
+        status_code: 200
+        sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+        mimetype: "text/html"
+        url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
+        timestamp: 20020429162520
+      - sha1: "3f242a192acc258bdfdb151943419437f440c313"
+        surt: "org,asheesh)/apus/ch1/node15.html"
+        status_code: 200
+        sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+        mimetype: "text/html"
+        url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
+        timestamp: 20020429162520
+      ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+      extra: "{}"
+      state: "wip"
+      release_ids:
+      - "release_ids"
+      - "release_ids"
+      edit_extra: "{}"
+      timestamp: "2000-01-23T04:56:07.000+00:00"
+      revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+    upperCaseName: "WEBCAPTURE_ENTITY"
   release_entity:
     type: "object"
     properties:
@@ -4424,6 +6002,16 @@ definitions:
       container_id:
         type: "string"
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+      webcaptures:
+        type: "array"
+        description: "Optional; GET-only"
+        items:
+          $ref: "#/definitions/webcapture_entity"
+      filesets:
+        type: "array"
+        description: "Optional; GET-only"
+        items:
+          $ref: "#/definitions/fileset_entity"
       files:
         type: "array"
         description: "Optional; GET-only"
@@ -4483,6 +6071,69 @@ definitions:
         wikidata_qid: "wikidata_qid"
         state: "wip"
         edit_extra: "{}"
+        revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+      webcaptures:
+      - redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        archive_urls:
+        - rel: "wayback"
+          url: "https://web.archive.org/web/"
+        - rel: "wayback"
+          url: "https://web.archive.org/web/"
+        original_url: "http://asheesh.org"
+        cdx:
+        - sha1: "3f242a192acc258bdfdb151943419437f440c313"
+          surt: "org,asheesh)/apus/ch1/node15.html"
+          status_code: 200
+          sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+          mimetype: "text/html"
+          url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
+          timestamp: 20020429162520
+        - sha1: "3f242a192acc258bdfdb151943419437f440c313"
+          surt: "org,asheesh)/apus/ch1/node15.html"
+          status_code: 200
+          sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+          mimetype: "text/html"
+          url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
+          timestamp: 20020429162520
+        ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        extra: "{}"
+        state: "wip"
+        release_ids:
+        - "release_ids"
+        - "release_ids"
+        edit_extra: "{}"
+        timestamp: "2000-01-23T04:56:07.000+00:00"
+        revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+      - redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        archive_urls:
+        - rel: "wayback"
+          url: "https://web.archive.org/web/"
+        - rel: "wayback"
+          url: "https://web.archive.org/web/"
+        original_url: "http://asheesh.org"
+        cdx:
+        - sha1: "3f242a192acc258bdfdb151943419437f440c313"
+          surt: "org,asheesh)/apus/ch1/node15.html"
+          status_code: 200
+          sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+          mimetype: "text/html"
+          url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
+          timestamp: 20020429162520
+        - sha1: "3f242a192acc258bdfdb151943419437f440c313"
+          surt: "org,asheesh)/apus/ch1/node15.html"
+          status_code: 200
+          sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+          mimetype: "text/html"
+          url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
+          timestamp: 20020429162520
+        ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        extra: "{}"
+        state: "wip"
+        release_ids:
+        - "release_ids"
+        - "release_ids"
+        edit_extra: "{}"
+        timestamp: "2000-01-23T04:56:07.000+00:00"
         revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
       language: "language"
@@ -4605,6 +6256,61 @@ definitions:
         - "release_ids"
         edit_extra: "{}"
         md5: "d41efcc592d1e40ac13905377399eb9b"
+      filesets:
+      - redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        urls:
+        - rel: "webarchive"
+          url: "https://example.edu/~frau/prcding.pdf"
+        - rel: "webarchive"
+          url: "https://example.edu/~frau/prcding.pdf"
+        manifest:
+        - sha1: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
+          path: "img/cat.png"
+          size: 1048576
+          sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+          extra: "{}"
+          md5: "d41efcc592d1e40ac13905377399eb9b"
+        - sha1: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
+          path: "img/cat.png"
+          size: 1048576
+          sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+          extra: "{}"
+          md5: "d41efcc592d1e40ac13905377399eb9b"
+        ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        extra: "{}"
+        state: "wip"
+        release_ids:
+        - "release_ids"
+        - "release_ids"
+        edit_extra: "{}"
+        revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+      - redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        urls:
+        - rel: "webarchive"
+          url: "https://example.edu/~frau/prcding.pdf"
+        - rel: "webarchive"
+          url: "https://example.edu/~frau/prcding.pdf"
+        manifest:
+        - sha1: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
+          path: "img/cat.png"
+          size: 1048576
+          sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+          extra: "{}"
+          md5: "d41efcc592d1e40ac13905377399eb9b"
+        - sha1: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
+          path: "img/cat.png"
+          size: 1048576
+          sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+          extra: "{}"
+          md5: "d41efcc592d1e40ac13905377399eb9b"
+        ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        extra: "{}"
+        state: "wip"
+        release_ids:
+        - "release_ids"
+        - "release_ids"
+        edit_extra: "{}"
+        revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       pmcid: "pmcid"
       container_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
       doi: "10.1234/abcde.789"
@@ -4684,6 +6390,21 @@ definitions:
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
             prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+          webcaptures:
+          - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            edit_id: 847
+            extra: "{}"
+            redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+            revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+          - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            edit_id: 847
+            extra: "{}"
+            redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+            revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           creators:
           - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
             edit_id: 847
@@ -4715,6 +6436,21 @@ definitions:
             prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           containers:
+          - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            edit_id: 847
+            extra: "{}"
+            redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+            revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+          - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            edit_id: 847
+            extra: "{}"
+            redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+            revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+          filesets:
           - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
             edit_id: 847
             extra: "{}"
@@ -4774,6 +6510,21 @@ definitions:
               editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
               prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
               revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+            webcaptures:
+            - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+              edit_id: 847
+              extra: "{}"
+              redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+              editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+              prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+              revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+            - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+              edit_id: 847
+              extra: "{}"
+              redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+              editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+              prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+              revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             creators:
             - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
               edit_id: 847
@@ -4805,6 +6556,21 @@ definitions:
               prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
               revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             containers:
+            - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+              edit_id: 847
+              extra: "{}"
+              redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+              editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+              prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+              revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+            - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+              edit_id: 847
+              extra: "{}"
+              redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+              editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+              prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+              revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+            filesets:
             - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
               edit_id: 847
               extra: "{}"
@@ -4936,6 +6702,21 @@ definitions:
           editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
           prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+        webcaptures:
+        - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          edit_id: 847
+          extra: "{}"
+          redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+          revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+        - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          edit_id: 847
+          extra: "{}"
+          redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+          revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         creators:
         - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
           edit_id: 847
@@ -4967,6 +6748,21 @@ definitions:
           prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         containers:
+        - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          edit_id: 847
+          extra: "{}"
+          redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+          revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+        - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          edit_id: 847
+          extra: "{}"
+          redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+          revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+        filesets:
         - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
           edit_id: 847
           extra: "{}"
@@ -5037,6 +6833,21 @@ definitions:
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
             prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+          webcaptures:
+          - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            edit_id: 847
+            extra: "{}"
+            redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+            revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+          - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            edit_id: 847
+            extra: "{}"
+            redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+            revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           creators:
           - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
             edit_id: 847
@@ -5068,6 +6879,21 @@ definitions:
             prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           containers:
+          - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            edit_id: 847
+            extra: "{}"
+            redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+            revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+          - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            edit_id: 847
+            extra: "{}"
+            redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+            revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+          filesets:
           - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
             edit_id: 847
             extra: "{}"
@@ -5188,6 +7014,93 @@ definitions:
       rel: "webarchive"
       url: "https://example.edu/~frau/prcding.pdf"
     upperCaseName: "FILE_ENTITY_URLS"
+  fileset_entity_manifest:
+    required:
+    - "path"
+    - "size"
+    properties:
+      path:
+        type: "string"
+        example: "img/cat.png"
+      size:
+        type: "integer"
+        format: "int64"
+        example: 1048576
+      md5:
+        type: "string"
+        example: "d41efcc592d1e40ac13905377399eb9b"
+      sha1:
+        type: "string"
+        example: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
+      sha256:
+        type: "string"
+        example: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+      extra:
+        type: "object"
+    example:
+      sha1: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
+      path: "img/cat.png"
+      size: 1048576
+      sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+      extra: "{}"
+      md5: "d41efcc592d1e40ac13905377399eb9b"
+    upperCaseName: "FILESET_ENTITY_MANIFEST"
+  webcapture_entity_archive_urls:
+    required:
+    - "rel"
+    - "url"
+    properties:
+      url:
+        type: "string"
+        format: "url"
+        example: "https://web.archive.org/web/"
+      rel:
+        type: "string"
+        example: "wayback"
+    example:
+      rel: "wayback"
+      url: "https://web.archive.org/web/"
+    upperCaseName: "WEBCAPTURE_ENTITY_ARCHIVE_URLS"
+  webcapture_entity_cdx:
+    required:
+    - "sha1"
+    - "status_code"
+    - "surt"
+    - "timestamp"
+    - "url"
+    properties:
+      surt:
+        type: "string"
+        example: "org,asheesh)/apus/ch1/node15.html"
+      timestamp:
+        type: "integer"
+        format: "int64"
+        example: 20020429162520
+      url:
+        type: "string"
+        example: "http://www.asheesh.org:80/APUS/ch1/node15.html"
+      mimetype:
+        type: "string"
+        example: "text/html"
+      status_code:
+        type: "integer"
+        format: "int64"
+        example: 200
+      sha1:
+        type: "string"
+        example: "3f242a192acc258bdfdb151943419437f440c313"
+      sha256:
+        type: "string"
+        example: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+    example:
+      sha1: "3f242a192acc258bdfdb151943419437f440c313"
+      surt: "org,asheesh)/apus/ch1/node15.html"
+      status_code: 200
+      sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+      mimetype: "text/html"
+      url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
+      timestamp: 20020429162520
+    upperCaseName: "WEBCAPTURE_ENTITY_CDX"
   release_entity_abstracts:
     properties:
       sha1:
@@ -5222,6 +7135,14 @@ definitions:
         type: "array"
         items:
           $ref: "#/definitions/entity_edit"
+      filesets:
+        type: "array"
+        items:
+          $ref: "#/definitions/entity_edit"
+      webcaptures:
+        type: "array"
+        items:
+          $ref: "#/definitions/entity_edit"
       releases:
         type: "array"
         items:
@@ -5232,6 +7153,21 @@ definitions:
           $ref: "#/definitions/entity_edit"
     example:
       works:
+      - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        edit_id: 847
+        extra: "{}"
+        redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+        revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+      - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        edit_id: 847
+        extra: "{}"
+        redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+        revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+      webcaptures:
       - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
         edit_id: 847
         extra: "{}"
@@ -5277,6 +7213,21 @@ definitions:
         prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       containers:
+      - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        edit_id: 847
+        extra: "{}"
+        redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+        revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+      - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        edit_id: 847
+        extra: "{}"
+        redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+        revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+      filesets:
       - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
         edit_id: 847
         extra: "{}"

@@ -648,6 +648,166 @@ pub mod responses {
     lazy_static! {
         pub static ref UPDATE_FILE_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
+    /// Create Mime objects for the response content types for CreateFileset
+    lazy_static! {
+        pub static ref CREATE_FILESET_CREATED_ENTITY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateFileset
+    lazy_static! {
+        pub static ref CREATE_FILESET_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateFileset
+    lazy_static! {
+        pub static ref CREATE_FILESET_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateFileset
+    lazy_static! {
+        pub static ref CREATE_FILESET_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateFilesetBatch
+    lazy_static! {
+        pub static ref CREATE_FILESET_BATCH_CREATED_ENTITIES: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateFilesetBatch
+    lazy_static! {
+        pub static ref CREATE_FILESET_BATCH_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateFilesetBatch
+    lazy_static! {
+        pub static ref CREATE_FILESET_BATCH_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateFilesetBatch
+    lazy_static! {
+        pub static ref CREATE_FILESET_BATCH_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteFileset
+    lazy_static! {
+        pub static ref DELETE_FILESET_DELETED_ENTITY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteFileset
+    lazy_static! {
+        pub static ref DELETE_FILESET_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteFileset
+    lazy_static! {
+        pub static ref DELETE_FILESET_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteFileset
+    lazy_static! {
+        pub static ref DELETE_FILESET_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteFilesetEdit
+    lazy_static! {
+        pub static ref DELETE_FILESET_EDIT_DELETED_EDIT: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteFilesetEdit
+    lazy_static! {
+        pub static ref DELETE_FILESET_EDIT_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteFilesetEdit
+    lazy_static! {
+        pub static ref DELETE_FILESET_EDIT_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteFilesetEdit
+    lazy_static! {
+        pub static ref DELETE_FILESET_EDIT_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetFileset
+    lazy_static! {
+        pub static ref GET_FILESET_FOUND_ENTITY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetFileset
+    lazy_static! {
+        pub static ref GET_FILESET_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetFileset
+    lazy_static! {
+        pub static ref GET_FILESET_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetFileset
+    lazy_static! {
+        pub static ref GET_FILESET_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetFilesetEdit
+    lazy_static! {
+        pub static ref GET_FILESET_EDIT_FOUND_EDIT: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetFilesetEdit
+    lazy_static! {
+        pub static ref GET_FILESET_EDIT_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetFilesetEdit
+    lazy_static! {
+        pub static ref GET_FILESET_EDIT_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetFilesetEdit
+    lazy_static! {
+        pub static ref GET_FILESET_EDIT_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetFilesetHistory
+    lazy_static! {
+        pub static ref GET_FILESET_HISTORY_FOUND_ENTITY_HISTORY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetFilesetHistory
+    lazy_static! {
+        pub static ref GET_FILESET_HISTORY_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetFilesetHistory
+    lazy_static! {
+        pub static ref GET_FILESET_HISTORY_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetFilesetHistory
+    lazy_static! {
+        pub static ref GET_FILESET_HISTORY_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetFilesetRedirects
+    lazy_static! {
+        pub static ref GET_FILESET_REDIRECTS_FOUND_ENTITY_REDIRECTS: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetFilesetRedirects
+    lazy_static! {
+        pub static ref GET_FILESET_REDIRECTS_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetFilesetRedirects
+    lazy_static! {
+        pub static ref GET_FILESET_REDIRECTS_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetFilesetRedirects
+    lazy_static! {
+        pub static ref GET_FILESET_REDIRECTS_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetFilesetRevision
+    lazy_static! {
+        pub static ref GET_FILESET_REVISION_FOUND_ENTITY_REVISION: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetFilesetRevision
+    lazy_static! {
+        pub static ref GET_FILESET_REVISION_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetFilesetRevision
+    lazy_static! {
+        pub static ref GET_FILESET_REVISION_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetFilesetRevision
+    lazy_static! {
+        pub static ref GET_FILESET_REVISION_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateFileset
+    lazy_static! {
+        pub static ref UPDATE_FILESET_UPDATED_ENTITY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateFileset
+    lazy_static! {
+        pub static ref UPDATE_FILESET_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateFileset
+    lazy_static! {
+        pub static ref UPDATE_FILESET_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateFileset
+    lazy_static! {
+        pub static ref UPDATE_FILESET_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
     /// Create Mime objects for the response content types for CreateRelease
     lazy_static! {
         pub static ref CREATE_RELEASE_CREATED_ENTITY: Mime = mime!(Application / Json);
@@ -776,6 +936,22 @@ pub mod responses {
     lazy_static! {
         pub static ref GET_RELEASE_FILES_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
+    /// Create Mime objects for the response content types for GetReleaseFilesets
+    lazy_static! {
+        pub static ref GET_RELEASE_FILESETS_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetReleaseFilesets
+    lazy_static! {
+        pub static ref GET_RELEASE_FILESETS_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetReleaseFilesets
+    lazy_static! {
+        pub static ref GET_RELEASE_FILESETS_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetReleaseFilesets
+    lazy_static! {
+        pub static ref GET_RELEASE_FILESETS_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
     /// Create Mime objects for the response content types for GetReleaseHistory
     lazy_static! {
         pub static ref GET_RELEASE_HISTORY_FOUND_ENTITY_HISTORY: Mime = mime!(Application / Json);
@@ -824,6 +1000,22 @@ pub mod responses {
     lazy_static! {
         pub static ref GET_RELEASE_REVISION_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
+    /// Create Mime objects for the response content types for GetReleaseWebcaptures
+    lazy_static! {
+        pub static ref GET_RELEASE_WEBCAPTURES_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetReleaseWebcaptures
+    lazy_static! {
+        pub static ref GET_RELEASE_WEBCAPTURES_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetReleaseWebcaptures
+    lazy_static! {
+        pub static ref GET_RELEASE_WEBCAPTURES_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetReleaseWebcaptures
+    lazy_static! {
+        pub static ref GET_RELEASE_WEBCAPTURES_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
     /// Create Mime objects for the response content types for LookupRelease
     lazy_static! {
         pub static ref LOOKUP_RELEASE_FOUND_ENTITY: Mime = mime!(Application / Json);
@@ -855,6 +1047,166 @@ pub mod responses {
     /// Create Mime objects for the response content types for UpdateRelease
     lazy_static! {
         pub static ref UPDATE_RELEASE_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateWebcapture
+    lazy_static! {
+        pub static ref CREATE_WEBCAPTURE_CREATED_ENTITY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateWebcapture
+    lazy_static! {
+        pub static ref CREATE_WEBCAPTURE_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateWebcapture
+    lazy_static! {
+        pub static ref CREATE_WEBCAPTURE_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateWebcapture
+    lazy_static! {
+        pub static ref CREATE_WEBCAPTURE_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateWebcaptureBatch
+    lazy_static! {
+        pub static ref CREATE_WEBCAPTURE_BATCH_CREATED_ENTITIES: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateWebcaptureBatch
+    lazy_static! {
+        pub static ref CREATE_WEBCAPTURE_BATCH_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateWebcaptureBatch
+    lazy_static! {
+        pub static ref CREATE_WEBCAPTURE_BATCH_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateWebcaptureBatch
+    lazy_static! {
+        pub static ref CREATE_WEBCAPTURE_BATCH_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteWebcapture
+    lazy_static! {
+        pub static ref DELETE_WEBCAPTURE_DELETED_ENTITY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteWebcapture
+    lazy_static! {
+        pub static ref DELETE_WEBCAPTURE_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteWebcapture
+    lazy_static! {
+        pub static ref DELETE_WEBCAPTURE_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteWebcapture
+    lazy_static! {
+        pub static ref DELETE_WEBCAPTURE_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteWebcaptureEdit
+    lazy_static! {
+        pub static ref DELETE_WEBCAPTURE_EDIT_DELETED_EDIT: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteWebcaptureEdit
+    lazy_static! {
+        pub static ref DELETE_WEBCAPTURE_EDIT_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteWebcaptureEdit
+    lazy_static! {
+        pub static ref DELETE_WEBCAPTURE_EDIT_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteWebcaptureEdit
+    lazy_static! {
+        pub static ref DELETE_WEBCAPTURE_EDIT_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetWebcapture
+    lazy_static! {
+        pub static ref GET_WEBCAPTURE_FOUND_ENTITY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetWebcapture
+    lazy_static! {
+        pub static ref GET_WEBCAPTURE_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetWebcapture
+    lazy_static! {
+        pub static ref GET_WEBCAPTURE_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetWebcapture
+    lazy_static! {
+        pub static ref GET_WEBCAPTURE_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetWebcaptureEdit
+    lazy_static! {
+        pub static ref GET_WEBCAPTURE_EDIT_FOUND_EDIT: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetWebcaptureEdit
+    lazy_static! {
+        pub static ref GET_WEBCAPTURE_EDIT_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetWebcaptureEdit
+    lazy_static! {
+        pub static ref GET_WEBCAPTURE_EDIT_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetWebcaptureEdit
+    lazy_static! {
+        pub static ref GET_WEBCAPTURE_EDIT_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetWebcaptureHistory
+    lazy_static! {
+        pub static ref GET_WEBCAPTURE_HISTORY_FOUND_ENTITY_HISTORY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetWebcaptureHistory
+    lazy_static! {
+        pub static ref GET_WEBCAPTURE_HISTORY_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetWebcaptureHistory
+    lazy_static! {
+        pub static ref GET_WEBCAPTURE_HISTORY_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetWebcaptureHistory
+    lazy_static! {
+        pub static ref GET_WEBCAPTURE_HISTORY_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetWebcaptureRedirects
+    lazy_static! {
+        pub static ref GET_WEBCAPTURE_REDIRECTS_FOUND_ENTITY_REDIRECTS: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetWebcaptureRedirects
+    lazy_static! {
+        pub static ref GET_WEBCAPTURE_REDIRECTS_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetWebcaptureRedirects
+    lazy_static! {
+        pub static ref GET_WEBCAPTURE_REDIRECTS_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetWebcaptureRedirects
+    lazy_static! {
+        pub static ref GET_WEBCAPTURE_REDIRECTS_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetWebcaptureRevision
+    lazy_static! {
+        pub static ref GET_WEBCAPTURE_REVISION_FOUND_ENTITY_REVISION: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetWebcaptureRevision
+    lazy_static! {
+        pub static ref GET_WEBCAPTURE_REVISION_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetWebcaptureRevision
+    lazy_static! {
+        pub static ref GET_WEBCAPTURE_REVISION_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetWebcaptureRevision
+    lazy_static! {
+        pub static ref GET_WEBCAPTURE_REVISION_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateWebcapture
+    lazy_static! {
+        pub static ref UPDATE_WEBCAPTURE_UPDATED_ENTITY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateWebcapture
+    lazy_static! {
+        pub static ref UPDATE_WEBCAPTURE_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateWebcapture
+    lazy_static! {
+        pub static ref UPDATE_WEBCAPTURE_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateWebcapture
+    lazy_static! {
+        pub static ref UPDATE_WEBCAPTURE_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for CreateWorkBatch
     lazy_static! {
@@ -1061,6 +1413,18 @@ pub mod requests {
     lazy_static! {
         pub static ref UPDATE_FILE: Mime = mime!(Application / Json);
     }
+    /// Create Mime objects for the request content types for CreateFileset
+    lazy_static! {
+        pub static ref CREATE_FILESET: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the request content types for CreateFilesetBatch
+    lazy_static! {
+        pub static ref CREATE_FILESET_BATCH: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the request content types for UpdateFileset
+    lazy_static! {
+        pub static ref UPDATE_FILESET: Mime = mime!(Application / Json);
+    }
     /// Create Mime objects for the request content types for CreateRelease
     lazy_static! {
         pub static ref CREATE_RELEASE: Mime = mime!(Application / Json);
@@ -1076,6 +1440,18 @@ pub mod requests {
     /// Create Mime objects for the request content types for UpdateRelease
     lazy_static! {
         pub static ref UPDATE_RELEASE: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the request content types for CreateWebcapture
+    lazy_static! {
+        pub static ref CREATE_WEBCAPTURE: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the request content types for CreateWebcaptureBatch
+    lazy_static! {
+        pub static ref CREATE_WEBCAPTURE_BATCH: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the request content types for UpdateWebcapture
+    lazy_static! {
+        pub static ref UPDATE_WEBCAPTURE: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the request content types for CreateWorkBatch
     lazy_static! {

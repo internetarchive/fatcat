@@ -519,6 +519,126 @@ pub enum UpdateFileResponse {
 }
 
 #[derive(Debug, PartialEq)]
+pub enum CreateFilesetResponse {
+    /// Created Entity
+    CreatedEntity(models::EntityEdit),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum CreateFilesetBatchResponse {
+    /// Created Entities
+    CreatedEntities(Vec<models::EntityEdit>),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum DeleteFilesetResponse {
+    /// Deleted Entity
+    DeletedEntity(models::EntityEdit),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum DeleteFilesetEditResponse {
+    /// Deleted Edit
+    DeletedEdit(models::Success),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum GetFilesetResponse {
+    /// Found Entity
+    FoundEntity(models::FilesetEntity),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum GetFilesetEditResponse {
+    /// Found Edit
+    FoundEdit(models::EntityEdit),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum GetFilesetHistoryResponse {
+    /// Found Entity History
+    FoundEntityHistory(Vec<models::EntityHistoryEntry>),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum GetFilesetRedirectsResponse {
+    /// Found Entity Redirects
+    FoundEntityRedirects(Vec<String>),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum GetFilesetRevisionResponse {
+    /// Found Entity Revision
+    FoundEntityRevision(models::FilesetEntity),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum UpdateFilesetResponse {
+    /// Updated Entity
+    UpdatedEntity(models::EntityEdit),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
 pub enum CreateReleaseResponse {
     /// Created Entity
     CreatedEntity(models::EntityEdit),
@@ -615,6 +735,18 @@ pub enum GetReleaseFilesResponse {
 }
 
 #[derive(Debug, PartialEq)]
+pub enum GetReleaseFilesetsResponse {
+    /// Found
+    Found(Vec<models::FilesetEntity>),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
 pub enum GetReleaseHistoryResponse {
     /// Found Entity History
     FoundEntityHistory(Vec<models::EntityHistoryEntry>),
@@ -651,6 +783,18 @@ pub enum GetReleaseRevisionResponse {
 }
 
 #[derive(Debug, PartialEq)]
+pub enum GetReleaseWebcapturesResponse {
+    /// Found
+    Found(Vec<models::WebcaptureEntity>),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
 pub enum LookupReleaseResponse {
     /// Found Entity
     FoundEntity(models::ReleaseEntity),
@@ -664,6 +808,126 @@ pub enum LookupReleaseResponse {
 
 #[derive(Debug, PartialEq)]
 pub enum UpdateReleaseResponse {
+    /// Updated Entity
+    UpdatedEntity(models::EntityEdit),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum CreateWebcaptureResponse {
+    /// Created Entity
+    CreatedEntity(models::EntityEdit),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum CreateWebcaptureBatchResponse {
+    /// Created Entities
+    CreatedEntities(Vec<models::EntityEdit>),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum DeleteWebcaptureResponse {
+    /// Deleted Entity
+    DeletedEntity(models::EntityEdit),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum DeleteWebcaptureEditResponse {
+    /// Deleted Edit
+    DeletedEdit(models::Success),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum GetWebcaptureResponse {
+    /// Found Entity
+    FoundEntity(models::WebcaptureEntity),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum GetWebcaptureEditResponse {
+    /// Found Edit
+    FoundEdit(models::EntityEdit),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum GetWebcaptureHistoryResponse {
+    /// Found Entity History
+    FoundEntityHistory(Vec<models::EntityHistoryEntry>),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum GetWebcaptureRedirectsResponse {
+    /// Found Entity Redirects
+    FoundEntityRedirects(Vec<String>),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum GetWebcaptureRevisionResponse {
+    /// Found Entity Revision
+    FoundEntityRevision(models::WebcaptureEntity),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum UpdateWebcaptureResponse {
     /// Updated Entity
     UpdatedEntity(models::EntityEdit),
     /// Bad Request
@@ -919,6 +1183,32 @@ pub trait Api {
 
     fn update_file(&self, ident: String, entity: models::FileEntity, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = UpdateFileResponse, Error = ApiError> + Send>;
 
+    fn create_fileset(&self, entity: models::FilesetEntity, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = CreateFilesetResponse, Error = ApiError> + Send>;
+
+    fn create_fileset_batch(
+        &self,
+        entity_list: &Vec<models::FilesetEntity>,
+        autoaccept: Option<bool>,
+        editgroup_id: Option<String>,
+        context: &Context,
+    ) -> Box<Future<Item = CreateFilesetBatchResponse, Error = ApiError> + Send>;
+
+    fn delete_fileset(&self, ident: String, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = DeleteFilesetResponse, Error = ApiError> + Send>;
+
+    fn delete_fileset_edit(&self, edit_id: i64, context: &Context) -> Box<Future<Item = DeleteFilesetEditResponse, Error = ApiError> + Send>;
+
+    fn get_fileset(&self, ident: String, expand: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = GetFilesetResponse, Error = ApiError> + Send>;
+
+    fn get_fileset_edit(&self, edit_id: i64, context: &Context) -> Box<Future<Item = GetFilesetEditResponse, Error = ApiError> + Send>;
+
+    fn get_fileset_history(&self, ident: String, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetFilesetHistoryResponse, Error = ApiError> + Send>;
+
+    fn get_fileset_redirects(&self, ident: String, context: &Context) -> Box<Future<Item = GetFilesetRedirectsResponse, Error = ApiError> + Send>;
+
+    fn get_fileset_revision(&self, rev_id: String, expand: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = GetFilesetRevisionResponse, Error = ApiError> + Send>;
+
+    fn update_fileset(&self, ident: String, entity: models::FilesetEntity, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = UpdateFilesetResponse, Error = ApiError> + Send>;
+
     fn create_release(&self, entity: models::ReleaseEntity, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = CreateReleaseResponse, Error = ApiError> + Send>;
 
     fn create_release_batch(
@@ -941,11 +1231,15 @@ pub trait Api {
 
     fn get_release_files(&self, ident: String, hide: Option<String>, context: &Context) -> Box<Future<Item = GetReleaseFilesResponse, Error = ApiError> + Send>;
 
+    fn get_release_filesets(&self, ident: String, hide: Option<String>, context: &Context) -> Box<Future<Item = GetReleaseFilesetsResponse, Error = ApiError> + Send>;
+
     fn get_release_history(&self, ident: String, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetReleaseHistoryResponse, Error = ApiError> + Send>;
 
     fn get_release_redirects(&self, ident: String, context: &Context) -> Box<Future<Item = GetReleaseRedirectsResponse, Error = ApiError> + Send>;
 
     fn get_release_revision(&self, rev_id: String, expand: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = GetReleaseRevisionResponse, Error = ApiError> + Send>;
+
+    fn get_release_webcaptures(&self, ident: String, hide: Option<String>, context: &Context) -> Box<Future<Item = GetReleaseWebcapturesResponse, Error = ApiError> + Send>;
 
     fn lookup_release(
         &self,
@@ -961,6 +1255,38 @@ pub trait Api {
     ) -> Box<Future<Item = LookupReleaseResponse, Error = ApiError> + Send>;
 
     fn update_release(&self, ident: String, entity: models::ReleaseEntity, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = UpdateReleaseResponse, Error = ApiError> + Send>;
+
+    fn create_webcapture(&self, entity: models::WebcaptureEntity, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = CreateWebcaptureResponse, Error = ApiError> + Send>;
+
+    fn create_webcapture_batch(
+        &self,
+        entity_list: &Vec<models::WebcaptureEntity>,
+        autoaccept: Option<bool>,
+        editgroup_id: Option<String>,
+        context: &Context,
+    ) -> Box<Future<Item = CreateWebcaptureBatchResponse, Error = ApiError> + Send>;
+
+    fn delete_webcapture(&self, ident: String, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = DeleteWebcaptureResponse, Error = ApiError> + Send>;
+
+    fn delete_webcapture_edit(&self, edit_id: i64, context: &Context) -> Box<Future<Item = DeleteWebcaptureEditResponse, Error = ApiError> + Send>;
+
+    fn get_webcapture(&self, ident: String, expand: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = GetWebcaptureResponse, Error = ApiError> + Send>;
+
+    fn get_webcapture_edit(&self, edit_id: i64, context: &Context) -> Box<Future<Item = GetWebcaptureEditResponse, Error = ApiError> + Send>;
+
+    fn get_webcapture_history(&self, ident: String, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetWebcaptureHistoryResponse, Error = ApiError> + Send>;
+
+    fn get_webcapture_redirects(&self, ident: String, context: &Context) -> Box<Future<Item = GetWebcaptureRedirectsResponse, Error = ApiError> + Send>;
+
+    fn get_webcapture_revision(&self, rev_id: String, expand: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = GetWebcaptureRevisionResponse, Error = ApiError> + Send>;
+
+    fn update_webcapture(
+        &self,
+        ident: String,
+        entity: models::WebcaptureEntity,
+        editgroup_id: Option<String>,
+        context: &Context,
+    ) -> Box<Future<Item = UpdateWebcaptureResponse, Error = ApiError> + Send>;
 
     fn create_work_batch(
         &self,
@@ -1096,6 +1422,31 @@ pub trait ApiNoContext {
 
     fn update_file(&self, ident: String, entity: models::FileEntity, editgroup_id: Option<String>) -> Box<Future<Item = UpdateFileResponse, Error = ApiError> + Send>;
 
+    fn create_fileset(&self, entity: models::FilesetEntity, editgroup_id: Option<String>) -> Box<Future<Item = CreateFilesetResponse, Error = ApiError> + Send>;
+
+    fn create_fileset_batch(
+        &self,
+        entity_list: &Vec<models::FilesetEntity>,
+        autoaccept: Option<bool>,
+        editgroup_id: Option<String>,
+    ) -> Box<Future<Item = CreateFilesetBatchResponse, Error = ApiError> + Send>;
+
+    fn delete_fileset(&self, ident: String, editgroup_id: Option<String>) -> Box<Future<Item = DeleteFilesetResponse, Error = ApiError> + Send>;
+
+    fn delete_fileset_edit(&self, edit_id: i64) -> Box<Future<Item = DeleteFilesetEditResponse, Error = ApiError> + Send>;
+
+    fn get_fileset(&self, ident: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetFilesetResponse, Error = ApiError> + Send>;
+
+    fn get_fileset_edit(&self, edit_id: i64) -> Box<Future<Item = GetFilesetEditResponse, Error = ApiError> + Send>;
+
+    fn get_fileset_history(&self, ident: String, limit: Option<i64>) -> Box<Future<Item = GetFilesetHistoryResponse, Error = ApiError> + Send>;
+
+    fn get_fileset_redirects(&self, ident: String) -> Box<Future<Item = GetFilesetRedirectsResponse, Error = ApiError> + Send>;
+
+    fn get_fileset_revision(&self, rev_id: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetFilesetRevisionResponse, Error = ApiError> + Send>;
+
+    fn update_fileset(&self, ident: String, entity: models::FilesetEntity, editgroup_id: Option<String>) -> Box<Future<Item = UpdateFilesetResponse, Error = ApiError> + Send>;
+
     fn create_release(&self, entity: models::ReleaseEntity, editgroup_id: Option<String>) -> Box<Future<Item = CreateReleaseResponse, Error = ApiError> + Send>;
 
     fn create_release_batch(
@@ -1117,11 +1468,15 @@ pub trait ApiNoContext {
 
     fn get_release_files(&self, ident: String, hide: Option<String>) -> Box<Future<Item = GetReleaseFilesResponse, Error = ApiError> + Send>;
 
+    fn get_release_filesets(&self, ident: String, hide: Option<String>) -> Box<Future<Item = GetReleaseFilesetsResponse, Error = ApiError> + Send>;
+
     fn get_release_history(&self, ident: String, limit: Option<i64>) -> Box<Future<Item = GetReleaseHistoryResponse, Error = ApiError> + Send>;
 
     fn get_release_redirects(&self, ident: String) -> Box<Future<Item = GetReleaseRedirectsResponse, Error = ApiError> + Send>;
 
     fn get_release_revision(&self, rev_id: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetReleaseRevisionResponse, Error = ApiError> + Send>;
+
+    fn get_release_webcaptures(&self, ident: String, hide: Option<String>) -> Box<Future<Item = GetReleaseWebcapturesResponse, Error = ApiError> + Send>;
 
     fn lookup_release(
         &self,
@@ -1136,6 +1491,31 @@ pub trait ApiNoContext {
     ) -> Box<Future<Item = LookupReleaseResponse, Error = ApiError> + Send>;
 
     fn update_release(&self, ident: String, entity: models::ReleaseEntity, editgroup_id: Option<String>) -> Box<Future<Item = UpdateReleaseResponse, Error = ApiError> + Send>;
+
+    fn create_webcapture(&self, entity: models::WebcaptureEntity, editgroup_id: Option<String>) -> Box<Future<Item = CreateWebcaptureResponse, Error = ApiError> + Send>;
+
+    fn create_webcapture_batch(
+        &self,
+        entity_list: &Vec<models::WebcaptureEntity>,
+        autoaccept: Option<bool>,
+        editgroup_id: Option<String>,
+    ) -> Box<Future<Item = CreateWebcaptureBatchResponse, Error = ApiError> + Send>;
+
+    fn delete_webcapture(&self, ident: String, editgroup_id: Option<String>) -> Box<Future<Item = DeleteWebcaptureResponse, Error = ApiError> + Send>;
+
+    fn delete_webcapture_edit(&self, edit_id: i64) -> Box<Future<Item = DeleteWebcaptureEditResponse, Error = ApiError> + Send>;
+
+    fn get_webcapture(&self, ident: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetWebcaptureResponse, Error = ApiError> + Send>;
+
+    fn get_webcapture_edit(&self, edit_id: i64) -> Box<Future<Item = GetWebcaptureEditResponse, Error = ApiError> + Send>;
+
+    fn get_webcapture_history(&self, ident: String, limit: Option<i64>) -> Box<Future<Item = GetWebcaptureHistoryResponse, Error = ApiError> + Send>;
+
+    fn get_webcapture_redirects(&self, ident: String) -> Box<Future<Item = GetWebcaptureRedirectsResponse, Error = ApiError> + Send>;
+
+    fn get_webcapture_revision(&self, rev_id: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetWebcaptureRevisionResponse, Error = ApiError> + Send>;
+
+    fn update_webcapture(&self, ident: String, entity: models::WebcaptureEntity, editgroup_id: Option<String>) -> Box<Future<Item = UpdateWebcaptureResponse, Error = ApiError> + Send>;
 
     fn create_work_batch(&self, entity_list: &Vec<models::WorkEntity>, autoaccept: Option<bool>, editgroup_id: Option<String>) -> Box<Future<Item = CreateWorkBatchResponse, Error = ApiError> + Send>;
 
@@ -1361,6 +1741,51 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().update_file(ident, entity, editgroup_id, &self.context())
     }
 
+    fn create_fileset(&self, entity: models::FilesetEntity, editgroup_id: Option<String>) -> Box<Future<Item = CreateFilesetResponse, Error = ApiError> + Send> {
+        self.api().create_fileset(entity, editgroup_id, &self.context())
+    }
+
+    fn create_fileset_batch(
+        &self,
+        entity_list: &Vec<models::FilesetEntity>,
+        autoaccept: Option<bool>,
+        editgroup_id: Option<String>,
+    ) -> Box<Future<Item = CreateFilesetBatchResponse, Error = ApiError> + Send> {
+        self.api().create_fileset_batch(entity_list, autoaccept, editgroup_id, &self.context())
+    }
+
+    fn delete_fileset(&self, ident: String, editgroup_id: Option<String>) -> Box<Future<Item = DeleteFilesetResponse, Error = ApiError> + Send> {
+        self.api().delete_fileset(ident, editgroup_id, &self.context())
+    }
+
+    fn delete_fileset_edit(&self, edit_id: i64) -> Box<Future<Item = DeleteFilesetEditResponse, Error = ApiError> + Send> {
+        self.api().delete_fileset_edit(edit_id, &self.context())
+    }
+
+    fn get_fileset(&self, ident: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetFilesetResponse, Error = ApiError> + Send> {
+        self.api().get_fileset(ident, expand, hide, &self.context())
+    }
+
+    fn get_fileset_edit(&self, edit_id: i64) -> Box<Future<Item = GetFilesetEditResponse, Error = ApiError> + Send> {
+        self.api().get_fileset_edit(edit_id, &self.context())
+    }
+
+    fn get_fileset_history(&self, ident: String, limit: Option<i64>) -> Box<Future<Item = GetFilesetHistoryResponse, Error = ApiError> + Send> {
+        self.api().get_fileset_history(ident, limit, &self.context())
+    }
+
+    fn get_fileset_redirects(&self, ident: String) -> Box<Future<Item = GetFilesetRedirectsResponse, Error = ApiError> + Send> {
+        self.api().get_fileset_redirects(ident, &self.context())
+    }
+
+    fn get_fileset_revision(&self, rev_id: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetFilesetRevisionResponse, Error = ApiError> + Send> {
+        self.api().get_fileset_revision(rev_id, expand, hide, &self.context())
+    }
+
+    fn update_fileset(&self, ident: String, entity: models::FilesetEntity, editgroup_id: Option<String>) -> Box<Future<Item = UpdateFilesetResponse, Error = ApiError> + Send> {
+        self.api().update_fileset(ident, entity, editgroup_id, &self.context())
+    }
+
     fn create_release(&self, entity: models::ReleaseEntity, editgroup_id: Option<String>) -> Box<Future<Item = CreateReleaseResponse, Error = ApiError> + Send> {
         self.api().create_release(entity, editgroup_id, &self.context())
     }
@@ -1398,6 +1823,10 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().get_release_files(ident, hide, &self.context())
     }
 
+    fn get_release_filesets(&self, ident: String, hide: Option<String>) -> Box<Future<Item = GetReleaseFilesetsResponse, Error = ApiError> + Send> {
+        self.api().get_release_filesets(ident, hide, &self.context())
+    }
+
     fn get_release_history(&self, ident: String, limit: Option<i64>) -> Box<Future<Item = GetReleaseHistoryResponse, Error = ApiError> + Send> {
         self.api().get_release_history(ident, limit, &self.context())
     }
@@ -1408,6 +1837,10 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
 
     fn get_release_revision(&self, rev_id: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetReleaseRevisionResponse, Error = ApiError> + Send> {
         self.api().get_release_revision(rev_id, expand, hide, &self.context())
+    }
+
+    fn get_release_webcaptures(&self, ident: String, hide: Option<String>) -> Box<Future<Item = GetReleaseWebcapturesResponse, Error = ApiError> + Send> {
+        self.api().get_release_webcaptures(ident, hide, &self.context())
     }
 
     fn lookup_release(
@@ -1426,6 +1859,51 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
 
     fn update_release(&self, ident: String, entity: models::ReleaseEntity, editgroup_id: Option<String>) -> Box<Future<Item = UpdateReleaseResponse, Error = ApiError> + Send> {
         self.api().update_release(ident, entity, editgroup_id, &self.context())
+    }
+
+    fn create_webcapture(&self, entity: models::WebcaptureEntity, editgroup_id: Option<String>) -> Box<Future<Item = CreateWebcaptureResponse, Error = ApiError> + Send> {
+        self.api().create_webcapture(entity, editgroup_id, &self.context())
+    }
+
+    fn create_webcapture_batch(
+        &self,
+        entity_list: &Vec<models::WebcaptureEntity>,
+        autoaccept: Option<bool>,
+        editgroup_id: Option<String>,
+    ) -> Box<Future<Item = CreateWebcaptureBatchResponse, Error = ApiError> + Send> {
+        self.api().create_webcapture_batch(entity_list, autoaccept, editgroup_id, &self.context())
+    }
+
+    fn delete_webcapture(&self, ident: String, editgroup_id: Option<String>) -> Box<Future<Item = DeleteWebcaptureResponse, Error = ApiError> + Send> {
+        self.api().delete_webcapture(ident, editgroup_id, &self.context())
+    }
+
+    fn delete_webcapture_edit(&self, edit_id: i64) -> Box<Future<Item = DeleteWebcaptureEditResponse, Error = ApiError> + Send> {
+        self.api().delete_webcapture_edit(edit_id, &self.context())
+    }
+
+    fn get_webcapture(&self, ident: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetWebcaptureResponse, Error = ApiError> + Send> {
+        self.api().get_webcapture(ident, expand, hide, &self.context())
+    }
+
+    fn get_webcapture_edit(&self, edit_id: i64) -> Box<Future<Item = GetWebcaptureEditResponse, Error = ApiError> + Send> {
+        self.api().get_webcapture_edit(edit_id, &self.context())
+    }
+
+    fn get_webcapture_history(&self, ident: String, limit: Option<i64>) -> Box<Future<Item = GetWebcaptureHistoryResponse, Error = ApiError> + Send> {
+        self.api().get_webcapture_history(ident, limit, &self.context())
+    }
+
+    fn get_webcapture_redirects(&self, ident: String) -> Box<Future<Item = GetWebcaptureRedirectsResponse, Error = ApiError> + Send> {
+        self.api().get_webcapture_redirects(ident, &self.context())
+    }
+
+    fn get_webcapture_revision(&self, rev_id: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetWebcaptureRevisionResponse, Error = ApiError> + Send> {
+        self.api().get_webcapture_revision(rev_id, expand, hide, &self.context())
+    }
+
+    fn update_webcapture(&self, ident: String, entity: models::WebcaptureEntity, editgroup_id: Option<String>) -> Box<Future<Item = UpdateWebcaptureResponse, Error = ApiError> + Send> {
+        self.api().update_webcapture(ident, entity, editgroup_id, &self.context())
     }
 
     fn create_work_batch(&self, entity_list: &Vec<models::WorkEntity>, autoaccept: Option<bool>, editgroup_id: Option<String>) -> Box<Future<Item = CreateWorkBatchResponse, Error = ApiError> + Send> {
