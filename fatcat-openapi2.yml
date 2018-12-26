@@ -1339,6 +1339,440 @@ paths:
           schema:
             $ref: "#/definitions/success"
         <<: *ENTITYRESPONSES
+  /fileset:
+    post:
+      operationId: "create_fileset"
+      tags: # TAGLINE
+        - filesets # TAGLINE
+      parameters:
+        - name: entity
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/fileset_entity"
+        - name: editgroup_id
+          in: query
+          required: false
+          type: string
+      responses:
+        201:
+          description: Created Entity
+          schema:
+            $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+  /fileset/batch:
+    post:
+      operationId: "create_fileset_batch"
+      tags: # TAGLINE
+        - filesets # TAGLINE
+      parameters:
+        - name: autoaccept
+          in: query
+          type: boolean
+          required: false
+          description: "If true, and editor is authorized, batch is accepted all at once"
+        - name: editgroup_id
+          in: query
+          type: string
+          required: false
+          description: "Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)"
+        - name: entity_list
+          in: body
+          required: true
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/fileset_entity"
+      responses:
+        201:
+          description: Created Entities
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+  /fileset/{ident}:
+    parameters:
+      - name: ident
+        in: path
+        type: string
+        required: true
+    get:
+      operationId: "get_fileset"
+      tags: # TAGLINE
+        - filesets # TAGLINE
+      parameters:
+        - name: expand
+          in: query
+          type: string
+          required: false
+          description: "List of sub-entities to expand in response. For filesets, none accepted (yet)."
+        - name: hide
+          in: query
+          type: string
+          required: false
+          description: "List of entity fields to elide in response. For filesets, 'manifest' is accepted."
+      responses:
+        200:
+          description: Found Entity
+          schema:
+            $ref: "#/definitions/fileset_entity"
+        <<: *ENTITYRESPONSES
+    put:
+      operationId: "update_fileset"
+      tags: # TAGLINE
+        - filesets # TAGLINE
+      parameters:
+        - name: entity
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/fileset_entity"
+        - name: editgroup_id
+          in: query
+          required: false
+          type: string
+      responses:
+        200:
+          description: Updated Entity
+          schema:
+            $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+    delete:
+      operationId: "delete_fileset"
+      tags: # TAGLINE
+        - filesets # TAGLINE
+      parameters:
+        - name: editgroup_id
+          in: query
+          required: false
+          type: string
+      responses:
+        200:
+          description: Deleted Entity
+          schema:
+            $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+  /fileset/rev/{rev_id}:
+    parameters:
+      - name: rev_id
+        in: path
+        type: string
+        #format: uuid
+        required: true
+    get:
+      operationId: "get_fileset_revision"
+      tags: # TAGLINE
+        - filesets # TAGLINE
+      parameters:
+        - name: expand
+          in: query
+          type: string
+          required: false
+          description: "List of sub-entities to expand in response. For filesets, none accepted (yet)."
+        - name: hide
+          in: query
+          type: string
+          required: false
+          description: "List of entity fields to elide in response. For filesets, 'manifest' is accepted."
+      responses:
+        200:
+          description: Found Entity Revision
+          schema:
+            $ref: "#/definitions/fileset_entity"
+        <<: *ENTITYRESPONSES
+  /fileset/{ident}/history:
+    parameters:
+      - name: ident
+        in: path
+        type: string
+        required: true
+      - name: limit
+        in: query
+        type: integer
+        format: int64
+        required: false
+    get:
+      operationId: "get_fileset_history"
+      tags: # TAGLINE
+        - filesets # TAGLINE
+      responses:
+        200:
+          description: Found Entity History
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/entity_history_entry"
+        <<: *ENTITYRESPONSES
+  /fileset/{ident}/redirects:
+    parameters:
+      - name: ident
+        in: path
+        type: string
+        required: true
+    get:
+      tags: # TAGLINE
+        - filesets # TAGLINE
+      operationId: "get_fileset_redirects"
+      responses:
+        200:
+          description: Found Entity Redirects
+          schema:
+            type: array
+            items:
+              type: string
+              #format: ident
+        <<: *ENTITYRESPONSES
+  /fileset/edit/{edit_id}:
+    get:
+      operationId: "get_fileset_edit"
+      tags: # TAGLINE
+        - filesets # TAGLINE
+      parameters:
+        - name: edit_id
+          in: path
+          type: integer
+          format: int64
+          required: true
+      responses:
+        200:
+          description: Found Edit
+          schema:
+            $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+    delete:
+      operationId: "delete_fileset_edit"
+      tags: # TAGLINE
+        - filesets # TAGLINE
+      parameters:
+        - name: edit_id
+          in: path
+          type: integer
+          format: int64
+          required: true
+      responses:
+        200:
+          description: Deleted Edit
+          schema:
+            $ref: "#/definitions/success"
+        <<: *ENTITYRESPONSES
+  /webcapture:
+    post:
+      operationId: "create_webcapture"
+      tags: # TAGLINE
+        - webcaptures # TAGLINE
+      parameters:
+        - name: entity
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/webcapture_entity"
+        - name: editgroup_id
+          in: query
+          required: false
+          type: string
+      responses:
+        201:
+          description: Created Entity
+          schema:
+            $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+  /webcapture/batch:
+    post:
+      operationId: "create_webcapture_batch"
+      tags: # TAGLINE
+        - webcaptures # TAGLINE
+      parameters:
+        - name: autoaccept
+          in: query
+          type: boolean
+          required: false
+          description: "If true, and editor is authorized, batch is accepted all at once"
+        - name: editgroup_id
+          in: query
+          type: string
+          required: false
+          description: "Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)"
+        - name: entity_list
+          in: body
+          required: true
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/webcapture_entity"
+      responses:
+        201:
+          description: Created Entities
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+  /webcapture/{ident}:
+    parameters:
+      - name: ident
+        in: path
+        type: string
+        required: true
+    get:
+      operationId: "get_webcapture"
+      tags: # TAGLINE
+        - webcaptures # TAGLINE
+      parameters:
+        - name: expand
+          in: query
+          type: string
+          required: false
+          description: "List of sub-entities to expand in response. For webcaptures, none accepted (yet)."
+        - name: hide
+          in: query
+          type: string
+          required: false
+          description: "List of entity fields to elide in response. For webcaptures, 'cdx' is accepted."
+      responses:
+        200:
+          description: Found Entity
+          schema:
+            $ref: "#/definitions/webcapture_entity"
+        <<: *ENTITYRESPONSES
+    put:
+      operationId: "update_webcapture"
+      tags: # TAGLINE
+        - webcaptures # TAGLINE
+      parameters:
+        - name: entity
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/webcapture_entity"
+        - name: editgroup_id
+          in: query
+          required: false
+          type: string
+      responses:
+        200:
+          description: Updated Entity
+          schema:
+            $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+    delete:
+      operationId: "delete_webcapture"
+      tags: # TAGLINE
+        - webcaptures # TAGLINE
+      parameters:
+        - name: editgroup_id
+          in: query
+          required: false
+          type: string
+      responses:
+        200:
+          description: Deleted Entity
+          schema:
+            $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+  /webcapture/rev/{rev_id}:
+    parameters:
+      - name: rev_id
+        in: path
+        type: string
+        #format: uuid
+        required: true
+    get:
+      operationId: "get_webcapture_revision"
+      tags: # TAGLINE
+        - webcaptures # TAGLINE
+      parameters:
+        - name: expand
+          in: query
+          type: string
+          required: false
+          description: "List of sub-entities to expand in response. For webcaptures, none accepted (yet)."
+        - name: hide
+          in: query
+          type: string
+          required: false
+          description: "List of entity fields to elide in response. For webcaptures, 'cdx' is accepted."
+      responses:
+        200:
+          description: Found Entity Revision
+          schema:
+            $ref: "#/definitions/webcapture_entity"
+        <<: *ENTITYRESPONSES
+  /webcapture/{ident}/history:
+    parameters:
+      - name: ident
+        in: path
+        type: string
+        required: true
+      - name: limit
+        in: query
+        type: integer
+        format: int64
+        required: false
+    get:
+      operationId: "get_webcapture_history"
+      tags: # TAGLINE
+        - webcaptures # TAGLINE
+      responses:
+        200:
+          description: Found Entity History
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/entity_history_entry"
+        <<: *ENTITYRESPONSES
+  /webcapture/{ident}/redirects:
+    parameters:
+      - name: ident
+        in: path
+        type: string
+        required: true
+    get:
+      tags: # TAGLINE
+        - webcaptures # TAGLINE
+      operationId: "get_webcapture_redirects"
+      responses:
+        200:
+          description: Found Entity Redirects
+          schema:
+            type: array
+            items:
+              type: string
+              #format: ident
+        <<: *ENTITYRESPONSES
+  /webcapture/edit/{edit_id}:
+    get:
+      operationId: "get_webcapture_edit"
+      tags: # TAGLINE
+        - webcaptures # TAGLINE
+      parameters:
+        - name: edit_id
+          in: path
+          type: integer
+          format: int64
+          required: true
+      responses:
+        200:
+          description: Found Edit
+          schema:
+            $ref: "#/definitions/entity_edit"
+        <<: *ENTITYRESPONSES
+    delete:
+      operationId: "delete_webcapture_edit"
+      tags: # TAGLINE
+        - webcaptures # TAGLINE
+      parameters:
+        - name: edit_id
+          in: path
+          type: integer
+          format: int64
+          required: true
+      responses:
+        200:
+          description: Deleted Edit
+          schema:
+            $ref: "#/definitions/success"
+        <<: *ENTITYRESPONSES
   /release:
     post:
       operationId: "create_release"
@@ -1406,7 +1840,7 @@ paths:
           in: query
           type: string
           required: false
-          description: "List of sub-entities to expand in response. For releases, 'files', 'container', and 'creators' are valid."
+          description: "List of sub-entities to expand in response. For releases, 'files', 'filesets, 'webcaptures', 'container', and 'creators' are valid."
         - name: hide
           in: query
           type: string
@@ -1527,6 +1961,52 @@ paths:
             items:
               $ref: "#/definitions/file_entity"
         <<: *ENTITYRESPONSES
+  /release/{ident}/filesets:
+    parameters:
+      - name: ident
+        in: path
+        type: string
+        required: true
+      - name: hide
+        in: query
+        type: string
+        required: false
+        description: "List of entity fields to elide in response. For filesets, 'manifest' is valid."
+    get:
+      operationId: "get_release_filesets"
+      tags: # TAGLINE
+        - releases # TAGLINE
+      responses:
+        200:
+          description: Found
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/fileset_entity"
+        <<: *ENTITYRESPONSES
+  /release/{ident}/webcaptures:
+    parameters:
+      - name: ident
+        in: path
+        type: string
+        required: true
+      - name: hide
+        in: query
+        type: string
+        required: false
+        description: "List of entity fields to elide in response. For webcaptures, 'cdx' is valid."
+    get:
+      operationId: "get_release_webcaptures"
+      tags: # TAGLINE
+        - releases # TAGLINE
+      responses:
+        200:
+          description: Found
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/webcapture_entity"
+        <<: *ENTITYRESPONSES
   /release/{ident}/redirects:
     parameters:
       - name: ident
@@ -1585,7 +2065,7 @@ paths:
           in: query
           type: string
           required: false
-          description: "List of entity fields to elide in response. For releases, 'abstracts', 'refs', and 'contribs' are valid."
+          description: "List of sub-entities to expand in response. For releases, 'files', 'filesets, 'webcaptures', 'container', and 'creators' are valid."
       responses:
         200:
           description: Found Entity
