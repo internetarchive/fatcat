@@ -142,7 +142,7 @@ CREATE TABLE file_rev (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     extra_json          JSONB,
 
-    size                BIGINT,
+    size_bytes          BIGINT,
     -- fixed size hashes (in hex). TODO: switch to binary type type
     sha1                TEXT CHECK(octet_length(sha1) = 40),
     sha256              TEXT CHECK(octet_length(sha256) = 64),
@@ -511,7 +511,7 @@ INSERT INTO creator_edit (ident_id, rev_id, redirect_id, editgroup_id, prev_rev)
     ('00000000-0000-0000-2222-000000000003', '00000000-0000-0000-2222-FFF000000003', null, '00000000-0000-0000-BBBB-000000000003', null),
     ('00000000-0000-0000-2222-000000000004', '00000000-0000-0000-2222-FFF000000002', null, '00000000-0000-0000-BBBB-000000000004', '00000000-0000-0000-2222-FFF000000003');
 
-INSERT INTO file_rev (id, size, sha1, sha256, md5, mimetype) VALUES
+INSERT INTO file_rev (id, size_bytes, sha1, sha256, md5, mimetype) VALUES
     ('00000000-0000-0000-3333-FFF000000001', null, null, null, null, null),
     ('00000000-0000-0000-3333-FFF000000002', 4321, '7d97e98f8af710c7e7fe703abc8f639e0ee507c4', null, null, 'text/plain'),
     ('00000000-0000-0000-3333-FFF000000003', 255629, '3f242a192acc258bdfdb151943419437f440c313', 'ffc1005680cb620eec4c913437dfabbf311b535cfe16cbaeb2faec1f92afc362', 'f4de91152c7ab9fdc2a128f962faebff', 'application/pdf');
