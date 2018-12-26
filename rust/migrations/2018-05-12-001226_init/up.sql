@@ -200,20 +200,18 @@ CREATE TABLE fileset_rev_url (
 
 CREATE INDEX fileset_rev_url_rev_idx ON fileset_rev_url(fileset_rev);
 
-CREATE TABLE fileset_rev_manifest (
+CREATE TABLE fileset_rev_file (
     id                  BIGSERIAL PRIMARY KEY,
     fileset_rev         UUID REFERENCES fileset_rev(id) NOT NULL,
-    surt                TEXT NOT NULL,
-    url                 TEXT NOT NULL,
-    timestamp           BIGINT NOT NULL,
-    status_code         BIGINT NOT NULL,
-    mimetype            TEXT,
-    sha1                TEXT CHECK(octet_length(sha1) = 40) NOT NULL,
+    path_name           TEXT NOT NULL,
+    size_bytes          BIGINT NOT NULL,
+    md5                 TEXT CHECK(octet_length(md5) = 32),
+    sha1                TEXT CHECK(octet_length(sha1) = 40),
     sha256              TEXT CHECK(octet_length(sha256) = 64),
     extra_json          JSONB
 );
 
-CREATE INDEX fileset_rev_manifest_rev_idx ON fileset_rev_manifest(fileset_rev);
+CREATE INDEX fileset_rev_file_rev_idx ON fileset_rev_file(fileset_rev);
 
 CREATE TABLE fileset_ident (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -245,22 +243,24 @@ CREATE TABLE webcapture_rev (
     timestamp           TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
-CREATE TABLE webcapture_rev_archive_url (
+CREATE TABLE webcapture_rev_url (
     id                  BIGSERIAL PRIMARY KEY,
     webcapture_rev      UUID REFERENCES webcapture_rev(id) NOT NULL,
     rel                 TEXT NOT NULL, -- TODO: enum? web, webarchive, repo, etc TODO: default web?
     url                 TEXT NOT NULL
 );
 
-CREATE INDEX webcapture_rev_url_archive_rev_idx ON webcapture_rev_archive_url(webcapture_rev);
+CREATE INDEX webcapture_rev_url_rev_idx ON webcapture_rev_url(webcapture_rev);
 
 CREATE TABLE webcapture_rev_cdx (
     id                  BIGSERIAL PRIMARY KEY,
     webcapture_rev      UUID REFERENCES webcapture_rev(id) NOT NULL,
-    path_name           TEXT NOT NULL,
-    size_bytes          BIGINT NOT NULL,
-    md5                 TEXT CHECK(octet_length(md5) = 32),
-    sha1                TEXT CHECK(octet_length(sha1) = 40),
+    surt                TEXT NOT NULL,
+    timestamp           BIGINT NOT NULL, -- TODO: timestamp type, or text?
+    url                 TEXT NOT NULL,
+    mimetype            TEXT,
+    status_code         BIGINT NOT NULL,
+    sha1                TEXT CHECK(octet_length(sha1) = 40) NOT NULL,
     sha256              TEXT CHECK(octet_length(sha256) = 64)
     -- could extend with: language (detection), simhash, redirect
 );
@@ -421,24 +421,24 @@ CREATE TABLE release_ref (
 CREATE INDEX release_ref_rev_idx ON release_ref(release_rev);
 CREATE INDEX release_ref_target_release_idx ON release_ref(target_release_ident_id);
 
-CREATE TABLE file_release (
+CREATE TABLE file_rev_release (
     file_rev                UUID REFERENCES file_rev(id) NOT NULL,
     target_release_ident_id UUID REFERENCES release_ident(id) NOT NULL,
     PRIMARY KEY (file_rev, target_release_ident_id)
 );
-CREATE INDEX file_release_target_release_idx ON file_release(target_release_ident_id);
-CREATE TABLE fileset_release (
+CREATE INDEX file_rev_release_target_release_idx ON file_rev_release(target_release_ident_id);
+CREATE TABLE fileset_rev_release (
     fileset_rev             UUID REFERENCES fileset_rev(id) NOT NULL,
     target_release_ident_id UUID REFERENCES release_ident(id) NOT NULL,
     PRIMARY KEY (fileset_rev, target_release_ident_id)
 );
-CREATE INDEX fileset_release_target_release_idx ON fileset_release(target_release_ident_id);
-CREATE TABLE webcapture_release (
+CREATE INDEX fileset_rev_release_target_release_idx ON fileset_rev_release(target_release_ident_id);
+CREATE TABLE webcapture_rev_release (
     webcapture_rev          UUID REFERENCES webcapture_rev(id) NOT NULL,
     target_release_ident_id UUID REFERENCES release_ident(id) NOT NULL,
     PRIMARY KEY (webcapture_rev, target_release_ident_id)
 );
-CREATE INDEX webcapture_release_target_release_idx ON webcapture_release(target_release_ident_id);
+CREATE INDEX webcapture_rev_release_target_release_idx ON webcapture_rev_release(target_release_ident_id);
 
 ---------------------------------------------------------------------------
 ---------------------------------------------------------------------------
@@ -579,7 +579,7 @@ INSERT INTO release_ref (release_rev, target_release_ident_id, index_val, extra_
     ('00000000-0000-0000-4444-FFF000000003', null, 4, '{"unstructured":"Ioannidis JPA, Ntzani EE, Trikalinos TA, Contopoulos-Ioannidis DG. Replication validity of genetic association studies. Nat Genet. 2001;29:306–309."}'),
     ('00000000-0000-0000-4444-FFF000000003', null, 5, '{"unstructured":"Colhoun HM, McKeigue PM, Davey Smith G. Problems of reporting genetic associations with complex outcomes. Lancet. 2003;361:865–872."}');
 
-INSERT INTO file_release (file_rev, target_release_ident_id) VALUES
+INSERT INTO file_rev_release (file_rev, target_release_ident_id) VALUES
     ('00000000-0000-0000-3333-FFF000000002', '00000000-0000-0000-4444-000000000002'),
     ('00000000-0000-0000-3333-FFF000000003', '00000000-0000-0000-4444-000000000003');
 
