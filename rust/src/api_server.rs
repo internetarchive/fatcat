@@ -59,16 +59,56 @@ pub fn get_release_files(
     hide_flags: HideFlags,
     conn: &DbConn,
 ) -> Result<Vec<FileEntity>> {
-    let rows: Vec<(FileRevRow, FileIdentRow, FileReleaseRow)> = file_rev::table
+    let rows: Vec<(FileRevRow, FileIdentRow, FileRevReleaseRow)> = file_rev::table
         .inner_join(file_ident::table)
-        .inner_join(file_release::table)
-        .filter(file_release::target_release_ident_id.eq(&ident.to_uuid()))
+        .inner_join(file_rev_release::table)
+        .filter(file_rev_release::target_release_ident_id.eq(&ident.to_uuid()))
         .filter(file_ident::is_live.eq(true))
         .filter(file_ident::redirect_id.is_null())
         .load(conn)?;
 
     rows.into_iter()
         .map(|(rev, ident, _)| FileEntity::db_from_row(conn, rev, Some(ident), hide_flags))
+        .collect()
+}
+
+pub fn get_release_filesets(
+    ident: FatCatId,
+    hide_flags: HideFlags,
+    conn: &DbConn,
+) -> Result<Vec<FilesetEntity>> {
+    let rows: Vec<(FilesetRevRow, FilesetIdentRow, FilesetRevReleaseRow)> = fileset_rev::table
+        .inner_join(fileset_ident::table)
+        .inner_join(fileset_rev_release::table)
+        .filter(fileset_rev_release::target_release_ident_id.eq(&ident.to_uuid()))
+        .filter(fileset_ident::is_live.eq(true))
+        .filter(fileset_ident::redirect_id.is_null())
+        .load(conn)?;
+
+    rows.into_iter()
+        .map(|(rev, ident, _)| FilesetEntity::db_from_row(conn, rev, Some(ident), hide_flags))
+        .collect()
+}
+
+pub fn get_release_webcaptures(
+    ident: FatCatId,
+    hide_flags: HideFlags,
+    conn: &DbConn,
+) -> Result<Vec<WebcaptureEntity>> {
+    let rows: Vec<(
+        WebcaptureRevRow,
+        WebcaptureIdentRow,
+        WebcaptureRevReleaseRow,
+    )> = webcapture_rev::table
+        .inner_join(webcapture_ident::table)
+        .inner_join(webcapture_rev_release::table)
+        .filter(webcapture_rev_release::target_release_ident_id.eq(&ident.to_uuid()))
+        .filter(webcapture_ident::is_live.eq(true))
+        .filter(webcapture_ident::redirect_id.is_null())
+        .load(conn)?;
+
+    rows.into_iter()
+        .map(|(rev, ident, _)| WebcaptureEntity::db_from_row(conn, rev, Some(ident), hide_flags))
         .collect()
 }
 
@@ -304,6 +344,24 @@ impl Server {
         get_release_files(ident, hide_flags, conn)
     }
 
+    pub fn get_release_filesets_handler(
+        &self,
+        ident: FatCatId,
+        hide_flags: HideFlags,
+        conn: &DbConn,
+    ) -> Result<Vec<FilesetEntity>> {
+        get_release_filesets(ident, hide_flags, conn)
+    }
+
+    pub fn get_release_webcaptures_handler(
+        &self,
+        ident: FatCatId,
+        hide_flags: HideFlags,
+        conn: &DbConn,
+    ) -> Result<Vec<WebcaptureEntity>> {
+        get_release_webcaptures(ident, hide_flags, conn)
+    }
+
     pub fn get_work_releases_handler(
         &self,
         ident: FatCatId,
@@ -379,6 +437,22 @@ impl Server {
                     .get_results(conn)?
                     .into_iter()
                     .map(|e: FileEditRow| e.into_model().unwrap())
+                    .collect(),
+            ),
+            filesets: Some(
+                fileset_edit::table
+                    .filter(fileset_edit::editgroup_id.eq(editgroup_id.to_uuid()))
+                    .get_results(conn)?
+                    .into_iter()
+                    .map(|e: FilesetEditRow| e.into_model().unwrap())
+                    .collect(),
+            ),
+            webcaptures: Some(
+                webcapture_edit::table
+                    .filter(webcapture_edit::editgroup_id.eq(editgroup_id.to_uuid()))
+                    .get_results(conn)?
+                    .into_iter()
+                    .map(|e: WebcaptureEditRow| e.into_model().unwrap())
                     .collect(),
             ),
             releases: Some(
@@ -481,6 +555,8 @@ impl Server {
     entity_batch_handler!(create_container_batch_handler, ContainerEntity);
     entity_batch_handler!(create_creator_batch_handler, CreatorEntity);
     entity_batch_handler!(create_file_batch_handler, FileEntity);
+    entity_batch_handler!(create_fileset_batch_handler, FilesetEntity);
+    entity_batch_handler!(create_webcapture_batch_handler, WebcaptureEntity);
     entity_batch_handler!(create_release_batch_handler, ReleaseEntity);
     entity_batch_handler!(create_work_batch_handler, WorkEntity);
 }

@@ -599,6 +599,54 @@ impl Api for Server {
         FileEntity
     );
     wrap_entity_handlers!(
+        get_fileset,
+        GetFilesetResponse,
+        create_fileset,
+        CreateFilesetResponse,
+        create_fileset_batch,
+        create_fileset_batch_handler,
+        CreateFilesetBatchResponse,
+        update_fileset,
+        UpdateFilesetResponse,
+        delete_fileset,
+        DeleteFilesetResponse,
+        get_fileset_history,
+        GetFilesetHistoryResponse,
+        get_fileset_edit,
+        GetFilesetEditResponse,
+        delete_fileset_edit,
+        DeleteFilesetEditResponse,
+        get_fileset_revision,
+        GetFilesetRevisionResponse,
+        get_fileset_redirects,
+        GetFilesetRedirectsResponse,
+        FilesetEntity
+    );
+    wrap_entity_handlers!(
+        get_webcapture,
+        GetWebcaptureResponse,
+        create_webcapture,
+        CreateWebcaptureResponse,
+        create_webcapture_batch,
+        create_webcapture_batch_handler,
+        CreateWebcaptureBatchResponse,
+        update_webcapture,
+        UpdateWebcaptureResponse,
+        delete_webcapture,
+        DeleteWebcaptureResponse,
+        get_webcapture_history,
+        GetWebcaptureHistoryResponse,
+        get_webcapture_edit,
+        GetWebcaptureEditResponse,
+        delete_webcapture_edit,
+        DeleteWebcaptureEditResponse,
+        get_webcapture_revision,
+        GetWebcaptureRevisionResponse,
+        get_webcapture_redirects,
+        GetWebcaptureRedirectsResponse,
+        WebcaptureEntity
+    );
+    wrap_entity_handlers!(
         get_release,
         GetReleaseResponse,
         create_release,
@@ -664,6 +712,16 @@ impl Api for Server {
         get_release_files,
         get_release_files_handler,
         GetReleaseFilesResponse
+    );
+    wrap_fcid_hide_handler!(
+        get_release_filesets,
+        get_release_filesets_handler,
+        GetReleaseFilesetsResponse
+    );
+    wrap_fcid_hide_handler!(
+        get_release_webcaptures,
+        get_release_webcaptures_handler,
+        GetReleaseWebcapturesResponse
     );
     wrap_fcid_hide_handler!(
         get_work_releases,

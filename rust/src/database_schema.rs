@@ -125,17 +125,10 @@ table! {
 }
 
 table! {
-    file_release (file_rev, target_release_ident_id) {
-        file_rev -> Uuid,
-        target_release_ident_id -> Uuid,
-    }
-}
-
-table! {
     file_rev (id) {
         id -> Uuid,
         extra_json -> Nullable<Jsonb>,
-        size -> Nullable<Int8>,
+        size_bytes -> Nullable<Int8>,
         sha1 -> Nullable<Text>,
         sha256 -> Nullable<Text>,
         md5 -> Nullable<Text>,
@@ -144,9 +137,74 @@ table! {
 }
 
 table! {
+    file_rev_release (file_rev, target_release_ident_id) {
+        file_rev -> Uuid,
+        target_release_ident_id -> Uuid,
+    }
+}
+
+table! {
     file_rev_url (id) {
         id -> Int8,
         file_rev -> Uuid,
+        rel -> Text,
+        url -> Text,
+    }
+}
+
+table! {
+    fileset_edit (id) {
+        id -> Int8,
+        editgroup_id -> Uuid,
+        updated -> Timestamptz,
+        ident_id -> Uuid,
+        rev_id -> Nullable<Uuid>,
+        redirect_id -> Nullable<Uuid>,
+        prev_rev -> Nullable<Uuid>,
+        extra_json -> Nullable<Jsonb>,
+    }
+}
+
+table! {
+    fileset_ident (id) {
+        id -> Uuid,
+        is_live -> Bool,
+        rev_id -> Nullable<Uuid>,
+        redirect_id -> Nullable<Uuid>,
+    }
+}
+
+table! {
+    fileset_rev (id) {
+        id -> Uuid,
+        extra_json -> Nullable<Jsonb>,
+    }
+}
+
+table! {
+    fileset_rev_file (id) {
+        id -> Int8,
+        fileset_rev -> Uuid,
+        path_name -> Text,
+        size_bytes -> Int8,
+        md5 -> Nullable<Text>,
+        sha1 -> Nullable<Text>,
+        sha256 -> Nullable<Text>,
+        extra_json -> Nullable<Jsonb>,
+    }
+}
+
+table! {
+    fileset_rev_release (fileset_rev, target_release_ident_id) {
+        fileset_rev -> Uuid,
+        target_release_ident_id -> Uuid,
+    }
+}
+
+table! {
+    fileset_rev_url (id) {
+        id -> Int8,
+        fileset_rev -> Uuid,
         rel -> Text,
         url -> Text,
     }
@@ -237,6 +295,67 @@ table! {
 }
 
 table! {
+    webcapture_edit (id) {
+        id -> Int8,
+        editgroup_id -> Uuid,
+        updated -> Timestamptz,
+        ident_id -> Uuid,
+        rev_id -> Nullable<Uuid>,
+        redirect_id -> Nullable<Uuid>,
+        prev_rev -> Nullable<Uuid>,
+        extra_json -> Nullable<Jsonb>,
+    }
+}
+
+table! {
+    webcapture_ident (id) {
+        id -> Uuid,
+        is_live -> Bool,
+        rev_id -> Nullable<Uuid>,
+        redirect_id -> Nullable<Uuid>,
+    }
+}
+
+table! {
+    webcapture_rev (id) {
+        id -> Uuid,
+        extra_json -> Nullable<Jsonb>,
+        original_url -> Text,
+        timestamp -> Timestamptz,
+    }
+}
+
+table! {
+    webcapture_rev_cdx (id) {
+        id -> Int8,
+        webcapture_rev -> Uuid,
+        surt -> Text,
+        timestamp -> Int8,
+        url -> Text,
+        mimetype -> Nullable<Text>,
+        status_code -> Int8,
+        sha1 -> Text,
+        sha256 -> Nullable<Text>,
+    }
+}
+
+table! {
+    webcapture_rev_release (webcapture_rev, target_release_ident_id) {
+        webcapture_rev -> Uuid,
+        target_release_ident_id -> Uuid,
+    }
+}
+
+table! {
+    webcapture_rev_url (id) {
+        id -> Int8,
+        webcapture_rev -> Uuid,
+        rel -> Text,
+        url -> Text,
+    }
+}
+
+table! {
     work_edit (id) {
         id -> Int8,
         editgroup_id -> Uuid,
@@ -272,9 +391,15 @@ joinable!(creator_edit -> editgroup (editgroup_id));
 joinable!(creator_ident -> creator_rev (rev_id));
 joinable!(file_edit -> editgroup (editgroup_id));
 joinable!(file_ident -> file_rev (rev_id));
-joinable!(file_release -> file_rev (file_rev));
-joinable!(file_release -> release_ident (target_release_ident_id));
+joinable!(file_rev_release -> file_rev (file_rev));
+joinable!(file_rev_release -> release_ident (target_release_ident_id));
 joinable!(file_rev_url -> file_rev (file_rev));
+joinable!(fileset_edit -> editgroup (editgroup_id));
+joinable!(fileset_ident -> fileset_rev (rev_id));
+joinable!(fileset_rev_file -> fileset_rev (fileset_rev));
+joinable!(fileset_rev_release -> fileset_rev (fileset_rev));
+joinable!(fileset_rev_release -> release_ident (target_release_ident_id));
+joinable!(fileset_rev_url -> fileset_rev (fileset_rev));
 joinable!(release_contrib -> creator_ident (creator_ident_id));
 joinable!(release_contrib -> release_rev (release_rev));
 joinable!(release_edit -> editgroup (editgroup_id));
@@ -285,6 +410,12 @@ joinable!(release_rev -> container_ident (container_ident_id));
 joinable!(release_rev -> work_ident (work_ident_id));
 joinable!(release_rev_abstract -> abstracts (abstract_sha1));
 joinable!(release_rev_abstract -> release_rev (release_rev));
+joinable!(webcapture_edit -> editgroup (editgroup_id));
+joinable!(webcapture_ident -> webcapture_rev (rev_id));
+joinable!(webcapture_rev_cdx -> webcapture_rev (webcapture_rev));
+joinable!(webcapture_rev_release -> release_ident (target_release_ident_id));
+joinable!(webcapture_rev_release -> webcapture_rev (webcapture_rev));
+joinable!(webcapture_rev_url -> webcapture_rev (webcapture_rev));
 joinable!(work_edit -> editgroup (editgroup_id));
 joinable!(work_ident -> work_rev (rev_id));
 
@@ -301,15 +432,27 @@ allow_tables_to_appear_in_same_query!(
     editor,
     file_edit,
     file_ident,
-    file_release,
     file_rev,
+    file_rev_release,
     file_rev_url,
+    fileset_edit,
+    fileset_ident,
+    fileset_rev,
+    fileset_rev_file,
+    fileset_rev_release,
+    fileset_rev_url,
     release_contrib,
     release_edit,
     release_ident,
     release_ref,
     release_rev,
     release_rev_abstract,
+    webcapture_edit,
+    webcapture_ident,
+    webcapture_rev,
+    webcapture_rev_cdx,
+    webcapture_rev_release,
+    webcapture_rev_url,
     work_edit,
     work_ident,
     work_rev,

@@ -38,6 +38,8 @@ impl EditContext {
 #[derive(Clone, Copy, PartialEq)]
 pub struct ExpandFlags {
     pub files: bool,
+    pub filesets: bool,
+    pub webcaptures: bool,
     pub container: bool,
     pub releases: bool,
     pub creators: bool,
@@ -55,6 +57,8 @@ impl ExpandFlags {
     pub fn from_str_list(list: &[&str]) -> ExpandFlags {
         ExpandFlags {
             files: list.contains(&"files"),
+            filesets: list.contains(&"filesets"),
+            webcaptures: list.contains(&"webcaptures"),
             container: list.contains(&"container"),
             releases: list.contains(&"releases"),
             creators: list.contains(&"creators"),
@@ -63,6 +67,8 @@ impl ExpandFlags {
     pub fn none() -> ExpandFlags {
         ExpandFlags {
             files: false,
+            filesets: false,
+            webcaptures: false,
             container: false,
             releases: false,
             creators: false,
@@ -77,6 +83,8 @@ fn test_expand_flags() {
     assert!(ExpandFlags::from_str_list(&vec!["file"]).files == false);
     let all = ExpandFlags::from_str_list(&vec![
         "files",
+        "filesets",
+        "webcaptures",
         "container",
         "other_thing",
         "releases",
@@ -85,6 +93,8 @@ fn test_expand_flags() {
     assert!(
         all == ExpandFlags {
             files: true,
+            filesets: true,
+            webcaptures: true,
             container: true,
             releases: true,
             creators: true
@@ -94,10 +104,14 @@ fn test_expand_flags() {
     assert!(ExpandFlags::from_str("files").unwrap().files == true);
     assert!(ExpandFlags::from_str("something,,files").unwrap().files == true);
     assert!(ExpandFlags::from_str("file").unwrap().files == false);
-    let all = ExpandFlags::from_str("files,container,other_thing,releases,creators").unwrap();
+    let all =
+        ExpandFlags::from_str("files,container,other_thing,releases,creators,filesets,webcaptures")
+            .unwrap();
     assert!(
         all == ExpandFlags {
             files: true,
+            filesets: true,
+            webcaptures: true,
             container: true,
             releases: true,
             creators: true
@@ -107,9 +121,14 @@ fn test_expand_flags() {
 
 #[derive(Clone, Copy, PartialEq)]
 pub struct HideFlags {
+    // release
     pub abstracts: bool,
     pub refs: bool,
     pub contribs: bool,
+    // fileset
+    pub manifest: bool,
+    // webcapture
+    pub cdx: bool,
 }
 
 impl FromStr for HideFlags {
@@ -126,6 +145,8 @@ impl HideFlags {
             abstracts: list.contains(&"abstracts"),
             refs: list.contains(&"refs"),
             contribs: list.contains(&"contribs"),
+            manifest: list.contains(&"contribs"),
+            cdx: list.contains(&"contribs"),
         }
     }
     pub fn none() -> HideFlags {
@@ -133,6 +154,8 @@ impl HideFlags {
             abstracts: false,
             refs: false,
             contribs: false,
+            manifest: false,
+            cdx: false,
         }
     }
 }
@@ -142,12 +165,21 @@ fn test_hide_flags() {
     assert!(HideFlags::from_str_list(&vec![]).abstracts == false);
     assert!(HideFlags::from_str_list(&vec!["abstracts"]).abstracts == true);
     assert!(HideFlags::from_str_list(&vec!["abstract"]).abstracts == false);
-    let all = HideFlags::from_str_list(&vec!["abstracts", "refs", "other_thing", "contribs"]);
+    let all = HideFlags::from_str_list(&vec![
+        "abstracts",
+        "refs",
+        "other_thing",
+        "contribs",
+        "manifest",
+        "cdx",
+    ]);
     assert!(
         all == HideFlags {
             abstracts: true,
             refs: true,
             contribs: true,
+            manifest: true,
+            cdx: true,
         }
     );
     assert!(HideFlags::from_str("").unwrap().abstracts == false);
@@ -159,12 +191,14 @@ fn test_hide_flags() {
             == true
     );
     assert!(HideFlags::from_str("file").unwrap().abstracts == false);
-    let all = HideFlags::from_str("abstracts,refs,other_thing,contribs").unwrap();
+    let all = HideFlags::from_str("abstracts,cdx,refs,manifest,other_thing,contribs").unwrap();
     assert!(
         all == HideFlags {
             abstracts: true,
             refs: true,
             contribs: true,
+            manifest: true,
+            cdx: true,
         }
     );
 }
@@ -229,6 +263,8 @@ pub fn accept_editgroup(editgroup_id: FatCatId, conn: &DbConn) -> Result<Changel
     ContainerEntity::db_accept_edits(conn, editgroup_id)?;
     CreatorEntity::db_accept_edits(conn, editgroup_id)?;
     FileEntity::db_accept_edits(conn, editgroup_id)?;
+    FilesetEntity::db_accept_edits(conn, editgroup_id)?;
+    WebcaptureEntity::db_accept_edits(conn, editgroup_id)?;
     ReleaseEntity::db_accept_edits(conn, editgroup_id)?;
     WorkEntity::db_accept_edits(conn, editgroup_id)?;
 

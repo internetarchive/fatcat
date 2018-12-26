@@ -1,5 +1,6 @@
 use api_helpers::*;
 use api_server::get_release_files;
+use chrono;
 use database_models::*;
 use database_schema::*;
 use diesel::prelude::*;
@@ -856,13 +857,6 @@ impl EntityCrud for FileEntity {
             None => (None, None, None),
         };
 
-        let releases: Vec<FatCatId> = file_release::table
-            .filter(file_release::file_rev.eq(rev_row.id))
-            .get_results(conn)?
-            .into_iter()
-            .map(|r: FileReleaseRow| FatCatId::from_uuid(&r.target_release_ident_id))
-            .collect();
-
         let urls: Vec<FileEntityUrls> = file_rev_url::table
             .filter(file_rev_url::file_rev.eq(rev_row.id))
             .get_results(conn)?
@@ -873,14 +867,21 @@ impl EntityCrud for FileEntity {
             })
             .collect();
 
+        let release_ids: Vec<FatCatId> = file_rev_release::table
+            .filter(file_rev_release::file_rev.eq(rev_row.id))
+            .get_results(conn)?
+            .into_iter()
+            .map(|r: FileRevReleaseRow| FatCatId::from_uuid(&r.target_release_ident_id))
+            .collect();
+
         Ok(FileEntity {
             sha1: rev_row.sha1,
             sha256: rev_row.sha256,
             md5: rev_row.md5,
-            size: rev_row.size.map(|v| v as i64),
+            size: rev_row.size_bytes.map(|v| v as i64),
             urls: Some(urls),
             mimetype: rev_row.mimetype,
-            release_ids: Some(releases.iter().map(|fcid| fcid.to_string()).collect()),
+            release_ids: Some(release_ids.iter().map(|fcid| fcid.to_string()).collect()),
             state: state,
             ident: ident_id,
             revision: Some(rev_row.id.to_string()),
@@ -909,7 +910,7 @@ impl EntityCrud for FileEntity {
                 models
                     .iter()
                     .map(|model| FileRevNewRow {
-                        size: model.size,
+                        size_bytes: model.size,
                         sha1: model.sha1.clone(),
                         sha256: model.sha256.clone(),
                         md5: model.md5.clone(),
@@ -921,23 +922,23 @@ impl EntityCrud for FileEntity {
             .returning(file_rev::id)
             .get_results(conn)?;
 
-        let mut file_release_rows: Vec<FileReleaseRow> = vec![];
+        let mut file_rev_release_rows: Vec<FileRevReleaseRow> = vec![];
         let mut file_url_rows: Vec<FileRevUrlNewRow> = vec![];
 
         for (model, rev_id) in models.iter().zip(rev_ids.iter()) {
             match &model.release_ids {
                 None => (),
                 Some(release_list) => {
-                    let these_release_rows: Result<Vec<FileReleaseRow>> = release_list
+                    let these_release_rows: Result<Vec<FileRevReleaseRow>> = release_list
                         .iter()
                         .map(|r| {
-                            Ok(FileReleaseRow {
+                            Ok(FileRevReleaseRow {
                                 file_rev: *rev_id,
                                 target_release_ident_id: FatCatId::from_str(r)?.to_uuid(),
                             })
                         })
                         .collect();
-                    file_release_rows.extend(these_release_rows?);
+                    file_rev_release_rows.extend(these_release_rows?);
                 }
             };
 
@@ -957,16 +958,441 @@ impl EntityCrud for FileEntity {
             };
         }
 
-        if !file_release_rows.is_empty() {
-            // TODO: shouldn't it be "file_rev_release"?
-            insert_into(file_release::table)
-                .values(file_release_rows)
+        if !file_rev_release_rows.is_empty() {
+            insert_into(file_rev_release::table)
+                .values(file_rev_release_rows)
                 .execute(conn)?;
         }
 
         if !file_url_rows.is_empty() {
             insert_into(file_rev_url::table)
                 .values(file_url_rows)
+                .execute(conn)?;
+        }
+
+        Ok(rev_ids)
+    }
+}
+
+impl EntityCrud for FilesetEntity {
+    type EditRow = FilesetEditRow;
+    type EditNewRow = FilesetEditNewRow;
+    type IdentRow = FilesetIdentRow;
+    type IdentNewRow = FilesetIdentNewRow;
+    type RevRow = FilesetRevRow;
+
+    generic_db_get!(fileset_ident, fileset_rev);
+    generic_db_get_rev!(fileset_rev);
+    generic_db_expand!();
+    generic_db_create!(fileset_ident, fileset_edit);
+    generic_db_create_batch!(fileset_ident, fileset_edit);
+    generic_db_update!(fileset_ident, fileset_edit);
+    generic_db_delete!(fileset_ident, fileset_edit);
+    generic_db_get_history!(fileset_edit);
+    generic_db_get_edit!(fileset_edit);
+    generic_db_delete_edit!(fileset_edit);
+    generic_db_get_redirects!(fileset_ident);
+    generic_db_accept_edits_batch!("file", fileset_ident, fileset_edit);
+    generic_db_insert_rev!();
+
+    fn from_deleted_row(ident_row: Self::IdentRow) -> Result<Self> {
+        if ident_row.rev_id.is_some() {
+            bail!("called from_deleted_row with a non-deleted-state row")
+        }
+
+        Ok(FilesetEntity {
+            manifest: None,
+            urls: None,
+            release_ids: None,
+            state: Some(ident_row.state().unwrap().shortname()),
+            ident: Some(FatCatId::from_uuid(&ident_row.id).to_string()),
+            revision: ident_row.rev_id.map(|u| u.to_string()),
+            redirect: ident_row
+                .redirect_id
+                .map(|u| FatCatId::from_uuid(&u).to_string()),
+            extra: None,
+            edit_extra: None,
+        })
+    }
+
+    fn db_from_row(
+        conn: &DbConn,
+        rev_row: Self::RevRow,
+        ident_row: Option<Self::IdentRow>,
+        _hide: HideFlags,
+    ) -> Result<Self> {
+        let (state, ident_id, redirect_id) = match ident_row {
+            Some(i) => (
+                Some(i.state().unwrap().shortname()),
+                Some(FatCatId::from_uuid(&i.id).to_string()),
+                i.redirect_id.map(|u| FatCatId::from_uuid(&u).to_string()),
+            ),
+            None => (None, None, None),
+        };
+
+        let manifest: Vec<FilesetEntityManifest> = fileset_rev_file::table
+            .filter(fileset_rev_file::fileset_rev.eq(rev_row.id))
+            .get_results(conn)?
+            .into_iter()
+            .map(|r: FilesetRevFileRow| FilesetEntityManifest {
+                path: r.path_name,
+                size: r.size_bytes,
+                md5: r.md5,
+                sha1: r.sha1,
+                sha256: r.sha256,
+                extra: r.extra_json,
+            })
+            .collect();
+
+        let urls: Vec<FileEntityUrls> = fileset_rev_url::table
+            .filter(fileset_rev_url::fileset_rev.eq(rev_row.id))
+            .get_results(conn)?
+            .into_iter()
+            .map(|r: FilesetRevUrlRow| FileEntityUrls {
+                rel: r.rel,
+                url: r.url,
+            })
+            .collect();
+
+        let release_ids: Vec<FatCatId> = fileset_rev_release::table
+            .filter(fileset_rev_release::fileset_rev.eq(rev_row.id))
+            .get_results(conn)?
+            .into_iter()
+            .map(|r: FilesetRevReleaseRow| FatCatId::from_uuid(&r.target_release_ident_id))
+            .collect();
+
+        Ok(FilesetEntity {
+            manifest: Some(manifest),
+            urls: Some(urls),
+            release_ids: Some(release_ids.iter().map(|fcid| fcid.to_string()).collect()),
+            state: state,
+            ident: ident_id,
+            revision: Some(rev_row.id.to_string()),
+            redirect: redirect_id,
+            extra: rev_row.extra_json,
+            edit_extra: None,
+        })
+    }
+
+    fn db_insert_revs(conn: &DbConn, models: &[&Self]) -> Result<Vec<Uuid>> {
+        // first verify hash syntax
+        for entity in models {
+            if let Some(ref manifest) = entity.manifest {
+                for file in manifest {
+                    if let Some(ref hash) = file.md5 {
+                        check_md5(hash)?;
+                    }
+                    if let Some(ref hash) = file.sha1 {
+                        check_sha1(hash)?;
+                    }
+                    if let Some(ref hash) = file.sha256 {
+                        check_sha256(hash)?;
+                    }
+                }
+            }
+        }
+
+        let rev_ids: Vec<Uuid> = insert_into(fileset_rev::table)
+            .values(
+                models
+                    .iter()
+                    .map(|model| FilesetRevNewRow {
+                        extra_json: model.extra.clone(),
+                    })
+                    .collect::<Vec<FilesetRevNewRow>>(),
+            )
+            .returning(fileset_rev::id)
+            .get_results(conn)?;
+
+        let mut fileset_file_rows: Vec<FilesetRevFileNewRow> = vec![];
+        let mut fileset_url_rows: Vec<FilesetRevUrlNewRow> = vec![];
+        let mut fileset_release_rows: Vec<FilesetRevReleaseRow> = vec![];
+
+        for (model, rev_id) in models.iter().zip(rev_ids.iter()) {
+            match &model.manifest {
+                None => (),
+                Some(file_list) => {
+                    let these_file_rows: Vec<FilesetRevFileNewRow> = file_list
+                        .into_iter()
+                        .map(|f| FilesetRevFileNewRow {
+                            fileset_rev: *rev_id,
+                            path_name: f.path.clone(),
+                            size_bytes: f.size,
+                            md5: f.md5.clone(),
+                            sha1: f.sha1.clone(),
+                            sha256: f.sha256.clone(),
+                            extra_json: f.extra.clone(),
+                        })
+                        .collect();
+                    fileset_file_rows.extend(these_file_rows);
+                }
+            };
+
+            match &model.urls {
+                None => (),
+                Some(url_list) => {
+                    let these_url_rows: Vec<FilesetRevUrlNewRow> = url_list
+                        .into_iter()
+                        .map(|u| FilesetRevUrlNewRow {
+                            fileset_rev: *rev_id,
+                            rel: u.rel.clone(),
+                            url: u.url.clone(),
+                        })
+                        .collect();
+                    fileset_url_rows.extend(these_url_rows);
+                }
+            };
+
+            match &model.release_ids {
+                None => (),
+                Some(release_list) => {
+                    let these_release_rows: Result<Vec<FilesetRevReleaseRow>> = release_list
+                        .iter()
+                        .map(|r| {
+                            Ok(FilesetRevReleaseRow {
+                                fileset_rev: *rev_id,
+                                target_release_ident_id: FatCatId::from_str(r)?.to_uuid(),
+                            })
+                        })
+                        .collect();
+                    fileset_release_rows.extend(these_release_rows?);
+                }
+            };
+        }
+
+        if !fileset_file_rows.is_empty() {
+            insert_into(fileset_rev_file::table)
+                .values(fileset_file_rows)
+                .execute(conn)?;
+        }
+
+        if !fileset_url_rows.is_empty() {
+            insert_into(fileset_rev_url::table)
+                .values(fileset_url_rows)
+                .execute(conn)?;
+        }
+
+        if !fileset_release_rows.is_empty() {
+            insert_into(fileset_rev_release::table)
+                .values(fileset_release_rows)
+                .execute(conn)?;
+        }
+
+        Ok(rev_ids)
+    }
+}
+
+impl EntityCrud for WebcaptureEntity {
+    type EditRow = WebcaptureEditRow;
+    type EditNewRow = WebcaptureEditNewRow;
+    type IdentRow = WebcaptureIdentRow;
+    type IdentNewRow = WebcaptureIdentNewRow;
+    type RevRow = WebcaptureRevRow;
+
+    generic_db_get!(webcapture_ident, webcapture_rev);
+    generic_db_get_rev!(webcapture_rev);
+    generic_db_expand!();
+    generic_db_create!(webcapture_ident, webcapture_edit);
+    generic_db_create_batch!(webcapture_ident, webcapture_edit);
+    generic_db_update!(webcapture_ident, webcapture_edit);
+    generic_db_delete!(webcapture_ident, webcapture_edit);
+    generic_db_get_history!(webcapture_edit);
+    generic_db_get_edit!(webcapture_edit);
+    generic_db_delete_edit!(webcapture_edit);
+    generic_db_get_redirects!(webcapture_ident);
+    generic_db_accept_edits_batch!("file", webcapture_ident, webcapture_edit);
+    generic_db_insert_rev!();
+
+    fn from_deleted_row(ident_row: Self::IdentRow) -> Result<Self> {
+        if ident_row.rev_id.is_some() {
+            bail!("called from_deleted_row with a non-deleted-state row")
+        }
+
+        Ok(WebcaptureEntity {
+            cdx: None,
+            archive_urls: None,
+            original_url: None,
+            timestamp: None,
+            release_ids: None,
+            state: Some(ident_row.state().unwrap().shortname()),
+            ident: Some(FatCatId::from_uuid(&ident_row.id).to_string()),
+            revision: ident_row.rev_id.map(|u| u.to_string()),
+            redirect: ident_row
+                .redirect_id
+                .map(|u| FatCatId::from_uuid(&u).to_string()),
+            extra: None,
+            edit_extra: None,
+        })
+    }
+
+    fn db_from_row(
+        conn: &DbConn,
+        rev_row: Self::RevRow,
+        ident_row: Option<Self::IdentRow>,
+        _hide: HideFlags,
+    ) -> Result<Self> {
+        let (state, ident_id, redirect_id) = match ident_row {
+            Some(i) => (
+                Some(i.state().unwrap().shortname()),
+                Some(FatCatId::from_uuid(&i.id).to_string()),
+                i.redirect_id.map(|u| FatCatId::from_uuid(&u).to_string()),
+            ),
+            None => (None, None, None),
+        };
+
+        let cdx: Vec<WebcaptureEntityCdx> = webcapture_rev_cdx::table
+            .filter(webcapture_rev_cdx::webcapture_rev.eq(rev_row.id))
+            .get_results(conn)?
+            .into_iter()
+            .map(|c: WebcaptureRevCdxRow| WebcaptureEntityCdx {
+                surt: c.surt,
+                timestamp: c.timestamp,
+                url: c.url,
+                mimetype: c.mimetype,
+                status_code: c.status_code,
+                sha1: c.sha1,
+                sha256: c.sha256,
+            })
+            .collect();
+
+        let archive_urls: Vec<WebcaptureEntityArchiveUrls> = webcapture_rev_url::table
+            .filter(webcapture_rev_url::webcapture_rev.eq(rev_row.id))
+            .get_results(conn)?
+            .into_iter()
+            .map(|r: WebcaptureRevUrlRow| WebcaptureEntityArchiveUrls {
+                rel: r.rel,
+                url: r.url,
+            })
+            .collect();
+
+        let release_ids: Vec<FatCatId> = webcapture_rev_release::table
+            .filter(webcapture_rev_release::webcapture_rev.eq(rev_row.id))
+            .get_results(conn)?
+            .into_iter()
+            .map(|r: WebcaptureRevReleaseRow| FatCatId::from_uuid(&r.target_release_ident_id))
+            .collect();
+
+        Ok(WebcaptureEntity {
+            cdx: Some(cdx),
+            archive_urls: Some(archive_urls),
+            original_url: Some(rev_row.original_url),
+            timestamp: Some(chrono::DateTime::from_utc(rev_row.timestamp, chrono::Utc)),
+            release_ids: Some(release_ids.iter().map(|fcid| fcid.to_string()).collect()),
+            state: state,
+            ident: ident_id,
+            revision: Some(rev_row.id.to_string()),
+            redirect: redirect_id,
+            extra: rev_row.extra_json,
+            edit_extra: None,
+        })
+    }
+
+    fn db_insert_revs(conn: &DbConn, models: &[&Self]) -> Result<Vec<Uuid>> {
+        // first verify hash syntax, and presence of required fields
+        for entity in models {
+            if let Some(ref cdx) = entity.cdx {
+                for row in cdx {
+                    check_sha1(&row.sha1)?;
+                    if let Some(ref hash) = row.sha256 {
+                        check_sha256(hash)?;
+                    }
+                }
+            }
+            if entity.timestamp.is_none() || entity.original_url.is_none() {
+                return Err(ErrorKind::OtherBadRequest(
+                    "timestamp and original_url are required for webcapture entities".to_string(),
+                )
+                .into());
+            }
+        }
+
+        let rev_ids: Vec<Uuid> = insert_into(webcapture_rev::table)
+            .values(
+                models
+                    .iter()
+                    .map(|model| WebcaptureRevNewRow {
+                        // these unwraps safe because of check above
+                        original_url: model.original_url.clone().unwrap(),
+                        timestamp: model.timestamp.unwrap().naive_utc(),
+                        extra_json: model.extra.clone(),
+                    })
+                    .collect::<Vec<WebcaptureRevNewRow>>(),
+            )
+            .returning(webcapture_rev::id)
+            .get_results(conn)?;
+
+        let mut webcapture_cdx_rows: Vec<WebcaptureRevCdxNewRow> = vec![];
+        let mut webcapture_url_rows: Vec<WebcaptureRevUrlNewRow> = vec![];
+        let mut webcapture_release_rows: Vec<WebcaptureRevReleaseRow> = vec![];
+
+        for (model, rev_id) in models.iter().zip(rev_ids.iter()) {
+            match &model.cdx {
+                None => (),
+                Some(cdx_list) => {
+                    let these_cdx_rows: Vec<WebcaptureRevCdxNewRow> = cdx_list
+                        .into_iter()
+                        .map(|c| WebcaptureRevCdxNewRow {
+                            webcapture_rev: *rev_id,
+                            surt: c.surt.clone(),
+                            timestamp: c.timestamp,
+                            url: c.url.clone(),
+                            mimetype: c.mimetype.clone(),
+                            status_code: c.status_code,
+                            sha1: c.sha1.clone(),
+                            sha256: c.sha256.clone(),
+                        })
+                        .collect();
+                    webcapture_cdx_rows.extend(these_cdx_rows);
+                }
+            };
+
+            match &model.archive_urls {
+                None => (),
+                Some(url_list) => {
+                    let these_url_rows: Vec<WebcaptureRevUrlNewRow> = url_list
+                        .into_iter()
+                        .map(|u| WebcaptureRevUrlNewRow {
+                            webcapture_rev: *rev_id,
+                            rel: u.rel.clone(),
+                            url: u.url.clone(),
+                        })
+                        .collect();
+                    webcapture_url_rows.extend(these_url_rows);
+                }
+            };
+
+            match &model.release_ids {
+                None => (),
+                Some(release_list) => {
+                    let these_release_rows: Result<Vec<WebcaptureRevReleaseRow>> = release_list
+                        .iter()
+                        .map(|r| {
+                            Ok(WebcaptureRevReleaseRow {
+                                webcapture_rev: *rev_id,
+                                target_release_ident_id: FatCatId::from_str(r)?.to_uuid(),
+                            })
+                        })
+                        .collect();
+                    webcapture_release_rows.extend(these_release_rows?);
+                }
+            };
+        }
+
+        if !webcapture_cdx_rows.is_empty() {
+            insert_into(webcapture_rev_cdx::table)
+                .values(webcapture_cdx_rows)
+                .execute(conn)?;
+        }
+
+        if !webcapture_url_rows.is_empty() {
+            insert_into(webcapture_rev_url::table)
+                .values(webcapture_url_rows)
+                .execute(conn)?;
+        }
+
+        if !webcapture_release_rows.is_empty() {
+            insert_into(webcapture_rev_release::table)
+                .values(webcapture_release_rows)
                 .execute(conn)?;
         }
 
@@ -1013,6 +1439,8 @@ impl EntityCrud for ReleaseEntity {
             issue: None,
             pages: None,
             files: None,
+            filesets: None,
+            webcaptures: None,
             container: None,
             container_id: None,
             publisher: None,
@@ -1275,6 +1703,8 @@ impl EntityCrud for ReleaseEntity {
             issue: rev_row.issue,
             pages: rev_row.pages,
             files: None,
+            filesets: None,
+            webcaptures: None,
             container: None,
             container_id: rev_row
                 .container_ident_id

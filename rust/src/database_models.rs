@@ -209,7 +209,7 @@ pub struct FileRevUrlNewRow {
 pub struct FileRevRow {
     pub id: Uuid,
     pub extra_json: Option<serde_json::Value>,
-    pub size: Option<i64>,
+    pub size_bytes: Option<i64>,
     pub sha1: Option<String>,
     pub sha256: Option<String>,
     pub md5: Option<String>,
@@ -220,7 +220,7 @@ pub struct FileRevRow {
 #[table_name = "file_rev"]
 pub struct FileRevNewRow {
     pub extra_json: Option<serde_json::Value>,
-    pub size: Option<i64>,
+    pub size_bytes: Option<i64>,
     pub sha1: Option<String>,
     pub sha256: Option<String>,
     pub md5: Option<String>,
@@ -234,6 +234,139 @@ entity_structs!(
     "file_ident",
     FileIdentRow,
     FileIdentNewRow
+);
+
+#[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
+#[table_name = "fileset_rev_file"]
+pub struct FilesetRevFileRow {
+    pub id: i64,
+    pub fileset_rev: Uuid,
+    pub path_name: String,
+    pub size_bytes: i64,
+    pub md5: Option<String>,
+    pub sha1: Option<String>,
+    pub sha256: Option<String>,
+    pub extra_json: Option<serde_json::Value>,
+}
+
+#[derive(Debug, Queryable, Associations, AsChangeset, Insertable)]
+#[table_name = "fileset_rev_file"]
+pub struct FilesetRevFileNewRow {
+    pub fileset_rev: Uuid,
+    pub path_name: String,
+    pub size_bytes: i64,
+    pub md5: Option<String>,
+    pub sha1: Option<String>,
+    pub sha256: Option<String>,
+    pub extra_json: Option<serde_json::Value>,
+}
+
+#[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
+#[table_name = "fileset_rev_url"]
+pub struct FilesetRevUrlRow {
+    pub id: i64,
+    pub fileset_rev: Uuid,
+    pub rel: String,
+    pub url: String,
+}
+
+#[derive(Debug, Queryable, Associations, AsChangeset, Insertable)]
+#[table_name = "fileset_rev_url"]
+pub struct FilesetRevUrlNewRow {
+    pub fileset_rev: Uuid,
+    pub rel: String,
+    pub url: String,
+}
+
+#[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
+#[table_name = "fileset_rev"]
+pub struct FilesetRevRow {
+    pub id: Uuid,
+    pub extra_json: Option<serde_json::Value>,
+}
+
+#[derive(Debug, Associations, AsChangeset, Insertable)]
+#[table_name = "fileset_rev"]
+pub struct FilesetRevNewRow {
+    pub extra_json: Option<serde_json::Value>,
+}
+
+entity_structs!(
+    "fileset_edit",
+    FilesetEditRow,
+    FilesetEditNewRow,
+    "fileset_ident",
+    FilesetIdentRow,
+    FilesetIdentNewRow
+);
+#[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
+#[table_name = "webcapture_rev_cdx"]
+pub struct WebcaptureRevCdxRow {
+    pub id: i64,
+    pub webcapture_rev: Uuid,
+    pub surt: String,
+    pub timestamp: i64,
+    pub url: String,
+    pub mimetype: Option<String>,
+    pub status_code: i64,
+    pub sha1: String,
+    pub sha256: Option<String>,
+}
+
+#[derive(Debug, Queryable, Associations, AsChangeset, Insertable)]
+#[table_name = "webcapture_rev_cdx"]
+pub struct WebcaptureRevCdxNewRow {
+    pub webcapture_rev: Uuid,
+    pub surt: String,
+    pub timestamp: i64,
+    pub url: String,
+    pub mimetype: Option<String>,
+    pub status_code: i64,
+    pub sha1: String,
+    pub sha256: Option<String>,
+}
+
+#[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
+#[table_name = "webcapture_rev_url"]
+pub struct WebcaptureRevUrlRow {
+    pub id: i64,
+    pub webcapture_rev: Uuid,
+    pub rel: String,
+    pub url: String,
+}
+
+#[derive(Debug, Queryable, Associations, AsChangeset, Insertable)]
+#[table_name = "webcapture_rev_url"]
+pub struct WebcaptureRevUrlNewRow {
+    pub webcapture_rev: Uuid,
+    pub rel: String,
+    pub url: String,
+}
+
+#[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
+#[table_name = "webcapture_rev"]
+pub struct WebcaptureRevRow {
+    pub id: Uuid,
+    pub extra_json: Option<serde_json::Value>,
+    pub original_url: String,
+    pub timestamp: chrono::NaiveDateTime,
+}
+
+#[derive(Debug, Associations, AsChangeset, Insertable)]
+#[table_name = "webcapture_rev"]
+pub struct WebcaptureRevNewRow {
+    pub extra_json: Option<serde_json::Value>,
+    pub original_url: String,
+    pub timestamp: chrono::NaiveDateTime,
+}
+
+entity_structs!(
+    "webcapture_edit",
+    WebcaptureEditRow,
+    WebcaptureEditNewRow,
+    "webcapture_ident",
+    WebcaptureIdentRow,
+    WebcaptureIdentNewRow
 );
 
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
@@ -388,9 +521,23 @@ pub struct ReleaseRefNewRow {
 }
 
 #[derive(Debug, Queryable, Insertable, Associations, AsChangeset)]
-#[table_name = "file_release"]
-pub struct FileReleaseRow {
+#[table_name = "file_rev_release"]
+pub struct FileRevReleaseRow {
     pub file_rev: Uuid,
+    pub target_release_ident_id: Uuid,
+}
+
+#[derive(Debug, Queryable, Insertable, Associations, AsChangeset)]
+#[table_name = "fileset_rev_release"]
+pub struct FilesetRevReleaseRow {
+    pub fileset_rev: Uuid,
+    pub target_release_ident_id: Uuid,
+}
+
+#[derive(Debug, Queryable, Insertable, Associations, AsChangeset)]
+#[table_name = "webcapture_rev_release"]
+pub struct WebcaptureRevReleaseRow {
+    pub webcapture_rev: Uuid,
     pub target_release_ident_id: Uuid,
 }
 
