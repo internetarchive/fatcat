@@ -220,7 +220,7 @@ definitions:
             rel:
               type: string
               example: "webarchive"
-      releases:
+      release_ids:
         type: array
         items:
           type: string
@@ -251,13 +251,13 @@ definitions:
             url:
               type: string
               example: "http://www.asheesh.org:80/APUS/ch1/node15.html"
+            mimetype:
+              type: string
+              example: "text/html"
             status_code:
               type: integer
               example: 200
               format: int64
-            mimetype:
-              type: string
-              example: "text/html"
             sha1:
               type: string
               #format: custom
@@ -284,11 +284,11 @@ definitions:
       original_url:
         type: string
         #format: url
-        example: "http://www.asheesh.org"
+        example: "http://asheesh.org"
       timestamp:
         type: string
         format: date-time
-      releases:
+      release_ids:
         type: array
         items:
           type: string
@@ -312,6 +312,16 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/file_entity"
+      filesets:
+        description: "Optional; GET-only"
+        type: array
+        items:
+          $ref: "#/definitions/fileset_entity"
+      webcaptures:
+        description: "Optional; GET-only"
+        type: array
+        items:
+          $ref: "#/definitions/webcapture_entity"
       container_id:
         type: string
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -467,6 +477,14 @@ definitions:
             items:
               $ref: "#/definitions/entity_edit"
           files:
+            type: array
+            items:
+              $ref: "#/definitions/entity_edit"
+          filesets:
+            type: array
+            items:
+              $ref: "#/definitions/entity_edit"
+          webcaptures:
             type: array
             items:
               $ref: "#/definitions/entity_edit"
@@ -976,7 +994,7 @@ paths:
         in: query
         type: string
         required: false
-        description: "List of entity fields to elide in response. For releases, 'abstracts', 'refs', and 'contribs' are valid."
+        description: "List of entity fields to elide in response. For creators, none implemented yet."
     get:
       operationId: "get_creator_releases"
       tags: # TAGLINE
@@ -1801,7 +1819,7 @@ paths:
         in: query
         type: string
         required: false
-        description: "List of entity fields to elide in response. For releases, 'abstracts', 'refs', and 'contribs' are valid."
+        description: "List of entity fields to elide in response. For works, none implemented yet."
     get:
       operationId: "get_work_releases"
       tags: # TAGLINE
