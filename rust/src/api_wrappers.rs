@@ -327,12 +327,13 @@ macro_rules! wrap_entity_handlers {
 
         fn $get_edit_fn(
             &self,
-            edit_id: i64,
+            edit_id: String,
             _context: &Context,
         ) -> Box<Future<Item = $get_edit_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             // No transaction for GET?
             let ret = match (|| {
+                let edit_id = Uuid::from_str(&edit_id)?;
                 $model::db_get_edit(&conn, edit_id)?.into_model()
             })() {
                 Ok(edit) =>
@@ -351,11 +352,12 @@ macro_rules! wrap_entity_handlers {
 
         fn $delete_edit_fn(
             &self,
-            edit_id: i64,
+            edit_id: String,
             _context: &Context,
         ) -> Box<Future<Item = $delete_edit_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             let ret = match conn.transaction(|| {
+                let edit_id = Uuid::from_str(&edit_id)?;
                 $model::db_delete_edit(&conn, edit_id)
             }) {
                 Ok(()) =>

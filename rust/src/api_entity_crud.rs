@@ -72,8 +72,8 @@ where
         ident: FatCatId,
         limit: Option<i64>,
     ) -> Result<Vec<EntityHistoryEntry>>;
-    fn db_get_edit(conn: &DbConn, edit_id: i64) -> Result<Self::EditRow>;
-    fn db_delete_edit(conn: &DbConn, edit_id: i64) -> Result<()>;
+    fn db_get_edit(conn: &DbConn, edit_id: Uuid) -> Result<Self::EditRow>;
+    fn db_delete_edit(conn: &DbConn, edit_id: Uuid) -> Result<()>;
     fn db_get_redirects(conn: &DbConn, ident: FatCatId) -> Result<Vec<FatCatId>>;
     fn db_accept_edits(conn: &DbConn, editgroup_id: FatCatId) -> Result<u64>;
 
@@ -368,7 +368,7 @@ macro_rules! generic_db_get_history {
 
 macro_rules! generic_db_get_edit {
     ($edit_table:ident) => {
-        fn db_get_edit(conn: &DbConn, edit_id: i64) -> Result<Self::EditRow> {
+        fn db_get_edit(conn: &DbConn, edit_id: Uuid) -> Result<Self::EditRow> {
             Ok($edit_table::table.find(edit_id).first(conn)?)
         }
     };
@@ -377,7 +377,7 @@ macro_rules! generic_db_get_edit {
 macro_rules! generic_db_delete_edit {
     ($edit_table:ident) => {
         /// This method assumes the connection is already in a transaction
-        fn db_delete_edit(conn: &DbConn, edit_id: i64) -> Result<()> {
+        fn db_delete_edit(conn: &DbConn, edit_id: Uuid) -> Result<()> {
             // ensure that edit hasn't been accepted
             let accepted_rows: Vec<(EditgroupRow, ChangelogRow, Self::EditRow)> = editgroup::table
                 .inner_join(changelog::table)

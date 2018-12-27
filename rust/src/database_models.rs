@@ -52,7 +52,7 @@ macro_rules! entity_structs {
         #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset, QueryableByName)]
         #[table_name = $edit_table]
         pub struct $edit_struct {
-            pub id: i64,
+            pub id: Uuid,
             pub editgroup_id: Uuid,
             pub updated: chrono::NaiveDateTime,
             pub ident_id: Uuid,
@@ -82,7 +82,7 @@ macro_rules! entity_structs {
                     redirect_ident: self.redirect_id.map(|v| uuid2fcid(&v)),
                     prev_revision: self.prev_rev.map(|v| v.to_string()),
                     ident: uuid2fcid(&self.ident_id),
-                    edit_id: self.id,
+                    edit_id: self.id.to_string(),
                     extra: self.extra_json,
                 })
             }

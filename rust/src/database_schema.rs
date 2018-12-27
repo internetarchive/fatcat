@@ -15,7 +15,7 @@ table! {
 
 table! {
     container_edit (id) {
-        id -> Int8,
+        id -> Uuid,
         editgroup_id -> Uuid,
         updated -> Timestamptz,
         ident_id -> Uuid,
@@ -50,7 +50,7 @@ table! {
 
 table! {
     creator_edit (id) {
-        id -> Int8,
+        id -> Uuid,
         editgroup_id -> Uuid,
         updated -> Timestamptz,
         ident_id -> Uuid,
@@ -104,7 +104,7 @@ table! {
 
 table! {
     file_edit (id) {
-        id -> Int8,
+        id -> Uuid,
         editgroup_id -> Uuid,
         updated -> Timestamptz,
         ident_id -> Uuid,
@@ -154,7 +154,7 @@ table! {
 
 table! {
     fileset_edit (id) {
-        id -> Int8,
+        id -> Uuid,
         editgroup_id -> Uuid,
         updated -> Timestamptz,
         ident_id -> Uuid,
@@ -224,7 +224,7 @@ table! {
 
 table! {
     release_edit (id) {
-        id -> Int8,
+        id -> Uuid,
         editgroup_id -> Uuid,
         updated -> Timestamptz,
         ident_id -> Uuid,
@@ -296,7 +296,7 @@ table! {
 
 table! {
     webcapture_edit (id) {
-        id -> Int8,
+        id -> Uuid,
         editgroup_id -> Uuid,
         updated -> Timestamptz,
         ident_id -> Uuid,
@@ -357,7 +357,7 @@ table! {
 
 table! {
     work_edit (id) {
-        id -> Int8,
+        id -> Uuid,
         editgroup_id -> Uuid,
         updated -> Timestamptz,
         ident_id -> Uuid,
