@@ -54,6 +54,24 @@ x-orcid: &FATCATORCID
   pattern: "\\d{4}-\\d{4}-\\d{4}-\\d{3}[\\dX]"
   minLength: 19
   maxLength: 19
+x-md5: &FATCATMD5
+  type: string
+  example: "1b39813549077b2347c0f370c3864b40"
+  pattern: "[a-f0-9]{32}"
+  minLength: 32
+  maxLength: 32
+x-sha1: &FATCATSHA1
+  type: string
+  example: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
+  pattern: "[a-f0-9]{40}"
+  minLength: 40
+  maxLength: 40
+x-sha256: &FATCATSHA256
+  type: string
+  example: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
+  pattern: "[a-f0-9]{64}"
+  minLength: 64
+  maxLength: 64
 
 # Common properties across entities
 x-entity-props: &ENTITYPROPS
@@ -136,17 +154,11 @@ definitions:
         example: 1048576
         format: int64
       md5:
-        type: string
-        #format: custom
-        example: "d41efcc592d1e40ac13905377399eb9b"
+        <<: *FATCATMD5
       sha1:
-        type: string
-        #format: custom
-        example: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
+        <<: *FATCATSHA1
       sha256:
-        type: string
-        #format: custom
-        example: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+        <<: *FATCATSHA256
       urls:
         type: array
         items:
@@ -168,8 +180,7 @@ definitions:
       release_ids:
         type: array
         items:
-          type: string
-          #format: uuid
+          <<: *FATCATIDENT
   fileset_entity:
     type: object
     properties:
@@ -191,17 +202,11 @@ definitions:
               example: 1048576
               format: int64
             md5:
-              type: string
-              #format: custom
-              example: "d41efcc592d1e40ac13905377399eb9b"
+              <<: *FATCATMD5
             sha1:
-              type: string
-              #format: custom
-              example: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
+              <<: *FATCATSHA1
             sha256:
-              type: string
-              #format: custom
-              example: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+              <<: *FATCATSHA256
             extra:
               type: object
               additionalProperties: {}
@@ -223,8 +228,7 @@ definitions:
       release_ids:
         type: array
         items:
-          type: string
-          #format: uuid
+          <<: *FATCATIDENT
   webcapture_entity:
     type: object
     properties:
@@ -248,6 +252,7 @@ definitions:
               example: "20020429162520"
             url:
               type: string
+              # NOTE: not format:url to allow alternatives
               example: "http://www.asheesh.org:80/APUS/ch1/node15.html"
             mimetype:
               type: string
@@ -257,13 +262,9 @@ definitions:
               example: 200
               format: int64
             sha1:
-              type: string
-              #format: custom
-              example: "3f242a192acc258bdfdb151943419437f440c313"
+              <<: *FATCATSHA1
             sha256:
-              type: string
-              #format: custom
-              example: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+              <<: *FATCATSHA256
       archive_urls:
         type: array
         items:
@@ -281,7 +282,7 @@ definitions:
               example: "wayback"
       original_url:
         type: string
-        #format: url
+        format: url
         example: "http://asheesh.org"
       timestamp:
         type: string
@@ -289,8 +290,7 @@ definitions:
       release_ids:
         type: array
         items:
-          type: string
-          #format: uuid
+          <<: *FATCATIDENT
   release_entity:
     type: object
     # required for creation: title
@@ -378,8 +378,7 @@ definitions:
           type: object
           properties:
             sha1:
-              type: string
-              example: "3f242a192acc258bdfdb151943419437f440c313"
+              <<: *FATCATSHA1
             content:
               type: string
               example: "<jats:p>Some abstract thing goes here</jats:p>"
@@ -416,23 +415,15 @@ definitions:
       edit_id:
           <<: *FATCATUUID
       ident:
-          type: string
-          example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          <<: *FATCATIDENT
       revision:
-          type: string
-          #format: uuid
-          example: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+          <<: *FATCATUUID
       prev_revision:
-          type: string
-          #format: uuid
-          example: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+          <<: *FATCATUUID
       redirect_ident:
-          type: string
-          example: "q3nouwy3nnbsvo3h5klxsx4a7y"
-          #format: ident
+          <<: *FATCATIDENT
       editgroup_id:
-          type: string
-          example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          <<: *FATCATIDENT
       extra:
           type: object
           additionalProperties: {}
@@ -442,8 +433,7 @@ definitions:
       - username
     properties:
       editor_id:
-        type: string
-        example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        <<: *FATCATIDENT
       username:
         type: string
         example: "zerocool93"
@@ -517,8 +507,7 @@ definitions:
         type: integer
         format: int64
       target_release_id:
-        type: string
-        #format: ident
+        <<: *FATCATIDENT
       extra:
         type: object
         additionalProperties: {}
@@ -687,9 +676,8 @@ paths:
     parameters:
       - name: rev_id
         in: path
-        type: string
-        #format: uuid
         required: true
+        <<: *FATCATUUID
     get:
       operationId: "get_container_revision"
       tags: # TAGLINE
@@ -931,9 +919,8 @@ paths:
     parameters:
       - name: rev_id
         in: path
-        type: string
-        #format: uuid
         required: true
+        <<: *FATCATUUID
     get:
       operationId: "get_creator_revision"
       tags: # TAGLINE
@@ -1198,9 +1185,8 @@ paths:
     parameters:
       - name: rev_id
         in: path
-        type: string
-        #format: uuid
         required: true
+        <<: *FATCATUUID
     get:
       operationId: "get_file_revision"
       tags: # TAGLINE
@@ -1272,16 +1258,16 @@ paths:
       parameters:
         - name: md5
           in: query
-          type: string
           required: false
+          <<: *FATCATMD5
         - name: sha1
           in: query
-          type: string
           required: false
+          <<: *FATCATSHA1
         - name: sha256
           in: query
-          type: string
           required: false
+          <<: *FATCATSHA256
         - name: expand
           in: query
           type: string
@@ -1447,9 +1433,8 @@ paths:
     parameters:
       - name: rev_id
         in: path
-        type: string
-        #format: uuid
         required: true
+        <<: *FATCATUUID
     get:
       operationId: "get_fileset_revision"
       tags: # TAGLINE
@@ -1662,9 +1647,8 @@ paths:
     parameters:
       - name: rev_id
         in: path
-        type: string
-        #format: uuid
         required: true
+        <<: *FATCATUUID
     get:
       operationId: "get_webcapture_revision"
       tags: # TAGLINE
@@ -1877,9 +1861,8 @@ paths:
     parameters:
       - name: rev_id
         in: path
-        type: string
-        #format: uuid
         required: true
+        <<: *FATCATUUID
     get:
       operationId: "get_release_revision"
       tags: # TAGLINE
@@ -2207,9 +2190,8 @@ paths:
     parameters:
       - name: rev_id
         in: path
-        type: string
-        #format: uuid
         required: true
+        <<: *FATCATUUID
     get:
       operationId: "get_work_revision"
       tags: # TAGLINE
