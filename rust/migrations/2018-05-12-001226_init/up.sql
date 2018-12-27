@@ -530,6 +530,56 @@ INSERT INTO file_edit (ident_id, rev_id, redirect_id, editgroup_id, prev_rev) VA
     ('00000000-0000-0000-3333-000000000002', '00000000-0000-0000-3333-FFF000000002', null, '00000000-0000-0000-BBBB-000000000004', null),
     ('00000000-0000-0000-3333-000000000003', '00000000-0000-0000-3333-FFF000000003', null, '00000000-0000-0000-BBBB-000000000005', '00000000-0000-0000-3333-FFF000000002');
 
+INSERT INTO fileset_rev (id) VALUES
+    ('00000000-0000-0000-6666-FFF000000001'),
+    ('00000000-0000-0000-6666-FFF000000002'),
+    ('00000000-0000-0000-6666-FFF000000003');
+
+INSERT INTO fileset_rev_file (fileset_rev, path_name, size_bytes, md5, sha1, sha256, extra_json) VALUES
+    ('00000000-0000-0000-6666-FFF000000002', 'README.md', 1024, null, null, null, null),
+    ('00000000-0000-0000-6666-FFF000000003', 'README.md', 2048, null, null, null, null),
+    ('00000000-0000-0000-6666-FFF000000003', 'stuff/data.tar.gz', 2340000, 'f4de91152c7ab9fdc2a128f962faebff', '3f242a192acc258bdfdb151943419437f440c313', 'ffc1005680cb620eec4c913437dfabbf311b535cfe16cbaeb2faec1f92afc362', '{"mimetype": "application/gzip"}');
+
+INSERT INTO fileset_rev_url (fileset_rev, rel, url) VALUES
+    ('00000000-0000-0000-6666-FFF000000002', 'web', 'http://personal-blog.name/dataset/'),
+    ('00000000-0000-0000-6666-FFF000000003', 'web', 'http://other-personal-blog.name/dataset/'),
+    ('00000000-0000-0000-6666-FFF000000003', 'archive', 'https://archive.org/download/random-dataset/');
+
+INSERT INTO fileset_ident (id, is_live, rev_id, redirect_id) VALUES
+    ('00000000-0000-0000-6666-000000000001', true, '00000000-0000-0000-6666-FFF000000001', null), -- aaaaaaaaaaaaaztg77yaaaaaae
+    ('00000000-0000-0000-6666-000000000002', true, '00000000-0000-0000-6666-FFF000000002', null), -- aaaaaaaaaaaaaztg77yaaaaaai
+    ('00000000-0000-0000-6666-000000000003', true, '00000000-0000-0000-6666-FFF000000003', null); -- aaaaaaaaaaaaaztg77yaaaaaam
+
+INSERT INTO fileset_edit (ident_id, rev_id, redirect_id, editgroup_id, prev_rev) VALUES
+    ('00000000-0000-0000-6666-000000000001', '00000000-0000-0000-6666-FFF000000001', null, '00000000-0000-0000-BBBB-000000000003', null),
+    ('00000000-0000-0000-6666-000000000002', '00000000-0000-0000-6666-FFF000000002', null, '00000000-0000-0000-BBBB-000000000004', null),
+    ('00000000-0000-0000-6666-000000000003', '00000000-0000-0000-6666-FFF000000003', null, '00000000-0000-0000-BBBB-000000000005', '00000000-0000-0000-6666-FFF000000002');
+
+INSERT INTO webcapture_rev (id, original_url, timestamp) VALUES
+    ('00000000-0000-0000-7777-FFF000000001', 'http://example.org', '1996-01-02T12:34:56Z'),
+    ('00000000-0000-0000-7777-FFF000000002', 'http://example.org', '1996-01-02T12:34:56Z'),
+    ('00000000-0000-0000-7777-FFF000000003', 'https://asheesh.org', '2003-02-17T04:47:21Z');
+
+INSERT INTO webcapture_rev_cdx (webcapture_rev, surt, timestamp, url, mimetype, status_code, sha1, sha256) VALUES
+    ('00000000-0000-0000-7777-FFF000000002', 'org,example)/', 19960102123456, 'http://example.org', null, 200, '5886903ba5aeaf7446fe9f77bd03adfc029cedf0', null),
+    ('00000000-0000-0000-7777-FFF000000003', 'org,asheesh)/', 20030217044721, 'http://asheesh.org:80/', 'text/html', 200, '5886903ba5aeaf7446fe9f77bd03adfc029cedf0', 'ffc1005680cb620eec4c913437dfabbf311b535cfe16cbaeb2faec1f92afc362'),
+    ('00000000-0000-0000-7777-FFF000000003', 'org,asheesh)/robots.txt', 20030217044719, 'http://asheesh.org:80/robots.txt', 'text/html', 404, 'a637f1d27d9bcb237310ed29f19c07e1c8cf0aa5', 'ffc1005680cb620eec4c913437dfabbf311b535cfe16cbaeb2faec1f92afc362');
+
+INSERT INTO webcapture_rev_url (webcapture_rev, rel, url) VALUES
+    ('00000000-0000-0000-7777-FFF000000002', 'wayback', 'http://web.archive.org/201801010001/http://example.org'),
+    ('00000000-0000-0000-7777-FFF000000003', 'wayback', 'http://web.archive.org/201801010001/https://asheesh.org'),
+    ('00000000-0000-0000-7777-FFF000000003', 'warc', 'https://example.org/something.warc.gz');
+
+INSERT INTO webcapture_ident (id, is_live, rev_id, redirect_id) VALUES
+    ('00000000-0000-0000-7777-000000000001', true, '00000000-0000-0000-7777-FFF000000001', null), -- aaaaaaaaaaaaa53x77yaaaaaae
+    ('00000000-0000-0000-7777-000000000002', true, '00000000-0000-0000-7777-FFF000000002', null), -- aaaaaaaaaaaaa53x77yaaaaaai
+    ('00000000-0000-0000-7777-000000000003', true, '00000000-0000-0000-7777-FFF000000003', null); -- aaaaaaaaaaaaa53x77yaaaaaam
+
+INSERT INTO webcapture_edit (ident_id, rev_id, redirect_id, editgroup_id, prev_rev) VALUES
+    ('00000000-0000-0000-7777-000000000001', '00000000-0000-0000-7777-FFF000000001', null, '00000000-0000-0000-BBBB-000000000003', null),
+    ('00000000-0000-0000-7777-000000000002', '00000000-0000-0000-7777-FFF000000002', null, '00000000-0000-0000-BBBB-000000000004', null),
+    ('00000000-0000-0000-7777-000000000003', '00000000-0000-0000-7777-FFF000000003', null, '00000000-0000-0000-BBBB-000000000005', '00000000-0000-0000-7777-FFF000000002');
+
 INSERT INTO work_rev (id) VALUES
     ('00000000-0000-0000-5555-FFF000000001'),
     ('00000000-0000-0000-5555-FFF000000002'),
@@ -582,5 +632,13 @@ INSERT INTO release_ref (release_rev, target_release_ident_id, index_val, extra_
 INSERT INTO file_rev_release (file_rev, target_release_ident_id) VALUES
     ('00000000-0000-0000-3333-FFF000000002', '00000000-0000-0000-4444-000000000002'),
     ('00000000-0000-0000-3333-FFF000000003', '00000000-0000-0000-4444-000000000003');
+
+INSERT INTO fileset_rev_release (fileset_rev, target_release_ident_id) VALUES
+    ('00000000-0000-0000-6666-FFF000000002', '00000000-0000-0000-4444-000000000002'),
+    ('00000000-0000-0000-6666-FFF000000003', '00000000-0000-0000-4444-000000000003');
+
+INSERT INTO webcapture_rev_release (webcapture_rev, target_release_ident_id) VALUES
+    ('00000000-0000-0000-7777-FFF000000002', '00000000-0000-0000-4444-000000000002'),
+    ('00000000-0000-0000-7777-FFF000000003', '00000000-0000-0000-4444-000000000003');
 
 commit;
