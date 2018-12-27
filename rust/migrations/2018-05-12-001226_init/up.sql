@@ -26,6 +26,7 @@ CREATE TABLE editor (
 );
 
 CREATE INDEX active_editgroup_idx ON editor(active_editgroup_id);
+CREATE INDEX editor_username_idx ON editor(username);
 
 CREATE TABLE editgroup (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
