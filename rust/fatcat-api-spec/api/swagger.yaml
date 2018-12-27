@@ -375,8 +375,12 @@ paths:
       parameters:
       - name: "rev_id"
         in: "path"
+        description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
         required: true
         type: "string"
+        maxLength: 36
+        minLength: 36
+        pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
         formatString: "\\\"{}\\\""
         example: "\"rev_id_example\".to_string()"
       - name: "expand"
@@ -641,11 +645,14 @@ paths:
       parameters:
       - name: "edit_id"
         in: "path"
+        description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
         required: true
-        type: "integer"
-        format: "int64"
-        formatString: "{}"
-        example: "789"
+        type: "string"
+        maxLength: 36
+        minLength: 36
+        pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        formatString: "\\\"{}\\\""
+        example: "\"edit_id_example\".to_string()"
       responses:
         200:
           description: "Found Edit"
@@ -695,11 +702,14 @@ paths:
       parameters:
       - name: "edit_id"
         in: "path"
+        description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
         required: true
-        type: "integer"
-        format: "int64"
-        formatString: "{}"
-        example: "789"
+        type: "string"
+        maxLength: 36
+        minLength: 36
+        pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        formatString: "\\\"{}\\\""
+        example: "\"edit_id_example\".to_string()"
       responses:
         200:
           description: "Deleted Edit"
@@ -1096,8 +1106,12 @@ paths:
       parameters:
       - name: "rev_id"
         in: "path"
+        description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
         required: true
         type: "string"
+        maxLength: 36
+        minLength: 36
+        pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
         formatString: "\\\"{}\\\""
         example: "\"rev_id_example\".to_string()"
       - name: "expand"
@@ -1426,11 +1440,14 @@ paths:
       parameters:
       - name: "edit_id"
         in: "path"
+        description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
         required: true
-        type: "integer"
-        format: "int64"
-        formatString: "{}"
-        example: "789"
+        type: "string"
+        maxLength: 36
+        minLength: 36
+        pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        formatString: "\\\"{}\\\""
+        example: "\"edit_id_example\".to_string()"
       responses:
         200:
           description: "Found Edit"
@@ -1480,11 +1497,14 @@ paths:
       parameters:
       - name: "edit_id"
         in: "path"
+        description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
         required: true
-        type: "integer"
-        format: "int64"
-        formatString: "{}"
-        example: "789"
+        type: "string"
+        maxLength: 36
+        minLength: 36
+        pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        formatString: "\\\"{}\\\""
+        example: "\"edit_id_example\".to_string()"
       responses:
         200:
           description: "Deleted Edit"
@@ -1881,8 +1901,12 @@ paths:
       parameters:
       - name: "rev_id"
         in: "path"
+        description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
         required: true
         type: "string"
+        maxLength: 36
+        minLength: 36
+        pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
         formatString: "\\\"{}\\\""
         example: "\"rev_id_example\".to_string()"
       - name: "expand"
@@ -2072,18 +2096,27 @@ paths:
         in: "query"
         required: false
         type: "string"
+        maxLength: 32
+        minLength: 32
+        pattern: "[a-f0-9]{32}"
         formatString: "{:?}"
         example: "Some(\"md5_example\".to_string())"
       - name: "sha1"
         in: "query"
         required: false
         type: "string"
+        maxLength: 40
+        minLength: 40
+        pattern: "[a-f0-9]{40}"
         formatString: "{:?}"
         example: "Some(\"sha1_example\".to_string())"
       - name: "sha256"
         in: "query"
         required: false
         type: "string"
+        maxLength: 64
+        minLength: 64
+        pattern: "[a-f0-9]{64}"
         formatString: "{:?}"
         example: "Some(\"sha256_example\".to_string())"
       - name: "expand"
@@ -2151,11 +2184,14 @@ paths:
       parameters:
       - name: "edit_id"
         in: "path"
+        description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
         required: true
-        type: "integer"
-        format: "int64"
-        formatString: "{}"
-        example: "789"
+        type: "string"
+        maxLength: 36
+        minLength: 36
+        pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        formatString: "\\\"{}\\\""
+        example: "\"edit_id_example\".to_string()"
       responses:
         200:
           description: "Found Edit"
@@ -2205,11 +2241,14 @@ paths:
       parameters:
       - name: "edit_id"
         in: "path"
+        description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
         required: true
-        type: "integer"
-        format: "int64"
-        formatString: "{}"
-        example: "789"
+        type: "string"
+        maxLength: 36
+        minLength: 36
+        pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        formatString: "\\\"{}\\\""
+        example: "\"edit_id_example\".to_string()"
       responses:
         200:
           description: "Deleted Edit"
@@ -2606,8 +2645,12 @@ paths:
       parameters:
       - name: "rev_id"
         in: "path"
+        description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
         required: true
         type: "string"
+        maxLength: 36
+        minLength: 36
+        pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
         formatString: "\\\"{}\\\""
         example: "\"rev_id_example\".to_string()"
       - name: "expand"
@@ -2795,11 +2838,14 @@ paths:
       parameters:
       - name: "edit_id"
         in: "path"
+        description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
         required: true
-        type: "integer"
-        format: "int64"
-        formatString: "{}"
-        example: "789"
+        type: "string"
+        maxLength: 36
+        minLength: 36
+        pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        formatString: "\\\"{}\\\""
+        example: "\"edit_id_example\".to_string()"
       responses:
         200:
           description: "Found Edit"
@@ -2849,11 +2895,14 @@ paths:
       parameters:
       - name: "edit_id"
         in: "path"
+        description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
         required: true
-        type: "integer"
-        format: "int64"
-        formatString: "{}"
-        example: "789"
+        type: "string"
+        maxLength: 36
+        minLength: 36
+        pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        formatString: "\\\"{}\\\""
+        example: "\"edit_id_example\".to_string()"
       responses:
         200:
           description: "Deleted Edit"
@@ -3250,8 +3299,12 @@ paths:
       parameters:
       - name: "rev_id"
         in: "path"
+        description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
         required: true
         type: "string"
+        maxLength: 36
+        minLength: 36
+        pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
         formatString: "\\\"{}\\\""
         example: "\"rev_id_example\".to_string()"
       - name: "expand"
@@ -3439,11 +3492,14 @@ paths:
       parameters:
       - name: "edit_id"
         in: "path"
+        description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
         required: true
-        type: "integer"
-        format: "int64"
-        formatString: "{}"
-        example: "789"
+        type: "string"
+        maxLength: 36
+        minLength: 36
+        pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        formatString: "\\\"{}\\\""
+        example: "\"edit_id_example\".to_string()"
       responses:
         200:
           description: "Found Edit"
@@ -3493,11 +3549,14 @@ paths:
       parameters:
       - name: "edit_id"
         in: "path"
+        description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
         required: true
-        type: "integer"
-        format: "int64"
-        formatString: "{}"
-        example: "789"
+        type: "string"
+        maxLength: 36
+        minLength: 36
+        pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        formatString: "\\\"{}\\\""
+        example: "\"edit_id_example\".to_string()"
       responses:
         200:
           description: "Deleted Edit"
@@ -3894,8 +3953,12 @@ paths:
       parameters:
       - name: "rev_id"
         in: "path"
+        description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
         required: true
         type: "string"
+        maxLength: 36
+        minLength: 36
+        pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
         formatString: "\\\"{}\\\""
         example: "\"rev_id_example\".to_string()"
       - name: "expand"
@@ -4374,11 +4437,14 @@ paths:
       parameters:
       - name: "edit_id"
         in: "path"
+        description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
         required: true
-        type: "integer"
-        format: "int64"
-        formatString: "{}"
-        example: "789"
+        type: "string"
+        maxLength: 36
+        minLength: 36
+        pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        formatString: "\\\"{}\\\""
+        example: "\"edit_id_example\".to_string()"
       responses:
         200:
           description: "Found Edit"
@@ -4428,11 +4494,14 @@ paths:
       parameters:
       - name: "edit_id"
         in: "path"
+        description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
         required: true
-        type: "integer"
-        format: "int64"
-        formatString: "{}"
-        example: "789"
+        type: "string"
+        maxLength: 36
+        minLength: 36
+        pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        formatString: "\\\"{}\\\""
+        example: "\"edit_id_example\".to_string()"
       responses:
         200:
           description: "Deleted Edit"
@@ -4829,8 +4898,12 @@ paths:
       parameters:
       - name: "rev_id"
         in: "path"
+        description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
         required: true
         type: "string"
+        maxLength: 36
+        minLength: 36
+        pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
         formatString: "\\\"{}\\\""
         example: "\"rev_id_example\".to_string()"
       - name: "expand"
@@ -5082,11 +5155,14 @@ paths:
       parameters:
       - name: "edit_id"
         in: "path"
+        description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
         required: true
-        type: "integer"
-        format: "int64"
-        formatString: "{}"
-        example: "789"
+        type: "string"
+        maxLength: 36
+        minLength: 36
+        pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        formatString: "\\\"{}\\\""
+        example: "\"edit_id_example\".to_string()"
       responses:
         200:
           description: "Found Edit"
@@ -5136,11 +5212,14 @@ paths:
       parameters:
       - name: "edit_id"
         in: "path"
+        description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
         required: true
-        type: "integer"
-        format: "int64"
-        formatString: "{}"
-        example: "789"
+        type: "string"
+        maxLength: 36
+        minLength: 36
+        pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        formatString: "\\\"{}\\\""
+        example: "\"edit_id_example\".to_string()"
       responses:
         200:
           description: "Deleted Edit"
@@ -5711,6 +5790,11 @@ definitions:
         type: "array"
         items:
           type: "string"
+          example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          description: "base32-encoded unique identifier"
+          minLength: 26
+          maxLength: 26
+          pattern: "[a-zA-Z2-7]{26}"
       mimetype:
         type: "string"
         example: "application/pdf"
@@ -5720,13 +5804,22 @@ definitions:
           $ref: "#/definitions/file_entity_urls"
       sha256:
         type: "string"
-        example: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+        example: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
+        minLength: 64
+        maxLength: 64
+        pattern: "[a-f0-9]{64}"
       sha1:
         type: "string"
-        example: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
+        example: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
+        minLength: 40
+        maxLength: 40
+        pattern: "[a-f0-9]{40}"
       md5:
         type: "string"
-        example: "d41efcc592d1e40ac13905377399eb9b"
+        example: "1b39813549077b2347c0f370c3864b40"
+        minLength: 32
+        maxLength: 32
+        pattern: "[a-f0-9]{32}"
       size:
         type: "integer"
         format: "int64"
@@ -5765,10 +5858,10 @@ definitions:
         - "deleted"
     example:
       redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
-      sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+      sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
       ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
       revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
-      sha1: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
+      sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
       urls:
       - rel: "webarchive"
         url: "https://example.edu/~frau/prcding.pdf"
@@ -5779,10 +5872,10 @@ definitions:
       mimetype: "application/pdf"
       state: "wip"
       release_ids:
-      - "release_ids"
-      - "release_ids"
+      - "q3nouwy3nnbsvo3h5klxsx4a7y"
+      - "q3nouwy3nnbsvo3h5klxsx4a7y"
       edit_extra: "{}"
-      md5: "d41efcc592d1e40ac13905377399eb9b"
+      md5: "1b39813549077b2347c0f370c3864b40"
     upperCaseName: "FILE_ENTITY"
   fileset_entity:
     type: "object"
@@ -5791,6 +5884,11 @@ definitions:
         type: "array"
         items:
           type: "string"
+          example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          description: "base32-encoded unique identifier"
+          minLength: 26
+          maxLength: 26
+          pattern: "[a-zA-Z2-7]{26}"
       urls:
         type: "array"
         items:
@@ -5839,24 +5937,24 @@ definitions:
       - rel: "webarchive"
         url: "https://example.edu/~frau/prcding.pdf"
       manifest:
-      - sha1: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
+      - sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
         path: "img/cat.png"
         size: 1048576
-        sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+        sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
         extra: "{}"
-        md5: "d41efcc592d1e40ac13905377399eb9b"
-      - sha1: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
+        md5: "1b39813549077b2347c0f370c3864b40"
+      - sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
         path: "img/cat.png"
         size: 1048576
-        sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+        sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
         extra: "{}"
-        md5: "d41efcc592d1e40ac13905377399eb9b"
+        md5: "1b39813549077b2347c0f370c3864b40"
       ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
       extra: "{}"
       state: "wip"
       release_ids:
-      - "release_ids"
-      - "release_ids"
+      - "q3nouwy3nnbsvo3h5klxsx4a7y"
+      - "q3nouwy3nnbsvo3h5klxsx4a7y"
       edit_extra: "{}"
       revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
     upperCaseName: "FILESET_ENTITY"
@@ -5867,11 +5965,17 @@ definitions:
         type: "array"
         items:
           type: "string"
+          example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          description: "base32-encoded unique identifier"
+          minLength: 26
+          maxLength: 26
+          pattern: "[a-zA-Z2-7]{26}"
       timestamp:
         type: "string"
         format: "date-time"
       original_url:
         type: "string"
+        format: "url"
         example: "http://asheesh.org"
       archive_urls:
         type: "array"
@@ -5922,17 +6026,17 @@ definitions:
         url: "https://web.archive.org/web/"
       original_url: "http://asheesh.org"
       cdx:
-      - sha1: "3f242a192acc258bdfdb151943419437f440c313"
+      - sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
         surt: "org,asheesh)/apus/ch1/node15.html"
         status_code: 200
-        sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+        sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
         mimetype: "text/html"
         url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
         timestamp: "20020429162520"
-      - sha1: "3f242a192acc258bdfdb151943419437f440c313"
+      - sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
         surt: "org,asheesh)/apus/ch1/node15.html"
         status_code: 200
-        sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+        sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
         mimetype: "text/html"
         url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
         timestamp: "20020429162520"
@@ -5940,8 +6044,8 @@ definitions:
       extra: "{}"
       state: "wip"
       release_ids:
-      - "release_ids"
-      - "release_ids"
+      - "q3nouwy3nnbsvo3h5klxsx4a7y"
+      - "q3nouwy3nnbsvo3h5klxsx4a7y"
       edit_extra: "{}"
       timestamp: "2000-01-23T04:56:07.000+00:00"
       revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
@@ -6081,17 +6185,17 @@ definitions:
           url: "https://web.archive.org/web/"
         original_url: "http://asheesh.org"
         cdx:
-        - sha1: "3f242a192acc258bdfdb151943419437f440c313"
+        - sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
           surt: "org,asheesh)/apus/ch1/node15.html"
           status_code: 200
-          sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+          sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
           mimetype: "text/html"
           url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
           timestamp: "20020429162520"
-        - sha1: "3f242a192acc258bdfdb151943419437f440c313"
+        - sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
           surt: "org,asheesh)/apus/ch1/node15.html"
           status_code: 200
-          sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+          sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
           mimetype: "text/html"
           url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
           timestamp: "20020429162520"
@@ -6099,8 +6203,8 @@ definitions:
         extra: "{}"
         state: "wip"
         release_ids:
-        - "release_ids"
-        - "release_ids"
+        - "q3nouwy3nnbsvo3h5klxsx4a7y"
+        - "q3nouwy3nnbsvo3h5klxsx4a7y"
         edit_extra: "{}"
         timestamp: "2000-01-23T04:56:07.000+00:00"
         revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
@@ -6112,17 +6216,17 @@ definitions:
           url: "https://web.archive.org/web/"
         original_url: "http://asheesh.org"
         cdx:
-        - sha1: "3f242a192acc258bdfdb151943419437f440c313"
+        - sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
           surt: "org,asheesh)/apus/ch1/node15.html"
           status_code: 200
-          sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+          sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
           mimetype: "text/html"
           url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
           timestamp: "20020429162520"
-        - sha1: "3f242a192acc258bdfdb151943419437f440c313"
+        - sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
           surt: "org,asheesh)/apus/ch1/node15.html"
           status_code: 200
-          sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+          sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
           mimetype: "text/html"
           url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
           timestamp: "20020429162520"
@@ -6130,8 +6234,8 @@ definitions:
         extra: "{}"
         state: "wip"
         release_ids:
-        - "release_ids"
-        - "release_ids"
+        - "q3nouwy3nnbsvo3h5klxsx4a7y"
+        - "q3nouwy3nnbsvo3h5klxsx4a7y"
         edit_extra: "{}"
         timestamp: "2000-01-23T04:56:07.000+00:00"
         revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
@@ -6182,11 +6286,11 @@ definitions:
       work_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
       issue: "12"
       abstracts:
-      - sha1: "3f242a192acc258bdfdb151943419437f440c313"
+      - sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
         mimetype: "application/xml+jats"
         lang: "en"
         content: "<jats:p>Some abstract thing goes here</jats:p>"
-      - sha1: "3f242a192acc258bdfdb151943419437f440c313"
+      - sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
         mimetype: "application/xml+jats"
         lang: "en"
         content: "<jats:p>Some abstract thing goes here</jats:p>"
@@ -6198,7 +6302,7 @@ definitions:
       revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       volume: "volume"
       refs:
-      - target_release_id: "target_release_id"
+      - target_release_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
         container_name: "container_name"
         year: 6
         extra: "{}"
@@ -6206,7 +6310,7 @@ definitions:
         title: "title"
         locator: "p123"
         key: "key"
-      - target_release_id: "target_release_id"
+      - target_release_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
         container_name: "container_name"
         year: 6
         extra: "{}"
@@ -6219,10 +6323,10 @@ definitions:
       publisher: "publisher"
       files:
       - redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
-        sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+        sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
         ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
         revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
-        sha1: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
+        sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
         urls:
         - rel: "webarchive"
           url: "https://example.edu/~frau/prcding.pdf"
@@ -6233,15 +6337,15 @@ definitions:
         mimetype: "application/pdf"
         state: "wip"
         release_ids:
-        - "release_ids"
-        - "release_ids"
+        - "q3nouwy3nnbsvo3h5klxsx4a7y"
+        - "q3nouwy3nnbsvo3h5klxsx4a7y"
         edit_extra: "{}"
-        md5: "d41efcc592d1e40ac13905377399eb9b"
+        md5: "1b39813549077b2347c0f370c3864b40"
       - redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
-        sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+        sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
         ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
         revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
-        sha1: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
+        sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
         urls:
         - rel: "webarchive"
           url: "https://example.edu/~frau/prcding.pdf"
@@ -6252,10 +6356,10 @@ definitions:
         mimetype: "application/pdf"
         state: "wip"
         release_ids:
-        - "release_ids"
-        - "release_ids"
+        - "q3nouwy3nnbsvo3h5klxsx4a7y"
+        - "q3nouwy3nnbsvo3h5klxsx4a7y"
         edit_extra: "{}"
-        md5: "d41efcc592d1e40ac13905377399eb9b"
+        md5: "1b39813549077b2347c0f370c3864b40"
       filesets:
       - redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
         urls:
@@ -6264,24 +6368,24 @@ definitions:
         - rel: "webarchive"
           url: "https://example.edu/~frau/prcding.pdf"
         manifest:
-        - sha1: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
+        - sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
           path: "img/cat.png"
           size: 1048576
-          sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+          sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
           extra: "{}"
-          md5: "d41efcc592d1e40ac13905377399eb9b"
-        - sha1: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
+          md5: "1b39813549077b2347c0f370c3864b40"
+        - sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
           path: "img/cat.png"
           size: 1048576
-          sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+          sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
           extra: "{}"
-          md5: "d41efcc592d1e40ac13905377399eb9b"
+          md5: "1b39813549077b2347c0f370c3864b40"
         ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
         extra: "{}"
         state: "wip"
         release_ids:
-        - "release_ids"
-        - "release_ids"
+        - "q3nouwy3nnbsvo3h5klxsx4a7y"
+        - "q3nouwy3nnbsvo3h5klxsx4a7y"
         edit_extra: "{}"
         revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       - redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -6291,24 +6395,24 @@ definitions:
         - rel: "webarchive"
           url: "https://example.edu/~frau/prcding.pdf"
         manifest:
-        - sha1: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
+        - sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
           path: "img/cat.png"
           size: 1048576
-          sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+          sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
           extra: "{}"
-          md5: "d41efcc592d1e40ac13905377399eb9b"
-        - sha1: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
+          md5: "1b39813549077b2347c0f370c3864b40"
+        - sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
           path: "img/cat.png"
           size: 1048576
-          sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+          sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
           extra: "{}"
-          md5: "d41efcc592d1e40ac13905377399eb9b"
+          md5: "1b39813549077b2347c0f370c3864b40"
         ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
         extra: "{}"
         state: "wip"
         release_ids:
-        - "release_ids"
-        - "release_ids"
+        - "q3nouwy3nnbsvo3h5klxsx4a7y"
+        - "q3nouwy3nnbsvo3h5klxsx4a7y"
         edit_extra: "{}"
         revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       pmcid: "pmcid"
@@ -6377,14 +6481,14 @@ definitions:
         edits:
           works:
           - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-            edit_id: 847
+            edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             extra: "{}"
             redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
             prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-            edit_id: 847
+            edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             extra: "{}"
             redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -6392,14 +6496,14 @@ definitions:
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           webcaptures:
           - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-            edit_id: 847
+            edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             extra: "{}"
             redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
             prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-            edit_id: 847
+            edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             extra: "{}"
             redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -6407,14 +6511,14 @@ definitions:
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           creators:
           - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-            edit_id: 847
+            edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             extra: "{}"
             redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
             prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-            edit_id: 847
+            edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             extra: "{}"
             redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -6422,14 +6526,14 @@ definitions:
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           files:
           - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-            edit_id: 847
+            edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             extra: "{}"
             redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
             prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-            edit_id: 847
+            edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             extra: "{}"
             redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -6437,14 +6541,14 @@ definitions:
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           containers:
           - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-            edit_id: 847
+            edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             extra: "{}"
             redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
             prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-            edit_id: 847
+            edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             extra: "{}"
             redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -6452,14 +6556,14 @@ definitions:
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           filesets:
           - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-            edit_id: 847
+            edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             extra: "{}"
             redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
             prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-            edit_id: 847
+            edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             extra: "{}"
             redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -6467,14 +6571,14 @@ definitions:
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           releases:
           - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-            edit_id: 847
+            edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             extra: "{}"
             redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
             prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-            edit_id: 847
+            edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             extra: "{}"
             redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -6485,7 +6589,7 @@ definitions:
         editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
       edit:
         ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-        edit_id: 847
+        edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         extra: "{}"
         redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
         editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -6497,14 +6601,14 @@ definitions:
           edits:
             works:
             - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-              edit_id: 847
+              edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
               extra: "{}"
               redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
               editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
               prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
               revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-              edit_id: 847
+              edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
               extra: "{}"
               redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
               editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -6512,14 +6616,14 @@ definitions:
               revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             webcaptures:
             - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-              edit_id: 847
+              edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
               extra: "{}"
               redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
               editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
               prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
               revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-              edit_id: 847
+              edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
               extra: "{}"
               redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
               editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -6527,14 +6631,14 @@ definitions:
               revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             creators:
             - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-              edit_id: 847
+              edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
               extra: "{}"
               redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
               editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
               prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
               revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-              edit_id: 847
+              edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
               extra: "{}"
               redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
               editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -6542,14 +6646,14 @@ definitions:
               revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             files:
             - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-              edit_id: 847
+              edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
               extra: "{}"
               redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
               editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
               prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
               revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-              edit_id: 847
+              edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
               extra: "{}"
               redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
               editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -6557,14 +6661,14 @@ definitions:
               revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             containers:
             - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-              edit_id: 847
+              edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
               extra: "{}"
               redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
               editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
               prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
               revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-              edit_id: 847
+              edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
               extra: "{}"
               redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
               editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -6572,14 +6676,14 @@ definitions:
               revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             filesets:
             - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-              edit_id: 847
+              edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
               extra: "{}"
               redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
               editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
               prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
               revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-              edit_id: 847
+              edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
               extra: "{}"
               redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
               editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -6587,14 +6691,14 @@ definitions:
               revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             releases:
             - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-              edit_id: 847
+              edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
               extra: "{}"
               redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
               editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
               prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
               revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-              edit_id: 847
+              edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
               extra: "{}"
               redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
               editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -6615,29 +6719,52 @@ definitions:
     - "ident"
     properties:
       edit_id:
-        type: "integer"
-        format: "int64"
-        example: 847
+        type: "string"
+        example: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+        description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
+        minLength: 36
+        maxLength: 36
+        pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
       ident:
         type: "string"
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        description: "base32-encoded unique identifier"
+        minLength: 26
+        maxLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
       revision:
         type: "string"
         example: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+        description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
+        minLength: 36
+        maxLength: 36
+        pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
       prev_revision:
         type: "string"
         example: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+        description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
+        minLength: 36
+        maxLength: 36
+        pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
       redirect_ident:
         type: "string"
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        description: "base32-encoded unique identifier"
+        minLength: 26
+        maxLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
       editgroup_id:
         type: "string"
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        description: "base32-encoded unique identifier"
+        minLength: 26
+        maxLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
       extra:
         type: "object"
     example:
       ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-      edit_id: 847
+      edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       extra: "{}"
       redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
       editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -6652,6 +6779,10 @@ definitions:
       editor_id:
         type: "string"
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        description: "base32-encoded unique identifier"
+        minLength: 26
+        maxLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
       username:
         type: "string"
         example: "zerocool93"
@@ -6689,14 +6820,14 @@ definitions:
       edits:
         works:
         - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-          edit_id: 847
+          edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           extra: "{}"
           redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
           editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
           prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-          edit_id: 847
+          edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           extra: "{}"
           redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
           editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -6704,14 +6835,14 @@ definitions:
           revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         webcaptures:
         - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-          edit_id: 847
+          edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           extra: "{}"
           redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
           editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
           prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-          edit_id: 847
+          edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           extra: "{}"
           redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
           editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -6719,14 +6850,14 @@ definitions:
           revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         creators:
         - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-          edit_id: 847
+          edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           extra: "{}"
           redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
           editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
           prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-          edit_id: 847
+          edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           extra: "{}"
           redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
           editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -6734,14 +6865,14 @@ definitions:
           revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         files:
         - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-          edit_id: 847
+          edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           extra: "{}"
           redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
           editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
           prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-          edit_id: 847
+          edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           extra: "{}"
           redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
           editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -6749,14 +6880,14 @@ definitions:
           revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         containers:
         - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-          edit_id: 847
+          edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           extra: "{}"
           redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
           editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
           prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-          edit_id: 847
+          edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           extra: "{}"
           redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
           editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -6764,14 +6895,14 @@ definitions:
           revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         filesets:
         - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-          edit_id: 847
+          edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           extra: "{}"
           redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
           editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
           prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-          edit_id: 847
+          edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           extra: "{}"
           redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
           editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -6779,14 +6910,14 @@ definitions:
           revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         releases:
         - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-          edit_id: 847
+          edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           extra: "{}"
           redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
           editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
           prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-          edit_id: 847
+          edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           extra: "{}"
           redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
           editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -6820,14 +6951,14 @@ definitions:
         edits:
           works:
           - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-            edit_id: 847
+            edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             extra: "{}"
             redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
             prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-            edit_id: 847
+            edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             extra: "{}"
             redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -6835,14 +6966,14 @@ definitions:
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           webcaptures:
           - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-            edit_id: 847
+            edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             extra: "{}"
             redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
             prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-            edit_id: 847
+            edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             extra: "{}"
             redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -6850,14 +6981,14 @@ definitions:
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           creators:
           - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-            edit_id: 847
+            edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             extra: "{}"
             redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
             prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-            edit_id: 847
+            edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             extra: "{}"
             redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -6865,14 +6996,14 @@ definitions:
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           files:
           - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-            edit_id: 847
+            edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             extra: "{}"
             redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
             prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-            edit_id: 847
+            edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             extra: "{}"
             redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -6880,14 +7011,14 @@ definitions:
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           containers:
           - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-            edit_id: 847
+            edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             extra: "{}"
             redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
             prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-            edit_id: 847
+            edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             extra: "{}"
             redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -6895,14 +7026,14 @@ definitions:
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           filesets:
           - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-            edit_id: 847
+            edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             extra: "{}"
             redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
             prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-            edit_id: 847
+            edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             extra: "{}"
             redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -6910,14 +7041,14 @@ definitions:
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           releases:
           - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-            edit_id: 847
+            edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             extra: "{}"
             redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
             prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-            edit_id: 847
+            edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
             extra: "{}"
             redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -6938,6 +7069,11 @@ definitions:
         format: "int64"
       target_release_id:
         type: "string"
+        example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        description: "base32-encoded unique identifier"
+        minLength: 26
+        maxLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
       extra:
         type: "object"
       key:
@@ -6953,7 +7089,7 @@ definitions:
         type: "string"
         example: "p123"
     example:
-      target_release_id: "target_release_id"
+      target_release_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
       container_name: "container_name"
       year: 6
       extra: "{}"
@@ -7028,22 +7164,31 @@ definitions:
         example: 1048576
       md5:
         type: "string"
-        example: "d41efcc592d1e40ac13905377399eb9b"
+        example: "1b39813549077b2347c0f370c3864b40"
+        minLength: 32
+        maxLength: 32
+        pattern: "[a-f0-9]{32}"
       sha1:
         type: "string"
-        example: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
+        example: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
+        minLength: 40
+        maxLength: 40
+        pattern: "[a-f0-9]{40}"
       sha256:
         type: "string"
-        example: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+        example: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
+        minLength: 64
+        maxLength: 64
+        pattern: "[a-f0-9]{64}"
       extra:
         type: "object"
     example:
-      sha1: "f013d66c7f6817d08b7eb2a93e6d0440c1f3e7f8"
+      sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
       path: "img/cat.png"
       size: 1048576
-      sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+      sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
       extra: "{}"
-      md5: "d41efcc592d1e40ac13905377399eb9b"
+      md5: "1b39813549077b2347c0f370c3864b40"
     upperCaseName: "FILESET_ENTITY_MANIFEST"
   webcapture_entity_archive_urls:
     required:
@@ -7086,15 +7231,21 @@ definitions:
         example: 200
       sha1:
         type: "string"
-        example: "3f242a192acc258bdfdb151943419437f440c313"
+        example: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
+        minLength: 40
+        maxLength: 40
+        pattern: "[a-f0-9]{40}"
       sha256:
         type: "string"
-        example: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+        example: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
+        minLength: 64
+        maxLength: 64
+        pattern: "[a-f0-9]{64}"
     example:
-      sha1: "3f242a192acc258bdfdb151943419437f440c313"
+      sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
       surt: "org,asheesh)/apus/ch1/node15.html"
       status_code: 200
-      sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
+      sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
       mimetype: "text/html"
       url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
       timestamp: "20020429162520"
@@ -7103,7 +7254,10 @@ definitions:
     properties:
       sha1:
         type: "string"
-        example: "3f242a192acc258bdfdb151943419437f440c313"
+        example: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
+        minLength: 40
+        maxLength: 40
+        pattern: "[a-f0-9]{40}"
       content:
         type: "string"
         example: "<jats:p>Some abstract thing goes here</jats:p>"
@@ -7114,7 +7268,7 @@ definitions:
         type: "string"
         example: "en"
     example:
-      sha1: "3f242a192acc258bdfdb151943419437f440c313"
+      sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
       mimetype: "application/xml+jats"
       lang: "en"
       content: "<jats:p>Some abstract thing goes here</jats:p>"
@@ -7152,14 +7306,14 @@ definitions:
     example:
       works:
       - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-        edit_id: 847
+        edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         extra: "{}"
         redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
         editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
         prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-        edit_id: 847
+        edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         extra: "{}"
         redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
         editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -7167,14 +7321,14 @@ definitions:
         revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       webcaptures:
       - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-        edit_id: 847
+        edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         extra: "{}"
         redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
         editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
         prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-        edit_id: 847
+        edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         extra: "{}"
         redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
         editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -7182,14 +7336,14 @@ definitions:
         revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       creators:
       - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-        edit_id: 847
+        edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         extra: "{}"
         redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
         editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
         prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-        edit_id: 847
+        edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         extra: "{}"
         redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
         editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -7197,14 +7351,14 @@ definitions:
         revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       files:
       - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-        edit_id: 847
+        edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         extra: "{}"
         redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
         editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
         prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-        edit_id: 847
+        edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         extra: "{}"
         redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
         editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -7212,14 +7366,14 @@ definitions:
         revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       containers:
       - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-        edit_id: 847
+        edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         extra: "{}"
         redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
         editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
         prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-        edit_id: 847
+        edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         extra: "{}"
         redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
         editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -7227,14 +7381,14 @@ definitions:
         revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       filesets:
       - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-        edit_id: 847
+        edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         extra: "{}"
         redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
         editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
         prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-        edit_id: 847
+        edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         extra: "{}"
         redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
         editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -7242,14 +7396,14 @@ definitions:
         revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       releases:
       - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-        edit_id: 847
+        edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         extra: "{}"
         redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
         editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
         prev_revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       - ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
-        edit_id: 847
+        edit_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         extra: "{}"
         redirect_ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
         editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -7282,6 +7436,24 @@ x-orcid:
   pattern: "\\d{4}-\\d{4}-\\d{4}-\\d{3}[\\dX]"
   minLength: 19
   maxLength: 19
+x-md5:
+  type: "string"
+  example: "1b39813549077b2347c0f370c3864b40"
+  pattern: "[a-f0-9]{32}"
+  minLength: 32
+  maxLength: 32
+x-sha1:
+  type: "string"
+  example: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
+  pattern: "[a-f0-9]{40}"
+  minLength: 40
+  maxLength: 40
+x-sha256:
+  type: "string"
+  example: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
+  pattern: "[a-f0-9]{64}"
+  minLength: 64
+  maxLength: 64
 x-entity-props:
   state:
     type: "string"

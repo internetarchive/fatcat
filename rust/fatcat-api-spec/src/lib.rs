@@ -1072,11 +1072,11 @@ pub trait Api {
 
     fn delete_container(&self, ident: String, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = DeleteContainerResponse, Error = ApiError> + Send>;
 
-    fn delete_container_edit(&self, edit_id: i64, context: &Context) -> Box<Future<Item = DeleteContainerEditResponse, Error = ApiError> + Send>;
+    fn delete_container_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = DeleteContainerEditResponse, Error = ApiError> + Send>;
 
     fn get_container(&self, ident: String, expand: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = GetContainerResponse, Error = ApiError> + Send>;
 
-    fn get_container_edit(&self, edit_id: i64, context: &Context) -> Box<Future<Item = GetContainerEditResponse, Error = ApiError> + Send>;
+    fn get_container_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = GetContainerEditResponse, Error = ApiError> + Send>;
 
     fn get_container_history(&self, ident: String, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetContainerHistoryResponse, Error = ApiError> + Send>;
 
@@ -1108,11 +1108,11 @@ pub trait Api {
 
     fn delete_creator(&self, ident: String, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = DeleteCreatorResponse, Error = ApiError> + Send>;
 
-    fn delete_creator_edit(&self, edit_id: i64, context: &Context) -> Box<Future<Item = DeleteCreatorEditResponse, Error = ApiError> + Send>;
+    fn delete_creator_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = DeleteCreatorEditResponse, Error = ApiError> + Send>;
 
     fn get_creator(&self, ident: String, expand: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send>;
 
-    fn get_creator_edit(&self, edit_id: i64, context: &Context) -> Box<Future<Item = GetCreatorEditResponse, Error = ApiError> + Send>;
+    fn get_creator_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = GetCreatorEditResponse, Error = ApiError> + Send>;
 
     fn get_creator_history(&self, ident: String, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetCreatorHistoryResponse, Error = ApiError> + Send>;
 
@@ -1159,11 +1159,11 @@ pub trait Api {
 
     fn delete_file(&self, ident: String, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = DeleteFileResponse, Error = ApiError> + Send>;
 
-    fn delete_file_edit(&self, edit_id: i64, context: &Context) -> Box<Future<Item = DeleteFileEditResponse, Error = ApiError> + Send>;
+    fn delete_file_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = DeleteFileEditResponse, Error = ApiError> + Send>;
 
     fn get_file(&self, ident: String, expand: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = GetFileResponse, Error = ApiError> + Send>;
 
-    fn get_file_edit(&self, edit_id: i64, context: &Context) -> Box<Future<Item = GetFileEditResponse, Error = ApiError> + Send>;
+    fn get_file_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = GetFileEditResponse, Error = ApiError> + Send>;
 
     fn get_file_history(&self, ident: String, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetFileHistoryResponse, Error = ApiError> + Send>;
 
@@ -1195,11 +1195,11 @@ pub trait Api {
 
     fn delete_fileset(&self, ident: String, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = DeleteFilesetResponse, Error = ApiError> + Send>;
 
-    fn delete_fileset_edit(&self, edit_id: i64, context: &Context) -> Box<Future<Item = DeleteFilesetEditResponse, Error = ApiError> + Send>;
+    fn delete_fileset_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = DeleteFilesetEditResponse, Error = ApiError> + Send>;
 
     fn get_fileset(&self, ident: String, expand: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = GetFilesetResponse, Error = ApiError> + Send>;
 
-    fn get_fileset_edit(&self, edit_id: i64, context: &Context) -> Box<Future<Item = GetFilesetEditResponse, Error = ApiError> + Send>;
+    fn get_fileset_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = GetFilesetEditResponse, Error = ApiError> + Send>;
 
     fn get_fileset_history(&self, ident: String, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetFilesetHistoryResponse, Error = ApiError> + Send>;
 
@@ -1223,11 +1223,11 @@ pub trait Api {
 
     fn delete_release(&self, ident: String, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = DeleteReleaseResponse, Error = ApiError> + Send>;
 
-    fn delete_release_edit(&self, edit_id: i64, context: &Context) -> Box<Future<Item = DeleteReleaseEditResponse, Error = ApiError> + Send>;
+    fn delete_release_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = DeleteReleaseEditResponse, Error = ApiError> + Send>;
 
     fn get_release(&self, ident: String, expand: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send>;
 
-    fn get_release_edit(&self, edit_id: i64, context: &Context) -> Box<Future<Item = GetReleaseEditResponse, Error = ApiError> + Send>;
+    fn get_release_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = GetReleaseEditResponse, Error = ApiError> + Send>;
 
     fn get_release_files(&self, ident: String, hide: Option<String>, context: &Context) -> Box<Future<Item = GetReleaseFilesResponse, Error = ApiError> + Send>;
 
@@ -1268,11 +1268,11 @@ pub trait Api {
 
     fn delete_webcapture(&self, ident: String, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = DeleteWebcaptureResponse, Error = ApiError> + Send>;
 
-    fn delete_webcapture_edit(&self, edit_id: i64, context: &Context) -> Box<Future<Item = DeleteWebcaptureEditResponse, Error = ApiError> + Send>;
+    fn delete_webcapture_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = DeleteWebcaptureEditResponse, Error = ApiError> + Send>;
 
     fn get_webcapture(&self, ident: String, expand: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = GetWebcaptureResponse, Error = ApiError> + Send>;
 
-    fn get_webcapture_edit(&self, edit_id: i64, context: &Context) -> Box<Future<Item = GetWebcaptureEditResponse, Error = ApiError> + Send>;
+    fn get_webcapture_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = GetWebcaptureEditResponse, Error = ApiError> + Send>;
 
     fn get_webcapture_history(&self, ident: String, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetWebcaptureHistoryResponse, Error = ApiError> + Send>;
 
@@ -1298,11 +1298,11 @@ pub trait Api {
 
     fn delete_work(&self, ident: String, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = DeleteWorkResponse, Error = ApiError> + Send>;
 
-    fn delete_work_edit(&self, edit_id: i64, context: &Context) -> Box<Future<Item = DeleteWorkEditResponse, Error = ApiError> + Send>;
+    fn delete_work_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = DeleteWorkEditResponse, Error = ApiError> + Send>;
 
     fn get_work(&self, ident: String, expand: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send>;
 
-    fn get_work_edit(&self, edit_id: i64, context: &Context) -> Box<Future<Item = GetWorkEditResponse, Error = ApiError> + Send>;
+    fn get_work_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = GetWorkEditResponse, Error = ApiError> + Send>;
 
     fn get_work_history(&self, ident: String, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetWorkHistoryResponse, Error = ApiError> + Send>;
 
@@ -1328,11 +1328,11 @@ pub trait ApiNoContext {
 
     fn delete_container(&self, ident: String, editgroup_id: Option<String>) -> Box<Future<Item = DeleteContainerResponse, Error = ApiError> + Send>;
 
-    fn delete_container_edit(&self, edit_id: i64) -> Box<Future<Item = DeleteContainerEditResponse, Error = ApiError> + Send>;
+    fn delete_container_edit(&self, edit_id: String) -> Box<Future<Item = DeleteContainerEditResponse, Error = ApiError> + Send>;
 
     fn get_container(&self, ident: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetContainerResponse, Error = ApiError> + Send>;
 
-    fn get_container_edit(&self, edit_id: i64) -> Box<Future<Item = GetContainerEditResponse, Error = ApiError> + Send>;
+    fn get_container_edit(&self, edit_id: String) -> Box<Future<Item = GetContainerEditResponse, Error = ApiError> + Send>;
 
     fn get_container_history(&self, ident: String, limit: Option<i64>) -> Box<Future<Item = GetContainerHistoryResponse, Error = ApiError> + Send>;
 
@@ -1361,11 +1361,11 @@ pub trait ApiNoContext {
 
     fn delete_creator(&self, ident: String, editgroup_id: Option<String>) -> Box<Future<Item = DeleteCreatorResponse, Error = ApiError> + Send>;
 
-    fn delete_creator_edit(&self, edit_id: i64) -> Box<Future<Item = DeleteCreatorEditResponse, Error = ApiError> + Send>;
+    fn delete_creator_edit(&self, edit_id: String) -> Box<Future<Item = DeleteCreatorEditResponse, Error = ApiError> + Send>;
 
     fn get_creator(&self, ident: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send>;
 
-    fn get_creator_edit(&self, edit_id: i64) -> Box<Future<Item = GetCreatorEditResponse, Error = ApiError> + Send>;
+    fn get_creator_edit(&self, edit_id: String) -> Box<Future<Item = GetCreatorEditResponse, Error = ApiError> + Send>;
 
     fn get_creator_history(&self, ident: String, limit: Option<i64>) -> Box<Future<Item = GetCreatorHistoryResponse, Error = ApiError> + Send>;
 
@@ -1399,11 +1399,11 @@ pub trait ApiNoContext {
 
     fn delete_file(&self, ident: String, editgroup_id: Option<String>) -> Box<Future<Item = DeleteFileResponse, Error = ApiError> + Send>;
 
-    fn delete_file_edit(&self, edit_id: i64) -> Box<Future<Item = DeleteFileEditResponse, Error = ApiError> + Send>;
+    fn delete_file_edit(&self, edit_id: String) -> Box<Future<Item = DeleteFileEditResponse, Error = ApiError> + Send>;
 
     fn get_file(&self, ident: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetFileResponse, Error = ApiError> + Send>;
 
-    fn get_file_edit(&self, edit_id: i64) -> Box<Future<Item = GetFileEditResponse, Error = ApiError> + Send>;
+    fn get_file_edit(&self, edit_id: String) -> Box<Future<Item = GetFileEditResponse, Error = ApiError> + Send>;
 
     fn get_file_history(&self, ident: String, limit: Option<i64>) -> Box<Future<Item = GetFileHistoryResponse, Error = ApiError> + Send>;
 
@@ -1433,11 +1433,11 @@ pub trait ApiNoContext {
 
     fn delete_fileset(&self, ident: String, editgroup_id: Option<String>) -> Box<Future<Item = DeleteFilesetResponse, Error = ApiError> + Send>;
 
-    fn delete_fileset_edit(&self, edit_id: i64) -> Box<Future<Item = DeleteFilesetEditResponse, Error = ApiError> + Send>;
+    fn delete_fileset_edit(&self, edit_id: String) -> Box<Future<Item = DeleteFilesetEditResponse, Error = ApiError> + Send>;
 
     fn get_fileset(&self, ident: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetFilesetResponse, Error = ApiError> + Send>;
 
-    fn get_fileset_edit(&self, edit_id: i64) -> Box<Future<Item = GetFilesetEditResponse, Error = ApiError> + Send>;
+    fn get_fileset_edit(&self, edit_id: String) -> Box<Future<Item = GetFilesetEditResponse, Error = ApiError> + Send>;
 
     fn get_fileset_history(&self, ident: String, limit: Option<i64>) -> Box<Future<Item = GetFilesetHistoryResponse, Error = ApiError> + Send>;
 
@@ -1460,11 +1460,11 @@ pub trait ApiNoContext {
 
     fn delete_release(&self, ident: String, editgroup_id: Option<String>) -> Box<Future<Item = DeleteReleaseResponse, Error = ApiError> + Send>;
 
-    fn delete_release_edit(&self, edit_id: i64) -> Box<Future<Item = DeleteReleaseEditResponse, Error = ApiError> + Send>;
+    fn delete_release_edit(&self, edit_id: String) -> Box<Future<Item = DeleteReleaseEditResponse, Error = ApiError> + Send>;
 
     fn get_release(&self, ident: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send>;
 
-    fn get_release_edit(&self, edit_id: i64) -> Box<Future<Item = GetReleaseEditResponse, Error = ApiError> + Send>;
+    fn get_release_edit(&self, edit_id: String) -> Box<Future<Item = GetReleaseEditResponse, Error = ApiError> + Send>;
 
     fn get_release_files(&self, ident: String, hide: Option<String>) -> Box<Future<Item = GetReleaseFilesResponse, Error = ApiError> + Send>;
 
@@ -1503,11 +1503,11 @@ pub trait ApiNoContext {
 
     fn delete_webcapture(&self, ident: String, editgroup_id: Option<String>) -> Box<Future<Item = DeleteWebcaptureResponse, Error = ApiError> + Send>;
 
-    fn delete_webcapture_edit(&self, edit_id: i64) -> Box<Future<Item = DeleteWebcaptureEditResponse, Error = ApiError> + Send>;
+    fn delete_webcapture_edit(&self, edit_id: String) -> Box<Future<Item = DeleteWebcaptureEditResponse, Error = ApiError> + Send>;
 
     fn get_webcapture(&self, ident: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetWebcaptureResponse, Error = ApiError> + Send>;
 
-    fn get_webcapture_edit(&self, edit_id: i64) -> Box<Future<Item = GetWebcaptureEditResponse, Error = ApiError> + Send>;
+    fn get_webcapture_edit(&self, edit_id: String) -> Box<Future<Item = GetWebcaptureEditResponse, Error = ApiError> + Send>;
 
     fn get_webcapture_history(&self, ident: String, limit: Option<i64>) -> Box<Future<Item = GetWebcaptureHistoryResponse, Error = ApiError> + Send>;
 
@@ -1521,11 +1521,11 @@ pub trait ApiNoContext {
 
     fn delete_work(&self, ident: String, editgroup_id: Option<String>) -> Box<Future<Item = DeleteWorkResponse, Error = ApiError> + Send>;
 
-    fn delete_work_edit(&self, edit_id: i64) -> Box<Future<Item = DeleteWorkEditResponse, Error = ApiError> + Send>;
+    fn delete_work_edit(&self, edit_id: String) -> Box<Future<Item = DeleteWorkEditResponse, Error = ApiError> + Send>;
 
     fn get_work(&self, ident: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send>;
 
-    fn get_work_edit(&self, edit_id: i64) -> Box<Future<Item = GetWorkEditResponse, Error = ApiError> + Send>;
+    fn get_work_edit(&self, edit_id: String) -> Box<Future<Item = GetWorkEditResponse, Error = ApiError> + Send>;
 
     fn get_work_history(&self, ident: String, limit: Option<i64>) -> Box<Future<Item = GetWorkHistoryResponse, Error = ApiError> + Send>;
 
@@ -1571,7 +1571,7 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().delete_container(ident, editgroup_id, &self.context())
     }
 
-    fn delete_container_edit(&self, edit_id: i64) -> Box<Future<Item = DeleteContainerEditResponse, Error = ApiError> + Send> {
+    fn delete_container_edit(&self, edit_id: String) -> Box<Future<Item = DeleteContainerEditResponse, Error = ApiError> + Send> {
         self.api().delete_container_edit(edit_id, &self.context())
     }
 
@@ -1579,7 +1579,7 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().get_container(ident, expand, hide, &self.context())
     }
 
-    fn get_container_edit(&self, edit_id: i64) -> Box<Future<Item = GetContainerEditResponse, Error = ApiError> + Send> {
+    fn get_container_edit(&self, edit_id: String) -> Box<Future<Item = GetContainerEditResponse, Error = ApiError> + Send> {
         self.api().get_container_edit(edit_id, &self.context())
     }
 
@@ -1626,7 +1626,7 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().delete_creator(ident, editgroup_id, &self.context())
     }
 
-    fn delete_creator_edit(&self, edit_id: i64) -> Box<Future<Item = DeleteCreatorEditResponse, Error = ApiError> + Send> {
+    fn delete_creator_edit(&self, edit_id: String) -> Box<Future<Item = DeleteCreatorEditResponse, Error = ApiError> + Send> {
         self.api().delete_creator_edit(edit_id, &self.context())
     }
 
@@ -1634,7 +1634,7 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().get_creator(ident, expand, hide, &self.context())
     }
 
-    fn get_creator_edit(&self, edit_id: i64) -> Box<Future<Item = GetCreatorEditResponse, Error = ApiError> + Send> {
+    fn get_creator_edit(&self, edit_id: String) -> Box<Future<Item = GetCreatorEditResponse, Error = ApiError> + Send> {
         self.api().get_creator_edit(edit_id, &self.context())
     }
 
@@ -1702,7 +1702,7 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().delete_file(ident, editgroup_id, &self.context())
     }
 
-    fn delete_file_edit(&self, edit_id: i64) -> Box<Future<Item = DeleteFileEditResponse, Error = ApiError> + Send> {
+    fn delete_file_edit(&self, edit_id: String) -> Box<Future<Item = DeleteFileEditResponse, Error = ApiError> + Send> {
         self.api().delete_file_edit(edit_id, &self.context())
     }
 
@@ -1710,7 +1710,7 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().get_file(ident, expand, hide, &self.context())
     }
 
-    fn get_file_edit(&self, edit_id: i64) -> Box<Future<Item = GetFileEditResponse, Error = ApiError> + Send> {
+    fn get_file_edit(&self, edit_id: String) -> Box<Future<Item = GetFileEditResponse, Error = ApiError> + Send> {
         self.api().get_file_edit(edit_id, &self.context())
     }
 
@@ -1758,7 +1758,7 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().delete_fileset(ident, editgroup_id, &self.context())
     }
 
-    fn delete_fileset_edit(&self, edit_id: i64) -> Box<Future<Item = DeleteFilesetEditResponse, Error = ApiError> + Send> {
+    fn delete_fileset_edit(&self, edit_id: String) -> Box<Future<Item = DeleteFilesetEditResponse, Error = ApiError> + Send> {
         self.api().delete_fileset_edit(edit_id, &self.context())
     }
 
@@ -1766,7 +1766,7 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().get_fileset(ident, expand, hide, &self.context())
     }
 
-    fn get_fileset_edit(&self, edit_id: i64) -> Box<Future<Item = GetFilesetEditResponse, Error = ApiError> + Send> {
+    fn get_fileset_edit(&self, edit_id: String) -> Box<Future<Item = GetFilesetEditResponse, Error = ApiError> + Send> {
         self.api().get_fileset_edit(edit_id, &self.context())
     }
 
@@ -1807,7 +1807,7 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().delete_release(ident, editgroup_id, &self.context())
     }
 
-    fn delete_release_edit(&self, edit_id: i64) -> Box<Future<Item = DeleteReleaseEditResponse, Error = ApiError> + Send> {
+    fn delete_release_edit(&self, edit_id: String) -> Box<Future<Item = DeleteReleaseEditResponse, Error = ApiError> + Send> {
         self.api().delete_release_edit(edit_id, &self.context())
     }
 
@@ -1815,7 +1815,7 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().get_release(ident, expand, hide, &self.context())
     }
 
-    fn get_release_edit(&self, edit_id: i64) -> Box<Future<Item = GetReleaseEditResponse, Error = ApiError> + Send> {
+    fn get_release_edit(&self, edit_id: String) -> Box<Future<Item = GetReleaseEditResponse, Error = ApiError> + Send> {
         self.api().get_release_edit(edit_id, &self.context())
     }
 
@@ -1878,7 +1878,7 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().delete_webcapture(ident, editgroup_id, &self.context())
     }
 
-    fn delete_webcapture_edit(&self, edit_id: i64) -> Box<Future<Item = DeleteWebcaptureEditResponse, Error = ApiError> + Send> {
+    fn delete_webcapture_edit(&self, edit_id: String) -> Box<Future<Item = DeleteWebcaptureEditResponse, Error = ApiError> + Send> {
         self.api().delete_webcapture_edit(edit_id, &self.context())
     }
 
@@ -1886,7 +1886,7 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().get_webcapture(ident, expand, hide, &self.context())
     }
 
-    fn get_webcapture_edit(&self, edit_id: i64) -> Box<Future<Item = GetWebcaptureEditResponse, Error = ApiError> + Send> {
+    fn get_webcapture_edit(&self, edit_id: String) -> Box<Future<Item = GetWebcaptureEditResponse, Error = ApiError> + Send> {
         self.api().get_webcapture_edit(edit_id, &self.context())
     }
 
@@ -1914,7 +1914,7 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().delete_work(ident, editgroup_id, &self.context())
     }
 
-    fn delete_work_edit(&self, edit_id: i64) -> Box<Future<Item = DeleteWorkEditResponse, Error = ApiError> + Send> {
+    fn delete_work_edit(&self, edit_id: String) -> Box<Future<Item = DeleteWorkEditResponse, Error = ApiError> + Send> {
         self.api().delete_work_edit(edit_id, &self.context())
     }
 
@@ -1922,7 +1922,7 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().get_work(ident, expand, hide, &self.context())
     }
 
-    fn get_work_edit(&self, edit_id: i64) -> Box<Future<Item = GetWorkEditResponse, Error = ApiError> + Send> {
+    fn get_work_edit(&self, edit_id: String) -> Box<Future<Item = GetWorkEditResponse, Error = ApiError> + Send> {
         self.api().get_work_edit(edit_id, &self.context())
     }
 

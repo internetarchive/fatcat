@@ -149,7 +149,7 @@ fn main() {
         }
 
         Some("DeleteContainerEdit") => {
-            let result = client.delete_container_edit(789).wait();
+            let result = client.delete_container_edit("edit_id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -161,7 +161,7 @@ fn main() {
         }
 
         Some("GetContainerEdit") => {
-            let result = client.get_container_edit(789).wait();
+            let result = client.get_container_edit("edit_id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -216,7 +216,7 @@ fn main() {
         }
 
         Some("DeleteCreatorEdit") => {
-            let result = client.delete_creator_edit(789).wait();
+            let result = client.delete_creator_edit("edit_id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -228,7 +228,7 @@ fn main() {
         }
 
         Some("GetCreatorEdit") => {
-            let result = client.get_creator_edit(789).wait();
+            let result = client.get_creator_edit("edit_id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -322,7 +322,7 @@ fn main() {
         }
 
         Some("DeleteFileEdit") => {
-            let result = client.delete_file_edit(789).wait();
+            let result = client.delete_file_edit("edit_id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -334,7 +334,7 @@ fn main() {
         }
 
         Some("GetFileEdit") => {
-            let result = client.get_file_edit(789).wait();
+            let result = client.get_file_edit("edit_id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -390,7 +390,7 @@ fn main() {
         }
 
         Some("DeleteFilesetEdit") => {
-            let result = client.delete_fileset_edit(789).wait();
+            let result = client.delete_fileset_edit("edit_id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -402,7 +402,7 @@ fn main() {
         }
 
         Some("GetFilesetEdit") => {
-            let result = client.get_fileset_edit(789).wait();
+            let result = client.get_fileset_edit("edit_id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -450,7 +450,7 @@ fn main() {
         }
 
         Some("DeleteReleaseEdit") => {
-            let result = client.delete_release_edit(789).wait();
+            let result = client.delete_release_edit("edit_id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -462,7 +462,7 @@ fn main() {
         }
 
         Some("GetReleaseEdit") => {
-            let result = client.get_release_edit(789).wait();
+            let result = client.get_release_edit("edit_id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -536,7 +536,7 @@ fn main() {
         }
 
         Some("DeleteWebcaptureEdit") => {
-            let result = client.delete_webcapture_edit(789).wait();
+            let result = client.delete_webcapture_edit("edit_id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -548,7 +548,7 @@ fn main() {
         }
 
         Some("GetWebcaptureEdit") => {
-            let result = client.get_webcapture_edit(789).wait();
+            let result = client.get_webcapture_edit("edit_id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -585,7 +585,7 @@ fn main() {
         }
 
         Some("DeleteWorkEdit") => {
-            let result = client.delete_work_edit(789).wait();
+            let result = client.delete_work_edit("edit_id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -597,7 +597,7 @@ fn main() {
         }
 
         Some("GetWorkEdit") => {
-            let result = client.get_work_edit(789).wait();
+            let result = client.get_work_edit("edit_id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 

@@ -190,6 +190,12 @@ class FileEntity(object):
         :param sha256: The sha256 of this FileEntity.  # noqa: E501
         :type: str
         """
+        if sha256 is not None and len(sha256) > 64:
+            raise ValueError("Invalid value for `sha256`, length must be less than or equal to `64`")  # noqa: E501
+        if sha256 is not None and len(sha256) < 64:
+            raise ValueError("Invalid value for `sha256`, length must be greater than or equal to `64`")  # noqa: E501
+        if sha256 is not None and not re.search('[a-f0-9]{64}', sha256):  # noqa: E501
+            raise ValueError("Invalid value for `sha256`, must be a follow pattern or equal to `/[a-f0-9]{64}/`")  # noqa: E501
 
         self._sha256 = sha256
 
@@ -211,6 +217,12 @@ class FileEntity(object):
         :param sha1: The sha1 of this FileEntity.  # noqa: E501
         :type: str
         """
+        if sha1 is not None and len(sha1) > 40:
+            raise ValueError("Invalid value for `sha1`, length must be less than or equal to `40`")  # noqa: E501
+        if sha1 is not None and len(sha1) < 40:
+            raise ValueError("Invalid value for `sha1`, length must be greater than or equal to `40`")  # noqa: E501
+        if sha1 is not None and not re.search('[a-f0-9]{40}', sha1):  # noqa: E501
+            raise ValueError("Invalid value for `sha1`, must be a follow pattern or equal to `/[a-f0-9]{40}/`")  # noqa: E501
 
         self._sha1 = sha1
 
@@ -232,6 +244,12 @@ class FileEntity(object):
         :param md5: The md5 of this FileEntity.  # noqa: E501
         :type: str
         """
+        if md5 is not None and len(md5) > 32:
+            raise ValueError("Invalid value for `md5`, length must be less than or equal to `32`")  # noqa: E501
+        if md5 is not None and len(md5) < 32:
+            raise ValueError("Invalid value for `md5`, length must be greater than or equal to `32`")  # noqa: E501
+        if md5 is not None and not re.search('[a-f0-9]{32}', md5):  # noqa: E501
+            raise ValueError("Invalid value for `md5`, must be a follow pattern or equal to `/[a-f0-9]{32}/`")  # noqa: E501
 
         self._md5 = md5
 

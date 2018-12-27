@@ -107,6 +107,7 @@ class ReleaseRef(object):
     def target_release_id(self):
         """Gets the target_release_id of this ReleaseRef.  # noqa: E501
 
+        base32-encoded unique identifier  # noqa: E501
 
         :return: The target_release_id of this ReleaseRef.  # noqa: E501
         :rtype: str
@@ -117,10 +118,17 @@ class ReleaseRef(object):
     def target_release_id(self, target_release_id):
         """Sets the target_release_id of this ReleaseRef.
 
+        base32-encoded unique identifier  # noqa: E501
 
         :param target_release_id: The target_release_id of this ReleaseRef.  # noqa: E501
         :type: str
         """
+        if target_release_id is not None and len(target_release_id) > 26:
+            raise ValueError("Invalid value for `target_release_id`, length must be less than or equal to `26`")  # noqa: E501
+        if target_release_id is not None and len(target_release_id) < 26:
+            raise ValueError("Invalid value for `target_release_id`, length must be greater than or equal to `26`")  # noqa: E501
+        if target_release_id is not None and not re.search('[a-zA-Z2-7]{26}', target_release_id):  # noqa: E501
+            raise ValueError("Invalid value for `target_release_id`, must be a follow pattern or equal to `/[a-zA-Z2-7]{26}/`")  # noqa: E501
 
         self._target_release_id = target_release_id
 

@@ -69,9 +69,9 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn delete_container_edit(&self, edit_id: i64, context: &Context) -> Box<Future<Item = DeleteContainerEditResponse, Error = ApiError> + Send> {
+    fn delete_container_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = DeleteContainerEditResponse, Error = ApiError> + Send> {
         let context = context.clone();
-        println!("delete_container_edit({}) - X-Span-ID: {:?}", edit_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        println!("delete_container_edit(\"{}\") - X-Span-ID: {:?}", edit_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))
     }
 
@@ -87,9 +87,9 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn get_container_edit(&self, edit_id: i64, context: &Context) -> Box<Future<Item = GetContainerEditResponse, Error = ApiError> + Send> {
+    fn get_container_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = GetContainerEditResponse, Error = ApiError> + Send> {
         let context = context.clone();
-        println!("get_container_edit({}) - X-Span-ID: {:?}", edit_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        println!("get_container_edit(\"{}\") - X-Span-ID: {:?}", edit_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))
     }
 
@@ -200,9 +200,9 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn delete_creator_edit(&self, edit_id: i64, context: &Context) -> Box<Future<Item = DeleteCreatorEditResponse, Error = ApiError> + Send> {
+    fn delete_creator_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = DeleteCreatorEditResponse, Error = ApiError> + Send> {
         let context = context.clone();
-        println!("delete_creator_edit({}) - X-Span-ID: {:?}", edit_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        println!("delete_creator_edit(\"{}\") - X-Span-ID: {:?}", edit_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))
     }
 
@@ -218,9 +218,9 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn get_creator_edit(&self, edit_id: i64, context: &Context) -> Box<Future<Item = GetCreatorEditResponse, Error = ApiError> + Send> {
+    fn get_creator_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = GetCreatorEditResponse, Error = ApiError> + Send> {
         let context = context.clone();
-        println!("get_creator_edit({}) - X-Span-ID: {:?}", edit_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        println!("get_creator_edit(\"{}\") - X-Span-ID: {:?}", edit_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))
     }
 
@@ -378,9 +378,9 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn delete_file_edit(&self, edit_id: i64, context: &Context) -> Box<Future<Item = DeleteFileEditResponse, Error = ApiError> + Send> {
+    fn delete_file_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = DeleteFileEditResponse, Error = ApiError> + Send> {
         let context = context.clone();
-        println!("delete_file_edit({}) - X-Span-ID: {:?}", edit_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        println!("delete_file_edit(\"{}\") - X-Span-ID: {:?}", edit_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))
     }
 
@@ -396,9 +396,9 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn get_file_edit(&self, edit_id: i64, context: &Context) -> Box<Future<Item = GetFileEditResponse, Error = ApiError> + Send> {
+    fn get_file_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = GetFileEditResponse, Error = ApiError> + Send> {
         let context = context.clone();
-        println!("get_file_edit({}) - X-Span-ID: {:?}", edit_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        println!("get_file_edit(\"{}\") - X-Span-ID: {:?}", edit_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))
     }
 
@@ -505,9 +505,9 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn delete_fileset_edit(&self, edit_id: i64, context: &Context) -> Box<Future<Item = DeleteFilesetEditResponse, Error = ApiError> + Send> {
+    fn delete_fileset_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = DeleteFilesetEditResponse, Error = ApiError> + Send> {
         let context = context.clone();
-        println!("delete_fileset_edit({}) - X-Span-ID: {:?}", edit_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        println!("delete_fileset_edit(\"{}\") - X-Span-ID: {:?}", edit_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))
     }
 
@@ -523,9 +523,9 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn get_fileset_edit(&self, edit_id: i64, context: &Context) -> Box<Future<Item = GetFilesetEditResponse, Error = ApiError> + Send> {
+    fn get_fileset_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = GetFilesetEditResponse, Error = ApiError> + Send> {
         let context = context.clone();
-        println!("get_fileset_edit({}) - X-Span-ID: {:?}", edit_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        println!("get_fileset_edit(\"{}\") - X-Span-ID: {:?}", edit_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))
     }
 
@@ -621,9 +621,9 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn delete_release_edit(&self, edit_id: i64, context: &Context) -> Box<Future<Item = DeleteReleaseEditResponse, Error = ApiError> + Send> {
+    fn delete_release_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = DeleteReleaseEditResponse, Error = ApiError> + Send> {
         let context = context.clone();
-        println!("delete_release_edit({}) - X-Span-ID: {:?}", edit_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        println!("delete_release_edit(\"{}\") - X-Span-ID: {:?}", edit_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))
     }
 
@@ -639,9 +639,9 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn get_release_edit(&self, edit_id: i64, context: &Context) -> Box<Future<Item = GetReleaseEditResponse, Error = ApiError> + Send> {
+    fn get_release_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = GetReleaseEditResponse, Error = ApiError> + Send> {
         let context = context.clone();
-        println!("get_release_edit({}) - X-Span-ID: {:?}", edit_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        println!("get_release_edit(\"{}\") - X-Span-ID: {:?}", edit_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))
     }
 
@@ -787,9 +787,9 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn delete_webcapture_edit(&self, edit_id: i64, context: &Context) -> Box<Future<Item = DeleteWebcaptureEditResponse, Error = ApiError> + Send> {
+    fn delete_webcapture_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = DeleteWebcaptureEditResponse, Error = ApiError> + Send> {
         let context = context.clone();
-        println!("delete_webcapture_edit({}) - X-Span-ID: {:?}", edit_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        println!("delete_webcapture_edit(\"{}\") - X-Span-ID: {:?}", edit_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))
     }
 
@@ -805,9 +805,9 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn get_webcapture_edit(&self, edit_id: i64, context: &Context) -> Box<Future<Item = GetWebcaptureEditResponse, Error = ApiError> + Send> {
+    fn get_webcapture_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = GetWebcaptureEditResponse, Error = ApiError> + Send> {
         let context = context.clone();
-        println!("get_webcapture_edit({}) - X-Span-ID: {:?}", edit_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        println!("get_webcapture_edit(\"{}\") - X-Span-ID: {:?}", edit_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))
     }
 
@@ -887,9 +887,9 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn delete_work_edit(&self, edit_id: i64, context: &Context) -> Box<Future<Item = DeleteWorkEditResponse, Error = ApiError> + Send> {
+    fn delete_work_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = DeleteWorkEditResponse, Error = ApiError> + Send> {
         let context = context.clone();
-        println!("delete_work_edit({}) - X-Span-ID: {:?}", edit_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        println!("delete_work_edit(\"{}\") - X-Span-ID: {:?}", edit_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))
     }
 
@@ -905,9 +905,9 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn get_work_edit(&self, edit_id: i64, context: &Context) -> Box<Future<Item = GetWorkEditResponse, Error = ApiError> + Send> {
+    fn get_work_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = GetWorkEditResponse, Error = ApiError> + Send> {
         let context = context.clone();
-        println!("get_work_edit({}) - X-Span-ID: {:?}", edit_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        println!("get_work_edit(\"{}\") - X-Span-ID: {:?}", edit_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))
     }
 

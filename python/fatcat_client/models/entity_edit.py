@@ -31,7 +31,7 @@ class EntityEdit(object):
                             and the value is json key in definition.
     """
     swagger_types = {
-        'edit_id': 'int',
+        'edit_id': 'str',
         'ident': 'str',
         'revision': 'str',
         'prev_revision': 'str',
@@ -78,9 +78,10 @@ class EntityEdit(object):
     def edit_id(self):
         """Gets the edit_id of this EntityEdit.  # noqa: E501
 
+        UUID (lower-case, dash-separated, hex-encoded 128-bit)  # noqa: E501
 
         :return: The edit_id of this EntityEdit.  # noqa: E501
-        :rtype: int
+        :rtype: str
         """
         return self._edit_id
 
@@ -88,12 +89,19 @@ class EntityEdit(object):
     def edit_id(self, edit_id):
         """Sets the edit_id of this EntityEdit.
 
+        UUID (lower-case, dash-separated, hex-encoded 128-bit)  # noqa: E501
 
         :param edit_id: The edit_id of this EntityEdit.  # noqa: E501
-        :type: int
+        :type: str
         """
         if edit_id is None:
             raise ValueError("Invalid value for `edit_id`, must not be `None`")  # noqa: E501
+        if edit_id is not None and len(edit_id) > 36:
+            raise ValueError("Invalid value for `edit_id`, length must be less than or equal to `36`")  # noqa: E501
+        if edit_id is not None and len(edit_id) < 36:
+            raise ValueError("Invalid value for `edit_id`, length must be greater than or equal to `36`")  # noqa: E501
+        if edit_id is not None and not re.search('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', edit_id):  # noqa: E501
+            raise ValueError("Invalid value for `edit_id`, must be a follow pattern or equal to `/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/`")  # noqa: E501
 
         self._edit_id = edit_id
 
@@ -101,6 +109,7 @@ class EntityEdit(object):
     def ident(self):
         """Gets the ident of this EntityEdit.  # noqa: E501
 
+        base32-encoded unique identifier  # noqa: E501
 
         :return: The ident of this EntityEdit.  # noqa: E501
         :rtype: str
@@ -111,12 +120,19 @@ class EntityEdit(object):
     def ident(self, ident):
         """Sets the ident of this EntityEdit.
 
+        base32-encoded unique identifier  # noqa: E501
 
         :param ident: The ident of this EntityEdit.  # noqa: E501
         :type: str
         """
         if ident is None:
             raise ValueError("Invalid value for `ident`, must not be `None`")  # noqa: E501
+        if ident is not None and len(ident) > 26:
+            raise ValueError("Invalid value for `ident`, length must be less than or equal to `26`")  # noqa: E501
+        if ident is not None and len(ident) < 26:
+            raise ValueError("Invalid value for `ident`, length must be greater than or equal to `26`")  # noqa: E501
+        if ident is not None and not re.search('[a-zA-Z2-7]{26}', ident):  # noqa: E501
+            raise ValueError("Invalid value for `ident`, must be a follow pattern or equal to `/[a-zA-Z2-7]{26}/`")  # noqa: E501
 
         self._ident = ident
 
@@ -124,6 +140,7 @@ class EntityEdit(object):
     def revision(self):
         """Gets the revision of this EntityEdit.  # noqa: E501
 
+        UUID (lower-case, dash-separated, hex-encoded 128-bit)  # noqa: E501
 
         :return: The revision of this EntityEdit.  # noqa: E501
         :rtype: str
@@ -134,10 +151,17 @@ class EntityEdit(object):
     def revision(self, revision):
         """Sets the revision of this EntityEdit.
 
+        UUID (lower-case, dash-separated, hex-encoded 128-bit)  # noqa: E501
 
         :param revision: The revision of this EntityEdit.  # noqa: E501
         :type: str
         """
+        if revision is not None and len(revision) > 36:
+            raise ValueError("Invalid value for `revision`, length must be less than or equal to `36`")  # noqa: E501
+        if revision is not None and len(revision) < 36:
+            raise ValueError("Invalid value for `revision`, length must be greater than or equal to `36`")  # noqa: E501
+        if revision is not None and not re.search('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', revision):  # noqa: E501
+            raise ValueError("Invalid value for `revision`, must be a follow pattern or equal to `/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/`")  # noqa: E501
 
         self._revision = revision
 
@@ -145,6 +169,7 @@ class EntityEdit(object):
     def prev_revision(self):
         """Gets the prev_revision of this EntityEdit.  # noqa: E501
 
+        UUID (lower-case, dash-separated, hex-encoded 128-bit)  # noqa: E501
 
         :return: The prev_revision of this EntityEdit.  # noqa: E501
         :rtype: str
@@ -155,10 +180,17 @@ class EntityEdit(object):
     def prev_revision(self, prev_revision):
         """Sets the prev_revision of this EntityEdit.
 
+        UUID (lower-case, dash-separated, hex-encoded 128-bit)  # noqa: E501
 
         :param prev_revision: The prev_revision of this EntityEdit.  # noqa: E501
         :type: str
         """
+        if prev_revision is not None and len(prev_revision) > 36:
+            raise ValueError("Invalid value for `prev_revision`, length must be less than or equal to `36`")  # noqa: E501
+        if prev_revision is not None and len(prev_revision) < 36:
+            raise ValueError("Invalid value for `prev_revision`, length must be greater than or equal to `36`")  # noqa: E501
+        if prev_revision is not None and not re.search('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', prev_revision):  # noqa: E501
+            raise ValueError("Invalid value for `prev_revision`, must be a follow pattern or equal to `/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/`")  # noqa: E501
 
         self._prev_revision = prev_revision
 
@@ -166,6 +198,7 @@ class EntityEdit(object):
     def redirect_ident(self):
         """Gets the redirect_ident of this EntityEdit.  # noqa: E501
 
+        base32-encoded unique identifier  # noqa: E501
 
         :return: The redirect_ident of this EntityEdit.  # noqa: E501
         :rtype: str
@@ -176,10 +209,17 @@ class EntityEdit(object):
     def redirect_ident(self, redirect_ident):
         """Sets the redirect_ident of this EntityEdit.
 
+        base32-encoded unique identifier  # noqa: E501
 
         :param redirect_ident: The redirect_ident of this EntityEdit.  # noqa: E501
         :type: str
         """
+        if redirect_ident is not None and len(redirect_ident) > 26:
+            raise ValueError("Invalid value for `redirect_ident`, length must be less than or equal to `26`")  # noqa: E501
+        if redirect_ident is not None and len(redirect_ident) < 26:
+            raise ValueError("Invalid value for `redirect_ident`, length must be greater than or equal to `26`")  # noqa: E501
+        if redirect_ident is not None and not re.search('[a-zA-Z2-7]{26}', redirect_ident):  # noqa: E501
+            raise ValueError("Invalid value for `redirect_ident`, must be a follow pattern or equal to `/[a-zA-Z2-7]{26}/`")  # noqa: E501
 
         self._redirect_ident = redirect_ident
 
@@ -187,6 +227,7 @@ class EntityEdit(object):
     def editgroup_id(self):
         """Gets the editgroup_id of this EntityEdit.  # noqa: E501
 
+        base32-encoded unique identifier  # noqa: E501
 
         :return: The editgroup_id of this EntityEdit.  # noqa: E501
         :rtype: str
@@ -197,12 +238,19 @@ class EntityEdit(object):
     def editgroup_id(self, editgroup_id):
         """Sets the editgroup_id of this EntityEdit.
 
+        base32-encoded unique identifier  # noqa: E501
 
         :param editgroup_id: The editgroup_id of this EntityEdit.  # noqa: E501
         :type: str
         """
         if editgroup_id is None:
             raise ValueError("Invalid value for `editgroup_id`, must not be `None`")  # noqa: E501
+        if editgroup_id is not None and len(editgroup_id) > 26:
+            raise ValueError("Invalid value for `editgroup_id`, length must be less than or equal to `26`")  # noqa: E501
+        if editgroup_id is not None and len(editgroup_id) < 26:
+            raise ValueError("Invalid value for `editgroup_id`, length must be greater than or equal to `26`")  # noqa: E501
+        if editgroup_id is not None and not re.search('[a-zA-Z2-7]{26}', editgroup_id):  # noqa: E501
+            raise ValueError("Invalid value for `editgroup_id`, must be a follow pattern or equal to `/[a-zA-Z2-7]{26}/`")  # noqa: E501
 
         self._editgroup_id = editgroup_id
 

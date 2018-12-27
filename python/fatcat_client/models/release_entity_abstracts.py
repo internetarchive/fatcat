@@ -80,6 +80,12 @@ class ReleaseEntityAbstracts(object):
         :param sha1: The sha1 of this ReleaseEntityAbstracts.  # noqa: E501
         :type: str
         """
+        if sha1 is not None and len(sha1) > 40:
+            raise ValueError("Invalid value for `sha1`, length must be less than or equal to `40`")  # noqa: E501
+        if sha1 is not None and len(sha1) < 40:
+            raise ValueError("Invalid value for `sha1`, length must be greater than or equal to `40`")  # noqa: E501
+        if sha1 is not None and not re.search('[a-f0-9]{40}', sha1):  # noqa: E501
+            raise ValueError("Invalid value for `sha1`, must be a follow pattern or equal to `/[a-f0-9]{40}/`")  # noqa: E501
 
         self._sha1 = sha1
 

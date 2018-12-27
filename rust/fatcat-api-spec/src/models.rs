@@ -264,6 +264,7 @@ impl EditgroupEdits {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Editor {
+    /// base32-encoded unique identifier
     #[serde(rename = "editor_id")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub editor_id: Option<String>,
@@ -280,24 +281,30 @@ impl Editor {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct EntityEdit {
+    /// UUID (lower-case, dash-separated, hex-encoded 128-bit)
     #[serde(rename = "edit_id")]
-    pub edit_id: i64,
+    pub edit_id: String,
 
+    /// base32-encoded unique identifier
     #[serde(rename = "ident")]
     pub ident: String,
 
+    /// UUID (lower-case, dash-separated, hex-encoded 128-bit)
     #[serde(rename = "revision")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub revision: Option<String>,
 
+    /// UUID (lower-case, dash-separated, hex-encoded 128-bit)
     #[serde(rename = "prev_revision")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub prev_revision: Option<String>,
 
+    /// base32-encoded unique identifier
     #[serde(rename = "redirect_ident")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub redirect_ident: Option<String>,
 
+    /// base32-encoded unique identifier
     #[serde(rename = "editgroup_id")]
     pub editgroup_id: String,
 
@@ -307,7 +314,7 @@ pub struct EntityEdit {
 }
 
 impl EntityEdit {
-    pub fn new(edit_id: i64, ident: String, editgroup_id: String) -> EntityEdit {
+    pub fn new(edit_id: String, ident: String, editgroup_id: String) -> EntityEdit {
         EntityEdit {
             edit_id: edit_id,
             ident: ident,
@@ -797,6 +804,7 @@ pub struct ReleaseRef {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub index: Option<i64>,
 
+    /// base32-encoded unique identifier
     #[serde(rename = "target_release_id")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub target_release_id: Option<String>,

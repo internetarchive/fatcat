@@ -1787,7 +1787,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int edit_id: (required)
+        :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: Success
                  If the method is called asynchronously,
                  returns the request thread.
@@ -1808,7 +1808,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int edit_id: (required)
+        :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: Success
                  If the method is called asynchronously,
                  returns the request thread.
@@ -1834,6 +1834,14 @@ class DefaultApi(object):
                 params['edit_id'] is None):
             raise ValueError("Missing the required parameter `edit_id` when calling `delete_container_edit`")  # noqa: E501
 
+        if ('edit_id' in params and
+                len(params['edit_id']) > 36):
+            raise ValueError("Invalid value for parameter `edit_id` when calling `delete_container_edit`, length must be less than or equal to `36`")  # noqa: E501
+        if ('edit_id' in params and
+                len(params['edit_id']) < 36):
+            raise ValueError("Invalid value for parameter `edit_id` when calling `delete_container_edit`, length must be greater than or equal to `36`")  # noqa: E501
+        if 'edit_id' in params and not re.search('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', params['edit_id']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `edit_id` when calling `delete_container_edit`, must conform to the pattern `/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -1985,7 +1993,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int edit_id: (required)
+        :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: Success
                  If the method is called asynchronously,
                  returns the request thread.
@@ -2006,7 +2014,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int edit_id: (required)
+        :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: Success
                  If the method is called asynchronously,
                  returns the request thread.
@@ -2032,6 +2040,14 @@ class DefaultApi(object):
                 params['edit_id'] is None):
             raise ValueError("Missing the required parameter `edit_id` when calling `delete_creator_edit`")  # noqa: E501
 
+        if ('edit_id' in params and
+                len(params['edit_id']) > 36):
+            raise ValueError("Invalid value for parameter `edit_id` when calling `delete_creator_edit`, length must be less than or equal to `36`")  # noqa: E501
+        if ('edit_id' in params and
+                len(params['edit_id']) < 36):
+            raise ValueError("Invalid value for parameter `edit_id` when calling `delete_creator_edit`, length must be greater than or equal to `36`")  # noqa: E501
+        if 'edit_id' in params and not re.search('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', params['edit_id']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `edit_id` when calling `delete_creator_edit`, must conform to the pattern `/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -2183,7 +2199,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int edit_id: (required)
+        :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: Success
                  If the method is called asynchronously,
                  returns the request thread.
@@ -2204,7 +2220,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int edit_id: (required)
+        :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: Success
                  If the method is called asynchronously,
                  returns the request thread.
@@ -2230,6 +2246,14 @@ class DefaultApi(object):
                 params['edit_id'] is None):
             raise ValueError("Missing the required parameter `edit_id` when calling `delete_file_edit`")  # noqa: E501
 
+        if ('edit_id' in params and
+                len(params['edit_id']) > 36):
+            raise ValueError("Invalid value for parameter `edit_id` when calling `delete_file_edit`, length must be less than or equal to `36`")  # noqa: E501
+        if ('edit_id' in params and
+                len(params['edit_id']) < 36):
+            raise ValueError("Invalid value for parameter `edit_id` when calling `delete_file_edit`, length must be greater than or equal to `36`")  # noqa: E501
+        if 'edit_id' in params and not re.search('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', params['edit_id']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `edit_id` when calling `delete_file_edit`, must conform to the pattern `/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -2381,7 +2405,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int edit_id: (required)
+        :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: Success
                  If the method is called asynchronously,
                  returns the request thread.
@@ -2402,7 +2426,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int edit_id: (required)
+        :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: Success
                  If the method is called asynchronously,
                  returns the request thread.
@@ -2428,6 +2452,14 @@ class DefaultApi(object):
                 params['edit_id'] is None):
             raise ValueError("Missing the required parameter `edit_id` when calling `delete_fileset_edit`")  # noqa: E501
 
+        if ('edit_id' in params and
+                len(params['edit_id']) > 36):
+            raise ValueError("Invalid value for parameter `edit_id` when calling `delete_fileset_edit`, length must be less than or equal to `36`")  # noqa: E501
+        if ('edit_id' in params and
+                len(params['edit_id']) < 36):
+            raise ValueError("Invalid value for parameter `edit_id` when calling `delete_fileset_edit`, length must be greater than or equal to `36`")  # noqa: E501
+        if 'edit_id' in params and not re.search('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', params['edit_id']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `edit_id` when calling `delete_fileset_edit`, must conform to the pattern `/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -2579,7 +2611,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int edit_id: (required)
+        :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: Success
                  If the method is called asynchronously,
                  returns the request thread.
@@ -2600,7 +2632,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int edit_id: (required)
+        :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: Success
                  If the method is called asynchronously,
                  returns the request thread.
@@ -2626,6 +2658,14 @@ class DefaultApi(object):
                 params['edit_id'] is None):
             raise ValueError("Missing the required parameter `edit_id` when calling `delete_release_edit`")  # noqa: E501
 
+        if ('edit_id' in params and
+                len(params['edit_id']) > 36):
+            raise ValueError("Invalid value for parameter `edit_id` when calling `delete_release_edit`, length must be less than or equal to `36`")  # noqa: E501
+        if ('edit_id' in params and
+                len(params['edit_id']) < 36):
+            raise ValueError("Invalid value for parameter `edit_id` when calling `delete_release_edit`, length must be greater than or equal to `36`")  # noqa: E501
+        if 'edit_id' in params and not re.search('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', params['edit_id']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `edit_id` when calling `delete_release_edit`, must conform to the pattern `/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -2777,7 +2817,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int edit_id: (required)
+        :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: Success
                  If the method is called asynchronously,
                  returns the request thread.
@@ -2798,7 +2838,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int edit_id: (required)
+        :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: Success
                  If the method is called asynchronously,
                  returns the request thread.
@@ -2824,6 +2864,14 @@ class DefaultApi(object):
                 params['edit_id'] is None):
             raise ValueError("Missing the required parameter `edit_id` when calling `delete_webcapture_edit`")  # noqa: E501
 
+        if ('edit_id' in params and
+                len(params['edit_id']) > 36):
+            raise ValueError("Invalid value for parameter `edit_id` when calling `delete_webcapture_edit`, length must be less than or equal to `36`")  # noqa: E501
+        if ('edit_id' in params and
+                len(params['edit_id']) < 36):
+            raise ValueError("Invalid value for parameter `edit_id` when calling `delete_webcapture_edit`, length must be greater than or equal to `36`")  # noqa: E501
+        if 'edit_id' in params and not re.search('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', params['edit_id']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `edit_id` when calling `delete_webcapture_edit`, must conform to the pattern `/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -2975,7 +3023,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int edit_id: (required)
+        :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: Success
                  If the method is called asynchronously,
                  returns the request thread.
@@ -2996,7 +3044,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int edit_id: (required)
+        :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: Success
                  If the method is called asynchronously,
                  returns the request thread.
@@ -3022,6 +3070,14 @@ class DefaultApi(object):
                 params['edit_id'] is None):
             raise ValueError("Missing the required parameter `edit_id` when calling `delete_work_edit`")  # noqa: E501
 
+        if ('edit_id' in params and
+                len(params['edit_id']) > 36):
+            raise ValueError("Invalid value for parameter `edit_id` when calling `delete_work_edit`, length must be less than or equal to `36`")  # noqa: E501
+        if ('edit_id' in params and
+                len(params['edit_id']) < 36):
+            raise ValueError("Invalid value for parameter `edit_id` when calling `delete_work_edit`, length must be greater than or equal to `36`")  # noqa: E501
+        if 'edit_id' in params and not re.search('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', params['edit_id']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `edit_id` when calling `delete_work_edit`, must conform to the pattern `/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -3367,7 +3423,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int edit_id: (required)
+        :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
@@ -3388,7 +3444,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int edit_id: (required)
+        :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
@@ -3414,6 +3470,14 @@ class DefaultApi(object):
                 params['edit_id'] is None):
             raise ValueError("Missing the required parameter `edit_id` when calling `get_container_edit`")  # noqa: E501
 
+        if ('edit_id' in params and
+                len(params['edit_id']) > 36):
+            raise ValueError("Invalid value for parameter `edit_id` when calling `get_container_edit`, length must be less than or equal to `36`")  # noqa: E501
+        if ('edit_id' in params and
+                len(params['edit_id']) < 36):
+            raise ValueError("Invalid value for parameter `edit_id` when calling `get_container_edit`, length must be greater than or equal to `36`")  # noqa: E501
+        if 'edit_id' in params and not re.search('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', params['edit_id']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `edit_id` when calling `get_container_edit`, must conform to the pattern `/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -3662,7 +3726,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param str rev_id: (required)
+        :param str rev_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :param str expand: List of sub-entities to expand in response. For containers, none accepted (yet).
         :param str hide: List of entity fields to elide in response. For containers, none accepted (yet).
         :return: ContainerEntity
@@ -3685,7 +3749,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param str rev_id: (required)
+        :param str rev_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :param str expand: List of sub-entities to expand in response. For containers, none accepted (yet).
         :param str hide: List of entity fields to elide in response. For containers, none accepted (yet).
         :return: ContainerEntity
@@ -3713,6 +3777,14 @@ class DefaultApi(object):
                 params['rev_id'] is None):
             raise ValueError("Missing the required parameter `rev_id` when calling `get_container_revision`")  # noqa: E501
 
+        if ('rev_id' in params and
+                len(params['rev_id']) > 36):
+            raise ValueError("Invalid value for parameter `rev_id` when calling `get_container_revision`, length must be less than or equal to `36`")  # noqa: E501
+        if ('rev_id' in params and
+                len(params['rev_id']) < 36):
+            raise ValueError("Invalid value for parameter `rev_id` when calling `get_container_revision`, length must be greater than or equal to `36`")  # noqa: E501
+        if 'rev_id' in params and not re.search('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', params['rev_id']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `rev_id` when calling `get_container_revision`, must conform to the pattern `/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -3872,7 +3944,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int edit_id: (required)
+        :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
@@ -3893,7 +3965,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int edit_id: (required)
+        :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
@@ -3919,6 +3991,14 @@ class DefaultApi(object):
                 params['edit_id'] is None):
             raise ValueError("Missing the required parameter `edit_id` when calling `get_creator_edit`")  # noqa: E501
 
+        if ('edit_id' in params and
+                len(params['edit_id']) > 36):
+            raise ValueError("Invalid value for parameter `edit_id` when calling `get_creator_edit`, length must be less than or equal to `36`")  # noqa: E501
+        if ('edit_id' in params and
+                len(params['edit_id']) < 36):
+            raise ValueError("Invalid value for parameter `edit_id` when calling `get_creator_edit`, length must be greater than or equal to `36`")  # noqa: E501
+        if 'edit_id' in params and not re.search('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', params['edit_id']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `edit_id` when calling `get_creator_edit`, must conform to the pattern `/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -4268,7 +4348,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param str rev_id: (required)
+        :param str rev_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :param str expand: List of sub-entities to expand in response. For creators, none accepted (yet).
         :param str hide: List of entity fields to elide in response. For creators, none accepted (yet).
         :return: CreatorEntity
@@ -4291,7 +4371,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param str rev_id: (required)
+        :param str rev_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :param str expand: List of sub-entities to expand in response. For creators, none accepted (yet).
         :param str hide: List of entity fields to elide in response. For creators, none accepted (yet).
         :return: CreatorEntity
@@ -4319,6 +4399,14 @@ class DefaultApi(object):
                 params['rev_id'] is None):
             raise ValueError("Missing the required parameter `rev_id` when calling `get_creator_revision`")  # noqa: E501
 
+        if ('rev_id' in params and
+                len(params['rev_id']) > 36):
+            raise ValueError("Invalid value for parameter `rev_id` when calling `get_creator_revision`, length must be less than or equal to `36`")  # noqa: E501
+        if ('rev_id' in params and
+                len(params['rev_id']) < 36):
+            raise ValueError("Invalid value for parameter `rev_id` when calling `get_creator_revision`, length must be greater than or equal to `36`")  # noqa: E501
+        if 'rev_id' in params and not re.search('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', params['rev_id']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `rev_id` when calling `get_creator_revision`, must conform to the pattern `/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -4777,7 +4865,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int edit_id: (required)
+        :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
@@ -4798,7 +4886,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int edit_id: (required)
+        :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
@@ -4824,6 +4912,14 @@ class DefaultApi(object):
                 params['edit_id'] is None):
             raise ValueError("Missing the required parameter `edit_id` when calling `get_file_edit`")  # noqa: E501
 
+        if ('edit_id' in params and
+                len(params['edit_id']) > 36):
+            raise ValueError("Invalid value for parameter `edit_id` when calling `get_file_edit`, length must be less than or equal to `36`")  # noqa: E501
+        if ('edit_id' in params and
+                len(params['edit_id']) < 36):
+            raise ValueError("Invalid value for parameter `edit_id` when calling `get_file_edit`, length must be greater than or equal to `36`")  # noqa: E501
+        if 'edit_id' in params and not re.search('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', params['edit_id']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `edit_id` when calling `get_file_edit`, must conform to the pattern `/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -5072,7 +5168,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param str rev_id: (required)
+        :param str rev_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :param str expand: List of sub-entities to expand in response. For files, none accepted (yet).
         :param str hide: List of entity fields to elide in response. For files, none accepted (yet).
         :return: FileEntity
@@ -5095,7 +5191,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param str rev_id: (required)
+        :param str rev_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :param str expand: List of sub-entities to expand in response. For files, none accepted (yet).
         :param str hide: List of entity fields to elide in response. For files, none accepted (yet).
         :return: FileEntity
@@ -5123,6 +5219,14 @@ class DefaultApi(object):
                 params['rev_id'] is None):
             raise ValueError("Missing the required parameter `rev_id` when calling `get_file_revision`")  # noqa: E501
 
+        if ('rev_id' in params and
+                len(params['rev_id']) > 36):
+            raise ValueError("Invalid value for parameter `rev_id` when calling `get_file_revision`, length must be less than or equal to `36`")  # noqa: E501
+        if ('rev_id' in params and
+                len(params['rev_id']) < 36):
+            raise ValueError("Invalid value for parameter `rev_id` when calling `get_file_revision`, length must be greater than or equal to `36`")  # noqa: E501
+        if 'rev_id' in params and not re.search('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', params['rev_id']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `rev_id` when calling `get_file_revision`, must conform to the pattern `/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -5282,7 +5386,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int edit_id: (required)
+        :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
@@ -5303,7 +5407,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int edit_id: (required)
+        :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
@@ -5329,6 +5433,14 @@ class DefaultApi(object):
                 params['edit_id'] is None):
             raise ValueError("Missing the required parameter `edit_id` when calling `get_fileset_edit`")  # noqa: E501
 
+        if ('edit_id' in params and
+                len(params['edit_id']) > 36):
+            raise ValueError("Invalid value for parameter `edit_id` when calling `get_fileset_edit`, length must be less than or equal to `36`")  # noqa: E501
+        if ('edit_id' in params and
+                len(params['edit_id']) < 36):
+            raise ValueError("Invalid value for parameter `edit_id` when calling `get_fileset_edit`, length must be greater than or equal to `36`")  # noqa: E501
+        if 'edit_id' in params and not re.search('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', params['edit_id']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `edit_id` when calling `get_fileset_edit`, must conform to the pattern `/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -5577,7 +5689,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param str rev_id: (required)
+        :param str rev_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :param str expand: List of sub-entities to expand in response. For filesets, none accepted (yet).
         :param str hide: List of entity fields to elide in response. For filesets, 'manifest' is accepted.
         :return: FilesetEntity
@@ -5600,7 +5712,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param str rev_id: (required)
+        :param str rev_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :param str expand: List of sub-entities to expand in response. For filesets, none accepted (yet).
         :param str hide: List of entity fields to elide in response. For filesets, 'manifest' is accepted.
         :return: FilesetEntity
@@ -5628,6 +5740,14 @@ class DefaultApi(object):
                 params['rev_id'] is None):
             raise ValueError("Missing the required parameter `rev_id` when calling `get_fileset_revision`")  # noqa: E501
 
+        if ('rev_id' in params and
+                len(params['rev_id']) > 36):
+            raise ValueError("Invalid value for parameter `rev_id` when calling `get_fileset_revision`, length must be less than or equal to `36`")  # noqa: E501
+        if ('rev_id' in params and
+                len(params['rev_id']) < 36):
+            raise ValueError("Invalid value for parameter `rev_id` when calling `get_fileset_revision`, length must be greater than or equal to `36`")  # noqa: E501
+        if 'rev_id' in params and not re.search('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', params['rev_id']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `rev_id` when calling `get_fileset_revision`, must conform to the pattern `/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -5787,7 +5907,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int edit_id: (required)
+        :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
@@ -5808,7 +5928,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int edit_id: (required)
+        :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
@@ -5834,6 +5954,14 @@ class DefaultApi(object):
                 params['edit_id'] is None):
             raise ValueError("Missing the required parameter `edit_id` when calling `get_release_edit`")  # noqa: E501
 
+        if ('edit_id' in params and
+                len(params['edit_id']) > 36):
+            raise ValueError("Invalid value for parameter `edit_id` when calling `get_release_edit`, length must be less than or equal to `36`")  # noqa: E501
+        if ('edit_id' in params and
+                len(params['edit_id']) < 36):
+            raise ValueError("Invalid value for parameter `edit_id` when calling `get_release_edit`, length must be greater than or equal to `36`")  # noqa: E501
+        if 'edit_id' in params and not re.search('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', params['edit_id']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `edit_id` when calling `get_release_edit`, must conform to the pattern `/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -6284,7 +6412,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param str rev_id: (required)
+        :param str rev_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :param str expand: List of sub-entities to expand in response. For releases, none accepted (yet).
         :param str hide: List of entity fields to elide in response. For releases, none accepted (yet).
         :return: ReleaseEntity
@@ -6307,7 +6435,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param str rev_id: (required)
+        :param str rev_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :param str expand: List of sub-entities to expand in response. For releases, none accepted (yet).
         :param str hide: List of entity fields to elide in response. For releases, none accepted (yet).
         :return: ReleaseEntity
@@ -6335,6 +6463,14 @@ class DefaultApi(object):
                 params['rev_id'] is None):
             raise ValueError("Missing the required parameter `rev_id` when calling `get_release_revision`")  # noqa: E501
 
+        if ('rev_id' in params and
+                len(params['rev_id']) > 36):
+            raise ValueError("Invalid value for parameter `rev_id` when calling `get_release_revision`, length must be less than or equal to `36`")  # noqa: E501
+        if ('rev_id' in params and
+                len(params['rev_id']) < 36):
+            raise ValueError("Invalid value for parameter `rev_id` when calling `get_release_revision`, length must be greater than or equal to `36`")  # noqa: E501
+        if 'rev_id' in params and not re.search('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', params['rev_id']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `rev_id` when calling `get_release_revision`, must conform to the pattern `/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -6595,7 +6731,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int edit_id: (required)
+        :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
@@ -6616,7 +6752,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int edit_id: (required)
+        :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
@@ -6642,6 +6778,14 @@ class DefaultApi(object):
                 params['edit_id'] is None):
             raise ValueError("Missing the required parameter `edit_id` when calling `get_webcapture_edit`")  # noqa: E501
 
+        if ('edit_id' in params and
+                len(params['edit_id']) > 36):
+            raise ValueError("Invalid value for parameter `edit_id` when calling `get_webcapture_edit`, length must be less than or equal to `36`")  # noqa: E501
+        if ('edit_id' in params and
+                len(params['edit_id']) < 36):
+            raise ValueError("Invalid value for parameter `edit_id` when calling `get_webcapture_edit`, length must be greater than or equal to `36`")  # noqa: E501
+        if 'edit_id' in params and not re.search('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', params['edit_id']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `edit_id` when calling `get_webcapture_edit`, must conform to the pattern `/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -6890,7 +7034,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param str rev_id: (required)
+        :param str rev_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :param str expand: List of sub-entities to expand in response. For webcaptures, none accepted (yet).
         :param str hide: List of entity fields to elide in response. For webcaptures, 'cdx' is accepted.
         :return: WebcaptureEntity
@@ -6913,7 +7057,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param str rev_id: (required)
+        :param str rev_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :param str expand: List of sub-entities to expand in response. For webcaptures, none accepted (yet).
         :param str hide: List of entity fields to elide in response. For webcaptures, 'cdx' is accepted.
         :return: WebcaptureEntity
@@ -6941,6 +7085,14 @@ class DefaultApi(object):
                 params['rev_id'] is None):
             raise ValueError("Missing the required parameter `rev_id` when calling `get_webcapture_revision`")  # noqa: E501
 
+        if ('rev_id' in params and
+                len(params['rev_id']) > 36):
+            raise ValueError("Invalid value for parameter `rev_id` when calling `get_webcapture_revision`, length must be less than or equal to `36`")  # noqa: E501
+        if ('rev_id' in params and
+                len(params['rev_id']) < 36):
+            raise ValueError("Invalid value for parameter `rev_id` when calling `get_webcapture_revision`, length must be greater than or equal to `36`")  # noqa: E501
+        if 'rev_id' in params and not re.search('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', params['rev_id']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `rev_id` when calling `get_webcapture_revision`, must conform to the pattern `/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -7100,7 +7252,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int edit_id: (required)
+        :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
@@ -7121,7 +7273,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int edit_id: (required)
+        :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
@@ -7147,6 +7299,14 @@ class DefaultApi(object):
                 params['edit_id'] is None):
             raise ValueError("Missing the required parameter `edit_id` when calling `get_work_edit`")  # noqa: E501
 
+        if ('edit_id' in params and
+                len(params['edit_id']) > 36):
+            raise ValueError("Invalid value for parameter `edit_id` when calling `get_work_edit`, length must be less than or equal to `36`")  # noqa: E501
+        if ('edit_id' in params and
+                len(params['edit_id']) < 36):
+            raise ValueError("Invalid value for parameter `edit_id` when calling `get_work_edit`, length must be greater than or equal to `36`")  # noqa: E501
+        if 'edit_id' in params and not re.search('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', params['edit_id']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `edit_id` when calling `get_work_edit`, must conform to the pattern `/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -7496,7 +7656,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param str rev_id: (required)
+        :param str rev_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :param str expand: List of sub-entities to expand in response. For works, none accepted (yet).
         :param str hide: List of entity fields to elide in response. For works, none accepted (yet).
         :return: WorkEntity
@@ -7519,7 +7679,7 @@ class DefaultApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param str rev_id: (required)
+        :param str rev_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :param str expand: List of sub-entities to expand in response. For works, none accepted (yet).
         :param str hide: List of entity fields to elide in response. For works, none accepted (yet).
         :return: WorkEntity
@@ -7547,6 +7707,14 @@ class DefaultApi(object):
                 params['rev_id'] is None):
             raise ValueError("Missing the required parameter `rev_id` when calling `get_work_revision`")  # noqa: E501
 
+        if ('rev_id' in params and
+                len(params['rev_id']) > 36):
+            raise ValueError("Invalid value for parameter `rev_id` when calling `get_work_revision`, length must be less than or equal to `36`")  # noqa: E501
+        if ('rev_id' in params and
+                len(params['rev_id']) < 36):
+            raise ValueError("Invalid value for parameter `rev_id` when calling `get_work_revision`, length must be greater than or equal to `36`")  # noqa: E501
+        if 'rev_id' in params and not re.search('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', params['rev_id']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `rev_id` when calling `get_work_revision`, must conform to the pattern `/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -7878,6 +8046,30 @@ class DefaultApi(object):
             params[key] = val
         del params['kwargs']
 
+        if ('md5' in params and
+                len(params['md5']) > 32):
+            raise ValueError("Invalid value for parameter `md5` when calling `lookup_file`, length must be less than or equal to `32`")  # noqa: E501
+        if ('md5' in params and
+                len(params['md5']) < 32):
+            raise ValueError("Invalid value for parameter `md5` when calling `lookup_file`, length must be greater than or equal to `32`")  # noqa: E501
+        if 'md5' in params and not re.search('[a-f0-9]{32}', params['md5']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `md5` when calling `lookup_file`, must conform to the pattern `/[a-f0-9]{32}/`")  # noqa: E501
+        if ('sha1' in params and
+                len(params['sha1']) > 40):
+            raise ValueError("Invalid value for parameter `sha1` when calling `lookup_file`, length must be less than or equal to `40`")  # noqa: E501
+        if ('sha1' in params and
+                len(params['sha1']) < 40):
+            raise ValueError("Invalid value for parameter `sha1` when calling `lookup_file`, length must be greater than or equal to `40`")  # noqa: E501
+        if 'sha1' in params and not re.search('[a-f0-9]{40}', params['sha1']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `sha1` when calling `lookup_file`, must conform to the pattern `/[a-f0-9]{40}/`")  # noqa: E501
+        if ('sha256' in params and
+                len(params['sha256']) > 64):
+            raise ValueError("Invalid value for parameter `sha256` when calling `lookup_file`, length must be less than or equal to `64`")  # noqa: E501
+        if ('sha256' in params and
+                len(params['sha256']) < 64):
+            raise ValueError("Invalid value for parameter `sha256` when calling `lookup_file`, length must be greater than or equal to `64`")  # noqa: E501
+        if 'sha256' in params and not re.search('[a-f0-9]{64}', params['sha256']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `sha256` when calling `lookup_file`, must conform to the pattern `/[a-f0-9]{64}/`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}

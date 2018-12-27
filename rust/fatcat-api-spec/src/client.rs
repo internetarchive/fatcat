@@ -392,7 +392,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_container_edit(&self, param_edit_id: i64, context: &Context) -> Box<Future<Item = DeleteContainerEditResponse, Error = ApiError> + Send> {
+    fn delete_container_edit(&self, param_edit_id: String, context: &Context) -> Box<Future<Item = DeleteContainerEditResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/container/edit/{edit_id}",
             self.base_path,
@@ -526,7 +526,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_container_edit(&self, param_edit_id: i64, context: &Context) -> Box<Future<Item = GetContainerEditResponse, Error = ApiError> + Send> {
+    fn get_container_edit(&self, param_edit_id: String, context: &Context) -> Box<Future<Item = GetContainerEditResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/container/edit/{edit_id}",
             self.base_path,
@@ -1177,7 +1177,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_creator_edit(&self, param_edit_id: i64, context: &Context) -> Box<Future<Item = DeleteCreatorEditResponse, Error = ApiError> + Send> {
+    fn delete_creator_edit(&self, param_edit_id: String, context: &Context) -> Box<Future<Item = DeleteCreatorEditResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/creator/edit/{edit_id}",
             self.base_path,
@@ -1311,7 +1311,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_creator_edit(&self, param_edit_id: i64, context: &Context) -> Box<Future<Item = GetCreatorEditResponse, Error = ApiError> + Send> {
+    fn get_creator_edit(&self, param_edit_id: String, context: &Context) -> Box<Future<Item = GetCreatorEditResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/creator/edit/{edit_id}",
             self.base_path,
@@ -2453,7 +2453,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_file_edit(&self, param_edit_id: i64, context: &Context) -> Box<Future<Item = DeleteFileEditResponse, Error = ApiError> + Send> {
+    fn delete_file_edit(&self, param_edit_id: String, context: &Context) -> Box<Future<Item = DeleteFileEditResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/file/edit/{edit_id}",
             self.base_path,
@@ -2587,7 +2587,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_file_edit(&self, param_edit_id: i64, context: &Context) -> Box<Future<Item = GetFileEditResponse, Error = ApiError> + Send> {
+    fn get_file_edit(&self, param_edit_id: String, context: &Context) -> Box<Future<Item = GetFileEditResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/file/edit/{edit_id}",
             self.base_path,
@@ -3241,7 +3241,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_fileset_edit(&self, param_edit_id: i64, context: &Context) -> Box<Future<Item = DeleteFilesetEditResponse, Error = ApiError> + Send> {
+    fn delete_fileset_edit(&self, param_edit_id: String, context: &Context) -> Box<Future<Item = DeleteFilesetEditResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/fileset/edit/{edit_id}",
             self.base_path,
@@ -3375,7 +3375,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_fileset_edit(&self, param_edit_id: i64, context: &Context) -> Box<Future<Item = GetFilesetEditResponse, Error = ApiError> + Send> {
+    fn get_fileset_edit(&self, param_edit_id: String, context: &Context) -> Box<Future<Item = GetFilesetEditResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/fileset/edit/{edit_id}",
             self.base_path,
@@ -4014,7 +4014,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_release_edit(&self, param_edit_id: i64, context: &Context) -> Box<Future<Item = DeleteReleaseEditResponse, Error = ApiError> + Send> {
+    fn delete_release_edit(&self, param_edit_id: String, context: &Context) -> Box<Future<Item = DeleteReleaseEditResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/release/edit/{edit_id}",
             self.base_path,
@@ -4148,7 +4148,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_release_edit(&self, param_edit_id: i64, context: &Context) -> Box<Future<Item = GetReleaseEditResponse, Error = ApiError> + Send> {
+    fn get_release_edit(&self, param_edit_id: String, context: &Context) -> Box<Future<Item = GetReleaseEditResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/release/edit/{edit_id}",
             self.base_path,
@@ -5020,7 +5020,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_webcapture_edit(&self, param_edit_id: i64, context: &Context) -> Box<Future<Item = DeleteWebcaptureEditResponse, Error = ApiError> + Send> {
+    fn delete_webcapture_edit(&self, param_edit_id: String, context: &Context) -> Box<Future<Item = DeleteWebcaptureEditResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/webcapture/edit/{edit_id}",
             self.base_path,
@@ -5154,7 +5154,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_webcapture_edit(&self, param_edit_id: i64, context: &Context) -> Box<Future<Item = GetWebcaptureEditResponse, Error = ApiError> + Send> {
+    fn get_webcapture_edit(&self, param_edit_id: String, context: &Context) -> Box<Future<Item = GetWebcaptureEditResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/webcapture/edit/{edit_id}",
             self.base_path,
@@ -5653,7 +5653,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_work_edit(&self, param_edit_id: i64, context: &Context) -> Box<Future<Item = DeleteWorkEditResponse, Error = ApiError> + Send> {
+    fn delete_work_edit(&self, param_edit_id: String, context: &Context) -> Box<Future<Item = DeleteWorkEditResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/work/edit/{edit_id}",
             self.base_path,
@@ -5787,7 +5787,7 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_work_edit(&self, param_edit_id: i64, context: &Context) -> Box<Future<Item = GetWorkEditResponse, Error = ApiError> + Send> {
+    fn get_work_edit(&self, param_edit_id: String, context: &Context) -> Box<Future<Item = GetWorkEditResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/work/edit/{edit_id}",
             self.base_path,

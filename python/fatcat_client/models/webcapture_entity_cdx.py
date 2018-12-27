@@ -32,7 +32,7 @@ class WebcaptureEntityCdx(object):
     """
     swagger_types = {
         'surt': 'str',
-        'timestamp': 'int',
+        'timestamp': 'str',
         'url': 'str',
         'mimetype': 'str',
         'status_code': 'int',
@@ -67,7 +67,8 @@ class WebcaptureEntityCdx(object):
         self.url = url
         if mimetype is not None:
             self.mimetype = mimetype
-        self.status_code = status_code
+        if status_code is not None:
+            self.status_code = status_code
         self.sha1 = sha1
         if sha256 is not None:
             self.sha256 = sha256
@@ -101,7 +102,7 @@ class WebcaptureEntityCdx(object):
 
 
         :return: The timestamp of this WebcaptureEntityCdx.  # noqa: E501
-        :rtype: int
+        :rtype: str
         """
         return self._timestamp
 
@@ -111,7 +112,7 @@ class WebcaptureEntityCdx(object):
 
 
         :param timestamp: The timestamp of this WebcaptureEntityCdx.  # noqa: E501
-        :type: int
+        :type: str
         """
         if timestamp is None:
             raise ValueError("Invalid value for `timestamp`, must not be `None`")  # noqa: E501
@@ -180,8 +181,6 @@ class WebcaptureEntityCdx(object):
         :param status_code: The status_code of this WebcaptureEntityCdx.  # noqa: E501
         :type: int
         """
-        if status_code is None:
-            raise ValueError("Invalid value for `status_code`, must not be `None`")  # noqa: E501
 
         self._status_code = status_code
 
@@ -205,6 +204,12 @@ class WebcaptureEntityCdx(object):
         """
         if sha1 is None:
             raise ValueError("Invalid value for `sha1`, must not be `None`")  # noqa: E501
+        if sha1 is not None and len(sha1) > 40:
+            raise ValueError("Invalid value for `sha1`, length must be less than or equal to `40`")  # noqa: E501
+        if sha1 is not None and len(sha1) < 40:
+            raise ValueError("Invalid value for `sha1`, length must be greater than or equal to `40`")  # noqa: E501
+        if sha1 is not None and not re.search('[a-f0-9]{40}', sha1):  # noqa: E501
+            raise ValueError("Invalid value for `sha1`, must be a follow pattern or equal to `/[a-f0-9]{40}/`")  # noqa: E501
 
         self._sha1 = sha1
 
@@ -226,6 +231,12 @@ class WebcaptureEntityCdx(object):
         :param sha256: The sha256 of this WebcaptureEntityCdx.  # noqa: E501
         :type: str
         """
+        if sha256 is not None and len(sha256) > 64:
+            raise ValueError("Invalid value for `sha256`, length must be less than or equal to `64`")  # noqa: E501
+        if sha256 is not None and len(sha256) < 64:
+            raise ValueError("Invalid value for `sha256`, length must be greater than or equal to `64`")  # noqa: E501
+        if sha256 is not None and not re.search('[a-f0-9]{64}', sha256):  # noqa: E501
+            raise ValueError("Invalid value for `sha256`, must be a follow pattern or equal to `/[a-f0-9]{64}/`")  # noqa: E501
 
         self._sha256 = sha256
 
