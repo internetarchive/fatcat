@@ -2,6 +2,7 @@
 
 #[macro_use]
 extern crate clap;
+extern crate diesel;
 extern crate dotenv;
 #[macro_use]
 extern crate error_chain;
@@ -16,6 +17,9 @@ use clap::{App, Arg, SubCommand};
 use dotenv::dotenv;
 use std::env;
 
+use diesel::prelude::*;
+use diesel::r2d2::ConnectionManager;
+use fatcat::ConnectionPool;
 use fatcat::errors::*;
 use fatcat::api_helpers::FatCatId;
 use std::str::FromStr;
@@ -26,6 +30,18 @@ use error_chain::ChainedError;
 use std::io::prelude::*;
 use std::io::{BufReader, BufWriter};
 
+
+/// Instantiate a new API server with a pooled database connection
+// TODO: copypasta from fatcat-export
+pub fn database_worker_pool() -> Result<ConnectionPool> {
+    dotenv().ok();
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    let manager = ConnectionManager::<PgConnection>::new(database_url);
+    let pool = diesel::r2d2::Pool::builder()
+        .build(manager)
+        .expect("Failed to create database pool.");
+    Ok(pool)
+}
 
 fn run() -> Result<()> {
     let m = App::new("fatcat-auth")
@@ -67,35 +83,37 @@ fn run() -> Result<()> {
         )
         .get_matches();
 
-/*
-        value_t_or_exit!(subm, "magic", u32)
-        .after_help("Reads a ident table TSV dump from stdin (aka, ident_id, rev_id, redirect_id), \
-            and outputs JSON (one entity per line). Database connection info read from environment \
-            (DATABASE_URL, same as fatcatd).")
-*/
     match m.subcommand() {
         ("list-editors", Some(_subm)) => {
-            fatcat::auth::print_editors()?;
+            let db_conn = database_worker_pool()?.get().expect("database pool");
+            fatcat::auth::print_editors(&db_conn)?;
         },
         ("create-editor", Some(subm)) => {
-            fatcat::auth::create_editor(
+            let db_conn = database_worker_pool()?.get().expect("database pool");
+            let editor = fatcat::auth::create_editor(
+                &db_conn,
                 subm.value_of("username").unwrap().to_string(),
                 subm.is_present("admin"),
                 subm.is_present("bot"))?;
+            //println!("{:?}", editor);
+            println!("{}", FatCatId::from_uuid(&editor.id).to_string());
         },
         ("create-token", Some(subm)) => {
+            let db_conn = database_worker_pool()?.get().expect("database pool");
             let editor_id = FatCatId::from_str(subm.value_of("editor").unwrap())?;
-            fatcat::auth::create_token(editor_id, None)?;
+            fatcat::auth::create_token(&db_conn, editor_id, None)?;
         },
         ("inspect-token", Some(subm)) => {
             fatcat::auth::inspect_token(subm.value_of("token").unwrap())?;
         },
         ("revoke-tokens", Some(subm)) => {
+            let db_conn = database_worker_pool()?.get().expect("database pool");
             let editor_id = FatCatId::from_str(subm.value_of("editor").unwrap())?;
-            fatcat::auth::revoke_tokens(editor_id)?;
+            fatcat::auth::revoke_tokens(&db_conn, editor_id)?;
         },
         ("revoke-tokens-everyone", Some(_subm)) => {
-            fatcat::auth::revoke_tokens_everyone()?;
+            let db_conn = database_worker_pool()?.get().expect("database pool");
+            fatcat::auth::revoke_tokens_everyone(&db_conn)?;
         },
         _ => {
             println!("Missing or unimplemented command!");

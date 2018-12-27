@@ -578,7 +578,10 @@ pub struct EditorRow {
     pub id: Uuid,
     pub username: String,
     pub is_admin: bool,
+    pub is_bot: bool,
     pub registered: chrono::NaiveDateTime,
+    pub auth_epoch: chrono::NaiveDateTime,
+    pub wrangler_id: Option<Uuid>,
     pub active_editgroup_id: Option<Uuid>,
 }
 

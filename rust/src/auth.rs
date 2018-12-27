@@ -4,17 +4,17 @@ use swagger::auth::{AuthData, Authorization, Scopes};
 //use macaroon::{Macaroon, Verifier};
 
 use std::collections::BTreeSet;
-//use database_models::*;
-//use database_schema::*;
+use database_models::*;
+use database_schema::*;
 use api_helpers::*;
 use chrono;
-//use diesel;
+use diesel;
 use iron;
-//use diesel::prelude::*;
+use diesel::prelude::*;
 use errors::*;
-//use serde_json;
-//use std::str::FromStr;
-//use uuid::Uuid;
+use serde_json;
+use std::str::FromStr;
+use uuid::Uuid;
 
 #[derive(Debug)]
 pub struct OpenAuthMiddleware;
@@ -76,20 +76,41 @@ impl iron::middleware::BeforeMiddleware for MacaroonAuthMiddleware {
 }
 
 // DUMMY: parse macaroon
+/// On success, returns Some((editor_id, scopes)), where `scopes` is a vector of strings.
 pub fn parse_macaroon_token(s: &str) -> Result<Option<(String,Vec<String>)>> {
     Ok(Some(("some_editor_id".to_string(), vec![])))
 }
 
-pub fn print_editors() -> Result<()>{
-    unimplemented!();
+pub fn print_editors(conn: &DbConn) -> Result<()>{
     // iterate over all editors. format id, print flags, auth_epoch
+    let all_editors: Vec<EditorRow> = editor::table
+        .load(conn)?;
+    println!("editor_id\t\t\tis_admin/is_bot\tauth_epoch\t\t\tusername\twrangler_id");
+    for e in all_editors {
+        println!("{}\t{}\t{}\t{}\t{}\t{:?}",
+            FatCatId::from_uuid(&e.id).to_string(),
+            e.is_admin,
+            e.is_bot,
+            e.auth_epoch,
+            e.username,
+            e.wrangler_id,
+        );
+    }
+    Ok(())
 }
 
-pub fn create_editor(username: String, is_admin: bool, is_bot: bool) -> Result<()> { // TODO: EditorRow or something
-    unimplemented!();
+pub fn create_editor(conn: &DbConn, username: String, is_admin: bool, is_bot: bool) -> Result<EditorRow> {
+    let ed: EditorRow = diesel::insert_into(editor::table)
+        .values((
+            editor::username.eq(username),
+            editor::is_admin.eq(is_admin),
+            editor::is_bot.eq(is_bot),
+        ))
+        .get_result(conn)?;
+    Ok(ed) 
 }
 
-pub fn create_token(editor_id: FatCatId, expires: Option<chrono::NaiveDateTime>) -> Result<String> {
+pub fn create_token(conn: &DbConn, editor_id: FatCatId, expires: Option<chrono::NaiveDateTime>) -> Result<String> {
     unimplemented!();
 }
 
@@ -97,10 +118,10 @@ pub fn inspect_token(token: &str) -> Result<()> {
     unimplemented!();
 }
 
-pub fn revoke_tokens(editor_id: FatCatId) -> Result<()>{
+pub fn revoke_tokens(conn: &DbConn, editor_id: FatCatId) -> Result<()>{
     unimplemented!();
 }
 
-pub fn revoke_tokens_everyone() -> Result<u64> {
+pub fn revoke_tokens_everyone(conn: &DbConn) -> Result<u64> {
     unimplemented!();
 }

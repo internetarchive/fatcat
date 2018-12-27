@@ -97,7 +97,10 @@ table! {
         id -> Uuid,
         username -> Text,
         is_admin -> Bool,
+        is_bot -> Bool,
         registered -> Timestamptz,
+        auth_epoch -> Timestamptz,
+        wrangler_id -> Nullable<Uuid>,
         active_editgroup_id -> Nullable<Uuid>,
     }
 }
