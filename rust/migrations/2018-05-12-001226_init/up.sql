@@ -546,9 +546,9 @@ INSERT INTO fileset_rev_url (fileset_rev, rel, url) VALUES
     ('00000000-0000-0000-6666-FFF000000003', 'archive', 'https://archive.org/download/random-dataset/');
 
 INSERT INTO fileset_ident (id, is_live, rev_id, redirect_id) VALUES
-    ('00000000-0000-0000-6666-000000000001', true, '00000000-0000-0000-6666-FFF000000001', null), -- aaaaaaaaaaaaaztg77yaaaaaae
-    ('00000000-0000-0000-6666-000000000002', true, '00000000-0000-0000-6666-FFF000000002', null), -- aaaaaaaaaaaaaztg77yaaaaaai
-    ('00000000-0000-0000-6666-000000000003', true, '00000000-0000-0000-6666-FFF000000003', null); -- aaaaaaaaaaaaaztg77yaaaaaam
+    ('00000000-0000-0000-6666-000000000001', true, '00000000-0000-0000-6666-FFF000000001', null), -- aaaaaaaaaaaaaztgaaaaaaaaam
+    ('00000000-0000-0000-6666-000000000002', true, '00000000-0000-0000-6666-FFF000000002', null), -- aaaaaaaaaaaaaztgaaaaaaaaai
+    ('00000000-0000-0000-6666-000000000003', true, '00000000-0000-0000-6666-FFF000000003', null); -- aaaaaaaaaaaaaztgaaaaaaaaam
 
 INSERT INTO fileset_edit (ident_id, rev_id, redirect_id, editgroup_id, prev_rev) VALUES
     ('00000000-0000-0000-6666-000000000001', '00000000-0000-0000-6666-FFF000000001', null, '00000000-0000-0000-BBBB-000000000003', null),
@@ -571,9 +571,9 @@ INSERT INTO webcapture_rev_url (webcapture_rev, rel, url) VALUES
     ('00000000-0000-0000-7777-FFF000000003', 'warc', 'https://example.org/something.warc.gz');
 
 INSERT INTO webcapture_ident (id, is_live, rev_id, redirect_id) VALUES
-    ('00000000-0000-0000-7777-000000000001', true, '00000000-0000-0000-7777-FFF000000001', null), -- aaaaaaaaaaaaa53x77yaaaaaae
-    ('00000000-0000-0000-7777-000000000002', true, '00000000-0000-0000-7777-FFF000000002', null), -- aaaaaaaaaaaaa53x77yaaaaaai
-    ('00000000-0000-0000-7777-000000000003', true, '00000000-0000-0000-7777-FFF000000003', null); -- aaaaaaaaaaaaa53x77yaaaaaam
+    ('00000000-0000-0000-7777-000000000001', true, '00000000-0000-0000-7777-FFF000000001', null), -- aaaaaaaaaaaaa53xaaaaaaaaae
+    ('00000000-0000-0000-7777-000000000002', true, '00000000-0000-0000-7777-FFF000000002', null), -- aaaaaaaaaaaaa53xaaaaaaaaai
+    ('00000000-0000-0000-7777-000000000003', true, '00000000-0000-0000-7777-FFF000000003', null); -- aaaaaaaaaaaaa53xaaaaaaaaam
 
 INSERT INTO webcapture_edit (ident_id, rev_id, redirect_id, editgroup_id, prev_rev) VALUES
     ('00000000-0000-0000-7777-000000000001', '00000000-0000-0000-7777-FFF000000001', null, '00000000-0000-0000-BBBB-000000000003', null),

@@ -39,8 +39,8 @@ Internet Archive's internal (not public) infrastructure.
     - [x] one-to-many and many-to-many entities
     - [x] JSON(B) "extra" metadata fields
     - [x] full rev1 schema for all entities
+    - [x] file sets and web captures
     - [ ] editgroup review: comments? actions?
-    - [ ] file sets and web captures
 - HTTP API Server
     - [x] base32 encoding of UUID identifiers
     - [x] inverse many-to-many helpers (files-by-release, release-by-creator)

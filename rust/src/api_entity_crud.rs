@@ -992,7 +992,7 @@ impl EntityCrud for FilesetEntity {
     generic_db_get_edit!(fileset_edit);
     generic_db_delete_edit!(fileset_edit);
     generic_db_get_redirects!(fileset_ident);
-    generic_db_accept_edits_batch!("file", fileset_ident, fileset_edit);
+    generic_db_accept_edits_batch!("fileset", fileset_ident, fileset_edit);
     generic_db_insert_rev!();
 
     fn from_deleted_row(ident_row: Self::IdentRow) -> Result<Self> {
@@ -1200,7 +1200,7 @@ impl EntityCrud for WebcaptureEntity {
     generic_db_get_edit!(webcapture_edit);
     generic_db_delete_edit!(webcapture_edit);
     generic_db_get_redirects!(webcapture_ident);
-    generic_db_accept_edits_batch!("file", webcapture_ident, webcapture_edit);
+    generic_db_accept_edits_batch!("webcapture", webcapture_ident, webcapture_edit);
     generic_db_insert_rev!();
 
     fn from_deleted_row(ident_row: Self::IdentRow) -> Result<Self> {

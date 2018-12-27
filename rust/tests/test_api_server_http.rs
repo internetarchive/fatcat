@@ -70,6 +70,26 @@ fn test_entity_gets() {
 
     check_http_response(
         request::get(
+            "http://localhost:9411/v0/fileset/aaaaaaaaaaaaaztgaaaaaaaaam",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some(".tar.gz"),
+    );
+
+    check_http_response(
+        request::get(
+            "http://localhost:9411/v0/webcapture/aaaaaaaaaaaaa53xaaaaaaaaam",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("asheesh.org"),
+    );
+
+    check_http_response(
+        request::get(
             "http://localhost:9411/v0/release/aaaaaaaaaaaaarceaaaaaaaaai",
             headers.clone(),
             &router,
@@ -152,7 +172,27 @@ fn test_entity_history() {
 
     check_http_response(
         request::get(
-            "http://localhost:9411/v0/file/aaaaaaaaaaaaamztaaaaaaaaai/history",
+            "http://localhost:9411/v0/file/aaaaaaaaaaaaamztaaaaaaaaam/history",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("changelog"),
+    );
+
+    check_http_response(
+        request::get(
+            "http://localhost:9411/v0/fileset/aaaaaaaaaaaaaztgaaaaaaaaam/history",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("changelog"),
+    );
+
+    check_http_response(
+        request::get(
+            "http://localhost:9411/v0/webcapture/aaaaaaaaaaaaa53xaaaaaaaaam/history",
             headers.clone(),
             &router,
         ),
@@ -420,6 +460,26 @@ fn test_reverse_lookups() {
 
     check_http_response(
         request::get(
+            "http://localhost:9411/v0/release/aaaaaaaaaaaaarceaaaaaaaaai/filesets",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("README.md"),
+    );
+
+    check_http_response(
+        request::get(
+            "http://localhost:9411/v0/release/aaaaaaaaaaaaarceaaaaaaaaai/webcaptures",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("http://example.org"),
+    );
+
+    check_http_response(
+        request::get(
             "http://localhost:9411/v0/work/aaaaaaaaaaaaavkvaaaaaaaaai/releases",
             headers.clone(),
             &router,
@@ -542,6 +602,127 @@ fn test_post_file() {
         status::Ok,
         Some("web.archive.org/2/http"),
     );
+}
+
+#[test]
+fn test_post_fileset() {
+    let (headers, router, conn) = setup_http();
+
+    check_http_response(
+        request::post(
+            "http://localhost:9411/v0/fileset",
+            headers.clone(),
+            r#"{ }"#,
+            &router,
+        ),
+        status::Created,
+        None,
+    );
+
+    check_http_response(
+        request::post(
+            "http://localhost:9411/v0/fileset",
+            headers.clone(),
+            r#"{"manifest": [
+                    {"path": "new_file.txt", "size": 12345, "sha1": "e9dd75237c94b209dc3ccd52722de6931a310ba3" },
+                    {"path": "output/bogus.hdf5", "size": 43210, "sha1": "e9dd75237c94b209dc3ccd52722de6931a310ba3", "extra": {"some": "other value"} }
+                ],
+                "urls": [
+                    {"url": "http://archive.org/download/dataset-0123/", "rel": "archive" },
+                    {"url": "http://homepage.name/dataset/", "rel": "web" }
+                ],
+                "releases": [
+                    "aaaaaaaaaaaaarceaaaaaaaaae",
+                    "aaaaaaaaaaaaarceaaaaaaaaai"
+                ],
+                "extra": { "source": "speculation" }
+                }"#,
+            &router,
+        ),
+        status::Created,
+        None,
+    );
+
+    let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
+    let editgroup_id = get_or_create_editgroup(editor_id, &conn).unwrap();
+    check_http_response(
+        request::post(
+            &format!(
+                "http://localhost:9411/v0/editgroup/{}/accept",
+                uuid2fcid(&editgroup_id)
+            ),
+            headers.clone(),
+            "",
+            &router,
+        ),
+        status::Ok,
+        None,
+    );
+    // TODO: there is no lookup for filesets
+}
+
+#[test]
+fn test_post_webcapture() {
+    let (headers, router, conn) = setup_http();
+
+    check_http_response(
+        request::post(
+            "http://localhost:9411/v0/webcapture",
+            headers.clone(),
+            r#"{ "original_url": "https://fatcat.wiki",
+                 "timestamp": "2018-12-28T11:11:11Z" }"#,
+            &router,
+        ),
+        status::Created,
+        None,
+    );
+
+    check_http_response(
+        request::post(
+            "http://localhost:9411/v0/webcapture",
+            headers.clone(),
+            r#"{"original_url": "https://bnewbold.net/",
+                "timestamp": "2018-12-28T05:06:07Z",
+                "cdx": [
+                    {"surt": "org,asheesh,)/robots.txt",
+                     "timestamp": 20181228050607,
+                     "url": "https://asheesh.org/robots.txt",
+                     "status_code": 200,
+                     "mimetype": "text/html",
+                     "sha1": "e9dd75237c94b209dc3ccd52722de6931a310ba3" }
+                ],
+                "archive_urls": [
+                    {"url": "http://archive.org/download/dataset-0123/", "rel": "archive" },
+                    {"url": "http://homepage.name/dataset/", "rel": "web" }
+                ],
+                "releases": [
+                    "aaaaaaaaaaaaarceaaaaaaaaae",
+                    "aaaaaaaaaaaaarceaaaaaaaaai"
+                ],
+                "extra": { "source": "speculation" }
+                }"#,
+            &router,
+        ),
+        status::Created,
+        None,
+    );
+
+    let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
+    let editgroup_id = get_or_create_editgroup(editor_id, &conn).unwrap();
+    check_http_response(
+        request::post(
+            &format!(
+                "http://localhost:9411/v0/editgroup/{}/accept",
+                uuid2fcid(&editgroup_id)
+            ),
+            headers.clone(),
+            "",
+            &router,
+        ),
+        status::Ok,
+        None,
+    );
+    // TODO: there is no lookup for filesets
 }
 
 #[test]
