@@ -256,10 +256,10 @@ CREATE TABLE webcapture_rev_cdx (
     id                  BIGSERIAL PRIMARY KEY,
     webcapture_rev      UUID REFERENCES webcapture_rev(id) NOT NULL,
     surt                TEXT NOT NULL,
-    timestamp           BIGINT NOT NULL, -- TODO: timestamp type, or text?
+    timestamp           TEXT NOT NULL, -- TODO: timestamp type?
     url                 TEXT NOT NULL,
     mimetype            TEXT,
-    status_code         BIGINT NOT NULL,
+    status_code         BIGINT,
     sha1                TEXT CHECK(octet_length(sha1) = 40) NOT NULL,
     sha256              TEXT CHECK(octet_length(sha256) = 64)
     -- could extend with: language (detection), simhash, redirect
