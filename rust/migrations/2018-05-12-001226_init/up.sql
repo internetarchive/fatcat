@@ -85,7 +85,7 @@ CREATE INDEX creator_ident_rev_idx ON creator_ident(rev_id);
 CREATE INDEX creator_ident_redirect_idx ON creator_ident(redirect_id);
 
 CREATE TABLE creator_edit (
-    id                  BIGSERIAL PRIMARY KEY,
+    id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     editgroup_id        UUID REFERENCES editgroup(id) NOT NULL,
     updated             TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
     ident_id            UUID REFERENCES creator_ident(id) NOT NULL,
@@ -126,7 +126,7 @@ CREATE INDEX container_ident_rev_idx ON container_ident(rev_id);
 CREATE INDEX container_ident_redirect_idx ON container_ident(redirect_id);
 
 CREATE TABLE container_edit (
-    id                  BIGSERIAL PRIMARY KEY,
+    id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     editgroup_id        UUID REFERENCES editgroup(id) NOT NULL,
     updated             TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
     ident_id            UUID REFERENCES container_ident(id) NOT NULL,
@@ -174,7 +174,7 @@ CREATE INDEX file_ident_rev_idx ON file_ident(rev_id);
 CREATE INDEX file_ident_redirect_idx ON file_ident(redirect_id);
 
 CREATE TABLE file_edit (
-    id                  BIGSERIAL PRIMARY KEY,
+    id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     editgroup_id        UUID REFERENCES editgroup(id) NOT NULL,
     updated             TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
     ident_id            UUID REFERENCES file_ident(id) NOT NULL,
@@ -223,7 +223,7 @@ CREATE TABLE fileset_ident (
 CREATE INDEX fileset_ident_rev_idx ON fileset_ident(rev_id);
 
 CREATE TABLE fileset_edit (
-    id                  BIGSERIAL PRIMARY KEY,
+    id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     editgroup_id        UUID REFERENCES editgroup(id) NOT NULL,
     updated             TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
     ident_id            UUID REFERENCES fileset_ident(id) NOT NULL,
@@ -277,7 +277,7 @@ CREATE TABLE webcapture_ident (
 CREATE INDEX webcapture_ident_rev_idx ON webcapture_ident(rev_id);
 
 CREATE TABLE webcapture_edit (
-    id                  BIGSERIAL PRIMARY KEY,
+    id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     editgroup_id        UUID REFERENCES editgroup(id) NOT NULL,
     updated             TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
     ident_id            UUID REFERENCES webcapture_ident(id) NOT NULL,
@@ -346,7 +346,7 @@ CREATE INDEX release_ident_rev_idx ON release_ident(rev_id);
 CREATE INDEX release_ident_redirect_idx ON release_ident(redirect_id);
 
 CREATE TABLE release_edit (
-    id                  BIGSERIAL PRIMARY KEY,
+    id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     editgroup_id        UUID REFERENCES editgroup(id) NOT NULL,
     updated             TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
     ident_id            UUID REFERENCES release_ident(id) NOT NULL,
@@ -374,7 +374,7 @@ CREATE INDEX work_ident_rev_idx ON work_ident(rev_id);
 CREATE INDEX work_ident_redirect_idx ON work_ident(redirect_id);
 
 CREATE TABLE work_edit (
-    id                  BIGSERIAL PRIMARY KEY,
+    id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     editgroup_id        UUID REFERENCES editgroup(id) NOT NULL,
     updated             TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
     ident_id            UUID REFERENCES work_ident(id) NOT NULL,

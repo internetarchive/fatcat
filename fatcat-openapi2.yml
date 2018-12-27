@@ -414,9 +414,7 @@ definitions:
       - editgroup_id
     properties:
       edit_id:
-          type: integer
-          example: 847
-          format: int64
+          <<: *FATCATUUID
       ident:
           type: string
           example: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -792,9 +790,8 @@ paths:
       parameters:
         - name: edit_id
           in: path
-          type: integer
-          format: int64
           required: true
+          <<: *FATCATUUID
       responses:
         200:
           description: Found Edit
@@ -808,9 +805,8 @@ paths:
       parameters:
         - name: edit_id
           in: path
-          type: integer
-          format: int64
           required: true
+          <<: *FATCATUUID
       responses:
         200:
           description: Deleted Edit
@@ -1061,9 +1057,8 @@ paths:
       parameters:
         - name: edit_id
           in: path
-          type: integer
-          format: int64
           required: true
+          <<: *FATCATUUID
       responses:
         200:
           description: Found Edit
@@ -1077,9 +1072,8 @@ paths:
       parameters:
         - name: edit_id
           in: path
-          type: integer
-          format: int64
           required: true
+          <<: *FATCATUUID
       responses:
         200:
           description: Deleted Edit
@@ -1312,9 +1306,8 @@ paths:
       parameters:
         - name: edit_id
           in: path
-          type: integer
-          format: int64
           required: true
+          <<: *FATCATUUID
       responses:
         200:
           description: Found Edit
@@ -1328,9 +1321,8 @@ paths:
       parameters:
         - name: edit_id
           in: path
-          type: integer
-          format: int64
           required: true
+          <<: *FATCATUUID
       responses:
         200:
           description: Deleted Edit
@@ -1529,9 +1521,8 @@ paths:
       parameters:
         - name: edit_id
           in: path
-          type: integer
-          format: int64
           required: true
+          <<: *FATCATUUID
       responses:
         200:
           description: Found Edit
@@ -1545,9 +1536,8 @@ paths:
       parameters:
         - name: edit_id
           in: path
-          type: integer
-          format: int64
           required: true
+          <<: *FATCATUUID
       responses:
         200:
           description: Deleted Edit
@@ -1746,9 +1736,8 @@ paths:
       parameters:
         - name: edit_id
           in: path
-          type: integer
-          format: int64
           required: true
+          <<: *FATCATUUID
       responses:
         200:
           description: Found Edit
@@ -1762,9 +1751,8 @@ paths:
       parameters:
         - name: edit_id
           in: path
-          type: integer
-          format: int64
           required: true
+          <<: *FATCATUUID
       responses:
         200:
           description: Deleted Edit
@@ -2078,9 +2066,8 @@ paths:
       parameters:
         - name: edit_id
           in: path
-          type: integer
-          format: int64
           required: true
+          <<: *FATCATUUID
       responses:
         200:
           description: Found Edit
@@ -2094,9 +2081,8 @@ paths:
       parameters:
         - name: edit_id
           in: path
-          type: integer
-          format: int64
           required: true
+          <<: *FATCATUUID
       responses:
         200:
           description: Deleted Edit
@@ -2318,9 +2304,8 @@ paths:
       parameters:
         - name: edit_id
           in: path
-          type: integer
-          format: int64
           required: true
+          <<: *FATCATUUID
       responses:
         200:
           description: Found Edit
@@ -2334,9 +2319,8 @@ paths:
       parameters:
         - name: edit_id
           in: path
-          type: integer
-          format: int64
           required: true
+          <<: *FATCATUUID
       responses:
         200:
           description: Deleted Edit
