@@ -46,6 +46,8 @@ arg_enum! {
         Creator,
         Container,
         File,
+        Fileset,
+        Webcapture,
         Release,
         Work
     }
@@ -107,6 +109,8 @@ macro_rules! generic_loop_work {
 generic_loop_work!(loop_work_container, ContainerEntity);
 generic_loop_work!(loop_work_creator, CreatorEntity);
 generic_loop_work!(loop_work_file, FileEntity);
+generic_loop_work!(loop_work_fileset, FilesetEntity);
+generic_loop_work!(loop_work_webcapture, WebcaptureEntity);
 generic_loop_work!(loop_work_release, ReleaseEntity);
 generic_loop_work!(loop_work_work, WorkEntity);
 
@@ -202,6 +206,12 @@ pub fn do_export(
             }),
             ExportEntityType::File => {
                 thread::spawn(move || loop_work_file(row_receiver, output_sender, &db_conn, expand))
+            }
+            ExportEntityType::Fileset => {
+                thread::spawn(move || loop_work_fileset(row_receiver, output_sender, &db_conn, expand))
+            }
+            ExportEntityType::Webcapture=> {
+                thread::spawn(move || loop_work_webcapture(row_receiver, output_sender, &db_conn, expand))
             }
             ExportEntityType::Release => thread::spawn(move || {
                 loop_work_release(row_receiver, output_sender, &db_conn, expand)
