@@ -238,16 +238,14 @@ definitions:
             - surt
             - timestamp
             - url
-            - status_code
             - sha1
           properties:
             surt:
               type: string
               example: "org,asheesh)/apus/ch1/node15.html"
             timestamp:
-              type: integer
-              example: 20020429162520
-              format: int64
+              type: string
+              example: "20020429162520"
             url:
               type: string
               example: "http://www.asheesh.org:80/APUS/ch1/node15.html"

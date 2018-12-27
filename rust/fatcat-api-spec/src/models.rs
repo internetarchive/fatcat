@@ -943,7 +943,7 @@ pub struct WebcaptureEntityCdx {
     pub surt: String,
 
     #[serde(rename = "timestamp")]
-    pub timestamp: i64,
+    pub timestamp: String,
 
     #[serde(rename = "url")]
     pub url: String,
@@ -953,7 +953,8 @@ pub struct WebcaptureEntityCdx {
     pub mimetype: Option<String>,
 
     #[serde(rename = "status_code")]
-    pub status_code: i64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub status_code: Option<i64>,
 
     #[serde(rename = "sha1")]
     pub sha1: String,
@@ -964,13 +965,13 @@ pub struct WebcaptureEntityCdx {
 }
 
 impl WebcaptureEntityCdx {
-    pub fn new(surt: String, timestamp: i64, url: String, status_code: i64, sha1: String) -> WebcaptureEntityCdx {
+    pub fn new(surt: String, timestamp: String, url: String, sha1: String) -> WebcaptureEntityCdx {
         WebcaptureEntityCdx {
             surt: surt,
             timestamp: timestamp,
             url: url,
             mimetype: None,
-            status_code: status_code,
+            status_code: None,
             sha1: sha1,
             sha256: None,
         }

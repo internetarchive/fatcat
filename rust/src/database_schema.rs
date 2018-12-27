@@ -330,10 +330,10 @@ table! {
         id -> Int8,
         webcapture_rev -> Uuid,
         surt -> Text,
-        timestamp -> Int8,
+        timestamp -> Text,
         url -> Text,
         mimetype -> Nullable<Text>,
-        status_code -> Int8,
+        status_code -> Nullable<Int8>,
         sha1 -> Text,
         sha256 -> Nullable<Text>,
     }

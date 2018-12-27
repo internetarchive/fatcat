@@ -305,10 +305,10 @@ pub struct WebcaptureRevCdxRow {
     pub id: i64,
     pub webcapture_rev: Uuid,
     pub surt: String,
-    pub timestamp: i64,
+    pub timestamp: String,
     pub url: String,
     pub mimetype: Option<String>,
-    pub status_code: i64,
+    pub status_code: Option<i64>,
     pub sha1: String,
     pub sha256: Option<String>,
 }
@@ -318,10 +318,10 @@ pub struct WebcaptureRevCdxRow {
 pub struct WebcaptureRevCdxNewRow {
     pub webcapture_rev: Uuid,
     pub surt: String,
-    pub timestamp: i64,
+    pub timestamp: String,
     pub url: String,
     pub mimetype: Option<String>,
-    pub status_code: i64,
+    pub status_code: Option<i64>,
     pub sha1: String,
     pub sha256: Option<String>,
 }

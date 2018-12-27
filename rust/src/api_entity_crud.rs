@@ -1334,7 +1334,7 @@ impl EntityCrud for WebcaptureEntity {
                         .map(|c| WebcaptureRevCdxNewRow {
                             webcapture_rev: *rev_id,
                             surt: c.surt.clone(),
-                            timestamp: c.timestamp,
+                            timestamp: c.timestamp.clone(),
                             url: c.url.clone(),
                             mimetype: c.mimetype.clone(),
                             status_code: c.status_code,

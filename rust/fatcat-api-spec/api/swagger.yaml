@@ -5928,14 +5928,14 @@ definitions:
         sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
         mimetype: "text/html"
         url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
-        timestamp: 20020429162520
+        timestamp: "20020429162520"
       - sha1: "3f242a192acc258bdfdb151943419437f440c313"
         surt: "org,asheesh)/apus/ch1/node15.html"
         status_code: 200
         sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
         mimetype: "text/html"
         url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
-        timestamp: 20020429162520
+        timestamp: "20020429162520"
       ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
       extra: "{}"
       state: "wip"
@@ -6087,14 +6087,14 @@ definitions:
           sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
           mimetype: "text/html"
           url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
-          timestamp: 20020429162520
+          timestamp: "20020429162520"
         - sha1: "3f242a192acc258bdfdb151943419437f440c313"
           surt: "org,asheesh)/apus/ch1/node15.html"
           status_code: 200
           sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
           mimetype: "text/html"
           url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
-          timestamp: 20020429162520
+          timestamp: "20020429162520"
         ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
         extra: "{}"
         state: "wip"
@@ -6118,14 +6118,14 @@ definitions:
           sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
           mimetype: "text/html"
           url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
-          timestamp: 20020429162520
+          timestamp: "20020429162520"
         - sha1: "3f242a192acc258bdfdb151943419437f440c313"
           surt: "org,asheesh)/apus/ch1/node15.html"
           status_code: 200
           sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
           mimetype: "text/html"
           url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
-          timestamp: 20020429162520
+          timestamp: "20020429162520"
         ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
         extra: "{}"
         state: "wip"
@@ -7064,7 +7064,6 @@ definitions:
   webcapture_entity_cdx:
     required:
     - "sha1"
-    - "status_code"
     - "surt"
     - "timestamp"
     - "url"
@@ -7073,9 +7072,8 @@ definitions:
         type: "string"
         example: "org,asheesh)/apus/ch1/node15.html"
       timestamp:
-        type: "integer"
-        format: "int64"
-        example: 20020429162520
+        type: "string"
+        example: "20020429162520"
       url:
         type: "string"
         example: "http://www.asheesh.org:80/APUS/ch1/node15.html"
@@ -7099,7 +7097,7 @@ definitions:
       sha256: "a77e4c11a57f1d757fca5754a8f83b5d4ece49a2d28596889127c1a2f3f28832"
       mimetype: "text/html"
       url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
-      timestamp: 20020429162520
+      timestamp: "20020429162520"
     upperCaseName: "WEBCAPTURE_ENTITY_CDX"
   release_entity_abstracts:
     properties:
