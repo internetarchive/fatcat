@@ -76,8 +76,12 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**create_editgroup**](docs/DefaultApi.md#create_editgroup) | **POST** /editgroup | 
 *DefaultApi* | [**create_file**](docs/DefaultApi.md#create_file) | **POST** /file | 
 *DefaultApi* | [**create_file_batch**](docs/DefaultApi.md#create_file_batch) | **POST** /file/batch | 
+*DefaultApi* | [**create_fileset**](docs/DefaultApi.md#create_fileset) | **POST** /fileset | 
+*DefaultApi* | [**create_fileset_batch**](docs/DefaultApi.md#create_fileset_batch) | **POST** /fileset/batch | 
 *DefaultApi* | [**create_release**](docs/DefaultApi.md#create_release) | **POST** /release | 
 *DefaultApi* | [**create_release_batch**](docs/DefaultApi.md#create_release_batch) | **POST** /release/batch | 
+*DefaultApi* | [**create_webcapture**](docs/DefaultApi.md#create_webcapture) | **POST** /webcapture | 
+*DefaultApi* | [**create_webcapture_batch**](docs/DefaultApi.md#create_webcapture_batch) | **POST** /webcapture/batch | 
 *DefaultApi* | [**create_work**](docs/DefaultApi.md#create_work) | **POST** /work | 
 *DefaultApi* | [**create_work_batch**](docs/DefaultApi.md#create_work_batch) | **POST** /work/batch | 
 *DefaultApi* | [**delete_container**](docs/DefaultApi.md#delete_container) | **DELETE** /container/{ident} | 
@@ -86,8 +90,12 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**delete_creator_edit**](docs/DefaultApi.md#delete_creator_edit) | **DELETE** /creator/edit/{edit_id} | 
 *DefaultApi* | [**delete_file**](docs/DefaultApi.md#delete_file) | **DELETE** /file/{ident} | 
 *DefaultApi* | [**delete_file_edit**](docs/DefaultApi.md#delete_file_edit) | **DELETE** /file/edit/{edit_id} | 
+*DefaultApi* | [**delete_fileset**](docs/DefaultApi.md#delete_fileset) | **DELETE** /fileset/{ident} | 
+*DefaultApi* | [**delete_fileset_edit**](docs/DefaultApi.md#delete_fileset_edit) | **DELETE** /fileset/edit/{edit_id} | 
 *DefaultApi* | [**delete_release**](docs/DefaultApi.md#delete_release) | **DELETE** /release/{ident} | 
 *DefaultApi* | [**delete_release_edit**](docs/DefaultApi.md#delete_release_edit) | **DELETE** /release/edit/{edit_id} | 
+*DefaultApi* | [**delete_webcapture**](docs/DefaultApi.md#delete_webcapture) | **DELETE** /webcapture/{ident} | 
+*DefaultApi* | [**delete_webcapture_edit**](docs/DefaultApi.md#delete_webcapture_edit) | **DELETE** /webcapture/edit/{edit_id} | 
 *DefaultApi* | [**delete_work**](docs/DefaultApi.md#delete_work) | **DELETE** /work/{ident} | 
 *DefaultApi* | [**delete_work_edit**](docs/DefaultApi.md#delete_work_edit) | **DELETE** /work/edit/{edit_id} | 
 *DefaultApi* | [**get_changelog**](docs/DefaultApi.md#get_changelog) | **GET** /changelog | 
@@ -111,12 +119,24 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**get_file_history**](docs/DefaultApi.md#get_file_history) | **GET** /file/{ident}/history | 
 *DefaultApi* | [**get_file_redirects**](docs/DefaultApi.md#get_file_redirects) | **GET** /file/{ident}/redirects | 
 *DefaultApi* | [**get_file_revision**](docs/DefaultApi.md#get_file_revision) | **GET** /file/rev/{rev_id} | 
+*DefaultApi* | [**get_fileset**](docs/DefaultApi.md#get_fileset) | **GET** /fileset/{ident} | 
+*DefaultApi* | [**get_fileset_edit**](docs/DefaultApi.md#get_fileset_edit) | **GET** /fileset/edit/{edit_id} | 
+*DefaultApi* | [**get_fileset_history**](docs/DefaultApi.md#get_fileset_history) | **GET** /fileset/{ident}/history | 
+*DefaultApi* | [**get_fileset_redirects**](docs/DefaultApi.md#get_fileset_redirects) | **GET** /fileset/{ident}/redirects | 
+*DefaultApi* | [**get_fileset_revision**](docs/DefaultApi.md#get_fileset_revision) | **GET** /fileset/rev/{rev_id} | 
 *DefaultApi* | [**get_release**](docs/DefaultApi.md#get_release) | **GET** /release/{ident} | 
 *DefaultApi* | [**get_release_edit**](docs/DefaultApi.md#get_release_edit) | **GET** /release/edit/{edit_id} | 
 *DefaultApi* | [**get_release_files**](docs/DefaultApi.md#get_release_files) | **GET** /release/{ident}/files | 
+*DefaultApi* | [**get_release_filesets**](docs/DefaultApi.md#get_release_filesets) | **GET** /release/{ident}/filesets | 
 *DefaultApi* | [**get_release_history**](docs/DefaultApi.md#get_release_history) | **GET** /release/{ident}/history | 
 *DefaultApi* | [**get_release_redirects**](docs/DefaultApi.md#get_release_redirects) | **GET** /release/{ident}/redirects | 
 *DefaultApi* | [**get_release_revision**](docs/DefaultApi.md#get_release_revision) | **GET** /release/rev/{rev_id} | 
+*DefaultApi* | [**get_release_webcaptures**](docs/DefaultApi.md#get_release_webcaptures) | **GET** /release/{ident}/webcaptures | 
+*DefaultApi* | [**get_webcapture**](docs/DefaultApi.md#get_webcapture) | **GET** /webcapture/{ident} | 
+*DefaultApi* | [**get_webcapture_edit**](docs/DefaultApi.md#get_webcapture_edit) | **GET** /webcapture/edit/{edit_id} | 
+*DefaultApi* | [**get_webcapture_history**](docs/DefaultApi.md#get_webcapture_history) | **GET** /webcapture/{ident}/history | 
+*DefaultApi* | [**get_webcapture_redirects**](docs/DefaultApi.md#get_webcapture_redirects) | **GET** /webcapture/{ident}/redirects | 
+*DefaultApi* | [**get_webcapture_revision**](docs/DefaultApi.md#get_webcapture_revision) | **GET** /webcapture/rev/{rev_id} | 
 *DefaultApi* | [**get_work**](docs/DefaultApi.md#get_work) | **GET** /work/{ident} | 
 *DefaultApi* | [**get_work_edit**](docs/DefaultApi.md#get_work_edit) | **GET** /work/edit/{edit_id} | 
 *DefaultApi* | [**get_work_history**](docs/DefaultApi.md#get_work_history) | **GET** /work/{ident}/history | 
@@ -130,7 +150,9 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**update_container**](docs/DefaultApi.md#update_container) | **PUT** /container/{ident} | 
 *DefaultApi* | [**update_creator**](docs/DefaultApi.md#update_creator) | **PUT** /creator/{ident} | 
 *DefaultApi* | [**update_file**](docs/DefaultApi.md#update_file) | **PUT** /file/{ident} | 
+*DefaultApi* | [**update_fileset**](docs/DefaultApi.md#update_fileset) | **PUT** /fileset/{ident} | 
 *DefaultApi* | [**update_release**](docs/DefaultApi.md#update_release) | **PUT** /release/{ident} | 
+*DefaultApi* | [**update_webcapture**](docs/DefaultApi.md#update_webcapture) | **PUT** /webcapture/{ident} | 
 *DefaultApi* | [**update_work**](docs/DefaultApi.md#update_work) | **PUT** /work/{ident} | 
 
 
@@ -147,11 +169,16 @@ Class | Method | HTTP request | Description
  - [ErrorResponse](docs/ErrorResponse.md)
  - [FileEntity](docs/FileEntity.md)
  - [FileEntityUrls](docs/FileEntityUrls.md)
+ - [FilesetEntity](docs/FilesetEntity.md)
+ - [FilesetEntityManifest](docs/FilesetEntityManifest.md)
  - [ReleaseContrib](docs/ReleaseContrib.md)
  - [ReleaseEntity](docs/ReleaseEntity.md)
  - [ReleaseEntityAbstracts](docs/ReleaseEntityAbstracts.md)
  - [ReleaseRef](docs/ReleaseRef.md)
  - [Success](docs/Success.md)
+ - [WebcaptureEntity](docs/WebcaptureEntity.md)
+ - [WebcaptureEntityArchiveUrls](docs/WebcaptureEntityArchiveUrls.md)
+ - [WebcaptureEntityCdx](docs/WebcaptureEntityCdx.md)
  - [WorkEntity](docs/WorkEntity.md)
 
 

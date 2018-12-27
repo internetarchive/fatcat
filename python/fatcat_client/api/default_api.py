@@ -853,6 +853,212 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
+    def create_fileset(self, entity, **kwargs):  # noqa: E501
+        """create_fileset  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.create_fileset(entity, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param FilesetEntity entity: (required)
+        :param str editgroup_id:
+        :return: EntityEdit
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.create_fileset_with_http_info(entity, **kwargs)  # noqa: E501
+        else:
+            (data) = self.create_fileset_with_http_info(entity, **kwargs)  # noqa: E501
+            return data
+
+    def create_fileset_with_http_info(self, entity, **kwargs):  # noqa: E501
+        """create_fileset  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.create_fileset_with_http_info(entity, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param FilesetEntity entity: (required)
+        :param str editgroup_id:
+        :return: EntityEdit
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['entity', 'editgroup_id']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method create_fileset" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'entity' is set
+        if ('entity' not in params or
+                params['entity'] is None):
+            raise ValueError("Missing the required parameter `entity` when calling `create_fileset`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+
+        query_params = []
+        if 'editgroup_id' in params:
+            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        if 'entity' in params:
+            body_params = params['entity']
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/fileset', 'POST',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='EntityEdit',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def create_fileset_batch(self, entity_list, **kwargs):  # noqa: E501
+        """create_fileset_batch  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.create_fileset_batch(entity_list, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param list[FilesetEntity] entity_list: (required)
+        :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
+        :param str editgroup_id: Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)
+        :return: list[EntityEdit]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.create_fileset_batch_with_http_info(entity_list, **kwargs)  # noqa: E501
+        else:
+            (data) = self.create_fileset_batch_with_http_info(entity_list, **kwargs)  # noqa: E501
+            return data
+
+    def create_fileset_batch_with_http_info(self, entity_list, **kwargs):  # noqa: E501
+        """create_fileset_batch  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.create_fileset_batch_with_http_info(entity_list, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param list[FilesetEntity] entity_list: (required)
+        :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
+        :param str editgroup_id: Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)
+        :return: list[EntityEdit]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['entity_list', 'autoaccept', 'editgroup_id']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method create_fileset_batch" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'entity_list' is set
+        if ('entity_list' not in params or
+                params['entity_list'] is None):
+            raise ValueError("Missing the required parameter `entity_list` when calling `create_fileset_batch`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+
+        query_params = []
+        if 'autoaccept' in params:
+            query_params.append(('autoaccept', params['autoaccept']))  # noqa: E501
+        if 'editgroup_id' in params:
+            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        if 'entity_list' in params:
+            body_params = params['entity_list']
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/fileset/batch', 'POST',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='list[EntityEdit]',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
     def create_release(self, entity, **kwargs):  # noqa: E501
         """create_release  # noqa: E501
 
@@ -1045,6 +1251,212 @@ class DefaultApi(object):
 
         return self.api_client.call_api(
             '/release/batch', 'POST',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='list[EntityEdit]',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def create_webcapture(self, entity, **kwargs):  # noqa: E501
+        """create_webcapture  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.create_webcapture(entity, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param WebcaptureEntity entity: (required)
+        :param str editgroup_id:
+        :return: EntityEdit
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.create_webcapture_with_http_info(entity, **kwargs)  # noqa: E501
+        else:
+            (data) = self.create_webcapture_with_http_info(entity, **kwargs)  # noqa: E501
+            return data
+
+    def create_webcapture_with_http_info(self, entity, **kwargs):  # noqa: E501
+        """create_webcapture  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.create_webcapture_with_http_info(entity, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param WebcaptureEntity entity: (required)
+        :param str editgroup_id:
+        :return: EntityEdit
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['entity', 'editgroup_id']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method create_webcapture" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'entity' is set
+        if ('entity' not in params or
+                params['entity'] is None):
+            raise ValueError("Missing the required parameter `entity` when calling `create_webcapture`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+
+        query_params = []
+        if 'editgroup_id' in params:
+            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        if 'entity' in params:
+            body_params = params['entity']
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/webcapture', 'POST',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='EntityEdit',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def create_webcapture_batch(self, entity_list, **kwargs):  # noqa: E501
+        """create_webcapture_batch  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.create_webcapture_batch(entity_list, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param list[WebcaptureEntity] entity_list: (required)
+        :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
+        :param str editgroup_id: Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)
+        :return: list[EntityEdit]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.create_webcapture_batch_with_http_info(entity_list, **kwargs)  # noqa: E501
+        else:
+            (data) = self.create_webcapture_batch_with_http_info(entity_list, **kwargs)  # noqa: E501
+            return data
+
+    def create_webcapture_batch_with_http_info(self, entity_list, **kwargs):  # noqa: E501
+        """create_webcapture_batch  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.create_webcapture_batch_with_http_info(entity_list, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param list[WebcaptureEntity] entity_list: (required)
+        :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
+        :param str editgroup_id: Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)
+        :return: list[EntityEdit]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['entity_list', 'autoaccept', 'editgroup_id']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method create_webcapture_batch" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'entity_list' is set
+        if ('entity_list' not in params or
+                params['entity_list'] is None):
+            raise ValueError("Missing the required parameter `entity_list` when calling `create_webcapture_batch`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+
+        query_params = []
+        if 'autoaccept' in params:
+            query_params.append(('autoaccept', params['autoaccept']))  # noqa: E501
+        if 'editgroup_id' in params:
+            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        if 'entity_list' in params:
+            body_params = params['entity_list']
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/webcapture/batch', 'POST',
             path_params,
             query_params,
             header_params,
@@ -1859,6 +2271,204 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
+    def delete_fileset(self, ident, **kwargs):  # noqa: E501
+        """delete_fileset  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.delete_fileset(ident, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str ident: (required)
+        :param str editgroup_id:
+        :return: EntityEdit
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.delete_fileset_with_http_info(ident, **kwargs)  # noqa: E501
+        else:
+            (data) = self.delete_fileset_with_http_info(ident, **kwargs)  # noqa: E501
+            return data
+
+    def delete_fileset_with_http_info(self, ident, **kwargs):  # noqa: E501
+        """delete_fileset  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.delete_fileset_with_http_info(ident, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str ident: (required)
+        :param str editgroup_id:
+        :return: EntityEdit
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['ident', 'editgroup_id']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method delete_fileset" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'ident' is set
+        if ('ident' not in params or
+                params['ident'] is None):
+            raise ValueError("Missing the required parameter `ident` when calling `delete_fileset`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'ident' in params:
+            path_params['ident'] = params['ident']  # noqa: E501
+
+        query_params = []
+        if 'editgroup_id' in params:
+            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/fileset/{ident}', 'DELETE',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='EntityEdit',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def delete_fileset_edit(self, edit_id, **kwargs):  # noqa: E501
+        """delete_fileset_edit  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.delete_fileset_edit(edit_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int edit_id: (required)
+        :return: Success
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.delete_fileset_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.delete_fileset_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+            return data
+
+    def delete_fileset_edit_with_http_info(self, edit_id, **kwargs):  # noqa: E501
+        """delete_fileset_edit  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.delete_fileset_edit_with_http_info(edit_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int edit_id: (required)
+        :return: Success
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['edit_id']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method delete_fileset_edit" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'edit_id' is set
+        if ('edit_id' not in params or
+                params['edit_id'] is None):
+            raise ValueError("Missing the required parameter `edit_id` when calling `delete_fileset_edit`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'edit_id' in params:
+            path_params['edit_id'] = params['edit_id']  # noqa: E501
+
+        query_params = []
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/fileset/edit/{edit_id}', 'DELETE',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='Success',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
     def delete_release(self, ident, **kwargs):  # noqa: E501
         """delete_release  # noqa: E501
 
@@ -2043,6 +2653,204 @@ class DefaultApi(object):
 
         return self.api_client.call_api(
             '/release/edit/{edit_id}', 'DELETE',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='Success',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def delete_webcapture(self, ident, **kwargs):  # noqa: E501
+        """delete_webcapture  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.delete_webcapture(ident, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str ident: (required)
+        :param str editgroup_id:
+        :return: EntityEdit
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.delete_webcapture_with_http_info(ident, **kwargs)  # noqa: E501
+        else:
+            (data) = self.delete_webcapture_with_http_info(ident, **kwargs)  # noqa: E501
+            return data
+
+    def delete_webcapture_with_http_info(self, ident, **kwargs):  # noqa: E501
+        """delete_webcapture  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.delete_webcapture_with_http_info(ident, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str ident: (required)
+        :param str editgroup_id:
+        :return: EntityEdit
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['ident', 'editgroup_id']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method delete_webcapture" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'ident' is set
+        if ('ident' not in params or
+                params['ident'] is None):
+            raise ValueError("Missing the required parameter `ident` when calling `delete_webcapture`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'ident' in params:
+            path_params['ident'] = params['ident']  # noqa: E501
+
+        query_params = []
+        if 'editgroup_id' in params:
+            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/webcapture/{ident}', 'DELETE',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='EntityEdit',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def delete_webcapture_edit(self, edit_id, **kwargs):  # noqa: E501
+        """delete_webcapture_edit  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.delete_webcapture_edit(edit_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int edit_id: (required)
+        :return: Success
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.delete_webcapture_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.delete_webcapture_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+            return data
+
+    def delete_webcapture_edit_with_http_info(self, edit_id, **kwargs):  # noqa: E501
+        """delete_webcapture_edit  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.delete_webcapture_edit_with_http_info(edit_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int edit_id: (required)
+        :return: Success
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['edit_id']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method delete_webcapture_edit" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'edit_id' is set
+        if ('edit_id' not in params or
+                params['edit_id'] is None):
+            raise ValueError("Missing the required parameter `edit_id` when calling `delete_webcapture_edit`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'edit_id' in params:
+            path_params['edit_id'] = params['edit_id']  # noqa: E501
+
+        query_params = []
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/webcapture/edit/{edit_id}', 'DELETE',
             path_params,
             query_params,
             header_params,
@@ -3360,7 +4168,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str ident: (required)
-        :param str hide: List of entity fields to elide in response. For releases, 'abstracts', 'refs', and 'contribs' are valid.
+        :param str hide: List of entity fields to elide in response. For creators, none implemented yet.
         :return: list[ReleaseEntity]
                  If the method is called asynchronously,
                  returns the request thread.
@@ -3382,7 +4190,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str ident: (required)
-        :param str hide: List of entity fields to elide in response. For releases, 'abstracts', 'refs', and 'contribs' are valid.
+        :param str hide: List of entity fields to elide in response. For creators, none implemented yet.
         :return: list[ReleaseEntity]
                  If the method is called asynchronously,
                  returns the request thread.
@@ -4360,6 +5168,511 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
+    def get_fileset(self, ident, **kwargs):  # noqa: E501
+        """get_fileset  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_fileset(ident, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str ident: (required)
+        :param str expand: List of sub-entities to expand in response. For filesets, none accepted (yet).
+        :param str hide: List of entity fields to elide in response. For filesets, 'manifest' is accepted.
+        :return: FilesetEntity
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.get_fileset_with_http_info(ident, **kwargs)  # noqa: E501
+        else:
+            (data) = self.get_fileset_with_http_info(ident, **kwargs)  # noqa: E501
+            return data
+
+    def get_fileset_with_http_info(self, ident, **kwargs):  # noqa: E501
+        """get_fileset  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_fileset_with_http_info(ident, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str ident: (required)
+        :param str expand: List of sub-entities to expand in response. For filesets, none accepted (yet).
+        :param str hide: List of entity fields to elide in response. For filesets, 'manifest' is accepted.
+        :return: FilesetEntity
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['ident', 'expand', 'hide']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method get_fileset" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'ident' is set
+        if ('ident' not in params or
+                params['ident'] is None):
+            raise ValueError("Missing the required parameter `ident` when calling `get_fileset`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'ident' in params:
+            path_params['ident'] = params['ident']  # noqa: E501
+
+        query_params = []
+        if 'expand' in params:
+            query_params.append(('expand', params['expand']))  # noqa: E501
+        if 'hide' in params:
+            query_params.append(('hide', params['hide']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/fileset/{ident}', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='FilesetEntity',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def get_fileset_edit(self, edit_id, **kwargs):  # noqa: E501
+        """get_fileset_edit  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_fileset_edit(edit_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int edit_id: (required)
+        :return: EntityEdit
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.get_fileset_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.get_fileset_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+            return data
+
+    def get_fileset_edit_with_http_info(self, edit_id, **kwargs):  # noqa: E501
+        """get_fileset_edit  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_fileset_edit_with_http_info(edit_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int edit_id: (required)
+        :return: EntityEdit
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['edit_id']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method get_fileset_edit" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'edit_id' is set
+        if ('edit_id' not in params or
+                params['edit_id'] is None):
+            raise ValueError("Missing the required parameter `edit_id` when calling `get_fileset_edit`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'edit_id' in params:
+            path_params['edit_id'] = params['edit_id']  # noqa: E501
+
+        query_params = []
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/fileset/edit/{edit_id}', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='EntityEdit',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def get_fileset_history(self, ident, **kwargs):  # noqa: E501
+        """get_fileset_history  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_fileset_history(ident, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str ident: (required)
+        :param int limit:
+        :return: list[EntityHistoryEntry]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.get_fileset_history_with_http_info(ident, **kwargs)  # noqa: E501
+        else:
+            (data) = self.get_fileset_history_with_http_info(ident, **kwargs)  # noqa: E501
+            return data
+
+    def get_fileset_history_with_http_info(self, ident, **kwargs):  # noqa: E501
+        """get_fileset_history  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_fileset_history_with_http_info(ident, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str ident: (required)
+        :param int limit:
+        :return: list[EntityHistoryEntry]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['ident', 'limit']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method get_fileset_history" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'ident' is set
+        if ('ident' not in params or
+                params['ident'] is None):
+            raise ValueError("Missing the required parameter `ident` when calling `get_fileset_history`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'ident' in params:
+            path_params['ident'] = params['ident']  # noqa: E501
+
+        query_params = []
+        if 'limit' in params:
+            query_params.append(('limit', params['limit']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/fileset/{ident}/history', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='list[EntityHistoryEntry]',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def get_fileset_redirects(self, ident, **kwargs):  # noqa: E501
+        """get_fileset_redirects  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_fileset_redirects(ident, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str ident: (required)
+        :return: list[str]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.get_fileset_redirects_with_http_info(ident, **kwargs)  # noqa: E501
+        else:
+            (data) = self.get_fileset_redirects_with_http_info(ident, **kwargs)  # noqa: E501
+            return data
+
+    def get_fileset_redirects_with_http_info(self, ident, **kwargs):  # noqa: E501
+        """get_fileset_redirects  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_fileset_redirects_with_http_info(ident, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str ident: (required)
+        :return: list[str]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['ident']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method get_fileset_redirects" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'ident' is set
+        if ('ident' not in params or
+                params['ident'] is None):
+            raise ValueError("Missing the required parameter `ident` when calling `get_fileset_redirects`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'ident' in params:
+            path_params['ident'] = params['ident']  # noqa: E501
+
+        query_params = []
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/fileset/{ident}/redirects', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='list[str]',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def get_fileset_revision(self, rev_id, **kwargs):  # noqa: E501
+        """get_fileset_revision  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_fileset_revision(rev_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str rev_id: (required)
+        :param str expand: List of sub-entities to expand in response. For filesets, none accepted (yet).
+        :param str hide: List of entity fields to elide in response. For filesets, 'manifest' is accepted.
+        :return: FilesetEntity
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.get_fileset_revision_with_http_info(rev_id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.get_fileset_revision_with_http_info(rev_id, **kwargs)  # noqa: E501
+            return data
+
+    def get_fileset_revision_with_http_info(self, rev_id, **kwargs):  # noqa: E501
+        """get_fileset_revision  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_fileset_revision_with_http_info(rev_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str rev_id: (required)
+        :param str expand: List of sub-entities to expand in response. For filesets, none accepted (yet).
+        :param str hide: List of entity fields to elide in response. For filesets, 'manifest' is accepted.
+        :return: FilesetEntity
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['rev_id', 'expand', 'hide']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method get_fileset_revision" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'rev_id' is set
+        if ('rev_id' not in params or
+                params['rev_id'] is None):
+            raise ValueError("Missing the required parameter `rev_id` when calling `get_fileset_revision`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'rev_id' in params:
+            path_params['rev_id'] = params['rev_id']  # noqa: E501
+
+        query_params = []
+        if 'expand' in params:
+            query_params.append(('expand', params['expand']))  # noqa: E501
+        if 'hide' in params:
+            query_params.append(('hide', params['hide']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/fileset/rev/{rev_id}', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='FilesetEntity',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
     def get_release(self, ident, **kwargs):  # noqa: E501
         """get_release  # noqa: E501
 
@@ -4370,7 +5683,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str ident: (required)
-        :param str expand: List of sub-entities to expand in response. For releases, 'files', 'container', and 'creators' are valid.
+        :param str expand: List of sub-entities to expand in response. For releases, 'files', 'filesets, 'webcaptures', 'container', and 'creators' are valid.
         :param str hide: List of entity fields to elide in response. For releases, 'abstracts', 'refs', and 'contribs' are valid.
         :return: ReleaseEntity
                  If the method is called asynchronously,
@@ -4393,7 +5706,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str ident: (required)
-        :param str expand: List of sub-entities to expand in response. For releases, 'files', 'container', and 'creators' are valid.
+        :param str expand: List of sub-entities to expand in response. For releases, 'files', 'filesets, 'webcaptures', 'container', and 'creators' are valid.
         :param str hide: List of entity fields to elide in response. For releases, 'abstracts', 'refs', and 'contribs' are valid.
         :return: ReleaseEntity
                  If the method is called asynchronously,
@@ -4656,6 +5969,107 @@ class DefaultApi(object):
             post_params=form_params,
             files=local_var_files,
             response_type='list[FileEntity]',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def get_release_filesets(self, ident, **kwargs):  # noqa: E501
+        """get_release_filesets  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_release_filesets(ident, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str ident: (required)
+        :param str hide: List of entity fields to elide in response. For filesets, 'manifest' is valid.
+        :return: list[FilesetEntity]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.get_release_filesets_with_http_info(ident, **kwargs)  # noqa: E501
+        else:
+            (data) = self.get_release_filesets_with_http_info(ident, **kwargs)  # noqa: E501
+            return data
+
+    def get_release_filesets_with_http_info(self, ident, **kwargs):  # noqa: E501
+        """get_release_filesets  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_release_filesets_with_http_info(ident, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str ident: (required)
+        :param str hide: List of entity fields to elide in response. For filesets, 'manifest' is valid.
+        :return: list[FilesetEntity]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['ident', 'hide']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method get_release_filesets" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'ident' is set
+        if ('ident' not in params or
+                params['ident'] is None):
+            raise ValueError("Missing the required parameter `ident` when calling `get_release_filesets`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'ident' in params:
+            path_params['ident'] = params['ident']  # noqa: E501
+
+        query_params = []
+        if 'hide' in params:
+            query_params.append(('hide', params['hide']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/release/{ident}/filesets', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='list[FilesetEntity]',  # noqa: E501
             auth_settings=auth_settings,
             async=params.get('async'),
             _return_http_data_only=params.get('_return_http_data_only'),
@@ -4959,6 +6373,612 @@ class DefaultApi(object):
             post_params=form_params,
             files=local_var_files,
             response_type='ReleaseEntity',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def get_release_webcaptures(self, ident, **kwargs):  # noqa: E501
+        """get_release_webcaptures  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_release_webcaptures(ident, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str ident: (required)
+        :param str hide: List of entity fields to elide in response. For webcaptures, 'cdx' is valid.
+        :return: list[WebcaptureEntity]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.get_release_webcaptures_with_http_info(ident, **kwargs)  # noqa: E501
+        else:
+            (data) = self.get_release_webcaptures_with_http_info(ident, **kwargs)  # noqa: E501
+            return data
+
+    def get_release_webcaptures_with_http_info(self, ident, **kwargs):  # noqa: E501
+        """get_release_webcaptures  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_release_webcaptures_with_http_info(ident, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str ident: (required)
+        :param str hide: List of entity fields to elide in response. For webcaptures, 'cdx' is valid.
+        :return: list[WebcaptureEntity]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['ident', 'hide']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method get_release_webcaptures" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'ident' is set
+        if ('ident' not in params or
+                params['ident'] is None):
+            raise ValueError("Missing the required parameter `ident` when calling `get_release_webcaptures`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'ident' in params:
+            path_params['ident'] = params['ident']  # noqa: E501
+
+        query_params = []
+        if 'hide' in params:
+            query_params.append(('hide', params['hide']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/release/{ident}/webcaptures', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='list[WebcaptureEntity]',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def get_webcapture(self, ident, **kwargs):  # noqa: E501
+        """get_webcapture  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_webcapture(ident, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str ident: (required)
+        :param str expand: List of sub-entities to expand in response. For webcaptures, none accepted (yet).
+        :param str hide: List of entity fields to elide in response. For webcaptures, 'cdx' is accepted.
+        :return: WebcaptureEntity
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.get_webcapture_with_http_info(ident, **kwargs)  # noqa: E501
+        else:
+            (data) = self.get_webcapture_with_http_info(ident, **kwargs)  # noqa: E501
+            return data
+
+    def get_webcapture_with_http_info(self, ident, **kwargs):  # noqa: E501
+        """get_webcapture  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_webcapture_with_http_info(ident, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str ident: (required)
+        :param str expand: List of sub-entities to expand in response. For webcaptures, none accepted (yet).
+        :param str hide: List of entity fields to elide in response. For webcaptures, 'cdx' is accepted.
+        :return: WebcaptureEntity
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['ident', 'expand', 'hide']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method get_webcapture" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'ident' is set
+        if ('ident' not in params or
+                params['ident'] is None):
+            raise ValueError("Missing the required parameter `ident` when calling `get_webcapture`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'ident' in params:
+            path_params['ident'] = params['ident']  # noqa: E501
+
+        query_params = []
+        if 'expand' in params:
+            query_params.append(('expand', params['expand']))  # noqa: E501
+        if 'hide' in params:
+            query_params.append(('hide', params['hide']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/webcapture/{ident}', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='WebcaptureEntity',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def get_webcapture_edit(self, edit_id, **kwargs):  # noqa: E501
+        """get_webcapture_edit  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_webcapture_edit(edit_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int edit_id: (required)
+        :return: EntityEdit
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.get_webcapture_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.get_webcapture_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+            return data
+
+    def get_webcapture_edit_with_http_info(self, edit_id, **kwargs):  # noqa: E501
+        """get_webcapture_edit  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_webcapture_edit_with_http_info(edit_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int edit_id: (required)
+        :return: EntityEdit
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['edit_id']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method get_webcapture_edit" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'edit_id' is set
+        if ('edit_id' not in params or
+                params['edit_id'] is None):
+            raise ValueError("Missing the required parameter `edit_id` when calling `get_webcapture_edit`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'edit_id' in params:
+            path_params['edit_id'] = params['edit_id']  # noqa: E501
+
+        query_params = []
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/webcapture/edit/{edit_id}', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='EntityEdit',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def get_webcapture_history(self, ident, **kwargs):  # noqa: E501
+        """get_webcapture_history  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_webcapture_history(ident, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str ident: (required)
+        :param int limit:
+        :return: list[EntityHistoryEntry]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.get_webcapture_history_with_http_info(ident, **kwargs)  # noqa: E501
+        else:
+            (data) = self.get_webcapture_history_with_http_info(ident, **kwargs)  # noqa: E501
+            return data
+
+    def get_webcapture_history_with_http_info(self, ident, **kwargs):  # noqa: E501
+        """get_webcapture_history  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_webcapture_history_with_http_info(ident, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str ident: (required)
+        :param int limit:
+        :return: list[EntityHistoryEntry]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['ident', 'limit']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method get_webcapture_history" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'ident' is set
+        if ('ident' not in params or
+                params['ident'] is None):
+            raise ValueError("Missing the required parameter `ident` when calling `get_webcapture_history`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'ident' in params:
+            path_params['ident'] = params['ident']  # noqa: E501
+
+        query_params = []
+        if 'limit' in params:
+            query_params.append(('limit', params['limit']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/webcapture/{ident}/history', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='list[EntityHistoryEntry]',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def get_webcapture_redirects(self, ident, **kwargs):  # noqa: E501
+        """get_webcapture_redirects  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_webcapture_redirects(ident, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str ident: (required)
+        :return: list[str]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.get_webcapture_redirects_with_http_info(ident, **kwargs)  # noqa: E501
+        else:
+            (data) = self.get_webcapture_redirects_with_http_info(ident, **kwargs)  # noqa: E501
+            return data
+
+    def get_webcapture_redirects_with_http_info(self, ident, **kwargs):  # noqa: E501
+        """get_webcapture_redirects  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_webcapture_redirects_with_http_info(ident, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str ident: (required)
+        :return: list[str]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['ident']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method get_webcapture_redirects" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'ident' is set
+        if ('ident' not in params or
+                params['ident'] is None):
+            raise ValueError("Missing the required parameter `ident` when calling `get_webcapture_redirects`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'ident' in params:
+            path_params['ident'] = params['ident']  # noqa: E501
+
+        query_params = []
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/webcapture/{ident}/redirects', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='list[str]',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def get_webcapture_revision(self, rev_id, **kwargs):  # noqa: E501
+        """get_webcapture_revision  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_webcapture_revision(rev_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str rev_id: (required)
+        :param str expand: List of sub-entities to expand in response. For webcaptures, none accepted (yet).
+        :param str hide: List of entity fields to elide in response. For webcaptures, 'cdx' is accepted.
+        :return: WebcaptureEntity
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.get_webcapture_revision_with_http_info(rev_id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.get_webcapture_revision_with_http_info(rev_id, **kwargs)  # noqa: E501
+            return data
+
+    def get_webcapture_revision_with_http_info(self, rev_id, **kwargs):  # noqa: E501
+        """get_webcapture_revision  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_webcapture_revision_with_http_info(rev_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str rev_id: (required)
+        :param str expand: List of sub-entities to expand in response. For webcaptures, none accepted (yet).
+        :param str hide: List of entity fields to elide in response. For webcaptures, 'cdx' is accepted.
+        :return: WebcaptureEntity
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['rev_id', 'expand', 'hide']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method get_webcapture_revision" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'rev_id' is set
+        if ('rev_id' not in params or
+                params['rev_id'] is None):
+            raise ValueError("Missing the required parameter `rev_id` when calling `get_webcapture_revision`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'rev_id' in params:
+            path_params['rev_id'] = params['rev_id']  # noqa: E501
+
+        query_params = []
+        if 'expand' in params:
+            query_params.append(('expand', params['expand']))  # noqa: E501
+        if 'hide' in params:
+            query_params.append(('hide', params['hide']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/webcapture/rev/{rev_id}', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='WebcaptureEntity',  # noqa: E501
             auth_settings=auth_settings,
             async=params.get('async'),
             _return_http_data_only=params.get('_return_http_data_only'),
@@ -5376,7 +7396,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str ident: (required)
-        :param str hide: List of entity fields to elide in response. For releases, 'abstracts', 'refs', and 'contribs' are valid.
+        :param str hide: List of entity fields to elide in response. For works, none implemented yet.
         :return: list[ReleaseEntity]
                  If the method is called asynchronously,
                  returns the request thread.
@@ -5398,7 +7418,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str ident: (required)
-        :param str hide: List of entity fields to elide in response. For releases, 'abstracts', 'refs', and 'contribs' are valid.
+        :param str hide: List of entity fields to elide in response. For works, none implemented yet.
         :return: list[ReleaseEntity]
                  If the method is called asynchronously,
                  returns the request thread.
@@ -5923,7 +7943,7 @@ class DefaultApi(object):
         :param str pmcid:
         :param str core_id:
         :param str expand: List of sub-entities to expand in response.
-        :param str hide: List of entity fields to elide in response. For releases, 'abstracts', 'refs', and 'contribs' are valid.
+        :param str hide: List of sub-entities to expand in response. For releases, 'files', 'filesets, 'webcaptures', 'container', and 'creators' are valid.
         :return: ReleaseEntity
                  If the method is called asynchronously,
                  returns the request thread.
@@ -5951,7 +7971,7 @@ class DefaultApi(object):
         :param str pmcid:
         :param str core_id:
         :param str expand: List of sub-entities to expand in response.
-        :param str hide: List of entity fields to elide in response. For releases, 'abstracts', 'refs', and 'contribs' are valid.
+        :param str hide: List of sub-entities to expand in response. For releases, 'files', 'filesets, 'webcaptures', 'container', and 'creators' are valid.
         :return: ReleaseEntity
                  If the method is called asynchronously,
                  returns the request thread.
@@ -6355,6 +8375,115 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
+    def update_fileset(self, ident, entity, **kwargs):  # noqa: E501
+        """update_fileset  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.update_fileset(ident, entity, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str ident: (required)
+        :param FilesetEntity entity: (required)
+        :param str editgroup_id:
+        :return: EntityEdit
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.update_fileset_with_http_info(ident, entity, **kwargs)  # noqa: E501
+        else:
+            (data) = self.update_fileset_with_http_info(ident, entity, **kwargs)  # noqa: E501
+            return data
+
+    def update_fileset_with_http_info(self, ident, entity, **kwargs):  # noqa: E501
+        """update_fileset  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.update_fileset_with_http_info(ident, entity, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str ident: (required)
+        :param FilesetEntity entity: (required)
+        :param str editgroup_id:
+        :return: EntityEdit
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['ident', 'entity', 'editgroup_id']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method update_fileset" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'ident' is set
+        if ('ident' not in params or
+                params['ident'] is None):
+            raise ValueError("Missing the required parameter `ident` when calling `update_fileset`")  # noqa: E501
+        # verify the required parameter 'entity' is set
+        if ('entity' not in params or
+                params['entity'] is None):
+            raise ValueError("Missing the required parameter `entity` when calling `update_fileset`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'ident' in params:
+            path_params['ident'] = params['ident']  # noqa: E501
+
+        query_params = []
+        if 'editgroup_id' in params:
+            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        if 'entity' in params:
+            body_params = params['entity']
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/fileset/{ident}', 'PUT',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='EntityEdit',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
     def update_release(self, ident, entity, **kwargs):  # noqa: E501
         """update_release  # noqa: E501
 
@@ -6450,6 +8579,115 @@ class DefaultApi(object):
 
         return self.api_client.call_api(
             '/release/{ident}', 'PUT',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='EntityEdit',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def update_webcapture(self, ident, entity, **kwargs):  # noqa: E501
+        """update_webcapture  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.update_webcapture(ident, entity, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str ident: (required)
+        :param WebcaptureEntity entity: (required)
+        :param str editgroup_id:
+        :return: EntityEdit
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.update_webcapture_with_http_info(ident, entity, **kwargs)  # noqa: E501
+        else:
+            (data) = self.update_webcapture_with_http_info(ident, entity, **kwargs)  # noqa: E501
+            return data
+
+    def update_webcapture_with_http_info(self, ident, entity, **kwargs):  # noqa: E501
+        """update_webcapture  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.update_webcapture_with_http_info(ident, entity, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str ident: (required)
+        :param WebcaptureEntity entity: (required)
+        :param str editgroup_id:
+        :return: EntityEdit
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['ident', 'entity', 'editgroup_id']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method update_webcapture" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'ident' is set
+        if ('ident' not in params or
+                params['ident'] is None):
+            raise ValueError("Missing the required parameter `ident` when calling `update_webcapture`")  # noqa: E501
+        # verify the required parameter 'entity' is set
+        if ('entity' not in params or
+                params['entity'] is None):
+            raise ValueError("Missing the required parameter `entity` when calling `update_webcapture`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'ident' in params:
+            path_params['ident'] = params['ident']  # noqa: E501
+
+        query_params = []
+        if 'editgroup_id' in params:
+            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        if 'entity' in params:
+            body_params = params['entity']
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/webcapture/{ident}', 'PUT',
             path_params,
             query_params,
             header_params,

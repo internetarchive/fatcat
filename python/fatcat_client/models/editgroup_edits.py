@@ -36,6 +36,8 @@ class EditgroupEdits(object):
         'containers': 'list[EntityEdit]',
         'creators': 'list[EntityEdit]',
         'files': 'list[EntityEdit]',
+        'filesets': 'list[EntityEdit]',
+        'webcaptures': 'list[EntityEdit]',
         'releases': 'list[EntityEdit]',
         'works': 'list[EntityEdit]'
     }
@@ -44,16 +46,20 @@ class EditgroupEdits(object):
         'containers': 'containers',
         'creators': 'creators',
         'files': 'files',
+        'filesets': 'filesets',
+        'webcaptures': 'webcaptures',
         'releases': 'releases',
         'works': 'works'
     }
 
-    def __init__(self, containers=None, creators=None, files=None, releases=None, works=None):  # noqa: E501
+    def __init__(self, containers=None, creators=None, files=None, filesets=None, webcaptures=None, releases=None, works=None):  # noqa: E501
         """EditgroupEdits - a model defined in Swagger"""  # noqa: E501
 
         self._containers = None
         self._creators = None
         self._files = None
+        self._filesets = None
+        self._webcaptures = None
         self._releases = None
         self._works = None
         self.discriminator = None
@@ -64,6 +70,10 @@ class EditgroupEdits(object):
             self.creators = creators
         if files is not None:
             self.files = files
+        if filesets is not None:
+            self.filesets = filesets
+        if webcaptures is not None:
+            self.webcaptures = webcaptures
         if releases is not None:
             self.releases = releases
         if works is not None:
@@ -131,6 +141,48 @@ class EditgroupEdits(object):
         """
 
         self._files = files
+
+    @property
+    def filesets(self):
+        """Gets the filesets of this EditgroupEdits.  # noqa: E501
+
+
+        :return: The filesets of this EditgroupEdits.  # noqa: E501
+        :rtype: list[EntityEdit]
+        """
+        return self._filesets
+
+    @filesets.setter
+    def filesets(self, filesets):
+        """Sets the filesets of this EditgroupEdits.
+
+
+        :param filesets: The filesets of this EditgroupEdits.  # noqa: E501
+        :type: list[EntityEdit]
+        """
+
+        self._filesets = filesets
+
+    @property
+    def webcaptures(self):
+        """Gets the webcaptures of this EditgroupEdits.  # noqa: E501
+
+
+        :return: The webcaptures of this EditgroupEdits.  # noqa: E501
+        :rtype: list[EntityEdit]
+        """
+        return self._webcaptures
+
+    @webcaptures.setter
+    def webcaptures(self, webcaptures):
+        """Sets the webcaptures of this EditgroupEdits.
+
+
+        :param webcaptures: The webcaptures of this EditgroupEdits.  # noqa: E501
+        :type: list[EntityEdit]
+        """
+
+        self._webcaptures = webcaptures
 
     @property
     def releases(self):

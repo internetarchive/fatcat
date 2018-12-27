@@ -77,6 +77,18 @@ class TestDefaultApi(unittest.TestCase):
         """
         pass
 
+    def test_create_fileset(self):
+        """Test case for create_fileset
+
+        """
+        pass
+
+    def test_create_fileset_batch(self):
+        """Test case for create_fileset_batch
+
+        """
+        pass
+
     def test_create_release(self):
         """Test case for create_release
 
@@ -85,6 +97,18 @@ class TestDefaultApi(unittest.TestCase):
 
     def test_create_release_batch(self):
         """Test case for create_release_batch
+
+        """
+        pass
+
+    def test_create_webcapture(self):
+        """Test case for create_webcapture
+
+        """
+        pass
+
+    def test_create_webcapture_batch(self):
+        """Test case for create_webcapture_batch
 
         """
         pass
@@ -137,6 +161,18 @@ class TestDefaultApi(unittest.TestCase):
         """
         pass
 
+    def test_delete_fileset(self):
+        """Test case for delete_fileset
+
+        """
+        pass
+
+    def test_delete_fileset_edit(self):
+        """Test case for delete_fileset_edit
+
+        """
+        pass
+
     def test_delete_release(self):
         """Test case for delete_release
 
@@ -145,6 +181,18 @@ class TestDefaultApi(unittest.TestCase):
 
     def test_delete_release_edit(self):
         """Test case for delete_release_edit
+
+        """
+        pass
+
+    def test_delete_webcapture(self):
+        """Test case for delete_webcapture
+
+        """
+        pass
+
+    def test_delete_webcapture_edit(self):
+        """Test case for delete_webcapture_edit
 
         """
         pass
@@ -287,6 +335,36 @@ class TestDefaultApi(unittest.TestCase):
         """
         pass
 
+    def test_get_fileset(self):
+        """Test case for get_fileset
+
+        """
+        pass
+
+    def test_get_fileset_edit(self):
+        """Test case for get_fileset_edit
+
+        """
+        pass
+
+    def test_get_fileset_history(self):
+        """Test case for get_fileset_history
+
+        """
+        pass
+
+    def test_get_fileset_redirects(self):
+        """Test case for get_fileset_redirects
+
+        """
+        pass
+
+    def test_get_fileset_revision(self):
+        """Test case for get_fileset_revision
+
+        """
+        pass
+
     def test_get_release(self):
         """Test case for get_release
 
@@ -305,6 +383,12 @@ class TestDefaultApi(unittest.TestCase):
         """
         pass
 
+    def test_get_release_filesets(self):
+        """Test case for get_release_filesets
+
+        """
+        pass
+
     def test_get_release_history(self):
         """Test case for get_release_history
 
@@ -319,6 +403,42 @@ class TestDefaultApi(unittest.TestCase):
 
     def test_get_release_revision(self):
         """Test case for get_release_revision
+
+        """
+        pass
+
+    def test_get_release_webcaptures(self):
+        """Test case for get_release_webcaptures
+
+        """
+        pass
+
+    def test_get_webcapture(self):
+        """Test case for get_webcapture
+
+        """
+        pass
+
+    def test_get_webcapture_edit(self):
+        """Test case for get_webcapture_edit
+
+        """
+        pass
+
+    def test_get_webcapture_history(self):
+        """Test case for get_webcapture_history
+
+        """
+        pass
+
+    def test_get_webcapture_redirects(self):
+        """Test case for get_webcapture_redirects
+
+        """
+        pass
+
+    def test_get_webcapture_revision(self):
+        """Test case for get_webcapture_revision
 
         """
         pass
@@ -401,8 +521,20 @@ class TestDefaultApi(unittest.TestCase):
         """
         pass
 
+    def test_update_fileset(self):
+        """Test case for update_fileset
+
+        """
+        pass
+
     def test_update_release(self):
         """Test case for update_release
+
+        """
+        pass
+
+    def test_update_webcapture(self):
+        """Test case for update_webcapture
 
         """
         pass

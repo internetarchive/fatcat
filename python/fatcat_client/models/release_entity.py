@@ -18,9 +18,11 @@ import six
 
 from fatcat_client.models.container_entity import ContainerEntity  # noqa: F401,E501
 from fatcat_client.models.file_entity import FileEntity  # noqa: F401,E501
+from fatcat_client.models.fileset_entity import FilesetEntity  # noqa: F401,E501
 from fatcat_client.models.release_contrib import ReleaseContrib  # noqa: F401,E501
 from fatcat_client.models.release_entity_abstracts import ReleaseEntityAbstracts  # noqa: F401,E501
 from fatcat_client.models.release_ref import ReleaseRef  # noqa: F401,E501
+from fatcat_client.models.webcapture_entity import WebcaptureEntity  # noqa: F401,E501
 
 
 class ReleaseEntity(object):
@@ -56,6 +58,8 @@ class ReleaseEntity(object):
         'release_status': 'str',
         'release_type': 'str',
         'container_id': 'str',
+        'webcaptures': 'list[WebcaptureEntity]',
+        'filesets': 'list[FilesetEntity]',
         'files': 'list[FileEntity]',
         'container': 'ContainerEntity',
         'work_id': 'str',
@@ -88,6 +92,8 @@ class ReleaseEntity(object):
         'release_status': 'release_status',
         'release_type': 'release_type',
         'container_id': 'container_id',
+        'webcaptures': 'webcaptures',
+        'filesets': 'filesets',
         'files': 'files',
         'container': 'container',
         'work_id': 'work_id',
@@ -100,7 +106,7 @@ class ReleaseEntity(object):
         'edit_extra': 'edit_extra'
     }
 
-    def __init__(self, abstracts=None, refs=None, contribs=None, language=None, publisher=None, pages=None, issue=None, volume=None, core_id=None, pmcid=None, pmid=None, isbn13=None, wikidata_qid=None, doi=None, release_year=None, release_date=None, release_status=None, release_type=None, container_id=None, files=None, container=None, work_id=None, title=None, state=None, ident=None, revision=None, redirect=None, extra=None, edit_extra=None):  # noqa: E501
+    def __init__(self, abstracts=None, refs=None, contribs=None, language=None, publisher=None, pages=None, issue=None, volume=None, core_id=None, pmcid=None, pmid=None, isbn13=None, wikidata_qid=None, doi=None, release_year=None, release_date=None, release_status=None, release_type=None, container_id=None, webcaptures=None, filesets=None, files=None, container=None, work_id=None, title=None, state=None, ident=None, revision=None, redirect=None, extra=None, edit_extra=None):  # noqa: E501
         """ReleaseEntity - a model defined in Swagger"""  # noqa: E501
 
         self._abstracts = None
@@ -122,6 +128,8 @@ class ReleaseEntity(object):
         self._release_status = None
         self._release_type = None
         self._container_id = None
+        self._webcaptures = None
+        self._filesets = None
         self._files = None
         self._container = None
         self._work_id = None
@@ -172,6 +180,10 @@ class ReleaseEntity(object):
             self.release_type = release_type
         if container_id is not None:
             self.container_id = container_id
+        if webcaptures is not None:
+            self.webcaptures = webcaptures
+        if filesets is not None:
+            self.filesets = filesets
         if files is not None:
             self.files = files
         if container is not None:
@@ -593,6 +605,52 @@ class ReleaseEntity(object):
         """
 
         self._container_id = container_id
+
+    @property
+    def webcaptures(self):
+        """Gets the webcaptures of this ReleaseEntity.  # noqa: E501
+
+        Optional; GET-only  # noqa: E501
+
+        :return: The webcaptures of this ReleaseEntity.  # noqa: E501
+        :rtype: list[WebcaptureEntity]
+        """
+        return self._webcaptures
+
+    @webcaptures.setter
+    def webcaptures(self, webcaptures):
+        """Sets the webcaptures of this ReleaseEntity.
+
+        Optional; GET-only  # noqa: E501
+
+        :param webcaptures: The webcaptures of this ReleaseEntity.  # noqa: E501
+        :type: list[WebcaptureEntity]
+        """
+
+        self._webcaptures = webcaptures
+
+    @property
+    def filesets(self):
+        """Gets the filesets of this ReleaseEntity.  # noqa: E501
+
+        Optional; GET-only  # noqa: E501
+
+        :return: The filesets of this ReleaseEntity.  # noqa: E501
+        :rtype: list[FilesetEntity]
+        """
+        return self._filesets
+
+    @filesets.setter
+    def filesets(self, filesets):
+        """Sets the filesets of this ReleaseEntity.
+
+        Optional; GET-only  # noqa: E501
+
+        :param filesets: The filesets of this ReleaseEntity.  # noqa: E501
+        :type: list[FilesetEntity]
+        """
+
+        self._filesets = filesets
 
     @property
     def files(self):
