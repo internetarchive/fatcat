@@ -378,7 +378,7 @@ dependencies = [
  "iron-test 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "lazy_static 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "macaroon 0.1.1 (git+https://github.com/bnewbold/libmacaroon-rs?branch=bnewbold-stable-rust)",
+ "macaroon 0.1.1 (git+https://github.com/bnewbold/libmacaroon-rs?branch=bnewbold-broken)",
  "num_cpus 1.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "regex 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_json 1.0.17 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -640,7 +640,7 @@ dependencies = [
 [[package]]
 name = "macaroon"
 version = "0.1.1"
-source = "git+https://github.com/bnewbold/libmacaroon-rs?branch=bnewbold-stable-rust#22bb19d70366f34fb32227d5ba311d4a4388d274"
+source = "git+https://github.com/bnewbold/libmacaroon-rs?branch=bnewbold-broken#346b4bb21c79958dde301501083bfdaa7aa83f73"
 dependencies = [
  "log 0.3.9 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc-serialize 0.3.24 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1642,7 +1642,7 @@ dependencies = [
 "checksum lock_api 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)" = "949826a5ccf18c1b3a7c3d57692778d21768b79e46eb9dd07bfc4c2160036c54"
 "checksum log 0.3.9 (registry+https://github.com/rust-lang/crates.io-index)" = "e19e8d5c34a3e0e2223db8e060f9e8264aeeb5c5fc64a4ee9965c062211c024b"
 "checksum log 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)" = "89f010e843f2b1a31dbd316b3b8d443758bc634bed37aabade59c686d644e0a2"
-"checksum macaroon 0.1.1 (git+https://github.com/bnewbold/libmacaroon-rs?branch=bnewbold-stable-rust)" = "<none>"
+"checksum macaroon 0.1.1 (git+https://github.com/bnewbold/libmacaroon-rs?branch=bnewbold-broken)" = "<none>"
 "checksum matches 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)" = "100aabe6b8ff4e4a7e32c1c13523379802df0772b82466207ac25b013f193376"
 "checksum memchr 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)" = "148fab2e51b4f1cfc66da2a7c32981d1d3c083a803978268bb11fe4b86925e7a"
 "checksum memchr 2.0.1 (registry+https://github.com/rust-lang/crates.io-index)" = "796fba70e76612589ed2ce7f45282f5af869e0fdd7cc6199fa1aa1f1d591ba9d"
