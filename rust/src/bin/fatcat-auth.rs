@@ -90,6 +90,7 @@ fn run() -> Result<()> {
         .get_matches();
 
     let db_conn = database_worker_pool()?.get().expect("database pool");
+    let confectionary = fatcat::auth::AuthConfectionary::new();
     match m.subcommand() {
         ("list-editors", Some(_subm)) => {
             fatcat::auth::print_editors(&db_conn)?;
@@ -105,7 +106,7 @@ fn run() -> Result<()> {
         },
         ("create-token", Some(subm)) => {
             let editor_id = FatCatId::from_str(subm.value_of("editor-id").unwrap())?;
-            println!("{}", fatcat::auth::create_token(&db_conn, editor_id, None)?);
+            println!("{}", confectionary.create_token(&db_conn, editor_id, None)?);
         },
         ("inspect-token", Some(subm)) => {
             fatcat::auth::inspect_token(&db_conn, subm.value_of("token").unwrap())?;

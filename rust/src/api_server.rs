@@ -2,6 +2,7 @@
 
 use api_entity_crud::EntityCrud;
 use api_helpers::*;
+use auth::*;
 use chrono;
 use database_models::*;
 use database_schema::*;
@@ -41,6 +42,7 @@ macro_rules! entity_batch_handler {
 #[derive(Clone)]
 pub struct Server {
     pub db_pool: ConnectionPool,
+    pub auth_confectionary: AuthConfectionary,
 }
 
 pub fn get_release_files(

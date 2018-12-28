@@ -572,7 +572,7 @@ impl EditgroupRow {
     }
 }
 
-#[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
+#[derive(Debug, Clone, Queryable, Identifiable, Associations, AsChangeset)]
 #[table_name = "editor"]
 pub struct EditorRow {
     pub id: Uuid,

@@ -78,7 +78,6 @@ fn main() {
 
     // authentication
     chain.link_before(fatcat_api_spec::server::ExtractAuthData);
-    chain.link_before(fatcat::auth::OpenAuthMiddleware::new());
 
     chain.link_after(fatcat::XClacksOverheadMiddleware);
 

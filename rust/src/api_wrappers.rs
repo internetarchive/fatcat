@@ -2,6 +2,7 @@
 
 use api_entity_crud::EntityCrud;
 use api_helpers::*;
+use auth::*;
 use api_server::Server;
 use database_models::EntityEditRow;
 use diesel::Connection;
@@ -80,10 +81,12 @@ macro_rules! wrap_entity_handlers {
             &self,
             entity: models::$model,
             editgroup_id: Option<String>,
-            _context: &Context,
+            context: &Context,
         ) -> Box<Future<Item = $post_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             let ret = match conn.transaction(|| {
+                let auth_context = self.auth_confectionary.parse_swagger(&conn, &context.auth_data)?;
+                // XXX: auth_context.expect("not authorized");
                 let editgroup_id = if let Some(s) = editgroup_id {
                     Some(FatCatId::from_str(&s)?)
                 } else { None };
