@@ -38,17 +38,6 @@ macro_rules! entity_batch_handler {
     }
 }
 
-macro_rules! count_entity {
-    ($table:ident, $conn:expr) => {{
-        let count: i64 = $table::table
-            .filter($table::is_live.eq(true))
-            .filter($table::redirect_id.is_null())
-            .count()
-            .first($conn)?;
-        count
-    }};
-}
-
 #[derive(Clone)]
 pub struct Server {
     pub db_pool: ConnectionPool,

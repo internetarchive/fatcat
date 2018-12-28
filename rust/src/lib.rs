@@ -15,7 +15,6 @@ extern crate swagger;
 #[macro_use]
 extern crate error_chain;
 extern crate iron;
-#[macro_use]
 extern crate serde_json;
 #[macro_use]
 extern crate log;
@@ -43,6 +42,8 @@ pub mod errors {
                         Uuid(::uuid::ParseError);
                         Io(::std::io::Error) #[cfg(unix)];
                         Serde(::serde_json::Error);
+                        Utf8Decode(::std::string::FromUtf8Error);
+                        StringDecode(::data_encoding::DecodeError);
         }
         errors {
             InvalidFatcatId(id: String) {
