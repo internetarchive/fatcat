@@ -48,5 +48,5 @@ class ElasticsearchReleaseWorker(FatcatWorker):
                 release.ident)
             print("Updating document: {}".format(elasticsearch_endpoint))
             resp = requests.post(elasticsearch_endpoint, json=release_to_elasticsearch(release))
-            assert resp.status_code in (200, 201)
+            resp.raise_for_status()
             #consumer.commit_offsets()

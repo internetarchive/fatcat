@@ -95,11 +95,11 @@ class HarvestCrossrefWorker:
             while True:
                 http_resp = requests.get(self.api_host_url, params, headers=headers)
                 if http_resp.status_code == 503:
-                    # crud backoff
+                    # crude backoff
                     print("got HTTP {}, pausing for 30 seconds".format(http_resp.status_code))
                     time.sleep(30.0)
                     continue
-                assert http_resp.status_code == 200
+                http_resp.raise_for_status()
                 resp = http_resp.json()
                 items = self.extract_items(resp)
                 count += len(items)

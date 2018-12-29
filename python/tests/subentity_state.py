@@ -36,7 +36,7 @@ def test_relation_states(api, app):
     eg = quick_eg(api)
     j2 = api.get_container(api.create_container(j2, editgroup_id=eg.editgroup_id).ident)
     rv = app.get('/container/{}'.format(j2.ident))
-    assert rv.status_code == 200
+    rv.raise_for_status()
 
     # create inter-related entities
     eg = quick_eg(api)
@@ -57,14 +57,15 @@ def test_relation_states(api, app):
     assert r1.contribs[0].creator.display_name == "test person"
     assert r1.contribs[0].creator.state == "active"
     rv = app.get('/release/{}'.format(r1.ident))
-    assert rv.status_code == 200
+    rv.raise_for_status()
 
     # delete creator
     eg = quick_eg(api)
     api.delete_creator(c1.ident, editgroup_id=eg.editgroup_id)
     api.accept_editgroup(eg.editgroup_id)
     rv = app.get('/creator/{}'.format(c1.ident))
-    assert rv.status_code == 200 # TODO: HTTP status "Gone"?
+    # TODO: HTTP status "Gone"?
+    rv.raise_for_status()
 
     c1_deleted = api.get_creator(c1.ident)
     assert c1_deleted.state == "deleted"
@@ -77,7 +78,7 @@ def test_relation_states(api, app):
     assert r1.contribs[0].creator.display_name is None
     assert r1.contribs[0].creator.state == "deleted"
     rv = app.get('/release/{}'.format(r1.ident))
-    assert rv.status_code == 200
+    rv.raise_for_status()
 
     # wip container
     eg = quick_eg(api)
@@ -94,7 +95,7 @@ def test_relation_states(api, app):
     assert r1.contribs[0].creator.display_name is None
     assert r1.contribs[0].creator.state == "deleted"
     rv = app.get('/release/{}'.format(r1.ident))
-    assert rv.status_code == 200
+    rv.raise_for_status()
 
     # redirect release
     r2 = api.get_release(r2.ident, expand="container,creators,files")
@@ -116,7 +117,7 @@ def test_relation_states(api, app):
     rv = app.get('/release/{}'.format(r2.ident))
     assert rv.status_code == 302
     rv = app.get('/file/{}'.format(f2.ident))
-    assert rv.status_code == 200
+    rv.raise_for_status()
 
     # delete release
     eg = quick_eg(api)
@@ -128,10 +129,11 @@ def test_relation_states(api, app):
     assert r2.files is None
     assert r2.contribs is None
     rv = app.get('/release/{}'.format(r2.ident))
-    assert rv.status_code == 200 # TODO: HTTP Gone?
+    # TODO: HTTP Gone?
+    rv.raise_for_status()
     rv = app.get('/file/{}'.format(f2.ident))
     print(rv.data)
-    assert rv.status_code == 200
+    rv.raise_for_status()
 
 
 def test_app_entity_states(api, app):
@@ -171,23 +173,23 @@ def test_app_entity_states(api, app):
 
     # all entities
     rv = app.get('/container/{}'.format(j1.ident))
-    assert rv.status_code == 200
+    rv.raise_for_status()
     rv = app.get('/container/{}'.format(j2.ident))
     assert rv.status_code == 302
     rv = app.get('/creator/{}'.format(c1.ident))
-    assert rv.status_code == 200
+    rv.raise_for_status()
     rv = app.get('/creator/{}'.format(c2.ident))
     assert rv.status_code == 302
     rv = app.get('/file/{}'.format(f1.ident))
-    assert rv.status_code == 200
+    rv.raise_for_status()
     rv = app.get('/file/{}'.format(f2.ident))
     assert rv.status_code == 302
     rv = app.get('/release/{}'.format(r1.ident))
-    assert rv.status_code == 200
+    rv.raise_for_status()
     rv = app.get('/release/{}'.format(r2.ident))
     assert rv.status_code == 302
     rv = app.get('/work/{}'.format(r1.work_id))
-    assert rv.status_code == 200
+    rv.raise_for_status()
     rv = app.get('/work/{}'.format(r2.work_id))
     assert rv.status_code == 302
 
@@ -202,23 +204,23 @@ def test_app_entity_states(api, app):
 
     # all entities
     rv = app.get('/container/{}'.format(j1.ident))
-    assert rv.status_code == 200
+    rv.raise_for_status()
     rv = app.get('/container/{}'.format(j2.ident))
     assert rv.status_code == 302
     rv = app.get('/creator/{}'.format(c1.ident))
-    assert rv.status_code == 200
+    rv.raise_for_status()
     rv = app.get('/creator/{}'.format(c2.ident))
     assert rv.status_code == 302
     rv = app.get('/file/{}'.format(f1.ident))
-    assert rv.status_code == 200
+    rv.raise_for_status()
     rv = app.get('/file/{}'.format(f2.ident))
     assert rv.status_code == 302
     rv = app.get('/release/{}'.format(r1.ident))
-    assert rv.status_code == 200
+    rv.raise_for_status()
     rv = app.get('/release/{}'.format(r2.ident))
     assert rv.status_code == 302
     rv = app.get('/work/{}'.format(r1.work_id))
-    assert rv.status_code == 200
+    rv.raise_for_status()
     rv = app.get('/work/{}'.format(r2.work_id))
     assert rv.status_code == 302
 
