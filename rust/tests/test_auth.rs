@@ -41,7 +41,7 @@ fn test_auth_db() {
     assert_eq!(editor_row.id, editor_id.to_uuid());
     
     // revoke token
-    revoke_tokens(&conn, editor_id);
+    revoke_tokens(&conn, editor_id).unwrap();
 
     // verification should fail
     assert!(c.parse_macaroon_token(&conn, &token).is_err());
