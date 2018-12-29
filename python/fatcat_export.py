@@ -22,7 +22,7 @@ def run_export_releases(args):
 
     for line in args.ident_file:
         ident = uuid2fcid(line.split()[0])
-        release = api.get_release(id=ident, expand="all")
+        release = api.get_release(ident=ident, expand="all")
         args.json_output.write(json.dumps(release.to_dict()) + "\n")
 
 def run_transform_releases(args):
@@ -45,7 +45,7 @@ def run_export_changelog(args):
         end = latest.index
 
     for i in range(args.start, end):
-        entry = api.get_changelog_entry(id=i)
+        entry = api.get_changelog_entry(index=i)
         args.json_output.write(json.dumps(entry.to_dict()) + "\n")
 
 def main():
