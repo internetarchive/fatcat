@@ -58,10 +58,7 @@ impl AuthConfectionary {
             DUMMY_KEY.to_vec())
     }
 
-    pub fn create_token(&self, conn: &DbConn, editor_id: FatCatId, expires: Option<DateTime<Utc>>) -> Result<String> {
-        let _ed: EditorRow = editor::table
-            .find(&editor_id.to_uuid())
-            .get_result(conn)?;
+    pub fn create_token(&self, editor_id: FatCatId, expires: Option<DateTime<Utc>>) -> Result<String> {
         let mut mac = Macaroon::create(&self.location, &self.key, &self.identifier).expect("Macaroon creation");
         mac.add_first_party_caveat(&format!("editor_id = {}", editor_id.to_string()));
         // TODO: put created one second in the past to prevent timing synchronization glitches?

@@ -294,7 +294,7 @@ pub fn accept_editgroup(editgroup_id: FatCatId, conn: &DbConn) -> Result<Changel
     Ok(entry)
 }
 
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, PartialEq, Debug)]
 pub struct FatCatId(Uuid);
 
 impl ToString for FatCatId {

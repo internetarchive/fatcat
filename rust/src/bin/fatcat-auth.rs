@@ -106,7 +106,11 @@ fn run() -> Result<()> {
         },
         ("create-token", Some(subm)) => {
             let editor_id = FatCatId::from_str(subm.value_of("editor-id").unwrap())?;
-            println!("{}", confectionary.create_token(&db_conn, editor_id, None)?);
+            // check that editor exists
+            let _ed: fatcat::database_models::EditorRow = fatcat::database_schema::editor::table
+                .find(&editor_id.to_uuid())
+                .get_result(&db_conn)?;
+            println!("{}", confectionary.create_token(editor_id, None)?);
         },
         ("inspect-token", Some(subm)) => {
             confectionary.inspect_token(&db_conn, subm.value_of("token").unwrap())?;
