@@ -59,3 +59,40 @@ support oauth2 against:
 - github
 ? google
 
+Macaroon details:
+- worth looking at "bakery" projects (python and golang) for example of how to
+  actually implement macaroon authentication/authorization
+- location is fatcat.wiki (and/or qa.fatcat.wiki, or test or localhost or test.fatcat.wiki?)
+- identifier is a UUID in upper-case string format
+- will need some on-disk key storage thing?
+    => how to generate new keys? which one should be used, most recent?
+       conception of revoking keys? simple JSON/TOML, or LMDB?
+- call them "authentication tokens"?
+- params/constraints
+    - editor_id: always, fcid format
+    - created: always, some date format (seconds/iso)
+    - expires: optional, same date format
+
+It's a huge simplification to have webface generate macaroons as well, using a
+root key. webface doesn't need multiple keys because it only creates, doesn't
+verify.
+
+Code structure:
+- auth service/struct is generated at startup; reads environment and on-disk keys
+- verify helper does the thing
+- some sort of auth/edit context
+
+Roles?
+- public: unauthenticated
+- editor: any authenticated, active account
+- bot
+- admin
+
+Caveats:
+- general model is that macaroon is omnipotent and passes all verification,
+  unless caveats are added. eg, adding verification checks doesn't constrain
+  auth, only the caveats constrain auth; verification check *allow* additional
+  auth. each caveat only needs to be allowed by one verifiation.
+- can (and should?) add as many caveat checkers/constrants in code as possible
+
+http://evancordell.com/2015/09/27/macaroons-101-contextual-confinement.html

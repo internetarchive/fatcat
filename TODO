@@ -1,10 +1,20 @@
 
 ## In Progress
 
+- authentication!
+    => unit tests
+    => refactor to use other macaroons lib
+    => env key passing
+    => RBAC infra
+    => wire up fatcatd (env, cli)
+    => check permissions everywhere
+    => toml or similar key-right
+- webface auth
+
 ## Next Up
 
-- fileset/webcapture entities
-- authentication
+- cargo update (rust deps)
+- pipenv update (python deps)
 - remove the concept of "active editgroup", and simplify autoaccept batch path
 - fix returned error messages; should return type (shortname), and then actual
   message/description
