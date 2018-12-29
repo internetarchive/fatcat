@@ -228,6 +228,18 @@ pub fn make_edit_context(
     })
 }
 
+// TODO: verify username (alphanum, etc)
+pub fn create_editor(conn: &DbConn, username: String, is_admin: bool, is_bot: bool) -> Result<EditorRow> {
+    let ed: EditorRow = diesel::insert_into(editor::table)
+        .values((
+            editor::username.eq(username),
+            editor::is_admin.eq(is_admin),
+            editor::is_bot.eq(is_bot),
+        ))
+        .get_result(conn)?;
+    Ok(ed) 
+}
+
 /// This function should always be run within a transaction
 pub fn get_or_create_editgroup(editor_id: Uuid, conn: &DbConn) -> Result<Uuid> {
     // check for current active

@@ -13,7 +13,7 @@ extern crate env_logger;
 extern crate serde_json;
 extern crate uuid;
 
-use clap::{App, Arg, SubCommand};
+use clap::{App, SubCommand};
 use dotenv::dotenv;
 use std::env;
 
@@ -90,13 +90,13 @@ fn run() -> Result<()> {
         .get_matches();
 
     let db_conn = database_worker_pool()?.get().expect("database pool");
-    let confectionary = fatcat::auth::AuthConfectionary::new();
+    let confectionary = fatcat::auth::AuthConfectionary::new_dummy();
     match m.subcommand() {
         ("list-editors", Some(_subm)) => {
             fatcat::auth::print_editors(&db_conn)?;
         },
         ("create-editor", Some(subm)) => {
-            let editor = fatcat::auth::create_editor(
+            let editor = fatcat::api_helpers::create_editor(
                 &db_conn,
                 subm.value_of("username").unwrap().to_string(),
                 subm.is_present("admin"),
@@ -109,7 +109,7 @@ fn run() -> Result<()> {
             println!("{}", confectionary.create_token(&db_conn, editor_id, None)?);
         },
         ("inspect-token", Some(subm)) => {
-            fatcat::auth::inspect_token(&db_conn, subm.value_of("token").unwrap())?;
+            confectionary.inspect_token(&db_conn, subm.value_of("token").unwrap())?;
         },
         ("revoke-tokens", Some(subm)) => {
             let editor_id = FatCatId::from_str(subm.value_of("editor-id").unwrap())?;

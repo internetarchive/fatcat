@@ -117,7 +117,7 @@ pub fn server() -> Result<api_server::Server> {
     let pool = diesel::r2d2::Pool::builder()
         .build(manager)
         .expect("Failed to create database pool.");
-    let confectionary = auth::AuthConfectionary::new();
+    let confectionary = auth::AuthConfectionary::new_dummy();
     Ok(api_server::Server { db_pool: pool, auth_confectionary: confectionary })
 }
 

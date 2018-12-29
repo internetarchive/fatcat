@@ -4,7 +4,7 @@ use swagger::auth::AuthData;
 use macaroon::{Format, Macaroon, Verifier};
 use data_encoding::BASE64;
 
-use std::collections::{BTreeSet,HashMap};
+use std::collections::HashMap;
 use database_models::*;
 use database_schema::*;
 use api_helpers::*;
@@ -33,21 +33,36 @@ impl AuthContext {
 
 #[derive(Clone)]
 pub struct AuthConfectionary {
-    pub root_keys: HashMap<String, [u8; 32]>,
+    pub location: String,
+    pub identifier: String,
+    pub key: Vec<u8>,
+    pub root_keys: HashMap<String, Vec<u8>>,
 }
 
 impl AuthConfectionary {
-    pub fn new() -> AuthConfectionary {
+    pub fn new(location: String, identifier: String, key: Vec<u8>) -> AuthConfectionary {
+        let mut root_keys = HashMap::new();
+        root_keys.insert(identifier.clone(), key.clone());
         AuthConfectionary {
-            root_keys: HashMap::new(),
+            location: location,
+            identifier: identifier,
+            key: key,
+            root_keys: root_keys,
         }
+    }
+
+    pub fn new_dummy() -> AuthConfectionary {
+        AuthConfectionary::new(
+            "test.fatcat.wiki".to_string(),
+            "dummy".to_string(),
+            DUMMY_KEY.to_vec())
     }
 
     pub fn create_token(&self, conn: &DbConn, editor_id: FatCatId, expires: Option<DateTime<Utc>>) -> Result<String> {
         let _ed: EditorRow = editor::table
             .find(&editor_id.to_uuid())
             .get_result(conn)?;
-        let mut mac = Macaroon::create("fatcat.wiki", DUMMY_KEY, "dummy-key").expect("Macaroon creation");
+        let mut mac = Macaroon::create(&self.location, &self.key, &self.identifier).expect("Macaroon creation");
         mac.add_first_party_caveat(&format!("editor_id = {}", editor_id.to_string()));
         // TODO: put created one second in the past to prevent timing synchronization glitches?
         let now = Utc::now().to_rfc3339_opts(SecondsFormat::Secs, true);
@@ -110,10 +125,11 @@ impl AuthConfectionary {
                 false
             }
         });
-        if !mac.verify_signature(DUMMY_KEY) {
-            bail!("token signature verification failed");
+        let verify_key = match self.root_keys.get(mac.identifier()) {
+            Some(key) => key,
+            None => bail!("key not found for identifier: {}", mac.identifier()),
         };
-        match mac.verify(DUMMY_KEY, &mut verifier) {
+        match mac.verify(verify_key, &mut verifier) {
             Ok(true) => (),
             Ok(false) => bail!("token overall verification failed"),
             Err(e) => bail!("token parsing failed: {:?}", e),
@@ -146,8 +162,43 @@ impl AuthConfectionary {
             roles: roles,
         }))
     }
+
+    // TODO: refactor out of this file?
+    /// Only used from CLI tool
+    pub fn inspect_token(&self, conn: &DbConn, token: &str) -> Result<()> {
+        let raw = BASE64.decode(token.as_bytes())?;
+        let mac = match Macaroon::deserialize(&raw) {
+            Ok(m) => m,
+            Err(e) => bail!("macaroon deserialize error: {:?}", e),
+        };
+        let now = Utc::now().to_rfc3339_opts(SecondsFormat::Secs, true);
+        println!("current time: {}", now);
+        println!("domain (location): {:?}", mac.location());
+        println!("signing key name (identifier): {}", mac.identifier());
+        for caveat in mac.first_party_caveats() {
+            println!("caveat: {}", caveat.predicate());
+        }
+        println!("verify: {:?}", self.parse_macaroon_token(conn, token));
+        Ok(())
+    }
 }
 
+pub fn revoke_tokens(conn: &DbConn, editor_id: FatCatId) -> Result<()>{
+    diesel::update(editor::table.filter(editor::id.eq(&editor_id.to_uuid())))
+        .set(editor::auth_epoch.eq(Utc::now()))
+        .execute(conn)?;
+    Ok(())
+}
+
+pub fn revoke_tokens_everyone(conn: &DbConn) -> Result<()> {
+    diesel::update(editor::table)
+        .set(editor::auth_epoch.eq(Utc::now()))
+        .execute(conn)?;
+    Ok(())
+}
+
+// TODO: refactor out of this file?
+/// Only used from CLI tool
 pub fn print_editors(conn: &DbConn) -> Result<()>{
     // iterate over all editors. format id, print flags, auth_epoch
     let all_editors: Vec<EditorRow> = editor::table
@@ -163,51 +214,5 @@ pub fn print_editors(conn: &DbConn) -> Result<()>{
             e.wrangler_id,
         );
     }
-    Ok(())
-}
-
-// TODO: move to api_helpers or some such
-// TODO: verify username
-pub fn create_editor(conn: &DbConn, username: String, is_admin: bool, is_bot: bool) -> Result<EditorRow> {
-    let ed: EditorRow = diesel::insert_into(editor::table)
-        .values((
-            editor::username.eq(username),
-            editor::is_admin.eq(is_admin),
-            editor::is_bot.eq(is_bot),
-        ))
-        .get_result(conn)?;
-    Ok(ed) 
-}
-
-pub fn inspect_token(conn: &DbConn, token: &str) -> Result<()> {
-    let raw = BASE64.decode(token.as_bytes())?;
-    let mac = match Macaroon::deserialize(&raw) {
-        Ok(m) => m,
-        Err(e) => bail!("macaroon deserialize error: {:?}", e),
-    };
-    let now = Utc::now().to_rfc3339_opts(SecondsFormat::Secs, true);
-    println!("current time: {}", now);
-    println!("domain (location): {:?}", mac.location());
-    println!("signing key name (identifier): {}", mac.identifier());
-    for caveat in mac.first_party_caveats() {
-        println!("caveat: {}", caveat.predicate());
-    }
-    let ac = AuthConfectionary::new();
-    // TODO: don't display full stacktrace on failure
-    println!("verify: {:?}", ac.parse_macaroon_token(conn, token));
-    Ok(())
-}
-
-pub fn revoke_tokens(conn: &DbConn, editor_id: FatCatId) -> Result<()>{
-    diesel::update(editor::table.filter(editor::id.eq(&editor_id.to_uuid())))
-        .set(editor::auth_epoch.eq(Utc::now()))
-        .execute(conn)?;
-    Ok(())
-}
-
-pub fn revoke_tokens_everyone(conn: &DbConn) -> Result<()> {
-    diesel::update(editor::table)
-        .set(editor::auth_epoch.eq(Utc::now()))
-        .execute(conn)?;
     Ok(())
 }
