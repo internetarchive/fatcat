@@ -40,22 +40,24 @@ pub struct AuthConfectionary {
 }
 
 impl AuthConfectionary {
-    pub fn new(location: String, identifier: String, key: Vec<u8>) -> AuthConfectionary {
+    pub fn new(location: String, identifier: String, key_base64: String) -> Result<AuthConfectionary> {
+        let key = BASE64.decode(key_base64.as_bytes())?;
         let mut root_keys = HashMap::new();
         root_keys.insert(identifier.clone(), key.clone());
-        AuthConfectionary {
+        Ok(AuthConfectionary {
             location: location,
             identifier: identifier,
             key: key,
             root_keys: root_keys,
-        }
+        })
     }
 
     pub fn new_dummy() -> AuthConfectionary {
         AuthConfectionary::new(
             "test.fatcat.wiki".to_string(),
             "dummy".to_string(),
-            DUMMY_KEY.to_vec())
+            BASE64.encode(DUMMY_KEY),
+        ).unwrap()
     }
 
     pub fn create_token(&self, editor_id: FatCatId, expires: Option<DateTime<Utc>>) -> Result<String> {
@@ -180,7 +182,15 @@ impl AuthConfectionary {
     }
 }
 
-pub fn revoke_tokens(conn: &DbConn, editor_id: FatCatId) -> Result<()>{
+pub fn create_key() -> String {
+    let mut key: Vec<u8> = vec![0; 32];
+    for v in key.iter_mut() {
+        *v = rand::random()
+    }
+    BASE64.encode(&key)
+}
+
+pub fn revoke_tokens(conn: &DbConn, editor_id: FatCatId) -> Result<()> {
     diesel::update(editor::table.filter(editor::id.eq(&editor_id.to_uuid())))
         .set(editor::auth_epoch.eq(Utc::now()))
         .execute(conn)?;

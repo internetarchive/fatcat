@@ -17,15 +17,10 @@ extern crate serde_json;
 extern crate uuid;
 
 use clap::{App, Arg};
-use dotenv::dotenv;
-use std::env;
 
-use diesel::prelude::*;
-use diesel::r2d2::ConnectionManager;
 use fatcat::api_entity_crud::*;
 use fatcat::api_helpers::*;
 use fatcat::errors::*;
-use fatcat::ConnectionPool;
 use fatcat_api_spec::models::*;
 use std::str::FromStr;
 use uuid::Uuid;
@@ -57,17 +52,6 @@ struct IdentRow {
     ident_id: FatCatId,
     rev_id: Option<Uuid>,
     redirect_id: Option<FatCatId>,
-}
-
-/// Instantiate a new API server with a pooled database connection
-pub fn database_worker_pool() -> Result<ConnectionPool> {
-    dotenv().ok();
-    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-    let manager = ConnectionManager::<PgConnection>::new(database_url);
-    let pool = diesel::r2d2::Pool::builder()
-        .build(manager)
-        .expect("Failed to create database pool.");
-    Ok(pool)
 }
 
 macro_rules! generic_loop_work {
@@ -183,7 +167,7 @@ pub fn do_export(
     entity_type: ExportEntityType,
     redirects: bool,
 ) -> Result<()> {
-    let db_pool = database_worker_pool()?;
+    let db_pool = fatcat::database_worker_pool()?;
     let buf_input = BufReader::new(std::io::stdin());
     let (row_sender, row_receiver) = channel::bounded(CHANNEL_BUFFER_LEN);
     let (output_sender, output_receiver) = channel::bounded(CHANNEL_BUFFER_LEN);

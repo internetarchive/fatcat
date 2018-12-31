@@ -14,12 +14,8 @@ extern crate serde_json;
 extern crate uuid;
 
 use clap::{App, SubCommand};
-use dotenv::dotenv;
-use std::env;
 
 use diesel::prelude::*;
-use diesel::r2d2::ConnectionManager;
-use fatcat::ConnectionPool;
 use fatcat::errors::*;
 use fatcat::api_helpers::FatCatId;
 use std::str::FromStr;
@@ -30,18 +26,6 @@ use std::str::FromStr;
 //use std::io::prelude::*;
 //use std::io::{BufReader, BufWriter};
 
-
-/// Instantiate a new API server with a pooled database connection
-// TODO: copypasta from fatcat-export
-pub fn database_worker_pool() -> Result<ConnectionPool> {
-    dotenv().ok();
-    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-    let manager = ConnectionManager::<PgConnection>::new(database_url);
-    let pool = diesel::r2d2::Pool::builder()
-        .build(manager)
-        .expect("Failed to create database pool.");
-    Ok(pool)
-}
 
 fn run() -> Result<()> {
     let m = App::new("fatcat-auth")
@@ -66,7 +50,7 @@ fn run() -> Result<()> {
                 .about("Creates a new auth token (macaroon) for the given editor")
                 .args_from_usage(
                     "<editor-id> 'id of the editor (fatcatid, not username)'
-                     --env-format 'outputs in a format that shells can source'"
+                     --env-format 'outputs in a format that shells can source'" // TODO
                 )
         )
         .subcommand(
@@ -74,6 +58,13 @@ fn run() -> Result<()> {
                 .about("Dumps token metadata (and whether it is valid)")
                 .args_from_usage(
                     "<token> 'base64-encoded token (macaroon)'"
+                )
+        )
+        .subcommand(
+            SubCommand::with_name("create-key")
+                .about("Creates a new auth secret key (aka, root/signing key for tokens)")
+                .args_from_usage(
+                    "--env-format 'outputs in a format that shells can source'" // TODO
                 )
         )
         .subcommand(
@@ -89,8 +80,18 @@ fn run() -> Result<()> {
         )
         .get_matches();
 
-    let db_conn = database_worker_pool()?.get().expect("database pool");
-    let confectionary = fatcat::auth::AuthConfectionary::new_dummy();
+    // First, the commands with no db or confectionary needed
+    match m.subcommand() {
+        ("create-key", Some(_subm)) => {
+            println!("{}", fatcat::auth::create_key());
+            return Ok(())
+        },
+        _ => (),
+    }
+
+    // Then the ones that do
+    let db_conn = fatcat::database_worker_pool()?.get().expect("database pool");
+    let confectionary = fatcat::env_confectionary()?;
     match m.subcommand() {
         ("list-editors", Some(_subm)) => {
             fatcat::auth::print_editors(&db_conn)?;

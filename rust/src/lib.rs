@@ -93,20 +93,29 @@ use dotenv::dotenv;
 use iron::middleware::AfterMiddleware;
 use iron::{Request, Response};
 use std::env;
+use auth::AuthConfectionary;
 
 #[cfg(feature = "postgres")]
 embed_migrations!("../migrations/");
 
 pub type ConnectionPool = diesel::r2d2::Pool<ConnectionManager<diesel::pg::PgConnection>>;
 
-/// Establish a direct database connection. Not currently used, but could be helpful for
-/// single-threaded tests or utilities.
-pub fn establish_connection() -> PgConnection {
+/// Instantiate a new API server with a pooled database connection
+pub fn database_worker_pool() -> Result<ConnectionPool> {
     dotenv().ok();
-
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-    PgConnection::establish(&database_url)
-        .unwrap_or_else(|_| panic!("Error connecting to {}", database_url))
+    let manager = ConnectionManager::<PgConnection>::new(database_url);
+    let pool = diesel::r2d2::Pool::builder()
+        .build(manager)
+        .expect("Failed to create database pool.");
+    Ok(pool)
+}
+
+pub fn env_confectionary() -> Result<AuthConfectionary> {
+    let auth_location = env::var("AUTH_LOCATION").expect("AUTH_LOCATION must be set");
+    let auth_key = env::var("AUTH_SECRET_KEY").expect("AUTH_SECRET_KEY must be set");
+    let auth_key_ident = env::var("AUTH_KEY_IDENT").expect("AUTH_KEY_IDENT must be set");
+    AuthConfectionary::new(auth_location, auth_key_ident, auth_key)
 }
 
 /// Instantiate a new API server with a pooled database connection
@@ -117,7 +126,7 @@ pub fn server() -> Result<api_server::Server> {
     let pool = diesel::r2d2::Pool::builder()
         .build(manager)
         .expect("Failed to create database pool.");
-    let confectionary = auth::AuthConfectionary::new_dummy();
+    let confectionary = env_confectionary()?;
     Ok(api_server::Server { db_pool: pool, auth_confectionary: confectionary })
 }
 
@@ -126,7 +135,8 @@ pub fn test_server() -> Result<api_server::Server> {
     let database_url = env::var("TEST_DATABASE_URL").expect("TEST_DATABASE_URL must be set");
     env::set_var("DATABASE_URL", database_url);
 
-    let server = server()?;
+    let mut server = server()?;
+    server.auth_confectionary = AuthConfectionary::new_dummy();
     let conn = server.db_pool.get().expect("db_pool error");
 
     // run migrations; revert latest (dummy data); re-run latest
