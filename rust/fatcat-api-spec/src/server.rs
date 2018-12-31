@@ -183,6 +183,18 @@ where
                             }
                             Ok(response)
                         }
+                        CreateContainerResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_CONTAINER_FORBIDDEN.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
                         CreateContainerResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -312,6 +324,18 @@ where
                             }
                             Ok(response)
                         }
+                        CreateContainerBatchResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_CONTAINER_BATCH_FORBIDDEN.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
                         CreateContainerBatchResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -424,6 +448,16 @@ where
 
                             Ok(response)
                         }
+                        DeleteContainerResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_CONTAINER_FORBIDDEN.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
                         DeleteContainerResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -526,6 +560,16 @@ where
 
                             Ok(response)
                         }
+                        DeleteContainerEditResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_CONTAINER_EDIT_FORBIDDEN.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
                         DeleteContainerEditResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -620,19 +664,6 @@ where
 
                             Ok(response)
                         }
-                        GetContainerResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_CONTAINER_NOT_AUTHORIZED.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
                         GetContainerResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -717,19 +748,6 @@ where
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_CONTAINER_EDIT_BAD_REQUEST.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
-                        GetContainerEditResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_CONTAINER_EDIT_NOT_AUTHORIZED.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -828,19 +846,6 @@ where
 
                             Ok(response)
                         }
-                        GetContainerHistoryResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_CONTAINER_HISTORY_NOT_AUTHORIZED.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
                         GetContainerHistoryResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -925,19 +930,6 @@ where
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_CONTAINER_REDIRECTS_BAD_REQUEST.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
-                        GetContainerRedirectsResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_CONTAINER_REDIRECTS_NOT_AUTHORIZED.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -1037,19 +1029,6 @@ where
 
                             Ok(response)
                         }
-                        GetContainerRevisionResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_CONTAINER_REVISION_NOT_AUTHORIZED.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
                         GetContainerRevisionResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -1126,19 +1105,6 @@ where
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
                             response.headers.set(ContentType(mimetypes::responses::LOOKUP_CONTAINER_BAD_REQUEST.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
-                        LookupContainerResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::LOOKUP_CONTAINER_NOT_AUTHORIZED.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -1283,6 +1249,18 @@ where
                             }
                             Ok(response)
                         }
+                        UpdateContainerResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::UPDATE_CONTAINER_FORBIDDEN.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
                         UpdateContainerResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -1404,6 +1382,18 @@ where
                             response.headers.set(ResponseWwwAuthenticate(www_authenticate));
 
                             response.headers.set(ContentType(mimetypes::responses::CREATE_CREATOR_NOT_AUTHORIZED.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        CreateCreatorResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_CREATOR_FORBIDDEN.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -1540,6 +1530,18 @@ where
                             }
                             Ok(response)
                         }
+                        CreateCreatorBatchResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_CREATOR_BATCH_FORBIDDEN.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
                         CreateCreatorBatchResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -1652,6 +1654,16 @@ where
 
                             Ok(response)
                         }
+                        DeleteCreatorResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_CREATOR_FORBIDDEN.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
                         DeleteCreatorResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -1754,6 +1766,16 @@ where
 
                             Ok(response)
                         }
+                        DeleteCreatorEditResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_CREATOR_EDIT_FORBIDDEN.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
                         DeleteCreatorEditResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -1848,19 +1870,6 @@ where
 
                             Ok(response)
                         }
-                        GetCreatorResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_CREATOR_NOT_AUTHORIZED.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
                         GetCreatorResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -1945,19 +1954,6 @@ where
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_CREATOR_EDIT_BAD_REQUEST.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
-                        GetCreatorEditResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_CREATOR_EDIT_NOT_AUTHORIZED.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -2056,19 +2052,6 @@ where
 
                             Ok(response)
                         }
-                        GetCreatorHistoryResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_CREATOR_HISTORY_NOT_AUTHORIZED.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
                         GetCreatorHistoryResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -2153,19 +2136,6 @@ where
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_CREATOR_REDIRECTS_BAD_REQUEST.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
-                        GetCreatorRedirectsResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_CREATOR_REDIRECTS_NOT_AUTHORIZED.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -2259,19 +2229,6 @@ where
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_CREATOR_RELEASES_BAD_REQUEST.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
-                        GetCreatorReleasesResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_CREATOR_RELEASES_NOT_AUTHORIZED.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -2371,19 +2328,6 @@ where
 
                             Ok(response)
                         }
-                        GetCreatorRevisionResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_CREATOR_REVISION_NOT_AUTHORIZED.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
                         GetCreatorRevisionResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -2460,19 +2404,6 @@ where
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
                             response.headers.set(ContentType(mimetypes::responses::LOOKUP_CREATOR_BAD_REQUEST.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
-                        LookupCreatorResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::LOOKUP_CREATOR_NOT_AUTHORIZED.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -2610,6 +2541,18 @@ where
                             response.headers.set(ResponseWwwAuthenticate(www_authenticate));
 
                             response.headers.set(ContentType(mimetypes::responses::UPDATE_CREATOR_NOT_AUTHORIZED.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        UpdateCreatorResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::UPDATE_CREATOR_FORBIDDEN.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -2888,6 +2831,29 @@ where
 
                             Ok(response)
                         }
+                        AcceptEditgroupResponse::NotAuthorized { body, www_authenticate } => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(401), body_string));
+                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
+
+                            response.headers.set(ContentType(mimetypes::responses::ACCEPT_EDITGROUP_NOT_AUTHORIZED.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                        AcceptEditgroupResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::ACCEPT_EDITGROUP_FORBIDDEN.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
                         AcceptEditgroupResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -2994,6 +2960,33 @@ where
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
                             response.headers.set(ContentType(mimetypes::responses::CREATE_EDITGROUP_BAD_REQUEST.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        CreateEditgroupResponse::NotAuthorized { body, www_authenticate } => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(401), body_string));
+                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
+
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_EDITGROUP_NOT_AUTHORIZED.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        CreateEditgroupResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_EDITGROUP_FORBIDDEN.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -3343,6 +3336,18 @@ where
                             }
                             Ok(response)
                         }
+                        CreateFileResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_FILE_FORBIDDEN.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
                         CreateFileResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -3472,6 +3477,18 @@ where
                             }
                             Ok(response)
                         }
+                        CreateFileBatchResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_FILE_BATCH_FORBIDDEN.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
                         CreateFileBatchResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -3584,6 +3601,16 @@ where
 
                             Ok(response)
                         }
+                        DeleteFileResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_FILE_FORBIDDEN.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
                         DeleteFileResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -3686,6 +3713,16 @@ where
 
                             Ok(response)
                         }
+                        DeleteFileEditResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_FILE_EDIT_FORBIDDEN.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
                         DeleteFileEditResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -3780,19 +3817,6 @@ where
 
                             Ok(response)
                         }
-                        GetFileResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_FILE_NOT_AUTHORIZED.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
                         GetFileResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -3877,19 +3901,6 @@ where
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_FILE_EDIT_BAD_REQUEST.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
-                        GetFileEditResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_FILE_EDIT_NOT_AUTHORIZED.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -3988,19 +3999,6 @@ where
 
                             Ok(response)
                         }
-                        GetFileHistoryResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_FILE_HISTORY_NOT_AUTHORIZED.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
                         GetFileHistoryResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -4085,19 +4083,6 @@ where
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_FILE_REDIRECTS_BAD_REQUEST.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
-                        GetFileRedirectsResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_FILE_REDIRECTS_NOT_AUTHORIZED.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -4197,19 +4182,6 @@ where
 
                             Ok(response)
                         }
-                        GetFileRevisionResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_FILE_REVISION_NOT_AUTHORIZED.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
                         GetFileRevisionResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -4287,19 +4259,6 @@ where
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
                             response.headers.set(ContentType(mimetypes::responses::LOOKUP_FILE_BAD_REQUEST.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
-                        LookupFileResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::LOOKUP_FILE_NOT_AUTHORIZED.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -4444,6 +4403,18 @@ where
                             }
                             Ok(response)
                         }
+                        UpdateFileResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::UPDATE_FILE_FORBIDDEN.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
                         UpdateFileResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -4563,6 +4534,18 @@ where
                             response.headers.set(ResponseWwwAuthenticate(www_authenticate));
 
                             response.headers.set(ContentType(mimetypes::responses::CREATE_FILESET_NOT_AUTHORIZED.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        CreateFilesetResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_FILESET_FORBIDDEN.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -4697,6 +4680,18 @@ where
                             }
                             Ok(response)
                         }
+                        CreateFilesetBatchResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_FILESET_BATCH_FORBIDDEN.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
                         CreateFilesetBatchResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -4807,6 +4802,16 @@ where
 
                             Ok(response)
                         }
+                        DeleteFilesetResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_FILESET_FORBIDDEN.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
                         DeleteFilesetResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -4909,6 +4914,16 @@ where
 
                             Ok(response)
                         }
+                        DeleteFilesetEditResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_FILESET_EDIT_FORBIDDEN.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
                         DeleteFilesetEditResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -5003,19 +5018,6 @@ where
 
                             Ok(response)
                         }
-                        GetFilesetResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_FILESET_NOT_AUTHORIZED.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
                         GetFilesetResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -5100,19 +5102,6 @@ where
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_FILESET_EDIT_BAD_REQUEST.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
-                        GetFilesetEditResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_FILESET_EDIT_NOT_AUTHORIZED.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -5211,19 +5200,6 @@ where
 
                             Ok(response)
                         }
-                        GetFilesetHistoryResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_FILESET_HISTORY_NOT_AUTHORIZED.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
                         GetFilesetHistoryResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -5308,19 +5284,6 @@ where
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_FILESET_REDIRECTS_BAD_REQUEST.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
-                        GetFilesetRedirectsResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_FILESET_REDIRECTS_NOT_AUTHORIZED.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -5415,19 +5378,6 @@ where
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_FILESET_REVISION_BAD_REQUEST.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
-                        GetFilesetRevisionResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_FILESET_REVISION_NOT_AUTHORIZED.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -5570,6 +5520,18 @@ where
                             }
                             Ok(response)
                         }
+                        UpdateFilesetResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::UPDATE_FILESET_FORBIDDEN.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
                         UpdateFilesetResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -5689,6 +5651,18 @@ where
                             response.headers.set(ResponseWwwAuthenticate(www_authenticate));
 
                             response.headers.set(ContentType(mimetypes::responses::CREATE_RELEASE_NOT_AUTHORIZED.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        CreateReleaseResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_RELEASE_FORBIDDEN.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -5823,6 +5797,18 @@ where
                             }
                             Ok(response)
                         }
+                        CreateReleaseBatchResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_RELEASE_BATCH_FORBIDDEN.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
                         CreateReleaseBatchResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -5949,6 +5935,18 @@ where
                             }
                             Ok(response)
                         }
+                        CreateWorkResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_WORK_FORBIDDEN.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
                         CreateWorkResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -6059,6 +6057,16 @@ where
 
                             Ok(response)
                         }
+                        DeleteReleaseResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_RELEASE_FORBIDDEN.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
                         DeleteReleaseResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -6161,6 +6169,16 @@ where
 
                             Ok(response)
                         }
+                        DeleteReleaseEditResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_RELEASE_EDIT_FORBIDDEN.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
                         DeleteReleaseEditResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -6255,19 +6273,6 @@ where
 
                             Ok(response)
                         }
-                        GetReleaseResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_RELEASE_NOT_AUTHORIZED.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
                         GetReleaseResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -6352,19 +6357,6 @@ where
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_RELEASE_EDIT_BAD_REQUEST.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
-                        GetReleaseEditResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_RELEASE_EDIT_NOT_AUTHORIZED.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -6463,19 +6455,6 @@ where
 
                             Ok(response)
                         }
-                        GetReleaseFilesResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_RELEASE_FILES_NOT_AUTHORIZED.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
                         GetReleaseFilesResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -6564,19 +6543,6 @@ where
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_RELEASE_FILESETS_BAD_REQUEST.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
-                        GetReleaseFilesetsResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_RELEASE_FILESETS_NOT_AUTHORIZED.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -6675,19 +6641,6 @@ where
 
                             Ok(response)
                         }
-                        GetReleaseHistoryResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_RELEASE_HISTORY_NOT_AUTHORIZED.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
                         GetReleaseHistoryResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -6772,19 +6725,6 @@ where
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_RELEASE_REDIRECTS_BAD_REQUEST.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
-                        GetReleaseRedirectsResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_RELEASE_REDIRECTS_NOT_AUTHORIZED.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -6884,19 +6824,6 @@ where
 
                             Ok(response)
                         }
-                        GetReleaseRevisionResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_RELEASE_REVISION_NOT_AUTHORIZED.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
                         GetReleaseRevisionResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -6990,19 +6917,6 @@ where
 
                             Ok(response)
                         }
-                        GetReleaseWebcapturesResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_RELEASE_WEBCAPTURES_NOT_AUTHORIZED.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
                         GetReleaseWebcapturesResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -7086,19 +7000,6 @@ where
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
                             response.headers.set(ContentType(mimetypes::responses::LOOKUP_RELEASE_BAD_REQUEST.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
-                        LookupReleaseResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::LOOKUP_RELEASE_NOT_AUTHORIZED.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -7241,6 +7142,18 @@ where
                             }
                             Ok(response)
                         }
+                        UpdateReleaseResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::UPDATE_RELEASE_FORBIDDEN.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
                         UpdateReleaseResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -7360,6 +7273,18 @@ where
                             response.headers.set(ResponseWwwAuthenticate(www_authenticate));
 
                             response.headers.set(ContentType(mimetypes::responses::CREATE_WEBCAPTURE_NOT_AUTHORIZED.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        CreateWebcaptureResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_WEBCAPTURE_FORBIDDEN.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -7494,6 +7419,18 @@ where
                             }
                             Ok(response)
                         }
+                        CreateWebcaptureBatchResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_WEBCAPTURE_BATCH_FORBIDDEN.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
                         CreateWebcaptureBatchResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -7604,6 +7541,16 @@ where
 
                             Ok(response)
                         }
+                        DeleteWebcaptureResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_WEBCAPTURE_FORBIDDEN.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
                         DeleteWebcaptureResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -7706,6 +7653,16 @@ where
 
                             Ok(response)
                         }
+                        DeleteWebcaptureEditResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_WEBCAPTURE_EDIT_FORBIDDEN.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
                         DeleteWebcaptureEditResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -7800,19 +7757,6 @@ where
 
                             Ok(response)
                         }
-                        GetWebcaptureResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_WEBCAPTURE_NOT_AUTHORIZED.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
                         GetWebcaptureResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -7897,19 +7841,6 @@ where
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_WEBCAPTURE_EDIT_BAD_REQUEST.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
-                        GetWebcaptureEditResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_WEBCAPTURE_EDIT_NOT_AUTHORIZED.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -8008,19 +7939,6 @@ where
 
                             Ok(response)
                         }
-                        GetWebcaptureHistoryResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_WEBCAPTURE_HISTORY_NOT_AUTHORIZED.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
                         GetWebcaptureHistoryResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -8105,19 +8023,6 @@ where
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_WEBCAPTURE_REDIRECTS_BAD_REQUEST.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
-                        GetWebcaptureRedirectsResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_WEBCAPTURE_REDIRECTS_NOT_AUTHORIZED.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -8212,19 +8117,6 @@ where
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_WEBCAPTURE_REVISION_BAD_REQUEST.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
-                        GetWebcaptureRevisionResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_WEBCAPTURE_REVISION_NOT_AUTHORIZED.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -8367,6 +8259,18 @@ where
                             }
                             Ok(response)
                         }
+                        UpdateWebcaptureResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::UPDATE_WEBCAPTURE_FORBIDDEN.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
                         UpdateWebcaptureResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -8494,6 +8398,18 @@ where
                             }
                             Ok(response)
                         }
+                        CreateWorkBatchResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_WORK_BATCH_FORBIDDEN.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
                         CreateWorkBatchResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -8604,6 +8520,16 @@ where
 
                             Ok(response)
                         }
+                        DeleteWorkResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_WORK_FORBIDDEN.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
                         DeleteWorkResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -8706,6 +8632,16 @@ where
 
                             Ok(response)
                         }
+                        DeleteWorkEditResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::DELETE_WORK_EDIT_FORBIDDEN.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
                         DeleteWorkEditResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -8800,19 +8736,6 @@ where
 
                             Ok(response)
                         }
-                        GetWorkResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_WORK_NOT_AUTHORIZED.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
                         GetWorkResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -8897,19 +8820,6 @@ where
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_WORK_EDIT_BAD_REQUEST.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
-                        GetWorkEditResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_WORK_EDIT_NOT_AUTHORIZED.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -9008,19 +8918,6 @@ where
 
                             Ok(response)
                         }
-                        GetWorkHistoryResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_WORK_HISTORY_NOT_AUTHORIZED.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
                         GetWorkHistoryResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -9105,19 +9002,6 @@ where
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_WORK_REDIRECTS_BAD_REQUEST.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
-                        GetWorkRedirectsResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_WORK_REDIRECTS_NOT_AUTHORIZED.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -9216,19 +9100,6 @@ where
 
                             Ok(response)
                         }
-                        GetWorkReleasesResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_WORK_RELEASES_NOT_AUTHORIZED.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
                         GetWorkReleasesResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -9318,19 +9189,6 @@ where
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_WORK_REVISION_BAD_REQUEST.clone()));
-
-                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
-
-                            Ok(response)
-                        }
-                        GetWorkRevisionResponse::NotAuthorized { body, www_authenticate } => {
-                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
-
-                            let mut response = Response::with((status::Status::from_u16(401), body_string));
-                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
-                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
-
-                            response.headers.set(ContentType(mimetypes::responses::GET_WORK_REVISION_NOT_AUTHORIZED.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -9466,6 +9324,18 @@ where
                             response.headers.set(ResponseWwwAuthenticate(www_authenticate));
 
                             response.headers.set(ContentType(mimetypes::responses::UPDATE_WORK_NOT_AUTHORIZED.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        UpdateWorkResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::UPDATE_WORK_FORBIDDEN.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
