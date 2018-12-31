@@ -549,11 +549,7 @@ definitions:
       role:
         type: string
 
-x-entity-responses: &ENTITYRESPONSES
-  400:
-    description: Bad Request
-    schema:
-      $ref: "#/definitions/error_response"
+x-auth-responses: &AUTHRESPONSES
   401:
     description: Not Authorized # "Authentication information is missing or invalid"
     schema:
@@ -561,6 +557,15 @@ x-entity-responses: &ENTITYRESPONSES
     headers:
       WWW_Authenticate:
         type: string
+  403:
+    description: Forbidden
+    schema:
+      $ref: "#/definitions/error_response"
+x-entity-responses: &ENTITYRESPONSES
+  400:
+    description: Bad Request
+    schema:
+      $ref: "#/definitions/error_response"
   404:
     description: Not Found
     schema:
@@ -594,6 +599,7 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
   /container/batch:
     post:
       operationId: "create_container_batch"
@@ -627,6 +633,7 @@ paths:
             items:
               $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
   /container/{ident}:
     parameters:
       - name: ident
@@ -676,6 +683,7 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
     delete:
       operationId: "delete_container"
       tags: # TAGLINE
@@ -693,6 +701,7 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
   /container/rev/{rev_id}:
     parameters:
       - name: rev_id
@@ -822,6 +831,7 @@ paths:
           schema:
             $ref: "#/definitions/success"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
   /creator:
     post:
       operationId: "create_creator"
@@ -845,6 +855,7 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
   /creator/batch:
     post:
       operationId: "create_creator_batch"
@@ -878,6 +889,7 @@ paths:
             items:
               $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
   /creator/{ident}:
     parameters:
       - name: ident
@@ -927,6 +939,7 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
     delete:
       operationId: "delete_creator"
       tags: # TAGLINE
@@ -944,6 +957,7 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
   /creator/rev/{rev_id}:
     parameters:
       - name: rev_id
@@ -1096,6 +1110,7 @@ paths:
           schema:
             $ref: "#/definitions/success"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
   /file:
     post:
       operationId: "create_file"
@@ -1119,6 +1134,7 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
   /file/batch:
     post:
       operationId: "create_file_batch"
@@ -1152,6 +1168,7 @@ paths:
             items:
               $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
   /file/{ident}:
     parameters:
       - name: ident
@@ -1201,6 +1218,7 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
     delete:
       operationId: "delete_file"
       tags: # TAGLINE
@@ -1218,6 +1236,7 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
   /file/rev/{rev_id}:
     parameters:
       - name: rev_id
@@ -1352,6 +1371,7 @@ paths:
           schema:
             $ref: "#/definitions/success"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
   /fileset:
     post:
       operationId: "create_fileset"
@@ -1373,6 +1393,7 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
   /fileset/batch:
     post:
       operationId: "create_fileset_batch"
@@ -1404,6 +1425,7 @@ paths:
             items:
               $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
   /fileset/{ident}:
     parameters:
       - name: ident
@@ -1451,6 +1473,7 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
     delete:
       operationId: "delete_fileset"
       tags: # TAGLINE
@@ -1466,6 +1489,7 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
   /fileset/rev/{rev_id}:
     parameters:
       - name: rev_id
@@ -1566,6 +1590,7 @@ paths:
           schema:
             $ref: "#/definitions/success"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
   /webcapture:
     post:
       operationId: "create_webcapture"
@@ -1587,6 +1612,7 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
   /webcapture/batch:
     post:
       operationId: "create_webcapture_batch"
@@ -1618,6 +1644,7 @@ paths:
             items:
               $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
   /webcapture/{ident}:
     parameters:
       - name: ident
@@ -1665,6 +1692,7 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
     delete:
       operationId: "delete_webcapture"
       tags: # TAGLINE
@@ -1680,6 +1708,7 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
   /webcapture/rev/{rev_id}:
     parameters:
       - name: rev_id
@@ -1780,6 +1809,7 @@ paths:
           schema:
             $ref: "#/definitions/success"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
   /release:
     post:
       operationId: "create_release"
@@ -1801,6 +1831,7 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
   /release/batch:
     post:
       operationId: "create_release_batch"
@@ -1832,6 +1863,7 @@ paths:
             items:
               $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
   /release/{ident}:
     parameters:
       - name: ident
@@ -1879,6 +1911,7 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
     delete:
       operationId: "delete_release"
       tags: # TAGLINE
@@ -1894,6 +1927,7 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
   /release/rev/{rev_id}:
     parameters:
       - name: rev_id
@@ -2109,6 +2143,7 @@ paths:
           schema:
             $ref: "#/definitions/success"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
   /work:
     post:
       operationId: "create_work"
@@ -2130,6 +2165,7 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
   /work/batch:
     post:
       operationId: "create_work_batch"
@@ -2161,6 +2197,7 @@ paths:
             items:
               $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
   /work/{ident}:
     parameters:
       - name: ident
@@ -2208,6 +2245,7 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
     delete:
       operationId: "delete_work"
       tags: # TAGLINE
@@ -2223,6 +2261,7 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
   /work/rev/{rev_id}:
     parameters:
       - name: rev_id
@@ -2346,6 +2385,7 @@ paths:
           schema:
             $ref: "#/definitions/success"
         <<: *ENTITYRESPONSES
+        <<: *AUTHRESPONSES
   /editor/{editor_id}:
     parameters:
       - name: editor_id
@@ -2422,6 +2462,7 @@ paths:
           description: Generic Error
           schema:
             $ref: "#/definitions/error_response"
+        <<: *AUTHRESPONSES
   /editgroup/{editgroup_id}:
     parameters:
       - name: editgroup_id
@@ -2480,6 +2521,7 @@ paths:
           description: Generic Error
           schema:
             $ref: "#/definitions/error_response"
+        <<: *AUTHRESPONSES
   /changelog:
     parameters:
       - name: limit
