@@ -22,16 +22,16 @@ extern crate data_encoding;
 extern crate regex;
 #[macro_use]
 extern crate lazy_static;
-extern crate sha1;
 extern crate macaroon;
+extern crate sha1;
 
 pub mod api_entity_crud;
 pub mod api_helpers;
 pub mod api_server;
 pub mod api_wrappers;
+pub mod auth;
 pub mod database_models;
 pub mod database_schema;
-pub mod auth;
 
 pub mod errors {
     // Create the Error, ErrorKind, ResultExt, and Result types
@@ -74,6 +74,14 @@ pub mod errors {
                 description("Invalid Entity State Transform")
                 display("tried to mutate an entity which was not in an appropriate state: {}", message)
             }
+            InvalidCredentials(message: String) {
+                description("auth token was missing, expired, revoked, or corrupt")
+                display("auth token was missing, expired, revoked, or corrupt: {}", message)
+            }
+            InsufficientPrivileges(message: String) {
+                description("editor account doesn't have authorization")
+                display("editor account doesn't have authorization: {}", message)
+            }
             OtherBadRequest(message: String) {
                 description("catch-all error for bad or unallowed requests")
                 display("broke a constraint or made an otherwise invalid request: {}", message)
@@ -86,14 +94,13 @@ pub mod errors {
 pub use errors::*;
 
 pub use self::errors::*;
+use auth::AuthConfectionary;
 use diesel::pg::PgConnection;
-use diesel::prelude::*;
 use diesel::r2d2::ConnectionManager;
 use dotenv::dotenv;
 use iron::middleware::AfterMiddleware;
 use iron::{Request, Response};
 use std::env;
-use auth::AuthConfectionary;
 
 #[cfg(feature = "postgres")]
 embed_migrations!("../migrations/");
@@ -127,7 +134,10 @@ pub fn server() -> Result<api_server::Server> {
         .build(manager)
         .expect("Failed to create database pool.");
     let confectionary = env_confectionary()?;
-    Ok(api_server::Server { db_pool: pool, auth_confectionary: confectionary })
+    Ok(api_server::Server {
+        db_pool: pool,
+        auth_confectionary: confectionary,
+    })
 }
 
 pub fn test_server() -> Result<api_server::Server> {

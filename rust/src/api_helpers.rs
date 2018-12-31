@@ -205,23 +205,23 @@ fn test_hide_flags() {
 
 pub fn make_edit_context(
     conn: &DbConn,
+    editor_id: FatCatId,
     editgroup_id: Option<FatCatId>,
     autoaccept: bool,
 ) -> Result<EditContext> {
-    let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001")?; // TODO: auth
     let editgroup_id: FatCatId = match (editgroup_id, autoaccept) {
         (Some(eg), _) => eg,
         // If autoaccept and no editgroup_id passed, always create a new one for this transaction
         (None, true) => {
             let eg_row: EditgroupRow = diesel::insert_into(editgroup::table)
-                .values((editgroup::editor_id.eq(editor_id),))
+                .values((editgroup::editor_id.eq(editor_id.to_uuid()),))
                 .get_result(conn)?;
             FatCatId::from_uuid(&eg_row.id)
         }
-        (None, false) => FatCatId::from_uuid(&get_or_create_editgroup(editor_id, conn)?),
+        (None, false) => FatCatId::from_uuid(&get_or_create_editgroup(editor_id.to_uuid(), conn)?),
     };
     Ok(EditContext {
-        editor_id: FatCatId::from_uuid(&editor_id),
+        editor_id: editor_id,
         editgroup_id: editgroup_id,
         extra_json: None,
         autoaccept: autoaccept,
@@ -229,7 +229,12 @@ pub fn make_edit_context(
 }
 
 // TODO: verify username (alphanum, etc)
-pub fn create_editor(conn: &DbConn, username: String, is_admin: bool, is_bot: bool) -> Result<EditorRow> {
+pub fn create_editor(
+    conn: &DbConn,
+    username: String,
+    is_admin: bool,
+    is_bot: bool,
+) -> Result<EditorRow> {
     let ed: EditorRow = diesel::insert_into(editor::table)
         .values((
             editor::username.eq(username),
@@ -237,7 +242,7 @@ pub fn create_editor(conn: &DbConn, username: String, is_admin: bool, is_bot: bo
             editor::is_bot.eq(is_bot),
         ))
         .get_result(conn)?;
-    Ok(ed) 
+    Ok(ed)
 }
 
 /// This function should always be run within a transaction
