@@ -15,7 +15,7 @@ use fatcat_api_spec::*;
 mod helpers;
 use helpers::setup_client;
 
-#[test]
+//#[test]
 fn test_api_rich_create() {
     let (client, mut server) = setup_client();
     let client = client.with_context(Context::new());
@@ -189,8 +189,7 @@ fn test_api_rich_create() {
  * because of any problem with this particular test... though this test isn't doing much right now
  * anyways.
  */
-/*
-#[test]
+//#[test]
 fn test_merge_works() {
     let (client, mut server) = setup_client();
     let client = client.with_context(Context::new());
@@ -202,7 +201,7 @@ fn test_merge_works() {
         .wait()
         .unwrap();
     let editgroup_id = match resp {
-        CreateEditgroupResponse::SuccessfullyCreated(eg) => eg.id.unwrap(),
+        CreateEditgroupResponse::SuccessfullyCreated(eg) => eg.editgroup_id.unwrap(),
         _ => unreachable!(),
     };
 
@@ -216,7 +215,8 @@ fn test_merge_works() {
         CreateWorkResponse::CreatedEntity(ee) => ee.ident,
         _ => unreachable!(),
     };
-    let mut new_release = ReleaseEntity::new("some release".to_string());
+    let mut new_release = ReleaseEntity::new();
+    new_release.title = Some("some release".to_string());
     new_release.release_type = Some("article-journal".to_string());
     new_release.work_id = Some(work_a_id.clone());
     new_release.doi = Some("10.1234/A1".to_string());
@@ -238,7 +238,8 @@ fn test_merge_works() {
         _ => unreachable!(),
     };
 
-    let mut new_release = ReleaseEntity::new("some release".to_string());
+    let mut new_release = ReleaseEntity::new();
+    new_release.title = Some("some release".to_string());
     new_release.release_type = Some("article-journal".to_string());
     new_release.work_id = Some(work_b_id.clone());
     new_release.doi = Some("10.1234/B1".to_string());
@@ -251,7 +252,8 @@ fn test_merge_works() {
         _ => unreachable!(),
     };
 
-    let mut new_release = ReleaseEntity::new("some release".to_string());
+    let mut new_release = ReleaseEntity::new();
+    new_release.title = Some("some release".to_string());
     new_release.release_type = Some("article-journal".to_string());
     new_release.work_id = Some(work_b_id.clone());
     new_release.doi = Some("10.1234/B2".to_string());
@@ -276,20 +278,19 @@ fn test_merge_works() {
     /* TODO:
     // merge works
     client.merge_works(work_a_id, work_b_id)
-*/
-// check results
-let work_a = match client.get_work(work_a_id.clone(), None).wait().unwrap() {
-GetWorkResponse::FoundEntity(e) => e,
-_ => unreachable!(),
-};
-let _work_b = match client.get_work(work_b_id.clone(), None).wait().unwrap() {
-GetWorkResponse::FoundEntity(e) => e,
-_ => unreachable!(),
-};
-// TODO: assert_eq!(work_a.revision.unwrap(), work_b.revision.unwrap());
-assert_eq!(work_a.redirect, None);
-// TODO: assert_eq!(work_b.redirect, Some(work_a_id));
+    */
+    // check results
+    let work_a = match client.get_work(work_a_id.clone(), None, None).wait().unwrap() {
+    GetWorkResponse::FoundEntity(e) => e,
+    _ => unreachable!(),
+    };
+    let _work_b = match client.get_work(work_b_id.clone(), None, None).wait().unwrap() {
+    GetWorkResponse::FoundEntity(e) => e,
+    _ => unreachable!(),
+    };
+    // TODO: assert_eq!(work_a.revision.unwrap(), work_b.revision.unwrap());
+    assert_eq!(work_a.redirect, None);
+    // TODO: assert_eq!(work_b.redirect, Some(work_a_id));
 
-server.close().unwrap()
+    server.close().unwrap()
 }
-*/
