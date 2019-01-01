@@ -39,6 +39,14 @@ fn main() {
     let formatter = DefaultLogFormatter;
 
     let server = fatcat::server().unwrap();
+    info!(
+        logger,
+        "using primary auth key: {}", server.auth_confectionary.identifier,
+    );
+    info!(
+        logger,
+        "all auth keys: {:?}", server.auth_confectionary.root_keys.keys().collect::<Vec<&String>>(),
+    );
     let mut router = fatcat_api_spec::router(server);
 
     router.get("/", root_handler, "root-redirect");

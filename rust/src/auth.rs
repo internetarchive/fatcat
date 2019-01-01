@@ -198,6 +198,12 @@ impl AuthConfectionary {
         .unwrap()
     }
 
+    pub fn add_keypair(&mut self, identifier: String, key_base64: String) -> Result<()> {
+        let key = BASE64.decode(key_base64.as_bytes())?;
+        self.root_keys.insert(identifier, key);
+        Ok(())
+    }
+
     pub fn create_token(
         &self,
         editor_id: FatCatId,
