@@ -456,10 +456,10 @@ CREATE INDEX webcapture_rev_release_target_release_idx ON webcapture_rev_release
 
 BEGIN;
 
-INSERT INTO editor (id, username, is_admin) VALUES
-    ('00000000-0000-0000-AAAA-000000000001', 'admin', true),        -- aaaaaaaaaaaabkvkaaaaaaaaae
-    ('00000000-0000-0000-AAAA-000000000002', 'demo-user', true),    -- aaaaaaaaaaaabkvkaaaaaaaaai
-    ('00000000-0000-0000-AAAA-000000000003', 'claire', false);      -- aaaaaaaaaaaabkvkaaaaaaaaam
+INSERT INTO editor (id, username, is_admin, auth_epoch) VALUES
+    ('00000000-0000-0000-AAAA-000000000001', 'admin', true, '1970-01-01T01:01:01Z'),        -- aaaaaaaaaaaabkvkaaaaaaaaae
+    ('00000000-0000-0000-AAAA-000000000002', 'demo-user', true, '1970-01-01T01:01:01Z'),    -- aaaaaaaaaaaabkvkaaaaaaaaai
+    ('00000000-0000-0000-AAAA-000000000003', 'claire', false, default);                     -- aaaaaaaaaaaabkvkaaaaaaaaam
 
 INSERT INTO editgroup (id, editor_id, description) VALUES
     ('00000000-0000-0000-BBBB-000000000001', '00000000-0000-0000-AAAA-000000000001', 'first edit ever!'),       -- aaaaaaaaaaaabo53aaaaaaaaae
