@@ -2,7 +2,8 @@
 
 use data_encoding::BASE64;
 use macaroon::{Format, Macaroon, Verifier};
-use swagger::auth::AuthData;
+use std::fmt;
+use swagger::auth::{AuthData, Authorization, Scopes};
 
 use api_helpers::*;
 use chrono::prelude::*;
@@ -59,7 +60,7 @@ impl AuthContext {
 
     pub fn require_editgroup(&self, conn: &DbConn, editgroup_id: FatCatId) -> Result<()> {
         if self.has_role(FatcatRole::Admin) {
-            return Ok(())
+            return Ok(());
         }
         let editgroup: EditgroupRow = editgroup::table
             .find(editgroup_id.to_uuid())
@@ -71,6 +72,94 @@ impl AuthContext {
             )
             .into()),
         }
+    }
+}
+
+#[derive(Debug)]
+pub struct AuthError {
+    msg: String,
+}
+
+impl fmt::Display for AuthError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "AuthError: {}", &self.msg)
+    }
+}
+
+impl iron::Error for AuthError {
+    fn description(&self) -> &str {
+        &self.msg
+    }
+    fn cause(&self) -> Option<&iron::Error> {
+        None
+    }
+}
+
+fn new_auth_ironerror(m: &str) -> iron::error::IronError {
+    iron::error::IronError::new(
+        AuthError { msg: m.to_string() },
+        (iron::status::BadRequest, m.to_string()),
+    )
+}
+
+#[derive(Debug)]
+pub struct OpenAuthMiddleware;
+
+impl OpenAuthMiddleware {
+    /// Create a middleware that authorizes with the configured subject.
+    pub fn new() -> OpenAuthMiddleware {
+        OpenAuthMiddleware
+    }
+}
+
+impl iron::middleware::BeforeMiddleware for OpenAuthMiddleware {
+    fn before(&self, req: &mut iron::Request) -> iron::IronResult<()> {
+        req.extensions.insert::<Authorization>(Authorization {
+            subject: "undefined".to_string(),
+            scopes: Scopes::All,
+            issuer: None,
+        });
+        Ok(())
+    }
+}
+
+#[derive(Debug)]
+pub struct MacaroonAuthMiddleware;
+
+impl MacaroonAuthMiddleware {
+    pub fn new() -> MacaroonAuthMiddleware {
+        MacaroonAuthMiddleware
+    }
+}
+impl iron::middleware::BeforeMiddleware for MacaroonAuthMiddleware {
+    fn before(&self, req: &mut iron::Request) -> iron::IronResult<()> {
+        // Structure here is sorta funky because we might some day actually want to parse token
+        // here in some way
+        let token: Option<String> = match req.extensions.get::<AuthData>() {
+            Some(AuthData::ApiKey(header)) => {
+                let header: Vec<String> =
+                    header.split_whitespace().map(|s| s.to_string()).collect();
+                if !(header.len() == 2 && header[0] == "Bearer") {
+                    return Err(new_auth_ironerror("invalid bearer auth HTTP Header"));
+                }
+                Some(header[1].to_string())
+            }
+            None => None,
+            _ => {
+                return Err(new_auth_ironerror(
+                    "auth HTTP Header should be empty or API token",
+                ));
+            }
+        };
+        if let Some(_token) = token {
+            req.extensions.insert::<Authorization>(Authorization {
+                // This is just a dummy; all actual authentication happens later
+                subject: "undefined".to_string(),
+                scopes: Scopes::All,
+                issuer: None,
+            });
+        };
+        Ok(())
     }
 }
 
@@ -88,6 +177,7 @@ impl AuthConfectionary {
         identifier: String,
         key_base64: String,
     ) -> Result<AuthConfectionary> {
+        macaroon::initialize().unwrap();
         let key = BASE64.decode(key_base64.as_bytes())?;
         let mut root_keys = HashMap::new();
         root_keys.insert(identifier.clone(), key.clone());
@@ -180,7 +270,8 @@ impl AuthConfectionary {
         ));
         let editor: EditorRow = editor::table.find(&editor_id.to_uuid()).get_result(conn)?;
         let auth_epoch = DateTime::<Utc>::from_utc(editor.auth_epoch, Utc);
-        if created < auth_epoch {
+        // allow a second of wiggle room for precision and, eg, tests
+        if created < (auth_epoch - chrono::Duration::seconds(1)) {
             return Err(ErrorKind::InvalidCredentials(
                 "token created before current auth_epoch (was probably revoked by editor)"
                     .to_string(),
