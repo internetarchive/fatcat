@@ -988,6 +988,19 @@ impl Api for Server {
                 .auth_confectionary
                 .require_auth(&conn, &context.auth_data)?;
             auth_context.require_role(FatcatRole::Editor)?;
+            let mut entity = entity.clone();
+            match entity.editor_id.clone() {
+                Some(editor_id) => {
+                    if !auth_context.has_role(FatcatRole::Admin) {
+                        if editor_id != auth_context.editor_id.to_string() {
+                            bail!("not authorized to create editgroups in others' names");
+                        }
+                    }
+                },
+                None => {
+                    entity.editor_id = Some(auth_context.editor_id.to_string());
+                }
+            };
             self.create_editgroup_handler(entity, &conn)
         }) {
             Ok(eg) => CreateEditgroupResponse::SuccessfullyCreated(eg),

@@ -45,7 +45,12 @@ fn main() {
     );
     info!(
         logger,
-        "all auth keys: {:?}", server.auth_confectionary.root_keys.keys().collect::<Vec<&String>>(),
+        "all auth keys: {:?}",
+        server
+            .auth_confectionary
+            .root_keys
+            .keys()
+            .collect::<Vec<&String>>(),
     );
     let mut router = fatcat_api_spec::router(server);
 

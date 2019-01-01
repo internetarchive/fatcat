@@ -445,8 +445,6 @@ definitions:
         example: "zerocool93"
   editgroup:
     type: object
-    required:
-      - editor_id
     properties:
       editgroup_id:
         <<: *FATCATIDENT

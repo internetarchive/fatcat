@@ -134,9 +134,8 @@ pub fn env_confectionary() -> Result<AuthConfectionary> {
                 }
                 info!("Loading alt auth key: {}", pair[0]);
                 confectionary.add_keypair(pair[0].to_string(), pair[1].to_string())?;
-
             }
-        },
+        }
         Err(_) => (),
     }
     Ok(confectionary)

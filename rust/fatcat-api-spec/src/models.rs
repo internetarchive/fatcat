@@ -190,7 +190,8 @@ pub struct Editgroup {
 
     /// base32-encoded unique identifier
     #[serde(rename = "editor_id")]
-    pub editor_id: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub editor_id: Option<String>,
 
     #[serde(rename = "description")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -206,10 +207,10 @@ pub struct Editgroup {
 }
 
 impl Editgroup {
-    pub fn new(editor_id: String) -> Editgroup {
+    pub fn new() -> Editgroup {
         Editgroup {
             editgroup_id: None,
-            editor_id: editor_id,
+            editor_id: None,
             description: None,
             extra: None,
             edits: None,

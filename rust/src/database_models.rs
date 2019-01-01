@@ -564,7 +564,7 @@ impl EditgroupRow {
     pub fn into_model_partial(self) -> Editgroup {
         Editgroup {
             editgroup_id: Some(uuid2fcid(&self.id)),
-            editor_id: uuid2fcid(&self.editor_id),
+            editor_id: Some(uuid2fcid(&self.editor_id)),
             description: self.description,
             extra: self.extra_json,
             edits: None,

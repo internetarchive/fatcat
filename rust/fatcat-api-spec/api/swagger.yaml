@@ -7598,8 +7598,6 @@ definitions:
     upperCaseName: "EDITOR"
   editgroup:
     type: "object"
-    required:
-    - "editor_id"
     properties:
       editgroup_id:
         type: "string"

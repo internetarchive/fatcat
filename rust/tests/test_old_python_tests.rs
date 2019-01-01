@@ -22,7 +22,8 @@ fn test_api_rich_create() {
 
     let admin_id = "aaaaaaaaaaaabkvkaaaaaaaaae".to_string();
 
-    let mut new_eg = Editgroup::new(admin_id);
+    let mut new_eg = Editgroup::new();
+    new_eg.editor_id = Some(admin_id);
     new_eg.description = Some("a unit test edit".to_string());
     let resp = client.create_editgroup(new_eg).wait().unwrap();
     let editgroup_id = match resp {
@@ -196,8 +197,10 @@ fn test_merge_works() {
 
     let admin_id = "aaaaaaaaaaaabkvkaaaaaaaaae".to_string();
 
+    let mut eg = Editgroup::new();
+    eg.editor_id = Some(admin_id);
     let resp = client
-        .create_editgroup(Editgroup::new(admin_id))
+        .create_editgroup(eg)
         .wait()
         .unwrap();
     let editgroup_id = match resp {

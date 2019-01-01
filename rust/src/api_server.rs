@@ -384,7 +384,7 @@ impl Server {
     ) -> Result<Editgroup> {
         let row: EditgroupRow = insert_into(editgroup::table)
             .values((
-                editgroup::editor_id.eq(FatCatId::from_str(&entity.editor_id)?.to_uuid()),
+                editgroup::editor_id.eq(FatCatId::from_str(&entity.editor_id.unwrap())?.to_uuid()),
                 editgroup::description.eq(entity.description),
                 editgroup::extra_json.eq(entity.extra),
             ))
@@ -392,7 +392,7 @@ impl Server {
 
         Ok(Editgroup {
             editgroup_id: Some(uuid2fcid(&row.id)),
-            editor_id: uuid2fcid(&row.editor_id),
+            editor_id: Some(uuid2fcid(&row.editor_id)),
             description: row.description,
             edits: None,
             extra: row.extra_json,
@@ -467,7 +467,7 @@ impl Server {
 
         let eg = Editgroup {
             editgroup_id: Some(uuid2fcid(&row.id)),
-            editor_id: uuid2fcid(&row.editor_id),
+            editor_id: Some(uuid2fcid(&row.editor_id)),
             description: row.description,
             edits: Some(edits),
             extra: row.extra_json,
