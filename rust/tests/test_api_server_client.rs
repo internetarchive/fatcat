@@ -22,8 +22,8 @@ use helpers::setup_client;
 // Disabled due to hang
 //#[test]
 fn test_basic() {
-    let (client, mut server) = setup_client();
-    let client = client.with_context(Context::new());
+    let (client, context, mut server) = setup_client();
+    let client = client.with_context(context);
 
     client.get_changelog_entry(1).wait().unwrap();
     server.close().unwrap()

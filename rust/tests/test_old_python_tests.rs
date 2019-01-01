@@ -17,8 +17,8 @@ use helpers::setup_client;
 
 //#[test]
 fn test_api_rich_create() {
-    let (client, mut server) = setup_client();
-    let client = client.with_context(Context::new());
+    let (client, context, mut server) = setup_client();
+    let client = client.with_context(context);
 
     let admin_id = "aaaaaaaaaaaabkvkaaaaaaaaae".to_string();
 
@@ -191,8 +191,8 @@ fn test_api_rich_create() {
  */
 //#[test]
 fn test_merge_works() {
-    let (client, mut server) = setup_client();
-    let client = client.with_context(Context::new());
+    let (client, context, mut server) = setup_client();
+    let client = client.with_context(context);
 
     let admin_id = "aaaaaaaaaaaabkvkaaaaaaaaae".to_string();
 
@@ -280,13 +280,21 @@ fn test_merge_works() {
     client.merge_works(work_a_id, work_b_id)
     */
     // check results
-    let work_a = match client.get_work(work_a_id.clone(), None, None).wait().unwrap() {
-    GetWorkResponse::FoundEntity(e) => e,
-    _ => unreachable!(),
+    let work_a = match client
+        .get_work(work_a_id.clone(), None, None)
+        .wait()
+        .unwrap()
+    {
+        GetWorkResponse::FoundEntity(e) => e,
+        _ => unreachable!(),
     };
-    let _work_b = match client.get_work(work_b_id.clone(), None, None).wait().unwrap() {
-    GetWorkResponse::FoundEntity(e) => e,
-    _ => unreachable!(),
+    let _work_b = match client
+        .get_work(work_b_id.clone(), None, None)
+        .wait()
+        .unwrap()
+    {
+        GetWorkResponse::FoundEntity(e) => e,
+        _ => unreachable!(),
     };
     // TODO: assert_eq!(work_a.revision.unwrap(), work_b.revision.unwrap());
     assert_eq!(work_a.redirect, None);
