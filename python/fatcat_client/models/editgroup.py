@@ -60,7 +60,8 @@ class Editgroup(object):
 
         if editgroup_id is not None:
             self.editgroup_id = editgroup_id
-        self.editor_id = editor_id
+        if editor_id is not None:
+            self.editor_id = editor_id
         if description is not None:
             self.description = description
         if extra is not None:
@@ -117,8 +118,6 @@ class Editgroup(object):
         :param editor_id: The editor_id of this Editgroup.  # noqa: E501
         :type: str
         """
-        if editor_id is None:
-            raise ValueError("Invalid value for `editor_id`, must not be `None`")  # noqa: E501
         if editor_id is not None and len(editor_id) > 26:
             raise ValueError("Invalid value for `editor_id`, length must be less than or equal to `26`")  # noqa: E501
         if editor_id is not None and len(editor_id) < 26:

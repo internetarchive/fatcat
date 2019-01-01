@@ -860,6 +860,8 @@ paths:
           uppercase_operation_id: "DELETE_CONTAINER_EDIT"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "delete_container_edit"
       uppercase_operation_id: "DELETE_CONTAINER_EDIT"
       path: "/container/edit/:edit_id"
@@ -1768,6 +1770,8 @@ paths:
           uppercase_operation_id: "DELETE_CREATOR_EDIT"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "delete_creator_edit"
       uppercase_operation_id: "DELETE_CREATOR_EDIT"
       path: "/creator/edit/:edit_id"
@@ -2625,6 +2629,8 @@ paths:
           uppercase_operation_id: "DELETE_FILE_EDIT"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "delete_file_edit"
       uppercase_operation_id: "DELETE_FILE_EDIT"
       path: "/file/edit/:edit_id"
@@ -2712,6 +2718,8 @@ paths:
           uppercase_operation_id: "CREATE_FILESET"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "create_fileset"
       uppercase_operation_id: "CREATE_FILESET"
       path: "/fileset"
@@ -2812,6 +2820,8 @@ paths:
           uppercase_operation_id: "CREATE_FILESET_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "create_fileset_batch"
       uppercase_operation_id: "CREATE_FILESET_BATCH"
       path: "/fileset/batch"
@@ -2974,6 +2984,8 @@ paths:
           uppercase_operation_id: "UPDATE_FILESET"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "update_fileset"
       uppercase_operation_id: "UPDATE_FILESET"
       path: "/fileset/:ident"
@@ -3055,6 +3067,8 @@ paths:
           uppercase_operation_id: "DELETE_FILESET"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "delete_fileset"
       uppercase_operation_id: "DELETE_FILESET"
       path: "/fileset/:ident"
@@ -3384,6 +3398,8 @@ paths:
           uppercase_operation_id: "DELETE_FILESET_EDIT"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "delete_fileset_edit"
       uppercase_operation_id: "DELETE_FILESET_EDIT"
       path: "/fileset/edit/:edit_id"
@@ -3471,6 +3487,8 @@ paths:
           uppercase_operation_id: "CREATE_WEBCAPTURE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "create_webcapture"
       uppercase_operation_id: "CREATE_WEBCAPTURE"
       path: "/webcapture"
@@ -3571,6 +3589,8 @@ paths:
           uppercase_operation_id: "CREATE_WEBCAPTURE_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "create_webcapture_batch"
       uppercase_operation_id: "CREATE_WEBCAPTURE_BATCH"
       path: "/webcapture/batch"
@@ -3733,6 +3753,8 @@ paths:
           uppercase_operation_id: "UPDATE_WEBCAPTURE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "update_webcapture"
       uppercase_operation_id: "UPDATE_WEBCAPTURE"
       path: "/webcapture/:ident"
@@ -3814,6 +3836,8 @@ paths:
           uppercase_operation_id: "DELETE_WEBCAPTURE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "delete_webcapture"
       uppercase_operation_id: "DELETE_WEBCAPTURE"
       path: "/webcapture/:ident"
@@ -4143,6 +4167,8 @@ paths:
           uppercase_operation_id: "DELETE_WEBCAPTURE_EDIT"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "delete_webcapture_edit"
       uppercase_operation_id: "DELETE_WEBCAPTURE_EDIT"
       path: "/webcapture/edit/:edit_id"
@@ -4230,6 +4256,8 @@ paths:
           uppercase_operation_id: "CREATE_RELEASE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "create_release"
       uppercase_operation_id: "CREATE_RELEASE"
       path: "/release"
@@ -4330,6 +4358,8 @@ paths:
           uppercase_operation_id: "CREATE_RELEASE_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "create_release_batch"
       uppercase_operation_id: "CREATE_RELEASE_BATCH"
       path: "/release/batch"
@@ -4492,6 +4522,8 @@ paths:
           uppercase_operation_id: "UPDATE_RELEASE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "update_release"
       uppercase_operation_id: "UPDATE_RELEASE"
       path: "/release/:ident"
@@ -4573,6 +4605,8 @@ paths:
           uppercase_operation_id: "DELETE_RELEASE"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "delete_release"
       uppercase_operation_id: "DELETE_RELEASE"
       path: "/release/:ident"
@@ -5193,6 +5227,8 @@ paths:
           uppercase_operation_id: "DELETE_RELEASE_EDIT"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "delete_release_edit"
       uppercase_operation_id: "DELETE_RELEASE_EDIT"
       path: "/release/edit/:edit_id"
@@ -5280,6 +5316,8 @@ paths:
           uppercase_operation_id: "CREATE_WORK"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "create_work"
       uppercase_operation_id: "CREATE_WORK"
       path: "/work"
@@ -5380,6 +5418,8 @@ paths:
           uppercase_operation_id: "CREATE_WORK_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "create_work_batch"
       uppercase_operation_id: "CREATE_WORK_BATCH"
       path: "/work/batch"
@@ -5542,6 +5582,8 @@ paths:
           uppercase_operation_id: "UPDATE_WORK"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "update_work"
       uppercase_operation_id: "UPDATE_WORK"
       path: "/work/:ident"
@@ -5623,6 +5665,8 @@ paths:
           uppercase_operation_id: "DELETE_WORK"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "delete_work"
       uppercase_operation_id: "DELETE_WORK"
       path: "/work/:ident"
@@ -6016,6 +6060,8 @@ paths:
           uppercase_operation_id: "DELETE_WORK_EDIT"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "delete_work_edit"
       uppercase_operation_id: "DELETE_WORK_EDIT"
       path: "/work/edit/:edit_id"
@@ -6194,6 +6240,8 @@ paths:
           uppercase_operation_id: "CREATE_EDITGROUP"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "create_editgroup"
       uppercase_operation_id: "CREATE_EDITGROUP"
       path: "/editgroup"
@@ -6341,6 +6389,8 @@ paths:
           uppercase_operation_id: "ACCEPT_EDITGROUP"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+      security:
+      - Bearer: []
       operation_id: "accept_editgroup"
       uppercase_operation_id: "ACCEPT_EDITGROUP"
       path: "/editgroup/:editgroup_id/accept"

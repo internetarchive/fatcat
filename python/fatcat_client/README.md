@@ -50,6 +50,11 @@ import time
 import fatcat_client
 from fatcat_client.rest import ApiException
 from pprint import pprint
+
+# Configure API key authorization: Bearer
+fatcat_client.configuration.api_key['Authorization'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# fatcat_client.configuration.api_key_prefix['Authorization'] = 'Bearer'
 # create an instance of the API class
 api_instance = fatcat_client.DefaultApi()
 editgroup_id = 'editgroup_id_example' # str | base32-encoded unique identifier
@@ -184,7 +189,12 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Authorization
 
- All endpoints do not require authorization.
+
+## Bearer
+
+- **Type**: API key
+- **API key parameter name**: Authorization
+- **Location**: HTTP header
 
 
 ## Author

@@ -510,6 +510,8 @@ where
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
 
+                let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
+
                 // Path parameters
                 let param_edit_id = {
                     let param = req
@@ -1716,6 +1718,8 @@ where
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
 
+                let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
+
                 // Path parameters
                 let param_edit_id = {
                     let param = req
@@ -2794,6 +2798,8 @@ where
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
 
+                let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
+
                 // Path parameters
                 let param_editgroup_id = {
                     let param = req
@@ -2915,6 +2921,8 @@ where
                 context.x_span_id = Some(req.headers.get::<XSpanId>().map(XSpanId::to_string).unwrap_or_else(|| self::uuid::Uuid::new_v4().to_string()));
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
+
+                let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -3662,6 +3670,8 @@ where
                 context.x_span_id = Some(req.headers.get::<XSpanId>().map(XSpanId::to_string).unwrap_or_else(|| self::uuid::Uuid::new_v4().to_string()));
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
+
+                let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
                 // Path parameters
                 let param_edit_id = {
@@ -4471,6 +4481,8 @@ where
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
 
+                let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
+
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
                 let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
@@ -4608,6 +4620,8 @@ where
                 context.x_span_id = Some(req.headers.get::<XSpanId>().map(XSpanId::to_string).unwrap_or_else(|| self::uuid::Uuid::new_v4().to_string()));
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
+
+                let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
@@ -4748,6 +4762,8 @@ where
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
 
+                let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
+
                 // Path parameters
                 let param_ident = {
                     let param = req
@@ -4863,6 +4879,8 @@ where
                 context.x_span_id = Some(req.headers.get::<XSpanId>().map(XSpanId::to_string).unwrap_or_else(|| self::uuid::Uuid::new_v4().to_string()));
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
+
+                let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
                 // Path parameters
                 let param_edit_id = {
@@ -5435,6 +5453,8 @@ where
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
 
+                let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
+
                 // Path parameters
                 let param_ident = {
                     let param = req
@@ -5588,6 +5608,8 @@ where
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
 
+                let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
+
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
                 let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
@@ -5725,6 +5747,8 @@ where
                 context.x_span_id = Some(req.headers.get::<XSpanId>().map(XSpanId::to_string).unwrap_or_else(|| self::uuid::Uuid::new_v4().to_string()));
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
+
+                let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
@@ -5865,6 +5889,8 @@ where
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
 
+                let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
+
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
                 let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
@@ -6003,6 +6029,8 @@ where
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
 
+                let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
+
                 // Path parameters
                 let param_ident = {
                     let param = req
@@ -6118,6 +6146,8 @@ where
                 context.x_span_id = Some(req.headers.get::<XSpanId>().map(XSpanId::to_string).unwrap_or_else(|| self::uuid::Uuid::new_v4().to_string()));
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
+
+                let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
                 // Path parameters
                 let param_edit_id = {
@@ -7057,6 +7087,8 @@ where
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
 
+                let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
+
                 // Path parameters
                 let param_ident = {
                     let param = req
@@ -7210,6 +7242,8 @@ where
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
 
+                let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
+
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
                 let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
@@ -7347,6 +7381,8 @@ where
                 context.x_span_id = Some(req.headers.get::<XSpanId>().map(XSpanId::to_string).unwrap_or_else(|| self::uuid::Uuid::new_v4().to_string()));
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
+
+                let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
@@ -7487,6 +7523,8 @@ where
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
 
+                let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
+
                 // Path parameters
                 let param_ident = {
                     let param = req
@@ -7602,6 +7640,8 @@ where
                 context.x_span_id = Some(req.headers.get::<XSpanId>().map(XSpanId::to_string).unwrap_or_else(|| self::uuid::Uuid::new_v4().to_string()));
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
+
+                let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
                 // Path parameters
                 let param_edit_id = {
@@ -8174,6 +8214,8 @@ where
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
 
+                let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
+
                 // Path parameters
                 let param_ident = {
                     let param = req
@@ -8327,6 +8369,8 @@ where
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
 
+                let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
+
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
                 let param_autoaccept = query_params.get("autoaccept").and_then(|list| list.first()).and_then(|x| x.parse::<bool>().ok());
@@ -8466,6 +8510,8 @@ where
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
 
+                let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
+
                 // Path parameters
                 let param_ident = {
                     let param = req
@@ -8581,6 +8627,8 @@ where
                 context.x_span_id = Some(req.headers.get::<XSpanId>().map(XSpanId::to_string).unwrap_or_else(|| self::uuid::Uuid::new_v4().to_string()));
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
+
+                let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
                 // Path parameters
                 let param_edit_id = {
@@ -9245,6 +9293,8 @@ where
                 context.x_span_id = Some(req.headers.get::<XSpanId>().map(XSpanId::to_string).unwrap_or_else(|| self::uuid::Uuid::new_v4().to_string()));
                 context.auth_data = req.extensions.remove::<AuthData>();
                 context.authorization = req.extensions.remove::<Authorization>();
+
+                let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
                 // Path parameters
                 let param_ident = {

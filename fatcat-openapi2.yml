@@ -823,6 +823,8 @@ paths:
           in: path
           required: true
           <<: *FATCATUUID
+      security:
+        - Bearer: []
       responses:
         200:
           description: Deleted Edit
@@ -1102,6 +1104,8 @@ paths:
           in: path
           required: true
           <<: *FATCATUUID
+      security:
+        - Bearer: []
       responses:
         200:
           description: Deleted Edit
@@ -1363,6 +1367,8 @@ paths:
           in: path
           required: true
           <<: *FATCATUUID
+      security:
+        - Bearer: []
       responses:
         200:
           description: Deleted Edit
@@ -1385,6 +1391,8 @@ paths:
           in: query
           required: false
           type: string
+      security:
+        - Bearer: []
       responses:
         201:
           description: Created Entity
@@ -1415,6 +1423,8 @@ paths:
             type: array
             items:
               $ref: "#/definitions/fileset_entity"
+      security:
+        - Bearer: []
       responses:
         201:
           description: Created Entities
@@ -1465,6 +1475,8 @@ paths:
           in: query
           required: false
           type: string
+      security:
+        - Bearer: []
       responses:
         200:
           description: Updated Entity
@@ -1481,6 +1493,8 @@ paths:
           in: query
           required: false
           type: string
+      security:
+        - Bearer: []
       responses:
         200:
           description: Deleted Entity
@@ -1582,6 +1596,8 @@ paths:
           in: path
           required: true
           <<: *FATCATUUID
+      security:
+        - Bearer: []
       responses:
         200:
           description: Deleted Edit
@@ -1604,6 +1620,8 @@ paths:
           in: query
           required: false
           type: string
+      security:
+        - Bearer: []
       responses:
         201:
           description: Created Entity
@@ -1634,6 +1652,8 @@ paths:
             type: array
             items:
               $ref: "#/definitions/webcapture_entity"
+      security:
+        - Bearer: []
       responses:
         201:
           description: Created Entities
@@ -1684,6 +1704,8 @@ paths:
           in: query
           required: false
           type: string
+      security:
+        - Bearer: []
       responses:
         200:
           description: Updated Entity
@@ -1700,6 +1722,8 @@ paths:
           in: query
           required: false
           type: string
+      security:
+        - Bearer: []
       responses:
         200:
           description: Deleted Entity
@@ -1801,6 +1825,8 @@ paths:
           in: path
           required: true
           <<: *FATCATUUID
+      security:
+        - Bearer: []
       responses:
         200:
           description: Deleted Edit
@@ -1823,6 +1849,8 @@ paths:
           in: query
           required: false
           type: string
+      security:
+        - Bearer: []
       responses:
         201:
           description: Created Entity
@@ -1853,6 +1881,8 @@ paths:
             type: array
             items:
               $ref: "#/definitions/release_entity"
+      security:
+        - Bearer: []
       responses:
         201:
           description: Created Entities
@@ -1903,6 +1933,8 @@ paths:
           in: query
           required: false
           type: string
+      security:
+        - Bearer: []
       responses:
         200:
           description: Updated Entity
@@ -1919,6 +1951,8 @@ paths:
           in: query
           required: false
           type: string
+      security:
+        - Bearer: []
       responses:
         200:
           description: Deleted Entity
@@ -2135,6 +2169,8 @@ paths:
           in: path
           required: true
           <<: *FATCATUUID
+      security:
+        - Bearer: []
       responses:
         200:
           description: Deleted Edit
@@ -2157,6 +2193,8 @@ paths:
           in: query
           required: false
           type: string
+      security:
+        - Bearer: []
       responses:
         201:
           description: Created Entity
@@ -2187,6 +2225,8 @@ paths:
             type: array
             items:
               $ref: "#/definitions/work_entity"
+      security:
+        - Bearer: []
       responses:
         201:
           description: Created Entities
@@ -2237,6 +2277,8 @@ paths:
           in: query
           required: false
           type: string
+      security:
+        - Bearer: []
       responses:
         200:
           description: Updated Entity
@@ -2253,6 +2295,8 @@ paths:
           in: query
           required: false
           type: string
+      security:
+        - Bearer: []
       responses:
         200:
           description: Deleted Entity
@@ -2377,6 +2421,8 @@ paths:
           in: path
           required: true
           <<: *FATCATUUID
+      security:
+        - Bearer: []
       responses:
         200:
           description: Deleted Edit
@@ -2447,6 +2493,8 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/editgroup"
+      security:
+        - Bearer: []
       responses:
         201:
           description: Successfully Created
@@ -2498,6 +2546,8 @@ paths:
       operationId: "accept_editgroup"
       tags: # TAGLINE
         - edit-lifecycle # TAGLINE
+      security:
+        - Bearer: []
       responses:
         200:
           description: Merged Successfully
