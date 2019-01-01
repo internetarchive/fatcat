@@ -199,10 +199,7 @@ fn test_merge_works() {
 
     let mut eg = Editgroup::new();
     eg.editor_id = Some(admin_id);
-    let resp = client
-        .create_editgroup(eg)
-        .wait()
-        .unwrap();
+    let resp = client.create_editgroup(eg).wait().unwrap();
     let editgroup_id = match resp {
         CreateEditgroupResponse::SuccessfullyCreated(eg) => eg.editgroup_id.unwrap(),
         _ => unreachable!(),

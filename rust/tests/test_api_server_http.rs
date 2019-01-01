@@ -1553,9 +1553,7 @@ fn test_create_editgroup() {
     // We're authenticated, so don't need to supply editor_id
     check_http_response(
         request::post(
-            &format!(
-                "http://localhost:9411/v0/editgroup",
-            ),
+            &format!("http://localhost:9411/v0/editgroup",),
             headers.clone(),
             "{}",
             &router,
@@ -1567,9 +1565,7 @@ fn test_create_editgroup() {
     // But can if we want to
     check_http_response(
         request::post(
-            &format!(
-                "http://localhost:9411/v0/editgroup",
-            ),
+            &format!("http://localhost:9411/v0/editgroup",),
             headers.clone(),
             r#"{"editor_id": "aaaaaaaaaaaabkvkaaaaaaaaae"}"#,
             &router,

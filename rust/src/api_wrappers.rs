@@ -996,7 +996,7 @@ impl Api for Server {
                             bail!("not authorized to create editgroups in others' names");
                         }
                     }
-                },
+                }
                 None => {
                     entity.editor_id = Some(auth_context.editor_id.to_string());
                 }
