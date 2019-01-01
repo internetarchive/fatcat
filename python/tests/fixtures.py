@@ -22,6 +22,8 @@ def app(full_app):
 def api():
     conf = fatcat_client.Configuration()
     conf.host = "http://localhost:9411/v0"
+    conf.api_key["Authorization"] = "AgEPZGV2LmZhdGNhdC53aWtpAg4yMDE4LTEyLTMxLWRldgACJmVkaXRvcl9pZCA9IGFhYWFhYWFhYWFhYWJrdmthYWFhYWFhYWFlAAIeY3JlYXRlZCA9IDIwMTgtMTItMzFUMjE6MTU6NDdaAAAGIMWFZeZ54pH4OzNl5+U5X3p1H1rMioSuIldihuiM5XAw"
+    conf.api_key_prefix["Authorization"] = "Bearer"
     api_client = fatcat_client.DefaultApi(fatcat_client.ApiClient(conf))
     return api_client
 
