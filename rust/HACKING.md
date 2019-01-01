@@ -57,3 +57,7 @@ Debug SQL schema errors (if diesel commands fail):
 Creating entities via API:
 
     http --json post localhost:9411/v0/container name=asdf issn=1234-5678
+
+## Authentication
+
+Uses macaroons. See `notes/auth.md` and maybe look in the guide.

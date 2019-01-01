@@ -17,6 +17,9 @@ Create a `.env` file with configuration:
 
     DATABASE_URL=postgres://fatcat:tactaf@localhost/fatcat_rs
     TEST_DATABASE_URL=postgres://fatcat:tactaf@localhost/fatcat_rs_test
+    AUTH_LOCATION=dev.fatcat.wiki
+    AUTH_KEY_IDENT=2018-12-31-dev
+    AUTH_SECRET_KEY=VQe8kdn8laZ3MArKAzOeWWNUQgM6IjduG2jwKnSWehQ=
 
 Re-create database from scratch:
 
