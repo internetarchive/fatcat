@@ -64,15 +64,13 @@ class FatcatImporter:
 
     def process_source(self, source, group_size=100):
         """Creates and auto-accepts editgroup every group_size rows"""
-        eg = self.api.create_editgroup(
-            fatcat_client.Editgroup(editor_id='aaaaaaaaaaaabkvkaaaaaaaaae'))
+        eg = self.api.create_editgroup(fatcat_client.Editgroup())
         i = 0
         for i, row in enumerate(source):
             self.create_row(row, editgroup_id=eg.editgroup_id)
             if i > 0 and (i % group_size) == 0:
                 self.api.accept_editgroup(eg.editgroup_id)
-                eg = self.api.create_editgroup(
-                    fatcat_client.Editgroup(editor_id='aaaaaaaaaaaabkvkaaaaaaaaae'))
+                eg = self.api.create_editgroup(fatcat_client.Editgroup())
             self.counts['processed_lines'] += 1
         if i == 0 or (i % group_size) != 0:
             self.api.accept_editgroup(eg.editgroup_id)
@@ -83,8 +81,7 @@ class FatcatImporter:
             if decode_kafka:
                 rows = [msg.value.decode('utf-8') for msg in rows]
             self.counts['processed_lines'] += len(rows)
-            eg = self.api.create_editgroup(
-                fatcat_client.Editgroup(editor_id='aaaaaaaaaaaabkvkaaaaaaaaae'))
+            eg = self.api.create_editgroup(fatcat_client.Editgroup())
             self.create_batch(rows, editgroup_id=eg.editgroup_id)
 
     def process_csv_source(self, source, group_size=100, delimiter=','):

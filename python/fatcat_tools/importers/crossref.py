@@ -313,8 +313,7 @@ class CrossrefImporter(FatcatImporter):
             if entities is not None:
                 (re, ce) = entities
                 if ce is not None:
-                    ce_eg = self.api.create_editgroup(
-                        fatcat_client.Editgroup(editor_id='aaaaaaaaaaaabkvkaaaaaaaaae'))
+                    ce_eg = self.api.create_editgroup(fatcat_client.Editgroup())
                     container = self.api.create_container(ce, editgroup_id=ce_eg.editgroup_id)
                     self.api.accept_editgroup(ce_eg.editgroup_id)
                     re.container_id = container.ident
