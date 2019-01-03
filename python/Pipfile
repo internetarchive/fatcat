@@ -18,11 +18,15 @@ pylint = "*"
 pg-view = "*"
 
 [packages]
+python-dotenv = "*"
 Flask = "*"
-requests = "*"
-raven = { extras = ['flask'], version = "*" }
+#Flask-OIDC = "*"
 flask-uuid = "*"
 flask-debugtoolbar = "*"
+flask-login = "*"
+loginpass = "*"
+requests = "*"
+raven = { extras = ['flask'], version = "*" }
 pykafka = "*"
 python-dateutil = "*"
 sickle = "*"

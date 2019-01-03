@@ -367,6 +367,19 @@ def search():
         return render_template('release_search.html', query=query, fulltext_only=fulltext_only)
 
 
+### Auth ####################################################################
+
+@app.route('/login')
+def login():
+    # show the user a list of login options
+    return render_template('release_search.html', query=query, fulltext_only=fulltext_only)
+
+@app.route('/login')
+def logout():
+    # TODO: clear extra session info
+    logout_user()
+    return render_template('logout.html')
+
 ### Static Routes ###########################################################
 
 @app.errorhandler(404)

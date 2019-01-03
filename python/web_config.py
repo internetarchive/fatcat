@@ -23,6 +23,12 @@ class Config(object):
     ELASTICSEARCH_BACKEND = os.environ.get("ELASTICSEARCH_BACKEND", default="http://localhost:9200")
     ELASTICSEARCH_INDEX = os.environ.get("ELASTICSEARCH_INDEX", default="fatcat")
 
+    # bogus values for dev/testing
+    SECRET_KEY = os.environ.get("SECRET_KEY", default="mQLO6DpyR4t91G1tl/LPMvb/5QFV9vIUDZah5PapTUSmP8jVIrvCRw")
+
+    GITLAB_CLIENT_ID = os.environ.get("GITLAB_CLIENT_ID", default="bogus")
+    GITLAB_CLIENT_SECRET = os.environ.get("GITLAB_CLIENT_SECRET", default="bogus")
+
     try:
         GIT_RELEASE = raven.fetch_git_sha('..')
     except Exception as e:
@@ -38,7 +44,6 @@ class Config(object):
         },
     }
 
-    # "Event more verbose" debug options. SECRET_KEY is bogus.
+    # "Even more verbose" debug options
     #SQLALCHEMY_ECHO = True
-    #SECRET_KEY = "kuhy0284hflskjhg01284"
     #DEBUG = True
