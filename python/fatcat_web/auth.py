@@ -1,10 +1,17 @@
 
 from flask import Flask, render_template, send_from_directory, request, \
-    url_for, abort, g, redirect, jsonify, session
-from fatcat_web import login_manager, api
+    url_for, abort, g, redirect, jsonify, session, flash
+from fatcat_web import login_manager, api, Config
 from flask_login import logout_user, login_user, UserMixin
 import pymacaroons
+import fatcat_client
 
+def auth_api(token):
+    conf = fatcat_client.Configuration()
+    conf.api_key["Authorization"] = token
+    conf.api_key_prefix["Authorization"] = "Bearer"
+    conf.host = Config.FATCAT_API_HOST
+    return fatcat_client.DefaultApi(fatcat_client.ApiClient(conf))
 
 def handle_logout():
     logout_user()
@@ -31,7 +38,7 @@ def handle_token_login(token):
     session['api_token'] = token
     session['editor'] = editor
     login_user(load_user(editor_id))
-    return redirect("/")
+    return redirect("/auth/account")
 
 # This will need to login/signup via fatcatd API, then set token in session
 def handle_oauth(remote, token, user_info):
@@ -70,6 +77,7 @@ def load_user(editor_id):
     token = session['api_token']
     user = UserMixin()
     user.id = editor_id
+    user.editor_id = editor_id
     user.username = editor['username']
     user.token = token
     return user

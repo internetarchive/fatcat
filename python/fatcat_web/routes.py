@@ -2,9 +2,10 @@
 import os
 import json
 from flask import Flask, render_template, send_from_directory, request, \
-    url_for, abort, g, redirect, jsonify, session
+    url_for, abort, g, redirect, jsonify, session, flash
+from flask_login import login_required
 from fatcat_web import app, api
-from fatcat_web.auth import handle_token_login, handle_logout
+from fatcat_web.auth import handle_token_login, handle_logout, load_user, auth_api
 from fatcat_client.rest import ApiException
 from fatcat_web.search import do_search
 
@@ -389,6 +390,23 @@ def token_login():
         return handle_token_login(request.form.get('token'))
     return render_template('auth_token_login.html')
 
+@app.route('/auth/change_username', methods=['POST'])
+@login_required
+def change_username():
+    # show the user a list of login options
+    if not 'username' in request.form:
+        abort(400)
+    # on behalf of user...
+    user_api = auth_api(session['api_token'])
+    editor = user_api.get_editor(session['editor']['editor_id'])
+    editor.username = request.form['username']
+    editor = user_api.update_editor(editor.editor_id, editor)
+    # update our session
+    session['editor'] = editor.to_dict()
+    load_user(editor.editor_id)
+    flash("Username updated successfully")
+    return redirect('/auth/account')
+
 @app.route('/auth/logout')
 def logout():
     # TODO: clear extra session info
@@ -397,10 +415,11 @@ def logout():
 
 @app.route('/auth/account')
 @login_required
-def logout():
-    # TODO: clear extra session info
-    handle_logout()
-    return render_template('auth_logout.html')
+def auth_account():
+    editor = api.get_editor(session['editor']['editor_id'])
+    session['editor'] = editor.to_dict()
+    load_user(editor.editor_id)
+    return render_template('auth_account.html')
 
 
 ### Static Routes ###########################################################

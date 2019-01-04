@@ -34,7 +34,7 @@
       {{ current_user.username }} <i class="dropdown icon"></i>
         <div class="menu">
           <a class="item" href="/editgroup/current"><i class="edit icon"></i>Edits in Progress</a>
-          <a class="item" href="/editor/{{ current_user.id }}/changelog"><i class="history icon"></i>History</a>
+          <a class="item" href="/editor/{{ current_user.editor_id }}/changelog"><i class="history icon"></i>History</a>
           <div class="divider"></div>
           <a class="item" href="/auth/account"><i class="user icon"></i>Account</a>
           <a class="item" href="/auth/logout"><i class="sign out icon"></i>Logout</a>
@@ -51,6 +51,19 @@
 
 <!-- 4em top margin is "enough" -->
 <main class="ui main container" style="margin-top: 6em; margin-bottom: 2em;">
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="ui message">
+    {# Needs more javascript: <i class="close icon"></i> #}
+    <div class="header">Now Hear This!</div>
+    <ul class="list">
+    {% for message in messages %}
+      <li>{{ message }}
+    {% endfor %}
+    </ul>
+    </div>
+  {% endif %}
+{% endwith %}
 {% block fullbody %}
   <div class="ui container text">
     {% block body %}Nothing to see here.{% endblock %}

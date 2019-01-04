@@ -23,21 +23,17 @@ oauth = OAuth(app)
 sentry = Sentry(app)
 
 conf = fatcat_client.Configuration()
-conf.host = "http://localhost:9411/v0"
+conf.host = Config.FATCAT_API_HOST
 api = fatcat_client.DefaultApi(fatcat_client.ApiClient(conf))
+
+from fatcat_web import routes, auth
 
 if Config.FATCAT_API_AUTH_TOKEN:
     print("Found and using privileged token (eg, for account signup)")
-    priv_conf = fatcat_client.Configuration()
-    priv_conf.api_key["Authorization"] = Config.FATCAT_API_AUTH_TOKEN
-    priv_conf.api_key_prefix["Authorization"] = "Bearer"
-    priv_conf.host = 'http://localhost:9411/v0'
-    priv_api = fatcat_client.DefaultApi(fatcat_client.ApiClient(local_conf))
+    priv_api = auth.auth_api(Config.FATCAT_API_AUTH_TOKEN)
 else:
     print("No privileged token found")
     priv_api = None
-
-from fatcat_web import routes, auth
 
 gitlab_bp = create_flask_blueprint(Gitlab, oauth, auth.handle_oauth)
 app.register_blueprint(gitlab_bp, url_prefix='/auth/gitlab')

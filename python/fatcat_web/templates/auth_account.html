@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block body %}
+
+<h1>Your Account</h1>
+
+<p><b>Username:</b> <code>{{ current_user.username }}</code>
+<p><b>Editor Id:</b> <code><a href="/editor/{{ current_user.editor_id }}">{{ current_user.editor_id }}</a></code>
+
+<div>
+<p>Change username:
+<form class="" role="change_username" action="/auth/change_username" method="post">
+  <div class="ui form">
+      <div class="ui action input medium fluid">
+      <input type="text" name="username" value="{{ current_user.username }}" aria-label="account username">
+      <button class="ui button">Update</button>
+    </div>
+  </div>
+</form>
+</div>
+
+<p>In the future, you might be able to...
+<ul>
+  <li>Create a bot user
+  <li>Generate an API token
+</ul>
+
+{% endblock %}
