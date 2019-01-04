@@ -1067,4 +1067,83 @@ impl Api for Server {
         };
         Box::new(futures::done(Ok(ret)))
     }
+
+    fn auth_oidc(
+        &self,
+        params: models::AuthOidc,
+        context: &Context,
+    ) -> Box<Future<Item = AuthOidcResponse, Error = ApiError> + Send> {
+        let conn = self.db_pool.get().expect("db_pool error");
+        let ret = match conn.transaction(|| {
+            let auth_context = self
+                .auth_confectionary
+                .require_auth(&conn, &context.auth_data)?;
+            auth_context.require_role(FatcatRole::Admin)?;
+            let (editor, created) = self.auth_oidc_handler(params, &conn)?;
+            // create an auth token; leave it to webface to attenuate to a given duration
+            let token = self
+                .auth_confectionary
+                .create_token(FatCatId::from_str(&editor.editor_id.clone().unwrap())?, None)?;
+            let result = AuthOidcResult { editor, token };
+            Ok((result, created))
+        }) {
+            Ok((result, true)) => AuthOidcResponse::Created(result),
+            Ok((result, false)) => AuthOidcResponse::Found(result),
+            Err(Error(ErrorKind::Diesel(e), _)) => AuthOidcResponse::BadRequest(ErrorResponse {
+                message: e.to_string(),
+            }),
+            Err(Error(ErrorKind::Uuid(e), _)) => AuthOidcResponse::BadRequest(ErrorResponse {
+                message: e.to_string(),
+            }),
+            Err(Error(ErrorKind::InvalidFatcatId(e), _)) => {
+                AuthOidcResponse::BadRequest(ErrorResponse {
+                    message: ErrorKind::InvalidFatcatId(e).to_string(),
+                })
+            }
+            Err(Error(ErrorKind::MalformedExternalId(e), _)) => {
+                AuthOidcResponse::BadRequest(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(Error(ErrorKind::MalformedChecksum(e), _)) => {
+                AuthOidcResponse::BadRequest(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(Error(ErrorKind::NotInControlledVocabulary(e), _)) => {
+                AuthOidcResponse::BadRequest(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(Error(ErrorKind::EditgroupAlreadyAccepted(e), _)) => {
+                AuthOidcResponse::BadRequest(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(Error(ErrorKind::InvalidCredentials(e), _)) =>
+            // TODO: why can't I NotAuthorized here?
+            {
+                AuthOidcResponse::Forbidden(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(Error(ErrorKind::InsufficientPrivileges(e), _)) => {
+                AuthOidcResponse::Forbidden(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(Error(ErrorKind::OtherBadRequest(e), _)) => {
+                AuthOidcResponse::BadRequest(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(e) => {
+                error!("{}", e);
+                AuthOidcResponse::GenericError(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+        };
+        Box::new(futures::done(Ok(ret)))
+    }
 }

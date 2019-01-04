@@ -4,7 +4,7 @@ use api_helpers::uuid2fcid;
 use chrono;
 use database_schema::*;
 use errors::*;
-use fatcat_api_spec::models::{ChangelogEntry, Editgroup, EntityEdit};
+use fatcat_api_spec::models::{ChangelogEntry, Editgroup, Editor, EntityEdit};
 use serde_json;
 use uuid::Uuid;
 
@@ -559,7 +559,7 @@ pub struct EditgroupRow {
 }
 
 impl EditgroupRow {
-    /// Returns an Edigroup API model *without* the entity edits actually populated. Useful for,
+    /// Returns an Editgroup API model *without* the entity edits actually populated. Useful for,
     /// eg, entity history queries (where we already have the entity edit we want)
     pub fn into_model_partial(self) -> Editgroup {
         Editgroup {
@@ -579,10 +579,34 @@ pub struct EditorRow {
     pub username: String,
     pub is_admin: bool,
     pub is_bot: bool,
+    pub is_active: bool,
     pub registered: chrono::NaiveDateTime,
     pub auth_epoch: chrono::NaiveDateTime,
     pub wrangler_id: Option<Uuid>,
     pub active_editgroup_id: Option<Uuid>,
+}
+
+impl EditorRow {
+    pub fn into_model(self) -> Editor {
+        Editor {
+            editor_id: Some(uuid2fcid(&self.id)),
+            username: self.username,
+            is_admin: Some(self.is_admin),
+            is_bot: Some(self.is_bot),
+            is_active: Some(self.is_active),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Queryable, Associations, AsChangeset)]
+#[table_name = "auth_oidc"]
+pub struct AuthOidcRow {
+    pub id: i64,
+    pub created: chrono::NaiveDateTime,
+    pub editor_id: Uuid,
+    pub provider: String,
+    pub oidc_iss: String,
+    pub oidc_sub: String,
 }
 
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]

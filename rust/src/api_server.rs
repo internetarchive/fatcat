@@ -477,12 +477,7 @@ impl Server {
 
     pub fn get_editor_handler(&self, editor_id: FatCatId, conn: &DbConn) -> Result<Editor> {
         let row: EditorRow = editor::table.find(editor_id.to_uuid()).first(conn)?;
-
-        let ed = Editor {
-            editor_id: Some(uuid2fcid(&row.id)),
-            username: row.username,
-        };
-        Ok(ed)
+        Ok(row.into_model())
     }
 
     pub fn get_editor_changelog_handler(
@@ -542,6 +537,32 @@ impl Server {
         let mut entry = cl_row.into_model();
         entry.editgroup = Some(editgroup);
         Ok(entry)
+    }
+
+    /// This helper either finds an Editor model by OIDC parameters (eg, remote domain and
+    /// identifier), or creates one and inserts the appropriate auth rows. The semantics are
+    /// basically an "upsert" of signup/account-creation.
+    /// Returns an editor model and boolean flag indicating whether a new editor was created or
+    /// not.
+    /// If this function creates an editor, it sets the username to "{iss}-{provider}"; the intent
+    /// is for this to be temporary but unique. Might look like "bnewbold-github", or might look
+    /// like "895139824-github". This is a hack to make check/creation idempotent.
+    pub fn auth_oidc_handler(&self, params: AuthOidc, conn: &DbConn) -> Result<(Editor, bool)> {
+        let existing: Vec<(EditorRow, AuthOidcRow)> = editor::table
+            .inner_join(auth_oidc::table)
+            .filter(auth_oidc::oidc_sub.eq(params.sub.clone()))
+            .filter(auth_oidc::oidc_iss.eq(params.iss))
+            .load(conn)?;
+
+        let (editor_row, created): (EditorRow, bool) = match existing.first() {
+            Some((editor, _)) => (editor.clone(), false),
+            None => {
+                let username = format!("{}-{}", params.sub, params.provider);
+                (create_editor(conn, username, false, false)?, true)
+            }
+        };
+
+        Ok((editor_row.into_model(), created))
     }
 
     entity_batch_handler!(create_container_batch_handler, ContainerEntity);
