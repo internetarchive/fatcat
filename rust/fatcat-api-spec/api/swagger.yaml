@@ -8179,6 +8179,7 @@ definitions:
     type: "object"
     required:
     - "iss"
+    - "preferred_username"
     - "provider"
     - "sub"
     properties:
@@ -8187,6 +8188,8 @@ definitions:
       sub:
         type: "string"
       iss:
+        type: "string"
+      preferred_username:
         type: "string"
     upperCaseName: "AUTH_OIDC"
   auth_oidc_result:

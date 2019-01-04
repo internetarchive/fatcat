@@ -558,12 +558,15 @@ definitions:
       - provider
       - sub
       - iss
+      - preferred_username
     properties:
       provider:
         type: string
       sub:
         type: string
       iss:
+        type: string
+      preferred_username:
         type: string
   auth_oidc_result:
     type: object

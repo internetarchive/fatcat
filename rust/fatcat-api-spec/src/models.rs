@@ -19,14 +19,18 @@ pub struct AuthOidc {
 
     #[serde(rename = "iss")]
     pub iss: String,
+
+    #[serde(rename = "preferred_username")]
+    pub preferred_username: String,
 }
 
 impl AuthOidc {
-    pub fn new(provider: String, sub: String, iss: String) -> AuthOidc {
+    pub fn new(provider: String, sub: String, iss: String, preferred_username: String) -> AuthOidc {
         AuthOidc {
             provider: provider,
             sub: sub,
             iss: iss,
+            preferred_username: preferred_username,
         }
     }
 }

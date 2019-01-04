@@ -33,26 +33,30 @@ class AuthOidc(object):
     swagger_types = {
         'provider': 'str',
         'sub': 'str',
-        'iss': 'str'
+        'iss': 'str',
+        'preferred_username': 'str'
     }
 
     attribute_map = {
         'provider': 'provider',
         'sub': 'sub',
-        'iss': 'iss'
+        'iss': 'iss',
+        'preferred_username': 'preferred_username'
     }
 
-    def __init__(self, provider=None, sub=None, iss=None):  # noqa: E501
+    def __init__(self, provider=None, sub=None, iss=None, preferred_username=None):  # noqa: E501
         """AuthOidc - a model defined in Swagger"""  # noqa: E501
 
         self._provider = None
         self._sub = None
         self._iss = None
+        self._preferred_username = None
         self.discriminator = None
 
         self.provider = provider
         self.sub = sub
         self.iss = iss
+        self.preferred_username = preferred_username
 
     @property
     def provider(self):
@@ -122,6 +126,29 @@ class AuthOidc(object):
             raise ValueError("Invalid value for `iss`, must not be `None`")  # noqa: E501
 
         self._iss = iss
+
+    @property
+    def preferred_username(self):
+        """Gets the preferred_username of this AuthOidc.  # noqa: E501
+
+
+        :return: The preferred_username of this AuthOidc.  # noqa: E501
+        :rtype: str
+        """
+        return self._preferred_username
+
+    @preferred_username.setter
+    def preferred_username(self, preferred_username):
+        """Sets the preferred_username of this AuthOidc.
+
+
+        :param preferred_username: The preferred_username of this AuthOidc.  # noqa: E501
+        :type: str
+        """
+        if preferred_username is None:
+            raise ValueError("Invalid value for `preferred_username`, must not be `None`")  # noqa: E501
+
+        self._preferred_username = preferred_username
 
     def to_dict(self):
         """Returns the model properties as a dict"""
