@@ -4,6 +4,7 @@ import json
 from flask import Flask, render_template, send_from_directory, request, \
     url_for, abort, g, redirect, jsonify, session
 from fatcat_web import app, api
+from fatcat_web.auth import handle_token_login, handle_logout
 from fatcat_client.rest import ApiException
 from fatcat_web.search import do_search
 
@@ -295,12 +296,6 @@ def work_view(ident):
         return render_template('deleted_entity.html', entity=entity)
     return render_template('work_view.html', work=entity, releases=releases)
 
-@app.route('/editgroup/current', methods=['GET'])
-def editgroup_current():
-    raise NotImplementedError
-    #eg = api.get_or_create_editgroup()
-    #return redirect('/editgroup/{}'.format(eg.id))
-
 @app.route('/editgroup/<ident>', methods=['GET'])
 def editgroup_view(ident):
     try:
@@ -326,6 +321,17 @@ def editor_changelog(ident):
         abort(ae.status)
     return render_template('editor_changelog.html', editor=editor,
         changelog_entries=changelog_entries)
+
+@app.route('/editor/<ident>/wip', methods=['GET'])
+def editor_wip(ident):
+    raise NotImplementedError
+    try:
+        editor = api.get_editor(ident)
+        entries = api.get_editor_wip(ident)
+    except ApiException as ae:
+        abort(ae.status)
+    return render_template('editor_changelog.html', editor=editor,
+        entries=entries)
 
 @app.route('/changelog', methods=['GET'])
 def changelog_view():
@@ -369,16 +375,33 @@ def search():
 
 ### Auth ####################################################################
 
-@app.route('/login')
+@app.route('/auth/login')
 def login():
     # show the user a list of login options
-    return render_template('release_search.html', query=query, fulltext_only=fulltext_only)
+    return render_template('auth_login.html')
 
-@app.route('/login')
+@app.route('/auth/token_login', methods=['GET', 'POST'])
+def token_login():
+    # show the user a list of login options
+    if 'token' in request.args:
+        return handle_token_login(request.args.get('token'))
+    if 'token' in request.form:
+        return handle_token_login(request.form.get('token'))
+    return render_template('auth_token_login.html')
+
+@app.route('/auth/logout')
 def logout():
     # TODO: clear extra session info
-    logout_user()
-    return render_template('logout.html')
+    handle_logout()
+    return render_template('auth_logout.html')
+
+@app.route('/auth/account')
+@login_required
+def logout():
+    # TODO: clear extra session info
+    handle_logout()
+    return render_template('auth_logout.html')
+
 
 ### Static Routes ###########################################################
 

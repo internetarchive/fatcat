@@ -26,6 +26,17 @@ conf = fatcat_client.Configuration()
 conf.host = "http://localhost:9411/v0"
 api = fatcat_client.DefaultApi(fatcat_client.ApiClient(conf))
 
+if Config.FATCAT_API_AUTH_TOKEN:
+    print("Found and using privileged token (eg, for account signup)")
+    priv_conf = fatcat_client.Configuration()
+    priv_conf.api_key["Authorization"] = Config.FATCAT_API_AUTH_TOKEN
+    priv_conf.api_key_prefix["Authorization"] = "Bearer"
+    priv_conf.host = 'http://localhost:9411/v0'
+    priv_api = fatcat_client.DefaultApi(fatcat_client.ApiClient(local_conf))
+else:
+    print("No privileged token found")
+    priv_api = None
+
 from fatcat_web import routes, auth
 
 gitlab_bp = create_flask_blueprint(Gitlab, oauth, auth.handle_oauth)

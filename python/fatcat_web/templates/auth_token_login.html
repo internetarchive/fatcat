@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block body %}
+<h1>Login with Token</h1>
+
+<p>This page is intended for operators and contingencies, not for general use. It
+allows editors (users) to use an existing token (macaroon) for authentication;
+a new web interface session and cookie are constructed using the token.
+
+<br>
+<br>
+<br>
+
+{% if current_user.is_authenticated %}
+  <div class="ui negative message">
+    <div class="header">You are already logged in!</div>
+    <p>You should logout first. Re-authenticating would be undefined behavior.
+  </div>
+{% else %}
+  <form class="" role="login" action="/auth/token_login" method="post">
+    <div class="ui form">
+        <div class="ui action input huge fluid">
+        <input type="password" placeholder="Your Fatcat API Auth Token..." name="token" value="{% if token %}{{ token }}{% endif %}" aria-label="login using token">
+        <button class="ui button">Login</button>
+      </div>
+    </div>
+  </form>
+{% endif %}
+
+{% endblock %}

@@ -17,14 +17,19 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config(object):
     GIT_REVISION = subprocess.check_output(["git", "describe", "--always"]).strip()
+
     # This is, effectively, the QA/PROD flag
     FATCAT_DOMAIN = os.environ.get("FATCAT_DOMAIN", default="qa.fatcat.wiki")
+    FATCAT_API_AUTH_TOKEN = os.environ.get("FATCAT_API_AUTH_TOKEN", default=None)
+    FATCAT_API_HOST = os.environ.get("FATCAT_API_HOST", default="https://{}/v0".format(FATCAT_DOMAIN))
+
     # can set this to https://search.fatcat.wiki for some experimentation
     ELASTICSEARCH_BACKEND = os.environ.get("ELASTICSEARCH_BACKEND", default="http://localhost:9200")
     ELASTICSEARCH_INDEX = os.environ.get("ELASTICSEARCH_INDEX", default="fatcat")
 
-    # bogus values for dev/testing
-    SECRET_KEY = os.environ.get("SECRET_KEY", default="mQLO6DpyR4t91G1tl/LPMvb/5QFV9vIUDZah5PapTUSmP8jVIrvCRw")
+    # for flask things, like session cookies
+    FLASK_SECRET_KEY = os.environ.get("FLASK_SECRET_KEY", default=None)
+    SECRET_KEY = FLASK_SECRET_KEY
 
     GITLAB_CLIENT_ID = os.environ.get("GITLAB_CLIENT_ID", default="bogus")
     GITLAB_CLIENT_SECRET = os.environ.get("GITLAB_CLIENT_SECRET", default="bogus")

@@ -29,17 +29,22 @@
           </div>
         </form>
       </div>
+{% if current_user.is_authenticated %}
       <div class="ui simple dropdown item">
-      demo-user <i class="dropdown icon"></i>
+      {{ current_user.username }} <i class="dropdown icon"></i>
         <div class="menu">
           <a class="item" href="/editgroup/current"><i class="edit icon"></i>Edits in Progress</a>
-          <a class="item" href="/editor/aaaaaaaaaaaabkvkaaaaaaaaae/changelog"><i class="history icon"></i>History</a>
+          <a class="item" href="/editor/{{ current_user.id }}/changelog"><i class="history icon"></i>History</a>
           <div class="divider"></div>
-          <a class="item" href="/editor/aaaaaaaaaaaabkvkaaaaaaaaae"><i class="user icon"></i>Account</a>
-          <a class="item" href="/logout"><i class="sign out icon"></i>Logout</a>
+          <a class="item" href="/auth/account"><i class="user icon"></i>Account</a>
+          <a class="item" href="/auth/logout"><i class="sign out icon"></i>Logout</a>
         </div>
       </div>
-
+{% else %}
+      <div class="ui simple item">
+        <a href="/auth/login">Login/Signup</a>
+      </div>
+{% endif %}
     </div>
   </div>
 </header>
