@@ -391,6 +391,22 @@ pub enum GetEditorChangelogResponse {
 }
 
 #[derive(Debug, PartialEq)]
+pub enum UpdateEditorResponse {
+    /// Updated Editor
+    UpdatedEditor(models::Editor),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
 pub enum AcceptEditgroupResponse {
     /// Merged Successfully
     MergedSuccessfully(models::Success),
@@ -1305,6 +1321,8 @@ pub trait Api {
 
     fn get_editor_changelog(&self, editor_id: String, context: &Context) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send>;
 
+    fn update_editor(&self, editor_id: String, editor: models::Editor, context: &Context) -> Box<Future<Item = UpdateEditorResponse, Error = ApiError> + Send>;
+
     fn accept_editgroup(&self, editgroup_id: String, context: &Context) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send>;
 
     fn create_editgroup(&self, editgroup: models::Editgroup, context: &Context) -> Box<Future<Item = CreateEditgroupResponse, Error = ApiError> + Send>;
@@ -1552,6 +1570,8 @@ pub trait ApiNoContext {
     fn get_editor(&self, editor_id: String) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send>;
 
     fn get_editor_changelog(&self, editor_id: String) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send>;
+
+    fn update_editor(&self, editor_id: String, editor: models::Editor) -> Box<Future<Item = UpdateEditorResponse, Error = ApiError> + Send>;
 
     fn accept_editgroup(&self, editgroup_id: String) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send>;
 
@@ -1842,6 +1862,10 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
 
     fn get_editor_changelog(&self, editor_id: String) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send> {
         self.api().get_editor_changelog(editor_id, &self.context())
+    }
+
+    fn update_editor(&self, editor_id: String, editor: models::Editor) -> Box<Future<Item = UpdateEditorResponse, Error = ApiError> + Send> {
+        self.api().update_editor(editor_id, editor, &self.context())
     }
 
     fn accept_editgroup(&self, editgroup_id: String) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send> {

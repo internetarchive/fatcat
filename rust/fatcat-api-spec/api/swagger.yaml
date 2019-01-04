@@ -6119,6 +6119,93 @@ paths:
       path: "/editor/:editor_id"
       HttpMethod: "Get"
       httpmethod: "get"
+    put:
+      operationId: "update_editor"
+      parameters:
+      - name: "editor_id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"editor_id_example\".to_string()"
+      - in: "body"
+        name: "editor"
+        required: true
+        schema:
+          $ref: "#/definitions/editor"
+        uppercase_data_type: "EDITOR"
+        refName: "editor"
+        formatString: "{:?}"
+        example: "???"
+        model_key: "editgroup_edits"
+        uppercase_operation_id: "UPDATE_EDITOR"
+        consumesJson: true
+      responses:
+        200:
+          description: "Updated Editor"
+          schema:
+            $ref: "#/definitions/editor"
+          x-responseId: "UpdatedEditor"
+          x-uppercaseResponseId: "UPDATED_EDITOR"
+          uppercase_operation_id: "UPDATE_EDITOR"
+          uppercase_data_type: "EDITOR"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "UPDATE_EDITOR"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "UPDATE_EDITOR"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        403:
+          description: "Forbidden"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "Forbidden"
+          x-uppercaseResponseId: "FORBIDDEN"
+          uppercase_operation_id: "UPDATE_EDITOR"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "UPDATE_EDITOR"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "UPDATE_EDITOR"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      security:
+      - Bearer: []
+      operation_id: "update_editor"
+      uppercase_operation_id: "UPDATE_EDITOR"
+      path: "/editor/:editor_id"
+      HttpMethod: "Put"
+      httpmethod: "put"
+      noClientExample: true
   /editor/{editor_id}/changelog:
     get:
       operationId: "get_editor_changelog"

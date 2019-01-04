@@ -2484,6 +2484,34 @@ paths:
           description: Generic Error
           schema:
             $ref: "#/definitions/error_response"
+    put:
+      operationId: "update_editor"
+      parameters:
+       - name: editor
+         in: body
+         required: true
+         schema:
+           $ref: "#/definitions/editor"
+      security:
+       - Bearer: []
+      responses:
+        200:
+          description: Updated Editor
+          schema:
+            $ref: "#/definitions/editor"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/error_response"
+        404:
+          description: Not Found
+          schema:
+            $ref: "#/definitions/error_response"
+        500:
+          description: Generic Error
+          schema:
+            $ref: "#/definitions/error_response"
+        <<: *AUTHRESPONSES
   /editor/{editor_id}/changelog:
     parameters:
       - name: editor_id
