@@ -1,5 +1,17 @@
 
-Rust implementation of fatcat API server (`fatcatd`).
+Rust implementation of fatcat API server. Commands include:
+
+- `fatcatd`: the API server itself
+- `fatcat-auth`: privileged command to manage authentication keys, tokens, and
+  accounts. Useful to generate admin accounts, new signing keys, etc.
+- `fatcat-export`: high-speed JSON export tool, which talks directly to the
+  database (instead of going through the API). See `README.export.md`.
+
+The `fatcat-api-spec` crate is generated from the openapi/swagger spec and
+contains Rust models, response types, and endpoint definitions (but not
+implementations).
+
+The SQL database schema (and migrations) are under `./migrations/`.
 
 ## Development
 
@@ -31,6 +43,9 @@ Build and run:
 Tests:
 
     cargo test -- --test-threads 1
+
+Note that most "integration" level tests are written in python and run by
+`pytest`; see `../python/README.md`.
 
 See `HACKING` for some more advanced tips and commands.
 
