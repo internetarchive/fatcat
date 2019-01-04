@@ -544,21 +544,32 @@ impl Server {
     /// basically an "upsert" of signup/account-creation.
     /// Returns an editor model and boolean flag indicating whether a new editor was created or
     /// not.
-    /// If this function creates an editor, it sets the username to "{iss}-{provider}"; the intent
-    /// is for this to be temporary but unique. Might look like "bnewbold-github", or might look
-    /// like "895139824-github". This is a hack to make check/creation idempotent.
+    /// If this function creates an editor, it sets the username to
+    /// "{preferred_username}-{provider}"; the intent is for this to be temporary but unique. Might
+    /// look like "bnewbold-github", or might look like "895139824-github". This is a hack to make
+    /// check/creation idempotent.
     pub fn auth_oidc_handler(&self, params: AuthOidc, conn: &DbConn) -> Result<(Editor, bool)> {
         let existing: Vec<(EditorRow, AuthOidcRow)> = editor::table
             .inner_join(auth_oidc::table)
             .filter(auth_oidc::oidc_sub.eq(params.sub.clone()))
-            .filter(auth_oidc::oidc_iss.eq(params.iss))
+            .filter(auth_oidc::oidc_iss.eq(params.iss.clone()))
             .load(conn)?;
 
         let (editor_row, created): (EditorRow, bool) = match existing.first() {
             Some((editor, _)) => (editor.clone(), false),
             None => {
-                let username = format!("{}-{}", params.sub, params.provider);
-                (create_editor(conn, username, false, false)?, true)
+                let username = format!("{}-{}", params.preferred_username, params.provider);
+                let editor = create_editor(conn, username, false, false)?;
+                // create an auth login row so the user can log back in
+                diesel::insert_into(auth_oidc::table)
+                    .values((
+                        auth_oidc::editor_id.eq(editor.id),
+                        auth_oidc::provider.eq(params.provider),
+                        auth_oidc::oidc_iss.eq(params.iss),
+                        auth_oidc::oidc_sub.eq(params.sub),
+                    ))
+                    .execute(conn)?;
+                (editor, true)
             }
         };
 

@@ -930,8 +930,7 @@ impl Api for Server {
                 // admin can update any username
                 auth_context.require_role(FatcatRole::Admin)?;
             };
-            update_editor_username(&conn, editor_id, editor.username)
-                .map(|e| e.into_model())
+            update_editor_username(&conn, editor_id, editor.username).map(|e| e.into_model())
         }) {
             Ok(editor) => UpdateEditorResponse::UpdatedEditor(editor),
             Err(Error(ErrorKind::Diesel(e), _)) => {
