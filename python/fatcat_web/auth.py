@@ -1,17 +1,10 @@
 
 from flask import Flask, render_template, send_from_directory, request, \
     url_for, abort, g, redirect, jsonify, session, flash
-from fatcat_web import login_manager, api, Config
+from fatcat_web import login_manager, api, priv_api, Config
 from flask_login import logout_user, login_user, UserMixin
 import pymacaroons
 import fatcat_client
-
-def auth_api(token):
-    conf = fatcat_client.Configuration()
-    conf.api_key["Authorization"] = token
-    conf.api_key_prefix["Authorization"] = "Bearer"
-    conf.host = Config.FATCAT_API_HOST
-    return fatcat_client.DefaultApi(fatcat_client.ApiClient(conf))
 
 def handle_logout():
     logout_user()
@@ -34,35 +27,49 @@ def handle_token_login(token):
     if not editor_id:
         abort(400)
     # fetch editor info
-    editor = api.get_editor(editor_id).to_dict()
+    editor = api.get_editor(editor_id)
     session['api_token'] = token
-    session['editor'] = editor
-    login_user(load_user(editor_id))
+    session['editor'] = editor.to_dict()
+    login_user(load_user(editor.editor_id))
     return redirect("/auth/account")
 
 # This will need to login/signup via fatcatd API, then set token in session
 def handle_oauth(remote, token, user_info):
-    print(remote)
-    if token:
-        print(remote.name, token)
     if user_info:
-        print(user_info)
-        print(user_info.iss)
-        print(user_info.prefered_username)
-
         # fetch api login/signup using user_info
-        params = AuthOidc(remote.name, user_info.sub, user_info.iss)
-        resp = api.auth_oidc(params)
-        editor = resp['editor']
-        api_token = resp['token']
+        # ISS is basically the API url (though more formal in OIDC)
+        # SUB is the stable internal identifier for the user (not usually the username itself)
+        # TODO: should have the real sub here
+        # TODO: would be nicer to pass preferred_username for account creation
+        iss = remote.OAUTH_CONFIG['api_base_url']
+
+        # we reuse 'preferred_username' for account name auto-creation (but
+        # don't store it otherwise in the backend, at least currently). But i'm
+        # not sure all loginpass backends will set it
+        if user_info.get('preferred_username'):
+            preferred_username = user_info['preferred_username']
+        else:
+            preferred_username = user_info['sub']
+
+        params = fatcat_client.AuthOidc(remote.name, user_info['sub'], iss, user_info['preferred_username'])
+        # this call requires admin privs
+        (resp, http_status, http_headers) = priv_api.auth_oidc_with_http_info(params)
+        editor = resp.editor
+        api_token = resp.token
+
+        if http_status == 201:
+            flash("Welcome to Fatcat! An account has been created for you with a temporary username; you may wish to change it under account settings")
+            flash("You must use the same mechanism ({}) to login in the future".format(remote.name))
+        else:
+            flash("Welcome back!")
 
         # write token and username to session
         session['api_token'] = api_token
-        session['editor'] = editor.editor_id
+        session['editor'] = editor.to_dict()
 
         # call login_user(load_user(editor_id))
-        login_user(load_user(editor_id))
-        return redirect("/")
+        login_user(load_user(editor.editor_id))
+        return redirect("/auth/account")
 
     raise some_error
 

@@ -4,8 +4,8 @@ import json
 from flask import Flask, render_template, send_from_directory, request, \
     url_for, abort, g, redirect, jsonify, session, flash
 from flask_login import login_required
-from fatcat_web import app, api
-from fatcat_web.auth import handle_token_login, handle_logout, load_user, auth_api
+from fatcat_web import app, api, auth_api
+from fatcat_web.auth import handle_token_login, handle_logout, load_user
 from fatcat_client.rest import ApiException
 from fatcat_web.search import do_search
 
