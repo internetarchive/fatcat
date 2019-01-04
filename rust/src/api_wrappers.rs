@@ -904,6 +904,81 @@ impl Api for Server {
         Box::new(futures::done(Ok(ret)))
     }
 
+    /// For now, only implements updating username
+    fn update_editor(
+        &self,
+        editor_id: String,
+        editor: models::Editor,
+        context: &Context,
+    ) -> Box<Future<Item = UpdateEditorResponse, Error = ApiError> + Send> {
+        let conn = self.db_pool.get().expect("db_pool error");
+        let ret = match conn.transaction(|| {
+            if Some(editor_id.clone()) != editor.editor_id {
+                return Err(
+                    ErrorKind::OtherBadRequest("editor_id doesn't match".to_string()).into(),
+                );
+            }
+            let auth_context = self
+                .auth_confectionary
+                .require_auth(&conn, &context.auth_data)?;
+            let editor_id = FatCatId::from_str(&editor_id)?;
+            // DANGER! these permissions are for username updates only!
+            if editor_id == auth_context.editor_id {
+                // self edit of username allowed
+                auth_context.require_role(FatcatRole::Editor)?;
+            } else {
+                // admin can update any username
+                auth_context.require_role(FatcatRole::Admin)?;
+            };
+            update_editor_username(&conn, editor_id, editor.username)
+                .map(|e| e.into_model())
+        }) {
+            Ok(editor) => UpdateEditorResponse::UpdatedEditor(editor),
+            Err(Error(ErrorKind::Diesel(e), _)) => {
+                UpdateEditorResponse::BadRequest(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(Error(ErrorKind::Uuid(e), _)) => UpdateEditorResponse::BadRequest(ErrorResponse {
+                message: e.to_string(),
+            }),
+            Err(Error(ErrorKind::InvalidFatcatId(e), _)) => {
+                UpdateEditorResponse::BadRequest(ErrorResponse {
+                    message: ErrorKind::InvalidFatcatId(e).to_string(),
+                })
+            }
+            Err(Error(ErrorKind::MalformedExternalId(e), _)) => {
+                UpdateEditorResponse::BadRequest(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(Error(ErrorKind::InvalidCredentials(e), _)) =>
+            // TODO: why can't I NotAuthorized here?
+            {
+                UpdateEditorResponse::Forbidden(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(Error(ErrorKind::InsufficientPrivileges(e), _)) => {
+                UpdateEditorResponse::Forbidden(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(Error(ErrorKind::OtherBadRequest(e), _)) => {
+                UpdateEditorResponse::BadRequest(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(e) => {
+                error!("{}", e);
+                UpdateEditorResponse::GenericError(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+        };
+        Box::new(futures::done(Ok(ret)))
+    }
+
     fn accept_editgroup(
         &self,
         editgroup_id: String,
@@ -1081,9 +1156,10 @@ impl Api for Server {
             auth_context.require_role(FatcatRole::Admin)?;
             let (editor, created) = self.auth_oidc_handler(params, &conn)?;
             // create an auth token; leave it to webface to attenuate to a given duration
-            let token = self
-                .auth_confectionary
-                .create_token(FatCatId::from_str(&editor.editor_id.clone().unwrap())?, None)?;
+            let token = self.auth_confectionary.create_token(
+                FatCatId::from_str(&editor.editor_id.clone().unwrap())?,
+                None,
+            )?;
             let result = AuthOidcResult { editor, token };
             Ok((result, created))
         }) {

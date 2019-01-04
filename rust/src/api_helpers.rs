@@ -228,13 +228,13 @@ pub fn make_edit_context(
     })
 }
 
-// TODO: verify username (alphanum, etc)
 pub fn create_editor(
     conn: &DbConn,
     username: String,
     is_admin: bool,
     is_bot: bool,
 ) -> Result<EditorRow> {
+    check_username(&username)?;
     let ed: EditorRow = diesel::insert_into(editor::table)
         .values((
             editor::username.eq(username),
@@ -243,6 +243,19 @@ pub fn create_editor(
         ))
         .get_result(conn)?;
     Ok(ed)
+}
+
+pub fn update_editor_username(
+    conn: &DbConn,
+    editor_id: FatCatId,
+    username: String,
+) -> Result<EditorRow> {
+    check_username(&username)?;
+    diesel::update(editor::table.find(editor_id.to_uuid()))
+        .set(editor::username.eq(username))
+        .execute(conn)?;
+    let editor: EditorRow = editor::table.find(editor_id.to_uuid()).get_result(conn)?;
+    Ok(editor)
 }
 
 /// This function should always be run within a transaction
@@ -342,6 +355,40 @@ pub fn fcid2uuid(fcid: &str) -> Result<Uuid> {
 pub fn uuid2fcid(id: &Uuid) -> String {
     let raw = id.as_bytes();
     BASE32_NOPAD.encode(raw).to_lowercase()
+}
+
+pub fn check_username(raw: &str) -> Result<()> {
+    lazy_static! {
+        static ref RE: Regex = Regex::new(r"^[A-Za-z0-9][A-Za-z0-9._-]{2,15}$").unwrap();
+    }
+    if RE.is_match(raw) {
+        Ok(())
+    } else {
+        Err(ErrorKind::MalformedExternalId(format!(
+            "not a valid username: '{}' (expected, eg, 'AcidBurn')",
+            raw
+        ))
+        .into())
+    }
+}
+
+#[test]
+fn test_check_username() {
+    assert!(check_username("bnewbold").is_ok());
+    assert!(check_username("BNEWBOLD").is_ok());
+    assert!(check_username("admin").is_ok());
+    assert!(check_username("friend-bot").is_ok());
+    assert!(check_username("dog").is_ok());
+    assert!(check_username("g_____").is_ok());
+
+    assert!(check_username("").is_err());
+    assert!(check_username("_").is_err());
+    assert!(check_username("gg").is_err());
+    assert!(check_username("adminadminadminadminadminadminadmin").is_err());
+    assert!(check_username("bryan newbold").is_err());
+    assert!(check_username("01234567-3456-6780").is_err());
+    assert!(check_username(".admin").is_err());
+    assert!(check_username("-bot").is_err());
 }
 
 pub fn check_pmcid(raw: &str) -> Result<()> {
