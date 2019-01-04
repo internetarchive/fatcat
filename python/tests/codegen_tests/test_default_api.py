@@ -521,6 +521,12 @@ class TestDefaultApi(unittest.TestCase):
         """
         pass
 
+    def test_update_editor(self):
+        """Test case for update_editor
+
+        """
+        pass
+
     def test_update_file(self):
         """Test case for update_file
 

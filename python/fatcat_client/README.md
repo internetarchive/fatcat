@@ -155,6 +155,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**lookup_release**](docs/DefaultApi.md#lookup_release) | **GET** /release/lookup | 
 *DefaultApi* | [**update_container**](docs/DefaultApi.md#update_container) | **PUT** /container/{ident} | 
 *DefaultApi* | [**update_creator**](docs/DefaultApi.md#update_creator) | **PUT** /creator/{ident} | 
+*DefaultApi* | [**update_editor**](docs/DefaultApi.md#update_editor) | **PUT** /editor/{editor_id} | 
 *DefaultApi* | [**update_file**](docs/DefaultApi.md#update_file) | **PUT** /file/{ident} | 
 *DefaultApi* | [**update_fileset**](docs/DefaultApi.md#update_fileset) | **PUT** /fileset/{ident} | 
 *DefaultApi* | [**update_release**](docs/DefaultApi.md#update_release) | **PUT** /release/{ident} | 
