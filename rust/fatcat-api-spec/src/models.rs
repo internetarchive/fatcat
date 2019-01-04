@@ -10,6 +10,43 @@ use std::collections::HashMap;
 use swagger;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct AuthOidc {
+    #[serde(rename = "provider")]
+    pub provider: String,
+
+    #[serde(rename = "sub")]
+    pub sub: String,
+
+    #[serde(rename = "iss")]
+    pub iss: String,
+}
+
+impl AuthOidc {
+    pub fn new(provider: String, sub: String, iss: String) -> AuthOidc {
+        AuthOidc {
+            provider: provider,
+            sub: sub,
+            iss: iss,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct AuthOidcResult {
+    #[serde(rename = "editor")]
+    pub editor: models::Editor,
+
+    #[serde(rename = "token")]
+    pub token: String,
+}
+
+impl AuthOidcResult {
+    pub fn new(editor: models::Editor, token: String) -> AuthOidcResult {
+        AuthOidcResult { editor: editor, token: token }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ChangelogEntry {
     #[serde(rename = "index")]
     pub index: i64,
@@ -272,11 +309,29 @@ pub struct Editor {
 
     #[serde(rename = "username")]
     pub username: String,
+
+    #[serde(rename = "is_admin")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub is_admin: Option<bool>,
+
+    #[serde(rename = "is_bot")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub is_bot: Option<bool>,
+
+    #[serde(rename = "is_active")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub is_active: Option<bool>,
 }
 
 impl Editor {
     pub fn new(username: String) -> Editor {
-        Editor { editor_id: None, username: username }
+        Editor {
+            editor_id: None,
+            username: username,
+            is_admin: None,
+            is_bot: None,
+            is_active: None,
+        }
     }
 }
 

@@ -37,18 +37,18 @@ use swagger::{ApiError, Context, XSpanId};
 #[allow(unused_imports)]
 use models;
 use {
-    AcceptEditgroupResponse, Api, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse, CreateEditgroupResponse, CreateFileBatchResponse,
-    CreateFileResponse, CreateFilesetBatchResponse, CreateFilesetResponse, CreateReleaseBatchResponse, CreateReleaseResponse, CreateWebcaptureBatchResponse, CreateWebcaptureResponse,
-    CreateWorkBatchResponse, CreateWorkResponse, DeleteContainerEditResponse, DeleteContainerResponse, DeleteCreatorEditResponse, DeleteCreatorResponse, DeleteFileEditResponse, DeleteFileResponse,
-    DeleteFilesetEditResponse, DeleteFilesetResponse, DeleteReleaseEditResponse, DeleteReleaseResponse, DeleteWebcaptureEditResponse, DeleteWebcaptureResponse, DeleteWorkEditResponse,
-    DeleteWorkResponse, GetChangelogEntryResponse, GetChangelogResponse, GetContainerEditResponse, GetContainerHistoryResponse, GetContainerRedirectsResponse, GetContainerResponse,
-    GetContainerRevisionResponse, GetCreatorEditResponse, GetCreatorHistoryResponse, GetCreatorRedirectsResponse, GetCreatorReleasesResponse, GetCreatorResponse, GetCreatorRevisionResponse,
-    GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileEditResponse, GetFileHistoryResponse, GetFileRedirectsResponse, GetFileResponse, GetFileRevisionResponse,
-    GetFilesetEditResponse, GetFilesetHistoryResponse, GetFilesetRedirectsResponse, GetFilesetResponse, GetFilesetRevisionResponse, GetReleaseEditResponse, GetReleaseFilesResponse,
-    GetReleaseFilesetsResponse, GetReleaseHistoryResponse, GetReleaseRedirectsResponse, GetReleaseResponse, GetReleaseRevisionResponse, GetReleaseWebcapturesResponse, GetWebcaptureEditResponse,
-    GetWebcaptureHistoryResponse, GetWebcaptureRedirectsResponse, GetWebcaptureResponse, GetWebcaptureRevisionResponse, GetWorkEditResponse, GetWorkHistoryResponse, GetWorkRedirectsResponse,
-    GetWorkReleasesResponse, GetWorkResponse, GetWorkRevisionResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse, LookupReleaseResponse, UpdateContainerResponse,
-    UpdateCreatorResponse, UpdateFileResponse, UpdateFilesetResponse, UpdateReleaseResponse, UpdateWebcaptureResponse, UpdateWorkResponse,
+    AcceptEditgroupResponse, Api, AuthOidcResponse, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse, CreateEditgroupResponse,
+    CreateFileBatchResponse, CreateFileResponse, CreateFilesetBatchResponse, CreateFilesetResponse, CreateReleaseBatchResponse, CreateReleaseResponse, CreateWebcaptureBatchResponse,
+    CreateWebcaptureResponse, CreateWorkBatchResponse, CreateWorkResponse, DeleteContainerEditResponse, DeleteContainerResponse, DeleteCreatorEditResponse, DeleteCreatorResponse,
+    DeleteFileEditResponse, DeleteFileResponse, DeleteFilesetEditResponse, DeleteFilesetResponse, DeleteReleaseEditResponse, DeleteReleaseResponse, DeleteWebcaptureEditResponse,
+    DeleteWebcaptureResponse, DeleteWorkEditResponse, DeleteWorkResponse, GetChangelogEntryResponse, GetChangelogResponse, GetContainerEditResponse, GetContainerHistoryResponse,
+    GetContainerRedirectsResponse, GetContainerResponse, GetContainerRevisionResponse, GetCreatorEditResponse, GetCreatorHistoryResponse, GetCreatorRedirectsResponse, GetCreatorReleasesResponse,
+    GetCreatorResponse, GetCreatorRevisionResponse, GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileEditResponse, GetFileHistoryResponse, GetFileRedirectsResponse,
+    GetFileResponse, GetFileRevisionResponse, GetFilesetEditResponse, GetFilesetHistoryResponse, GetFilesetRedirectsResponse, GetFilesetResponse, GetFilesetRevisionResponse, GetReleaseEditResponse,
+    GetReleaseFilesResponse, GetReleaseFilesetsResponse, GetReleaseHistoryResponse, GetReleaseRedirectsResponse, GetReleaseResponse, GetReleaseRevisionResponse, GetReleaseWebcapturesResponse,
+    GetWebcaptureEditResponse, GetWebcaptureHistoryResponse, GetWebcaptureRedirectsResponse, GetWebcaptureResponse, GetWebcaptureRevisionResponse, GetWorkEditResponse, GetWorkHistoryResponse,
+    GetWorkRedirectsResponse, GetWorkReleasesResponse, GetWorkResponse, GetWorkRevisionResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse, LookupReleaseResponse,
+    UpdateContainerResponse, UpdateCreatorResponse, UpdateFileResponse, UpdateFilesetResponse, UpdateReleaseResponse, UpdateWebcaptureResponse, UpdateWorkResponse,
 };
 
 header! { (Warning, "Warning") => [String] }
@@ -2603,6 +2603,154 @@ where
             })
         },
         "UpdateCreator",
+    );
+
+    let api_clone = api.clone();
+    router.post(
+        "/v0/auth/oidc",
+        move |req: &mut Request| {
+            let mut context = Context::default();
+
+            // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
+            fn handle_request<T>(req: &mut Request, api: &T, context: &mut Context) -> Result<Response, Response>
+            where
+                T: Api,
+            {
+                context.x_span_id = Some(req.headers.get::<XSpanId>().map(XSpanId::to_string).unwrap_or_else(|| self::uuid::Uuid::new_v4().to_string()));
+                context.auth_data = req.extensions.remove::<AuthData>();
+                context.authorization = req.extensions.remove::<Authorization>();
+
+                let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
+
+                // Body parameters (note that non-required body parameters will ignore garbage
+                // values, rather than causing a 400 response). Produce warning header and logs for
+                // any unused fields.
+
+                let param_oidc_params = req
+                    .get::<bodyparser::Raw>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter oidc_params - not valid UTF-8: {}", e))))?;
+
+                let mut unused_elements = Vec::new();
+
+                let param_oidc_params = if let Some(param_oidc_params_raw) = param_oidc_params {
+                    let deserializer = &mut serde_json::Deserializer::from_str(&param_oidc_params_raw);
+
+                    let param_oidc_params: Option<models::AuthOidc> = serde_ignored::deserialize(deserializer, |path| {
+                        warn!("Ignoring unknown field in body: {}", path);
+                        unused_elements.push(path.to_string());
+                    })
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter oidc_params - doesn't match schema: {}", e))))?;
+
+                    param_oidc_params
+                } else {
+                    None
+                };
+                let param_oidc_params = param_oidc_params.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter oidc_params".to_string())))?;
+
+                match api.auth_oidc(param_oidc_params, context).wait() {
+                    Ok(rsp) => match rsp {
+                        AuthOidcResponse::Found(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(200), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::AUTH_OIDC_FOUND.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        AuthOidcResponse::Created(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(201), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::AUTH_OIDC_CREATED.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        AuthOidcResponse::BadRequest(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(400), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::AUTH_OIDC_BAD_REQUEST.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        AuthOidcResponse::NotAuthorized { body, www_authenticate } => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(401), body_string));
+                            header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                            response.headers.set(ResponseWwwAuthenticate(www_authenticate));
+
+                            response.headers.set(ContentType(mimetypes::responses::AUTH_OIDC_NOT_AUTHORIZED.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        AuthOidcResponse::Forbidden(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(403), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::AUTH_OIDC_FORBIDDEN.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        AuthOidcResponse::Conflict(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(409), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::AUTH_OIDC_CONFLICT.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                        AuthOidcResponse::GenericError(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(500), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::AUTH_OIDC_GENERIC_ERROR.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
+                    },
+                    Err(_) => {
+                        // Application code returned an error. This should not happen, as the implementation should
+                        // return a valid response.
+                        Err(Response::with((status::InternalServerError, "An internal error occurred".to_string())))
+                    }
+                }
+            }
+
+            handle_request(req, &api_clone, &mut context).or_else(|mut response| {
+                context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                Ok(response)
+            })
+        },
+        "AuthOidc",
     );
 
     let api_clone = api.clone();

@@ -11,18 +11,18 @@ use swagger;
 
 use fatcat::models;
 use fatcat::{
-    AcceptEditgroupResponse, Api, ApiError, Context, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse, CreateEditgroupResponse,
-    CreateFileBatchResponse, CreateFileResponse, CreateFilesetBatchResponse, CreateFilesetResponse, CreateReleaseBatchResponse, CreateReleaseResponse, CreateWebcaptureBatchResponse,
-    CreateWebcaptureResponse, CreateWorkBatchResponse, CreateWorkResponse, DeleteContainerEditResponse, DeleteContainerResponse, DeleteCreatorEditResponse, DeleteCreatorResponse,
-    DeleteFileEditResponse, DeleteFileResponse, DeleteFilesetEditResponse, DeleteFilesetResponse, DeleteReleaseEditResponse, DeleteReleaseResponse, DeleteWebcaptureEditResponse,
-    DeleteWebcaptureResponse, DeleteWorkEditResponse, DeleteWorkResponse, GetChangelogEntryResponse, GetChangelogResponse, GetContainerEditResponse, GetContainerHistoryResponse,
-    GetContainerRedirectsResponse, GetContainerResponse, GetContainerRevisionResponse, GetCreatorEditResponse, GetCreatorHistoryResponse, GetCreatorRedirectsResponse, GetCreatorReleasesResponse,
-    GetCreatorResponse, GetCreatorRevisionResponse, GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileEditResponse, GetFileHistoryResponse, GetFileRedirectsResponse,
-    GetFileResponse, GetFileRevisionResponse, GetFilesetEditResponse, GetFilesetHistoryResponse, GetFilesetRedirectsResponse, GetFilesetResponse, GetFilesetRevisionResponse, GetReleaseEditResponse,
-    GetReleaseFilesResponse, GetReleaseFilesetsResponse, GetReleaseHistoryResponse, GetReleaseRedirectsResponse, GetReleaseResponse, GetReleaseRevisionResponse, GetReleaseWebcapturesResponse,
-    GetWebcaptureEditResponse, GetWebcaptureHistoryResponse, GetWebcaptureRedirectsResponse, GetWebcaptureResponse, GetWebcaptureRevisionResponse, GetWorkEditResponse, GetWorkHistoryResponse,
-    GetWorkRedirectsResponse, GetWorkReleasesResponse, GetWorkResponse, GetWorkRevisionResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse, LookupReleaseResponse,
-    UpdateContainerResponse, UpdateCreatorResponse, UpdateFileResponse, UpdateFilesetResponse, UpdateReleaseResponse, UpdateWebcaptureResponse, UpdateWorkResponse,
+    AcceptEditgroupResponse, Api, ApiError, AuthOidcResponse, Context, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse,
+    CreateEditgroupResponse, CreateFileBatchResponse, CreateFileResponse, CreateFilesetBatchResponse, CreateFilesetResponse, CreateReleaseBatchResponse, CreateReleaseResponse,
+    CreateWebcaptureBatchResponse, CreateWebcaptureResponse, CreateWorkBatchResponse, CreateWorkResponse, DeleteContainerEditResponse, DeleteContainerResponse, DeleteCreatorEditResponse,
+    DeleteCreatorResponse, DeleteFileEditResponse, DeleteFileResponse, DeleteFilesetEditResponse, DeleteFilesetResponse, DeleteReleaseEditResponse, DeleteReleaseResponse,
+    DeleteWebcaptureEditResponse, DeleteWebcaptureResponse, DeleteWorkEditResponse, DeleteWorkResponse, GetChangelogEntryResponse, GetChangelogResponse, GetContainerEditResponse,
+    GetContainerHistoryResponse, GetContainerRedirectsResponse, GetContainerResponse, GetContainerRevisionResponse, GetCreatorEditResponse, GetCreatorHistoryResponse, GetCreatorRedirectsResponse,
+    GetCreatorReleasesResponse, GetCreatorResponse, GetCreatorRevisionResponse, GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileEditResponse, GetFileHistoryResponse,
+    GetFileRedirectsResponse, GetFileResponse, GetFileRevisionResponse, GetFilesetEditResponse, GetFilesetHistoryResponse, GetFilesetRedirectsResponse, GetFilesetResponse, GetFilesetRevisionResponse,
+    GetReleaseEditResponse, GetReleaseFilesResponse, GetReleaseFilesetsResponse, GetReleaseHistoryResponse, GetReleaseRedirectsResponse, GetReleaseResponse, GetReleaseRevisionResponse,
+    GetReleaseWebcapturesResponse, GetWebcaptureEditResponse, GetWebcaptureHistoryResponse, GetWebcaptureRedirectsResponse, GetWebcaptureResponse, GetWebcaptureRevisionResponse, GetWorkEditResponse,
+    GetWorkHistoryResponse, GetWorkRedirectsResponse, GetWorkReleasesResponse, GetWorkResponse, GetWorkRevisionResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse,
+    LookupReleaseResponse, UpdateContainerResponse, UpdateCreatorResponse, UpdateFileResponse, UpdateFilesetResponse, UpdateReleaseResponse, UpdateWebcaptureResponse, UpdateWorkResponse,
 };
 
 #[derive(Copy, Clone)]
@@ -293,6 +293,12 @@ impl Api for Server {
             editgroup_id,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
         );
+        Box::new(futures::failed("Generic failure".into()))
+    }
+
+    fn auth_oidc(&self, oidc_params: models::AuthOidc, context: &Context) -> Box<Future<Item = AuthOidcResponse, Error = ApiError> + Send> {
+        let context = context.clone();
+        println!("auth_oidc({:?}) - X-Span-ID: {:?}", oidc_params, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))
     }
 

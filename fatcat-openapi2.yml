@@ -443,6 +443,12 @@ definitions:
       username:
         type: string
         example: "zerocool93"
+      is_admin:
+        type: boolean
+      is_bot:
+        type: boolean
+      is_active:
+        type: boolean
   editgroup:
     type: object
     properties:
@@ -545,6 +551,29 @@ definitions:
         type: object
         additionalProperties: {}
       role:
+        type: string
+  auth_oidc:
+    type: object
+    required:
+      - provider
+      - sub
+      - iss
+    properties:
+      provider:
+        type: string
+      sub:
+        type: string
+      iss:
+        type: string
+  auth_oidc_result:
+    type: object
+    required:
+      - editor
+      - token
+    properties:
+      editor:
+        $ref: "#/definitions/editor"
+      token:
         type: string
 
 x-auth-responses: &AUTHRESPONSES
@@ -2616,3 +2645,39 @@ paths:
           description: Generic Error
           schema:
             $ref: "#/definitions/error_response"
+  /auth/oidc:
+    post:
+      operationId: "auth_oidc"
+      tags: # TAGLINE
+      security:
+        # required admin privs
+        - Bearer: []
+      parameters:
+        - name: oidc_params
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/auth_oidc"
+      responses:
+        200:
+          description: Found
+          schema:
+            $ref: "#/definitions/auth_oidc_result"
+        201:
+          description: Created
+          schema:
+            $ref: "#/definitions/auth_oidc_result"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/error_response"
+        409:
+          description: Conflict
+          schema:
+            $ref: "#/definitions/error_response"
+        500:
+          description: Generic Error
+          schema:
+            $ref: "#/definitions/error_response"
+        <<: *AUTHRESPONSES
+

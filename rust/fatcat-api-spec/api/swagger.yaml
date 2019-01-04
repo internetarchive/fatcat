@@ -6481,6 +6481,97 @@ paths:
       path: "/changelog/:index"
       HttpMethod: "Get"
       httpmethod: "get"
+  /auth/oidc:
+    post:
+      operationId: "auth_oidc"
+      parameters:
+      - in: "body"
+        name: "oidc_params"
+        required: true
+        schema:
+          $ref: "#/definitions/auth_oidc"
+        uppercase_data_type: "AUTHOIDC"
+        refName: "auth_oidc"
+        formatString: "{:?}"
+        example: "???"
+        model_key: "editgroup_edits"
+        uppercase_operation_id: "AUTH_OIDC"
+        consumesJson: true
+      responses:
+        200:
+          description: "Found"
+          schema:
+            $ref: "#/definitions/auth_oidc_result"
+          x-responseId: "Found"
+          x-uppercaseResponseId: "FOUND"
+          uppercase_operation_id: "AUTH_OIDC"
+          uppercase_data_type: "AUTHOIDCRESULT"
+          producesJson: true
+        201:
+          description: "Created"
+          schema:
+            $ref: "#/definitions/auth_oidc_result"
+          x-responseId: "Created"
+          x-uppercaseResponseId: "CREATED"
+          uppercase_operation_id: "AUTH_OIDC"
+          uppercase_data_type: "AUTHOIDCRESULT"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "AUTH_OIDC"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "AUTH_OIDC"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        403:
+          description: "Forbidden"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "Forbidden"
+          x-uppercaseResponseId: "FORBIDDEN"
+          uppercase_operation_id: "AUTH_OIDC"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        409:
+          description: "Conflict"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "Conflict"
+          x-uppercaseResponseId: "CONFLICT"
+          uppercase_operation_id: "AUTH_OIDC"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "AUTH_OIDC"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      security:
+      - Bearer: []
+      operation_id: "auth_oidc"
+      uppercase_operation_id: "AUTH_OIDC"
+      path: "/auth/oidc"
+      HttpMethod: "Post"
+      httpmethod: "post"
+      noClientExample: true
 securityDefinitions:
   Bearer:
     type: "apiKey"
@@ -7642,8 +7733,17 @@ definitions:
       username:
         type: "string"
         example: "zerocool93"
+      is_admin:
+        type: "boolean"
+      is_bot:
+        type: "boolean"
+      is_active:
+        type: "boolean"
     example:
+      is_admin: true
+      is_active: true
       editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+      is_bot: true
       username: "zerocool93"
     upperCaseName: "EDITOR"
   editgroup:
@@ -7988,6 +8088,39 @@ definitions:
       creator_id: "creator_id"
       index: 1
     upperCaseName: "RELEASE_CONTRIB"
+  auth_oidc:
+    type: "object"
+    required:
+    - "iss"
+    - "provider"
+    - "sub"
+    properties:
+      provider:
+        type: "string"
+      sub:
+        type: "string"
+      iss:
+        type: "string"
+    upperCaseName: "AUTH_OIDC"
+  auth_oidc_result:
+    type: "object"
+    required:
+    - "editor"
+    - "token"
+    properties:
+      editor:
+        $ref: "#/definitions/editor"
+      token:
+        type: "string"
+    example:
+      editor:
+        is_admin: true
+        is_active: true
+        editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        is_bot: true
+        username: "zerocool93"
+      token: "token"
+    upperCaseName: "AUTH_OIDC_RESULT"
   file_entity_urls:
     required:
     - "rel"

@@ -452,6 +452,34 @@ pub mod responses {
     lazy_static! {
         pub static ref UPDATE_CREATOR_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
+    /// Create Mime objects for the response content types for AuthOidc
+    lazy_static! {
+        pub static ref AUTH_OIDC_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthOidc
+    lazy_static! {
+        pub static ref AUTH_OIDC_CREATED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthOidc
+    lazy_static! {
+        pub static ref AUTH_OIDC_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthOidc
+    lazy_static! {
+        pub static ref AUTH_OIDC_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthOidc
+    lazy_static! {
+        pub static ref AUTH_OIDC_FORBIDDEN: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthOidc
+    lazy_static! {
+        pub static ref AUTH_OIDC_CONFLICT: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthOidc
+    lazy_static! {
+        pub static ref AUTH_OIDC_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
     /// Create Mime objects for the response content types for GetEditor
     lazy_static! {
         pub static ref GET_EDITOR_FOUND: Mime = mime!(Application / Json);
@@ -1692,6 +1720,10 @@ pub mod requests {
     /// Create Mime objects for the request content types for UpdateCreator
     lazy_static! {
         pub static ref UPDATE_CREATOR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the request content types for AuthOidc
+    lazy_static! {
+        pub static ref AUTH_OIDC: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the request content types for CreateEditgroup
     lazy_static! {
