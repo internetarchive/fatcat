@@ -19,6 +19,7 @@ CREATE TABLE editor (
     username            TEXT NOT NULL UNIQUE, -- TODO: alphanum and length constraints?
     is_admin            BOOLEAN NOT NULL DEFAULT false,
     is_bot              BOOLEAN NOT NULL DEFAULT false,
+    is_active           BOOLEAN NOT NULL DEFAULT true,
     registered          TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
     auth_epoch          TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
     wrangler_id         UUID REFERENCES editor(id),
@@ -27,6 +28,17 @@ CREATE TABLE editor (
 
 CREATE INDEX active_editgroup_idx ON editor(active_editgroup_id);
 CREATE INDEX editor_username_idx ON editor(username);
+
+CREATE TABLE auth_oidc (
+    id                  BIGSERIAL PRIMARY KEY,
+    created             TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
+    editor_id           UUID REFERENCES editor(id) NOT NULL,
+    provider            TEXT NOT NULL,
+    oidc_iss            TEXT NOT NULL,
+    oidc_sub            TEXT NOT NULL,
+    UNIQUE (editor_id, provider),
+    UNIQUE (oidc_iss, oidc_sub)
+);
 
 CREATE TABLE editgroup (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
