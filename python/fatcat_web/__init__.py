@@ -6,8 +6,9 @@ from flask_login import LoginManager
 from authlib.flask.client import OAuth
 from loginpass import create_flask_blueprint, Gitlab
 from raven.contrib.flask import Sentry
-from web_config import Config
 import fatcat_client
+
+from fatcat_web.web_config import Config
 
 toolbar = DebugToolbarExtension()
 app = Flask(__name__)

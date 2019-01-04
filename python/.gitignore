@@ -1,3 +1,4 @@
+.env
 codegen-out/
 build/
 dist/
