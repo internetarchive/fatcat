@@ -96,3 +96,88 @@ Caveats:
 - can (and should?) add as many caveat checkers/constrants in code as possible
 
 http://evancordell.com/2015/09/27/macaroons-101-contextual-confinement.html
+
+-------
+
+## Schema/API Notes
+
+GET /auth/oidc
+=> params: provider, sub, iss
+=> returns {editor, token} or not found
+=> admin auth required
+
+POST /auth/oidc
+=> params: editor_id, provider, sub, iss
+=> returns {editor, token}
+=> admin auth required
+
+POST /editor
+=> admin auth required
+
+flow is to have single login/signup OIDC flow. If need to create an account,
+bounce to special page for that and store ISS/SUB in (signed/secure) session
+temporarily.
+
+This doesn't feel great. Could instead randomly generate a username, and
+provide mechanism to update. That's better!
+
+PUT /editor/{editor_id}
+=> only allow username updates, and only by admin or logged-in user
+
+schema:
+`auth_oidc`
+    => id (BIGINT), editor_id, provider, oidc_iss, oidc_sub
+    => created (auto-timestamp)
+    => UNIQ index on (editor_id, provider)
+    => UNIQ index on (provider, remote_sub, remote_iss)
+    => all are NOT NULL
+
+## Webface Notes
+
+Want to use "OpenID Connect" (OIDC), which is basically a subset/convention of
+OAuth 2.0 for authenticaiton ("log in as"), without granting API priviliges.
+
+Want to support multiple identity providers, eg:
+- orcid.org
+    => Basic OpenID Provider; implicit token
+- git.archive.org
+- gitlab.org
+    => https://docs.gitlab.com/ee/integration/openid_connect_provider.html
+- google.com
+
+Currently, looks like github.com doesn't support OIDC; they are the only
+provider i'm interested in that does not.
+
+authlib/loginpass are tempting to use as they support a bunch of providers
+out-of-the-box... but not orcid.
+
+Alternatively, could use any number of "proxies"/thingies to aggregate auth:
+- https://www.keycloak.org/about.html
+- https://portier.github.io/
+- https://github.com/dexidp/dex
+
+Possible flask integrations:
+=> https://flask-oidc.readthedocs.io/en/latest/
+=> https://github.com/zamzterz/Flask-pyoidc
+
+Background:
+=> https://blog.runscope.com/posts/understanding-oauth-2-and-openid-connect
+=> https://latacora.micro.blog/2018/06/12/a-childs-garden.html
+
+Future work:
+=> multiple logins, and/or merging accounts
+
+
+"Fatcat is an open, editable database of bibliographic metadata. You can
+sign-up and login using orcid.org; this option is used for identity and
+authentication only. Fatcat does not currently make changes to any data on
+orcid.org, which you can verify from the permissions requested."
+
+    https://fatcat.wiki/auth/oidc_redirect
+    https://qa.fatcat.wiki/auth/oidc_redirect
+
+PLAN:
+- have a mode/mechanism for login-by-token; mostly for testing
+- for now, use loginpass OAuth/OIDC for login/signup. upstream ORCID support or
+  hack that in somehow when desired
+- auto-create a username based on oauth, then allow changes
