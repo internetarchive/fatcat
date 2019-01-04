@@ -16,7 +16,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE editor (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    username            TEXT NOT NULL UNIQUE, -- TODO: alphanum and length constraints?
+    username            TEXT NOT NULL CHECK (username ~* '^[A-Za-z0-9][A-Za-z0-9._-]{2,15}$'), -- UNIQ below
     is_admin            BOOLEAN NOT NULL DEFAULT false,
     is_bot              BOOLEAN NOT NULL DEFAULT false,
     is_active           BOOLEAN NOT NULL DEFAULT true,
@@ -26,6 +26,8 @@ CREATE TABLE editor (
     active_editgroup_id UUID -- REFERENCES( editgroup(id) via ALTER below
 );
 
+-- case-insensitive UNIQ index on username
+CREATE UNIQUE INDEX editor_username_uniq_idx on editor(lower(username));
 CREATE INDEX active_editgroup_idx ON editor(active_editgroup_id);
 CREATE INDEX editor_username_idx ON editor(username);
 
