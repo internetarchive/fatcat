@@ -22,6 +22,8 @@ from fatcat_client.api.default_api import DefaultApi
 from fatcat_client.api_client import ApiClient
 from fatcat_client.configuration import Configuration
 # import models into sdk package
+from fatcat_client.models.auth_oidc import AuthOidc
+from fatcat_client.models.auth_oidc_result import AuthOidcResult
 from fatcat_client.models.changelog_entry import ChangelogEntry
 from fatcat_client.models.container_entity import ContainerEntity
 from fatcat_client.models.creator_entity import CreatorEntity
