@@ -28,6 +28,7 @@ def handle_token_login(token):
         abort(400)
     # fetch editor info
     editor = api.get_editor(editor_id)
+    session.permanent = True
     session['api_token'] = token
     session['editor'] = editor.to_dict()
     login_user(load_user(editor.editor_id))
@@ -64,6 +65,7 @@ def handle_oauth(remote, token, user_info):
             flash("Welcome back!")
 
         # write token and username to session
+        session.permanent = True
         session['api_token'] = api_token
         session['editor'] = editor.to_dict()
 

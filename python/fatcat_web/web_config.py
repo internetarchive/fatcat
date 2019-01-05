@@ -34,6 +34,12 @@ class Config(object):
     GITLAB_CLIENT_ID = os.environ.get("GITLAB_CLIENT_ID", default="bogus")
     GITLAB_CLIENT_SECRET = os.environ.get("GITLAB_CLIENT_SECRET", default="bogus")
 
+    # protect cookies (which include API tokens)
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SECURE = True
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    PERMANENT_SESSION_LIFETIME = 2678400 # 31 days, in seconds
+
     try:
         GIT_RELEASE = raven.fetch_git_sha('..')
     except Exception as e:
