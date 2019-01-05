@@ -577,6 +577,7 @@ impl EditgroupRow {
 pub struct EditorRow {
     pub id: Uuid,
     pub username: String,
+    pub is_superuser: bool,
     pub is_admin: bool,
     pub is_bot: bool,
     pub is_active: bool,

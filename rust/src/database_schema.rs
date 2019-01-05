@@ -107,6 +107,7 @@ table! {
     editor (id) {
         id -> Uuid,
         username -> Text,
+        is_superuser -> Bool,
         is_admin -> Bool,
         is_bot -> Bool,
         is_active -> Bool,

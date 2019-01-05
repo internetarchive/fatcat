@@ -17,6 +17,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE editor (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     username            TEXT NOT NULL CHECK (username ~* '^[A-Za-z0-9][A-Za-z0-9._-]{2,15}$'), -- UNIQ below
+    is_superuser        BOOLEAN NOT NULL DEFAULT false,
     is_admin            BOOLEAN NOT NULL DEFAULT false,
     is_bot              BOOLEAN NOT NULL DEFAULT false,
     is_active           BOOLEAN NOT NULL DEFAULT true,
@@ -470,10 +471,13 @@ CREATE INDEX webcapture_rev_release_target_release_idx ON webcapture_rev_release
 
 BEGIN;
 
-INSERT INTO editor (id, username, is_admin, auth_epoch) VALUES
-    ('00000000-0000-0000-AAAA-000000000001', 'admin', true, '1970-01-01T01:01:01Z'),        -- aaaaaaaaaaaabkvkaaaaaaaaae
-    ('00000000-0000-0000-AAAA-000000000002', 'demo-user', true, '1970-01-01T01:01:01Z'),    -- aaaaaaaaaaaabkvkaaaaaaaaai
-    ('00000000-0000-0000-AAAA-000000000003', 'claire', false, default);                     -- aaaaaaaaaaaabkvkaaaaaaaaam
+INSERT INTO editor (id, username, is_superuser, is_admin, is_bot, auth_epoch) VALUES
+    ('00000000-0000-0000-AAAA-000000000001', 'root', true, true, false, '1970-01-01T01:01:01Z'),          -- aaaaaaaaaaaabkvkaaaaaaaaae
+    ('00000000-0000-0000-AAAA-000000000002', 'admin', true, true, false, '1970-01-01T01:01:01Z'),         -- aaaaaaaaaaaabkvkaaaaaaaaai
+    ('00000000-0000-0000-AAAA-000000000003', 'demo-user', false, true, false, '1970-01-01T01:01:01Z'),    -- aaaaaaaaaaaabkvkaaaaaaaaam
+    ('00000000-0000-0000-AAAA-000000000004', 'claire', false, false, false, default),                     -- aaaaaaaaaaaabkvkaaaaaaaaaq
+    ('00000000-0000-0000-AAAA-000000000005', 'webface-bot', true, true, true, '1970-01-01T01:01:01Z'),    -- aaaaaaaaaaaabkvkaaaaaaaaau
+    ('00000000-0000-0000-AAAA-000000000006', 'bnewbold', false, true, false, '1970-01-01T01:01:01Z');     -- aaaaaaaaaaaabkvkaaaaaaaaay
 
 INSERT INTO editgroup (id, editor_id, description) VALUES
     ('00000000-0000-0000-BBBB-000000000001', '00000000-0000-0000-AAAA-000000000001', 'first edit ever!'),       -- aaaaaaaaaaaabo53aaaaaaaaae
@@ -482,9 +486,6 @@ INSERT INTO editgroup (id, editor_id, description) VALUES
     ('00000000-0000-0000-BBBB-000000000004', '00000000-0000-0000-AAAA-000000000002', 'uncommited edit'),        -- aaaaaaaaaaaabo53aaaaaaaaaq
     ('00000000-0000-0000-BBBB-000000000005', '00000000-0000-0000-AAAA-000000000001', 'journal edit'),           -- aaaaaaaaaaaabo53aaaaaaaaau
     ('00000000-0000-0000-BBBB-000000000006', '00000000-0000-0000-AAAA-000000000001', 'another journal edit');   -- aaaaaaaaaaaabo53aaaaaaaaay
-
-INSERT INTO editor (id, username, is_admin, active_editgroup_id) VALUES
-    ('00000000-0000-0000-AAAA-000000000004', 'bnewbold', true, '00000000-0000-0000-BBBB-000000000004');
 
 INSERT INTO changelog (editgroup_id) VALUES
     ('00000000-0000-0000-BBBB-000000000001'),

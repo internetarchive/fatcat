@@ -35,13 +35,13 @@ fn test_auth_db() {
     let token = c.create_token(editor_id, None).unwrap();
 
     // verify token
-    let editor_row = c.parse_macaroon_token(&conn, &token).unwrap();
+    let editor_row = c.parse_macaroon_token(&conn, &token, None).unwrap();
     assert_eq!(editor_row.id, editor_id.to_uuid());
 
     // revoke token
     revoke_tokens(&conn, editor_id).unwrap();
 
     // verification should fail
-    // XXX: one-second slop breads this
-    //assert!(c.parse_macaroon_token(&conn, &token).is_err());
+    // XXX: one-second slop breaks this
+    //assert!(c.parse_macaroon_token(&conn, &token, None).is_err());
 }

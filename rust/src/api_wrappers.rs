@@ -85,7 +85,7 @@ macro_rules! wrap_entity_handlers {
         ) -> Box<Future<Item = $post_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             let ret = match conn.transaction(|| {
-                let auth_context = self.auth_confectionary.require_auth(&conn, &context.auth_data)?;
+                let auth_context = self.auth_confectionary.require_auth(&conn, &context.auth_data, Some(stringify!($post_fn)))?;
                 auth_context.require_role(FatcatRole::Editor)?;
                 let editgroup_id = if let Some(s) = editgroup_id {
                     let eg_id = FatCatId::from_str(&s)?;
@@ -137,7 +137,7 @@ macro_rules! wrap_entity_handlers {
         ) -> Box<Future<Item = $post_batch_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             let ret = match conn.transaction(|| {
-                let auth_context = self.auth_confectionary.require_auth(&conn, &context.auth_data)?;
+                let auth_context = self.auth_confectionary.require_auth(&conn, &context.auth_data, Some(stringify!($post_batch_fn)))?;
                 auth_context.require_role(FatcatRole::Editor)?;
                 let editgroup_id = if let Some(s) = editgroup_id {
                     let eg_id = FatCatId::from_str(&s)?;
@@ -187,7 +187,7 @@ macro_rules! wrap_entity_handlers {
         ) -> Box<Future<Item = $update_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             let ret = match conn.transaction(|| {
-                let auth_context = self.auth_confectionary.require_auth(&conn, &context.auth_data)?;
+                let auth_context = self.auth_confectionary.require_auth(&conn, &context.auth_data, Some(stringify!($update_fn)))?;
                 auth_context.require_role(FatcatRole::Editor)?;
                 let entity_id = FatCatId::from_str(&ident)?;
                 let editgroup_id = if let Some(s) = editgroup_id {
@@ -243,7 +243,7 @@ macro_rules! wrap_entity_handlers {
         ) -> Box<Future<Item = $delete_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             let ret = match conn.transaction(|| {
-                let auth_context = self.auth_confectionary.require_auth(&conn, &context.auth_data)?;
+                let auth_context = self.auth_confectionary.require_auth(&conn, &context.auth_data, Some(stringify!($delete_fn)))?;
                 auth_context.require_role(FatcatRole::Editor)?;
                 let entity_id = FatCatId::from_str(&ident)?;
                 let editgroup_id: Option<FatCatId> = match editgroup_id {
@@ -397,7 +397,7 @@ macro_rules! wrap_entity_handlers {
             let conn = self.db_pool.get().expect("db_pool error");
             let ret = match conn.transaction(|| {
                 let edit_id = Uuid::from_str(&edit_id)?;
-                let auth_context = self.auth_confectionary.require_auth(&conn, &context.auth_data)?;
+                let auth_context = self.auth_confectionary.require_auth(&conn, &context.auth_data, Some(stringify!($delete_edit_fn)))?;
                 auth_context.require_role(FatcatRole::Editor)?;
                 let edit = $model::db_get_edit(&conn, edit_id)?;
                 auth_context.require_editgroup(&conn, FatCatId::from_uuid(&edit.editgroup_id))?;
@@ -920,7 +920,7 @@ impl Api for Server {
             }
             let auth_context = self
                 .auth_confectionary
-                .require_auth(&conn, &context.auth_data)?;
+                .require_auth(&conn, &context.auth_data, Some("update_editor"))?;
             let editor_id = FatCatId::from_str(&editor_id)?;
             // DANGER! these permissions are for username updates only!
             if editor_id == auth_context.editor_id {
@@ -988,7 +988,7 @@ impl Api for Server {
             let editgroup_id = FatCatId::from_str(&editgroup_id)?;
             let auth_context = self
                 .auth_confectionary
-                .require_auth(&conn, &context.auth_data)?;
+                .require_auth(&conn, &context.auth_data, Some("accept_editgroup"))?;
             auth_context.require_role(FatcatRole::Admin)?;
             // NOTE: this is currently redundant, but zero-cost
             auth_context.require_editgroup(&conn, editgroup_id)?;
@@ -1060,7 +1060,7 @@ impl Api for Server {
         let ret = match conn.transaction(|| {
             let auth_context = self
                 .auth_confectionary
-                .require_auth(&conn, &context.auth_data)?;
+                .require_auth(&conn, &context.auth_data, Some("create_editgroup"))?;
             auth_context.require_role(FatcatRole::Editor)?;
             let mut entity = entity.clone();
             match entity.editor_id.clone() {
@@ -1151,8 +1151,8 @@ impl Api for Server {
         let ret = match conn.transaction(|| {
             let auth_context = self
                 .auth_confectionary
-                .require_auth(&conn, &context.auth_data)?;
-            auth_context.require_role(FatcatRole::Admin)?;
+                .require_auth(&conn, &context.auth_data, Some("auth_oidc"))?;
+            auth_context.require_role(FatcatRole::Superuser)?;
             let (editor, created) = self.auth_oidc_handler(params, &conn)?;
             // create an auth token; leave it to webface to attenuate to a given duration
             let token = self.auth_confectionary.create_token(

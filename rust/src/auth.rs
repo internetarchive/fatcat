@@ -18,13 +18,14 @@ use std::str::FromStr;
 // 32 bytes max (!)
 static DUMMY_KEY: &[u8] = b"dummy-key-a-one-two-three-a-la";
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum FatcatRole {
     Public,
     Editor,
     Bot,
     Human,
     Admin,
+    Superuser,
 }
 
 #[derive(Clone)]
@@ -35,6 +36,10 @@ pub struct AuthContext {
 
 impl AuthContext {
     pub fn has_role(&self, role: FatcatRole) -> bool {
+        if !self.editor_row.is_active {
+            // if account is disabled, only allow public role
+            return role == FatcatRole::Public;
+        }
         if self.editor_row.is_admin {
             return true;
         }
@@ -44,15 +49,15 @@ impl AuthContext {
             FatcatRole::Bot => self.editor_row.is_bot,
             FatcatRole::Human => !self.editor_row.is_bot,
             FatcatRole::Admin => self.editor_row.is_admin,
+            FatcatRole::Superuser => self.editor_row.is_superuser,
         }
     }
 
     pub fn require_role(&self, role: FatcatRole) -> Result<()> {
         match self.has_role(role) {
             true => Ok(()),
-            // TODO: better message
             false => Err(ErrorKind::InsufficientPrivileges(
-                "doesn't have required role".to_string(),
+                format!("doesn't have required role: {:?}", role),
             )
             .into()),
         }
@@ -225,8 +230,7 @@ impl AuthConfectionary {
         Ok(BASE64.encode(&raw))
     }
 
-    /// On success, returns Some((editor_id, scopes)), where `scopes` is a vector of strings.
-    pub fn parse_macaroon_token(&self, conn: &DbConn, s: &str) -> Result<EditorRow> {
+    pub fn parse_macaroon_token(&self, conn: &DbConn, s: &str, endpoint: Option<&str>) -> Result<EditorRow> {
         let raw = BASE64.decode(s.as_bytes())?;
         let mac = match Macaroon::deserialize(&raw) {
             Ok(m) => m,
@@ -258,6 +262,10 @@ impl AuthConfectionary {
         }
         let editor_id = editor_id.expect("expected an editor_id caveat");
         verifier.satisfy_exact(&format!("editor_id = {}", editor_id.to_string()));
+        if let Some(endpoint) = endpoint {
+            // API endpoint
+            verifier.satisfy_exact(&format!("endpoint = {}", endpoint));
+        }
         let mut created: Option<DateTime<Utc>> = None;
         for caveat in mac.first_party_caveats() {
             if caveat.predicate().starts_with("created = ") {
@@ -329,6 +337,7 @@ impl AuthConfectionary {
         &self,
         conn: &DbConn,
         auth_data: &Option<AuthData>,
+        endpoint: Option<&str>,
     ) -> Result<Option<AuthContext>> {
         let token: Option<String> = match auth_data {
             Some(AuthData::ApiKey(header)) => {
@@ -355,15 +364,15 @@ impl AuthConfectionary {
             Some(t) => t,
             None => return Ok(None),
         };
-        let editor_row = self.parse_macaroon_token(conn, &token)?;
+        let editor_row = self.parse_macaroon_token(conn, &token, endpoint)?;
         Ok(Some(AuthContext {
             editor_id: FatCatId::from_uuid(&editor_row.id),
             editor_row: editor_row,
         }))
     }
 
-    pub fn require_auth(&self, conn: &DbConn, auth_data: &Option<AuthData>) -> Result<AuthContext> {
-        match self.parse_swagger(conn, auth_data)? {
+    pub fn require_auth(&self, conn: &DbConn, auth_data: &Option<AuthData>, endpoint: Option<&str>) -> Result<AuthContext> {
+        match self.parse_swagger(conn, auth_data, endpoint)? {
             Some(auth) => Ok(auth),
             None => Err(ErrorKind::InvalidCredentials("no token supplied".to_string()).into()),
         }
@@ -384,7 +393,7 @@ impl AuthConfectionary {
         for caveat in mac.first_party_caveats() {
             println!("caveat: {}", caveat.predicate());
         }
-        println!("verify: {:?}", self.parse_macaroon_token(conn, token));
+        println!("verify: {:?}", self.parse_macaroon_token(conn, token, None));
         Ok(())
     }
 }
@@ -416,11 +425,12 @@ pub fn revoke_tokens_everyone(conn: &DbConn) -> Result<()> {
 pub fn print_editors(conn: &DbConn) -> Result<()> {
     // iterate over all editors. format id, print flags, auth_epoch
     let all_editors: Vec<EditorRow> = editor::table.load(conn)?;
-    println!("editor_id\t\t\tis_admin/is_bot\tauth_epoch\t\t\tusername\twrangler_id");
+    println!("editor_id\t\t\tsuper/admin/bot\tauth_epoch\t\t\tusername\twrangler_id");
     for e in all_editors {
         println!(
-            "{}\t{}\t{}\t{}\t{}\t{:?}",
+            "{}\t{}/{}/{}\t{}\t{}\t{:?}",
             FatCatId::from_uuid(&e.id).to_string(),
+            e.is_superuser,
             e.is_admin,
             e.is_bot,
             e.auth_epoch,
