@@ -15,11 +15,9 @@ from fatcat_client.rest import ApiException
 from fatcat_client import ReleaseEntity
 from fatcat_tools import uuid2fcid, entity_from_json, release_to_elasticsearch
 
-def run_export_releases(args):
-    conf = fatcat_client.Configuration()
-    conf.host = args.host_url
-    api = fatcat_client.DefaultApi(fatcat_client.ApiClient(conf))
 
+def run_export_releases(args):
+    api = args.api
     for line in args.ident_file:
         ident = uuid2fcid(line.split()[0])
         release = api.get_release(id=ident, expand="all")
@@ -35,10 +33,7 @@ def run_transform_releases(args):
             json.dumps(release_to_elasticsearch(release)) + '\n')
 
 def run_export_changelog(args):
-    conf = fatcat_client.Configuration()
-    conf.host = args.host_url
-    api = fatcat_client.DefaultApi(fatcat_client.ApiClient(conf))
-
+    api = args.api
     end = args.end
     if end is None:
         latest = api.get_changelog(limit=1)[0]
@@ -92,6 +87,8 @@ def main():
     if not args.__dict__.get("func"):
         print("tell me what to do!")
         sys.exit(-1)
+
+    args.api = public_api(args.host_url)
     args.func(args)
 
 if __name__ == '__main__':

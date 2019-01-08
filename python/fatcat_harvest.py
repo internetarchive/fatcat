@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
 
 import sys
+import raven
 import argparse
 import datetime
 from fatcat_tools.harvest import HarvestCrossrefWorker, HarvestDataciteWorker,\
     HarvestArxivWorker, HarvestPubmedWorker, HarvestDoajArticleWorker,\
     HarvestDoajJournalWorker
+
+# Yep, a global. Gets DSN from `SENTRY_DSN` environment variable
+sentry_client = raven.Client()
+
 
 def run_crossref(args):
     worker = HarvestCrossrefWorker(

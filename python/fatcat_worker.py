@@ -1,21 +1,26 @@
 #!/usr/bin/env python3
 
 import sys
+import raven
 import argparse
 import datetime
+from fatcat_tools import public_api
 from fatcat_tools.workers import ChangelogWorker, EntityUpdatesWorker, ElasticsearchReleaseWorker
+
+# Yep, a global. Gets DSN from `SENTRY_DSN` environment variable
+sentry_client = raven.Client()
 
 
 def run_changelog(args):
     topic = "fatcat-{}.changelog".format(args.env)
-    worker = ChangelogWorker(args.api_host_url, args.kafka_hosts, topic,
+    worker = ChangelogWorker(args.api, args.kafka_hosts, topic,
         args.poll_interval)
     worker.run()
 
 def run_entity_updates(args):
     changelog_topic = "fatcat-{}.changelog".format(args.env)
     release_topic = "fatcat-{}.release-updates".format(args.env)
-    worker = EntityUpdatesWorker(args.api_host_url, args.kafka_hosts,
+    worker = EntityUpdatesWorker(args.api, args.kafka_hosts,
         changelog_topic, release_topic)
     worker.run()
 
@@ -64,6 +69,8 @@ def main():
     if not args.__dict__.get("func"):
         print("tell me what to do!")
         sys.exit(-1)
+
+    args.api = public_api(args.api_host_url)
     args.func(args)
 
 if __name__ == '__main__':
