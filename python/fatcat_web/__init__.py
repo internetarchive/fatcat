@@ -18,6 +18,7 @@ FlaskUUID(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
+login_manager.login_view = "/auth/login"
 oauth = OAuth(app)
 
 # Grabs sentry config from SENTRY_DSN environment variable
