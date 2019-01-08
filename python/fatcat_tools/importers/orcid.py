@@ -22,6 +22,16 @@ def value_or_none(e):
 
 class OrcidImporter(FatcatImporter):
 
+    def __init__(self, api, **kwargs):
+
+        eg_desc = kwargs.get('editgroup_description',
+            "Automated import of ORCID metadata, from official bulk releases.")
+        eg_extra = kwargs.get('editgroup_extra', dict())
+        eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.OrcidImporter')
+        super().__init__(api,
+            editgroup_description=eg_desc,
+            editgroup_extra=eg_extra)
+
     def parse_orcid_dict(self, obj):
         """
         obj is a python dict (parsed from json).

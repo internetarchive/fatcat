@@ -46,7 +46,7 @@ class CrossrefImporter(FatcatImporter):
         eg_desc = kwargs.get('editgroup_description',
             "Automated import of Crossref DOI metadata, harvested from REST API")
         eg_extra = kwargs.get('editgroup_extra', dict())
-        eg_extra['agent'] = eg_extra.get('agent', 'CrossrefImporter')
+        eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.CrossrefImporter')
         super().__init__(api,
             issn_map_file=issn_map_file,
             editgroup_description=eg_desc,

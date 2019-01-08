@@ -37,12 +37,18 @@ class MatchedImporter(FatcatImporter):
     - core_id, wikidata_id, pmcid, pmid: not as lists
     """
 
-    def __init__(self, host_url, skip_file_updates=False, default_mime=None,
-            default_link_rel="web"):
-        super().__init__(host_url)
-        self.default_mime = default_mime
-        self.default_link_rel = default_link_rel
-        self.skip_file_updates = skip_file_updates
+    def __init__(self, api, **kwargs):
+
+        eg_desc = kwargs.get('editgroup_description',
+            "Import of large-scale file-to-release match results. Source of metadata varies.")
+        eg_extra = kwargs.get('editgroup_extra', dict())
+        eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.MatchedImporter')
+        super().__init__(api,
+            editgroup_description=eg_desc,
+            editgroup_extra=eg_extra)
+        self.default_link_rel = kwargs.get("default_link_rel", "web")
+        self.default_mime = kwargs.get("default_mime", None)
+        self.skip_file_updates = kwargs.get("skip_file_updates", False)
 
     def make_url(self, raw):
         rel = self.default_link_rel

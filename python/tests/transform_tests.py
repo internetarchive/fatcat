@@ -3,6 +3,7 @@ import json
 import pytest
 from fatcat_tools import *
 from fatcat_client import *
+from fixtures import api
 
 from import_crossref import crossref_importer
 

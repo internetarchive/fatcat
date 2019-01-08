@@ -28,7 +28,7 @@ def test_crossref_importer(crossref_importer):
     assert eg.description
     assert "crossref" in eg.description.lower()
     assert eg.extra['git_rev']
-    assert "CrossrefImporter" in eg.extra['agent']
+    assert "fatcat_tools.CrossrefImporter" in eg.extra['agent']
 
 def test_crossref_mappings(crossref_importer):
     assert crossref_importer.map_release_type('journal-article') == "article-journal"

@@ -12,9 +12,16 @@ MAX_ABSTRACT_BYTES=4096
 
 class GrobidMetadataImporter(FatcatImporter):
 
-    def __init__(self, host_url, default_link_rel="web"):
-        super().__init__(host_url)
-        self.default_link_rel = default_link_rel
+    def __init__(self, api, **kwargs):
+
+        eg_desc = kwargs.get('editgroup_description',
+            "Import of release and file metadata, as extracted from PDFs by GROBID.")
+        eg_extra = kwargs.get('editgroup_extra', dict())
+        eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.GrobidMetadataImporter')
+        super().__init__(api,
+            editgroup_description=eg_desc,
+            editgroup_extra=eg_extra)
+        self.default_link_rel = kwargs.get("default_link_rel", "web")
 
     def parse_grobid_json(self, obj):
 

@@ -43,6 +43,7 @@ class FatcatImporter:
         eg_extra = kwargs.get('editgroup_extra', dict())
         eg_extra['git_rev'] = eg_extra.get('git_rev',
             subprocess.check_output(["git", "describe", "--always"]).strip()).decode('utf-8')
+        eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.FatcatImporter')
         
         self.api = api
         self._editgroup_description = kwargs.get('editgroup_description')

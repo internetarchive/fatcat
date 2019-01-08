@@ -2,11 +2,12 @@
 import json
 import pytest
 from fatcat_tools.importers import MatchedImporter
+from fixtures import api
 
 
 @pytest.fixture(scope="function")
-def matched_importer():
-    yield MatchedImporter("http://localhost:9411/v0")
+def matched_importer(api):
+    yield MatchedImporter(api)
 
 # TODO: use API to check that entities actually created...
 def test_matched_importer_batch(matched_importer):
@@ -16,6 +17,14 @@ def test_matched_importer_batch(matched_importer):
 def test_matched_importer(matched_importer):
     with open('tests/files/example_matched.json', 'r') as f:
         matched_importer.process_source(f)
+
+    # fetch most recent editgroup
+    changes = matched_importer.api.get_changelog(limit=1)
+    eg = changes[0].editgroup
+    assert eg.description
+    assert "file-to-release" in eg.description.lower()
+    assert eg.extra['git_rev']
+    assert "fatcat_tools.MatchedImporter" in eg.extra['agent']
 
 def test_matched_dict_parse(matched_importer):
     with open('tests/files/example_matched.json', 'r') as f:
