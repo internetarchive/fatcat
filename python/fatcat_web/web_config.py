@@ -16,7 +16,7 @@ import subprocess
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config(object):
-    GIT_REVISION = subprocess.check_output(["git", "describe", "--always"]).strip()
+    GIT_REVISION = subprocess.check_output(["git", "describe", "--always"]).strip().decode('utf-8')
 
     # This is, effectively, the QA/PROD flag
     FATCAT_DOMAIN = os.environ.get("FATCAT_DOMAIN", default="qa.fatcat.wiki")
