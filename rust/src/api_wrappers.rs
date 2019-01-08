@@ -1161,10 +1161,10 @@ impl Api for Server {
             )?;
             auth_context.require_role(FatcatRole::Superuser)?;
             let (editor, created) = self.auth_oidc_handler(params, &conn)?;
-            // create an auth token; leave it to webface to attenuate to a given duration
+            // create an auth token with 31 day duration
             let token = self.auth_confectionary.create_token(
                 FatCatId::from_str(&editor.editor_id.clone().unwrap())?,
-                None,
+                Some(chrono::Duration::days(31)),
             )?;
             let result = AuthOidcResult { editor, token };
             Ok((result, created))
