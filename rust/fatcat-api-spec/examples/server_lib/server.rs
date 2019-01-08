@@ -11,7 +11,7 @@ use swagger;
 
 use fatcat::models;
 use fatcat::{
-    AcceptEditgroupResponse, Api, ApiError, AuthOidcResponse, Context, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse,
+    AcceptEditgroupResponse, Api, ApiError, AuthCheckResponse, AuthOidcResponse, Context, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse,
     CreateEditgroupResponse, CreateFileBatchResponse, CreateFileResponse, CreateFilesetBatchResponse, CreateFilesetResponse, CreateReleaseBatchResponse, CreateReleaseResponse,
     CreateWebcaptureBatchResponse, CreateWebcaptureResponse, CreateWorkBatchResponse, CreateWorkResponse, DeleteContainerEditResponse, DeleteContainerResponse, DeleteCreatorEditResponse,
     DeleteCreatorResponse, DeleteFileEditResponse, DeleteFileResponse, DeleteFilesetEditResponse, DeleteFilesetResponse, DeleteReleaseEditResponse, DeleteReleaseResponse,
@@ -294,6 +294,12 @@ impl Api for Server {
             editgroup_id,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
         );
+        Box::new(futures::failed("Generic failure".into()))
+    }
+
+    fn auth_check(&self, role: Option<String>, context: &Context) -> Box<Future<Item = AuthCheckResponse, Error = ApiError> + Send> {
+        let context = context.clone();
+        println!("auth_check({:?}) - X-Span-ID: {:?}", role, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))
     }
 

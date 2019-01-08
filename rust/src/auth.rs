@@ -56,9 +56,10 @@ impl AuthContext {
     pub fn require_role(&self, role: FatcatRole) -> Result<()> {
         match self.has_role(role) {
             true => Ok(()),
-            false => Err(ErrorKind::InsufficientPrivileges(
-                format!("doesn't have required role: {:?}", role),
-            )
+            false => Err(ErrorKind::InsufficientPrivileges(format!(
+                "doesn't have required role: {:?}",
+                role
+            ))
             .into()),
         }
     }
@@ -230,7 +231,12 @@ impl AuthConfectionary {
         Ok(BASE64.encode(&raw))
     }
 
-    pub fn parse_macaroon_token(&self, conn: &DbConn, s: &str, endpoint: Option<&str>) -> Result<EditorRow> {
+    pub fn parse_macaroon_token(
+        &self,
+        conn: &DbConn,
+        s: &str,
+        endpoint: Option<&str>,
+    ) -> Result<EditorRow> {
         let raw = BASE64.decode(s.as_bytes())?;
         let mac = match Macaroon::deserialize(&raw) {
             Ok(m) => m,
@@ -371,7 +377,12 @@ impl AuthConfectionary {
         }))
     }
 
-    pub fn require_auth(&self, conn: &DbConn, auth_data: &Option<AuthData>, endpoint: Option<&str>) -> Result<AuthContext> {
+    pub fn require_auth(
+        &self,
+        conn: &DbConn,
+        auth_data: &Option<AuthData>,
+        endpoint: Option<&str>,
+    ) -> Result<AuthContext> {
         match self.parse_swagger(conn, auth_data, endpoint)? {
             Some(auth) => Ok(auth),
             None => Err(ErrorKind::InvalidCredentials("no token supplied".to_string()).into()),

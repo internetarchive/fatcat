@@ -54,6 +54,15 @@ Debug SQL schema errors (if diesel commands fail):
 
 ## Direct API Interaction
 
+First setup an auth token and check that authentication is working
+
+    EDITOR_ID='aaaaaaaaaaaabkvkaaaaaaaaay'
+    AUTH_TOKEN=`./target/debug/fatcat-auth create-token $EDITOR_ID`
+    http get :9411/v0/auth/check "Authorization:Bearer $AUTH_TOKEN"
+    http get :9411/v0/auth/check?role=admin "Authorization:Bearer $AUTH_TOKEN"
+
+You'll need to add the `$AUTH_TOKEN` bit to all requests below.
+    
 Creating entities via API:
 
     http --json post localhost:9411/v0/container name=asdf issn=1234-5678

@@ -349,6 +349,20 @@ pub enum UpdateCreatorResponse {
 }
 
 #[derive(Debug, PartialEq)]
+pub enum AuthCheckResponse {
+    /// Success
+    Success(models::Success),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
 pub enum AuthOidcResponse {
     /// Found
     Found(models::AuthOidcResult),
@@ -1315,6 +1329,8 @@ pub trait Api {
 
     fn update_creator(&self, ident: String, entity: models::CreatorEntity, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = UpdateCreatorResponse, Error = ApiError> + Send>;
 
+    fn auth_check(&self, role: Option<String>, context: &Context) -> Box<Future<Item = AuthCheckResponse, Error = ApiError> + Send>;
+
     fn auth_oidc(&self, oidc_params: models::AuthOidc, context: &Context) -> Box<Future<Item = AuthOidcResponse, Error = ApiError> + Send>;
 
     fn get_editor(&self, editor_id: String, context: &Context) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send>;
@@ -1564,6 +1580,8 @@ pub trait ApiNoContext {
     fn lookup_creator(&self, orcid: Option<String>, wikidata_qid: Option<String>, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = LookupCreatorResponse, Error = ApiError> + Send>;
 
     fn update_creator(&self, ident: String, entity: models::CreatorEntity, editgroup_id: Option<String>) -> Box<Future<Item = UpdateCreatorResponse, Error = ApiError> + Send>;
+
+    fn auth_check(&self, role: Option<String>) -> Box<Future<Item = AuthCheckResponse, Error = ApiError> + Send>;
 
     fn auth_oidc(&self, oidc_params: models::AuthOidc) -> Box<Future<Item = AuthOidcResponse, Error = ApiError> + Send>;
 
@@ -1850,6 +1868,10 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
 
     fn update_creator(&self, ident: String, entity: models::CreatorEntity, editgroup_id: Option<String>) -> Box<Future<Item = UpdateCreatorResponse, Error = ApiError> + Send> {
         self.api().update_creator(ident, entity, editgroup_id, &self.context())
+    }
+
+    fn auth_check(&self, role: Option<String>) -> Box<Future<Item = AuthCheckResponse, Error = ApiError> + Send> {
+        self.api().auth_check(role, &self.context())
     }
 
     fn auth_oidc(&self, oidc_params: models::AuthOidc) -> Box<Future<Item = AuthOidcResponse, Error = ApiError> + Send> {

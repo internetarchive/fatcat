@@ -452,6 +452,26 @@ pub mod responses {
     lazy_static! {
         pub static ref UPDATE_CREATOR_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
+    /// Create Mime objects for the response content types for AuthCheck
+    lazy_static! {
+        pub static ref AUTH_CHECK_SUCCESS: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthCheck
+    lazy_static! {
+        pub static ref AUTH_CHECK_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthCheck
+    lazy_static! {
+        pub static ref AUTH_CHECK_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthCheck
+    lazy_static! {
+        pub static ref AUTH_CHECK_FORBIDDEN: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthCheck
+    lazy_static! {
+        pub static ref AUTH_CHECK_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
     /// Create Mime objects for the response content types for AuthOidc
     lazy_static! {
         pub static ref AUTH_OIDC_FOUND: Mime = mime!(Application / Json);

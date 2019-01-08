@@ -2711,4 +2711,30 @@ paths:
           schema:
             $ref: "#/definitions/error_response"
         <<: *AUTHRESPONSES
+  /auth/check:
+    get:
+      operationId: "auth_check"
+      tags: # TAGLINE
+      security:
+        # required admin privs
+        - Bearer: []
+      parameters:
+        - name: role
+          in: query
+          required: false
+          type: string
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: "#/definitions/success"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/error_response"
+        500:
+          description: Generic Error
+          schema:
+            $ref: "#/definitions/error_response"
+        <<: *AUTHRESPONSES
 

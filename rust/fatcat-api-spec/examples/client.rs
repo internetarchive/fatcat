@@ -12,8 +12,8 @@ extern crate uuid;
 use clap::{App, Arg};
 #[allow(unused_imports)]
 use fatcat::{
-    AcceptEditgroupResponse, ApiError, ApiNoContext, AuthOidcResponse, ContextWrapperExt, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse,
-    CreateEditgroupResponse, CreateFileBatchResponse, CreateFileResponse, CreateFilesetBatchResponse, CreateFilesetResponse, CreateReleaseBatchResponse, CreateReleaseResponse,
+    AcceptEditgroupResponse, ApiError, ApiNoContext, AuthCheckResponse, AuthOidcResponse, ContextWrapperExt, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse,
+    CreateCreatorResponse, CreateEditgroupResponse, CreateFileBatchResponse, CreateFileResponse, CreateFilesetBatchResponse, CreateFilesetResponse, CreateReleaseBatchResponse, CreateReleaseResponse,
     CreateWebcaptureBatchResponse, CreateWebcaptureResponse, CreateWorkBatchResponse, CreateWorkResponse, DeleteContainerEditResponse, DeleteContainerResponse, DeleteCreatorEditResponse,
     DeleteCreatorResponse, DeleteFileEditResponse, DeleteFileResponse, DeleteFilesetEditResponse, DeleteFilesetResponse, DeleteReleaseEditResponse, DeleteReleaseResponse,
     DeleteWebcaptureEditResponse, DeleteWebcaptureResponse, DeleteWorkEditResponse, DeleteWorkResponse, GetChangelogEntryResponse, GetChangelogResponse, GetContainerEditResponse,
@@ -54,6 +54,7 @@ fn main() {
                     "GetCreatorReleases",
                     "GetCreatorRevision",
                     "LookupCreator",
+                    "AuthCheck",
                     "GetEditor",
                     "GetEditorChangelog",
                     "AcceptEditgroup",
@@ -272,6 +273,10 @@ fn main() {
         //     let result = client.update_creator("ident_example".to_string(), ???, Some("editgroup_id_example".to_string())).wait();
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         //  },
+        Some("AuthCheck") => {
+            let result = client.auth_check(Some("role_example".to_string())).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
 
         // Disabled because there's no example.
         // Some("AuthOidc") => {
