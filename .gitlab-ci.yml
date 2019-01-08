@@ -28,8 +28,10 @@ unified_test:
     - cargo test -- --test-threads 1
     - cargo run --bin fatcatd &
     - cd ../python
+    - cp env.example .env
     - pipenv install --dev --deploy
     - pipenv run pytest --cov
+    - pipenv run ./tests/cli.sh
     # Just errors
     - pipenv run pylint -E fatcat*.py fatcat_tools fatcat_web
 
