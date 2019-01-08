@@ -4,12 +4,14 @@ import time
 import json
 import signal
 import pytest
+from dotenv import load_dotenv
 import fatcat_web
 import fatcat_client
 
 
 @pytest.fixture
 def full_app():
+    load_dotenv(dotenv_path="./env.example")
     fatcat_web.app.testing = True
     fatcat_web.app.debug = False
     return fatcat_web.app
@@ -20,9 +22,10 @@ def app(full_app):
 
 @pytest.fixture
 def api():
+    load_dotenv(dotenv_path="./env.example")
     conf = fatcat_client.Configuration()
     conf.host = "http://localhost:9411/v0"
-    conf.api_key["Authorization"] = "AgEPZGV2LmZhdGNhdC53aWtpAg4yMDE4LTEyLTMxLWRldgACJmVkaXRvcl9pZCA9IGFhYWFhYWFhYWFhYWJrdmthYWFhYWFhYWFlAAIeY3JlYXRlZCA9IDIwMTgtMTItMzFUMjE6MTU6NDdaAAAGIMWFZeZ54pH4OzNl5+U5X3p1H1rMioSuIldihuiM5XAw"
+    conf.api_key["Authorization"] = os.getenv("FATCAT_API_AUTH_TOKEN")
     conf.api_key_prefix["Authorization"] = "Bearer"
     api_client = fatcat_client.DefaultApi(fatcat_client.ApiClient(conf))
     return api_client

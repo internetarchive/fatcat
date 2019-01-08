@@ -1,5 +1,5 @@
 
-import sys
+import os, sys
 import fatcat_client
 from fatcat_client.rest import ApiException
 
@@ -23,7 +23,7 @@ def authenticated_api(host_uri, token=None):
     conf = fatcat_client.Configuration()
     conf.host = host_uri
     if not token:
-        token = sys.env['FATCAT_API_AUTH_TOKEN']
+        token = os.environ['FATCAT_API_AUTH_TOKEN']
     if not token:
         sys.stderr.write(
             'This client requires a fatcat API token (eg, in env var FATCAT_API_AUTH_TOKEN)\n')
@@ -34,7 +34,7 @@ def authenticated_api(host_uri, token=None):
     api = fatcat_client.DefaultApi(fatcat_client.ApiClient(conf))
 
     # verify up front that auth is working
-    api.check_auth()
+    api.auth_check()
 
     return api
 

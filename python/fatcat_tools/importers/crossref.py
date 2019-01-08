@@ -4,6 +4,7 @@ import json
 import sqlite3
 import datetime
 import itertools
+import subprocess
 import fatcat_client
 from .common import FatcatImporter
 
@@ -40,8 +41,19 @@ class CrossrefImporter(FatcatImporter):
     See https://github.com/CrossRef/rest-api-doc for JSON schema notes
     """
 
-    def __init__(self, host_url, issn_map_file, extid_map_file=None, create_containers=True, check_existing=True):
-        super().__init__(host_url, issn_map_file)
+    def __init__(self, api, issn_map_file, **kwargs):
+
+        eg_desc = kwargs.get('editgroup_description',
+            "Automated import of Crossref DOI metadata, harvested from REST API")
+        eg_extra = kwargs.get('editgroup_extra', dict())
+        eg_extra['agent'] = eg_extra.get('agent', 'CrossrefImporter')
+        super().__init__(api,
+            issn_map_file=issn_map_file,
+            editgroup_description=eg_desc,
+            editgroup_extra=eg_extra)
+        extid_map_file = kwargs.get('extid_map_file')
+        create_containers = kwargs.get('create_containers')
+        check_existing = kwargs.get('check_existing')
         self.extid_map_db = None
         if extid_map_file:
             db_uri = "file:{}?mode=ro".format(extid_map_file)
