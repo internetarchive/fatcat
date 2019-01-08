@@ -241,21 +241,21 @@ impl AuthConfectionary {
         let raw = BASE64.decode(s.as_bytes())?;
         let mac = match Macaroon::deserialize(&raw) {
             Ok(m) => m,
-            Err(_e) => {
+            Err(e) => {
                 // TODO: should be "chaining" here
-                //bail!("macaroon deserialize error: {:?}", e),
                 return Err(
-                    ErrorKind::InvalidCredentials("macaroon deserialize error".to_string()).into(),
+                    ErrorKind::InvalidCredentials(
+                        format!("macaroon deserialize error: {:?}", e)).into(),
                 );
             }
         };
         let mac = match mac.validate() {
             Ok(m) => m,
-            Err(_e) => {
+            Err(e) => {
                 // TODO: should be "chaining" here
-                //bail!("macaroon validate error: {:?}", e),
                 return Err(
-                    ErrorKind::InvalidCredentials("macaroon validate error".to_string()).into(),
+                    ErrorKind::InvalidCredentials(
+                        format!("macaroon validate error: {:?}", e)).into(),
                 );
             }
         };
@@ -267,7 +267,14 @@ impl AuthConfectionary {
                 break;
             }
         }
-        let editor_id = editor_id.expect("expected an editor_id caveat");
+        let editor_id = match editor_id {
+            Some(id) => id,
+            None => {
+                return Err(
+                    ErrorKind::InvalidCredentials("expected an editor_id caveat".to_string()).into(),
+                );
+            },
+        };
         verifier.satisfy_exact(&format!("editor_id = {}", editor_id.to_string()));
         if let Some(endpoint) = endpoint {
             // API endpoint
@@ -284,7 +291,14 @@ impl AuthConfectionary {
                 break;
             }
         }
-        let created = created.expect("expected a 'created' (time >) caveat");
+        let created = match created {
+            Some(c) => c,
+            None => {
+                return Err(
+                    ErrorKind::InvalidCredentials("expected a 'created' (time >) caveat".to_string()).into(),
+                );
+            },
+        };
         verifier.satisfy_exact(&format!(
             "time > {}",
             created.to_rfc3339_opts(SecondsFormat::Secs, true)
