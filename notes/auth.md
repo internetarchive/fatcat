@@ -148,6 +148,20 @@ The `auth_oidc` enforces uniqueness on accounts in a few ways:
   accounts using the same remote account
 - all fields are NOT NULL
 
+### archive.org "XAuth" Login
+
+The internet archive has it's own bespoke internal API for authentication
+between services. Internal (non-public) documentation link:
+
+    https://git.archive.org/ia/petabox/blob/master/www/sf/services/xauthn/README.md
+
+Fatcat implements "passthrough" authentication to this endpoint by accepting
+email/password (in plaintext! red lights and sirens!) and passes them through,
+along with with special staff-level authentication keys, to authenticate and
+fetch user info. Fatcat then pretends this was a regular OAuth/OIDC
+interaction, substituting the archive.org user "itemname" as a persistent
+identifier, and the XAuth endpoint as the service key.
+
 ## Role-Based Authentication (RBAC)
 
 Current acknowledge roles:
@@ -177,11 +191,8 @@ Tokens and other secrets can be store in environment variables, scripts, or
 
 Want to support more OAuth/OIDC endpoints:
 
-- archive.org: bespoke "XAuth" thing; would be reasonable to hack in support.
-  use user itemname as persistent 'sub' field
 - orcid.org: supports OIDC
 - wikipedia/wikimedia: OAuth; https://github.com/valhallasw/flask-mwoauth
-- additional 
 
 Additional macaroon caveats:
 
