@@ -1,13 +1,12 @@
 
 ## In Progress
 
-- tool scripts auth
-    => from ENV, with optional prefixes by type
-- review/refactor/audit auth setup (eg, created/epoch times)
-
 ## Next Up
 
+- pg_tmp for rust tests
 - cargo update (rust deps)
+- rust to 2018 version
+- guide updates for auth
 - pipenv update; and maybe pin some versions (python deps)
 - remove the concept of "active editgroup", and simplify autoaccept batch path
 - refactor webface views to use shared entity_view.html template
@@ -24,6 +23,9 @@
 
 ## Ideas
 
+- more logins: orcid, wikimedia
+- `fatcat-auth` tool should support more caveats, both when generating new or
+  mutating existing tokens
 - fast path to skip recursive redirect checks for bulk inserts
 - when getting "wip" entities, require a parameter ("allow_wip"), else get a
   404
@@ -41,6 +43,7 @@
 
 ## Production blockers
 
+- privacy policy, and link from: create account, create edit
 - refactors and correctness in rust/TODO
 - importers have editor accounts and include editgroup metadata
 - crossref importer sets release_type as "stub" when appropriate
