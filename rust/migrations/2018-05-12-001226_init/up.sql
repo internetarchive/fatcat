@@ -16,7 +16,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE editor (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    username            TEXT NOT NULL CHECK (username ~* '^[A-Za-z0-9][A-Za-z0-9._-]{2,19}$'), -- UNIQ below
+    username            TEXT NOT NULL CHECK (username ~* '^[A-Za-z][A-Za-z0-9._-]{2,24}$'), -- UNIQ below
     is_superuser        BOOLEAN NOT NULL DEFAULT false,
     is_admin            BOOLEAN NOT NULL DEFAULT false,
     is_bot              BOOLEAN NOT NULL DEFAULT false,
