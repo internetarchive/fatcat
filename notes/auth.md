@@ -201,6 +201,16 @@ Looked at a few other options for managing use accounts:
   public infrastructure.
 - having webface generate macaroons itself
 
+Will probably eventually need to support multiple logins per editor account.
+Shouldn't be too hard, but will require additional API endpoints (POST with
+`editor_id` included, DELETE to remove, etc).
+
+On mobile folks might not be signed in to as many accounts, or it might be
+annoying to enter long/secure passwords (eg, to login to github). Could get
+around this with "login via token via QR code" with long/unlimited expiry.
+Might make more sense to support google OIDC as my guess is that many (most?)
+people have a google account logged in on their phone.
+
 ## Implementation Notes
 
 To start, using the `loginpass` python library to handle logins, which is built
