@@ -213,17 +213,18 @@ impl AuthConfectionary {
     pub fn create_token(
         &self,
         editor_id: FatCatId,
-        expires: Option<DateTime<Utc>>,
+        duration: Option<chrono::Duration>,
     ) -> Result<String> {
         let mut mac = Macaroon::create(&self.location, &self.key, &self.identifier)
             .expect("Macaroon creation");
         mac.add_first_party_caveat(&format!("editor_id = {}", editor_id.to_string()));
-        // TODO: put created one second in the past to prevent timing synchronization glitches?
-        let now = Utc::now().to_rfc3339_opts(SecondsFormat::Secs, true);
-        mac.add_first_party_caveat(&format!("created = {}", now));
-        if let Some(expires) = expires {
+        let now_utc = Utc::now();
+        let now = now_utc.to_rfc3339_opts(SecondsFormat::Secs, true);
+        mac.add_first_party_caveat(&format!("time > {}", now));
+        if let Some(duration) = duration {
+            let expires = now_utc + duration;
             mac.add_first_party_caveat(&format!(
-                "expires = {:?}",
+                "time < {:?}",
                 &expires.to_rfc3339_opts(SecondsFormat::Secs, true)
             ));
         };
@@ -274,18 +275,18 @@ impl AuthConfectionary {
         }
         let mut created: Option<DateTime<Utc>> = None;
         for caveat in mac.first_party_caveats() {
-            if caveat.predicate().starts_with("created = ") {
+            if caveat.predicate().starts_with("time > ") {
                 created = Some(
-                    DateTime::parse_from_rfc3339(caveat.predicate().get(10..).unwrap())
+                    DateTime::parse_from_rfc3339(caveat.predicate().get(7..).unwrap())
                         .unwrap()
                         .with_timezone(&Utc),
                 );
                 break;
             }
         }
-        let created = created.expect("expected a 'created' caveat");
+        let created = created.expect("expected a 'created' (time >) caveat");
         verifier.satisfy_exact(&format!(
-            "created = {}",
+            "time > {}",
             created.to_rfc3339_opts(SecondsFormat::Secs, true)
         ));
         let editor: EditorRow = editor::table.find(&editor_id.to_uuid()).get_result(conn)?;
@@ -299,9 +300,9 @@ impl AuthConfectionary {
             .into());
         }
         verifier.satisfy_general(|p: &str| -> bool {
-            // not expired (based on expires)
-            if p.starts_with("expires = ") {
-                let expires: DateTime<Utc> = DateTime::parse_from_rfc3339(p.get(12..).unwrap())
+            // not expired (based on time)
+            if p.starts_with("time < ") {
+                let expires: DateTime<Utc> = DateTime::parse_from_rfc3339(p.get(7..).unwrap())
                     .unwrap()
                     .with_timezone(&Utc);
                 expires < Utc::now()
@@ -312,10 +313,8 @@ impl AuthConfectionary {
         let verify_key = match self.root_keys.get(mac.identifier()) {
             Some(key) => key,
             None => {
-                // TODO: better message
-                //bail!("key not found for identifier: {}", mac.identifier()),
                 return Err(ErrorKind::InvalidCredentials(
-                    "key not found for identifier".to_string(),
+                    format!("no valid auth signing key for identifier: {}", mac.identifier())
                 )
                 .into());
             }
@@ -324,15 +323,15 @@ impl AuthConfectionary {
             Ok(true) => (),
             Ok(false) => {
                 return Err(ErrorKind::InvalidCredentials(
-                    "token overall verification failed".to_string(),
+                    "auth token (macaroon) not valid (signature and/or caveats failed)".to_string(),
                 )
                 .into());
             }
-            Err(_e) => {
+            Err(e) => {
                 // TODO: chain
-                //bail!("token parsing failed: {:?}", e),
                 return Err(
-                    ErrorKind::InvalidCredentials("token parsing failed".to_string()).into(),
+                    ErrorKind::InvalidCredentials(
+                        format!("token parsing failed: {:?}", e)).into(),
                 );
             }
         }
