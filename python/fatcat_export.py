@@ -13,7 +13,8 @@ import argparse
 import fatcat_client
 from fatcat_client.rest import ApiException
 from fatcat_client import ReleaseEntity
-from fatcat_tools import uuid2fcid, entity_from_json, release_to_elasticsearch
+from fatcat_tools import uuid2fcid, entity_from_json, entity_to_dict, \
+    release_to_elasticsearch, public_api
 
 
 def run_export_releases(args):
@@ -21,7 +22,8 @@ def run_export_releases(args):
     for line in args.ident_file:
         ident = uuid2fcid(line.split()[0])
         release = api.get_release(id=ident, expand="all")
-        args.json_output.write(json.dumps(release.to_dict()) + "\n")
+        args.json_output.write(
+            json.dumps(entity_to_dict(release)) + "\n")
 
 def run_transform_releases(args):
     for line in args.json_input:
@@ -40,8 +42,9 @@ def run_export_changelog(args):
         end = latest.index
 
     for i in range(args.start, end):
-        entry = api.get_changelog_entry(id=i)
-        args.json_output.write(json.dumps(entry.to_dict()) + "\n")
+        entry = api.get_changelog_entry(index=i)
+        args.json_output.write(
+            json.dumps(entity_to_dict(entry)) + "\n")
 
 def main():
     parser = argparse.ArgumentParser()
