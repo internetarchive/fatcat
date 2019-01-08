@@ -1,16 +1,19 @@
 
+from collections import namedtuple
+import requests
+import pymacaroons
 from flask import Flask, render_template, send_from_directory, request, \
     url_for, abort, g, redirect, jsonify, session, flash
 from fatcat_web import login_manager, api, priv_api, Config
 from flask_login import logout_user, login_user, UserMixin
-import pymacaroons
 import fatcat_client
 
 def handle_logout():
     logout_user()
-    for k in ('editor', 'token'):
+    for k in ('editor', 'api_token'):
         if k in session:
             session.pop(k)
+    session.clear()
 
 def handle_token_login(token):
     try:
@@ -73,14 +76,59 @@ def handle_oauth(remote, token, user_info):
         login_user(load_user(editor.editor_id))
         return redirect("/auth/account")
 
-    raise some_error
+    # XXX: what should this actually be?
+    raise Exception("didn't receive OAuth user_info")
 
+def handle_ia_xauth(email, password):
+    resp = requests.post(Config.IA_XAUTH_URI,
+        params={'op': 'authenticate'},
+        json={
+            'version': '1',
+            'email': email,
+            'password': password,
+            'access': Config.IA_XAUTH_CLIENT_ID,
+            'secret': Config.IA_XAUTH_CLIENT_SECRET,
+        })
+    if resp.status_code == 401 or (not resp.json().get('success')):
+        flash("Internet Archive email/password didn't match: {}".format(resp.json()['values']['reason']))
+        return render_template('auth_ia_login.html', email=email), resp.status_code
+    elif resp.status_code != 200:
+        flash("Internet Archive login failed (internal error?)")
+        # TODO: log.warn
+        print("IA XAuth fail: {}".format(resp.content))
+        return render_template('auth_ia_login.html', email=email), resp.status_code
+
+    # Successful login; now fetch info...
+    resp = requests.post(Config.IA_XAUTH_URI,
+        params={'op': 'info'},
+        json={
+            'version': '1',
+            'email': email,
+            'access': Config.IA_XAUTH_CLIENT_ID,
+            'secret': Config.IA_XAUTH_CLIENT_SECRET,
+        })
+    if resp.status_code != 200:
+        flash("Internet Archive login failed (internal error?)")
+        # TODO: log.warn
+        print("IA XAuth fail: {}".format(resp.content))
+        return render_template('auth_ia_login.html', email=email), resp.status_code
+    ia_info = resp.json()['values']
+
+    # and pass off "as if" we did OAuth successfully
+    FakeOAuthRemote = namedtuple('FakeOAuthRemote', ['name', 'OAUTH_CONFIG'])
+    remote = FakeOAuthRemote(name='archive', OAUTH_CONFIG={'api_base_url': Config.IA_XAUTH_URI})
+    oauth_info = {
+        'preferred_username': ia_info['screenname'],
+        'iss': Config.IA_XAUTH_URI,
+        'sub': ia_info['itemname'],
+    }
+    return handle_oauth(remote, None, oauth_info)
 
 @login_manager.user_loader
 def load_user(editor_id):
     # looks for extra info in session, and updates the user object with that.
     # If session isn't loaded/valid, should return None
-    if not 'editor' in session or not 'api_token' in session:
+    if (not session.get('editor')) or (not session.get('api_token')):
         return None
     editor = session['editor']
     token = session['api_token']
@@ -90,3 +138,4 @@ def load_user(editor_id):
     user.username = editor['username']
     user.token = token
     return user
+

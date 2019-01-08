@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block body %}
+<h1>Login with Internet Archive account</h1>
+
+<p>Warning: still experimental!
+
+<br>
+<br>
+<br>
+
+{% if current_user.is_authenticated %}
+  <div class="ui negative message">
+    <div class="header">You are already logged in!</div>
+    <p>You should logout first. Re-authenticating would be undefined behavior.
+  </div>
+{% else %}
+  <form class="" role="login" action="/auth/ia/login" method="post">
+    <div class="ui form">
+        <div class="ui input huge fluid">
+          <input type="email" placeholder="user@domain.tdl..." name="email" {% if email %}value="{{ email }}"{% endif %} aria-label="email for login">
+        </div>
+        <div class="ui action input huge fluid">
+          <input type="password" placeholder="password" name="password" aria-label="internet archive password">
+          <button class="ui button">Login</button>
+        </div>
+      </div>
+    </div>
+  </form>
+{% endif %}
+
+{% endblock %}

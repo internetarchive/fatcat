@@ -31,8 +31,12 @@ class Config(object):
     FLASK_SECRET_KEY = os.environ.get("FLASK_SECRET_KEY", default=None)
     SECRET_KEY = FLASK_SECRET_KEY
 
-    GITLAB_CLIENT_ID = os.environ.get("GITLAB_CLIENT_ID", default="bogus")
-    GITLAB_CLIENT_SECRET = os.environ.get("GITLAB_CLIENT_SECRET", default="bogus")
+    GITLAB_CLIENT_ID = os.environ.get("GITLAB_CLIENT_ID", default=None)
+    GITLAB_CLIENT_SECRET = os.environ.get("GITLAB_CLIENT_SECRET", default=None)
+
+    IA_XAUTH_URI = "https://archive.org/services/xauthn/"
+    IA_XAUTH_CLIENT_ID = os.environ.get("IA_XAUTH_CLIENT_ID", default=None)
+    IA_XAUTH_CLIENT_SECRET = os.environ.get("IA_XAUTH_CLIENT_SECRET", default=None)
 
     # protect cookies (which include API tokens)
     SESSION_COOKIE_HTTPONLY = True

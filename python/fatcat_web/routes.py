@@ -5,7 +5,7 @@ from flask import Flask, render_template, send_from_directory, request, \
     url_for, abort, g, redirect, jsonify, session, flash
 from flask_login import login_required
 from fatcat_web import app, api, auth_api
-from fatcat_web.auth import handle_token_login, handle_logout, load_user
+from fatcat_web.auth import handle_token_login, handle_logout, load_user, handle_ia_xauth
 from fatcat_client.rest import ApiException
 from fatcat_web.search import do_search
 
@@ -381,6 +381,14 @@ def login():
     # show the user a list of login options
     return render_template('auth_login.html')
 
+@app.route('/auth/ia/login', methods=['GET', 'POST'])
+def ia_xauth_login():
+    if 'email' in request.form:
+        # if a login attempt...
+        return handle_ia_xauth(request.form.get('email'), request.form.get('password'))
+    # else show form
+    return render_template('auth_ia_login.html')
+
 @app.route('/auth/token_login', methods=['GET', 'POST'])
 def token_login():
     # show the user a list of login options
@@ -409,7 +417,6 @@ def change_username():
 
 @app.route('/auth/logout')
 def logout():
-    # TODO: clear extra session info
     handle_logout()
     return render_template('auth_logout.html')
 
