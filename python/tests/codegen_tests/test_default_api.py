@@ -35,6 +35,12 @@ class TestDefaultApi(unittest.TestCase):
         """
         pass
 
+    def test_auth_check(self):
+        """Test case for auth_check
+
+        """
+        pass
+
     def test_auth_oidc(self):
         """Test case for auth_oidc
 

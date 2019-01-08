@@ -74,6 +74,7 @@ All URIs are relative to *https://api.fatcat.wiki/v0*
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
 *DefaultApi* | [**accept_editgroup**](docs/DefaultApi.md#accept_editgroup) | **POST** /editgroup/{editgroup_id}/accept | 
+*DefaultApi* | [**auth_check**](docs/DefaultApi.md#auth_check) | **GET** /auth/check | 
 *DefaultApi* | [**auth_oidc**](docs/DefaultApi.md#auth_oidc) | **POST** /auth/oidc | 
 *DefaultApi* | [**create_container**](docs/DefaultApi.md#create_container) | **POST** /container | 
 *DefaultApi* | [**create_container_batch**](docs/DefaultApi.md#create_container_batch) | **POST** /container/batch | 
