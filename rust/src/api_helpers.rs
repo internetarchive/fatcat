@@ -359,7 +359,7 @@ pub fn uuid2fcid(id: &Uuid) -> String {
 
 pub fn check_username(raw: &str) -> Result<()> {
     lazy_static! {
-        static ref RE: Regex = Regex::new(r"^[A-Za-z0-9][A-Za-z0-9._-]{2,15}$").unwrap();
+        static ref RE: Regex = Regex::new(r"^[A-Za-z0-9][A-Za-z0-9._-]{2,19}$").unwrap();
     }
     if RE.is_match(raw) {
         Ok(())

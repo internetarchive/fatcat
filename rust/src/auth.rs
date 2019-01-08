@@ -40,7 +40,7 @@ impl AuthContext {
             // if account is disabled, only allow public role
             return role == FatcatRole::Public;
         }
-        if self.editor_row.is_admin {
+        if self.editor_row.is_superuser {
             return true;
         }
         match role {
