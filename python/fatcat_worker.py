@@ -14,20 +14,20 @@ sentry_client = raven.Client()
 def run_changelog(args):
     topic = "fatcat-{}.changelog".format(args.env)
     worker = ChangelogWorker(args.api, args.kafka_hosts, topic,
-        args.poll_interval)
+        poll_interval=args.poll_interval)
     worker.run()
 
 def run_entity_updates(args):
     changelog_topic = "fatcat-{}.changelog".format(args.env)
     release_topic = "fatcat-{}.release-updates".format(args.env)
-    worker = EntityUpdatesWorker(args.api, args.kafka_hosts,
-        changelog_topic, release_topic)
+    worker = EntityUpdatesWorker(args.api, args.kafka_hosts, changelog_topic,
+        release_topic=release_topic)
     worker.run()
 
 def run_elasticsearch_release(args):
     consume_topic = "fatcat-{}.release-updates".format(args.env)
-    worker = ElasticsearchReleaseWorker(args.kafka_hosts,
-        consume_topic, elasticsearch_backend=args.elasticsearch_backend,
+    worker = ElasticsearchReleaseWorker(args.kafka_hosts, consume_topic,
+        elasticsearch_backend=args.elasticsearch_backend,
         elasticsearch_index=args.elasticsearch_index)
     worker.run()
 
