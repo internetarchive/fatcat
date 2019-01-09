@@ -323,16 +323,17 @@ def editor_changelog(ident):
     return render_template('editor_changelog.html', editor=editor,
         changelog_entries=changelog_entries)
 
-@app.route('/editor/<ident>/wip', methods=['GET'])
-def editor_wip(ident):
-    raise NotImplementedError
-    try:
-        editor = api.get_editor(ident)
-        entries = api.get_editor_wip(ident)
-    except ApiException as ae:
-        abort(ae.status)
-    return render_template('editor_changelog.html', editor=editor,
-        entries=entries)
+# Not implemented
+#@app.route('/editor/<ident>/wip', methods=['GET'])
+#def editor_wip(ident):
+#    raise NotImplementedError
+#    try:
+#        editor = api.get_editor(ident)
+#        entries = api.get_editor_wip(ident)
+#    except ApiException as ae:
+#        abort(ae.status)
+#    return render_template('editor_changelog.html', editor=editor,
+#        entries=entries)
 
 @app.route('/changelog', methods=['GET'])
 def changelog_view():
