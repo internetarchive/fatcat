@@ -110,7 +110,7 @@ fn new_auth_ironerror(m: &str) -> iron::error::IronError {
     )
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct OpenAuthMiddleware;
 
 impl OpenAuthMiddleware {
@@ -131,7 +131,7 @@ impl iron::middleware::BeforeMiddleware for OpenAuthMiddleware {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct MacaroonAuthMiddleware;
 
 impl MacaroonAuthMiddleware {
@@ -183,17 +183,17 @@ impl AuthConfectionary {
     pub fn new(
         location: String,
         identifier: String,
-        key_base64: String,
+        key_base64: &str,
     ) -> Result<AuthConfectionary> {
         macaroon::initialize().unwrap();
         let key = BASE64.decode(key_base64.as_bytes())?;
         let mut root_keys = HashMap::new();
         root_keys.insert(identifier.clone(), key.clone());
         Ok(AuthConfectionary {
-            location: location,
-            identifier: identifier,
-            key: key,
-            root_keys: root_keys,
+            location,
+            identifier,
+            key,
+            root_keys,
         })
     }
 
@@ -201,12 +201,12 @@ impl AuthConfectionary {
         AuthConfectionary::new(
             "test.fatcat.wiki".to_string(),
             "dummy".to_string(),
-            BASE64.encode(DUMMY_KEY),
+            &BASE64.encode(DUMMY_KEY),
         )
         .unwrap()
     }
 
-    pub fn add_keypair(&mut self, identifier: String, key_base64: String) -> Result<()> {
+    pub fn add_keypair(&mut self, identifier: String, key_base64: &str) -> Result<()> {
         let key = BASE64.decode(key_base64.as_bytes())?;
         self.root_keys.insert(identifier, key);
         Ok(())
@@ -392,7 +392,7 @@ impl AuthConfectionary {
         let editor_row = self.parse_macaroon_token(conn, &token, endpoint)?;
         Ok(Some(AuthContext {
             editor_id: FatCatId::from_uuid(&editor_row.id),
-            editor_row: editor_row,
+            editor_row,
         }))
     }
 
@@ -476,20 +476,17 @@ pub fn env_confectionary() -> Result<AuthConfectionary> {
     let auth_key = env::var("AUTH_SECRET_KEY").expect("AUTH_SECRET_KEY must be set");
     let auth_key_ident = env::var("AUTH_KEY_IDENT").expect("AUTH_KEY_IDENT must be set");
     info!("Loaded primary auth key: {}", auth_key_ident);
-    let mut confectionary = AuthConfectionary::new(auth_location, auth_key_ident, auth_key)?;
-    match env::var("AUTH_ALT_KEYS") {
-        Ok(var) => {
-            for pair in var.split(",") {
-                let pair: Vec<&str> = pair.split(":").collect();
-                if pair.len() != 2 {
-                    println!("{:#?}", pair);
-                    bail!("couldn't parse keypair from AUTH_ALT_KEYS (expected 'ident:key' pairs separated by commas)");
-                }
-                info!("Loading alt auth key: {}", pair[0]);
-                confectionary.add_keypair(pair[0].to_string(), pair[1].to_string())?;
+    let mut confectionary = AuthConfectionary::new(auth_location, auth_key_ident, &auth_key)?;
+    if let Ok(var) = env::var("AUTH_ALT_KEYS") {
+        for pair in var.split(',') {
+            let pair: Vec<&str> = pair.split(':').collect();
+            if pair.len() != 2 {
+                println!("{:#?}", pair);
+                bail!("couldn't parse keypair from AUTH_ALT_KEYS (expected 'ident:key' pairs separated by commas)");
             }
+            info!("Loading alt auth key: {}", pair[0]);
+            confectionary.add_keypair(pair[0].to_string(), pair[1])?;
         }
-        Err(_) => (),
-    }
+    };
     Ok(confectionary)
 }

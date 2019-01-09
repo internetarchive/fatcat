@@ -26,7 +26,7 @@ impl EditContext {
         if count > 0 {
             return Err(ErrorKind::EditgroupAlreadyAccepted(self.editgroup_id.to_string()).into());
         }
-        return Ok(());
+        Ok(())
     }
 }
 
@@ -48,10 +48,10 @@ pub fn make_edit_context(
         (None, false) => FatCatId::from_uuid(&get_or_create_editgroup(editor_id.to_uuid(), conn)?),
     };
     Ok(EditContext {
-        editor_id: editor_id,
-        editgroup_id: editgroup_id,
+        editor_id,
+        editgroup_id,
         extra_json: None,
-        autoaccept: autoaccept,
+        autoaccept,
     })
 }
 

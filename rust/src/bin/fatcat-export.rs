@@ -1,5 +1,8 @@
 //! JSON Export Helper
 
+// using closures as a Result/? hack
+#![allow(clippy::redundant_closure_call)]
+
 #[macro_use]
 extern crate clap;
 #[macro_use]
@@ -100,7 +103,7 @@ fn loop_printer(
     let mut buf_output = BufWriter::new(output);
     for line in output_receiver {
         buf_output.write_all(&line.into_bytes())?;
-        buf_output.write(b"\n")?;
+        buf_output.write_all(b"\n")?;
         buf_output.flush()?;
     }
     drop(done_sender);
@@ -108,7 +111,7 @@ fn loop_printer(
 }
 
 fn parse_line(s: &str) -> Result<IdentRow> {
-    let fields: Vec<String> = s.split("\t").map(|v| v.to_string()).collect();
+    let fields: Vec<String> = s.split('\t').map(|v| v.to_string()).collect();
     if fields.len() != 3 {
         bail!("Invalid input line");
     }

@@ -4,6 +4,9 @@
 //! response types (mapping to HTTP statuses. Some contain actual endpoint implementations, but
 //! most implementation lives in the server module.
 
+// using closures as a Result/? hack
+#![allow(clippy::redundant_closure_call)]
+
 use crate::auth::*;
 use crate::database_models::EntityEditRow;
 use crate::editing::*;
@@ -1075,10 +1078,10 @@ impl Api for Server {
             let mut entity = entity.clone();
             match entity.editor_id.clone() {
                 Some(editor_id) => {
-                    if !auth_context.has_role(FatcatRole::Admin) {
-                        if editor_id != auth_context.editor_id.to_string() {
-                            bail!("not authorized to create editgroups in others' names");
-                        }
+                    if editor_id != auth_context.editor_id.to_string()
+                        && !auth_context.has_role(FatcatRole::Admin)
+                    {
+                        bail!("not authorized to create editgroups in others' names");
                     }
                 }
                 None => {

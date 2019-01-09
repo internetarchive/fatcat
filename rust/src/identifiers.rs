@@ -17,7 +17,7 @@ impl ToString for FatCatId {
 impl FromStr for FatCatId {
     type Err = Error;
     fn from_str(s: &str) -> Result<FatCatId> {
-        fcid2uuid(s).map(|u| FatCatId(u))
+        fcid2uuid(s).map(FatCatId)
     }
 }
 

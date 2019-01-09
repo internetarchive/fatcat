@@ -103,7 +103,7 @@ pub struct ExpandFlags {
 impl FromStr for ExpandFlags {
     type Err = Error;
     fn from_str(param: &str) -> Result<ExpandFlags> {
-        let list: Vec<&str> = param.split_terminator(",").collect();
+        let list: Vec<&str> = param.split_terminator(',').collect();
         Ok(ExpandFlags::from_str_list(&list))
     }
 }
@@ -189,7 +189,7 @@ pub struct HideFlags {
 impl FromStr for HideFlags {
     type Err = Error;
     fn from_str(param: &str) -> Result<HideFlags> {
-        let list: Vec<&str> = param.split_terminator(",").collect();
+        let list: Vec<&str> = param.split_terminator(',').collect();
         Ok(HideFlags::from_str_list(&list))
     }
 }
@@ -363,7 +363,7 @@ macro_rules! generic_db_create_batch {
                         .map(|(rev_id, ident_id)| Self::EditNewRow {
                             editgroup_id: edit_context.editgroup_id.to_uuid(),
                             rev_id: Some(rev_id),
-                            ident_id: ident_id,
+                            ident_id,
                             redirect_id: None,
                             prev_rev: None,
                             extra_json: edit_context.extra_json.clone(),
@@ -809,7 +809,7 @@ impl EntityCrud for ContainerEntity {
             name: Some(rev_row.name),
             abbrev: rev_row.abbrev,
             coden: rev_row.coden,
-            state: state,
+            state,
             ident: ident_id,
             revision: Some(rev_row.id.to_string()),
             redirect: redirect_id,
@@ -920,7 +920,7 @@ impl EntityCrud for CreatorEntity {
             surname: rev_row.surname,
             orcid: rev_row.orcid,
             wikidata_qid: rev_row.wikidata_qid,
-            state: state,
+            state,
             ident: ident_id,
             revision: Some(rev_row.id.to_string()),
             redirect: redirect_id,
@@ -1052,7 +1052,7 @@ impl EntityCrud for FileEntity {
             urls: Some(urls),
             mimetype: rev_row.mimetype,
             release_ids: Some(release_ids.iter().map(|fcid| fcid.to_string()).collect()),
-            state: state,
+            state,
             ident: ident_id,
             revision: Some(rev_row.id.to_string()),
             redirect: redirect_id,
@@ -1235,7 +1235,7 @@ impl EntityCrud for FilesetEntity {
             manifest: Some(manifest),
             urls: Some(urls),
             release_ids: Some(release_ids.iter().map(|fcid| fcid.to_string()).collect()),
-            state: state,
+            state,
             ident: ident_id,
             revision: Some(rev_row.id.to_string()),
             redirect: redirect_id,
@@ -1448,7 +1448,7 @@ impl EntityCrud for WebcaptureEntity {
             original_url: Some(rev_row.original_url),
             timestamp: Some(chrono::DateTime::from_utc(rev_row.timestamp, chrono::Utc)),
             release_ids: Some(release_ids.iter().map(|fcid| fcid.to_string()).collect()),
-            state: state,
+            state,
             ident: ident_id,
             revision: Some(rev_row.id.to_string()),
             redirect: redirect_id,
@@ -1762,7 +1762,7 @@ impl EntityCrud for ReleaseEntity {
                     .map(|(rev_id, ident_id)| Self::EditNewRow {
                         editgroup_id: edit_context.editgroup_id.to_uuid(),
                         rev_id: Some(rev_id),
-                        ident_id: ident_id,
+                        ident_id,
                         redirect_id: None,
                         prev_rev: None,
                         extra_json: edit_context.extra_json.clone(),
@@ -1837,9 +1837,10 @@ impl EntityCrud for ReleaseEntity {
             ),
         };
 
-        let abstracts: Option<Vec<ReleaseEntityAbstracts>> = match hide.abstracts {
-            true => None,
-            false => Some(
+        let abstracts: Option<Vec<ReleaseEntityAbstracts>> = if hide.abstracts {
+            None
+        } else {
+            Some(
                 release_rev_abstract::table
                     .inner_join(abstracts::table)
                     .filter(release_rev_abstract::release_rev.eq(rev_row.id))
@@ -1854,7 +1855,7 @@ impl EntityCrud for ReleaseEntity {
                         },
                     )
                     .collect(),
-            ),
+            )
         };
 
         Ok(ReleaseEntity {
@@ -1882,10 +1883,10 @@ impl EntityCrud for ReleaseEntity {
             publisher: rev_row.publisher,
             language: rev_row.language,
             work_id: Some(FatCatId::from_uuid(&rev_row.work_ident_id).to_string()),
-            refs: refs,
-            contribs: contribs,
-            abstracts: abstracts,
-            state: state,
+            refs,
+            contribs,
+            abstracts,
+            state,
             ident: ident_id,
             revision: Some(rev_row.id.to_string()),
             redirect: redirect_id,
@@ -1979,7 +1980,7 @@ impl EntityCrud for ReleaseEntity {
                         .iter()
                         .map(|r| {
                             Ok(ReleaseRefNewRow {
-                                release_rev: rev_id.clone(),
+                                release_rev: *rev_id,
                                 target_release_ident_id: match r.target_release_id.clone() {
                                     None => None,
                                     Some(v) => Some(FatCatId::from_str(&v)?.to_uuid()),
@@ -2005,7 +2006,7 @@ impl EntityCrud for ReleaseEntity {
                         .iter()
                         .map(|c| {
                             Ok(ReleaseContribNewRow {
-                                release_rev: rev_id.clone(),
+                                release_rev: *rev_id,
                                 creator_ident_id: match c.creator_id.clone() {
                                     None => None,
                                     Some(v) => Some(FatCatId::from_str(&v)?.to_uuid()),
@@ -2136,7 +2137,7 @@ impl EntityCrud for WorkEntity {
         };
 
         Ok(WorkEntity {
-            state: state,
+            state,
             ident: ident_id,
             revision: Some(rev_row.id.to_string()),
             redirect: redirect_id,
