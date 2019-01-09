@@ -3,11 +3,7 @@
 
 ## Next Up
 
-- pg_tmp for rust tests
-- cargo update (rust deps)
-- rust to 2018 version
 - guide updates for auth
-- pipenv update; and maybe pin some versions (python deps)
 - remove the concept of "active editgroup", and simplify autoaccept batch path
 - refactor webface views to use shared entity_view.html template
 - fix returned error messages; should return type (shortname), and then actual
@@ -45,11 +41,9 @@
 
 - privacy policy, and link from: create account, create edit
 - refactors and correctness in rust/TODO
-- importers have editor accounts and include editgroup metadata
-- crossref importer sets release_type as "stub" when appropriate
-- real authentication and authorization
-- metrics, jwt, config, sentry
-- importers:  don't insert wayback links with short timestamps
+- metrics
+- sentry
+- importers: don't insert wayback links with short timestamps
 
 ## Metadata Import
 
@@ -98,8 +92,7 @@ new importers:
 ## Schema / Entity Fields
 
 - arxiv_id field (keep flip-flopping)
-- original_title field (?)
-- FileSet and WebCapture entities
+- original_title field (internationalization, "original language")
 - `doi` field for containers (at least for "journal" type; maybe for "series"
   as well?)
 - `retracted`, `translation`, and perhaps `corrected` as flags on releases,
@@ -120,9 +113,6 @@ new importers:
 - add_header Strict-Transport-Security "max-age=3600";
     => 12 hours? 24?
 - haproxy for rate-limiting
-- feature flags: consul?
-- secrets: vault?
-- "authn" microservice: https://keratin.tech/
 
 better API docs
 - readme.io has a free open source plan (or at least used to)
