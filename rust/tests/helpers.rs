@@ -36,7 +36,7 @@ pub fn setup_client() -> (Client, Context, Listening) {
 
     let mut iron_server = Iron::new(chain);
     iron_server.threads = 1;
-    // XXX: this isn't support to block, but it is. Disabling these tests for now.
+    // XXX: this isn't supposed to block, but it is. Disabling these tests for now.
     let iron_server = iron_server
         .http("localhost:9300")
         .expect("Failed to start HTTP server");
@@ -51,7 +51,7 @@ pub fn setup_http() -> (
     iron::middleware::Chain,
     diesel::r2d2::PooledConnection<diesel::r2d2::ConnectionManager<diesel::PgConnection>>,
 ) {
-    let server = fatcat::create_test_server().unwrap();
+    let server = server::create_test_server().unwrap();
     let conn = server.db_pool.get().expect("db_pool error");
 
     // setup auth as admin user

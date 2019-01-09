@@ -7,9 +7,7 @@ use diesel;
 use diesel::pg::PgConnection;
 use diesel::r2d2::ConnectionManager;
 use dotenv::dotenv;
-use rand::Rng;
-use std::process::Command;
-use std::{env, thread, time};
+use std::env;
 
 #[cfg(feature = "postgres")]
 embed_migrations!("../migrations/");
@@ -59,23 +57,16 @@ pub fn create_server() -> Result<Server> {
 /// CI should run tests serially.
 pub fn create_test_server() -> Result<Server> {
     dotenv().ok();
-    // sleep a bit so we don't have thundering herd collisions, resuliting in
-    // "pg_extension_name_index" or "pg_proc_proname_args_nsp_index" or "pg_type_typname_nsp_index"
-    // duplicate key violations.
-    thread::sleep(time::Duration::from_millis(
-        rand::thread_rng().gen_range(0, 200),
-    ));
-    let pg_tmp = Command::new("./tests/pg_tmp.sh")
-        .output()
-        .expect("run ./tests/pg_tmp.sh to get temporary postgres DB");
-    let database_url = String::from_utf8_lossy(&pg_tmp.stdout).to_string();
+    let database_url = env::var("TEST_DATABASE_URL").expect("TEST_DATABASE_URL must be set");
     env::set_var("DATABASE_URL", database_url);
 
     let mut server = create_server()?;
     server.auth_confectionary = AuthConfectionary::new_dummy();
     let conn = server.db_pool.get().expect("db_pool error");
 
-    // run migrations; this is a fresh/bare database
+    // create fresh database
+    diesel_migrations::run_pending_migrations(&conn).unwrap();
+    diesel_migrations::revert_latest_migration(&conn).unwrap();
     diesel_migrations::run_pending_migrations(&conn).unwrap();
     Ok(server)
 }
