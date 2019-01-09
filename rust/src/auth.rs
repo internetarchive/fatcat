@@ -243,20 +243,22 @@ impl AuthConfectionary {
             Ok(m) => m,
             Err(e) => {
                 // TODO: should be "chaining" here
-                return Err(
-                    ErrorKind::InvalidCredentials(
-                        format!("macaroon deserialize error: {:?}", e)).into(),
-                );
+                return Err(ErrorKind::InvalidCredentials(format!(
+                    "macaroon deserialize error: {:?}",
+                    e
+                ))
+                .into());
             }
         };
         let mac = match mac.validate() {
             Ok(m) => m,
             Err(e) => {
                 // TODO: should be "chaining" here
-                return Err(
-                    ErrorKind::InvalidCredentials(
-                        format!("macaroon validate error: {:?}", e)).into(),
-                );
+                return Err(ErrorKind::InvalidCredentials(format!(
+                    "macaroon validate error: {:?}",
+                    e
+                ))
+                .into());
             }
         };
         let mut verifier = Verifier::new();
@@ -270,10 +272,11 @@ impl AuthConfectionary {
         let editor_id = match editor_id {
             Some(id) => id,
             None => {
-                return Err(
-                    ErrorKind::InvalidCredentials("expected an editor_id caveat".to_string()).into(),
-                );
-            },
+                return Err(ErrorKind::InvalidCredentials(
+                    "expected an editor_id caveat".to_string(),
+                )
+                .into());
+            }
         };
         verifier.satisfy_exact(&format!("editor_id = {}", editor_id.to_string()));
         if let Some(endpoint) = endpoint {
@@ -294,10 +297,11 @@ impl AuthConfectionary {
         let created = match created {
             Some(c) => c,
             None => {
-                return Err(
-                    ErrorKind::InvalidCredentials("expected a 'created' (time >) caveat".to_string()).into(),
-                );
-            },
+                return Err(ErrorKind::InvalidCredentials(
+                    "expected a 'created' (time >) caveat".to_string(),
+                )
+                .into());
+            }
         };
         verifier.satisfy_exact(&format!(
             "time > {}",
@@ -327,9 +331,10 @@ impl AuthConfectionary {
         let verify_key = match self.root_keys.get(mac.identifier()) {
             Some(key) => key,
             None => {
-                return Err(ErrorKind::InvalidCredentials(
-                    format!("no valid auth signing key for identifier: {}", mac.identifier())
-                )
+                return Err(ErrorKind::InvalidCredentials(format!(
+                    "no valid auth signing key for identifier: {}",
+                    mac.identifier()
+                ))
                 .into());
             }
         };
@@ -344,8 +349,7 @@ impl AuthConfectionary {
             Err(e) => {
                 // TODO: chain
                 return Err(
-                    ErrorKind::InvalidCredentials(
-                        format!("token parsing failed: {:?}", e)).into(),
+                    ErrorKind::InvalidCredentials(format!("token parsing failed: {:?}", e)).into(),
                 );
             }
         }

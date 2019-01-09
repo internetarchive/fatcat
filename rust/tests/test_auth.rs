@@ -18,7 +18,8 @@ fn test_macaroons() {
     c.create_token(editor_id, None).unwrap();
 
     // create token w/ expiration
-    c.create_token(editor_id, Some(chrono::Duration::days(1))).unwrap();
+    c.create_token(editor_id, Some(chrono::Duration::days(1)))
+        .unwrap();
 }
 
 #[test]

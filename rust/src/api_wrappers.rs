@@ -1256,7 +1256,8 @@ impl Api for Server {
             Ok(())
         }) {
             Ok(()) => AuthCheckResponse::Success(Success {
-                message: "auth check successful!".to_string() }),
+                message: "auth check successful!".to_string(),
+            }),
             Err(Error(ErrorKind::Diesel(e), _)) => AuthCheckResponse::BadRequest(ErrorResponse {
                 message: e.to_string(),
             }),
@@ -1269,23 +1270,23 @@ impl Api for Server {
                 AuthCheckResponse::Forbidden(ErrorResponse {
                     message: e.to_string(),
                 })
-            },
+            }
             Err(Error(ErrorKind::InsufficientPrivileges(e), _)) => {
                 AuthCheckResponse::Forbidden(ErrorResponse {
                     message: e.to_string(),
                 })
-            },
+            }
             Err(Error(ErrorKind::OtherBadRequest(e), _)) => {
                 AuthCheckResponse::BadRequest(ErrorResponse {
                     message: e.to_string(),
                 })
-            },
+            }
             Err(e) => {
                 error!("{}", e);
                 AuthCheckResponse::GenericError(ErrorResponse {
                     message: e.to_string(),
                 })
-            },
+            }
         };
         Box::new(futures::done(Ok(ret)))
     }
