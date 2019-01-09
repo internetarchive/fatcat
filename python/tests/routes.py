@@ -9,7 +9,7 @@ from fixtures import *
 def test_static_routes(app):
     for route in ('/health', '/robots.txt', '/', '/about'):
         rv = app.get(route)
-        rv.raise_for_status()
+        assert rv.status_code == 200
 
     assert app.get("/static/bogus/route").status_code == 404
 
@@ -27,16 +27,16 @@ def test_all_views(app):
         assert rv.status_code == 404
 
     rv = app.get('/container/aaaaaaaaaaaaaeiraaaaaaaaai')
-    rv.raise_for_status()
+    assert rv.status_code == 200
 
     rv = app.get('/container/aaaaaaaaaaaaaeiraaaaaaaaai/history')
-    rv.raise_for_status()
+    assert rv.status_code == 200
 
     rv = app.get('/container/aaaaaaaaaaaaaeiraaaaaaaaai/edit')
-    rv.raise_for_status()
+    assert rv.status_code == 200
 
     rv = app.get('/container/create')
-    rv.raise_for_status()
+    assert rv.status_code == 200
 
     rv = app.get('/container/lookup')
     assert rv.status_code == 400
@@ -48,34 +48,34 @@ def test_all_views(app):
     assert rv.status_code == 302
 
     rv = app.get('/creator/aaaaaaaaaaaaaircaaaaaaaaai')
-    rv.raise_for_status()
+    assert rv.status_code == 200
 
     rv = app.get('/creator/aaaaaaaaaaaaaircaaaaaaaaai/history')
-    rv.raise_for_status()
+    assert rv.status_code == 200
 
     rv = app.get('/creator/aaaaaaaaaaaaaircaaaaaaaaai/edit')
-    rv.raise_for_status()
+    assert rv.status_code == 200
 
     rv = app.get('/creator/lookup?orcid=0000-0003-2088-7465')
     assert rv.status_code == 302
 
     rv = app.get('/file/aaaaaaaaaaaaamztaaaaaaaaai')
-    rv.raise_for_status()
+    assert rv.status_code == 200
 
     rv = app.get('/file/lookup?sha1=7d97e98f8af710c7e7fe703abc8f639e0ee507c4')
     assert rv.status_code == 302
 
     rv = app.get('/release/aaaaaaaaaaaaarceaaaaaaaaai')
-    rv.raise_for_status()
+    assert rv.status_code == 200
 
     rv = app.get('/release/aaaaaaaaaaaaarceaaaaaaaaai/history')
-    rv.raise_for_status()
+    assert rv.status_code == 200
 
     rv = app.get('/release/aaaaaaaaaaaaarceaaaaaaaaai/edit')
-    rv.raise_for_status()
+    assert rv.status_code == 200
 
     rv = app.get('/release/create')
-    rv.raise_for_status()
+    assert rv.status_code == 200
 
     rv = app.get('/release/lookup?doi=10.123/abc')
     assert rv.status_code == 302
@@ -84,22 +84,22 @@ def test_all_views(app):
     assert rv.status_code == 302
 
     rv = app.get('/release/search')
-    rv.raise_for_status()
+    assert rv.status_code == 200
 
     rv = app.get('/work/aaaaaaaaaaaaavkvaaaaaaaaai')
-    rv.raise_for_status()
+    assert rv.status_code == 200
 
     rv = app.get('/work/aaaaaaaaaaaaavkvaaaaaaaaai/history')
-    rv.raise_for_status()
+    assert rv.status_code == 200
 
     rv = app.get('/work/aaaaaaaaaaaaavkvaaaaaaaaai/edit')
-    rv.raise_for_status()
+    assert rv.status_code == 200
 
     rv = app.get('/work/create')
     assert rv.status_code == 404
 
     rv = app.get('/editgroup/aaaaaaaaaaaabo53aaaaaaaaae')
-    rv.raise_for_status()
+    assert rv.status_code == 200
 
     rv = app.get('/editgroup/ccccccccccccccccccccccccca')
     print(rv)
@@ -110,7 +110,7 @@ def test_all_views(app):
     #assert rv.status_code == 302
 
     rv = app.get('/editor/aaaaaaaaaaaabkvkaaaaaaaaae')
-    rv.raise_for_status()
+    assert rv.status_code == 200
 
     rv = app.get('/editor/aaaaaaaaaaaabkvkaaaaaaaaae/changelog')
-    rv.raise_for_status()
+    assert rv.status_code == 200

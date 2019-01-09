@@ -36,7 +36,6 @@ def do_search(q, limit=50, fulltext_only=True):
             (app.config['ELASTICSEARCH_BACKEND'], app.config['ELASTICSEARCH_INDEX']),
         json=search_request)
 
-    #rv.raise_for_status()
     if resp.status_code != 200:
         print("elasticsearch non-200 status code: " + str(resp.status_code))
         print(resp.content)
