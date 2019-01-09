@@ -1,6 +1,6 @@
 
 unified_test:
-  image: "rust:1.30-stretch"
+  image: "rust:1.31-stretch"
   variables:
     LC_ALL: "C.UTF-8"
     LANG: "C.UTF-8"
