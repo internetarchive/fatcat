@@ -1,18 +1,18 @@
 //! API endpoint handlers
 
-use api_entity_crud::EntityCrud;
-use api_helpers::*;
-use auth::*;
+use crate::api_entity_crud::EntityCrud;
+use crate::api_helpers::*;
+use crate::auth::*;
 use chrono;
-use database_models::*;
-use database_schema::*;
+use crate::database_models::*;
+use crate::database_schema::*;
 use diesel::prelude::*;
 use diesel::{self, insert_into};
-use errors::*;
+use crate::errors::*;
 use fatcat_api_spec::models;
 use fatcat_api_spec::models::*;
 use std::str::FromStr;
-use ConnectionPool;
+use crate::ConnectionPool;
 
 macro_rules! entity_batch_handler {
     ($post_batch_handler:ident, $model:ident) => {

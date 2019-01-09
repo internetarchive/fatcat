@@ -1,10 +1,10 @@
-use api_entity_crud::EntityCrud;
+use crate::api_entity_crud::EntityCrud;
 use data_encoding::BASE32_NOPAD;
-use database_models::*;
-use database_schema::*;
+use crate::database_models::*;
+use crate::database_schema::*;
 use diesel;
 use diesel::prelude::*;
-use errors::*;
+use crate::errors::*;
 use fatcat_api_spec::models::*;
 use regex::Regex;
 use serde_json;

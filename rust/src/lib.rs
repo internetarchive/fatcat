@@ -92,10 +92,10 @@ pub mod errors {
 }
 
 #[doc(hidden)]
-pub use errors::*;
+pub use crate::errors::*;
 
 pub use self::errors::*;
-use auth::AuthConfectionary;
+use crate::auth::AuthConfectionary;
 use diesel::pg::PgConnection;
 use diesel::r2d2::ConnectionManager;
 use dotenv::dotenv;

@@ -13,13 +13,12 @@ use fatcat_api_spec::models::*;
 use fatcat_api_spec::*;
 
 mod helpers;
-use helpers::setup_client;
 
 // Disabled due to hang
 //#[test]
 #[allow(dead_code)]
 fn test_api_rich_create() {
-    let (client, context, mut server) = setup_client();
+    let (client, context, mut server) = helpers::setup_client();
     let client = client.with_context(context);
 
     let admin_id = "aaaaaaaaaaaabkvkaaaaaaaaae".to_string();
@@ -195,7 +194,7 @@ fn test_api_rich_create() {
 //#[test]
 #[allow(dead_code)]
 fn test_merge_works() {
-    let (client, context, mut server) = setup_client();
+    let (client, context, mut server) = helpers::setup_client();
     let client = client.with_context(context);
 
     let admin_id = "aaaaaaaaaaaabkvkaaaaaaaaae".to_string();

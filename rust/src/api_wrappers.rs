@@ -1,12 +1,12 @@
 //! API endpoint handlers
 
-use api_entity_crud::EntityCrud;
-use api_helpers::*;
-use api_server::Server;
-use auth::*;
-use database_models::EntityEditRow;
+use crate::api_entity_crud::EntityCrud;
+use crate::api_helpers::*;
+use crate::api_server::Server;
+use crate::auth::*;
+use crate::database_models::EntityEditRow;
 use diesel::Connection;
-use errors::*;
+use crate::errors::*;
 use fatcat_api_spec::models;
 use fatcat_api_spec::models::*;
 use fatcat_api_spec::*;
