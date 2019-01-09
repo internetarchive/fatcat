@@ -39,6 +39,8 @@ while [ $# -gt 0 ]; do
 	shift
 done
 
+# bnewbold: hack this in to "make it work" on debian/ubuntu
+export PATH="$PATH:/usr/lib/postgresql/9.6/bin:/usr/lib/postgresql/11/bin"
 initdb -V > /dev/null || exit 1
 PGVER=$(psql -V | awk '{print $NF}')
 
