@@ -14,13 +14,14 @@ extern crate fatcat_api_spec;
 extern crate iron;
 extern crate uuid;
 
-use fatcat_api_spec::{Api, ApiNoContext, Context, ContextWrapperExt, Future};
+use fatcat_api_spec::{ApiNoContext, ContextWrapperExt, Future};
 
 mod helpers;
 use helpers::setup_client;
 
 // Disabled due to hang
 //#[test]
+#[allow(dead_code)]
 fn test_basic() {
     let (client, context, mut server) = setup_client();
     let client = client.with_context(context);
