@@ -37,19 +37,10 @@ slog = "^2.0"
 slog-term = "*"
 slog-async = "*"
 serde_json = "1.0"
+sentry = { version = "^0.12", default-features = false, features = ["with_client_implementation", "with_backtrace", "with_panic", "with_log", "with_rust_info", "with_error_chain"] }
+#cadence = "^0.16"
 
 # Command-line tools
 crossbeam-channel = "0.2"
 num_cpus = "1"
 env_logger = "*"
-
-# Unused (hyper 0.11 and https)
-#hyper-openssl = {version = "0.2", optional = true}
-#hyper-tls = {version = "0.1.2", optional = true}
-#tokio-core = "0.1.6"
-#tokio-proto = "0.1.1"
-
-# TODO
-#sentry = "*"
-#cadence = "*"
-#frank_jwt = "*"
