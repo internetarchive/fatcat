@@ -20,11 +20,11 @@ macro_rules! entity_batch_handler {
     ($post_batch_handler:ident, $model:ident) => {
         pub fn $post_batch_handler(
             &self,
+            conn: &DbConn,
             entity_list: &[models::$model],
             autoaccept: bool,
             editor_id: FatCatId,
             editgroup_id: Option<FatCatId>,
-            conn: &DbConn,
         ) -> Result<Vec<EntityEdit>> {
 
             let edit_context = make_edit_context(conn, editor_id, editgroup_id, autoaccept)?;
@@ -43,9 +43,9 @@ macro_rules! entity_batch_handler {
 }
 
 pub fn get_release_files(
+    conn: &DbConn,
     ident: FatCatId,
     hide_flags: HideFlags,
-    conn: &DbConn,
 ) -> Result<Vec<FileEntity>> {
     let rows: Vec<(FileRevRow, FileIdentRow, FileRevReleaseRow)> = file_rev::table
         .inner_join(file_ident::table)
@@ -61,9 +61,9 @@ pub fn get_release_files(
 }
 
 pub fn get_release_filesets(
+    conn: &DbConn,
     ident: FatCatId,
     hide_flags: HideFlags,
-    conn: &DbConn,
 ) -> Result<Vec<FilesetEntity>> {
     let rows: Vec<(FilesetRevRow, FilesetIdentRow, FilesetRevReleaseRow)> = fileset_rev::table
         .inner_join(fileset_ident::table)
@@ -79,9 +79,9 @@ pub fn get_release_filesets(
 }
 
 pub fn get_release_webcaptures(
+    conn: &DbConn,
     ident: FatCatId,
     hide_flags: HideFlags,
-    conn: &DbConn,
 ) -> Result<Vec<WebcaptureEntity>> {
     let rows: Vec<(
         WebcaptureRevRow,
@@ -103,11 +103,11 @@ pub fn get_release_webcaptures(
 impl Server {
     pub fn lookup_container_handler(
         &self,
+        conn: &DbConn,
         issnl: &Option<String>,
         wikidata_qid: &Option<String>,
         expand_flags: ExpandFlags,
         hide_flags: HideFlags,
-        conn: &DbConn,
     ) -> Result<ContainerEntity> {
         let (ident, rev): (ContainerIdentRow, ContainerRevRow) = match (issnl, wikidata_qid) {
             (Some(issnl), None) => {
@@ -140,11 +140,11 @@ impl Server {
 
     pub fn lookup_creator_handler(
         &self,
+        conn: &DbConn,
         orcid: &Option<String>,
         wikidata_qid: &Option<String>,
         expand_flags: ExpandFlags,
         hide_flags: HideFlags,
-        conn: &DbConn,
     ) -> Result<CreatorEntity> {
         let (ident, rev): (CreatorIdentRow, CreatorRevRow) = match (orcid, wikidata_qid) {
             (Some(orcid), None) => {
@@ -177,9 +177,9 @@ impl Server {
 
     pub fn get_creator_releases_handler(
         &self,
+        conn: &DbConn,
         ident: FatCatId,
         hide_flags: HideFlags,
-        conn: &DbConn,
     ) -> Result<Vec<ReleaseEntity>> {
         // TODO: some kind of unique or group-by?
         let rows: Vec<(ReleaseRevRow, ReleaseIdentRow, ReleaseContribRow)> = release_rev::table
@@ -198,12 +198,12 @@ impl Server {
 
     pub fn lookup_file_handler(
         &self,
+        conn: &DbConn,
         md5: &Option<String>,
         sha1: &Option<String>,
         sha256: &Option<String>,
         expand_flags: ExpandFlags,
         hide_flags: HideFlags,
-        conn: &DbConn,
     ) -> Result<FileEntity> {
         let (ident, rev): (FileIdentRow, FileRevRow) = match (md5, sha1, sha256) {
             (Some(md5), None, None) => {
@@ -245,6 +245,7 @@ impl Server {
 
     pub fn lookup_release_handler(
         &self,
+        conn: &DbConn,
         doi: &Option<String>,
         wikidata_qid: &Option<String>,
         isbn13: &Option<String>,
@@ -253,7 +254,6 @@ impl Server {
         core_id: &Option<String>,
         expand_flags: ExpandFlags,
         hide_flags: HideFlags,
-        conn: &DbConn,
     ) -> Result<ReleaseEntity> {
         let (ident, rev): (ReleaseIdentRow, ReleaseRevRow) =
             match (doi, wikidata_qid, isbn13, pmid, pmcid, core_id) {
@@ -325,36 +325,36 @@ impl Server {
 
     pub fn get_release_files_handler(
         &self,
+        conn: &DbConn,
         ident: FatCatId,
         hide_flags: HideFlags,
-        conn: &DbConn,
     ) -> Result<Vec<FileEntity>> {
-        get_release_files(ident, hide_flags, conn)
+        get_release_files(conn, ident, hide_flags)
     }
 
     pub fn get_release_filesets_handler(
         &self,
+        conn: &DbConn,
         ident: FatCatId,
         hide_flags: HideFlags,
-        conn: &DbConn,
     ) -> Result<Vec<FilesetEntity>> {
-        get_release_filesets(ident, hide_flags, conn)
+        get_release_filesets(conn, ident, hide_flags)
     }
 
     pub fn get_release_webcaptures_handler(
         &self,
+        conn: &DbConn,
         ident: FatCatId,
         hide_flags: HideFlags,
-        conn: &DbConn,
     ) -> Result<Vec<WebcaptureEntity>> {
-        get_release_webcaptures(ident, hide_flags, conn)
+        get_release_webcaptures(conn, ident, hide_flags)
     }
 
     pub fn get_work_releases_handler(
         &self,
+        conn: &DbConn,
         ident: FatCatId,
         hide_flags: HideFlags,
-        conn: &DbConn,
     ) -> Result<Vec<ReleaseEntity>> {
         let rows: Vec<(ReleaseRevRow, ReleaseIdentRow)> = release_rev::table
             .inner_join(release_ident::table)
@@ -368,15 +368,15 @@ impl Server {
             .collect()
     }
 
-    pub fn accept_editgroup_handler(&self, editgroup_id: FatCatId, conn: &DbConn) -> Result<()> {
-        accept_editgroup(editgroup_id, conn)?;
+    pub fn accept_editgroup_handler(&self, conn: &DbConn, editgroup_id: FatCatId) -> Result<()> {
+        accept_editgroup(conn, editgroup_id)?;
         Ok(())
     }
 
     pub fn create_editgroup_handler(
         &self,
-        entity: models::Editgroup,
         conn: &DbConn,
+        entity: models::Editgroup,
     ) -> Result<Editgroup> {
         let row: EditgroupRow = insert_into(editgroup::table)
             .values((
@@ -397,8 +397,8 @@ impl Server {
 
     pub fn get_editgroup_handler(
         &self,
-        editgroup_id: FatCatId,
         conn: &DbConn,
+        editgroup_id: FatCatId,
     ) -> Result<Editgroup> {
         let row: EditgroupRow = editgroup::table.find(editgroup_id.to_uuid()).first(conn)?;
 
@@ -471,15 +471,15 @@ impl Server {
         Ok(eg)
     }
 
-    pub fn get_editor_handler(&self, editor_id: FatCatId, conn: &DbConn) -> Result<Editor> {
+    pub fn get_editor_handler(&self, conn: &DbConn, editor_id: FatCatId) -> Result<Editor> {
         let row: EditorRow = editor::table.find(editor_id.to_uuid()).first(conn)?;
         Ok(row.into_model())
     }
 
     pub fn get_editor_changelog_handler(
         &self,
-        editor_id: FatCatId,
         conn: &DbConn,
+        editor_id: FatCatId,
     ) -> Result<Vec<ChangelogEntry>> {
         // TODO: single query
         let editor: EditorRow = editor::table.find(editor_id.to_uuid()).first(conn)?;
@@ -502,8 +502,8 @@ impl Server {
 
     pub fn get_changelog_handler(
         &self,
-        limit: Option<i64>,
         conn: &DbConn,
+        limit: Option<i64>,
     ) -> Result<Vec<ChangelogEntry>> {
         let limit = limit.unwrap_or(50);
 
@@ -525,10 +525,10 @@ impl Server {
         Ok(entries)
     }
 
-    pub fn get_changelog_entry_handler(&self, index: i64, conn: &DbConn) -> Result<ChangelogEntry> {
+    pub fn get_changelog_entry_handler(&self, conn: &DbConn, index: i64) -> Result<ChangelogEntry> {
         let cl_row: ChangelogRow = changelog::table.find(index).first(conn)?;
         let editgroup =
-            self.get_editgroup_handler(FatCatId::from_uuid(&cl_row.editgroup_id), conn)?;
+            self.get_editgroup_handler(conn, FatCatId::from_uuid(&cl_row.editgroup_id))?;
 
         let mut entry = cl_row.into_model();
         entry.editgroup = Some(editgroup);
@@ -544,7 +544,7 @@ impl Server {
     /// "{preferred_username}-{provider}"; the intent is for this to be temporary but unique. Might
     /// look like "bnewbold-github", or might look like "895139824-github". This is a hack to make
     /// check/creation idempotent.
-    pub fn auth_oidc_handler(&self, params: AuthOidc, conn: &DbConn) -> Result<(Editor, bool)> {
+    pub fn auth_oidc_handler(&self, conn: &DbConn, params: AuthOidc) -> Result<(Editor, bool)> {
         let existing: Vec<(EditorRow, AuthOidcRow)> = editor::table
             .inner_join(auth_oidc::table)
             .filter(auth_oidc::oidc_sub.eq(params.sub.clone()))

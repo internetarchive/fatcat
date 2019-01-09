@@ -1649,7 +1649,7 @@ impl EntityCrud for ReleaseEntity {
                     Some(redir) => FatCatId::from_str(&redir)?,
                 },
             };
-            self.files = Some(get_release_files(ident, HideFlags::none(), conn)?);
+            self.files = Some(get_release_files(conn, ident, HideFlags::none())?);
         }
         if expand.container {
             if let Some(ref cid) = self.container_id {

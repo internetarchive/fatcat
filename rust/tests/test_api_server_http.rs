@@ -571,7 +571,7 @@ fn test_post_file() {
     );
 
     let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
-    let editgroup_id = get_or_create_editgroup(editor_id, &conn).unwrap();
+    let editgroup_id = get_or_create_editgroup(&conn, editor_id).unwrap();
     helpers::check_http_response(
         request::post(
             &format!(
@@ -637,7 +637,7 @@ fn test_post_fileset() {
     );
 
     let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
-    let editgroup_id = get_or_create_editgroup(editor_id, &conn).unwrap();
+    let editgroup_id = get_or_create_editgroup(&conn, editor_id).unwrap();
     helpers::check_http_response(
         request::post(
             &format!(
@@ -701,7 +701,7 @@ fn test_post_webcapture() {
     );
 
     let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
-    let editgroup_id = get_or_create_editgroup(editor_id, &conn).unwrap();
+    let editgroup_id = get_or_create_editgroup(&conn, editor_id).unwrap();
     helpers::check_http_response(
         request::post(
             &format!(
@@ -847,7 +847,7 @@ fn test_update_work() {
     );
 
     let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
-    let editgroup_id = get_or_create_editgroup(editor_id, &conn).unwrap();
+    let editgroup_id = get_or_create_editgroup(&conn, editor_id).unwrap();
     helpers::check_http_response(
         request::post(
             &format!(
@@ -878,7 +878,7 @@ fn test_delete_work() {
     );
 
     let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
-    let editgroup_id = get_or_create_editgroup(editor_id, &conn).unwrap();
+    let editgroup_id = get_or_create_editgroup(&conn, editor_id).unwrap();
     helpers::check_http_response(
         request::post(
             &format!(
@@ -899,7 +899,7 @@ fn test_accept_editgroup() {
     let (headers, router, conn) = helpers::setup_http();
 
     let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
-    let editgroup_id = get_or_create_editgroup(editor_id, &conn).unwrap();
+    let editgroup_id = get_or_create_editgroup(&conn, editor_id).unwrap();
 
     let c: i64 = container_ident::table
         .filter(container_ident::is_live.eq(false))
@@ -1237,7 +1237,7 @@ fn test_abstracts() {
     );
 
     let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
-    let editgroup_id = get_or_create_editgroup(editor_id, &conn).unwrap();
+    let editgroup_id = get_or_create_editgroup(&conn, editor_id).unwrap();
     helpers::check_http_response(
         request::post(
             &format!(
@@ -1309,7 +1309,7 @@ fn test_contribs() {
     );
 
     let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
-    let editgroup_id = get_or_create_editgroup(editor_id, &conn).unwrap();
+    let editgroup_id = get_or_create_editgroup(&conn, editor_id).unwrap();
     helpers::check_http_response(
         request::post(
             &format!(

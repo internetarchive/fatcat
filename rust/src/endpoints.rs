@@ -152,7 +152,7 @@ macro_rules! wrap_entity_handlers {
                     auth_context.require_editgroup(&conn, eg_id)?;
                     Some(eg_id)
                 } else { None };
-                self.$post_batch_handler(entity_list, autoaccept.unwrap_or(false), auth_context.editor_id, editgroup_id, &conn)
+                self.$post_batch_handler(&conn, entity_list, autoaccept.unwrap_or(false), auth_context.editor_id, editgroup_id)
             }) {
                 Ok(edit) =>
                     $post_batch_resp::CreatedEntities(edit),
@@ -487,7 +487,7 @@ macro_rules! wrap_lookup_handler {
                 Some(param) => HideFlags::from_str(&param).unwrap(),
             };
             // No transaction for GET
-            let ret = match self.$get_handler(&$idname, &wikidata_qid, expand_flags, hide_flags, &conn) {
+            let ret = match self.$get_handler(&conn, &$idname, &wikidata_qid, expand_flags, hide_flags) {
                 Ok(entity) =>
                     $get_resp::FoundEntity(entity),
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
@@ -521,7 +521,7 @@ macro_rules! wrap_fcid_handler {
             // No transaction for GET
             let ret = match (|| {
                 let fcid = FatCatId::from_str(&id)?;
-                self.$get_handler(fcid, &conn)
+                self.$get_handler(&conn, fcid)
             })() {
                 Ok(entity) =>
                     $get_resp::Found(entity),
@@ -559,7 +559,7 @@ macro_rules! wrap_fcid_hide_handler {
                     None => HideFlags::none(),
                     Some(param) => HideFlags::from_str(&param)?,
                 };
-                self.$get_handler(fcid, hide_flags, &conn)
+                self.$get_handler(&conn, fcid, hide_flags)
             })() {
                 Ok(entity) =>
                     $get_resp::Found(entity),
@@ -817,7 +817,7 @@ impl Api for Server {
         };
         // No transaction for GET
         let ret =
-            match self.lookup_file_handler(&md5, &sha1, &sha256, expand_flags, hide_flags, &conn) {
+            match self.lookup_file_handler(&conn, &md5, &sha1, &sha256, expand_flags, hide_flags) {
                 Ok(entity) => LookupFileResponse::FoundEntity(entity),
                 Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
                     LookupFileResponse::NotFound(ErrorResponse {
@@ -872,6 +872,7 @@ impl Api for Server {
         };
         // No transaction for GET
         let ret = match self.lookup_release_handler(
+            &conn,
             &doi,
             &wikidata_qid,
             &isbn13,
@@ -880,7 +881,6 @@ impl Api for Server {
             &core_id,
             expand_flags,
             hide_flags,
-            &conn,
         ) {
             Ok(entity) => LookupReleaseResponse::FoundEntity(entity),
             Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
@@ -1003,7 +1003,7 @@ impl Api for Server {
             auth_context.require_role(FatcatRole::Admin)?;
             // NOTE: this is currently redundant, but zero-cost
             auth_context.require_editgroup(&conn, editgroup_id)?;
-            self.accept_editgroup_handler(editgroup_id, &conn)
+            self.accept_editgroup_handler(&conn, editgroup_id)
         }) {
             Ok(()) => AcceptEditgroupResponse::MergedSuccessfully(Success {
                 message: "horray!".to_string(),
@@ -1043,7 +1043,7 @@ impl Api for Server {
         let conn = self.db_pool.get().expect("db_pool error");
         let ret = match conn.transaction(|| {
             let editgroup_id = FatCatId::from_str(&editgroup_id)?;
-            self.get_editgroup_handler(editgroup_id, &conn)
+            self.get_editgroup_handler(&conn, editgroup_id)
         }) {
             Ok(entity) => GetEditgroupResponse::Found(entity),
             Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
@@ -1088,7 +1088,7 @@ impl Api for Server {
                     entity.editor_id = Some(auth_context.editor_id.to_string());
                 }
             };
-            self.create_editgroup_handler(entity, &conn)
+            self.create_editgroup_handler(&conn, entity)
         }) {
             Ok(eg) => CreateEditgroupResponse::SuccessfullyCreated(eg),
             Err(Error(ErrorKind::InvalidCredentials(e), _)) => {
@@ -1119,7 +1119,7 @@ impl Api for Server {
     ) -> Box<Future<Item = GetChangelogResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
         // No transaction for GET
-        let ret = match self.get_changelog_handler(limit, &conn) {
+        let ret = match self.get_changelog_handler(&conn, limit) {
             Ok(changelog) => GetChangelogResponse::Success(changelog),
             Err(e) => {
                 error!("{}", e);
@@ -1138,7 +1138,7 @@ impl Api for Server {
     ) -> Box<Future<Item = GetChangelogEntryResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
         // No transaction for GET
-        let ret = match self.get_changelog_entry_handler(id, &conn) {
+        let ret = match self.get_changelog_entry_handler(&conn, id) {
             Ok(entry) => GetChangelogEntryResponse::FoundChangelogEntry(entry),
             Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
                 GetChangelogEntryResponse::NotFound(ErrorResponse {
@@ -1168,7 +1168,7 @@ impl Api for Server {
                 Some("auth_oidc"),
             )?;
             auth_context.require_role(FatcatRole::Superuser)?;
-            let (editor, created) = self.auth_oidc_handler(params, &conn)?;
+            let (editor, created) = self.auth_oidc_handler(&conn, params)?;
             // create an auth token with 31 day duration
             let token = self.auth_confectionary.create_token(
                 FatCatId::from_str(&editor.editor_id.clone().unwrap())?,

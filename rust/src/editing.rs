@@ -45,7 +45,7 @@ pub fn make_edit_context(
                 .get_result(conn)?;
             FatCatId::from_uuid(&eg_row.id)
         }
-        (None, false) => FatCatId::from_uuid(&get_or_create_editgroup(editor_id.to_uuid(), conn)?),
+        (None, false) => FatCatId::from_uuid(&get_or_create_editgroup(conn, editor_id.to_uuid())?),
     };
     Ok(EditContext {
         editor_id,
@@ -86,7 +86,7 @@ pub fn update_editor_username(
 }
 
 /// This function should always be run within a transaction
-pub fn get_or_create_editgroup(editor_id: Uuid, conn: &DbConn) -> Result<Uuid> {
+pub fn get_or_create_editgroup(conn: &DbConn, editor_id: Uuid) -> Result<Uuid> {
     // check for current active
     let ed_row: EditorRow = editor::table.find(editor_id).first(conn)?;
     if let Some(current) = ed_row.active_editgroup_id {
@@ -104,7 +104,7 @@ pub fn get_or_create_editgroup(editor_id: Uuid, conn: &DbConn) -> Result<Uuid> {
 }
 
 /// This function should always be run within a transaction
-pub fn accept_editgroup(editgroup_id: FatCatId, conn: &DbConn) -> Result<ChangelogRow> {
+pub fn accept_editgroup(conn: &DbConn, editgroup_id: FatCatId) -> Result<ChangelogRow> {
     // check that we haven't accepted already (in changelog)
     // NB: could leave this to a UNIQUE constraint
     // TODO: redundant with check_edit_context
