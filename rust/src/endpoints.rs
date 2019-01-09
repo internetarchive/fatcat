@@ -88,19 +88,16 @@ macro_rules! wrap_entity_handlers {
         fn $post_fn(
             &self,
             entity: models::$model,
-            editgroup_id: Option<String>,
+            editgroup_id: String,
             context: &Context,
         ) -> Box<Future<Item = $post_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             let ret = match conn.transaction(|| {
+                let editgroup_id = FatCatId::from_str(&editgroup_id)?;
                 let auth_context = self.auth_confectionary.require_auth(&conn, &context.auth_data, Some(stringify!($post_fn)))?;
                 auth_context.require_role(FatcatRole::Editor)?;
-                let editgroup_id = if let Some(s) = editgroup_id {
-                    let eg_id = FatCatId::from_str(&s)?;
-                    auth_context.require_editgroup(&conn, eg_id)?;
-                    Some(eg_id)
-                } else { None };
-                let edit_context = make_edit_context(&conn, auth_context.editor_id, editgroup_id, false)?;
+                auth_context.require_editgroup(&conn, editgroup_id)?;
+                let edit_context = make_edit_context(&conn, auth_context.editor_id, Some(editgroup_id), false)?;
                 edit_context.check(&conn)?;
                 entity.db_create(&conn, &edit_context)?.into_model()
             }) {
@@ -190,20 +187,17 @@ macro_rules! wrap_entity_handlers {
             &self,
             ident: String,
             entity: models::$model,
-            editgroup_id: Option<String>,
+            editgroup_id: String,
             context: &Context,
         ) -> Box<Future<Item = $update_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             let ret = match conn.transaction(|| {
+                let editgroup_id = FatCatId::from_str(&editgroup_id)?;
                 let auth_context = self.auth_confectionary.require_auth(&conn, &context.auth_data, Some(stringify!($update_fn)))?;
                 auth_context.require_role(FatcatRole::Editor)?;
                 let entity_id = FatCatId::from_str(&ident)?;
-                let editgroup_id = if let Some(s) = editgroup_id {
-                    let eg_id = FatCatId::from_str(&s)?;
-                    auth_context.require_editgroup(&conn, eg_id)?;
-                    Some(eg_id)
-                } else { None };
-                let edit_context = make_edit_context(&conn, auth_context.editor_id, editgroup_id, false)?;
+                auth_context.require_editgroup(&conn, editgroup_id)?;
+                let edit_context = make_edit_context(&conn, auth_context.editor_id, Some(editgroup_id), false)?;
                 edit_context.check(&conn)?;
                 entity.db_update(&conn, &edit_context, entity_id)?.into_model()
             }) {
@@ -246,23 +240,17 @@ macro_rules! wrap_entity_handlers {
         fn $delete_fn(
             &self,
             ident: String,
-            editgroup_id: Option<String>,
+            editgroup_id: String,
             context: &Context,
         ) -> Box<Future<Item = $delete_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             let ret = match conn.transaction(|| {
+                let editgroup_id = FatCatId::from_str(&editgroup_id)?;
                 let auth_context = self.auth_confectionary.require_auth(&conn, &context.auth_data, Some(stringify!($delete_fn)))?;
                 auth_context.require_role(FatcatRole::Editor)?;
                 let entity_id = FatCatId::from_str(&ident)?;
-                let editgroup_id: Option<FatCatId> = match editgroup_id {
-                    Some(s) => {
-                        let editgroup_id = FatCatId::from_str(&s)?;
-                        auth_context.require_editgroup(&conn, editgroup_id)?;
-                        Some(editgroup_id)
-                    },
-                    None => None,
-                };
-                let edit_context = make_edit_context(&conn, auth_context.editor_id, editgroup_id, false)?;
+                auth_context.require_editgroup(&conn, editgroup_id)?;
+                let edit_context = make_edit_context(&conn, auth_context.editor_id, Some(editgroup_id), false)?;
                 edit_context.check(&conn)?;
                 $model::db_delete(&conn, &edit_context, entity_id)?.into_model()
             }) {

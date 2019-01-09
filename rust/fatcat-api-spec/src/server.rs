@@ -116,7 +116,13 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params
+                    .get("editgroup_id")
+                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
+                    .first()
+                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
+                    .parse::<String>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -412,7 +418,13 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params
+                    .get("editgroup_id")
+                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
+                    .first()
+                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
+                    .parse::<String>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
 
                 match api.delete_container(param_ident, param_editgroup_id, context).wait() {
                     Ok(rsp) => match rsp {
@@ -1184,7 +1196,13 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params
+                    .get("editgroup_id")
+                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
+                    .first()
+                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
+                    .parse::<String>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -1324,7 +1342,13 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params
+                    .get("editgroup_id")
+                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
+                    .first()
+                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
+                    .parse::<String>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -1620,7 +1644,13 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params
+                    .get("editgroup_id")
+                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
+                    .first()
+                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
+                    .parse::<String>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
 
                 match api.delete_creator(param_ident, param_editgroup_id, context).wait() {
                     Ok(rsp) => match rsp {
@@ -2485,7 +2515,13 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params
+                    .get("editgroup_id")
+                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
+                    .first()
+                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
+                    .parse::<String>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -3669,7 +3705,13 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params
+                    .get("editgroup_id")
+                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
+                    .first()
+                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
+                    .parse::<String>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -3965,7 +4007,13 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params
+                    .get("editgroup_id")
+                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
+                    .first()
+                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
+                    .parse::<String>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
 
                 match api.delete_file(param_ident, param_editgroup_id, context).wait() {
                     Ok(rsp) => match rsp {
@@ -4738,7 +4786,13 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params
+                    .get("editgroup_id")
+                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
+                    .first()
+                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
+                    .parse::<String>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -4878,7 +4932,13 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params
+                    .get("editgroup_id")
+                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
+                    .first()
+                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
+                    .parse::<String>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -5174,7 +5234,13 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params
+                    .get("editgroup_id")
+                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
+                    .first()
+                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
+                    .parse::<String>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
 
                 match api.delete_fileset(param_ident, param_editgroup_id, context).wait() {
                     Ok(rsp) => match rsp {
@@ -5865,7 +5931,13 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params
+                    .get("editgroup_id")
+                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
+                    .first()
+                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
+                    .parse::<String>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -6005,7 +6077,13 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params
+                    .get("editgroup_id")
+                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
+                    .first()
+                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
+                    .parse::<String>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -6286,7 +6364,13 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params
+                    .get("editgroup_id")
+                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
+                    .first()
+                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
+                    .parse::<String>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -6441,7 +6525,13 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params
+                    .get("editgroup_id")
+                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
+                    .first()
+                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
+                    .parse::<String>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
 
                 match api.delete_release(param_ident, param_editgroup_id, context).wait() {
                     Ok(rsp) => match rsp {
@@ -7499,7 +7589,13 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params
+                    .get("editgroup_id")
+                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
+                    .first()
+                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
+                    .parse::<String>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -7639,7 +7735,13 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params
+                    .get("editgroup_id")
+                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
+                    .first()
+                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
+                    .parse::<String>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -7935,7 +8037,13 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params
+                    .get("editgroup_id")
+                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
+                    .first()
+                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
+                    .parse::<String>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
 
                 match api.delete_webcapture(param_ident, param_editgroup_id, context).wait() {
                     Ok(rsp) => match rsp {
@@ -8626,7 +8734,13 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params
+                    .get("editgroup_id")
+                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
+                    .first()
+                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
+                    .parse::<String>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -8922,7 +9036,13 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params
+                    .get("editgroup_id")
+                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
+                    .first()
+                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
+                    .parse::<String>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
 
                 match api.delete_work(param_ident, param_editgroup_id, context).wait() {
                     Ok(rsp) => match rsp {
@@ -9706,7 +9826,13 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_editgroup_id = query_params
+                    .get("editgroup_id")
+                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
+                    .first()
+                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
+                    .parse::<String>()
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for

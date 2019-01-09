@@ -30,10 +30,10 @@ use fatcat::{
 pub struct Server;
 
 impl Api for Server {
-    fn create_container(&self, entity: models::ContainerEntity, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = CreateContainerResponse, Error = ApiError> + Send> {
+    fn create_container(&self, entity: models::ContainerEntity, editgroup_id: String, context: &Context) -> Box<Future<Item = CreateContainerResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "create_container({:?}, {:?}) - X-Span-ID: {:?}",
+            "create_container({:?}, \"{}\") - X-Span-ID: {:?}",
             entity,
             editgroup_id,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
@@ -59,10 +59,10 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn delete_container(&self, ident: String, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = DeleteContainerResponse, Error = ApiError> + Send> {
+    fn delete_container(&self, ident: String, editgroup_id: String, context: &Context) -> Box<Future<Item = DeleteContainerResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "delete_container(\"{}\", {:?}) - X-Span-ID: {:?}",
+            "delete_container(\"{}\", \"{}\") - X-Span-ID: {:?}",
             ident,
             editgroup_id,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
@@ -143,16 +143,10 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn update_container(
-        &self,
-        ident: String,
-        entity: models::ContainerEntity,
-        editgroup_id: Option<String>,
-        context: &Context,
-    ) -> Box<Future<Item = UpdateContainerResponse, Error = ApiError> + Send> {
+    fn update_container(&self, ident: String, entity: models::ContainerEntity, editgroup_id: String, context: &Context) -> Box<Future<Item = UpdateContainerResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "update_container(\"{}\", {:?}, {:?}) - X-Span-ID: {:?}",
+            "update_container(\"{}\", {:?}, \"{}\") - X-Span-ID: {:?}",
             ident,
             entity,
             editgroup_id,
@@ -161,10 +155,10 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn create_creator(&self, entity: models::CreatorEntity, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = CreateCreatorResponse, Error = ApiError> + Send> {
+    fn create_creator(&self, entity: models::CreatorEntity, editgroup_id: String, context: &Context) -> Box<Future<Item = CreateCreatorResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "create_creator({:?}, {:?}) - X-Span-ID: {:?}",
+            "create_creator({:?}, \"{}\") - X-Span-ID: {:?}",
             entity,
             editgroup_id,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
@@ -190,10 +184,10 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn delete_creator(&self, ident: String, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = DeleteCreatorResponse, Error = ApiError> + Send> {
+    fn delete_creator(&self, ident: String, editgroup_id: String, context: &Context) -> Box<Future<Item = DeleteCreatorResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "delete_creator(\"{}\", {:?}) - X-Span-ID: {:?}",
+            "delete_creator(\"{}\", \"{}\") - X-Span-ID: {:?}",
             ident,
             editgroup_id,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
@@ -285,10 +279,10 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn update_creator(&self, ident: String, entity: models::CreatorEntity, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = UpdateCreatorResponse, Error = ApiError> + Send> {
+    fn update_creator(&self, ident: String, entity: models::CreatorEntity, editgroup_id: String, context: &Context) -> Box<Future<Item = UpdateCreatorResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "update_creator(\"{}\", {:?}, {:?}) - X-Span-ID: {:?}",
+            "update_creator(\"{}\", {:?}, \"{}\") - X-Span-ID: {:?}",
             ident,
             entity,
             editgroup_id,
@@ -362,10 +356,10 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn create_file(&self, entity: models::FileEntity, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = CreateFileResponse, Error = ApiError> + Send> {
+    fn create_file(&self, entity: models::FileEntity, editgroup_id: String, context: &Context) -> Box<Future<Item = CreateFileResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "create_file({:?}, {:?}) - X-Span-ID: {:?}",
+            "create_file({:?}, \"{}\") - X-Span-ID: {:?}",
             entity,
             editgroup_id,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
@@ -391,10 +385,10 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn delete_file(&self, ident: String, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = DeleteFileResponse, Error = ApiError> + Send> {
+    fn delete_file(&self, ident: String, editgroup_id: String, context: &Context) -> Box<Future<Item = DeleteFileResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "delete_file(\"{}\", {:?}) - X-Span-ID: {:?}",
+            "delete_file(\"{}\", \"{}\") - X-Span-ID: {:?}",
             ident,
             editgroup_id,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
@@ -477,10 +471,10 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn update_file(&self, ident: String, entity: models::FileEntity, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = UpdateFileResponse, Error = ApiError> + Send> {
+    fn update_file(&self, ident: String, entity: models::FileEntity, editgroup_id: String, context: &Context) -> Box<Future<Item = UpdateFileResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "update_file(\"{}\", {:?}, {:?}) - X-Span-ID: {:?}",
+            "update_file(\"{}\", {:?}, \"{}\") - X-Span-ID: {:?}",
             ident,
             entity,
             editgroup_id,
@@ -489,10 +483,10 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn create_fileset(&self, entity: models::FilesetEntity, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = CreateFilesetResponse, Error = ApiError> + Send> {
+    fn create_fileset(&self, entity: models::FilesetEntity, editgroup_id: String, context: &Context) -> Box<Future<Item = CreateFilesetResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "create_fileset({:?}, {:?}) - X-Span-ID: {:?}",
+            "create_fileset({:?}, \"{}\") - X-Span-ID: {:?}",
             entity,
             editgroup_id,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
@@ -518,10 +512,10 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn delete_fileset(&self, ident: String, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = DeleteFilesetResponse, Error = ApiError> + Send> {
+    fn delete_fileset(&self, ident: String, editgroup_id: String, context: &Context) -> Box<Future<Item = DeleteFilesetResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "delete_fileset(\"{}\", {:?}) - X-Span-ID: {:?}",
+            "delete_fileset(\"{}\", \"{}\") - X-Span-ID: {:?}",
             ident,
             editgroup_id,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
@@ -582,10 +576,10 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn update_fileset(&self, ident: String, entity: models::FilesetEntity, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = UpdateFilesetResponse, Error = ApiError> + Send> {
+    fn update_fileset(&self, ident: String, entity: models::FilesetEntity, editgroup_id: String, context: &Context) -> Box<Future<Item = UpdateFilesetResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "update_fileset(\"{}\", {:?}, {:?}) - X-Span-ID: {:?}",
+            "update_fileset(\"{}\", {:?}, \"{}\") - X-Span-ID: {:?}",
             ident,
             entity,
             editgroup_id,
@@ -594,10 +588,10 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn create_release(&self, entity: models::ReleaseEntity, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = CreateReleaseResponse, Error = ApiError> + Send> {
+    fn create_release(&self, entity: models::ReleaseEntity, editgroup_id: String, context: &Context) -> Box<Future<Item = CreateReleaseResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "create_release({:?}, {:?}) - X-Span-ID: {:?}",
+            "create_release({:?}, \"{}\") - X-Span-ID: {:?}",
             entity,
             editgroup_id,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
@@ -623,10 +617,10 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn create_work(&self, entity: models::WorkEntity, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = CreateWorkResponse, Error = ApiError> + Send> {
+    fn create_work(&self, entity: models::WorkEntity, editgroup_id: String, context: &Context) -> Box<Future<Item = CreateWorkResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "create_work({:?}, {:?}) - X-Span-ID: {:?}",
+            "create_work({:?}, \"{}\") - X-Span-ID: {:?}",
             entity,
             editgroup_id,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
@@ -634,10 +628,10 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn delete_release(&self, ident: String, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = DeleteReleaseResponse, Error = ApiError> + Send> {
+    fn delete_release(&self, ident: String, editgroup_id: String, context: &Context) -> Box<Future<Item = DeleteReleaseResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "delete_release(\"{}\", {:?}) - X-Span-ID: {:?}",
+            "delete_release(\"{}\", \"{}\") - X-Span-ID: {:?}",
             ident,
             editgroup_id,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
@@ -759,10 +753,10 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn update_release(&self, ident: String, entity: models::ReleaseEntity, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = UpdateReleaseResponse, Error = ApiError> + Send> {
+    fn update_release(&self, ident: String, entity: models::ReleaseEntity, editgroup_id: String, context: &Context) -> Box<Future<Item = UpdateReleaseResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "update_release(\"{}\", {:?}, {:?}) - X-Span-ID: {:?}",
+            "update_release(\"{}\", {:?}, \"{}\") - X-Span-ID: {:?}",
             ident,
             entity,
             editgroup_id,
@@ -771,10 +765,10 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn create_webcapture(&self, entity: models::WebcaptureEntity, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = CreateWebcaptureResponse, Error = ApiError> + Send> {
+    fn create_webcapture(&self, entity: models::WebcaptureEntity, editgroup_id: String, context: &Context) -> Box<Future<Item = CreateWebcaptureResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "create_webcapture({:?}, {:?}) - X-Span-ID: {:?}",
+            "create_webcapture({:?}, \"{}\") - X-Span-ID: {:?}",
             entity,
             editgroup_id,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
@@ -800,10 +794,10 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn delete_webcapture(&self, ident: String, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = DeleteWebcaptureResponse, Error = ApiError> + Send> {
+    fn delete_webcapture(&self, ident: String, editgroup_id: String, context: &Context) -> Box<Future<Item = DeleteWebcaptureResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "delete_webcapture(\"{}\", {:?}) - X-Span-ID: {:?}",
+            "delete_webcapture(\"{}\", \"{}\") - X-Span-ID: {:?}",
             ident,
             editgroup_id,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
@@ -864,16 +858,10 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn update_webcapture(
-        &self,
-        ident: String,
-        entity: models::WebcaptureEntity,
-        editgroup_id: Option<String>,
-        context: &Context,
-    ) -> Box<Future<Item = UpdateWebcaptureResponse, Error = ApiError> + Send> {
+    fn update_webcapture(&self, ident: String, entity: models::WebcaptureEntity, editgroup_id: String, context: &Context) -> Box<Future<Item = UpdateWebcaptureResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "update_webcapture(\"{}\", {:?}, {:?}) - X-Span-ID: {:?}",
+            "update_webcapture(\"{}\", {:?}, \"{}\") - X-Span-ID: {:?}",
             ident,
             entity,
             editgroup_id,
@@ -900,10 +888,10 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn delete_work(&self, ident: String, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = DeleteWorkResponse, Error = ApiError> + Send> {
+    fn delete_work(&self, ident: String, editgroup_id: String, context: &Context) -> Box<Future<Item = DeleteWorkResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "delete_work(\"{}\", {:?}) - X-Span-ID: {:?}",
+            "delete_work(\"{}\", \"{}\") - X-Span-ID: {:?}",
             ident,
             editgroup_id,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
@@ -975,10 +963,10 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn update_work(&self, ident: String, entity: models::WorkEntity, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = UpdateWorkResponse, Error = ApiError> + Send> {
+    fn update_work(&self, ident: String, entity: models::WorkEntity, editgroup_id: String, context: &Context) -> Box<Future<Item = UpdateWorkResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "update_work(\"{}\", {:?}, {:?}) - X-Span-ID: {:?}",
+            "update_work(\"{}\", {:?}, \"{}\") - X-Span-ID: {:?}",
             ident,
             entity,
             editgroup_id,

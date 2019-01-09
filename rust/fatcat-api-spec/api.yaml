@@ -619,7 +619,7 @@ paths:
             $ref: "#/definitions/container_entity"
         - name: editgroup_id
           in: query
-          required: false
+          required: true
           type: string
       security:
         - Bearer: []
@@ -703,7 +703,7 @@ paths:
             $ref: "#/definitions/container_entity"
         - name: editgroup_id
           in: query
-          required: false
+          required: true
           type: string
       security:
         - Bearer: []
@@ -721,7 +721,7 @@ paths:
       parameters:
         - name: editgroup_id
           in: query
-          required: false
+          required: true 
           type: string
       security:
         - Bearer: []
@@ -877,7 +877,7 @@ paths:
             $ref: "#/definitions/creator_entity"
         - name: editgroup_id
           in: query
-          required: false
+          required: true
           type: string
       security:
         - Bearer: []
@@ -961,7 +961,7 @@ paths:
             $ref: "#/definitions/creator_entity"
         - name: editgroup_id
           in: query
-          required: false
+          required: true
           type: string
       security:
         - Bearer: []
@@ -979,7 +979,7 @@ paths:
       parameters:
         - name: editgroup_id
           in: query
-          required: false
+          required: true
           type: string
       security:
         - Bearer: []
@@ -1158,7 +1158,7 @@ paths:
             $ref: "#/definitions/file_entity"
         - name: editgroup_id
           in: query
-          required: false
+          required: true
           type: string
       security:
         - Bearer: []
@@ -1242,7 +1242,7 @@ paths:
             $ref: "#/definitions/file_entity"
         - name: editgroup_id
           in: query
-          required: false
+          required: true
           type: string
       security:
         - Bearer: []
@@ -1260,7 +1260,7 @@ paths:
       parameters:
         - name: editgroup_id
           in: query
-          required: false
+          required: true
           type: string
       security:
         - Bearer: []
@@ -1421,7 +1421,7 @@ paths:
             $ref: "#/definitions/fileset_entity"
         - name: editgroup_id
           in: query
-          required: false
+          required: true
           type: string
       security:
         - Bearer: []
@@ -1505,7 +1505,7 @@ paths:
             $ref: "#/definitions/fileset_entity"
         - name: editgroup_id
           in: query
-          required: false
+          required: true
           type: string
       security:
         - Bearer: []
@@ -1523,7 +1523,7 @@ paths:
       parameters:
         - name: editgroup_id
           in: query
-          required: false
+          required: true
           type: string
       security:
         - Bearer: []
@@ -1650,7 +1650,7 @@ paths:
             $ref: "#/definitions/webcapture_entity"
         - name: editgroup_id
           in: query
-          required: false
+          required: true
           type: string
       security:
         - Bearer: []
@@ -1734,7 +1734,7 @@ paths:
             $ref: "#/definitions/webcapture_entity"
         - name: editgroup_id
           in: query
-          required: false
+          required: true
           type: string
       security:
         - Bearer: []
@@ -1752,7 +1752,7 @@ paths:
       parameters:
         - name: editgroup_id
           in: query
-          required: false
+          required: true
           type: string
       security:
         - Bearer: []
@@ -1879,7 +1879,7 @@ paths:
             $ref: "#/definitions/release_entity"
         - name: editgroup_id
           in: query
-          required: false
+          required: true
           type: string
       security:
         - Bearer: []
@@ -1963,7 +1963,7 @@ paths:
             $ref: "#/definitions/release_entity"
         - name: editgroup_id
           in: query
-          required: false
+          required: true
           type: string
       security:
         - Bearer: []
@@ -1981,7 +1981,7 @@ paths:
       parameters:
         - name: editgroup_id
           in: query
-          required: false
+          required: true
           type: string
       security:
         - Bearer: []
@@ -2223,7 +2223,7 @@ paths:
             $ref: "#/definitions/work_entity"
         - name: editgroup_id
           in: query
-          required: false
+          required: true
           type: string
       security:
         - Bearer: []
@@ -2307,7 +2307,7 @@ paths:
             $ref: "#/definitions/work_entity"
         - name: editgroup_id
           in: query
-          required: false
+          required: true
           type: string
       security:
         - Bearer: []
@@ -2325,7 +2325,7 @@ paths:
       parameters:
         - name: editgroup_id
           in: query
-          required: false
+          required: true
           type: string
       security:
         - Bearer: []

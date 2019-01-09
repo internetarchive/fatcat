@@ -33,7 +33,7 @@ fn test_api_rich_create() {
     new_container.issnl = Some("2222-3333".to_string());
     // extra=dict(a=2, i="zing"))),
     let resp = client
-        .create_container(new_container, Some(editgroup_id.clone()))
+        .create_container(new_container, editgroup_id.clone())
         .wait()
         .unwrap();
     let container_id = match resp {
@@ -46,7 +46,7 @@ fn test_api_rich_create() {
     new_creator.orcid = Some("0000-0002-1825-0097".to_string());
     // extra=dict(a=2, i="zing"))),
     let resp = client
-        .create_creator(new_creator, Some(editgroup_id.clone()))
+        .create_creator(new_creator, editgroup_id.clone())
         .wait()
         .unwrap();
     let creator_id = match resp {
@@ -57,7 +57,7 @@ fn test_api_rich_create() {
     let new_work = WorkEntity::new();
     // extra=dict(a=2, i="zing"))),
     let resp = client
-        .create_work(new_work, Some(editgroup_id.clone()))
+        .create_work(new_work, editgroup_id.clone())
         .wait()
         .unwrap();
     let work_id = match resp {
@@ -79,7 +79,7 @@ fn test_api_rich_create() {
     new_release.refs = Some(vec![rref]);
     // extra=dict(a=2, i="zing"))),
     let resp = client
-        .create_release(new_release, Some(editgroup_id.clone()))
+        .create_release(new_release, editgroup_id.clone())
         .wait()
         .unwrap();
     let stub_release_id = match resp {
@@ -102,7 +102,7 @@ fn test_api_rich_create() {
     new_release.refs = Some(vec![rref]);
     // extra=dict(f=7, b="loopy"))),
     let resp = client
-        .create_release(new_release, Some(editgroup_id.clone()))
+        .create_release(new_release, editgroup_id.clone())
         .wait()
         .unwrap();
     let release_id = match resp {
@@ -116,7 +116,7 @@ fn test_api_rich_create() {
     new_file.release_ids = Some(vec![release_id.clone()]);
     // extra=dict(f=4, b="zing"))),
     let resp = client
-        .create_file(new_file, Some(editgroup_id.clone()))
+        .create_file(new_file, editgroup_id.clone())
         .wait()
         .unwrap();
     let file_id = match resp {
@@ -203,7 +203,7 @@ fn test_merge_works() {
     // Create 2x works, each with releases; work_b has two releases
 
     let resp = client
-        .create_work(WorkEntity::new(), Some(editgroup_id.clone()))
+        .create_work(WorkEntity::new(), editgroup_id.clone())
         .wait()
         .unwrap();
     let work_a_id = match resp {
@@ -216,7 +216,7 @@ fn test_merge_works() {
     new_release.work_id = Some(work_a_id.clone());
     new_release.doi = Some("10.1234/A1".to_string());
     let resp = client
-        .create_release(new_release, Some(editgroup_id.clone()))
+        .create_release(new_release, editgroup_id.clone())
         .wait()
         .unwrap();
     let _release_a1_id = match resp {
@@ -225,7 +225,7 @@ fn test_merge_works() {
     };
 
     let resp = client
-        .create_work(WorkEntity::new(), Some(editgroup_id.clone()))
+        .create_work(WorkEntity::new(), editgroup_id.clone())
         .wait()
         .unwrap();
     let work_b_id = match resp {
@@ -239,7 +239,7 @@ fn test_merge_works() {
     new_release.work_id = Some(work_b_id.clone());
     new_release.doi = Some("10.1234/B1".to_string());
     let resp = client
-        .create_release(new_release, Some(editgroup_id.clone()))
+        .create_release(new_release, editgroup_id.clone())
         .wait()
         .unwrap();
     let _release_b1_id = match resp {
@@ -253,7 +253,7 @@ fn test_merge_works() {
     new_release.work_id = Some(work_b_id.clone());
     new_release.doi = Some("10.1234/B2".to_string());
     let resp = client
-        .create_release(new_release, Some(editgroup_id.clone()))
+        .create_release(new_release, editgroup_id.clone())
         .wait()
         .unwrap();
     let _release_b2_id = match resp {

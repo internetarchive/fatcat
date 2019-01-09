@@ -538,7 +538,10 @@ fn test_post_file() {
 
     helpers::check_http_response(
         request::post(
-            &format!("http://localhost:9411/v0/file?editgroup_id={}", editgroup_id),
+            &format!(
+                "http://localhost:9411/v0/file?editgroup_id={}",
+                editgroup_id
+            ),
             headers.clone(),
             r#"{ }"#,
             &router,
@@ -605,7 +608,10 @@ fn test_post_fileset() {
 
     helpers::check_http_response(
         request::post(
-            &format!("http://localhost:9411/v0/fileset?editgroup_id={}", editgroup_id),
+            &format!(
+                "http://localhost:9411/v0/fileset?editgroup_id={}",
+                editgroup_id
+            ),
             headers.clone(),
             r#"{ }"#,
             &router,
@@ -662,7 +668,10 @@ fn test_post_webcapture() {
 
     helpers::check_http_response(
         request::post(
-            &format!("http://localhost:9411/v0/webcapture?editgroup_id={}", editgroup_id),
+            &format!(
+                "http://localhost:9411/v0/webcapture?editgroup_id={}",
+                editgroup_id
+            ),
             headers.clone(),
             r#"{ "original_url": "https://fatcat.wiki",
                  "timestamp": "2018-12-28T11:11:11Z" }"#,
@@ -674,7 +683,10 @@ fn test_post_webcapture() {
 
     helpers::check_http_response(
         request::post(
-            &format!("http://localhost:9411/v0/webcapture?editgroup_id={}", editgroup_id),
+            &format!(
+                "http://localhost:9411/v0/webcapture?editgroup_id={}",
+                editgroup_id
+            ),
             headers.clone(),
             r#"{"original_url": "https://bnewbold.net/",
                 "timestamp": "2018-12-28T05:06:07Z",
@@ -726,7 +738,10 @@ fn test_post_release() {
 
     helpers::check_http_response(
         request::post(
-            &format!("http://localhost:9411/v0/release?editgroup_id={}", editgroup_id),
+            &format!(
+                "http://localhost:9411/v0/release?editgroup_id={}",
+                editgroup_id
+            ),
             headers.clone(),
             // TODO: target_release_id
             r#"{"title": "secret minimal paper",
@@ -742,7 +757,10 @@ fn test_post_release() {
     // No work_id supplied (auto-created)
     helpers::check_http_response(
         request::post(
-            &format!("http://localhost:9411/v0/release?editgroup_id={}", editgroup_id),
+            &format!(
+                "http://localhost:9411/v0/release?editgroup_id={}",
+                editgroup_id
+            ),
             headers.clone(),
             // TODO: target_release_id
             r#"{"title": "secret minimal paper the second",
@@ -756,7 +774,10 @@ fn test_post_release() {
 
     helpers::check_http_response(
         request::post(
-            &format!("http://localhost:9411/v0/release?editgroup_id={}", editgroup_id),
+            &format!(
+                "http://localhost:9411/v0/release?editgroup_id={}",
+                editgroup_id
+            ),
             headers.clone(),
             // TODO: target_release_id
             r#"{"title": "secret paper",
@@ -918,7 +939,10 @@ fn test_accept_editgroup() {
 
     helpers::check_http_response(
         request::post(
-            &format!("http://localhost:9411/v0/container?editgroup_id={}", uuid2fcid(&editgroup_id)),
+            &format!(
+                "http://localhost:9411/v0/container?editgroup_id={}",
+                uuid2fcid(&editgroup_id)
+            ),
             headers.clone(),
             &format!(
                 "{{\"name\": \"test journal 1\", \"editgroup_id\": \"{}\"}}",
@@ -931,7 +955,10 @@ fn test_accept_editgroup() {
     );
     helpers::check_http_response(
         request::post(
-            &format!("http://localhost:9411/v0/container?editgroup_id={}", uuid2fcid(&editgroup_id)),
+            &format!(
+                "http://localhost:9411/v0/container?editgroup_id={}",
+                uuid2fcid(&editgroup_id)
+            ),
             headers.clone(),
             &format!(
                 "{{\"name\": \"test journal 2\", \"editgroup_id\": \"{}\"}}",
@@ -1200,7 +1227,10 @@ fn test_abstracts() {
 
     helpers::check_http_response(
         request::post(
-            &format!("http://localhost:9411/v0/release?editgroup_id={}", editgroup_id),
+            &format!(
+                "http://localhost:9411/v0/release?editgroup_id={}",
+                editgroup_id
+            ),
             headers.clone(),
             r#"{"title": "some paper",
                 "doi": "10.1234/iiiiiii",
@@ -1222,7 +1252,10 @@ fn test_abstracts() {
     // Same abstracts; checking that re-inserting works
     helpers::check_http_response(
         request::post(
-            &format!("http://localhost:9411/v0/release?editgroup_id={}", editgroup_id),
+            &format!(
+                "http://localhost:9411/v0/release?editgroup_id={}",
+                editgroup_id
+            ),
             headers.clone(),
             r#"{"title": "some paper again",
                 "abstracts": [
@@ -1292,7 +1325,10 @@ fn test_contribs() {
 
     helpers::check_http_response(
         request::post(
-            &format!("http://localhost:9411/v0/release?editgroup_id={}", editgroup_id),
+            &format!(
+                "http://localhost:9411/v0/release?editgroup_id={}",
+                editgroup_id
+            ),
             headers.clone(),
             r#"{"title": "some paper",
                 "doi": "10.1234/iiiiiii",

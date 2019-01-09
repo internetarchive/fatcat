@@ -41,10 +41,10 @@ paths:
         consumesJson: true
       - name: "editgroup_id"
         in: "query"
-        required: false
+        required: true
         type: "string"
-        formatString: "{:?}"
-        example: "Some(\"editgroup_id_example\".to_string())"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       responses:
         201:
           description: "Created Entity"
@@ -307,10 +307,10 @@ paths:
         consumesJson: true
       - name: "editgroup_id"
         in: "query"
-        required: false
+        required: true
         type: "string"
-        formatString: "{:?}"
-        example: "Some(\"editgroup_id_example\".to_string())"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       responses:
         200:
           description: "Updated Entity"
@@ -390,10 +390,10 @@ paths:
         example: "\"ident_example\".to_string()"
       - name: "editgroup_id"
         in: "query"
-        required: false
+        required: true
         type: "string"
-        formatString: "{:?}"
-        example: "Some(\"editgroup_id_example\".to_string())"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       responses:
         200:
           description: "Deleted Entity"
@@ -887,10 +887,10 @@ paths:
         consumesJson: true
       - name: "editgroup_id"
         in: "query"
-        required: false
+        required: true
         type: "string"
-        formatString: "{:?}"
-        example: "Some(\"editgroup_id_example\".to_string())"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       responses:
         201:
           description: "Created Entity"
@@ -1153,10 +1153,10 @@ paths:
         consumesJson: true
       - name: "editgroup_id"
         in: "query"
-        required: false
+        required: true
         type: "string"
-        formatString: "{:?}"
-        example: "Some(\"editgroup_id_example\".to_string())"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       responses:
         200:
           description: "Updated Entity"
@@ -1236,10 +1236,10 @@ paths:
         example: "\"ident_example\".to_string()"
       - name: "editgroup_id"
         in: "query"
-        required: false
+        required: true
         type: "string"
-        formatString: "{:?}"
-        example: "Some(\"editgroup_id_example\".to_string())"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       responses:
         200:
           description: "Deleted Entity"
@@ -1797,10 +1797,10 @@ paths:
         consumesJson: true
       - name: "editgroup_id"
         in: "query"
-        required: false
+        required: true
         type: "string"
-        formatString: "{:?}"
-        example: "Some(\"editgroup_id_example\".to_string())"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       responses:
         201:
           description: "Created Entity"
@@ -2063,10 +2063,10 @@ paths:
         consumesJson: true
       - name: "editgroup_id"
         in: "query"
-        required: false
+        required: true
         type: "string"
-        formatString: "{:?}"
-        example: "Some(\"editgroup_id_example\".to_string())"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       responses:
         200:
           description: "Updated Entity"
@@ -2146,10 +2146,10 @@ paths:
         example: "\"ident_example\".to_string()"
       - name: "editgroup_id"
         in: "query"
-        required: false
+        required: true
         type: "string"
-        formatString: "{:?}"
-        example: "Some(\"editgroup_id_example\".to_string())"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       responses:
         200:
           description: "Deleted Entity"
@@ -2656,10 +2656,10 @@ paths:
         consumesJson: true
       - name: "editgroup_id"
         in: "query"
-        required: false
+        required: true
         type: "string"
-        formatString: "{:?}"
-        example: "Some(\"editgroup_id_example\".to_string())"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       responses:
         201:
           description: "Created Entity"
@@ -2922,10 +2922,10 @@ paths:
         consumesJson: true
       - name: "editgroup_id"
         in: "query"
-        required: false
+        required: true
         type: "string"
-        formatString: "{:?}"
-        example: "Some(\"editgroup_id_example\".to_string())"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       responses:
         200:
           description: "Updated Entity"
@@ -3005,10 +3005,10 @@ paths:
         example: "\"ident_example\".to_string()"
       - name: "editgroup_id"
         in: "query"
-        required: false
+        required: true
         type: "string"
-        formatString: "{:?}"
-        example: "Some(\"editgroup_id_example\".to_string())"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       responses:
         200:
           description: "Deleted Entity"
@@ -3425,10 +3425,10 @@ paths:
         consumesJson: true
       - name: "editgroup_id"
         in: "query"
-        required: false
+        required: true
         type: "string"
-        formatString: "{:?}"
-        example: "Some(\"editgroup_id_example\".to_string())"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       responses:
         201:
           description: "Created Entity"
@@ -3691,10 +3691,10 @@ paths:
         consumesJson: true
       - name: "editgroup_id"
         in: "query"
-        required: false
+        required: true
         type: "string"
-        formatString: "{:?}"
-        example: "Some(\"editgroup_id_example\".to_string())"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       responses:
         200:
           description: "Updated Entity"
@@ -3774,10 +3774,10 @@ paths:
         example: "\"ident_example\".to_string()"
       - name: "editgroup_id"
         in: "query"
-        required: false
+        required: true
         type: "string"
-        formatString: "{:?}"
-        example: "Some(\"editgroup_id_example\".to_string())"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       responses:
         200:
           description: "Deleted Entity"
@@ -4194,10 +4194,10 @@ paths:
         consumesJson: true
       - name: "editgroup_id"
         in: "query"
-        required: false
+        required: true
         type: "string"
-        formatString: "{:?}"
-        example: "Some(\"editgroup_id_example\".to_string())"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       responses:
         201:
           description: "Created Entity"
@@ -4460,10 +4460,10 @@ paths:
         consumesJson: true
       - name: "editgroup_id"
         in: "query"
-        required: false
+        required: true
         type: "string"
-        formatString: "{:?}"
-        example: "Some(\"editgroup_id_example\".to_string())"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       responses:
         200:
           description: "Updated Entity"
@@ -4543,10 +4543,10 @@ paths:
         example: "\"ident_example\".to_string()"
       - name: "editgroup_id"
         in: "query"
-        required: false
+        required: true
         type: "string"
-        formatString: "{:?}"
-        example: "Some(\"editgroup_id_example\".to_string())"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       responses:
         200:
           description: "Deleted Entity"
@@ -5254,10 +5254,10 @@ paths:
         consumesJson: true
       - name: "editgroup_id"
         in: "query"
-        required: false
+        required: true
         type: "string"
-        formatString: "{:?}"
-        example: "Some(\"editgroup_id_example\".to_string())"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       responses:
         201:
           description: "Created Entity"
@@ -5520,10 +5520,10 @@ paths:
         consumesJson: true
       - name: "editgroup_id"
         in: "query"
-        required: false
+        required: true
         type: "string"
-        formatString: "{:?}"
-        example: "Some(\"editgroup_id_example\".to_string())"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       responses:
         200:
           description: "Updated Entity"
@@ -5603,10 +5603,10 @@ paths:
         example: "\"ident_example\".to_string()"
       - name: "editgroup_id"
         in: "query"
-        required: false
+        required: true
         type: "string"
-        formatString: "{:?}"
-        example: "Some(\"editgroup_id_example\".to_string())"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       responses:
         200:
           description: "Deleted Entity"

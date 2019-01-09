@@ -137,7 +137,7 @@ fn main() {
     match matches.value_of("operation") {
         // Disabled because there's no example.
         // Some("CreateContainer") => {
-        //     let result = client.create_container(???, Some("editgroup_id_example".to_string())).wait();
+        //     let result = client.create_container(???, "editgroup_id_example".to_string()).wait();
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         //  },
         Some("CreateContainerBatch") => {
@@ -146,7 +146,7 @@ fn main() {
         }
 
         Some("DeleteContainer") => {
-            let result = client.delete_container("ident_example".to_string(), Some("editgroup_id_example".to_string())).wait();
+            let result = client.delete_container("ident_example".to_string(), "editgroup_id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -198,13 +198,13 @@ fn main() {
 
         // Disabled because there's no example.
         // Some("UpdateContainer") => {
-        //     let result = client.update_container("ident_example".to_string(), ???, Some("editgroup_id_example".to_string())).wait();
+        //     let result = client.update_container("ident_example".to_string(), ???, "editgroup_id_example".to_string()).wait();
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         //  },
 
         // Disabled because there's no example.
         // Some("CreateCreator") => {
-        //     let result = client.create_creator(???, Some("editgroup_id_example".to_string())).wait();
+        //     let result = client.create_creator(???, "editgroup_id_example".to_string()).wait();
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         //  },
         Some("CreateCreatorBatch") => {
@@ -213,7 +213,7 @@ fn main() {
         }
 
         Some("DeleteCreator") => {
-            let result = client.delete_creator("ident_example".to_string(), Some("editgroup_id_example".to_string())).wait();
+            let result = client.delete_creator("ident_example".to_string(), "editgroup_id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -270,7 +270,7 @@ fn main() {
 
         // Disabled because there's no example.
         // Some("UpdateCreator") => {
-        //     let result = client.update_creator("ident_example".to_string(), ???, Some("editgroup_id_example".to_string())).wait();
+        //     let result = client.update_creator("ident_example".to_string(), ???, "editgroup_id_example".to_string()).wait();
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         //  },
         Some("AuthCheck") => {
@@ -325,7 +325,7 @@ fn main() {
 
         // Disabled because there's no example.
         // Some("CreateFile") => {
-        //     let result = client.create_file(???, Some("editgroup_id_example".to_string())).wait();
+        //     let result = client.create_file(???, "editgroup_id_example".to_string()).wait();
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         //  },
         Some("CreateFileBatch") => {
@@ -334,7 +334,7 @@ fn main() {
         }
 
         Some("DeleteFile") => {
-            let result = client.delete_file("ident_example".to_string(), Some("editgroup_id_example".to_string())).wait();
+            let result = client.delete_file("ident_example".to_string(), "editgroup_id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -387,13 +387,13 @@ fn main() {
 
         // Disabled because there's no example.
         // Some("UpdateFile") => {
-        //     let result = client.update_file("ident_example".to_string(), ???, Some("editgroup_id_example".to_string())).wait();
+        //     let result = client.update_file("ident_example".to_string(), ???, "editgroup_id_example".to_string()).wait();
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         //  },
 
         // Disabled because there's no example.
         // Some("CreateFileset") => {
-        //     let result = client.create_fileset(???, Some("editgroup_id_example".to_string())).wait();
+        //     let result = client.create_fileset(???, "editgroup_id_example".to_string()).wait();
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         //  },
         Some("CreateFilesetBatch") => {
@@ -402,7 +402,7 @@ fn main() {
         }
 
         Some("DeleteFileset") => {
-            let result = client.delete_fileset("ident_example".to_string(), Some("editgroup_id_example".to_string())).wait();
+            let result = client.delete_fileset("ident_example".to_string(), "editgroup_id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -442,13 +442,13 @@ fn main() {
 
         // Disabled because there's no example.
         // Some("UpdateFileset") => {
-        //     let result = client.update_fileset("ident_example".to_string(), ???, Some("editgroup_id_example".to_string())).wait();
+        //     let result = client.update_fileset("ident_example".to_string(), ???, "editgroup_id_example".to_string()).wait();
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         //  },
 
         // Disabled because there's no example.
         // Some("CreateRelease") => {
-        //     let result = client.create_release(???, Some("editgroup_id_example".to_string())).wait();
+        //     let result = client.create_release(???, "editgroup_id_example".to_string()).wait();
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         //  },
         Some("CreateReleaseBatch") => {
@@ -458,11 +458,11 @@ fn main() {
 
         // Disabled because there's no example.
         // Some("CreateWork") => {
-        //     let result = client.create_work(???, Some("editgroup_id_example".to_string())).wait();
+        //     let result = client.create_work(???, "editgroup_id_example".to_string()).wait();
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         //  },
         Some("DeleteRelease") => {
-            let result = client.delete_release("ident_example".to_string(), Some("editgroup_id_example".to_string())).wait();
+            let result = client.delete_release("ident_example".to_string(), "editgroup_id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -533,13 +533,13 @@ fn main() {
 
         // Disabled because there's no example.
         // Some("UpdateRelease") => {
-        //     let result = client.update_release("ident_example".to_string(), ???, Some("editgroup_id_example".to_string())).wait();
+        //     let result = client.update_release("ident_example".to_string(), ???, "editgroup_id_example".to_string()).wait();
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         //  },
 
         // Disabled because there's no example.
         // Some("CreateWebcapture") => {
-        //     let result = client.create_webcapture(???, Some("editgroup_id_example".to_string())).wait();
+        //     let result = client.create_webcapture(???, "editgroup_id_example".to_string()).wait();
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         //  },
         Some("CreateWebcaptureBatch") => {
@@ -548,7 +548,7 @@ fn main() {
         }
 
         Some("DeleteWebcapture") => {
-            let result = client.delete_webcapture("ident_example".to_string(), Some("editgroup_id_example".to_string())).wait();
+            let result = client.delete_webcapture("ident_example".to_string(), "editgroup_id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -588,7 +588,7 @@ fn main() {
 
         // Disabled because there's no example.
         // Some("UpdateWebcapture") => {
-        //     let result = client.update_webcapture("ident_example".to_string(), ???, Some("editgroup_id_example".to_string())).wait();
+        //     let result = client.update_webcapture("ident_example".to_string(), ???, "editgroup_id_example".to_string()).wait();
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         //  },
         Some("CreateWorkBatch") => {
@@ -597,7 +597,7 @@ fn main() {
         }
 
         Some("DeleteWork") => {
-            let result = client.delete_work("ident_example".to_string(), Some("editgroup_id_example".to_string())).wait();
+            let result = client.delete_work("ident_example".to_string(), "editgroup_id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
@@ -642,7 +642,7 @@ fn main() {
 
         // Disabled because there's no example.
         // Some("UpdateWork") => {
-        //     let result = client.update_work("ident_example".to_string(), ???, Some("editgroup_id_example".to_string())).wait();
+        //     let result = client.update_work("ident_example".to_string(), ???, "editgroup_id_example".to_string()).wait();
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         //  },
         _ => panic!("Invalid operation provided"),

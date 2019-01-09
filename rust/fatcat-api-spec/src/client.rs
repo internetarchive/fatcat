@@ -173,9 +173,9 @@ impl Client {
 }
 
 impl Api for Client {
-    fn create_container(&self, param_entity: models::ContainerEntity, param_editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = CreateContainerResponse, Error = ApiError> + Send> {
+    fn create_container(&self, param_entity: models::ContainerEntity, param_editgroup_id: String, context: &Context) -> Box<Future<Item = CreateContainerResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
+        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
 
         let url = format!(
             "{}/v0/container?{editgroup_id}",
@@ -369,9 +369,9 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_container(&self, param_ident: String, param_editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = DeleteContainerResponse, Error = ApiError> + Send> {
+    fn delete_container(&self, param_ident: String, param_editgroup_id: String, context: &Context) -> Box<Future<Item = DeleteContainerResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
+        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
 
         let url = format!(
             "{}/v0/container/{ident}?{editgroup_id}",
@@ -971,11 +971,11 @@ impl Api for Client {
         &self,
         param_ident: String,
         param_entity: models::ContainerEntity,
-        param_editgroup_id: Option<String>,
+        param_editgroup_id: String,
         context: &Context,
     ) -> Box<Future<Item = UpdateContainerResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
+        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
 
         let url = format!(
             "{}/v0/container/{ident}?{editgroup_id}",
@@ -1068,9 +1068,9 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_creator(&self, param_entity: models::CreatorEntity, param_editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = CreateCreatorResponse, Error = ApiError> + Send> {
+    fn create_creator(&self, param_entity: models::CreatorEntity, param_editgroup_id: String, context: &Context) -> Box<Future<Item = CreateCreatorResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
+        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
 
         let url = format!(
             "{}/v0/creator?{editgroup_id}",
@@ -1264,9 +1264,9 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_creator(&self, param_ident: String, param_editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = DeleteCreatorResponse, Error = ApiError> + Send> {
+    fn delete_creator(&self, param_ident: String, param_editgroup_id: String, context: &Context) -> Box<Future<Item = DeleteCreatorResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
+        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
 
         let url = format!(
             "{}/v0/creator/{ident}?{editgroup_id}",
@@ -1934,11 +1934,11 @@ impl Api for Client {
         &self,
         param_ident: String,
         param_entity: models::CreatorEntity,
-        param_editgroup_id: Option<String>,
+        param_editgroup_id: String,
         context: &Context,
     ) -> Box<Future<Item = UpdateCreatorResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
+        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
 
         let url = format!(
             "{}/v0/creator/{ident}?{editgroup_id}",
@@ -2765,9 +2765,9 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_file(&self, param_entity: models::FileEntity, param_editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = CreateFileResponse, Error = ApiError> + Send> {
+    fn create_file(&self, param_entity: models::FileEntity, param_editgroup_id: String, context: &Context) -> Box<Future<Item = CreateFileResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
+        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
 
         let url = format!("{}/v0/file?{editgroup_id}", self.base_path, editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET));
 
@@ -2957,9 +2957,9 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_file(&self, param_ident: String, param_editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = DeleteFileResponse, Error = ApiError> + Send> {
+    fn delete_file(&self, param_ident: String, param_editgroup_id: String, context: &Context) -> Box<Future<Item = DeleteFileResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
+        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
 
         let url = format!(
             "{}/v0/file/{ident}?{editgroup_id}",
@@ -3558,15 +3558,9 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn update_file(
-        &self,
-        param_ident: String,
-        param_entity: models::FileEntity,
-        param_editgroup_id: Option<String>,
-        context: &Context,
-    ) -> Box<Future<Item = UpdateFileResponse, Error = ApiError> + Send> {
+    fn update_file(&self, param_ident: String, param_entity: models::FileEntity, param_editgroup_id: String, context: &Context) -> Box<Future<Item = UpdateFileResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
+        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
 
         let url = format!(
             "{}/v0/file/{ident}?{editgroup_id}",
@@ -3659,9 +3653,9 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_fileset(&self, param_entity: models::FilesetEntity, param_editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = CreateFilesetResponse, Error = ApiError> + Send> {
+    fn create_fileset(&self, param_entity: models::FilesetEntity, param_editgroup_id: String, context: &Context) -> Box<Future<Item = CreateFilesetResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
+        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
 
         let url = format!(
             "{}/v0/fileset?{editgroup_id}",
@@ -3855,9 +3849,9 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_fileset(&self, param_ident: String, param_editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = DeleteFilesetResponse, Error = ApiError> + Send> {
+    fn delete_fileset(&self, param_ident: String, param_editgroup_id: String, context: &Context) -> Box<Future<Item = DeleteFilesetResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
+        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
 
         let url = format!(
             "{}/v0/fileset/{ident}?{editgroup_id}",
@@ -4377,11 +4371,11 @@ impl Api for Client {
         &self,
         param_ident: String,
         param_entity: models::FilesetEntity,
-        param_editgroup_id: Option<String>,
+        param_editgroup_id: String,
         context: &Context,
     ) -> Box<Future<Item = UpdateFilesetResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
+        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
 
         let url = format!(
             "{}/v0/fileset/{ident}?{editgroup_id}",
@@ -4474,9 +4468,9 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_release(&self, param_entity: models::ReleaseEntity, param_editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = CreateReleaseResponse, Error = ApiError> + Send> {
+    fn create_release(&self, param_entity: models::ReleaseEntity, param_editgroup_id: String, context: &Context) -> Box<Future<Item = CreateReleaseResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
+        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
 
         let url = format!(
             "{}/v0/release?{editgroup_id}",
@@ -4670,9 +4664,9 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_work(&self, param_entity: models::WorkEntity, param_editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = CreateWorkResponse, Error = ApiError> + Send> {
+    fn create_work(&self, param_entity: models::WorkEntity, param_editgroup_id: String, context: &Context) -> Box<Future<Item = CreateWorkResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
+        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
 
         let url = format!("{}/v0/work?{editgroup_id}", self.base_path, editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET));
 
@@ -4760,9 +4754,9 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_release(&self, param_ident: String, param_editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = DeleteReleaseResponse, Error = ApiError> + Send> {
+    fn delete_release(&self, param_ident: String, param_editgroup_id: String, context: &Context) -> Box<Future<Item = DeleteReleaseResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
+        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
 
         let url = format!(
             "{}/v0/release/{ident}?{editgroup_id}",
@@ -5578,11 +5572,11 @@ impl Api for Client {
         &self,
         param_ident: String,
         param_entity: models::ReleaseEntity,
-        param_editgroup_id: Option<String>,
+        param_editgroup_id: String,
         context: &Context,
     ) -> Box<Future<Item = UpdateReleaseResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
+        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
 
         let url = format!(
             "{}/v0/release/{ident}?{editgroup_id}",
@@ -5675,14 +5669,9 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_webcapture(
-        &self,
-        param_entity: models::WebcaptureEntity,
-        param_editgroup_id: Option<String>,
-        context: &Context,
-    ) -> Box<Future<Item = CreateWebcaptureResponse, Error = ApiError> + Send> {
+    fn create_webcapture(&self, param_entity: models::WebcaptureEntity, param_editgroup_id: String, context: &Context) -> Box<Future<Item = CreateWebcaptureResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
+        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
 
         let url = format!(
             "{}/v0/webcapture?{editgroup_id}",
@@ -5876,9 +5865,9 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_webcapture(&self, param_ident: String, param_editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = DeleteWebcaptureResponse, Error = ApiError> + Send> {
+    fn delete_webcapture(&self, param_ident: String, param_editgroup_id: String, context: &Context) -> Box<Future<Item = DeleteWebcaptureResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
+        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
 
         let url = format!(
             "{}/v0/webcapture/{ident}?{editgroup_id}",
@@ -6398,11 +6387,11 @@ impl Api for Client {
         &self,
         param_ident: String,
         param_entity: models::WebcaptureEntity,
-        param_editgroup_id: Option<String>,
+        param_editgroup_id: String,
         context: &Context,
     ) -> Box<Future<Item = UpdateWebcaptureResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
+        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
 
         let url = format!(
             "{}/v0/webcapture/{ident}?{editgroup_id}",
@@ -6597,9 +6586,9 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_work(&self, param_ident: String, param_editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = DeleteWorkResponse, Error = ApiError> + Send> {
+    fn delete_work(&self, param_ident: String, param_editgroup_id: String, context: &Context) -> Box<Future<Item = DeleteWorkResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
+        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
 
         let url = format!(
             "{}/v0/work/{ident}?{editgroup_id}",
@@ -7183,15 +7172,9 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn update_work(
-        &self,
-        param_ident: String,
-        param_entity: models::WorkEntity,
-        param_editgroup_id: Option<String>,
-        context: &Context,
-    ) -> Box<Future<Item = UpdateWorkResponse, Error = ApiError> + Send> {
+    fn update_work(&self, param_ident: String, param_entity: models::WorkEntity, param_editgroup_id: String, context: &Context) -> Box<Future<Item = UpdateWorkResponse, Error = ApiError> + Send> {
         // Query parameters
-        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
+        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
 
         let url = format!(
             "{}/v0/work/{ident}?{editgroup_id}",
