@@ -40,6 +40,7 @@ while [ $# -gt 0 ]; do
 done
 
 # bnewbold: hack this in to "make it work" on debian/ubuntu
+# bnewbold: also note, pg_virtualenv could also work, but is ubuntu/debian specific
 export PATH="$PATH:/usr/lib/postgresql/9.6/bin:/usr/lib/postgresql/11/bin"
 initdb -V > /dev/null || exit 1
 PGVER=$(psql -V | awk '{print $NF}')

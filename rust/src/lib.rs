@@ -24,6 +24,7 @@ extern crate regex;
 extern crate lazy_static;
 extern crate macaroon;
 extern crate sha1;
+extern crate rand;
 
 pub mod api_entity_crud;
 pub mod api_helpers;
@@ -100,7 +101,9 @@ use diesel::r2d2::ConnectionManager;
 use dotenv::dotenv;
 use iron::middleware::AfterMiddleware;
 use iron::{Request, Response};
-use std::env;
+use std::{env, thread, time};
+use std::process::Command;
+use rand::Rng;
 
 #[cfg(feature = "postgres")]
 embed_migrations!("../migrations/");
@@ -156,21 +159,34 @@ pub fn server() -> Result<api_server::Server> {
     })
 }
 
+/// Generates a server for testing. Calls an external bash script to generate a random postgres
+/// database, which will be unique to this process but common across threads and connections. The
+/// database will automagically get cleaned up (deleted) after 60 seconds.
+/// Currently, start times are staggered by up to 200ms to prevent internal postgres concurrency
+/// errors; if this fails run the tests serially (one at a time), which is slower but more robust.
+/// CI should run tests serially.
 pub fn test_server() -> Result<api_server::Server> {
     dotenv().ok();
-    let database_url = env::var("TEST_DATABASE_URL").expect("TEST_DATABASE_URL must be set");
+    // sleep a bit so we don't have thundering herd collisions, resuliting in
+    // "pg_extension_name_index" or "pg_proc_proname_args_nsp_index" or "pg_type_typname_nsp_index"
+    // duplicate key violations.
+    thread::sleep(time::Duration::from_millis(rand::thread_rng().gen_range(0, 200)));
+    let pg_tmp = Command::new("./tests/pg_tmp.sh")
+        .output()
+        .expect("run ./tests/pg_tmp.sh to get temporary postgres DB");
+    let database_url = String::from_utf8_lossy(&pg_tmp.stdout).to_string();
     env::set_var("DATABASE_URL", database_url);
 
     let mut server = server()?;
     server.auth_confectionary = AuthConfectionary::new_dummy();
     let conn = server.db_pool.get().expect("db_pool error");
 
-    // run migrations; revert latest (dummy data); re-run latest
-    diesel_migrations::run_pending_migrations(&conn).unwrap();
-    diesel_migrations::revert_latest_migration(&conn).unwrap();
+    // run migrations; this is a fresh/bare database
     diesel_migrations::run_pending_migrations(&conn).unwrap();
     Ok(server)
 }
+
+// TODO: move this to bin/fatcatd
 
 /// HTTP header middleware
 header! { (XClacksOverhead, "X-Clacks-Overhead") => [String] }

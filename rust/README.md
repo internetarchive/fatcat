@@ -42,6 +42,10 @@ Build and run:
 
 Tests:
 
+    cargo test
+
+    # if you get weird postgres errors, try running only one test at a time
+    # (slow and conservative)
     cargo test -- --test-threads 1
 
 Note that most "integration" level tests are written in python and run by
