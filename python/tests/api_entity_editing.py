@@ -36,7 +36,7 @@ def test_multiple_edits_same_group(api):
 
     # cleanup
     eg = quick_eg(api)
-    api.delete_creator(c1.ident)
+    api.delete_creator(c1.ident, eg.editgroup_id)
     api.accept_editgroup(eg.editgroup_id)
 
 
@@ -61,7 +61,7 @@ def test_edit_after_accept(api):
 
     # cleanup
     eg = quick_eg(api)
-    api.delete_creator(c1.ident)
+    api.delete_creator(c1.ident, eg.editgroup_id)
     api.accept_editgroup(eg.editgroup_id)
 
 
@@ -94,7 +94,7 @@ def test_edit_deletion(api):
 
     # cleanup
     eg = quick_eg(api)
-    api.delete_creator(c1.ident)
+    api.delete_creator(c1.ident, eg.editgroup_id)
     api.accept_editgroup(eg.editgroup_id)
 
 

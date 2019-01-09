@@ -129,8 +129,8 @@ def test_redirect_entity(api):
 
     # cleanup
     eg = quick_eg(api)
-    api.delete_creator(c1.ident)
-    api.delete_creator(c2.ident)
+    api.delete_creator(c1.ident, eg.editgroup_id)
+    api.delete_creator(c2.ident, eg.editgroup_id)
     api.accept_editgroup(eg.editgroup_id)
 
 
@@ -196,7 +196,7 @@ def test_delete_entity(api):
 
     # cleanup
     eg = quick_eg(api)
-    api.delete_creator(c1.ident)
+    api.delete_creator(c1.ident, eg.editgroup_id)
     api.accept_editgroup(eg.editgroup_id)
 
 
@@ -340,7 +340,7 @@ def test_recursive_redirects_entity(api):
 
     # cleanup
     eg = quick_eg(api)
-    api.delete_creator(c1.ident)
+    api.delete_creator(c1.ident, eg.editgroup_id)
     # c2 already deleted
     # c3 already deleted
     api.accept_editgroup(eg.editgroup_id)
