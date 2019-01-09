@@ -9,25 +9,24 @@ verify_ssl = true
 name = "pypi"
 
 [dev-packages]
-pytest = "*"
+pytest = ">=4"
 pytest-pythonpath = "*"
 ipython = "*"
-responses = "*"
+responses = ">=0.10"
 pytest-cov = "*"
 pylint = "*"
 pg-view = "*"
 
 [packages]
 python-dotenv = "*"
-Flask = "*"
-#Flask-OIDC = "*"
+Flask = ">=1"
 flask-uuid = "*"
 flask-debugtoolbar = "*"
 flask-login = "*"
 loginpass = "*"
-requests = "*"
+requests = ">=2"
 raven = { extras = ['flask'], version = "*" }
-pykafka = "*"
+pykafka = ">=2"
 python-dateutil = "*"
 sickle = "*"
 python-snappy = "*"
