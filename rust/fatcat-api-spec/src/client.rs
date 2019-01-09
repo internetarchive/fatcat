@@ -35,18 +35,19 @@ use swagger::{ApiError, Context, XSpanId};
 
 use models;
 use {
-    AcceptEditgroupResponse, Api, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse, CreateEditgroupResponse, CreateFileBatchResponse,
-    CreateFileResponse, CreateFilesetBatchResponse, CreateFilesetResponse, CreateReleaseBatchResponse, CreateReleaseResponse, CreateWebcaptureBatchResponse, CreateWebcaptureResponse,
-    CreateWorkBatchResponse, CreateWorkResponse, DeleteContainerEditResponse, DeleteContainerResponse, DeleteCreatorEditResponse, DeleteCreatorResponse, DeleteFileEditResponse, DeleteFileResponse,
-    DeleteFilesetEditResponse, DeleteFilesetResponse, DeleteReleaseEditResponse, DeleteReleaseResponse, DeleteWebcaptureEditResponse, DeleteWebcaptureResponse, DeleteWorkEditResponse,
-    DeleteWorkResponse, GetChangelogEntryResponse, GetChangelogResponse, GetContainerEditResponse, GetContainerHistoryResponse, GetContainerRedirectsResponse, GetContainerResponse,
-    GetContainerRevisionResponse, GetCreatorEditResponse, GetCreatorHistoryResponse, GetCreatorRedirectsResponse, GetCreatorReleasesResponse, GetCreatorResponse, GetCreatorRevisionResponse,
-    GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileEditResponse, GetFileHistoryResponse, GetFileRedirectsResponse, GetFileResponse, GetFileRevisionResponse,
-    GetFilesetEditResponse, GetFilesetHistoryResponse, GetFilesetRedirectsResponse, GetFilesetResponse, GetFilesetRevisionResponse, GetReleaseEditResponse, GetReleaseFilesResponse,
-    GetReleaseFilesetsResponse, GetReleaseHistoryResponse, GetReleaseRedirectsResponse, GetReleaseResponse, GetReleaseRevisionResponse, GetReleaseWebcapturesResponse, GetWebcaptureEditResponse,
-    GetWebcaptureHistoryResponse, GetWebcaptureRedirectsResponse, GetWebcaptureResponse, GetWebcaptureRevisionResponse, GetWorkEditResponse, GetWorkHistoryResponse, GetWorkRedirectsResponse,
-    GetWorkReleasesResponse, GetWorkResponse, GetWorkRevisionResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse, LookupReleaseResponse, UpdateContainerResponse,
-    UpdateCreatorResponse, UpdateFileResponse, UpdateFilesetResponse, UpdateReleaseResponse, UpdateWebcaptureResponse, UpdateWorkResponse,
+    AcceptEditgroupResponse, Api, AuthCheckResponse, AuthOidcResponse, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse,
+    CreateEditgroupResponse, CreateFileBatchResponse, CreateFileResponse, CreateFilesetBatchResponse, CreateFilesetResponse, CreateReleaseBatchResponse, CreateReleaseResponse,
+    CreateWebcaptureBatchResponse, CreateWebcaptureResponse, CreateWorkBatchResponse, CreateWorkResponse, DeleteContainerEditResponse, DeleteContainerResponse, DeleteCreatorEditResponse,
+    DeleteCreatorResponse, DeleteFileEditResponse, DeleteFileResponse, DeleteFilesetEditResponse, DeleteFilesetResponse, DeleteReleaseEditResponse, DeleteReleaseResponse,
+    DeleteWebcaptureEditResponse, DeleteWebcaptureResponse, DeleteWorkEditResponse, DeleteWorkResponse, GetChangelogEntryResponse, GetChangelogResponse, GetContainerEditResponse,
+    GetContainerHistoryResponse, GetContainerRedirectsResponse, GetContainerResponse, GetContainerRevisionResponse, GetCreatorEditResponse, GetCreatorHistoryResponse, GetCreatorRedirectsResponse,
+    GetCreatorReleasesResponse, GetCreatorResponse, GetCreatorRevisionResponse, GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileEditResponse, GetFileHistoryResponse,
+    GetFileRedirectsResponse, GetFileResponse, GetFileRevisionResponse, GetFilesetEditResponse, GetFilesetHistoryResponse, GetFilesetRedirectsResponse, GetFilesetResponse, GetFilesetRevisionResponse,
+    GetReleaseEditResponse, GetReleaseFilesResponse, GetReleaseFilesetsResponse, GetReleaseHistoryResponse, GetReleaseRedirectsResponse, GetReleaseResponse, GetReleaseRevisionResponse,
+    GetReleaseWebcapturesResponse, GetWebcaptureEditResponse, GetWebcaptureHistoryResponse, GetWebcaptureRedirectsResponse, GetWebcaptureResponse, GetWebcaptureRevisionResponse, GetWorkEditResponse,
+    GetWorkHistoryResponse, GetWorkRedirectsResponse, GetWorkReleasesResponse, GetWorkResponse, GetWorkRevisionResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse,
+    LookupReleaseResponse, UpdateContainerResponse, UpdateCreatorResponse, UpdateEditorResponse, UpdateFileResponse, UpdateFilesetResponse, UpdateReleaseResponse, UpdateWebcaptureResponse,
+    UpdateWorkResponse,
 };
 
 /// Convert input into a base path, e.g. "http://example:123". Also checks the scheme as it goes.
@@ -212,6 +213,28 @@ impl Api for Client {
 
                     Ok(CreateContainerResponse::BadRequest(body))
                 }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(CreateContainerResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(CreateContainerResponse::Forbidden(body))
+                }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
@@ -292,6 +315,28 @@ impl Api for Client {
 
                     Ok(CreateContainerBatchResponse::BadRequest(body))
                 }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(CreateContainerBatchResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(CreateContainerBatchResponse::Forbidden(body))
+                }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
@@ -360,6 +405,28 @@ impl Api for Client {
 
                     Ok(DeleteContainerResponse::BadRequest(body))
                 }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(DeleteContainerResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(DeleteContainerResponse::Forbidden(body))
+                }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
@@ -423,6 +490,28 @@ impl Api for Client {
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
                     Ok(DeleteContainerEditResponse::BadRequest(body))
+                }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(DeleteContainerEditResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(DeleteContainerEditResponse::Forbidden(body))
                 }
                 404 => {
                     let mut buf = String::new();
@@ -925,6 +1014,28 @@ impl Api for Client {
 
                     Ok(UpdateContainerResponse::BadRequest(body))
                 }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(UpdateContainerResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(UpdateContainerResponse::Forbidden(body))
+                }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
@@ -996,6 +1107,28 @@ impl Api for Client {
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
                     Ok(CreateCreatorResponse::BadRequest(body))
+                }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(CreateCreatorResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(CreateCreatorResponse::Forbidden(body))
                 }
                 404 => {
                     let mut buf = String::new();
@@ -1077,6 +1210,28 @@ impl Api for Client {
 
                     Ok(CreateCreatorBatchResponse::BadRequest(body))
                 }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(CreateCreatorBatchResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(CreateCreatorBatchResponse::Forbidden(body))
+                }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
@@ -1145,6 +1300,28 @@ impl Api for Client {
 
                     Ok(DeleteCreatorResponse::BadRequest(body))
                 }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(DeleteCreatorResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(DeleteCreatorResponse::Forbidden(body))
+                }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
@@ -1208,6 +1385,28 @@ impl Api for Client {
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
                     Ok(DeleteCreatorEditResponse::BadRequest(body))
+                }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(DeleteCreatorEditResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(DeleteCreatorEditResponse::Forbidden(body))
                 }
                 404 => {
                     let mut buf = String::new();
@@ -1778,6 +1977,28 @@ impl Api for Client {
 
                     Ok(UpdateCreatorResponse::BadRequest(body))
                 }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(UpdateCreatorResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(UpdateCreatorResponse::Forbidden(body))
+                }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
@@ -1791,6 +2012,178 @@ impl Api for Client {
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
                     Ok(UpdateCreatorResponse::GenericError(body))
+                }
+                code => {
+                    let mut buf = [0; 100];
+                    let debug_body = match response.read(&mut buf) {
+                        Ok(len) => match str::from_utf8(&buf[..len]) {
+                            Ok(body) => Cow::from(body),
+                            Err(_) => Cow::from(format!("<Body was not UTF8: {:?}>", &buf[..len].to_vec())),
+                        },
+                        Err(e) => Cow::from(format!("<Failed to read body: {}>", e)),
+                    };
+                    Err(ApiError(format!("Unexpected response code {}:\n{:?}\n\n{}", code, response.headers, debug_body)))
+                }
+            }
+        }
+
+        let result = request.send().map_err(|e| ApiError(format!("No response received: {}", e))).and_then(parse_response);
+        Box::new(futures::done(result))
+    }
+
+    fn auth_check(&self, param_role: Option<String>, context: &Context) -> Box<Future<Item = AuthCheckResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_role = param_role.map_or_else(String::new, |query| format!("role={role}&", role = query.to_string()));
+
+        let url = format!("{}/v0/auth/check?{role}", self.base_path, role = utf8_percent_encode(&query_role, QUERY_ENCODE_SET));
+
+        let hyper_client = (self.hyper_client)();
+        let request = hyper_client.request(hyper::method::Method::Get, &url);
+        let mut custom_headers = hyper::header::Headers::new();
+
+        context.x_span_id.as_ref().map(|header| custom_headers.set(XSpanId(header.clone())));
+
+        let request = request.headers(custom_headers);
+
+        // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
+        fn parse_response(mut response: hyper::client::response::Response) -> Result<AuthCheckResponse, ApiError> {
+            match response.status.to_u16() {
+                200 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::Success>(&buf)?;
+
+                    Ok(AuthCheckResponse::Success(body))
+                }
+                400 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(AuthCheckResponse::BadRequest(body))
+                }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(AuthCheckResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(AuthCheckResponse::Forbidden(body))
+                }
+                500 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(AuthCheckResponse::GenericError(body))
+                }
+                code => {
+                    let mut buf = [0; 100];
+                    let debug_body = match response.read(&mut buf) {
+                        Ok(len) => match str::from_utf8(&buf[..len]) {
+                            Ok(body) => Cow::from(body),
+                            Err(_) => Cow::from(format!("<Body was not UTF8: {:?}>", &buf[..len].to_vec())),
+                        },
+                        Err(e) => Cow::from(format!("<Failed to read body: {}>", e)),
+                    };
+                    Err(ApiError(format!("Unexpected response code {}:\n{:?}\n\n{}", code, response.headers, debug_body)))
+                }
+            }
+        }
+
+        let result = request.send().map_err(|e| ApiError(format!("No response received: {}", e))).and_then(parse_response);
+        Box::new(futures::done(result))
+    }
+
+    fn auth_oidc(&self, param_oidc_params: models::AuthOidc, context: &Context) -> Box<Future<Item = AuthOidcResponse, Error = ApiError> + Send> {
+        let url = format!("{}/v0/auth/oidc", self.base_path);
+
+        let body = serde_json::to_string(&param_oidc_params).expect("impossible to fail to serialize");
+
+        let hyper_client = (self.hyper_client)();
+        let request = hyper_client.request(hyper::method::Method::Post, &url);
+        let mut custom_headers = hyper::header::Headers::new();
+
+        let request = request.body(&body);
+
+        custom_headers.set(ContentType(mimetypes::requests::AUTH_OIDC.clone()));
+        context.x_span_id.as_ref().map(|header| custom_headers.set(XSpanId(header.clone())));
+
+        let request = request.headers(custom_headers);
+
+        // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
+        fn parse_response(mut response: hyper::client::response::Response) -> Result<AuthOidcResponse, ApiError> {
+            match response.status.to_u16() {
+                200 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::AuthOidcResult>(&buf)?;
+
+                    Ok(AuthOidcResponse::Found(body))
+                }
+                201 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::AuthOidcResult>(&buf)?;
+
+                    Ok(AuthOidcResponse::Created(body))
+                }
+                400 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(AuthOidcResponse::BadRequest(body))
+                }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(AuthOidcResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(AuthOidcResponse::Forbidden(body))
+                }
+                409 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(AuthOidcResponse::Conflict(body))
+                }
+                500 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(AuthOidcResponse::GenericError(body))
                 }
                 code => {
                     let mut buf = [0; 100];
@@ -1938,6 +2331,97 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
+    fn update_editor(&self, param_editor_id: String, param_editor: models::Editor, context: &Context) -> Box<Future<Item = UpdateEditorResponse, Error = ApiError> + Send> {
+        let url = format!(
+            "{}/v0/editor/{editor_id}",
+            self.base_path,
+            editor_id = utf8_percent_encode(&param_editor_id.to_string(), PATH_SEGMENT_ENCODE_SET)
+        );
+
+        let body = serde_json::to_string(&param_editor).expect("impossible to fail to serialize");
+
+        let hyper_client = (self.hyper_client)();
+        let request = hyper_client.request(hyper::method::Method::Put, &url);
+        let mut custom_headers = hyper::header::Headers::new();
+
+        let request = request.body(&body);
+
+        custom_headers.set(ContentType(mimetypes::requests::UPDATE_EDITOR.clone()));
+        context.x_span_id.as_ref().map(|header| custom_headers.set(XSpanId(header.clone())));
+
+        let request = request.headers(custom_headers);
+
+        // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
+        fn parse_response(mut response: hyper::client::response::Response) -> Result<UpdateEditorResponse, ApiError> {
+            match response.status.to_u16() {
+                200 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::Editor>(&buf)?;
+
+                    Ok(UpdateEditorResponse::UpdatedEditor(body))
+                }
+                400 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(UpdateEditorResponse::BadRequest(body))
+                }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(UpdateEditorResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(UpdateEditorResponse::Forbidden(body))
+                }
+                404 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(UpdateEditorResponse::NotFound(body))
+                }
+                500 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(UpdateEditorResponse::GenericError(body))
+                }
+                code => {
+                    let mut buf = [0; 100];
+                    let debug_body = match response.read(&mut buf) {
+                        Ok(len) => match str::from_utf8(&buf[..len]) {
+                            Ok(body) => Cow::from(body),
+                            Err(_) => Cow::from(format!("<Body was not UTF8: {:?}>", &buf[..len].to_vec())),
+                        },
+                        Err(e) => Cow::from(format!("<Failed to read body: {}>", e)),
+                    };
+                    Err(ApiError(format!("Unexpected response code {}:\n{:?}\n\n{}", code, response.headers, debug_body)))
+                }
+            }
+        }
+
+        let result = request.send().map_err(|e| ApiError(format!("No response received: {}", e))).and_then(parse_response);
+        Box::new(futures::done(result))
+    }
+
     fn accept_editgroup(&self, param_editgroup_id: String, context: &Context) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editgroup/{editgroup_id}/accept",
@@ -1969,6 +2453,28 @@ impl Api for Client {
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
                     Ok(AcceptEditgroupResponse::BadRequest(body))
+                }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(AcceptEditgroupResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(AcceptEditgroupResponse::Forbidden(body))
                 }
                 404 => {
                     let mut buf = String::new();
@@ -2041,6 +2547,28 @@ impl Api for Client {
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
                     Ok(CreateEditgroupResponse::BadRequest(body))
+                }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(CreateEditgroupResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(CreateEditgroupResponse::Forbidden(body))
                 }
                 500 => {
                     let mut buf = String::new();
@@ -2273,6 +2801,28 @@ impl Api for Client {
 
                     Ok(CreateFileResponse::BadRequest(body))
                 }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(CreateFileResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(CreateFileResponse::Forbidden(body))
+                }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
@@ -2353,6 +2903,28 @@ impl Api for Client {
 
                     Ok(CreateFileBatchResponse::BadRequest(body))
                 }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(CreateFileBatchResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(CreateFileBatchResponse::Forbidden(body))
+                }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
@@ -2421,6 +2993,28 @@ impl Api for Client {
 
                     Ok(DeleteFileResponse::BadRequest(body))
                 }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(DeleteFileResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(DeleteFileResponse::Forbidden(body))
+                }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
@@ -2484,6 +3078,28 @@ impl Api for Client {
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
                     Ok(DeleteFileEditResponse::BadRequest(body))
+                }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(DeleteFileEditResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(DeleteFileEditResponse::Forbidden(body))
                 }
                 404 => {
                     let mut buf = String::new();
@@ -2989,6 +3605,28 @@ impl Api for Client {
 
                     Ok(UpdateFileResponse::BadRequest(body))
                 }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(UpdateFileResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(UpdateFileResponse::Forbidden(body))
+                }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
@@ -3060,6 +3698,28 @@ impl Api for Client {
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
                     Ok(CreateFilesetResponse::BadRequest(body))
+                }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(CreateFilesetResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(CreateFilesetResponse::Forbidden(body))
                 }
                 404 => {
                     let mut buf = String::new();
@@ -3141,6 +3801,28 @@ impl Api for Client {
 
                     Ok(CreateFilesetBatchResponse::BadRequest(body))
                 }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(CreateFilesetBatchResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(CreateFilesetBatchResponse::Forbidden(body))
+                }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
@@ -3209,6 +3891,28 @@ impl Api for Client {
 
                     Ok(DeleteFilesetResponse::BadRequest(body))
                 }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(DeleteFilesetResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(DeleteFilesetResponse::Forbidden(body))
+                }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
@@ -3272,6 +3976,28 @@ impl Api for Client {
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
                     Ok(DeleteFilesetEditResponse::BadRequest(body))
+                }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(DeleteFilesetEditResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(DeleteFilesetEditResponse::Forbidden(body))
                 }
                 404 => {
                     let mut buf = String::new();
@@ -3694,6 +4420,28 @@ impl Api for Client {
 
                     Ok(UpdateFilesetResponse::BadRequest(body))
                 }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(UpdateFilesetResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(UpdateFilesetResponse::Forbidden(body))
+                }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
@@ -3765,6 +4513,28 @@ impl Api for Client {
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
                     Ok(CreateReleaseResponse::BadRequest(body))
+                }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(CreateReleaseResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(CreateReleaseResponse::Forbidden(body))
                 }
                 404 => {
                     let mut buf = String::new();
@@ -3846,6 +4616,28 @@ impl Api for Client {
 
                     Ok(CreateReleaseBatchResponse::BadRequest(body))
                 }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(CreateReleaseBatchResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(CreateReleaseBatchResponse::Forbidden(body))
+                }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
@@ -3913,6 +4705,28 @@ impl Api for Client {
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
                     Ok(CreateWorkResponse::BadRequest(body))
+                }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(CreateWorkResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(CreateWorkResponse::Forbidden(body))
                 }
                 404 => {
                     let mut buf = String::new();
@@ -3982,6 +4796,28 @@ impl Api for Client {
 
                     Ok(DeleteReleaseResponse::BadRequest(body))
                 }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(DeleteReleaseResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(DeleteReleaseResponse::Forbidden(body))
+                }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
@@ -4045,6 +4881,28 @@ impl Api for Client {
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
                     Ok(DeleteReleaseEditResponse::BadRequest(body))
+                }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(DeleteReleaseEditResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(DeleteReleaseEditResponse::Forbidden(body))
                 }
                 404 => {
                     let mut buf = String::new();
@@ -4763,6 +5621,28 @@ impl Api for Client {
 
                     Ok(UpdateReleaseResponse::BadRequest(body))
                 }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(UpdateReleaseResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(UpdateReleaseResponse::Forbidden(body))
+                }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
@@ -4839,6 +5719,28 @@ impl Api for Client {
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
                     Ok(CreateWebcaptureResponse::BadRequest(body))
+                }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(CreateWebcaptureResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(CreateWebcaptureResponse::Forbidden(body))
                 }
                 404 => {
                     let mut buf = String::new();
@@ -4920,6 +5822,28 @@ impl Api for Client {
 
                     Ok(CreateWebcaptureBatchResponse::BadRequest(body))
                 }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(CreateWebcaptureBatchResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(CreateWebcaptureBatchResponse::Forbidden(body))
+                }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
@@ -4988,6 +5912,28 @@ impl Api for Client {
 
                     Ok(DeleteWebcaptureResponse::BadRequest(body))
                 }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(DeleteWebcaptureResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(DeleteWebcaptureResponse::Forbidden(body))
+                }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
@@ -5051,6 +5997,28 @@ impl Api for Client {
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
                     Ok(DeleteWebcaptureEditResponse::BadRequest(body))
+                }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(DeleteWebcaptureEditResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(DeleteWebcaptureEditResponse::Forbidden(body))
                 }
                 404 => {
                     let mut buf = String::new();
@@ -5473,6 +6441,28 @@ impl Api for Client {
 
                     Ok(UpdateWebcaptureResponse::BadRequest(body))
                 }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(UpdateWebcaptureResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(UpdateWebcaptureResponse::Forbidden(body))
+                }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
@@ -5553,6 +6543,28 @@ impl Api for Client {
 
                     Ok(CreateWorkBatchResponse::BadRequest(body))
                 }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(CreateWorkBatchResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(CreateWorkBatchResponse::Forbidden(body))
+                }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
@@ -5621,6 +6633,28 @@ impl Api for Client {
 
                     Ok(DeleteWorkResponse::BadRequest(body))
                 }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(DeleteWorkResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(DeleteWorkResponse::Forbidden(body))
+                }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
@@ -5684,6 +6718,28 @@ impl Api for Client {
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
                     Ok(DeleteWorkEditResponse::BadRequest(body))
+                }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(DeleteWorkEditResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(DeleteWorkEditResponse::Forbidden(body))
                 }
                 404 => {
                     let mut buf = String::new();
@@ -6173,6 +7229,28 @@ impl Api for Client {
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
                     Ok(UpdateWorkResponse::BadRequest(body))
+                }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(UpdateWorkResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(UpdateWorkResponse::Forbidden(body))
                 }
                 404 => {
                     let mut buf = String::new();

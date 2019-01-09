@@ -120,7 +120,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/editgroup/{editgroup_id}/accept', 'POST',
@@ -131,6 +131,196 @@ class DefaultApi(object):
             post_params=form_params,
             files=local_var_files,
             response_type='Success',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def auth_check(self, **kwargs):  # noqa: E501
+        """auth_check  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.auth_check(async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str role:
+        :return: Success
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.auth_check_with_http_info(**kwargs)  # noqa: E501
+        else:
+            (data) = self.auth_check_with_http_info(**kwargs)  # noqa: E501
+            return data
+
+    def auth_check_with_http_info(self, **kwargs):  # noqa: E501
+        """auth_check  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.auth_check_with_http_info(async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str role:
+        :return: Success
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['role']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method auth_check" % key
+                )
+            params[key] = val
+        del params['kwargs']
+
+        collection_formats = {}
+
+        path_params = {}
+
+        query_params = []
+        if 'role' in params:
+            query_params.append(('role', params['role']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = ['Bearer']  # noqa: E501
+
+        return self.api_client.call_api(
+            '/auth/check', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='Success',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def auth_oidc(self, oidc_params, **kwargs):  # noqa: E501
+        """auth_oidc  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.auth_oidc(oidc_params, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param AuthOidc oidc_params: (required)
+        :return: AuthOidcResult
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.auth_oidc_with_http_info(oidc_params, **kwargs)  # noqa: E501
+        else:
+            (data) = self.auth_oidc_with_http_info(oidc_params, **kwargs)  # noqa: E501
+            return data
+
+    def auth_oidc_with_http_info(self, oidc_params, **kwargs):  # noqa: E501
+        """auth_oidc  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.auth_oidc_with_http_info(oidc_params, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param AuthOidc oidc_params: (required)
+        :return: AuthOidcResult
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['oidc_params']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method auth_oidc" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'oidc_params' is set
+        if ('oidc_params' not in params or
+                params['oidc_params'] is None):
+            raise ValueError("Missing the required parameter `oidc_params` when calling `auth_oidc`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+
+        query_params = []
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        if 'oidc_params' in params:
+            body_params = params['oidc_params']
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = ['Bearer']  # noqa: E501
+
+        return self.api_client.call_api(
+            '/auth/oidc', 'POST',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='AuthOidcResult',  # noqa: E501
             auth_settings=auth_settings,
             async=params.get('async'),
             _return_http_data_only=params.get('_return_http_data_only'),
@@ -221,7 +411,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/container', 'POST',
@@ -326,7 +516,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/container/batch', 'POST',
@@ -427,7 +617,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/creator', 'POST',
@@ -532,7 +722,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/creator/batch', 'POST',
@@ -629,7 +819,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/editgroup', 'POST',
@@ -730,7 +920,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/file', 'POST',
@@ -835,7 +1025,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/file/batch', 'POST',
@@ -936,7 +1126,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/fileset', 'POST',
@@ -1041,7 +1231,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/fileset/batch', 'POST',
@@ -1142,7 +1332,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/release', 'POST',
@@ -1247,7 +1437,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/release/batch', 'POST',
@@ -1348,7 +1538,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/webcapture', 'POST',
@@ -1453,7 +1643,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/webcapture/batch', 'POST',
@@ -1554,7 +1744,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/work', 'POST',
@@ -1659,7 +1849,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/work/batch', 'POST',
@@ -1760,7 +1950,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/container/{ident}', 'DELETE',
@@ -1865,7 +2055,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/container/edit/{edit_id}', 'DELETE',
@@ -1966,7 +2156,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/creator/{ident}', 'DELETE',
@@ -2071,7 +2261,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/creator/edit/{edit_id}', 'DELETE',
@@ -2172,7 +2362,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/file/{ident}', 'DELETE',
@@ -2277,7 +2467,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/file/edit/{edit_id}', 'DELETE',
@@ -2378,7 +2568,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/fileset/{ident}', 'DELETE',
@@ -2483,7 +2673,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/fileset/edit/{edit_id}', 'DELETE',
@@ -2584,7 +2774,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/release/{ident}', 'DELETE',
@@ -2689,7 +2879,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/release/edit/{edit_id}', 'DELETE',
@@ -2790,7 +2980,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/webcapture/{ident}', 'DELETE',
@@ -2895,7 +3085,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/webcapture/edit/{edit_id}', 'DELETE',
@@ -2996,7 +3186,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/work/{ident}', 'DELETE',
@@ -3101,7 +3291,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/work/edit/{edit_id}', 'DELETE',
@@ -8331,7 +8521,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/container/{ident}', 'PUT',
@@ -8440,7 +8630,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/creator/{ident}', 'PUT',
@@ -8451,6 +8641,111 @@ class DefaultApi(object):
             post_params=form_params,
             files=local_var_files,
             response_type='EntityEdit',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def update_editor(self, editor_id, editor, **kwargs):  # noqa: E501
+        """update_editor  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.update_editor(editor_id, editor, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str editor_id: (required)
+        :param Editor editor: (required)
+        :return: Editor
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.update_editor_with_http_info(editor_id, editor, **kwargs)  # noqa: E501
+        else:
+            (data) = self.update_editor_with_http_info(editor_id, editor, **kwargs)  # noqa: E501
+            return data
+
+    def update_editor_with_http_info(self, editor_id, editor, **kwargs):  # noqa: E501
+        """update_editor  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.update_editor_with_http_info(editor_id, editor, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str editor_id: (required)
+        :param Editor editor: (required)
+        :return: Editor
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['editor_id', 'editor']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method update_editor" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'editor_id' is set
+        if ('editor_id' not in params or
+                params['editor_id'] is None):
+            raise ValueError("Missing the required parameter `editor_id` when calling `update_editor`")  # noqa: E501
+        # verify the required parameter 'editor' is set
+        if ('editor' not in params or
+                params['editor'] is None):
+            raise ValueError("Missing the required parameter `editor` when calling `update_editor`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'editor_id' in params:
+            path_params['editor_id'] = params['editor_id']  # noqa: E501
+
+        query_params = []
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        if 'editor' in params:
+            body_params = params['editor']
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = ['Bearer']  # noqa: E501
+
+        return self.api_client.call_api(
+            '/editor/{editor_id}', 'PUT',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='Editor',  # noqa: E501
             auth_settings=auth_settings,
             async=params.get('async'),
             _return_http_data_only=params.get('_return_http_data_only'),
@@ -8549,7 +8844,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/file/{ident}', 'PUT',
@@ -8658,7 +8953,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/fileset/{ident}', 'PUT',
@@ -8767,7 +9062,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/release/{ident}', 'PUT',
@@ -8876,7 +9171,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/webcapture/{ident}', 'PUT',
@@ -8985,7 +9280,7 @@ class DefaultApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = []  # noqa: E501
+        auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
             '/work/{ident}', 'PUT',

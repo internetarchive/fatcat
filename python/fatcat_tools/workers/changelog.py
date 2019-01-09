@@ -12,11 +12,11 @@ class ChangelogWorker(FatcatWorker):
     found, fetch them and push (as JSON) into a Kafka topic.
     """
 
-    def __init__(self, api_host_url, kafka_hosts, produce_topic, poll_interval=10.0, offset=None):
+    def __init__(self, api, kafka_hosts, produce_topic, poll_interval=10.0, offset=None):
         # TODO: should be offset=0
         super().__init__(kafka_hosts=kafka_hosts,
                          produce_topic=produce_topic,
-                         api_host_url=api_host_url)
+                         api=api)
         self.poll_interval = poll_interval
         self.offset = offset    # the fatcat changelog offset, not the kafka offset
 
@@ -61,10 +61,10 @@ class EntityUpdatesWorker(FatcatWorker):
     For now, only release updates are published.
     """
 
-    def __init__(self, api_host_url, kafka_hosts, consume_topic, release_topic):
+    def __init__(self, api, kafka_hosts, consume_topic, release_topic):
         super().__init__(kafka_hosts=kafka_hosts,
                          consume_topic=consume_topic,
-                         api_host_url=api_host_url)
+                         api=api)
         self.release_topic = release_topic
         self.consumer_group = "entity-updates"
 

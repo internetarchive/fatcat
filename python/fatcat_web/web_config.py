@@ -16,12 +16,33 @@ import subprocess
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config(object):
-    GIT_REVISION = subprocess.check_output(["git", "describe", "--always"]).strip()
+    GIT_REVISION = subprocess.check_output(["git", "describe", "--always"]).strip().decode('utf-8')
+
     # This is, effectively, the QA/PROD flag
     FATCAT_DOMAIN = os.environ.get("FATCAT_DOMAIN", default="qa.fatcat.wiki")
+    FATCAT_API_AUTH_TOKEN = os.environ.get("FATCAT_API_AUTH_TOKEN", default=None)
+    FATCAT_API_HOST = os.environ.get("FATCAT_API_HOST", default="https://{}/v0".format(FATCAT_DOMAIN))
+
     # can set this to https://search.fatcat.wiki for some experimentation
     ELASTICSEARCH_BACKEND = os.environ.get("ELASTICSEARCH_BACKEND", default="http://localhost:9200")
     ELASTICSEARCH_INDEX = os.environ.get("ELASTICSEARCH_INDEX", default="fatcat")
+
+    # for flask things, like session cookies
+    FLASK_SECRET_KEY = os.environ.get("FLASK_SECRET_KEY", default=None)
+    SECRET_KEY = FLASK_SECRET_KEY
+
+    GITLAB_CLIENT_ID = os.environ.get("GITLAB_CLIENT_ID", default=None)
+    GITLAB_CLIENT_SECRET = os.environ.get("GITLAB_CLIENT_SECRET", default=None)
+
+    IA_XAUTH_URI = "https://archive.org/services/xauthn/"
+    IA_XAUTH_CLIENT_ID = os.environ.get("IA_XAUTH_CLIENT_ID", default=None)
+    IA_XAUTH_CLIENT_SECRET = os.environ.get("IA_XAUTH_CLIENT_SECRET", default=None)
+
+    # protect cookies (which include API tokens)
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SECURE = True
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    PERMANENT_SESSION_LIFETIME = 2678400 # 31 days, in seconds
 
     try:
         GIT_RELEASE = raven.fetch_git_sha('..')
@@ -38,7 +59,6 @@ class Config(object):
         },
     }
 
-    # "Event more verbose" debug options. SECRET_KEY is bogus.
+    # "Even more verbose" debug options
     #SQLALCHEMY_ECHO = True
-    #SECRET_KEY = "kuhy0284hflskjhg01284"
     #DEBUG = True

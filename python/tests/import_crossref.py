@@ -2,17 +2,18 @@
 import json
 import pytest
 from fatcat_tools.importers import CrossrefImporter
+from fixtures import api
 
 
 @pytest.fixture(scope="function")
-def crossref_importer():
+def crossref_importer(api):
     with open('tests/files/ISSN-to-ISSN-L.snip.txt', 'r') as issn_file:
-        yield CrossrefImporter("http://localhost:9411/v0", issn_file, 'tests/files/example_map.sqlite3', check_existing=False)
+        yield CrossrefImporter(api, issn_file, extid_map_file='tests/files/example_map.sqlite3', check_existing=False)
 
 @pytest.fixture(scope="function")
-def crossref_importer_existing():
+def crossref_importer_existing(api):
     with open('tests/files/ISSN-to-ISSN-L.snip.txt', 'r') as issn_file:
-        yield CrossrefImporter("http://localhost:9411/v0", issn_file, 'tests/files/example_map.sqlite3', check_existing=True)
+        yield CrossrefImporter(api, issn_file, extid_map_file='tests/files/example_map.sqlite3', check_existing=True)
 
 def test_crossref_importer_batch(crossref_importer):
     with open('tests/files/crossref-works.2018-01-21.badsample.json', 'r') as f:
@@ -21,6 +22,13 @@ def test_crossref_importer_batch(crossref_importer):
 def test_crossref_importer(crossref_importer):
     with open('tests/files/crossref-works.2018-01-21.badsample.json', 'r') as f:
         crossref_importer.process_source(f)
+    # fetch most recent editgroup
+    changes = crossref_importer.api.get_changelog(limit=1)
+    eg = changes[0].editgroup
+    assert eg.description
+    assert "crossref" in eg.description.lower()
+    assert eg.extra['git_rev']
+    assert "fatcat_tools.CrossrefImporter" in eg.extra['agent']
 
 def test_crossref_mappings(crossref_importer):
     assert crossref_importer.map_release_type('journal-article') == "article-journal"

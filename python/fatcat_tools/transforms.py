@@ -2,7 +2,7 @@
 import collections
 from fatcat_client import ReleaseEntity, ApiClient
 
-def entity_to_json(entity):
+def entity_to_dict(entity):
     """
     Hack to take advantage of the code-generated serialization code
     """

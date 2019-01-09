@@ -50,6 +50,11 @@ import time
 import fatcat_client
 from fatcat_client.rest import ApiException
 from pprint import pprint
+
+# Configure API key authorization: Bearer
+fatcat_client.configuration.api_key['Authorization'] = 'YOUR_API_KEY'
+# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
+# fatcat_client.configuration.api_key_prefix['Authorization'] = 'Bearer'
 # create an instance of the API class
 api_instance = fatcat_client.DefaultApi()
 editgroup_id = 'editgroup_id_example' # str | base32-encoded unique identifier
@@ -69,6 +74,8 @@ All URIs are relative to *https://api.fatcat.wiki/v0*
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
 *DefaultApi* | [**accept_editgroup**](docs/DefaultApi.md#accept_editgroup) | **POST** /editgroup/{editgroup_id}/accept | 
+*DefaultApi* | [**auth_check**](docs/DefaultApi.md#auth_check) | **GET** /auth/check | 
+*DefaultApi* | [**auth_oidc**](docs/DefaultApi.md#auth_oidc) | **POST** /auth/oidc | 
 *DefaultApi* | [**create_container**](docs/DefaultApi.md#create_container) | **POST** /container | 
 *DefaultApi* | [**create_container_batch**](docs/DefaultApi.md#create_container_batch) | **POST** /container/batch | 
 *DefaultApi* | [**create_creator**](docs/DefaultApi.md#create_creator) | **POST** /creator | 
@@ -149,6 +156,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**lookup_release**](docs/DefaultApi.md#lookup_release) | **GET** /release/lookup | 
 *DefaultApi* | [**update_container**](docs/DefaultApi.md#update_container) | **PUT** /container/{ident} | 
 *DefaultApi* | [**update_creator**](docs/DefaultApi.md#update_creator) | **PUT** /creator/{ident} | 
+*DefaultApi* | [**update_editor**](docs/DefaultApi.md#update_editor) | **PUT** /editor/{editor_id} | 
 *DefaultApi* | [**update_file**](docs/DefaultApi.md#update_file) | **PUT** /file/{ident} | 
 *DefaultApi* | [**update_fileset**](docs/DefaultApi.md#update_fileset) | **PUT** /fileset/{ident} | 
 *DefaultApi* | [**update_release**](docs/DefaultApi.md#update_release) | **PUT** /release/{ident} | 
@@ -158,6 +166,8 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Models
 
+ - [AuthOidc](docs/AuthOidc.md)
+ - [AuthOidcResult](docs/AuthOidcResult.md)
  - [ChangelogEntry](docs/ChangelogEntry.md)
  - [ContainerEntity](docs/ContainerEntity.md)
  - [CreatorEntity](docs/CreatorEntity.md)
@@ -184,7 +194,12 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Authorization
 
- All endpoints do not require authorization.
+
+## Bearer
+
+- **Type**: API key
+- **API key parameter name**: Authorization
+- **Location**: HTTP header
 
 
 ## Author

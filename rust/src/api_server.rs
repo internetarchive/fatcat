@@ -2,6 +2,7 @@
 
 use api_entity_crud::EntityCrud;
 use api_helpers::*;
+use auth::*;
 use chrono;
 use database_models::*;
 use database_schema::*;
@@ -19,11 +20,12 @@ macro_rules! entity_batch_handler {
             &self,
             entity_list: &[models::$model],
             autoaccept: bool,
+            editor_id: FatCatId,
             editgroup_id: Option<FatCatId>,
             conn: &DbConn,
         ) -> Result<Vec<EntityEdit>> {
 
-            let edit_context = make_edit_context(conn, editgroup_id, autoaccept)?;
+            let edit_context = make_edit_context(conn, editor_id, editgroup_id, autoaccept)?;
             edit_context.check(&conn)?;
             let model_list: Vec<&models::$model> = entity_list.iter().map(|e| e).collect();
             let edits = $model::db_create_batch(conn, &edit_context, model_list.as_slice())?;
@@ -38,20 +40,10 @@ macro_rules! entity_batch_handler {
     }
 }
 
-macro_rules! count_entity {
-    ($table:ident, $conn:expr) => {{
-        let count: i64 = $table::table
-            .filter($table::is_live.eq(true))
-            .filter($table::redirect_id.is_null())
-            .count()
-            .first($conn)?;
-        count
-    }};
-}
-
 #[derive(Clone)]
 pub struct Server {
     pub db_pool: ConnectionPool,
+    pub auth_confectionary: AuthConfectionary,
 }
 
 pub fn get_release_files(
@@ -392,7 +384,7 @@ impl Server {
     ) -> Result<Editgroup> {
         let row: EditgroupRow = insert_into(editgroup::table)
             .values((
-                editgroup::editor_id.eq(FatCatId::from_str(&entity.editor_id)?.to_uuid()),
+                editgroup::editor_id.eq(FatCatId::from_str(&entity.editor_id.unwrap())?.to_uuid()),
                 editgroup::description.eq(entity.description),
                 editgroup::extra_json.eq(entity.extra),
             ))
@@ -400,7 +392,7 @@ impl Server {
 
         Ok(Editgroup {
             editgroup_id: Some(uuid2fcid(&row.id)),
-            editor_id: uuid2fcid(&row.editor_id),
+            editor_id: Some(uuid2fcid(&row.editor_id)),
             description: row.description,
             edits: None,
             extra: row.extra_json,
@@ -475,7 +467,7 @@ impl Server {
 
         let eg = Editgroup {
             editgroup_id: Some(uuid2fcid(&row.id)),
-            editor_id: uuid2fcid(&row.editor_id),
+            editor_id: Some(uuid2fcid(&row.editor_id)),
             description: row.description,
             edits: Some(edits),
             extra: row.extra_json,
@@ -485,12 +477,7 @@ impl Server {
 
     pub fn get_editor_handler(&self, editor_id: FatCatId, conn: &DbConn) -> Result<Editor> {
         let row: EditorRow = editor::table.find(editor_id.to_uuid()).first(conn)?;
-
-        let ed = Editor {
-            editor_id: Some(uuid2fcid(&row.id)),
-            username: row.username,
-        };
-        Ok(ed)
+        Ok(row.into_model())
     }
 
     pub fn get_editor_changelog_handler(
@@ -550,6 +537,43 @@ impl Server {
         let mut entry = cl_row.into_model();
         entry.editgroup = Some(editgroup);
         Ok(entry)
+    }
+
+    /// This helper either finds an Editor model by OIDC parameters (eg, remote domain and
+    /// identifier), or creates one and inserts the appropriate auth rows. The semantics are
+    /// basically an "upsert" of signup/account-creation.
+    /// Returns an editor model and boolean flag indicating whether a new editor was created or
+    /// not.
+    /// If this function creates an editor, it sets the username to
+    /// "{preferred_username}-{provider}"; the intent is for this to be temporary but unique. Might
+    /// look like "bnewbold-github", or might look like "895139824-github". This is a hack to make
+    /// check/creation idempotent.
+    pub fn auth_oidc_handler(&self, params: AuthOidc, conn: &DbConn) -> Result<(Editor, bool)> {
+        let existing: Vec<(EditorRow, AuthOidcRow)> = editor::table
+            .inner_join(auth_oidc::table)
+            .filter(auth_oidc::oidc_sub.eq(params.sub.clone()))
+            .filter(auth_oidc::oidc_iss.eq(params.iss.clone()))
+            .load(conn)?;
+
+        let (editor_row, created): (EditorRow, bool) = match existing.first() {
+            Some((editor, _)) => (editor.clone(), false),
+            None => {
+                let username = format!("{}-{}", params.preferred_username, params.provider);
+                let editor = create_editor(conn, username, false, false)?;
+                // create an auth login row so the user can log back in
+                diesel::insert_into(auth_oidc::table)
+                    .values((
+                        auth_oidc::editor_id.eq(editor.id),
+                        auth_oidc::provider.eq(params.provider),
+                        auth_oidc::oidc_iss.eq(params.iss),
+                        auth_oidc::oidc_sub.eq(params.sub),
+                    ))
+                    .execute(conn)?;
+                (editor, true)
+            }
+        };
+
+        Ok((editor_row.into_model(), created))
     }
 
     entity_batch_handler!(create_container_batch_handler, ContainerEntity);

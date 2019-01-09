@@ -4,6 +4,7 @@ import sys
 import csv
 import json
 import itertools
+import subprocess
 from collections import Counter
 import pykafka
 
@@ -37,18 +38,32 @@ class FatcatImporter:
     Base class for fatcat importers
     """
 
-    def __init__(self, host_url, issn_map_file=None):
-        conf = fatcat_client.Configuration()
-        conf.host = host_url
-        self.api = fatcat_client.DefaultApi(fatcat_client.ApiClient(conf))
+    def __init__(self, api, **kwargs):
+
+        eg_extra = kwargs.get('editgroup_extra', dict())
+        eg_extra['git_rev'] = eg_extra.get('git_rev',
+            subprocess.check_output(["git", "describe", "--always"]).strip()).decode('utf-8')
+        eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.FatcatImporter')
+        
+        self.api = api
+        self._editgroup_description = kwargs.get('editgroup_description')
+        self._editgroup_extra = kwargs.get('editgroup_extra')
+        issn_map_file = kwargs.get('issn_map_file')
+
         self._issnl_id_map = dict()
         self._orcid_id_map = dict()
         self._doi_id_map = dict()
-        self._issn_issnl_map = None
-        self._orcid_regex = re.compile("^\\d{4}-\\d{4}-\\d{4}-\\d{3}[\\dX]$")
         if issn_map_file:
             self.read_issn_map_file(issn_map_file)
+        self._orcid_regex = re.compile("^\\d{4}-\\d{4}-\\d{4}-\\d{3}[\\dX]$")
         self.counts = Counter({'insert': 0, 'update': 0, 'processed_lines': 0})
+
+    def _editgroup(self):
+        eg = fatcat_client.Editgroup(
+            description=self._editgroup_description,
+            extra=self._editgroup_extra,
+        )
+        return self.api.create_editgroup(eg)
 
     def describe_run(self):
         print("Processed {} lines, inserted {}, updated {}.".format(
@@ -64,15 +79,13 @@ class FatcatImporter:
 
     def process_source(self, source, group_size=100):
         """Creates and auto-accepts editgroup every group_size rows"""
-        eg = self.api.create_editgroup(
-            fatcat_client.Editgroup(editor_id='aaaaaaaaaaaabkvkaaaaaaaaae'))
+        eg = self._editgroup()
         i = 0
         for i, row in enumerate(source):
             self.create_row(row, editgroup_id=eg.editgroup_id)
             if i > 0 and (i % group_size) == 0:
                 self.api.accept_editgroup(eg.editgroup_id)
-                eg = self.api.create_editgroup(
-                    fatcat_client.Editgroup(editor_id='aaaaaaaaaaaabkvkaaaaaaaaae'))
+                eg = self._editgroup()
             self.counts['processed_lines'] += 1
         if i == 0 or (i % group_size) != 0:
             self.api.accept_editgroup(eg.editgroup_id)
@@ -83,8 +96,7 @@ class FatcatImporter:
             if decode_kafka:
                 rows = [msg.value.decode('utf-8') for msg in rows]
             self.counts['processed_lines'] += len(rows)
-            eg = self.api.create_editgroup(
-                fatcat_client.Editgroup(editor_id='aaaaaaaaaaaabkvkaaaaaaaaae'))
+            eg = self._editgroup()
             self.create_batch(rows, editgroup_id=eg.editgroup_id)
 
     def process_csv_source(self, source, group_size=100, delimiter=','):

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block body %}
+<h1>Login</h1>
+
+<p>via OAuth / OpenID Connect:
+<ul>
+  <li><a href="/auth/gitlab/login">gitlab.com</a>
+  <li><strike><a href="/auth/google/login">google.com</a></strike>
+  <li><strike><a href="/auth/orcid/login">orcid.org</a></strike>
+</ul>
+
+<p>Other options...
+<ul>
+  <li><a href="/auth/token_login">Using auth token</a> (admin/operator)
+  <li><a href="/auth/ia/login">With Internet Archive account</a> (experimental)
+</ul>
+
+{% endblock %}

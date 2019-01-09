@@ -11,18 +11,19 @@ use swagger;
 
 use fatcat::models;
 use fatcat::{
-    AcceptEditgroupResponse, Api, ApiError, Context, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse, CreateEditgroupResponse,
-    CreateFileBatchResponse, CreateFileResponse, CreateFilesetBatchResponse, CreateFilesetResponse, CreateReleaseBatchResponse, CreateReleaseResponse, CreateWebcaptureBatchResponse,
-    CreateWebcaptureResponse, CreateWorkBatchResponse, CreateWorkResponse, DeleteContainerEditResponse, DeleteContainerResponse, DeleteCreatorEditResponse, DeleteCreatorResponse,
-    DeleteFileEditResponse, DeleteFileResponse, DeleteFilesetEditResponse, DeleteFilesetResponse, DeleteReleaseEditResponse, DeleteReleaseResponse, DeleteWebcaptureEditResponse,
-    DeleteWebcaptureResponse, DeleteWorkEditResponse, DeleteWorkResponse, GetChangelogEntryResponse, GetChangelogResponse, GetContainerEditResponse, GetContainerHistoryResponse,
-    GetContainerRedirectsResponse, GetContainerResponse, GetContainerRevisionResponse, GetCreatorEditResponse, GetCreatorHistoryResponse, GetCreatorRedirectsResponse, GetCreatorReleasesResponse,
-    GetCreatorResponse, GetCreatorRevisionResponse, GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileEditResponse, GetFileHistoryResponse, GetFileRedirectsResponse,
-    GetFileResponse, GetFileRevisionResponse, GetFilesetEditResponse, GetFilesetHistoryResponse, GetFilesetRedirectsResponse, GetFilesetResponse, GetFilesetRevisionResponse, GetReleaseEditResponse,
-    GetReleaseFilesResponse, GetReleaseFilesetsResponse, GetReleaseHistoryResponse, GetReleaseRedirectsResponse, GetReleaseResponse, GetReleaseRevisionResponse, GetReleaseWebcapturesResponse,
-    GetWebcaptureEditResponse, GetWebcaptureHistoryResponse, GetWebcaptureRedirectsResponse, GetWebcaptureResponse, GetWebcaptureRevisionResponse, GetWorkEditResponse, GetWorkHistoryResponse,
-    GetWorkRedirectsResponse, GetWorkReleasesResponse, GetWorkResponse, GetWorkRevisionResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse, LookupReleaseResponse,
-    UpdateContainerResponse, UpdateCreatorResponse, UpdateFileResponse, UpdateFilesetResponse, UpdateReleaseResponse, UpdateWebcaptureResponse, UpdateWorkResponse,
+    AcceptEditgroupResponse, Api, ApiError, AuthCheckResponse, AuthOidcResponse, Context, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse,
+    CreateEditgroupResponse, CreateFileBatchResponse, CreateFileResponse, CreateFilesetBatchResponse, CreateFilesetResponse, CreateReleaseBatchResponse, CreateReleaseResponse,
+    CreateWebcaptureBatchResponse, CreateWebcaptureResponse, CreateWorkBatchResponse, CreateWorkResponse, DeleteContainerEditResponse, DeleteContainerResponse, DeleteCreatorEditResponse,
+    DeleteCreatorResponse, DeleteFileEditResponse, DeleteFileResponse, DeleteFilesetEditResponse, DeleteFilesetResponse, DeleteReleaseEditResponse, DeleteReleaseResponse,
+    DeleteWebcaptureEditResponse, DeleteWebcaptureResponse, DeleteWorkEditResponse, DeleteWorkResponse, GetChangelogEntryResponse, GetChangelogResponse, GetContainerEditResponse,
+    GetContainerHistoryResponse, GetContainerRedirectsResponse, GetContainerResponse, GetContainerRevisionResponse, GetCreatorEditResponse, GetCreatorHistoryResponse, GetCreatorRedirectsResponse,
+    GetCreatorReleasesResponse, GetCreatorResponse, GetCreatorRevisionResponse, GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileEditResponse, GetFileHistoryResponse,
+    GetFileRedirectsResponse, GetFileResponse, GetFileRevisionResponse, GetFilesetEditResponse, GetFilesetHistoryResponse, GetFilesetRedirectsResponse, GetFilesetResponse, GetFilesetRevisionResponse,
+    GetReleaseEditResponse, GetReleaseFilesResponse, GetReleaseFilesetsResponse, GetReleaseHistoryResponse, GetReleaseRedirectsResponse, GetReleaseResponse, GetReleaseRevisionResponse,
+    GetReleaseWebcapturesResponse, GetWebcaptureEditResponse, GetWebcaptureHistoryResponse, GetWebcaptureRedirectsResponse, GetWebcaptureResponse, GetWebcaptureRevisionResponse, GetWorkEditResponse,
+    GetWorkHistoryResponse, GetWorkRedirectsResponse, GetWorkReleasesResponse, GetWorkResponse, GetWorkRevisionResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse,
+    LookupReleaseResponse, UpdateContainerResponse, UpdateCreatorResponse, UpdateEditorResponse, UpdateFileResponse, UpdateFilesetResponse, UpdateReleaseResponse, UpdateWebcaptureResponse,
+    UpdateWorkResponse,
 };
 
 #[derive(Copy, Clone)]
@@ -296,6 +297,18 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
+    fn auth_check(&self, role: Option<String>, context: &Context) -> Box<Future<Item = AuthCheckResponse, Error = ApiError> + Send> {
+        let context = context.clone();
+        println!("auth_check({:?}) - X-Span-ID: {:?}", role, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        Box::new(futures::failed("Generic failure".into()))
+    }
+
+    fn auth_oidc(&self, oidc_params: models::AuthOidc, context: &Context) -> Box<Future<Item = AuthOidcResponse, Error = ApiError> + Send> {
+        let context = context.clone();
+        println!("auth_oidc({:?}) - X-Span-ID: {:?}", oidc_params, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        Box::new(futures::failed("Generic failure".into()))
+    }
+
     fn get_editor(&self, editor_id: String, context: &Context) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!("get_editor(\"{}\") - X-Span-ID: {:?}", editor_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
@@ -305,6 +318,17 @@ impl Api for Server {
     fn get_editor_changelog(&self, editor_id: String, context: &Context) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!("get_editor_changelog(\"{}\") - X-Span-ID: {:?}", editor_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        Box::new(futures::failed("Generic failure".into()))
+    }
+
+    fn update_editor(&self, editor_id: String, editor: models::Editor, context: &Context) -> Box<Future<Item = UpdateEditorResponse, Error = ApiError> + Send> {
+        let context = context.clone();
+        println!(
+            "update_editor(\"{}\", {:?}) - X-Span-ID: {:?}",
+            editor_id,
+            editor,
+            context.x_span_id.unwrap_or(String::from("<none>")).clone()
+        );
         Box::new(futures::failed("Generic failure".into()))
     }
 

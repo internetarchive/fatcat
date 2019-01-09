@@ -38,6 +38,10 @@ pub enum CreateContainerResponse {
     CreatedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -50,6 +54,10 @@ pub enum CreateContainerBatchResponse {
     CreatedEntities(Vec<models::EntityEdit>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -62,6 +70,10 @@ pub enum DeleteContainerResponse {
     DeletedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -74,6 +86,10 @@ pub enum DeleteContainerEditResponse {
     DeletedEdit(models::Success),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -158,6 +174,10 @@ pub enum UpdateContainerResponse {
     UpdatedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -170,6 +190,10 @@ pub enum CreateCreatorResponse {
     CreatedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -182,6 +206,10 @@ pub enum CreateCreatorBatchResponse {
     CreatedEntities(Vec<models::EntityEdit>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -194,6 +222,10 @@ pub enum DeleteCreatorResponse {
     DeletedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -206,6 +238,10 @@ pub enum DeleteCreatorEditResponse {
     DeletedEdit(models::Success),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -302,8 +338,44 @@ pub enum UpdateCreatorResponse {
     UpdatedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum AuthCheckResponse {
+    /// Success
+    Success(models::Success),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum AuthOidcResponse {
+    /// Found
+    Found(models::AuthOidcResult),
+    /// Created
+    Created(models::AuthOidcResult),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
+    /// Conflict
+    Conflict(models::ErrorResponse),
     /// Generic Error
     GenericError(models::ErrorResponse),
 }
@@ -333,11 +405,31 @@ pub enum GetEditorChangelogResponse {
 }
 
 #[derive(Debug, PartialEq)]
+pub enum UpdateEditorResponse {
+    /// Updated Editor
+    UpdatedEditor(models::Editor),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
 pub enum AcceptEditgroupResponse {
     /// Merged Successfully
     MergedSuccessfully(models::Success),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Edit Conflict
@@ -352,6 +444,10 @@ pub enum CreateEditgroupResponse {
     SuccessfullyCreated(models::Editgroup),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Generic Error
     GenericError(models::ErrorResponse),
 }
@@ -392,6 +488,10 @@ pub enum CreateFileResponse {
     CreatedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -404,6 +504,10 @@ pub enum CreateFileBatchResponse {
     CreatedEntities(Vec<models::EntityEdit>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -416,6 +520,10 @@ pub enum DeleteFileResponse {
     DeletedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -428,6 +536,10 @@ pub enum DeleteFileEditResponse {
     DeletedEdit(models::Success),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -512,6 +624,10 @@ pub enum UpdateFileResponse {
     UpdatedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -524,6 +640,10 @@ pub enum CreateFilesetResponse {
     CreatedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -536,6 +656,10 @@ pub enum CreateFilesetBatchResponse {
     CreatedEntities(Vec<models::EntityEdit>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -548,6 +672,10 @@ pub enum DeleteFilesetResponse {
     DeletedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -560,6 +688,10 @@ pub enum DeleteFilesetEditResponse {
     DeletedEdit(models::Success),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -632,6 +764,10 @@ pub enum UpdateFilesetResponse {
     UpdatedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -644,6 +780,10 @@ pub enum CreateReleaseResponse {
     CreatedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -656,6 +796,10 @@ pub enum CreateReleaseBatchResponse {
     CreatedEntities(Vec<models::EntityEdit>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -668,6 +812,10 @@ pub enum CreateWorkResponse {
     CreatedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -680,6 +828,10 @@ pub enum DeleteReleaseResponse {
     DeletedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -692,6 +844,10 @@ pub enum DeleteReleaseEditResponse {
     DeletedEdit(models::Success),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -812,6 +968,10 @@ pub enum UpdateReleaseResponse {
     UpdatedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -824,6 +984,10 @@ pub enum CreateWebcaptureResponse {
     CreatedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -836,6 +1000,10 @@ pub enum CreateWebcaptureBatchResponse {
     CreatedEntities(Vec<models::EntityEdit>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -848,6 +1016,10 @@ pub enum DeleteWebcaptureResponse {
     DeletedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -860,6 +1032,10 @@ pub enum DeleteWebcaptureEditResponse {
     DeletedEdit(models::Success),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -932,6 +1108,10 @@ pub enum UpdateWebcaptureResponse {
     UpdatedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -944,6 +1124,10 @@ pub enum CreateWorkBatchResponse {
     CreatedEntities(Vec<models::EntityEdit>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -956,6 +1140,10 @@ pub enum DeleteWorkResponse {
     DeletedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -968,6 +1156,10 @@ pub enum DeleteWorkEditResponse {
     DeletedEdit(models::Success),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -1052,6 +1244,10 @@ pub enum UpdateWorkResponse {
     UpdatedEntity(models::EntityEdit),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -1133,9 +1329,15 @@ pub trait Api {
 
     fn update_creator(&self, ident: String, entity: models::CreatorEntity, editgroup_id: Option<String>, context: &Context) -> Box<Future<Item = UpdateCreatorResponse, Error = ApiError> + Send>;
 
+    fn auth_check(&self, role: Option<String>, context: &Context) -> Box<Future<Item = AuthCheckResponse, Error = ApiError> + Send>;
+
+    fn auth_oidc(&self, oidc_params: models::AuthOidc, context: &Context) -> Box<Future<Item = AuthOidcResponse, Error = ApiError> + Send>;
+
     fn get_editor(&self, editor_id: String, context: &Context) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send>;
 
     fn get_editor_changelog(&self, editor_id: String, context: &Context) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send>;
+
+    fn update_editor(&self, editor_id: String, editor: models::Editor, context: &Context) -> Box<Future<Item = UpdateEditorResponse, Error = ApiError> + Send>;
 
     fn accept_editgroup(&self, editgroup_id: String, context: &Context) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send>;
 
@@ -1379,9 +1581,15 @@ pub trait ApiNoContext {
 
     fn update_creator(&self, ident: String, entity: models::CreatorEntity, editgroup_id: Option<String>) -> Box<Future<Item = UpdateCreatorResponse, Error = ApiError> + Send>;
 
+    fn auth_check(&self, role: Option<String>) -> Box<Future<Item = AuthCheckResponse, Error = ApiError> + Send>;
+
+    fn auth_oidc(&self, oidc_params: models::AuthOidc) -> Box<Future<Item = AuthOidcResponse, Error = ApiError> + Send>;
+
     fn get_editor(&self, editor_id: String) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send>;
 
     fn get_editor_changelog(&self, editor_id: String) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send>;
+
+    fn update_editor(&self, editor_id: String, editor: models::Editor) -> Box<Future<Item = UpdateEditorResponse, Error = ApiError> + Send>;
 
     fn accept_editgroup(&self, editgroup_id: String) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send>;
 
@@ -1662,12 +1870,24 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().update_creator(ident, entity, editgroup_id, &self.context())
     }
 
+    fn auth_check(&self, role: Option<String>) -> Box<Future<Item = AuthCheckResponse, Error = ApiError> + Send> {
+        self.api().auth_check(role, &self.context())
+    }
+
+    fn auth_oidc(&self, oidc_params: models::AuthOidc) -> Box<Future<Item = AuthOidcResponse, Error = ApiError> + Send> {
+        self.api().auth_oidc(oidc_params, &self.context())
+    }
+
     fn get_editor(&self, editor_id: String) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send> {
         self.api().get_editor(editor_id, &self.context())
     }
 
     fn get_editor_changelog(&self, editor_id: String) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send> {
         self.api().get_editor_changelog(editor_id, &self.context())
+    }
+
+    fn update_editor(&self, editor_id: String, editor: models::Editor) -> Box<Future<Item = UpdateEditorResponse, Error = ApiError> + Send> {
+        self.api().update_editor(editor_id, editor, &self.context())
     }
 
     fn accept_editgroup(&self, editgroup_id: String) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send> {

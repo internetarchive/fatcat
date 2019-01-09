@@ -21,6 +21,8 @@ data-encoding = "2.1"
 regex = "1"
 lazy_static = "1.0"
 sha1 = { version = "0.6", features = ["std"] }
+macaroon = { git = "https://github.com/bnewbold/libmacaroon-rs", branch = "bnewbold-broken" }
+rand = "*"
 
 # API server
 chrono = { version = "0.4", features = ["serde"] }

@@ -6,40 +6,79 @@ extern crate iron_test;
 extern crate uuid;
 
 use self::iron_test::response;
+use fatcat::api_helpers::FatCatId;
 use fatcat_api_spec::client::Client;
-use iron::headers::ContentType;
+use fatcat_api_spec::Context;
+use iron::headers::{Authorization, Bearer, ContentType};
 use iron::mime::Mime;
-use iron::{status, Headers, Iron, Listening};
+use iron::{status, Chain, Headers, Iron, Listening};
+use std::str::FromStr;
 
 // A current problem with this method is that if the test fails (eg, panics, assert fails), the
 // server never gets closed, and the server thread hangs forever.
 // One workaround might be to invert the function, take a closure, capture the panic/failure, and
 // cleanup.
-pub fn setup_client() -> (Client, Listening) {
+#[allow(dead_code)]
+pub fn setup_client() -> (Client, Context, Listening) {
     let server = fatcat::test_server().unwrap();
+
+    // setup auth as admin user
+    let admin_id = FatCatId::from_str("aaaaaaaaaaaabkvkaaaaaaaaae").unwrap();
+    let token = server
+        .auth_confectionary
+        .create_token(admin_id, None)
+        .unwrap();
+    let client_context = Context {
+        x_span_id: None,
+        authorization: None,
+        auth_data: Some(swagger::auth::AuthData::ApiKey(token)),
+    };
+
     let router = fatcat_api_spec::router(server);
-    let iron_server = Iron::new(router)
-        .http("localhost:9144")
+    let mut chain = Chain::new(router);
+    chain.link_before(fatcat_api_spec::server::ExtractAuthData);
+    chain.link_before(fatcat::auth::MacaroonAuthMiddleware::new());
+
+    let mut iron_server = Iron::new(chain);
+    iron_server.threads = 1;
+    // XXX: this isn't support to block, but it is. Disabling these tests for now.
+    let iron_server = iron_server
+        .http("localhost:9300")
         .expect("Failed to start HTTP server");
 
     let client = Client::try_new_http("http://localhost:9144").unwrap();
-    (client, iron_server)
+    (client, client_context, iron_server)
 }
 
+#[allow(dead_code)]
 pub fn setup_http() -> (
     Headers,
-    fatcat_api_spec::router::Router,
+    iron::middleware::Chain,
     diesel::r2d2::PooledConnection<diesel::r2d2::ConnectionManager<diesel::PgConnection>>,
 ) {
     let server = fatcat::test_server().unwrap();
     let conn = server.db_pool.get().expect("db_pool error");
+
+    // setup auth as admin user
+    let admin_id = FatCatId::from_str("aaaaaaaaaaaabkvkaaaaaaaaae").unwrap();
+    let token = server
+        .auth_confectionary
+        .create_token(admin_id, None)
+        .unwrap();
+
     let router = fatcat_api_spec::router(server);
+    let mut chain = Chain::new(router);
+    chain.link_before(fatcat_api_spec::server::ExtractAuthData);
+    chain.link_before(fatcat::auth::MacaroonAuthMiddleware::new());
     let mut headers = Headers::new();
     let mime: Mime = "application/json".parse().unwrap();
     headers.set(ContentType(mime));
-    (headers, router, conn)
+    headers.set(Authorization(Bearer { token: token }));
+
+    (headers, chain, conn)
 }
 
+#[allow(dead_code)]
 pub fn check_http_response(
     resp: iron::IronResult<iron::response::Response>,
     want_status: status::Status,

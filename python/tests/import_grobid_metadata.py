@@ -4,6 +4,7 @@ import json
 import base64
 import pytest
 from fatcat_tools.importers import GrobidMetadataImporter
+from fixtures import api
 
 """
 WARNING: these tests are currently very fragile because they have database
@@ -11,8 +12,8 @@ side-effects. Should probably be disabled or re-written.
 """
 
 @pytest.fixture(scope="function")
-def grobid_metadata_importer():
-    yield GrobidMetadataImporter("http://localhost:9411/v0")
+def grobid_metadata_importer(api):
+    yield GrobidMetadataImporter(api)
 
 # TODO: use API to check that entities actually created...
 #def test_grobid_metadata_importer_batch(grobid_metadata_importer):
@@ -54,3 +55,11 @@ def test_file_metadata_parse(grobid_metadata_importer):
 def test_grobid_metadata_importer(grobid_metadata_importer):
     with open('tests/files/example_grobid_metadata_lines.tsv', 'r') as f:
         grobid_metadata_importer.process_source(f)
+
+    # fetch most recent editgroup
+    changes = grobid_metadata_importer.api.get_changelog(limit=1)
+    eg = changes[0].editgroup
+    assert eg.description
+    assert "grobid" in eg.description.lower()
+    assert eg.extra['git_rev']
+    assert "fatcat_tools.GrobidMetadataImporter" in eg.extra['agent']

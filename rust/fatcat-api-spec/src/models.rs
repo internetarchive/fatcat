@@ -10,6 +10,47 @@ use std::collections::HashMap;
 use swagger;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct AuthOidc {
+    #[serde(rename = "provider")]
+    pub provider: String,
+
+    #[serde(rename = "sub")]
+    pub sub: String,
+
+    #[serde(rename = "iss")]
+    pub iss: String,
+
+    #[serde(rename = "preferred_username")]
+    pub preferred_username: String,
+}
+
+impl AuthOidc {
+    pub fn new(provider: String, sub: String, iss: String, preferred_username: String) -> AuthOidc {
+        AuthOidc {
+            provider: provider,
+            sub: sub,
+            iss: iss,
+            preferred_username: preferred_username,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct AuthOidcResult {
+    #[serde(rename = "editor")]
+    pub editor: models::Editor,
+
+    #[serde(rename = "token")]
+    pub token: String,
+}
+
+impl AuthOidcResult {
+    pub fn new(editor: models::Editor, token: String) -> AuthOidcResult {
+        AuthOidcResult { editor: editor, token: token }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ChangelogEntry {
     #[serde(rename = "index")]
     pub index: i64,
@@ -190,7 +231,8 @@ pub struct Editgroup {
 
     /// base32-encoded unique identifier
     #[serde(rename = "editor_id")]
-    pub editor_id: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub editor_id: Option<String>,
 
     #[serde(rename = "description")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -206,10 +248,10 @@ pub struct Editgroup {
 }
 
 impl Editgroup {
-    pub fn new(editor_id: String) -> Editgroup {
+    pub fn new() -> Editgroup {
         Editgroup {
             editgroup_id: None,
-            editor_id: editor_id,
+            editor_id: None,
             description: None,
             extra: None,
             edits: None,
@@ -271,11 +313,29 @@ pub struct Editor {
 
     #[serde(rename = "username")]
     pub username: String,
+
+    #[serde(rename = "is_admin")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub is_admin: Option<bool>,
+
+    #[serde(rename = "is_bot")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub is_bot: Option<bool>,
+
+    #[serde(rename = "is_active")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub is_active: Option<bool>,
 }
 
 impl Editor {
     pub fn new(username: String) -> Editor {
-        Editor { editor_id: None, username: username }
+        Editor {
+            editor_id: None,
+            username: username,
+            is_admin: None,
+            is_bot: None,
+            is_active: None,
+        }
     }
 }
 

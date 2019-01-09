@@ -15,6 +15,8 @@
 from __future__ import absolute_import
 
 # import models into model package
+from fatcat_client.models.auth_oidc import AuthOidc
+from fatcat_client.models.auth_oidc_result import AuthOidcResult
 from fatcat_client.models.changelog_entry import ChangelogEntry
 from fatcat_client.models.container_entity import ContainerEntity
 from fatcat_client.models.creator_entity import CreatorEntity

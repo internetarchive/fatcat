@@ -32,24 +32,39 @@ class Editor(object):
     """
     swagger_types = {
         'editor_id': 'str',
-        'username': 'str'
+        'username': 'str',
+        'is_admin': 'bool',
+        'is_bot': 'bool',
+        'is_active': 'bool'
     }
 
     attribute_map = {
         'editor_id': 'editor_id',
-        'username': 'username'
+        'username': 'username',
+        'is_admin': 'is_admin',
+        'is_bot': 'is_bot',
+        'is_active': 'is_active'
     }
 
-    def __init__(self, editor_id=None, username=None):  # noqa: E501
+    def __init__(self, editor_id=None, username=None, is_admin=None, is_bot=None, is_active=None):  # noqa: E501
         """Editor - a model defined in Swagger"""  # noqa: E501
 
         self._editor_id = None
         self._username = None
+        self._is_admin = None
+        self._is_bot = None
+        self._is_active = None
         self.discriminator = None
 
         if editor_id is not None:
             self.editor_id = editor_id
         self.username = username
+        if is_admin is not None:
+            self.is_admin = is_admin
+        if is_bot is not None:
+            self.is_bot = is_bot
+        if is_active is not None:
+            self.is_active = is_active
 
     @property
     def editor_id(self):
@@ -102,6 +117,69 @@ class Editor(object):
             raise ValueError("Invalid value for `username`, must not be `None`")  # noqa: E501
 
         self._username = username
+
+    @property
+    def is_admin(self):
+        """Gets the is_admin of this Editor.  # noqa: E501
+
+
+        :return: The is_admin of this Editor.  # noqa: E501
+        :rtype: bool
+        """
+        return self._is_admin
+
+    @is_admin.setter
+    def is_admin(self, is_admin):
+        """Sets the is_admin of this Editor.
+
+
+        :param is_admin: The is_admin of this Editor.  # noqa: E501
+        :type: bool
+        """
+
+        self._is_admin = is_admin
+
+    @property
+    def is_bot(self):
+        """Gets the is_bot of this Editor.  # noqa: E501
+
+
+        :return: The is_bot of this Editor.  # noqa: E501
+        :rtype: bool
+        """
+        return self._is_bot
+
+    @is_bot.setter
+    def is_bot(self, is_bot):
+        """Sets the is_bot of this Editor.
+
+
+        :param is_bot: The is_bot of this Editor.  # noqa: E501
+        :type: bool
+        """
+
+        self._is_bot = is_bot
+
+    @property
+    def is_active(self):
+        """Gets the is_active of this Editor.  # noqa: E501
+
+
+        :return: The is_active of this Editor.  # noqa: E501
+        :rtype: bool
+        """
+        return self._is_active
+
+    @is_active.setter
+    def is_active(self, is_active):
+        """Sets the is_active of this Editor.
+
+
+        :param is_active: The is_active of this Editor.  # noqa: E501
+        :type: bool
+        """
+
+        self._is_active = is_active
 
     def to_dict(self):
         """Returns the model properties as a dict"""

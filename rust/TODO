@@ -5,16 +5,19 @@ correctness
 - changelog sequence without gaps
 - batch insert editgroup behavior; always a new editgroup?
 
+refactor:
+- consistent `conn` and `context` orders in _handler() functions
+
 edit lifecycle
 - editgroup: state to track review status?
 - per-edit extra JSON
 
 account helper tool
 - set admin bit
-- create editors
-- create keypairs
-- generate tokens
-- test/validate tokens
+x create editors
+x create keypairs
+x generate tokens
+x test/validate tokens
 
 later:
 - "prev_rev" required in updates

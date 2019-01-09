@@ -13,17 +13,17 @@ import argparse
 import fatcat_client
 from fatcat_client.rest import ApiException
 from fatcat_client import ReleaseEntity
-from fatcat_tools import uuid2fcid, entity_from_json, release_to_elasticsearch
+from fatcat_tools import uuid2fcid, entity_from_json, entity_to_dict, \
+    release_to_elasticsearch, public_api
+
 
 def run_export_releases(args):
-    conf = fatcat_client.Configuration()
-    conf.host = args.host_url
-    api = fatcat_client.DefaultApi(fatcat_client.ApiClient(conf))
-
+    api = args.api
     for line in args.ident_file:
         ident = uuid2fcid(line.split()[0])
         release = api.get_release(ident=ident, expand="all")
-        args.json_output.write(json.dumps(release.to_dict()) + "\n")
+        args.json_output.write(
+            json.dumps(entity_to_dict(release)) + "\n")
 
 def run_transform_releases(args):
     for line in args.json_input:
@@ -35,10 +35,7 @@ def run_transform_releases(args):
             json.dumps(release_to_elasticsearch(release)) + '\n')
 
 def run_export_changelog(args):
-    conf = fatcat_client.Configuration()
-    conf.host = args.host_url
-    api = fatcat_client.DefaultApi(fatcat_client.ApiClient(conf))
-
+    api = args.api
     end = args.end
     if end is None:
         latest = api.get_changelog(limit=1)[0]
@@ -46,7 +43,8 @@ def run_export_changelog(args):
 
     for i in range(args.start, end):
         entry = api.get_changelog_entry(index=i)
-        args.json_output.write(json.dumps(entry.to_dict()) + "\n")
+        args.json_output.write(
+            json.dumps(entity_to_dict(entry)) + "\n")
 
 def main():
     parser = argparse.ArgumentParser()
@@ -92,6 +90,8 @@ def main():
     if not args.__dict__.get("func"):
         print("tell me what to do!")
         sys.exit(-1)
+
+    args.api = public_api(args.host_url)
     args.func(args)
 
 if __name__ == '__main__':

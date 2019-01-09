@@ -14,6 +14,14 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for CreateContainer
     lazy_static! {
+        pub static ref CREATE_CONTAINER_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateContainer
+    lazy_static! {
+        pub static ref CREATE_CONTAINER_FORBIDDEN: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateContainer
+    lazy_static! {
         pub static ref CREATE_CONTAINER_NOT_FOUND: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for CreateContainer
@@ -27,6 +35,14 @@ pub mod responses {
     /// Create Mime objects for the response content types for CreateContainerBatch
     lazy_static! {
         pub static ref CREATE_CONTAINER_BATCH_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateContainerBatch
+    lazy_static! {
+        pub static ref CREATE_CONTAINER_BATCH_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateContainerBatch
+    lazy_static! {
+        pub static ref CREATE_CONTAINER_BATCH_FORBIDDEN: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for CreateContainerBatch
     lazy_static! {
@@ -46,6 +62,14 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for DeleteContainer
     lazy_static! {
+        pub static ref DELETE_CONTAINER_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteContainer
+    lazy_static! {
+        pub static ref DELETE_CONTAINER_FORBIDDEN: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteContainer
+    lazy_static! {
         pub static ref DELETE_CONTAINER_NOT_FOUND: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for DeleteContainer
@@ -59,6 +83,14 @@ pub mod responses {
     /// Create Mime objects for the response content types for DeleteContainerEdit
     lazy_static! {
         pub static ref DELETE_CONTAINER_EDIT_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteContainerEdit
+    lazy_static! {
+        pub static ref DELETE_CONTAINER_EDIT_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteContainerEdit
+    lazy_static! {
+        pub static ref DELETE_CONTAINER_EDIT_FORBIDDEN: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for DeleteContainerEdit
     lazy_static! {
@@ -174,6 +206,14 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for UpdateContainer
     lazy_static! {
+        pub static ref UPDATE_CONTAINER_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateContainer
+    lazy_static! {
+        pub static ref UPDATE_CONTAINER_FORBIDDEN: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateContainer
+    lazy_static! {
         pub static ref UPDATE_CONTAINER_NOT_FOUND: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for UpdateContainer
@@ -187,6 +227,14 @@ pub mod responses {
     /// Create Mime objects for the response content types for CreateCreator
     lazy_static! {
         pub static ref CREATE_CREATOR_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateCreator
+    lazy_static! {
+        pub static ref CREATE_CREATOR_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateCreator
+    lazy_static! {
+        pub static ref CREATE_CREATOR_FORBIDDEN: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for CreateCreator
     lazy_static! {
@@ -206,6 +254,14 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for CreateCreatorBatch
     lazy_static! {
+        pub static ref CREATE_CREATOR_BATCH_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateCreatorBatch
+    lazy_static! {
+        pub static ref CREATE_CREATOR_BATCH_FORBIDDEN: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateCreatorBatch
+    lazy_static! {
         pub static ref CREATE_CREATOR_BATCH_NOT_FOUND: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for CreateCreatorBatch
@@ -222,6 +278,14 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for DeleteCreator
     lazy_static! {
+        pub static ref DELETE_CREATOR_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteCreator
+    lazy_static! {
+        pub static ref DELETE_CREATOR_FORBIDDEN: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteCreator
+    lazy_static! {
         pub static ref DELETE_CREATOR_NOT_FOUND: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for DeleteCreator
@@ -235,6 +299,14 @@ pub mod responses {
     /// Create Mime objects for the response content types for DeleteCreatorEdit
     lazy_static! {
         pub static ref DELETE_CREATOR_EDIT_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteCreatorEdit
+    lazy_static! {
+        pub static ref DELETE_CREATOR_EDIT_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteCreatorEdit
+    lazy_static! {
+        pub static ref DELETE_CREATOR_EDIT_FORBIDDEN: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for DeleteCreatorEdit
     lazy_static! {
@@ -366,11 +438,67 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for UpdateCreator
     lazy_static! {
+        pub static ref UPDATE_CREATOR_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateCreator
+    lazy_static! {
+        pub static ref UPDATE_CREATOR_FORBIDDEN: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateCreator
+    lazy_static! {
         pub static ref UPDATE_CREATOR_NOT_FOUND: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for UpdateCreator
     lazy_static! {
         pub static ref UPDATE_CREATOR_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthCheck
+    lazy_static! {
+        pub static ref AUTH_CHECK_SUCCESS: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthCheck
+    lazy_static! {
+        pub static ref AUTH_CHECK_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthCheck
+    lazy_static! {
+        pub static ref AUTH_CHECK_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthCheck
+    lazy_static! {
+        pub static ref AUTH_CHECK_FORBIDDEN: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthCheck
+    lazy_static! {
+        pub static ref AUTH_CHECK_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthOidc
+    lazy_static! {
+        pub static ref AUTH_OIDC_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthOidc
+    lazy_static! {
+        pub static ref AUTH_OIDC_CREATED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthOidc
+    lazy_static! {
+        pub static ref AUTH_OIDC_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthOidc
+    lazy_static! {
+        pub static ref AUTH_OIDC_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthOidc
+    lazy_static! {
+        pub static ref AUTH_OIDC_FORBIDDEN: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthOidc
+    lazy_static! {
+        pub static ref AUTH_OIDC_CONFLICT: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthOidc
+    lazy_static! {
+        pub static ref AUTH_OIDC_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for GetEditor
     lazy_static! {
@@ -404,6 +532,30 @@ pub mod responses {
     lazy_static! {
         pub static ref GET_EDITOR_CHANGELOG_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
+    /// Create Mime objects for the response content types for UpdateEditor
+    lazy_static! {
+        pub static ref UPDATE_EDITOR_UPDATED_EDITOR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateEditor
+    lazy_static! {
+        pub static ref UPDATE_EDITOR_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateEditor
+    lazy_static! {
+        pub static ref UPDATE_EDITOR_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateEditor
+    lazy_static! {
+        pub static ref UPDATE_EDITOR_FORBIDDEN: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateEditor
+    lazy_static! {
+        pub static ref UPDATE_EDITOR_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateEditor
+    lazy_static! {
+        pub static ref UPDATE_EDITOR_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
     /// Create Mime objects for the response content types for AcceptEditgroup
     lazy_static! {
         pub static ref ACCEPT_EDITGROUP_MERGED_SUCCESSFULLY: Mime = mime!(Application / Json);
@@ -411,6 +563,14 @@ pub mod responses {
     /// Create Mime objects for the response content types for AcceptEditgroup
     lazy_static! {
         pub static ref ACCEPT_EDITGROUP_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AcceptEditgroup
+    lazy_static! {
+        pub static ref ACCEPT_EDITGROUP_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AcceptEditgroup
+    lazy_static! {
+        pub static ref ACCEPT_EDITGROUP_FORBIDDEN: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for AcceptEditgroup
     lazy_static! {
@@ -431,6 +591,14 @@ pub mod responses {
     /// Create Mime objects for the response content types for CreateEditgroup
     lazy_static! {
         pub static ref CREATE_EDITGROUP_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateEditgroup
+    lazy_static! {
+        pub static ref CREATE_EDITGROUP_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateEditgroup
+    lazy_static! {
+        pub static ref CREATE_EDITGROUP_FORBIDDEN: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for CreateEditgroup
     lazy_static! {
@@ -482,6 +650,14 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for CreateFile
     lazy_static! {
+        pub static ref CREATE_FILE_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateFile
+    lazy_static! {
+        pub static ref CREATE_FILE_FORBIDDEN: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateFile
+    lazy_static! {
         pub static ref CREATE_FILE_NOT_FOUND: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for CreateFile
@@ -495,6 +671,14 @@ pub mod responses {
     /// Create Mime objects for the response content types for CreateFileBatch
     lazy_static! {
         pub static ref CREATE_FILE_BATCH_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateFileBatch
+    lazy_static! {
+        pub static ref CREATE_FILE_BATCH_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateFileBatch
+    lazy_static! {
+        pub static ref CREATE_FILE_BATCH_FORBIDDEN: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for CreateFileBatch
     lazy_static! {
@@ -514,6 +698,14 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for DeleteFile
     lazy_static! {
+        pub static ref DELETE_FILE_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteFile
+    lazy_static! {
+        pub static ref DELETE_FILE_FORBIDDEN: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteFile
+    lazy_static! {
         pub static ref DELETE_FILE_NOT_FOUND: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for DeleteFile
@@ -527,6 +719,14 @@ pub mod responses {
     /// Create Mime objects for the response content types for DeleteFileEdit
     lazy_static! {
         pub static ref DELETE_FILE_EDIT_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteFileEdit
+    lazy_static! {
+        pub static ref DELETE_FILE_EDIT_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteFileEdit
+    lazy_static! {
+        pub static ref DELETE_FILE_EDIT_FORBIDDEN: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for DeleteFileEdit
     lazy_static! {
@@ -642,6 +842,14 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for UpdateFile
     lazy_static! {
+        pub static ref UPDATE_FILE_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateFile
+    lazy_static! {
+        pub static ref UPDATE_FILE_FORBIDDEN: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateFile
+    lazy_static! {
         pub static ref UPDATE_FILE_NOT_FOUND: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for UpdateFile
@@ -655,6 +863,14 @@ pub mod responses {
     /// Create Mime objects for the response content types for CreateFileset
     lazy_static! {
         pub static ref CREATE_FILESET_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateFileset
+    lazy_static! {
+        pub static ref CREATE_FILESET_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateFileset
+    lazy_static! {
+        pub static ref CREATE_FILESET_FORBIDDEN: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for CreateFileset
     lazy_static! {
@@ -674,6 +890,14 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for CreateFilesetBatch
     lazy_static! {
+        pub static ref CREATE_FILESET_BATCH_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateFilesetBatch
+    lazy_static! {
+        pub static ref CREATE_FILESET_BATCH_FORBIDDEN: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateFilesetBatch
+    lazy_static! {
         pub static ref CREATE_FILESET_BATCH_NOT_FOUND: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for CreateFilesetBatch
@@ -690,6 +914,14 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for DeleteFileset
     lazy_static! {
+        pub static ref DELETE_FILESET_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteFileset
+    lazy_static! {
+        pub static ref DELETE_FILESET_FORBIDDEN: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteFileset
+    lazy_static! {
         pub static ref DELETE_FILESET_NOT_FOUND: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for DeleteFileset
@@ -703,6 +935,14 @@ pub mod responses {
     /// Create Mime objects for the response content types for DeleteFilesetEdit
     lazy_static! {
         pub static ref DELETE_FILESET_EDIT_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteFilesetEdit
+    lazy_static! {
+        pub static ref DELETE_FILESET_EDIT_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteFilesetEdit
+    lazy_static! {
+        pub static ref DELETE_FILESET_EDIT_FORBIDDEN: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for DeleteFilesetEdit
     lazy_static! {
@@ -802,6 +1042,14 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for UpdateFileset
     lazy_static! {
+        pub static ref UPDATE_FILESET_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateFileset
+    lazy_static! {
+        pub static ref UPDATE_FILESET_FORBIDDEN: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateFileset
+    lazy_static! {
         pub static ref UPDATE_FILESET_NOT_FOUND: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for UpdateFileset
@@ -815,6 +1063,14 @@ pub mod responses {
     /// Create Mime objects for the response content types for CreateRelease
     lazy_static! {
         pub static ref CREATE_RELEASE_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateRelease
+    lazy_static! {
+        pub static ref CREATE_RELEASE_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateRelease
+    lazy_static! {
+        pub static ref CREATE_RELEASE_FORBIDDEN: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for CreateRelease
     lazy_static! {
@@ -834,6 +1090,14 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for CreateReleaseBatch
     lazy_static! {
+        pub static ref CREATE_RELEASE_BATCH_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateReleaseBatch
+    lazy_static! {
+        pub static ref CREATE_RELEASE_BATCH_FORBIDDEN: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateReleaseBatch
+    lazy_static! {
         pub static ref CREATE_RELEASE_BATCH_NOT_FOUND: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for CreateReleaseBatch
@@ -847,6 +1111,14 @@ pub mod responses {
     /// Create Mime objects for the response content types for CreateWork
     lazy_static! {
         pub static ref CREATE_WORK_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateWork
+    lazy_static! {
+        pub static ref CREATE_WORK_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateWork
+    lazy_static! {
+        pub static ref CREATE_WORK_FORBIDDEN: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for CreateWork
     lazy_static! {
@@ -866,6 +1138,14 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for DeleteRelease
     lazy_static! {
+        pub static ref DELETE_RELEASE_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteRelease
+    lazy_static! {
+        pub static ref DELETE_RELEASE_FORBIDDEN: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteRelease
+    lazy_static! {
         pub static ref DELETE_RELEASE_NOT_FOUND: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for DeleteRelease
@@ -879,6 +1159,14 @@ pub mod responses {
     /// Create Mime objects for the response content types for DeleteReleaseEdit
     lazy_static! {
         pub static ref DELETE_RELEASE_EDIT_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteReleaseEdit
+    lazy_static! {
+        pub static ref DELETE_RELEASE_EDIT_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteReleaseEdit
+    lazy_static! {
+        pub static ref DELETE_RELEASE_EDIT_FORBIDDEN: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for DeleteReleaseEdit
     lazy_static! {
@@ -1042,6 +1330,14 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for UpdateRelease
     lazy_static! {
+        pub static ref UPDATE_RELEASE_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateRelease
+    lazy_static! {
+        pub static ref UPDATE_RELEASE_FORBIDDEN: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateRelease
+    lazy_static! {
         pub static ref UPDATE_RELEASE_NOT_FOUND: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for UpdateRelease
@@ -1055,6 +1351,14 @@ pub mod responses {
     /// Create Mime objects for the response content types for CreateWebcapture
     lazy_static! {
         pub static ref CREATE_WEBCAPTURE_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateWebcapture
+    lazy_static! {
+        pub static ref CREATE_WEBCAPTURE_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateWebcapture
+    lazy_static! {
+        pub static ref CREATE_WEBCAPTURE_FORBIDDEN: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for CreateWebcapture
     lazy_static! {
@@ -1074,6 +1378,14 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for CreateWebcaptureBatch
     lazy_static! {
+        pub static ref CREATE_WEBCAPTURE_BATCH_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateWebcaptureBatch
+    lazy_static! {
+        pub static ref CREATE_WEBCAPTURE_BATCH_FORBIDDEN: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateWebcaptureBatch
+    lazy_static! {
         pub static ref CREATE_WEBCAPTURE_BATCH_NOT_FOUND: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for CreateWebcaptureBatch
@@ -1090,6 +1402,14 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for DeleteWebcapture
     lazy_static! {
+        pub static ref DELETE_WEBCAPTURE_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteWebcapture
+    lazy_static! {
+        pub static ref DELETE_WEBCAPTURE_FORBIDDEN: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteWebcapture
+    lazy_static! {
         pub static ref DELETE_WEBCAPTURE_NOT_FOUND: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for DeleteWebcapture
@@ -1103,6 +1423,14 @@ pub mod responses {
     /// Create Mime objects for the response content types for DeleteWebcaptureEdit
     lazy_static! {
         pub static ref DELETE_WEBCAPTURE_EDIT_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteWebcaptureEdit
+    lazy_static! {
+        pub static ref DELETE_WEBCAPTURE_EDIT_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteWebcaptureEdit
+    lazy_static! {
+        pub static ref DELETE_WEBCAPTURE_EDIT_FORBIDDEN: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for DeleteWebcaptureEdit
     lazy_static! {
@@ -1202,6 +1530,14 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for UpdateWebcapture
     lazy_static! {
+        pub static ref UPDATE_WEBCAPTURE_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateWebcapture
+    lazy_static! {
+        pub static ref UPDATE_WEBCAPTURE_FORBIDDEN: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateWebcapture
+    lazy_static! {
         pub static ref UPDATE_WEBCAPTURE_NOT_FOUND: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for UpdateWebcapture
@@ -1215,6 +1551,14 @@ pub mod responses {
     /// Create Mime objects for the response content types for CreateWorkBatch
     lazy_static! {
         pub static ref CREATE_WORK_BATCH_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateWorkBatch
+    lazy_static! {
+        pub static ref CREATE_WORK_BATCH_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateWorkBatch
+    lazy_static! {
+        pub static ref CREATE_WORK_BATCH_FORBIDDEN: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for CreateWorkBatch
     lazy_static! {
@@ -1234,6 +1578,14 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for DeleteWork
     lazy_static! {
+        pub static ref DELETE_WORK_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteWork
+    lazy_static! {
+        pub static ref DELETE_WORK_FORBIDDEN: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteWork
+    lazy_static! {
         pub static ref DELETE_WORK_NOT_FOUND: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for DeleteWork
@@ -1247,6 +1599,14 @@ pub mod responses {
     /// Create Mime objects for the response content types for DeleteWorkEdit
     lazy_static! {
         pub static ref DELETE_WORK_EDIT_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteWorkEdit
+    lazy_static! {
+        pub static ref DELETE_WORK_EDIT_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for DeleteWorkEdit
+    lazy_static! {
+        pub static ref DELETE_WORK_EDIT_FORBIDDEN: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for DeleteWorkEdit
     lazy_static! {
@@ -1362,6 +1722,14 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for UpdateWork
     lazy_static! {
+        pub static ref UPDATE_WORK_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateWork
+    lazy_static! {
+        pub static ref UPDATE_WORK_FORBIDDEN: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateWork
+    lazy_static! {
         pub static ref UPDATE_WORK_NOT_FOUND: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for UpdateWork
@@ -1396,6 +1764,14 @@ pub mod requests {
     /// Create Mime objects for the request content types for UpdateCreator
     lazy_static! {
         pub static ref UPDATE_CREATOR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the request content types for AuthOidc
+    lazy_static! {
+        pub static ref AUTH_OIDC: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the request content types for UpdateEditor
+    lazy_static! {
+        pub static ref UPDATE_EDITOR: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the request content types for CreateEditgroup
     lazy_static! {

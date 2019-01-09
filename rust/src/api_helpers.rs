@@ -205,27 +205,57 @@ fn test_hide_flags() {
 
 pub fn make_edit_context(
     conn: &DbConn,
+    editor_id: FatCatId,
     editgroup_id: Option<FatCatId>,
     autoaccept: bool,
 ) -> Result<EditContext> {
-    let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001")?; // TODO: auth
     let editgroup_id: FatCatId = match (editgroup_id, autoaccept) {
         (Some(eg), _) => eg,
         // If autoaccept and no editgroup_id passed, always create a new one for this transaction
         (None, true) => {
             let eg_row: EditgroupRow = diesel::insert_into(editgroup::table)
-                .values((editgroup::editor_id.eq(editor_id),))
+                .values((editgroup::editor_id.eq(editor_id.to_uuid()),))
                 .get_result(conn)?;
             FatCatId::from_uuid(&eg_row.id)
         }
-        (None, false) => FatCatId::from_uuid(&get_or_create_editgroup(editor_id, conn)?),
+        (None, false) => FatCatId::from_uuid(&get_or_create_editgroup(editor_id.to_uuid(), conn)?),
     };
     Ok(EditContext {
-        editor_id: FatCatId::from_uuid(&editor_id),
+        editor_id: editor_id,
         editgroup_id: editgroup_id,
         extra_json: None,
         autoaccept: autoaccept,
     })
+}
+
+pub fn create_editor(
+    conn: &DbConn,
+    username: String,
+    is_admin: bool,
+    is_bot: bool,
+) -> Result<EditorRow> {
+    check_username(&username)?;
+    let ed: EditorRow = diesel::insert_into(editor::table)
+        .values((
+            editor::username.eq(username),
+            editor::is_admin.eq(is_admin),
+            editor::is_bot.eq(is_bot),
+        ))
+        .get_result(conn)?;
+    Ok(ed)
+}
+
+pub fn update_editor_username(
+    conn: &DbConn,
+    editor_id: FatCatId,
+    username: String,
+) -> Result<EditorRow> {
+    check_username(&username)?;
+    diesel::update(editor::table.find(editor_id.to_uuid()))
+        .set(editor::username.eq(username))
+        .execute(conn)?;
+    let editor: EditorRow = editor::table.find(editor_id.to_uuid()).get_result(conn)?;
+    Ok(editor)
 }
 
 /// This function should always be run within a transaction
@@ -282,7 +312,7 @@ pub fn accept_editgroup(editgroup_id: FatCatId, conn: &DbConn) -> Result<Changel
     Ok(entry)
 }
 
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, PartialEq, Debug)]
 pub struct FatCatId(Uuid);
 
 impl ToString for FatCatId {
@@ -325,6 +355,42 @@ pub fn fcid2uuid(fcid: &str) -> Result<Uuid> {
 pub fn uuid2fcid(id: &Uuid) -> String {
     let raw = id.as_bytes();
     BASE32_NOPAD.encode(raw).to_lowercase()
+}
+
+pub fn check_username(raw: &str) -> Result<()> {
+    lazy_static! {
+        static ref RE: Regex = Regex::new(r"^[A-Za-z][A-Za-z0-9._-]{2,24}$").unwrap();
+    }
+    if RE.is_match(raw) {
+        Ok(())
+    } else {
+        Err(ErrorKind::MalformedExternalId(format!(
+            "not a valid username: '{}' (expected, eg, 'AcidBurn')",
+            raw
+        ))
+        .into())
+    }
+}
+
+#[test]
+fn test_check_username() {
+    assert!(check_username("bnewbold").is_ok());
+    assert!(check_username("BNEWBOLD").is_ok());
+    assert!(check_username("admin").is_ok());
+    assert!(check_username("friend-bot").is_ok());
+    assert!(check_username("dog").is_ok());
+    assert!(check_username("g_____").is_ok());
+    assert!(check_username("bnewbold2-archive").is_ok());
+    assert!(check_username("bnewbold2-internetarchive").is_ok());
+
+    assert!(check_username("").is_err());
+    assert!(check_username("_").is_err());
+    assert!(check_username("gg").is_err());
+    assert!(check_username("adminadminadminadminadminadminadmin").is_err());
+    assert!(check_username("bryan newbold").is_err());
+    assert!(check_username("01234567-3456-6780").is_err());
+    assert!(check_username(".admin").is_err());
+    assert!(check_username("-bot").is_err());
 }
 
 pub fn check_pmcid(raw: &str) -> Result<()> {

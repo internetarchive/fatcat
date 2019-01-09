@@ -35,6 +35,16 @@ class IssnImporter(FatcatImporter):
         ISSN-L,in_doaj,in_road,in_norwegian,in_crossref,title,publisher,url,lang,ISSN-print,ISSN-electronic,doi_count,has_doi,is_oa,is_kept,publisher_size,url_live,url_live_status,url_live_final_status,url_live_final_url,url_live_status_simple,url_live_final_status_simple,url_domain,gwb_pdf_count
     """
 
+    def __init__(self, api, **kwargs):
+
+        eg_desc = kwargs.get('editgroup_description',
+            "Automated import of container-level metadata, by ISSN. Metadata from Internet Archive munging.")
+        eg_extra = kwargs.get('editgroup_extra', dict())
+        eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.IssnImporter')
+        super().__init__(api,
+            editgroup_description=eg_desc,
+            editgroup_extra=eg_extra)
+
     def parse_issn_row(self, row):
         """
         row is a python dict (parsed from CSV).

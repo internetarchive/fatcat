@@ -6,6 +6,17 @@ table! {
 }
 
 table! {
+    auth_oidc (id) {
+        id -> Int8,
+        created -> Timestamptz,
+        editor_id -> Uuid,
+        provider -> Text,
+        oidc_iss -> Text,
+        oidc_sub -> Text,
+    }
+}
+
+table! {
     changelog (id) {
         id -> Int8,
         editgroup_id -> Uuid,
@@ -96,8 +107,13 @@ table! {
     editor (id) {
         id -> Uuid,
         username -> Text,
+        is_superuser -> Bool,
         is_admin -> Bool,
+        is_bot -> Bool,
+        is_active -> Bool,
         registered -> Timestamptz,
+        auth_epoch -> Timestamptz,
+        wrangler_id -> Nullable<Uuid>,
         active_editgroup_id -> Nullable<Uuid>,
     }
 }
@@ -384,6 +400,7 @@ table! {
     }
 }
 
+joinable!(auth_oidc -> editor (editor_id));
 joinable!(changelog -> editgroup (editgroup_id));
 joinable!(container_edit -> editgroup (editgroup_id));
 joinable!(container_ident -> container_rev (rev_id));
@@ -421,6 +438,7 @@ joinable!(work_ident -> work_rev (rev_id));
 
 allow_tables_to_appear_in_same_query!(
     abstracts,
+    auth_oidc,
     changelog,
     container_edit,
     container_ident,

@@ -12,8 +12,8 @@ extern crate uuid;
 use clap::{App, Arg};
 #[allow(unused_imports)]
 use fatcat::{
-    AcceptEditgroupResponse, ApiError, ApiNoContext, ContextWrapperExt, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse,
-    CreateEditgroupResponse, CreateFileBatchResponse, CreateFileResponse, CreateFilesetBatchResponse, CreateFilesetResponse, CreateReleaseBatchResponse, CreateReleaseResponse,
+    AcceptEditgroupResponse, ApiError, ApiNoContext, AuthCheckResponse, AuthOidcResponse, ContextWrapperExt, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse,
+    CreateCreatorResponse, CreateEditgroupResponse, CreateFileBatchResponse, CreateFileResponse, CreateFilesetBatchResponse, CreateFilesetResponse, CreateReleaseBatchResponse, CreateReleaseResponse,
     CreateWebcaptureBatchResponse, CreateWebcaptureResponse, CreateWorkBatchResponse, CreateWorkResponse, DeleteContainerEditResponse, DeleteContainerResponse, DeleteCreatorEditResponse,
     DeleteCreatorResponse, DeleteFileEditResponse, DeleteFileResponse, DeleteFilesetEditResponse, DeleteFilesetResponse, DeleteReleaseEditResponse, DeleteReleaseResponse,
     DeleteWebcaptureEditResponse, DeleteWebcaptureResponse, DeleteWorkEditResponse, DeleteWorkResponse, GetChangelogEntryResponse, GetChangelogResponse, GetContainerEditResponse,
@@ -23,7 +23,8 @@ use fatcat::{
     GetReleaseEditResponse, GetReleaseFilesResponse, GetReleaseFilesetsResponse, GetReleaseHistoryResponse, GetReleaseRedirectsResponse, GetReleaseResponse, GetReleaseRevisionResponse,
     GetReleaseWebcapturesResponse, GetWebcaptureEditResponse, GetWebcaptureHistoryResponse, GetWebcaptureRedirectsResponse, GetWebcaptureResponse, GetWebcaptureRevisionResponse, GetWorkEditResponse,
     GetWorkHistoryResponse, GetWorkRedirectsResponse, GetWorkReleasesResponse, GetWorkResponse, GetWorkRevisionResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse,
-    LookupReleaseResponse, UpdateContainerResponse, UpdateCreatorResponse, UpdateFileResponse, UpdateFilesetResponse, UpdateReleaseResponse, UpdateWebcaptureResponse, UpdateWorkResponse,
+    LookupReleaseResponse, UpdateContainerResponse, UpdateCreatorResponse, UpdateEditorResponse, UpdateFileResponse, UpdateFilesetResponse, UpdateReleaseResponse, UpdateWebcaptureResponse,
+    UpdateWorkResponse,
 };
 #[allow(unused_imports)]
 use futures::{future, stream, Future, Stream};
@@ -53,6 +54,7 @@ fn main() {
                     "GetCreatorReleases",
                     "GetCreatorRevision",
                     "LookupCreator",
+                    "AuthCheck",
                     "GetEditor",
                     "GetEditorChangelog",
                     "AcceptEditgroup",
@@ -271,6 +273,16 @@ fn main() {
         //     let result = client.update_creator("ident_example".to_string(), ???, Some("editgroup_id_example".to_string())).wait();
         //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         //  },
+        Some("AuthCheck") => {
+            let result = client.auth_check(Some("role_example".to_string())).wait();
+            println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        }
+
+        // Disabled because there's no example.
+        // Some("AuthOidc") => {
+        //     let result = client.auth_oidc(???).wait();
+        //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        //  },
         Some("GetEditor") => {
             let result = client.get_editor("editor_id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
@@ -281,6 +293,11 @@ fn main() {
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
         }
 
+        // Disabled because there's no example.
+        // Some("UpdateEditor") => {
+        //     let result = client.update_editor("editor_id_example".to_string(), ???).wait();
+        //     println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));
+        //  },
         Some("AcceptEditgroup") => {
             let result = client.accept_editgroup("editgroup_id_example".to_string()).wait();
             println!("{:?} (X-Span-ID: {:?})", result, client.context().x_span_id.clone().unwrap_or(String::from("<none>")));

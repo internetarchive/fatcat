@@ -3,6 +3,7 @@
 use api_entity_crud::EntityCrud;
 use api_helpers::*;
 use api_server::Server;
+use auth::*;
 use database_models::EntityEditRow;
 use diesel::Connection;
 use errors::*;
@@ -80,14 +81,18 @@ macro_rules! wrap_entity_handlers {
             &self,
             entity: models::$model,
             editgroup_id: Option<String>,
-            _context: &Context,
+            context: &Context,
         ) -> Box<Future<Item = $post_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             let ret = match conn.transaction(|| {
+                let auth_context = self.auth_confectionary.require_auth(&conn, &context.auth_data, Some(stringify!($post_fn)))?;
+                auth_context.require_role(FatcatRole::Editor)?;
                 let editgroup_id = if let Some(s) = editgroup_id {
-                    Some(FatCatId::from_str(&s)?)
+                    let eg_id = FatCatId::from_str(&s)?;
+                    auth_context.require_editgroup(&conn, eg_id)?;
+                    Some(eg_id)
                 } else { None };
-                let edit_context = make_edit_context(&conn, editgroup_id, false)?;
+                let edit_context = make_edit_context(&conn, auth_context.editor_id, editgroup_id, false)?;
                 edit_context.check(&conn)?;
                 entity.db_create(&conn, &edit_context)?.into_model()
             }) {
@@ -108,6 +113,11 @@ macro_rules! wrap_entity_handlers {
                     $post_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::EditgroupAlreadyAccepted(e), _)) =>
                     $post_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::InvalidCredentials(e), _)) =>
+                    // TODO: why can't I NotAuthorized here?
+                    $post_resp::Forbidden(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::InsufficientPrivileges(e), _)) =>
+                    $post_resp::Forbidden(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::OtherBadRequest(e), _)) =>
                     $post_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
@@ -123,14 +133,18 @@ macro_rules! wrap_entity_handlers {
             entity_list: &Vec<models::$model>,
             autoaccept: Option<bool>,
             editgroup_id: Option<String>,
-            _context: &Context,
+            context: &Context,
         ) -> Box<Future<Item = $post_batch_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             let ret = match conn.transaction(|| {
+                let auth_context = self.auth_confectionary.require_auth(&conn, &context.auth_data, Some(stringify!($post_batch_fn)))?;
+                auth_context.require_role(FatcatRole::Editor)?;
                 let editgroup_id = if let Some(s) = editgroup_id {
-                    Some(FatCatId::from_str(&s)?)
+                    let eg_id = FatCatId::from_str(&s)?;
+                    auth_context.require_editgroup(&conn, eg_id)?;
+                    Some(eg_id)
                 } else { None };
-                self.$post_batch_handler(entity_list, autoaccept.unwrap_or(false), editgroup_id, &conn)
+                self.$post_batch_handler(entity_list, autoaccept.unwrap_or(false), auth_context.editor_id, editgroup_id, &conn)
             }) {
                 Ok(edit) =>
                     $post_batch_resp::CreatedEntities(edit),
@@ -149,6 +163,11 @@ macro_rules! wrap_entity_handlers {
                     $post_batch_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::EditgroupAlreadyAccepted(e), _)) =>
                     $post_batch_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::InvalidCredentials(e), _)) =>
+                    // TODO: why can't I NotAuthorized here?
+                    $post_batch_resp::Forbidden(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::InsufficientPrivileges(e), _)) =>
+                    $post_batch_resp::Forbidden(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::OtherBadRequest(e), _)) =>
                     $post_batch_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
@@ -164,15 +183,19 @@ macro_rules! wrap_entity_handlers {
             ident: String,
             entity: models::$model,
             editgroup_id: Option<String>,
-            _context: &Context,
+            context: &Context,
         ) -> Box<Future<Item = $update_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             let ret = match conn.transaction(|| {
+                let auth_context = self.auth_confectionary.require_auth(&conn, &context.auth_data, Some(stringify!($update_fn)))?;
+                auth_context.require_role(FatcatRole::Editor)?;
                 let entity_id = FatCatId::from_str(&ident)?;
                 let editgroup_id = if let Some(s) = editgroup_id {
-                    Some(FatCatId::from_str(&s)?)
+                    let eg_id = FatCatId::from_str(&s)?;
+                    auth_context.require_editgroup(&conn, eg_id)?;
+                    Some(eg_id)
                 } else { None };
-                let edit_context = make_edit_context(&conn, editgroup_id, false)?;
+                let edit_context = make_edit_context(&conn, auth_context.editor_id, editgroup_id, false)?;
                 edit_context.check(&conn)?;
                 entity.db_update(&conn, &edit_context, entity_id)?.into_model()
             }) {
@@ -199,6 +222,11 @@ macro_rules! wrap_entity_handlers {
                     $update_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::OtherBadRequest(e), _)) =>
                     $update_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::InvalidCredentials(e), _)) =>
+                    // TODO: why can't I NotAuthorized here?
+                    $update_resp::Forbidden(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::InsufficientPrivileges(e), _)) =>
+                    $update_resp::Forbidden(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
                     $update_resp::GenericError(ErrorResponse { message: e.to_string() })
@@ -211,16 +239,22 @@ macro_rules! wrap_entity_handlers {
             &self,
             ident: String,
             editgroup_id: Option<String>,
-            _context: &Context,
+            context: &Context,
         ) -> Box<Future<Item = $delete_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             let ret = match conn.transaction(|| {
+                let auth_context = self.auth_confectionary.require_auth(&conn, &context.auth_data, Some(stringify!($delete_fn)))?;
+                auth_context.require_role(FatcatRole::Editor)?;
                 let entity_id = FatCatId::from_str(&ident)?;
                 let editgroup_id: Option<FatCatId> = match editgroup_id {
-                    Some(s) => Some(FatCatId::from_str(&s)?),
+                    Some(s) => {
+                        let editgroup_id = FatCatId::from_str(&s)?;
+                        auth_context.require_editgroup(&conn, editgroup_id)?;
+                        Some(editgroup_id)
+                    },
                     None => None,
                 };
-                let edit_context = make_edit_context(&conn, editgroup_id, false)?;
+                let edit_context = make_edit_context(&conn, auth_context.editor_id, editgroup_id, false)?;
                 edit_context.check(&conn)?;
                 $model::db_delete(&conn, &edit_context, entity_id)?.into_model()
             }) {
@@ -243,6 +277,11 @@ macro_rules! wrap_entity_handlers {
                     $delete_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::OtherBadRequest(e), _)) =>
                     $delete_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::InvalidCredentials(e), _)) =>
+                    // TODO: why can't I NotAuthorized here?
+                    $delete_resp::Forbidden(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::InsufficientPrivileges(e), _)) =>
+                    $delete_resp::Forbidden(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
                     $delete_resp::GenericError(ErrorResponse { message: e.to_string() })
@@ -353,16 +392,19 @@ macro_rules! wrap_entity_handlers {
         fn $delete_edit_fn(
             &self,
             edit_id: String,
-            _context: &Context,
+            context: &Context,
         ) -> Box<Future<Item = $delete_edit_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             let ret = match conn.transaction(|| {
                 let edit_id = Uuid::from_str(&edit_id)?;
+                let auth_context = self.auth_confectionary.require_auth(&conn, &context.auth_data, Some(stringify!($delete_edit_fn)))?;
+                auth_context.require_role(FatcatRole::Editor)?;
+                let edit = $model::db_get_edit(&conn, edit_id)?;
+                auth_context.require_editgroup(&conn, FatCatId::from_uuid(&edit.editgroup_id))?;
                 $model::db_delete_edit(&conn, edit_id)
             }) {
                 Ok(()) =>
-                    $delete_edit_resp::DeletedEdit(Success { message: format!("Successfully deleted work-in-progress {} edit: {}", stringify!($model), edit_id) } ),
-                Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
+                    $delete_edit_resp::DeletedEdit(Success { message: format!("Successfully deleted work-in-progress {} edit: {}", stringify!($model), edit_id) } ), Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
                     $delete_edit_resp::NotFound(ErrorResponse { message: format!("No such {} edit: {}", stringify!($model), edit_id) }),
                 Err(Error(ErrorKind::Diesel(e), _)) =>
                     $delete_edit_resp::BadRequest(ErrorResponse { message: e.to_string() }),
@@ -370,6 +412,11 @@ macro_rules! wrap_entity_handlers {
                     $delete_edit_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(Error(ErrorKind::OtherBadRequest(e), _)) =>
                     $delete_edit_resp::BadRequest(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::InvalidCredentials(e), _)) =>
+                    // TODO: why can't I NotAuthorized here?
+                    $delete_edit_resp::Forbidden(ErrorResponse { message: e.to_string() }),
+                Err(Error(ErrorKind::InsufficientPrivileges(e), _)) =>
+                    $delete_edit_resp::Forbidden(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
                     $delete_edit_resp::GenericError(ErrorResponse { message: e.to_string() })
@@ -856,14 +903,98 @@ impl Api for Server {
         Box::new(futures::done(Ok(ret)))
     }
 
+    /// For now, only implements updating username
+    fn update_editor(
+        &self,
+        editor_id: String,
+        editor: models::Editor,
+        context: &Context,
+    ) -> Box<Future<Item = UpdateEditorResponse, Error = ApiError> + Send> {
+        let conn = self.db_pool.get().expect("db_pool error");
+        let ret = match conn.transaction(|| {
+            if Some(editor_id.clone()) != editor.editor_id {
+                return Err(
+                    ErrorKind::OtherBadRequest("editor_id doesn't match".to_string()).into(),
+                );
+            }
+            let auth_context = self.auth_confectionary.require_auth(
+                &conn,
+                &context.auth_data,
+                Some("update_editor"),
+            )?;
+            let editor_id = FatCatId::from_str(&editor_id)?;
+            // DANGER! these permissions are for username updates only!
+            if editor_id == auth_context.editor_id {
+                // self edit of username allowed
+                auth_context.require_role(FatcatRole::Editor)?;
+            } else {
+                // admin can update any username
+                auth_context.require_role(FatcatRole::Admin)?;
+            };
+            update_editor_username(&conn, editor_id, editor.username).map(|e| e.into_model())
+        }) {
+            Ok(editor) => UpdateEditorResponse::UpdatedEditor(editor),
+            Err(Error(ErrorKind::Diesel(e), _)) => {
+                UpdateEditorResponse::BadRequest(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(Error(ErrorKind::Uuid(e), _)) => UpdateEditorResponse::BadRequest(ErrorResponse {
+                message: e.to_string(),
+            }),
+            Err(Error(ErrorKind::InvalidFatcatId(e), _)) => {
+                UpdateEditorResponse::BadRequest(ErrorResponse {
+                    message: ErrorKind::InvalidFatcatId(e).to_string(),
+                })
+            }
+            Err(Error(ErrorKind::MalformedExternalId(e), _)) => {
+                UpdateEditorResponse::BadRequest(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(Error(ErrorKind::InvalidCredentials(e), _)) =>
+            // TODO: why can't I NotAuthorized here?
+            {
+                UpdateEditorResponse::Forbidden(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(Error(ErrorKind::InsufficientPrivileges(e), _)) => {
+                UpdateEditorResponse::Forbidden(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(Error(ErrorKind::OtherBadRequest(e), _)) => {
+                UpdateEditorResponse::BadRequest(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(e) => {
+                error!("{}", e);
+                UpdateEditorResponse::GenericError(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+        };
+        Box::new(futures::done(Ok(ret)))
+    }
+
     fn accept_editgroup(
         &self,
         editgroup_id: String,
-        _context: &Context,
+        context: &Context,
     ) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
         let ret = match conn.transaction(|| {
             let editgroup_id = FatCatId::from_str(&editgroup_id)?;
+            let auth_context = self.auth_confectionary.require_auth(
+                &conn,
+                &context.auth_data,
+                Some("accept_editgroup"),
+            )?;
+            auth_context.require_role(FatcatRole::Admin)?;
+            // NOTE: this is currently redundant, but zero-cost
+            auth_context.require_editgroup(&conn, editgroup_id)?;
             self.accept_editgroup_handler(editgroup_id, &conn)
         }) {
             Ok(()) => AcceptEditgroupResponse::MergedSuccessfully(Success {
@@ -877,6 +1008,16 @@ impl Api for Server {
             Err(Error(ErrorKind::EditgroupAlreadyAccepted(e), _)) => {
                 AcceptEditgroupResponse::BadRequest(ErrorResponse {
                     message: ErrorKind::EditgroupAlreadyAccepted(e).to_string(),
+                })
+            }
+            Err(Error(ErrorKind::InvalidCredentials(e), _)) => {
+                AcceptEditgroupResponse::Forbidden(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(Error(ErrorKind::InsufficientPrivileges(e), _)) => {
+                AcceptEditgroupResponse::Forbidden(ErrorResponse {
+                    message: e.to_string(),
                 })
             }
             Err(e) => AcceptEditgroupResponse::GenericError(ErrorResponse {
@@ -916,11 +1057,42 @@ impl Api for Server {
     fn create_editgroup(
         &self,
         entity: models::Editgroup,
-        _context: &Context,
+        context: &Context,
     ) -> Box<Future<Item = CreateEditgroupResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let ret = match conn.transaction(|| self.create_editgroup_handler(entity, &conn)) {
+        let ret = match conn.transaction(|| {
+            let auth_context = self.auth_confectionary.require_auth(
+                &conn,
+                &context.auth_data,
+                Some("create_editgroup"),
+            )?;
+            auth_context.require_role(FatcatRole::Editor)?;
+            let mut entity = entity.clone();
+            match entity.editor_id.clone() {
+                Some(editor_id) => {
+                    if !auth_context.has_role(FatcatRole::Admin) {
+                        if editor_id != auth_context.editor_id.to_string() {
+                            bail!("not authorized to create editgroups in others' names");
+                        }
+                    }
+                }
+                None => {
+                    entity.editor_id = Some(auth_context.editor_id.to_string());
+                }
+            };
+            self.create_editgroup_handler(entity, &conn)
+        }) {
             Ok(eg) => CreateEditgroupResponse::SuccessfullyCreated(eg),
+            Err(Error(ErrorKind::InvalidCredentials(e), _)) => {
+                CreateEditgroupResponse::Forbidden(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(Error(ErrorKind::InsufficientPrivileges(e), _)) => {
+                CreateEditgroupResponse::Forbidden(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
             Err(e) =>
             // TODO: dig in to error type here
             {
@@ -968,6 +1140,150 @@ impl Api for Server {
             Err(e) => {
                 error!("{}", e);
                 GetChangelogEntryResponse::GenericError(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+        };
+        Box::new(futures::done(Ok(ret)))
+    }
+
+    fn auth_oidc(
+        &self,
+        params: models::AuthOidc,
+        context: &Context,
+    ) -> Box<Future<Item = AuthOidcResponse, Error = ApiError> + Send> {
+        let conn = self.db_pool.get().expect("db_pool error");
+        let ret = match conn.transaction(|| {
+            let auth_context = self.auth_confectionary.require_auth(
+                &conn,
+                &context.auth_data,
+                Some("auth_oidc"),
+            )?;
+            auth_context.require_role(FatcatRole::Superuser)?;
+            let (editor, created) = self.auth_oidc_handler(params, &conn)?;
+            // create an auth token with 31 day duration
+            let token = self.auth_confectionary.create_token(
+                FatCatId::from_str(&editor.editor_id.clone().unwrap())?,
+                Some(chrono::Duration::days(31)),
+            )?;
+            let result = AuthOidcResult { editor, token };
+            Ok((result, created))
+        }) {
+            Ok((result, true)) => AuthOidcResponse::Created(result),
+            Ok((result, false)) => AuthOidcResponse::Found(result),
+            Err(Error(ErrorKind::Diesel(e), _)) => AuthOidcResponse::BadRequest(ErrorResponse {
+                message: e.to_string(),
+            }),
+            Err(Error(ErrorKind::Uuid(e), _)) => AuthOidcResponse::BadRequest(ErrorResponse {
+                message: e.to_string(),
+            }),
+            Err(Error(ErrorKind::InvalidFatcatId(e), _)) => {
+                AuthOidcResponse::BadRequest(ErrorResponse {
+                    message: ErrorKind::InvalidFatcatId(e).to_string(),
+                })
+            }
+            Err(Error(ErrorKind::MalformedExternalId(e), _)) => {
+                AuthOidcResponse::BadRequest(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(Error(ErrorKind::MalformedChecksum(e), _)) => {
+                AuthOidcResponse::BadRequest(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(Error(ErrorKind::NotInControlledVocabulary(e), _)) => {
+                AuthOidcResponse::BadRequest(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(Error(ErrorKind::EditgroupAlreadyAccepted(e), _)) => {
+                AuthOidcResponse::BadRequest(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(Error(ErrorKind::InvalidCredentials(e), _)) =>
+            // TODO: why can't I NotAuthorized here?
+            {
+                AuthOidcResponse::Forbidden(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(Error(ErrorKind::InsufficientPrivileges(e), _)) => {
+                AuthOidcResponse::Forbidden(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(Error(ErrorKind::OtherBadRequest(e), _)) => {
+                AuthOidcResponse::BadRequest(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(e) => {
+                error!("{}", e);
+                AuthOidcResponse::GenericError(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+        };
+        Box::new(futures::done(Ok(ret)))
+    }
+
+    fn auth_check(
+        &self,
+        role: Option<String>,
+        context: &Context,
+    ) -> Box<Future<Item = AuthCheckResponse, Error = ApiError> + Send> {
+        let conn = self.db_pool.get().expect("db_pool error");
+        let ret = match conn.transaction(|| {
+            let auth_context = self.auth_confectionary.require_auth(
+                &conn,
+                &context.auth_data,
+                Some("auth_check"),
+            )?;
+            if let Some(role) = role {
+                let role = match role.to_lowercase().as_ref() {
+                    "superuser" => FatcatRole::Superuser,
+                    "admin" => FatcatRole::Admin,
+                    "editor" => FatcatRole::Editor,
+                    "bot" => FatcatRole::Bot,
+                    "human" => FatcatRole::Human,
+                    "public" => FatcatRole::Public,
+                    _ => bail!("unknown auth role: {}", role),
+                };
+                auth_context.require_role(role)?;
+            };
+            Ok(())
+        }) {
+            Ok(()) => AuthCheckResponse::Success(Success {
+                message: "auth check successful!".to_string(),
+            }),
+            Err(Error(ErrorKind::Diesel(e), _)) => AuthCheckResponse::BadRequest(ErrorResponse {
+                message: e.to_string(),
+            }),
+            Err(Error(ErrorKind::Uuid(e), _)) => AuthCheckResponse::BadRequest(ErrorResponse {
+                message: e.to_string(),
+            }),
+            Err(Error(ErrorKind::InvalidCredentials(e), _)) =>
+            // TODO: why can't I NotAuthorized here?
+            {
+                AuthCheckResponse::Forbidden(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(Error(ErrorKind::InsufficientPrivileges(e), _)) => {
+                AuthCheckResponse::Forbidden(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(Error(ErrorKind::OtherBadRequest(e), _)) => {
+                AuthCheckResponse::BadRequest(ErrorResponse {
+                    message: e.to_string(),
+                })
+            }
+            Err(e) => {
+                error!("{}", e);
+                AuthCheckResponse::GenericError(ErrorResponse {
                     message: e.to_string(),
                 })
             }
