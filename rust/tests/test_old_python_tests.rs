@@ -177,8 +177,6 @@ fn test_api_rich_create() {
     };
     assert_eq!(fe.release_ids.unwrap()[0], release_id.clone());
 
-    // had a test for active_editgroup here, but that's soon-to-be-deprecated
-
     server.close().unwrap()
 }
 

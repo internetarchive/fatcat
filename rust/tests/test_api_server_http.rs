@@ -8,7 +8,7 @@
 
 use diesel::prelude::*;
 use fatcat::database_schema::*;
-use fatcat::editing::get_or_create_editgroup;
+use fatcat::editing::create_editgroup;
 use fatcat::identifiers::*;
 use iron::status;
 use iron_test::request;
@@ -533,10 +533,12 @@ fn test_post_creator() {
 #[test]
 fn test_post_file() {
     let (headers, router, conn) = helpers::setup_http();
+    let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
+    let editgroup_id = uuid2fcid(&create_editgroup(&conn, editor_id).unwrap());
 
     helpers::check_http_response(
         request::post(
-            "http://localhost:9411/v0/file",
+            &format!("http://localhost:9411/v0/file?editgroup_id={}", editgroup_id),
             headers.clone(),
             r#"{ }"#,
             &router,
@@ -547,7 +549,7 @@ fn test_post_file() {
 
     helpers::check_http_response(
         request::post(
-            "http://localhost:9411/v0/file",
+            &format!("http://localhost:9411/v0/file?editgroup_id={}", editgroup_id),
             headers.clone(),
             r#"{"size": 76543,
                 "sha1": "f0000000000000008b7eb2a93e6d0440c1f3e7f8",
@@ -570,13 +572,11 @@ fn test_post_file() {
         None,
     );
 
-    let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
-    let editgroup_id = get_or_create_editgroup(&conn, editor_id).unwrap();
     helpers::check_http_response(
         request::post(
             &format!(
                 "http://localhost:9411/v0/editgroup/{}/accept",
-                uuid2fcid(&editgroup_id)
+                &editgroup_id
             ),
             headers.clone(),
             "",
@@ -600,10 +600,12 @@ fn test_post_file() {
 #[test]
 fn test_post_fileset() {
     let (headers, router, conn) = helpers::setup_http();
+    let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
+    let editgroup_id = uuid2fcid(&create_editgroup(&conn, editor_id).unwrap());
 
     helpers::check_http_response(
         request::post(
-            "http://localhost:9411/v0/fileset",
+            &format!("http://localhost:9411/v0/fileset?editgroup_id={}", editgroup_id),
             headers.clone(),
             r#"{ }"#,
             &router,
@@ -614,7 +616,7 @@ fn test_post_fileset() {
 
     helpers::check_http_response(
         request::post(
-            "http://localhost:9411/v0/fileset",
+            &format!("http://localhost:9411/v0/fileset?editgroup_id={}", editgroup_id),
             headers.clone(),
             r#"{"manifest": [
                     {"path": "new_file.txt", "size": 12345, "sha1": "e9dd75237c94b209dc3ccd52722de6931a310ba3" },
@@ -636,13 +638,11 @@ fn test_post_fileset() {
         None,
     );
 
-    let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
-    let editgroup_id = get_or_create_editgroup(&conn, editor_id).unwrap();
     helpers::check_http_response(
         request::post(
             &format!(
                 "http://localhost:9411/v0/editgroup/{}/accept",
-                uuid2fcid(&editgroup_id)
+                &editgroup_id
             ),
             headers.clone(),
             "",
@@ -657,10 +657,12 @@ fn test_post_fileset() {
 #[test]
 fn test_post_webcapture() {
     let (headers, router, conn) = helpers::setup_http();
+    let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
+    let editgroup_id = uuid2fcid(&create_editgroup(&conn, editor_id).unwrap());
 
     helpers::check_http_response(
         request::post(
-            "http://localhost:9411/v0/webcapture",
+            &format!("http://localhost:9411/v0/webcapture?editgroup_id={}", editgroup_id),
             headers.clone(),
             r#"{ "original_url": "https://fatcat.wiki",
                  "timestamp": "2018-12-28T11:11:11Z" }"#,
@@ -672,7 +674,7 @@ fn test_post_webcapture() {
 
     helpers::check_http_response(
         request::post(
-            "http://localhost:9411/v0/webcapture",
+            &format!("http://localhost:9411/v0/webcapture?editgroup_id={}", editgroup_id),
             headers.clone(),
             r#"{"original_url": "https://bnewbold.net/",
                 "timestamp": "2018-12-28T05:06:07Z",
@@ -700,13 +702,11 @@ fn test_post_webcapture() {
         None,
     );
 
-    let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
-    let editgroup_id = get_or_create_editgroup(&conn, editor_id).unwrap();
     helpers::check_http_response(
         request::post(
             &format!(
                 "http://localhost:9411/v0/editgroup/{}/accept",
-                uuid2fcid(&editgroup_id)
+                &editgroup_id
             ),
             headers.clone(),
             "",
@@ -720,11 +720,13 @@ fn test_post_webcapture() {
 
 #[test]
 fn test_post_release() {
-    let (headers, router, _conn) = helpers::setup_http();
+    let (headers, router, conn) = helpers::setup_http();
+    let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
+    let editgroup_id = uuid2fcid(&create_editgroup(&conn, editor_id).unwrap());
 
     helpers::check_http_response(
         request::post(
-            "http://localhost:9411/v0/release",
+            &format!("http://localhost:9411/v0/release?editgroup_id={}", editgroup_id),
             headers.clone(),
             // TODO: target_release_id
             r#"{"title": "secret minimal paper",
@@ -740,7 +742,7 @@ fn test_post_release() {
     // No work_id supplied (auto-created)
     helpers::check_http_response(
         request::post(
-            "http://localhost:9411/v0/release",
+            &format!("http://localhost:9411/v0/release?editgroup_id={}", editgroup_id),
             headers.clone(),
             // TODO: target_release_id
             r#"{"title": "secret minimal paper the second",
@@ -754,7 +756,7 @@ fn test_post_release() {
 
     helpers::check_http_response(
         request::post(
-            "http://localhost:9411/v0/release",
+            &format!("http://localhost:9411/v0/release?editgroup_id={}", editgroup_id),
             headers.clone(),
             // TODO: target_release_id
             r#"{"title": "secret paper",
@@ -797,7 +799,7 @@ fn test_post_release() {
     /* XXX: doesn't fail
     helpers::check_http_response(
         request::post(
-            "http://localhost:9411/v0/release",
+            &format!("http://localhost:9411/v0/release?editgroup_id={}", editgroup_id),
             headers.clone(),
             r#"{"title": "secret minimal paper the second",
                 "asdf123": "lalala"
@@ -847,7 +849,7 @@ fn test_update_work() {
     );
 
     let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
-    let editgroup_id = get_or_create_editgroup(&conn, editor_id).unwrap();
+    let editgroup_id = create_editgroup(&conn, editor_id).unwrap();
     helpers::check_http_response(
         request::post(
             &format!(
@@ -878,7 +880,7 @@ fn test_delete_work() {
     );
 
     let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
-    let editgroup_id = get_or_create_editgroup(&conn, editor_id).unwrap();
+    let editgroup_id = create_editgroup(&conn, editor_id).unwrap();
     helpers::check_http_response(
         request::post(
             &format!(
@@ -899,7 +901,7 @@ fn test_accept_editgroup() {
     let (headers, router, conn) = helpers::setup_http();
 
     let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
-    let editgroup_id = get_or_create_editgroup(&conn, editor_id).unwrap();
+    let editgroup_id = create_editgroup(&conn, editor_id).unwrap();
 
     let c: i64 = container_ident::table
         .filter(container_ident::is_live.eq(false))
@@ -916,7 +918,7 @@ fn test_accept_editgroup() {
 
     helpers::check_http_response(
         request::post(
-            "http://localhost:9411/v0/container",
+            &format!("http://localhost:9411/v0/container?editgroup_id={}", uuid2fcid(&editgroup_id)),
             headers.clone(),
             &format!(
                 "{{\"name\": \"test journal 1\", \"editgroup_id\": \"{}\"}}",
@@ -929,7 +931,7 @@ fn test_accept_editgroup() {
     );
     helpers::check_http_response(
         request::post(
-            "http://localhost:9411/v0/container",
+            &format!("http://localhost:9411/v0/container?editgroup_id={}", uuid2fcid(&editgroup_id)),
             headers.clone(),
             &format!(
                 "{{\"name\": \"test journal 2\", \"editgroup_id\": \"{}\"}}",
@@ -1193,10 +1195,12 @@ fn test_bad_external_idents() {
 #[test]
 fn test_abstracts() {
     let (headers, router, conn) = helpers::setup_http();
+    let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
+    let editgroup_id = uuid2fcid(&create_editgroup(&conn, editor_id).unwrap());
 
     helpers::check_http_response(
         request::post(
-            "http://localhost:9411/v0/release",
+            &format!("http://localhost:9411/v0/release?editgroup_id={}", editgroup_id),
             headers.clone(),
             r#"{"title": "some paper",
                 "doi": "10.1234/iiiiiii",
@@ -1218,7 +1222,7 @@ fn test_abstracts() {
     // Same abstracts; checking that re-inserting works
     helpers::check_http_response(
         request::post(
-            "http://localhost:9411/v0/release",
+            &format!("http://localhost:9411/v0/release?editgroup_id={}", editgroup_id),
             headers.clone(),
             r#"{"title": "some paper again",
                 "abstracts": [
@@ -1236,13 +1240,11 @@ fn test_abstracts() {
         None,
     );
 
-    let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
-    let editgroup_id = get_or_create_editgroup(&conn, editor_id).unwrap();
     helpers::check_http_response(
         request::post(
             &format!(
                 "http://localhost:9411/v0/editgroup/{}/accept",
-                uuid2fcid(&editgroup_id)
+                &editgroup_id
             ),
             headers.clone(),
             "",
@@ -1285,10 +1287,12 @@ fn test_abstracts() {
 #[test]
 fn test_contribs() {
     let (headers, router, conn) = helpers::setup_http();
+    let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
+    let editgroup_id = uuid2fcid(&create_editgroup(&conn, editor_id).unwrap());
 
     helpers::check_http_response(
         request::post(
-            "http://localhost:9411/v0/release",
+            &format!("http://localhost:9411/v0/release?editgroup_id={}", editgroup_id),
             headers.clone(),
             r#"{"title": "some paper",
                 "doi": "10.1234/iiiiiii",
@@ -1308,13 +1312,11 @@ fn test_contribs() {
         None,
     );
 
-    let editor_id = Uuid::parse_str("00000000-0000-0000-AAAA-000000000001").unwrap();
-    let editgroup_id = get_or_create_editgroup(&conn, editor_id).unwrap();
     helpers::check_http_response(
         request::post(
             &format!(
                 "http://localhost:9411/v0/editgroup/{}/accept",
-                uuid2fcid(&editgroup_id)
+                &editgroup_id
             ),
             headers.clone(),
             "",

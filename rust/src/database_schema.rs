@@ -114,7 +114,6 @@ table! {
         registered -> Timestamptz,
         auth_epoch -> Timestamptz,
         wrangler_id -> Nullable<Uuid>,
-        active_editgroup_id -> Nullable<Uuid>,
     }
 }
 
@@ -406,6 +405,7 @@ joinable!(container_edit -> editgroup (editgroup_id));
 joinable!(container_ident -> container_rev (rev_id));
 joinable!(creator_edit -> editgroup (editgroup_id));
 joinable!(creator_ident -> creator_rev (rev_id));
+joinable!(editgroup -> editor (editor_id));
 joinable!(file_edit -> editgroup (editgroup_id));
 joinable!(file_ident -> file_rev (rev_id));
 joinable!(file_rev_release -> file_rev (file_rev));

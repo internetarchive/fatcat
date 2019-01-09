@@ -45,7 +45,7 @@ pub fn make_edit_context(
                 .get_result(conn)?;
             FatCatId::from_uuid(&eg_row.id)
         }
-        (None, false) => FatCatId::from_uuid(&get_or_create_editgroup(conn, editor_id.to_uuid())?),
+        (None, false) => FatCatId::from_uuid(&create_editgroup(conn, editor_id.to_uuid())?),
     };
     Ok(EditContext {
         editor_id,
@@ -86,20 +86,11 @@ pub fn update_editor_username(
 }
 
 /// This function should always be run within a transaction
-pub fn get_or_create_editgroup(conn: &DbConn, editor_id: Uuid) -> Result<Uuid> {
-    // check for current active
-    let ed_row: EditorRow = editor::table.find(editor_id).first(conn)?;
-    if let Some(current) = ed_row.active_editgroup_id {
-        return Ok(current);
-    }
-
+pub fn create_editgroup(conn: &DbConn, editor_id: Uuid) -> Result<Uuid> {
     // need to insert and update
     let eg_row: EditgroupRow = diesel::insert_into(editgroup::table)
-        .values((editgroup::editor_id.eq(ed_row.id),))
+        .values((editgroup::editor_id.eq(editor_id),))
         .get_result(conn)?;
-    diesel::update(editor::table.find(ed_row.id))
-        .set(editor::active_editgroup_id.eq(eg_row.id))
-        .execute(conn)?;
     Ok(eg_row.id)
 }
 
@@ -130,11 +121,5 @@ pub fn accept_editgroup(conn: &DbConn, editgroup_id: FatCatId) -> Result<Changel
         .values((changelog::editgroup_id.eq(editgroup_id.to_uuid()),))
         .get_result(conn)?;
 
-    // update any editor's active editgroup
-    let no_active: Option<Uuid> = None;
-    diesel::update(editor::table)
-        .filter(editor::active_editgroup_id.eq(editgroup_id.to_uuid()))
-        .set(editor::active_editgroup_id.eq(no_active))
-        .execute(conn)?;
     Ok(entry)
 }

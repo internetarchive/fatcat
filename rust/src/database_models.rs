@@ -584,7 +584,6 @@ pub struct EditorRow {
     pub registered: chrono::NaiveDateTime,
     pub auth_epoch: chrono::NaiveDateTime,
     pub wrangler_id: Option<Uuid>,
-    pub active_editgroup_id: Option<Uuid>,
 }
 
 impl EditorRow {

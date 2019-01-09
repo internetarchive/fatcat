@@ -23,13 +23,11 @@ CREATE TABLE editor (
     is_active           BOOLEAN NOT NULL DEFAULT true,
     registered          TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
     auth_epoch          TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
-    wrangler_id         UUID REFERENCES editor(id),
-    active_editgroup_id UUID -- REFERENCES( editgroup(id) via ALTER below
+    wrangler_id         UUID REFERENCES editor(id)
 );
 
 -- case-insensitive UNIQ index on username
 CREATE UNIQUE INDEX editor_username_uniq_idx on editor(lower(username));
-CREATE INDEX active_editgroup_idx ON editor(active_editgroup_id);
 CREATE INDEX editor_username_idx ON editor(username);
 
 CREATE TABLE auth_oidc (
@@ -51,9 +49,7 @@ CREATE TABLE editgroup (
     description         TEXT
 );
 
-ALTER TABLE editor
-    ADD CONSTRAINT editor_editgroupid_fkey FOREIGN KEY (active_editgroup_id)
-        REFERENCES editgroup(id);
+CREATE INDEX editgroup_created_idx ON editgroup(created);
 
 CREATE TABLE changelog (
     id                  BIGSERIAL PRIMARY KEY,
