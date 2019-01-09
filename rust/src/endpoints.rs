@@ -19,6 +19,7 @@ use fatcat_api_spec::models;
 use fatcat_api_spec::models::*;
 use fatcat_api_spec::*;
 use futures::{self, Future};
+use sentry::integrations::error_chain::capture_error_chain;
 use std::str::FromStr;
 use uuid::Uuid;
 
@@ -79,6 +80,7 @@ macro_rules! wrap_entity_handlers {
                     $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
+                    capture_error_chain(&e);
                     $get_resp::GenericError(ErrorResponse { message: e.to_string() })
                 },
             };
@@ -127,6 +129,7 @@ macro_rules! wrap_entity_handlers {
                     $post_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
+                    capture_error_chain(&e);
                     $post_resp::GenericError(ErrorResponse { message: e.to_string() })
                 },
             };
@@ -177,6 +180,7 @@ macro_rules! wrap_entity_handlers {
                     $post_batch_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
+                    capture_error_chain(&e);
                     $post_batch_resp::GenericError(ErrorResponse { message: e.to_string() })
                 },
             };
@@ -231,6 +235,7 @@ macro_rules! wrap_entity_handlers {
                     $update_resp::Forbidden(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
+                    capture_error_chain(&e);
                     $update_resp::GenericError(ErrorResponse { message: e.to_string() })
                 },
             };
@@ -280,6 +285,7 @@ macro_rules! wrap_entity_handlers {
                     $delete_resp::Forbidden(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
+                    capture_error_chain(&e);
                     $delete_resp::GenericError(ErrorResponse { message: e.to_string() })
                 },
             };
@@ -311,6 +317,7 @@ macro_rules! wrap_entity_handlers {
                     $get_history_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
+                    capture_error_chain(&e);
                     $get_history_resp::GenericError(ErrorResponse { message: e.to_string() })
                 },
             };
@@ -354,6 +361,7 @@ macro_rules! wrap_entity_handlers {
                     $get_rev_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
+                    capture_error_chain(&e);
                     $get_rev_resp::GenericError(ErrorResponse { message: e.to_string() })
                 },
             };
@@ -379,6 +387,7 @@ macro_rules! wrap_entity_handlers {
                     $get_edit_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
+                    capture_error_chain(&e);
                     $get_edit_resp::GenericError(ErrorResponse { message: e.to_string() })
                 },
             };
@@ -415,6 +424,7 @@ macro_rules! wrap_entity_handlers {
                     $delete_edit_resp::Forbidden(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
+                    capture_error_chain(&e);
                     $delete_edit_resp::GenericError(ErrorResponse { message: e.to_string() })
                 },
             };
@@ -446,6 +456,7 @@ macro_rules! wrap_entity_handlers {
                     $get_redirects_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
+                    capture_error_chain(&e);
                     $get_redirects_resp::GenericError(ErrorResponse { message: e.to_string() })
                 },
             };
@@ -490,6 +501,7 @@ macro_rules! wrap_lookup_handler {
                     $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
+                    capture_error_chain(&e);
                     $get_resp::BadRequest(ErrorResponse { message: e.to_string() })
                 },
             };
@@ -523,6 +535,7 @@ macro_rules! wrap_fcid_handler {
                     $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
+                    capture_error_chain(&e);
                     $get_resp::BadRequest(ErrorResponse { message: e.to_string() })
                 },
             };
@@ -561,6 +574,7 @@ macro_rules! wrap_fcid_hide_handler {
                     $get_resp::BadRequest(ErrorResponse { message: e.to_string() }),
                 Err(e) => {
                     error!("{}", e);
+                    capture_error_chain(&e);
                     $get_resp::BadRequest(ErrorResponse { message: e.to_string() })
                 },
             };
@@ -829,6 +843,7 @@ impl Api for Server {
                 }
                 Err(e) => {
                     error!("{}", e);
+                    capture_error_chain(&e);
                     LookupFileResponse::BadRequest(ErrorResponse {
                         message: e.to_string(),
                     })
@@ -891,6 +906,7 @@ impl Api for Server {
             }
             Err(e) => {
                 error!("{}", e);
+                capture_error_chain(&e);
                 LookupReleaseResponse::BadRequest(ErrorResponse {
                     message: e.to_string(),
                 })
@@ -967,6 +983,7 @@ impl Api for Server {
             }
             Err(e) => {
                 error!("{}", e);
+                capture_error_chain(&e);
                 UpdateEditorResponse::GenericError(ErrorResponse {
                     message: e.to_string(),
                 })
@@ -1111,6 +1128,7 @@ impl Api for Server {
             Ok(changelog) => GetChangelogResponse::Success(changelog),
             Err(e) => {
                 error!("{}", e);
+                capture_error_chain(&e);
                 GetChangelogResponse::GenericError(ErrorResponse {
                     message: e.to_string(),
                 })
@@ -1135,6 +1153,7 @@ impl Api for Server {
             }
             Err(e) => {
                 error!("{}", e);
+                capture_error_chain(&e);
                 GetChangelogEntryResponse::GenericError(ErrorResponse {
                     message: e.to_string(),
                 })
@@ -1217,6 +1236,7 @@ impl Api for Server {
             }
             Err(e) => {
                 error!("{}", e);
+                capture_error_chain(&e);
                 AuthOidcResponse::GenericError(ErrorResponse {
                     message: e.to_string(),
                 })
@@ -1279,6 +1299,7 @@ impl Api for Server {
             }
             Err(e) => {
                 error!("{}", e);
+                capture_error_chain(&e);
                 AuthCheckResponse::GenericError(ErrorResponse {
                     message: e.to_string(),
                 })

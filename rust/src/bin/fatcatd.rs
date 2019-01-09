@@ -12,7 +12,9 @@ use iron::middleware::AfterMiddleware;
 use iron::modifiers::RedirectRaw;
 use iron::{status, Chain, Iron, IronResult, Request, Response};
 use iron_slog::{DefaultLogFormatter, LoggerMiddleware};
+use sentry::integrations::panic;
 use slog::{Drain, Logger};
+use std::env;
 
 // HTTP header middleware
 header! { (XClacksOverhead, "X-Clacks-Overhead") => [String] }
@@ -38,11 +40,25 @@ fn main() -> Result<()> {
         )
         .get_matches();
 
+    dotenv::dotenv().ok();
+
     let decorator = slog_term::TermDecorator::new().build();
     let drain = slog_term::CompactFormat::new(decorator).build().fuse();
     let drain = slog_async::Async::new(drain).build().fuse();
     let logger = Logger::root(drain, o!());
     let formatter = DefaultLogFormatter;
+
+    // sentry exception handling
+    let sentry_dsn = env::var("SENTRY_DSN");
+    let _guard = if let Ok(dsn) = sentry_dsn {
+        let client = sentry::init(dsn);
+        panic::register_panic_handler();
+        info!(logger, "Sentry configured via DSN");
+        Some(client)
+    } else {
+        info!(logger, "Sentry not configured");
+        None
+    };
 
     let server = create_server()?;
     info!(
