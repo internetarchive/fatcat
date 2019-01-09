@@ -14,7 +14,7 @@ unified_test:
   before_script:
     - cargo install diesel_cli --version 1.3.1
     - apt update -qy
-    - apt install -y python3-dev python3-pip python3-wheel libsnappy-dev libsodium-dev
+    - apt install -y python3-dev python3-pip python3-wheel python3-requests python3-six python3-pytest libsnappy-dev libsodium-dev
     - pip3 install pipenv
     - pipenv --version
   script:
@@ -25,6 +25,8 @@ unified_test:
     - cargo build
     - cargo test -- --test-threads 1
     - cargo run --bin fatcatd &
+    - cd ../python_client
+    - pytest-3
     - cd ../python
     - cp env.example .env
     - pipenv install --dev --deploy
