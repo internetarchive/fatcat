@@ -47,7 +47,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 # Import the README and use it as the long-description.
 # Note: this will only work if 'README.md' is present in your MANIFEST.in file!
 try:
-    with io.open(os.path.join(here, 'fatcat_client/README.md'), encoding='utf-8') as f:
+    with io.open(os.path.join(here, './README.md'), encoding='utf-8') as f:
         long_description = '\n' + f.read()
 except FileNotFoundError:
     long_description = DESCRIPTION
@@ -110,7 +110,7 @@ setup(
     author_email=EMAIL,
     python_requires=REQUIRES_PYTHON,
     url=URL,
-    packages=find_packages(exclude=('tests','fatcat_tools','fatcat_web')),
+    packages=find_packages(exclude=('tests')),
     # If your package is a single module, use this instead of 'packages':
     #py_modules=['fatcat_client'],
     # entry_points={

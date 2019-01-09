@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "e330c4f12e19ee154c6de6e10a7b1349a2dd019e5483d2a7700fb542ad1477f1"
+            "sha256": "c3deb49cf4c122c2aed3f4f944e9763cfcf40c85891ca3d3e9cabc3debbb9075"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -117,6 +117,10 @@
                 "sha256:da5b5dda4aa0d5e2b758cc8dfc67f8d4212e88ea9caad5f61ba132f948bab859"
             ],
             "version": "==2.4.2"
+        },
+        "fatcat-client": {
+            "editable": true,
+            "path": "./../python_client"
         },
         "flask": {
             "hashes": [

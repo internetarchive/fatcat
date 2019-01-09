@@ -22,9 +22,12 @@ docker run \
 
 sudo chown -R `whoami`:`whoami` $OUTPUT
 mkdir -p fatcat_client
-mkdir -p tests/codegen_tests
 cp -r $OUTPUT/fatcat_client/* fatcat_client
-cp -r $OUTPUT/test/* tests/codegen_tests
-cp $OUTPUT/README.md fatcat_client/README.md
+cp $OUTPUT/README.md README.md
+
+# these tests are basically no-ops
+mkdir -p tests/codegen
+cp -r $OUTPUT/test/* tests/codegen
+
 # ooo, this makes me nervous
 rm -rf $OUTPUT
