@@ -2,7 +2,6 @@ extern crate chrono;
 extern crate fatcat;
 extern crate uuid;
 
-use chrono::prelude::*;
 use fatcat::api_helpers::*;
 use fatcat::auth::*;
 use std::str::FromStr;
