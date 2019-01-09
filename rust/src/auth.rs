@@ -5,14 +5,16 @@ use macaroon::{Format, Macaroon, Verifier};
 use std::fmt;
 use swagger::auth::{AuthData, Authorization, Scopes};
 
-use crate::api_helpers::*;
-use chrono::prelude::*;
 use crate::database_models::*;
 use crate::database_schema::*;
+use crate::errors::*;
+use crate::identifiers::*;
+use crate::server::*;
+use chrono::prelude::*;
 use diesel;
 use diesel::prelude::*;
-use crate::errors::*;
 use std::collections::HashMap;
+use std::env;
 use std::str::FromStr;
 
 // 32 bytes max (!)
@@ -467,4 +469,27 @@ pub fn print_editors(conn: &DbConn) -> Result<()> {
         );
     }
     Ok(())
+}
+
+pub fn env_confectionary() -> Result<AuthConfectionary> {
+    let auth_location = env::var("AUTH_LOCATION").expect("AUTH_LOCATION must be set");
+    let auth_key = env::var("AUTH_SECRET_KEY").expect("AUTH_SECRET_KEY must be set");
+    let auth_key_ident = env::var("AUTH_KEY_IDENT").expect("AUTH_KEY_IDENT must be set");
+    info!("Loaded primary auth key: {}", auth_key_ident);
+    let mut confectionary = AuthConfectionary::new(auth_location, auth_key_ident, auth_key)?;
+    match env::var("AUTH_ALT_KEYS") {
+        Ok(var) => {
+            for pair in var.split(",") {
+                let pair: Vec<&str> = pair.split(":").collect();
+                if pair.len() != 2 {
+                    println!("{:#?}", pair);
+                    bail!("couldn't parse keypair from AUTH_ALT_KEYS (expected 'ident:key' pairs separated by commas)");
+                }
+                info!("Loading alt auth key: {}", pair[0]);
+                confectionary.add_keypair(pair[0].to_string(), pair[1].to_string())?;
+            }
+        }
+        Err(_) => (),
+    }
+    Ok(confectionary)
 }

@@ -2,25 +2,17 @@
 
 #[macro_use]
 extern crate clap;
-extern crate diesel;
-extern crate dotenv;
 #[macro_use]
 extern crate error_chain;
-extern crate fatcat;
-extern crate fatcat_api_spec;
 #[macro_use]
 extern crate log;
-extern crate crossbeam_channel;
-extern crate env_logger;
-extern crate num_cpus;
-extern crate serde_json;
-extern crate uuid;
 
 use clap::{App, Arg};
 
-use fatcat::api_entity_crud::*;
-use fatcat::api_helpers::*;
+use fatcat::entity_crud::*;
 use fatcat::errors::*;
+use fatcat::identifiers::*;
+use fatcat::server::*;
 use fatcat_api_spec::models::*;
 use std::str::FromStr;
 use uuid::Uuid;
@@ -167,7 +159,7 @@ pub fn do_export(
     entity_type: ExportEntityType,
     redirects: bool,
 ) -> Result<()> {
-    let db_pool = fatcat::database_worker_pool()?;
+    let db_pool = database_worker_pool()?;
     let buf_input = BufReader::new(std::io::stdin());
     let (row_sender, row_receiver) = channel::bounded(CHANNEL_BUFFER_LEN);
     let (output_sender, output_receiver) = channel::bounded(CHANNEL_BUFFER_LEN);
@@ -232,7 +224,7 @@ pub fn do_export(
     Ok(())
 }
 
-fn run() -> Result<()> {
+fn main() -> Result<()> {
     let m = App::new("fatcat-export")
         .version(env!("CARGO_PKG_VERSION"))
         .author("Bryan Newbold <bnewbold@archive.org>")
@@ -273,5 +265,3 @@ fn run() -> Result<()> {
         m.is_present("include_redirects"),
     )
 }
-
-quick_main!(run);

@@ -1,11 +1,13 @@
-use crate::api_helpers::*;
-use crate::api_server::get_release_files;
-use chrono;
 use crate::database_models::*;
 use crate::database_schema::*;
+use crate::editing::*;
+use crate::endpoint_handlers::get_release_files;
+use crate::errors::*;
+use crate::identifiers::*;
+use crate::server::*;
+use chrono;
 use diesel::prelude::*;
 use diesel::{self, insert_into};
-use crate::errors::*;
 use fatcat_api_spec::models::*;
 use sha1::Sha1;
 use std::marker::Sized;
@@ -86,6 +88,174 @@ where
     ) -> Result<Self>;
     fn db_insert_rev(&self, conn: &DbConn) -> Result<Uuid>;
     fn db_insert_revs(conn: &DbConn, models: &[&Self]) -> Result<Vec<Uuid>>;
+}
+
+#[derive(Clone, Copy, PartialEq)]
+pub struct ExpandFlags {
+    pub files: bool,
+    pub filesets: bool,
+    pub webcaptures: bool,
+    pub container: bool,
+    pub releases: bool,
+    pub creators: bool,
+}
+
+impl FromStr for ExpandFlags {
+    type Err = Error;
+    fn from_str(param: &str) -> Result<ExpandFlags> {
+        let list: Vec<&str> = param.split_terminator(",").collect();
+        Ok(ExpandFlags::from_str_list(&list))
+    }
+}
+
+impl ExpandFlags {
+    pub fn from_str_list(list: &[&str]) -> ExpandFlags {
+        ExpandFlags {
+            files: list.contains(&"files"),
+            filesets: list.contains(&"filesets"),
+            webcaptures: list.contains(&"webcaptures"),
+            container: list.contains(&"container"),
+            releases: list.contains(&"releases"),
+            creators: list.contains(&"creators"),
+        }
+    }
+    pub fn none() -> ExpandFlags {
+        ExpandFlags {
+            files: false,
+            filesets: false,
+            webcaptures: false,
+            container: false,
+            releases: false,
+            creators: false,
+        }
+    }
+}
+
+#[test]
+fn test_expand_flags() {
+    assert!(ExpandFlags::from_str_list(&vec![]).files == false);
+    assert!(ExpandFlags::from_str_list(&vec!["files"]).files == true);
+    assert!(ExpandFlags::from_str_list(&vec!["file"]).files == false);
+    let all = ExpandFlags::from_str_list(&vec![
+        "files",
+        "filesets",
+        "webcaptures",
+        "container",
+        "other_thing",
+        "releases",
+        "creators",
+    ]);
+    assert!(
+        all == ExpandFlags {
+            files: true,
+            filesets: true,
+            webcaptures: true,
+            container: true,
+            releases: true,
+            creators: true
+        }
+    );
+    assert!(ExpandFlags::from_str("").unwrap().files == false);
+    assert!(ExpandFlags::from_str("files").unwrap().files == true);
+    assert!(ExpandFlags::from_str("something,,files").unwrap().files == true);
+    assert!(ExpandFlags::from_str("file").unwrap().files == false);
+    let all =
+        ExpandFlags::from_str("files,container,other_thing,releases,creators,filesets,webcaptures")
+            .unwrap();
+    assert!(
+        all == ExpandFlags {
+            files: true,
+            filesets: true,
+            webcaptures: true,
+            container: true,
+            releases: true,
+            creators: true
+        }
+    );
+}
+
+#[derive(Clone, Copy, PartialEq)]
+pub struct HideFlags {
+    // release
+    pub abstracts: bool,
+    pub refs: bool,
+    pub contribs: bool,
+    // fileset
+    pub manifest: bool,
+    // webcapture
+    pub cdx: bool,
+}
+
+impl FromStr for HideFlags {
+    type Err = Error;
+    fn from_str(param: &str) -> Result<HideFlags> {
+        let list: Vec<&str> = param.split_terminator(",").collect();
+        Ok(HideFlags::from_str_list(&list))
+    }
+}
+
+impl HideFlags {
+    pub fn from_str_list(list: &[&str]) -> HideFlags {
+        HideFlags {
+            abstracts: list.contains(&"abstracts"),
+            refs: list.contains(&"refs"),
+            contribs: list.contains(&"contribs"),
+            manifest: list.contains(&"contribs"),
+            cdx: list.contains(&"contribs"),
+        }
+    }
+    pub fn none() -> HideFlags {
+        HideFlags {
+            abstracts: false,
+            refs: false,
+            contribs: false,
+            manifest: false,
+            cdx: false,
+        }
+    }
+}
+
+#[test]
+fn test_hide_flags() {
+    assert!(HideFlags::from_str_list(&vec![]).abstracts == false);
+    assert!(HideFlags::from_str_list(&vec!["abstracts"]).abstracts == true);
+    assert!(HideFlags::from_str_list(&vec!["abstract"]).abstracts == false);
+    let all = HideFlags::from_str_list(&vec![
+        "abstracts",
+        "refs",
+        "other_thing",
+        "contribs",
+        "manifest",
+        "cdx",
+    ]);
+    assert!(
+        all == HideFlags {
+            abstracts: true,
+            refs: true,
+            contribs: true,
+            manifest: true,
+            cdx: true,
+        }
+    );
+    assert!(HideFlags::from_str("").unwrap().abstracts == false);
+    assert!(HideFlags::from_str("abstracts").unwrap().abstracts == true);
+    assert!(
+        HideFlags::from_str("something,,abstracts")
+            .unwrap()
+            .abstracts
+            == true
+    );
+    assert!(HideFlags::from_str("file").unwrap().abstracts == false);
+    let all = HideFlags::from_str("abstracts,cdx,refs,manifest,other_thing,contribs").unwrap();
+    assert!(
+        all == HideFlags {
+            abstracts: true,
+            refs: true,
+            contribs: true,
+            manifest: true,
+            cdx: true,
+        }
+    );
 }
 
 macro_rules! generic_db_get {

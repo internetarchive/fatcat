@@ -1,18 +1,20 @@
 //! API endpoint handlers
+//!
+//! This module contains actual implementations of endpoints with rust-style type signatures.
 
-use crate::api_entity_crud::EntityCrud;
-use crate::api_helpers::*;
-use crate::auth::*;
-use chrono;
 use crate::database_models::*;
 use crate::database_schema::*;
+use crate::editing::*;
+use crate::entity_crud::{EntityCrud, ExpandFlags, HideFlags};
+use crate::errors::*;
+use crate::identifiers::*;
+use crate::server::*;
+use chrono;
 use diesel::prelude::*;
 use diesel::{self, insert_into};
-use crate::errors::*;
 use fatcat_api_spec::models;
 use fatcat_api_spec::models::*;
 use std::str::FromStr;
-use crate::ConnectionPool;
 
 macro_rules! entity_batch_handler {
     ($post_batch_handler:ident, $model:ident) => {
@@ -38,12 +40,6 @@ macro_rules! entity_batch_handler {
             edits.into_iter().map(|e| e.into_model()).collect()
         }
     }
-}
-
-#[derive(Clone)]
-pub struct Server {
-    pub db_pool: ConnectionPool,
-    pub auth_confectionary: AuthConfectionary,
 }
 
 pub fn get_release_files(

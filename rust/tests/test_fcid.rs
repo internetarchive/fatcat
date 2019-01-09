@@ -1,7 +1,7 @@
 extern crate fatcat;
 extern crate uuid;
 
-use fatcat::api_helpers::{fcid2uuid, uuid2fcid};
+use fatcat::identifiers::{fcid2uuid, uuid2fcid};
 use uuid::Uuid;
 
 #[test]

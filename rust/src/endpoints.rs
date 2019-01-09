@@ -1,12 +1,17 @@
-//! API endpoint handlers
+//! API server endpoint request/response wrappers
+//!
+//! These mostly deal with type conversion between internal function signatures and API-defined
+//! response types (mapping to HTTP statuses. Some contain actual endpoint implementations, but
+//! most implementation lives in the server module.
 
-use crate::api_entity_crud::EntityCrud;
-use crate::api_helpers::*;
-use crate::api_server::Server;
 use crate::auth::*;
 use crate::database_models::EntityEditRow;
-use diesel::Connection;
+use crate::editing::*;
+use crate::entity_crud::{EntityCrud, ExpandFlags, HideFlags};
 use crate::errors::*;
+use crate::identifiers::*;
+use crate::server::*;
+use diesel::Connection;
 use fatcat_api_spec::models;
 use fatcat_api_spec::models::*;
 use fatcat_api_spec::*;

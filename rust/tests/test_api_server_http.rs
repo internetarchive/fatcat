@@ -6,16 +6,10 @@
  * test basic serialization/deserialization, and take advantage of hard-coded example entities.
  */
 
-extern crate diesel;
-extern crate fatcat;
-extern crate fatcat_api_spec;
-extern crate iron;
-extern crate iron_test;
-extern crate uuid;
-
 use diesel::prelude::*;
-use fatcat::api_helpers::*;
 use fatcat::database_schema::*;
+use fatcat::editing::get_or_create_editgroup;
+use fatcat::identifiers::*;
 use iron::status;
 use iron_test::request;
 use uuid::Uuid;

@@ -4,11 +4,6 @@
  * a single editgroup.
  */
 
-extern crate fatcat;
-extern crate fatcat_api_spec;
-extern crate iron;
-extern crate uuid;
-
 use fatcat_api_spec::models::*;
 use fatcat_api_spec::*;
 

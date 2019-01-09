@@ -1,9 +1,9 @@
 #![allow(proc_macro_derive_resolution_fallback)]
 
-use crate::api_helpers::uuid2fcid;
-use chrono;
 use crate::database_schema::*;
 use crate::errors::*;
+use crate::identifiers::uuid2fcid;
+use chrono;
 use fatcat_api_spec::models::{ChangelogEntry, Editgroup, Editor, EntityEdit};
 use serde_json;
 use uuid::Uuid;

@@ -1,16 +1,13 @@
-extern crate chrono;
-extern crate fatcat;
-extern crate uuid;
-
-use fatcat::api_helpers::*;
-use fatcat::auth::*;
+use fatcat::auth::AuthConfectionary;
+use fatcat::identifiers::FatCatId;
+use fatcat::{auth, server};
 use std::str::FromStr;
 
 #[test]
 fn test_macaroons() {
     // Test everything we can without connecting to database
 
-    let c = fatcat::auth::AuthConfectionary::new_dummy();
+    let c = AuthConfectionary::new_dummy();
     let editor_id = FatCatId::from_str("q3nouwy3nnbsvo3h5klxsx4a7y").unwrap();
 
     // create token w/o expiration
@@ -25,9 +22,9 @@ fn test_macaroons() {
 fn test_auth_db() {
     // Test things that require database
 
-    let server = fatcat::test_server().unwrap();
+    let server = server::create_test_server().unwrap();
     let conn = server.db_pool.get().expect("db_pool error");
-    let c = fatcat::auth::AuthConfectionary::new_dummy();
+    let c = AuthConfectionary::new_dummy();
     let editor_id = FatCatId::from_str("aaaaaaaaaaaabkvkaaaaaaaaae").unwrap();
 
     // create token
@@ -38,7 +35,7 @@ fn test_auth_db() {
     assert_eq!(editor_row.id, editor_id.to_uuid());
 
     // revoke token
-    revoke_tokens(&conn, editor_id).unwrap();
+    auth::revoke_tokens(&conn, editor_id).unwrap();
 
     // verification should fail
     // XXX: one-second slop breaks this

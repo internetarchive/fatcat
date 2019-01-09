@@ -1,32 +1,16 @@
 //! JSON Export Helper
 
-//#[macro_use]
-extern crate clap;
-extern crate diesel;
-extern crate dotenv;
-#[macro_use]
-extern crate error_chain;
-extern crate fatcat;
-//#[macro_use]
-extern crate env_logger;
-extern crate log;
-extern crate serde_json;
-extern crate uuid;
-
 use clap::{App, SubCommand};
 
-use diesel::prelude::*;
-use fatcat::api_helpers::FatCatId;
+use fatcat::auth;
+use fatcat::editing;
 use fatcat::errors::*;
+use fatcat::identifiers::FatCatId;
+use fatcat::server::*;
+use std::process;
 use std::str::FromStr;
-//use uuid::Uuid;
 
-//use error_chain::ChainedError;
-//use std::io::{Stdout,StdoutLock};
-//use std::io::prelude::*;
-//use std::io::{BufReader, BufWriter};
-
-fn run() -> Result<()> {
+fn main() -> Result<()> {
     let m = App::new("fatcat-auth")
         .version(env!("CARGO_PKG_VERSION"))
         .author("Bryan Newbold <bnewbold@archive.org>")
@@ -84,16 +68,14 @@ fn run() -> Result<()> {
     }
 
     // Then the ones that do
-    let db_conn = fatcat::database_worker_pool()?
-        .get()
-        .expect("database pool");
-    let confectionary = fatcat::env_confectionary()?;
+    let db_conn = database_worker_pool()?.get().expect("database pool");
+    let confectionary = auth::env_confectionary()?;
     match m.subcommand() {
         ("list-editors", Some(_subm)) => {
             fatcat::auth::print_editors(&db_conn)?;
         }
         ("create-editor", Some(subm)) => {
-            let editor = fatcat::api_helpers::create_editor(
+            let editor = editing::create_editor(
                 &db_conn,
                 subm.value_of("username").unwrap().to_string(),
                 subm.is_present("admin"),
@@ -104,10 +86,6 @@ fn run() -> Result<()> {
         }
         ("create-token", Some(subm)) => {
             let editor_id = FatCatId::from_str(subm.value_of("editor-id").unwrap())?;
-            // check that editor exists
-            let _ed: fatcat::database_models::EditorRow = fatcat::database_schema::editor::table
-                .find(&editor_id.to_uuid())
-                .get_result(&db_conn)?;
             println!("{}", confectionary.create_token(editor_id, None)?);
         }
         ("inspect-token", Some(subm)) => {
@@ -125,10 +103,8 @@ fn run() -> Result<()> {
         _ => {
             println!("Missing or unimplemented command!");
             println!("{}", m.usage());
-            ::std::process::exit(-1);
+            process::exit(-1);
         }
     }
     Ok(())
 }
-
-quick_main!(run);

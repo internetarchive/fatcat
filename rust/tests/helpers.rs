@@ -1,17 +1,12 @@
-extern crate diesel;
-extern crate fatcat;
-extern crate fatcat_api_spec;
-extern crate iron;
-extern crate iron_test;
-extern crate uuid;
-
-use self::iron_test::response;
-use fatcat::api_helpers::FatCatId;
+use fatcat::auth::MacaroonAuthMiddleware;
+use fatcat::identifiers::FatCatId;
+use fatcat::server;
 use fatcat_api_spec::client::Client;
 use fatcat_api_spec::Context;
 use iron::headers::{Authorization, Bearer, ContentType};
 use iron::mime::Mime;
 use iron::{status, Chain, Headers, Iron, Listening};
+use iron_test::response;
 use std::str::FromStr;
 
 // A current problem with this method is that if the test fails (eg, panics, assert fails), the
@@ -20,7 +15,7 @@ use std::str::FromStr;
 // cleanup.
 #[allow(dead_code)]
 pub fn setup_client() -> (Client, Context, Listening) {
-    let server = fatcat::test_server().unwrap();
+    let server = server::create_test_server().unwrap();
 
     // setup auth as admin user
     let admin_id = FatCatId::from_str("aaaaaaaaaaaabkvkaaaaaaaaae").unwrap();
@@ -37,7 +32,7 @@ pub fn setup_client() -> (Client, Context, Listening) {
     let router = fatcat_api_spec::router(server);
     let mut chain = Chain::new(router);
     chain.link_before(fatcat_api_spec::server::ExtractAuthData);
-    chain.link_before(fatcat::auth::MacaroonAuthMiddleware::new());
+    chain.link_before(MacaroonAuthMiddleware::new());
 
     let mut iron_server = Iron::new(chain);
     iron_server.threads = 1;
@@ -56,7 +51,7 @@ pub fn setup_http() -> (
     iron::middleware::Chain,
     diesel::r2d2::PooledConnection<diesel::r2d2::ConnectionManager<diesel::PgConnection>>,
 ) {
-    let server = fatcat::test_server().unwrap();
+    let server = fatcat::create_test_server().unwrap();
     let conn = server.db_pool.get().expect("db_pool error");
 
     // setup auth as admin user
@@ -69,7 +64,7 @@ pub fn setup_http() -> (
     let router = fatcat_api_spec::router(server);
     let mut chain = Chain::new(router);
     chain.link_before(fatcat_api_spec::server::ExtractAuthData);
-    chain.link_before(fatcat::auth::MacaroonAuthMiddleware::new());
+    chain.link_before(MacaroonAuthMiddleware::new());
     let mut headers = Headers::new();
     let mime: Mime = "application/json".parse().unwrap();
     headers.set(ContentType(mime));
