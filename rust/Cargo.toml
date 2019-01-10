@@ -38,7 +38,7 @@ slog-term = "*"
 slog-async = "*"
 serde_json = "1.0"
 sentry = { version = "^0.12", default-features = false, features = ["with_client_implementation", "with_backtrace", "with_panic", "with_log", "with_rust_info", "with_failure"] }
-#cadence = "^0.16"
+cadence = "^0.16"
 
 # Command-line tools
 crossbeam-channel = "0.2"
