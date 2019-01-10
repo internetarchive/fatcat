@@ -411,13 +411,23 @@ impl EntityHistoryEntry {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ErrorResponse {
+    #[serde(rename = "success")]
+    pub success: bool,
+
+    #[serde(rename = "error")]
+    pub error: String,
+
     #[serde(rename = "message")]
     pub message: String,
 }
 
 impl ErrorResponse {
-    pub fn new(message: String) -> ErrorResponse {
-        ErrorResponse { message: message }
+    pub fn new(success: bool, error: String, message: String) -> ErrorResponse {
+        ErrorResponse {
+            success: success,
+            error: error,
+            message: message,
+        }
     }
 }
 
@@ -911,13 +921,16 @@ impl ReleaseRef {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Success {
+    #[serde(rename = "success")]
+    pub success: bool,
+
     #[serde(rename = "message")]
     pub message: String,
 }
 
 impl Success {
-    pub fn new(message: String) -> Success {
-        Success { message: message }
+    pub fn new(success: bool, message: String) -> Success {
+        Success { success: success, message: message }
     }
 }
 

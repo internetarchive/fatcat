@@ -6734,8 +6734,14 @@ definitions:
   error_response:
     type: "object"
     required:
+    - "error"
     - "message"
+    - "success"
     properties:
+      success:
+        type: "boolean"
+      error:
+        type: "string"
       message:
         type: "string"
         example: "A really confusing, totally unexpected thing happened"
@@ -6744,11 +6750,15 @@ definitions:
     type: "object"
     required:
     - "message"
+    - "success"
     properties:
+      success:
+        type: "boolean"
       message:
         type: "string"
         example: "The computers did the thing successfully!"
     example:
+      success: true
       message: "The computers did the thing successfully!"
     upperCaseName: "SUCCESS"
   container_entity:

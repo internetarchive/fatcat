@@ -101,16 +101,25 @@ definitions:
   error_response:
     type: object
     required:
+      - success
+      - error
       - message
     properties:
+      success:
+        type: boolean
+      error:
+        type: string
       message:
         type: string
         example: "A really confusing, totally unexpected thing happened"
   success:
     type: object
     required:
+      - success
       - message
     properties:
+      success:
+        type: boolean
       message:
         type: string
         example: "The computers did the thing successfully!"
@@ -721,7 +730,7 @@ paths:
       parameters:
         - name: editgroup_id
           in: query
-          required: true 
+          required: true
           type: string
       security:
         - Bearer: []
