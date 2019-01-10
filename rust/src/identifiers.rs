@@ -4,7 +4,7 @@ use regex::Regex;
 use serde_json;
 use std::str::FromStr;
 use uuid::Uuid;
-use std::fmt;
+use std::{fmt, convert};
 
 
 #[derive(Clone, Copy, PartialEq, Debug)]
@@ -23,11 +23,29 @@ impl FromStr for FatCatId {
     }
 }
 
+impl convert::AsRef<Uuid> for FatCatId {
+    fn as_ref(&self) -> &Uuid {
+        &self.0
+    }
+}
+
+impl convert::Into<Uuid> for FatCatId {
+    fn into(self) -> Uuid {
+        self.0
+    }
+}
+
+impl convert::From<Uuid> for FatCatId {
+    fn from(u: Uuid) -> FatCatId {
+        FatCatId(u)
+    }
+}
+
 impl FatCatId {
     pub fn to_uuid(&self) -> Uuid {
         self.0
     }
-    // TODO: just make it u: Uuid and clone (not by ref)
+    // TODO: make it possible to just pass 'Uuid' in addition to '&Uuid'
     pub fn from_uuid(u: &Uuid) -> FatCatId {
         FatCatId(*u)
     }
