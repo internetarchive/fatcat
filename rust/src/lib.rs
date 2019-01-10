@@ -2,13 +2,13 @@
 #![recursion_limit = "128"]
 
 #[macro_use]
-extern crate error_chain;
-#[macro_use]
 extern crate diesel;
 #[macro_use]
 extern crate log;
 #[macro_use]
 extern crate lazy_static;
+#[macro_use]
+extern crate failure;
 
 pub mod auth;
 pub mod database_models;

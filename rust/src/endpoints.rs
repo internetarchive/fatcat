@@ -19,9 +19,44 @@ use fatcat_api_spec::models;
 use fatcat_api_spec::models::*;
 use fatcat_api_spec::*;
 use futures::{self, Future};
-use sentry::integrations::error_chain::capture_error_chain;
+use sentry::integrations::failure::capture_fail;
 use std::str::FromStr;
-use uuid::Uuid;
+use uuid::{self, Uuid};
+
+// This makes response matching below *much* more terse
+use crate::errors::FatcatError::*;
+
+// I heard you liked macros, so I use macros in your macros
+macro_rules! generic_auth_err_responses {
+    ($val:ident, $resp_type:ident) => {
+        //use crate::errors::FatcatError::*;
+        match $val {
+            NotFound(_, _) => $resp_type::NotFound($val.into()),
+            InvalidCredentials(_) | InsufficientPrivileges(_) => $resp_type::Forbidden($val.into()),
+            DatabaseError(_) | InternalError(_) => {
+                error!("{}", $val);
+                capture_fail(&$val);
+                $resp_type::GenericError($val.into())
+            }
+            _ => $resp_type::BadRequest($val.into()),
+        }
+    };
+}
+
+macro_rules! generic_err_responses {
+    ($val:ident, $resp_type:ident) => {
+        //use crate::errors::FatcatError::*;
+        match $val {
+            NotFound(_, _) => $resp_type::NotFound($val.into()),
+            DatabaseError(_) | InternalError(_) => {
+                error!("{}", $val);
+                capture_fail(&$val);
+                $resp_type::GenericError($val.into())
+            }
+            _ => $resp_type::BadRequest($val.into()),
+        }
+    };
+}
 
 /// Helper for generating wrappers (which return "Box::new(futures::done(Ok(BLAH)))" like the
 /// codegen fatcat-api-spec code wants) that call through to actual helpers (which have simple
@@ -62,28 +97,10 @@ macro_rules! wrap_entity_handlers {
                         Ok(entity)
                     },
                 }
-            })() {
+            })().map_err(|e| FatcatError::from(e)) {
                 Ok(entity) =>
                     $get_resp::FoundEntity(entity),
-                Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
-                    $get_resp::NotFound(ErrorResponse { success: false, error: "not-found".to_string(), message: format!("No such entity {}: {}", stringify!($model), ident) }),
-                Err(Error(ErrorKind::Uuid(e), _)) =>
-                    $get_resp::BadRequest(ErrorResponse { success: false, error: "uuid".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::InvalidFatcatId(e), _)) =>
-                    $get_resp::BadRequest(ErrorResponse {
-                        success: false, error: "fatcat-id".to_string(),
-                        message: ErrorKind::InvalidFatcatId(e).to_string() }),
-                Err(Error(ErrorKind::MalformedExternalId(e), _)) =>
-                    $get_resp::BadRequest(ErrorResponse { success: false, error: "field-syntax".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::EditgroupAlreadyAccepted(e), _)) =>
-                    $get_resp::BadRequest(ErrorResponse { success: false, error: "editgroup".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::OtherBadRequest(e), _)) =>
-                    $get_resp::BadRequest(ErrorResponse { success: false, error: "other".to_string(), message: e.to_string() }),
-                Err(e) => {
-                    error!("{}", e);
-                    capture_error_chain(&e);
-                    $get_resp::GenericError(ErrorResponse { success: false, error: "internal".to_string(), message: e.to_string() })
-                },
+                Err(fe) => generic_err_responses!(fe, $get_resp),
             };
             Box::new(futures::done(Ok(ret)))
         }
@@ -103,37 +120,10 @@ macro_rules! wrap_entity_handlers {
                 let edit_context = make_edit_context(&conn, auth_context.editor_id, Some(editgroup_id), false)?;
                 edit_context.check(&conn)?;
                 entity.db_create(&conn, &edit_context)?.into_model()
-            }) {
+            }).map_err(|e| FatcatError::from(e)) {
                 Ok(edit) =>
                     $post_resp::CreatedEntity(edit),
-                Err(Error(ErrorKind::Diesel(e), _)) =>
-                    // TODO: needs refinement; what kind of Diesel error?
-                    $post_resp::BadRequest(ErrorResponse { success: false, error: "database".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::Uuid(e), _)) =>
-                    $post_resp::BadRequest(ErrorResponse { success: false, error: "uuid".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::InvalidFatcatId(e), _)) =>
-                    $post_resp::BadRequest(ErrorResponse {
-                        success: false, error: "fatcat-id".to_string(),
-                        message: ErrorKind::InvalidFatcatId(e).to_string() }),
-                Err(Error(ErrorKind::MalformedExternalId(e), _)) =>
-                    $post_resp::BadRequest(ErrorResponse { success: false, error: "field-syntax".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::MalformedChecksum(e), _)) =>
-                    $post_resp::BadRequest(ErrorResponse { success: false, error: "field-syntax".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::NotInControlledVocabulary(e), _)) =>
-                    $post_resp::BadRequest(ErrorResponse { success: false, error: "field-syntax".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::EditgroupAlreadyAccepted(e), _)) =>
-                    $post_resp::BadRequest(ErrorResponse { success: false, error: "editgroup".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::InvalidCredentials(e), _)) =>
-                    $post_resp::Forbidden(ErrorResponse { success: false, error: "auth".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::InsufficientPrivileges(e), _)) =>
-                    $post_resp::Forbidden(ErrorResponse { success: false, error: "auth".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::OtherBadRequest(e), _)) =>
-                    $post_resp::BadRequest(ErrorResponse { success: false, error: "other".to_string(), message: e.to_string() }),
-                Err(e) => {
-                    error!("{}", e);
-                    capture_error_chain(&e);
-                    $post_resp::GenericError(ErrorResponse { success: false, error: "internal".to_string(), message: e.to_string() })
-                },
+                Err(fe) => generic_auth_err_responses!(fe, $post_resp),
             };
             Box::new(futures::done(Ok(ret)))
         }
@@ -155,37 +145,10 @@ macro_rules! wrap_entity_handlers {
                     Some(eg_id)
                 } else { None };
                 self.$post_batch_handler(&conn, entity_list, autoaccept.unwrap_or(false), auth_context.editor_id, editgroup_id)
-            }) {
+            }).map_err(|e| FatcatError::from(e)) {
                 Ok(edit) =>
                     $post_batch_resp::CreatedEntities(edit),
-                Err(Error(ErrorKind::Diesel(e), _)) =>
-                    $post_batch_resp::BadRequest(ErrorResponse { success: false, error: "database".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::Uuid(e), _)) =>
-                    $post_batch_resp::BadRequest(ErrorResponse { success: false, error: "uuid".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::InvalidFatcatId(e), _)) =>
-                    $post_batch_resp::BadRequest(ErrorResponse {
-                        success: false, error: "fatcat-id".to_string(),
-                        message: ErrorKind::InvalidFatcatId(e).to_string() }),
-                Err(Error(ErrorKind::MalformedExternalId(e), _)) =>
-                    $post_batch_resp::BadRequest(ErrorResponse { success: false, error: "field-syntax".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::MalformedChecksum(e), _)) =>
-                    $post_batch_resp::BadRequest(ErrorResponse { success: false, error: "field-syntax".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::NotInControlledVocabulary(e), _)) =>
-                    $post_batch_resp::BadRequest(ErrorResponse { success: false, error: "field-syntax".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::EditgroupAlreadyAccepted(e), _)) =>
-                    $post_batch_resp::BadRequest(ErrorResponse { success: false, error: "editgroup".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::InvalidCredentials(e), _)) =>
-                    // TODO: why can't I NotAuthorized here?
-                    $post_batch_resp::Forbidden(ErrorResponse { success: false, error: "auth".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::InsufficientPrivileges(e), _)) =>
-                    $post_batch_resp::Forbidden(ErrorResponse { success: false, error: "auth".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::OtherBadRequest(e), _)) =>
-                    $post_batch_resp::BadRequest(ErrorResponse { success: false, error: "other".to_string(), message: e.to_string() }),
-                Err(e) => {
-                    error!("{}", e);
-                    capture_error_chain(&e);
-                    $post_batch_resp::GenericError(ErrorResponse { success: false, error: "internal".to_string(), message: e.to_string() })
-                },
+                Err(fe) => generic_auth_err_responses!(fe, $post_batch_resp),
             };
             Box::new(futures::done(Ok(ret)))
         }
@@ -207,40 +170,10 @@ macro_rules! wrap_entity_handlers {
                 let edit_context = make_edit_context(&conn, auth_context.editor_id, Some(editgroup_id), false)?;
                 edit_context.check(&conn)?;
                 entity.db_update(&conn, &edit_context, entity_id)?.into_model()
-            }) {
+            }).map_err(|e| FatcatError::from(e)) {
                 Ok(edit) =>
                     $update_resp::UpdatedEntity(edit),
-                Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
-                    $update_resp::NotFound(ErrorResponse { success: false, error: "not-found".to_string(), message: format!("No such entity {}: {}", stringify!($model), ident) }),
-                Err(Error(ErrorKind::Diesel(e), _)) =>
-                    $update_resp::BadRequest(ErrorResponse { success: false, error: "database".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::Uuid(e), _)) =>
-                    $update_resp::BadRequest(ErrorResponse { success: false, error: "uuid".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::InvalidFatcatId(e), _)) =>
-                    $update_resp::BadRequest(ErrorResponse {
-                        success: false, error: "fatcat-id".to_string(),
-                        message: ErrorKind::InvalidFatcatId(e).to_string() }),
-                Err(Error(ErrorKind::MalformedExternalId(e), _)) =>
-                    $update_resp::BadRequest(ErrorResponse { success: false, error: "field-syntax".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::MalformedChecksum(e), _)) =>
-                    $update_resp::BadRequest(ErrorResponse { success: false, error: "field-syntax".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::NotInControlledVocabulary(e), _)) =>
-                    $update_resp::BadRequest(ErrorResponse { success: false, error: "field-syntax".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::EditgroupAlreadyAccepted(e), _)) =>
-                    $update_resp::BadRequest(ErrorResponse { success: false, error: "editgroup".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::InvalidEntityStateTransform(e), _)) =>
-                    $update_resp::BadRequest(ErrorResponse { success: false, error: "entity-state".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::OtherBadRequest(e), _)) =>
-                    $update_resp::BadRequest(ErrorResponse { success: false, error: "other".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::InvalidCredentials(e), _)) =>
-                    $update_resp::Forbidden(ErrorResponse { success: false, error: "auth".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::InsufficientPrivileges(e), _)) =>
-                    $update_resp::Forbidden(ErrorResponse { success: false, error: "auth".to_string(), message: e.to_string() }),
-                Err(e) => {
-                    error!("{}", e);
-                    capture_error_chain(&e);
-                    $update_resp::GenericError(ErrorResponse { success: false, error: "internal".to_string(), message: e.to_string() })
-                },
+                Err(fe) => generic_auth_err_responses!(fe, $update_resp),
             };
             Box::new(futures::done(Ok(ret)))
         }
@@ -261,36 +194,10 @@ macro_rules! wrap_entity_handlers {
                 let edit_context = make_edit_context(&conn, auth_context.editor_id, Some(editgroup_id), false)?;
                 edit_context.check(&conn)?;
                 $model::db_delete(&conn, &edit_context, entity_id)?.into_model()
-            }) {
+            }).map_err(|e| FatcatError::from(e)) {
                 Ok(edit) =>
                     $delete_resp::DeletedEntity(edit),
-                Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
-                    $delete_resp::NotFound(ErrorResponse { success: false, error: "not-found".to_string(), message: format!("No such entity {}: {}", stringify!($model), ident) }),
-                Err(Error(ErrorKind::Diesel(e), _)) =>
-                    $delete_resp::BadRequest(ErrorResponse { success: false, error: "database".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::Uuid(e), _)) =>
-                    $delete_resp::BadRequest(ErrorResponse { success: false, error: "uuid".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::InvalidFatcatId(e), _)) =>
-                    $delete_resp::BadRequest(ErrorResponse {
-                        success: false, error: "fatcat-id".to_string(),
-                        message: ErrorKind::InvalidFatcatId(e).to_string() }),
-                Err(Error(ErrorKind::MalformedExternalId(e), _)) =>
-                    $delete_resp::BadRequest(ErrorResponse { success: false, error: "field-syntax".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::EditgroupAlreadyAccepted(e), _)) =>
-                    $delete_resp::BadRequest(ErrorResponse { success: false, error: "editgroup".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::InvalidEntityStateTransform(e), _)) =>
-                    $delete_resp::BadRequest(ErrorResponse { success: false, error: "entity-state".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::OtherBadRequest(e), _)) =>
-                    $delete_resp::BadRequest(ErrorResponse { success: false, error: "other".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::InvalidCredentials(e), _)) =>
-                    $delete_resp::Forbidden(ErrorResponse { success: false, error: "auth".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::InsufficientPrivileges(e), _)) =>
-                    $delete_resp::Forbidden(ErrorResponse { success: false, error: "auth".to_string(), message: e.to_string() }),
-                Err(e) => {
-                    error!("{}", e);
-                    capture_error_chain(&e);
-                    $delete_resp::GenericError(ErrorResponse { success: false, error: "internal".to_string(), message: e.to_string() })
-                },
+                Err(fe) => generic_auth_err_responses!(fe, $delete_resp),
             };
             Box::new(futures::done(Ok(ret)))
         }
@@ -306,24 +213,10 @@ macro_rules! wrap_entity_handlers {
             let ret = match (|| {
                 let entity_id = FatcatId::from_str(&ident)?;
                 $model::db_get_history(&conn, entity_id, limit)
-            })() {
+            })().map_err(|e| FatcatError::from(e)) {
                 Ok(history) =>
                     $get_history_resp::FoundEntityHistory(history),
-                Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
-                    $get_history_resp::NotFound(ErrorResponse { success: false, error: "not-found".to_string(), message: format!("No such entity {}: {}", stringify!($model), ident) }),
-                Err(Error(ErrorKind::Uuid(e), _)) =>
-                    $get_history_resp::BadRequest(ErrorResponse { success: false, error: "uuid".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::InvalidFatcatId(e), _)) =>
-                    $get_history_resp::BadRequest(ErrorResponse {
-                        success: false, error: "fatcat-id".to_string(),
-                        message: ErrorKind::InvalidFatcatId(e).to_string() }),
-                Err(Error(ErrorKind::OtherBadRequest(e), _)) =>
-                    $get_history_resp::BadRequest(ErrorResponse { success: false, error: "other".to_string(), message: e.to_string() }),
-                Err(e) => {
-                    error!("{}", e);
-                    capture_error_chain(&e);
-                    $get_history_resp::GenericError(ErrorResponse { success: false, error: "internal".to_string(), message: e.to_string() })
-                },
+                Err(fe) => generic_err_responses!(fe, $get_history_resp),
             };
             Box::new(futures::done(Ok(ret)))
         }
@@ -352,22 +245,10 @@ macro_rules! wrap_entity_handlers {
                         Ok(entity)
                     },
                 }
-            })() {
+            })().map_err(|e| FatcatError::from(e)) {
                 Ok(entity) =>
                     $get_rev_resp::FoundEntityRevision(entity),
-                Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
-                    $get_rev_resp::NotFound(ErrorResponse { success: false, error: "not-found".to_string(), message: format!("No such entity revision {}: {}", stringify!($model), rev_id) }),
-                Err(Error(ErrorKind::Uuid(e), _)) =>
-                    $get_rev_resp::BadRequest(ErrorResponse { success: false, error: "uuid".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::MalformedExternalId(e), _)) =>
-                    $get_rev_resp::BadRequest(ErrorResponse { success: false, error: "field-syntax".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::OtherBadRequest(e), _)) =>
-                    $get_rev_resp::BadRequest(ErrorResponse { success: false, error: "other".to_string(), message: e.to_string() }),
-                Err(e) => {
-                    error!("{}", e);
-                    capture_error_chain(&e);
-                    $get_rev_resp::GenericError(ErrorResponse { success: false, error: "internal".to_string(), message: e.to_string() })
-                },
+                Err(fe) => generic_err_responses!(fe, $get_rev_resp),
             };
             Box::new(futures::done(Ok(ret)))
         }
@@ -382,18 +263,10 @@ macro_rules! wrap_entity_handlers {
             let ret = match (|| {
                 let edit_id = Uuid::from_str(&edit_id)?;
                 $model::db_get_edit(&conn, edit_id)?.into_model()
-            })() {
+            })().map_err(|e| FatcatError::from(e)) {
                 Ok(edit) =>
                     $get_edit_resp::FoundEdit(edit),
-                Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
-                    $get_edit_resp::NotFound(ErrorResponse { success: false, error: "not-found".to_string(), message: format!("No such {} entity edit: {}", stringify!($model), edit_id) }),
-                Err(Error(ErrorKind::OtherBadRequest(e), _)) =>
-                    $get_edit_resp::BadRequest(ErrorResponse { success: false, error: "other".to_string(), message: e.to_string() }),
-                Err(e) => {
-                    error!("{}", e);
-                    capture_error_chain(&e);
-                    $get_edit_resp::GenericError(ErrorResponse { success: false, error: "internal".to_string(), message: e.to_string() })
-                },
+                Err(fe) => generic_err_responses!(fe, $get_edit_resp),
             };
             Box::new(futures::done(Ok(ret)))
         }
@@ -411,29 +284,13 @@ macro_rules! wrap_entity_handlers {
                 let edit = $model::db_get_edit(&conn, edit_id)?;
                 auth_context.require_editgroup(&conn, FatcatId::from_uuid(&edit.editgroup_id))?;
                 $model::db_delete_edit(&conn, edit_id)
-            }) {
+            }).map_err(|e| FatcatError::from(e)) {
                 Ok(()) =>
                     $delete_edit_resp::DeletedEdit(Success {
                         success: true,
                         message: format!("Successfully deleted work-in-progress {} edit: {}", stringify!($model), edit_id)
                 }),
-                Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
-                    $delete_edit_resp::NotFound(ErrorResponse { success: false, error: "not-found".to_string(), message: format!("No such {} edit: {}", stringify!($model), edit_id) }),
-                Err(Error(ErrorKind::Diesel(e), _)) =>
-                    $delete_edit_resp::BadRequest(ErrorResponse { success: false, error: "database".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::EditgroupAlreadyAccepted(e), _)) =>
-                    $delete_edit_resp::BadRequest(ErrorResponse { success: false, error: "editgroup".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::OtherBadRequest(e), _)) =>
-                    $delete_edit_resp::BadRequest(ErrorResponse { success: false, error: "other".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::InvalidCredentials(e), _)) =>
-                    $delete_edit_resp::Forbidden(ErrorResponse { success: false, error: "auth".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::InsufficientPrivileges(e), _)) =>
-                    $delete_edit_resp::Forbidden(ErrorResponse { success: false, error: "auth".to_string(), message: e.to_string() }),
-                Err(e) => {
-                    error!("{}", e);
-                    capture_error_chain(&e);
-                    $delete_edit_resp::GenericError(ErrorResponse { success: false, error: "internal".to_string(), message: e.to_string() })
-                },
+                Err(fe) => generic_auth_err_responses!(fe, $delete_edit_resp),
             };
             Box::new(futures::done(Ok(ret)))
         }
@@ -449,24 +306,10 @@ macro_rules! wrap_entity_handlers {
                 let entity_id = FatcatId::from_str(&ident)?;
                 let redirects: Vec<FatcatId> = $model::db_get_redirects(&conn, entity_id)?;
                 Ok(redirects.into_iter().map(|fcid| fcid.to_string()).collect())
-            })() {
+            })().map_err(|e: Error| FatcatError::from(e)) {
                 Ok(redirects) =>
                     $get_redirects_resp::FoundEntityRedirects(redirects),
-                Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
-                    $get_redirects_resp::NotFound(ErrorResponse { success: false, error: "not-found".to_string(), message: format!("No such entity {}: {}", stringify!($model), ident) }),
-                Err(Error(ErrorKind::Uuid(e), _)) =>
-                    $get_redirects_resp::BadRequest(ErrorResponse { success: false, error: "uuid".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::InvalidFatcatId(e), _)) =>
-                    $get_redirects_resp::BadRequest(ErrorResponse {
-                        success: false, error: "fatcat-id".to_string(),
-                        message: ErrorKind::InvalidFatcatId(e).to_string() }),
-                Err(Error(ErrorKind::OtherBadRequest(e), _)) =>
-                    $get_redirects_resp::BadRequest(ErrorResponse { success: false, error: "other".to_string(), message: e.to_string() }),
-                Err(e) => {
-                    error!("{}", e);
-                    capture_error_chain(&e);
-                    $get_redirects_resp::GenericError(ErrorResponse { success: false, error: "internal".to_string(), message: e.to_string() })
-                },
+                Err(fe) => generic_err_responses!(fe, $get_redirects_resp),
             };
             Box::new(futures::done(Ok(ret)))
         }
@@ -494,24 +337,10 @@ macro_rules! wrap_lookup_handler {
                 Some(param) => HideFlags::from_str(&param).unwrap(),
             };
             // No transaction for GET
-            let ret = match self.$get_handler(&conn, &$idname, &wikidata_qid, expand_flags, hide_flags) {
+            let ret = match self.$get_handler(&conn, &$idname, &wikidata_qid, expand_flags, hide_flags).map_err(|e| FatcatError::from(e)) {
                 Ok(entity) =>
                     $get_resp::FoundEntity(entity),
-                Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
-                    $get_resp::NotFound(ErrorResponse { success: false, error: "not-found".to_string(), message: format!("Not found: {:?} / {:?}", $idname, wikidata_qid) }),
-                Err(Error(ErrorKind::MalformedExternalId(e), _)) =>
-                    $get_resp::BadRequest(ErrorResponse { success: false, error: "field-syntax".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::MalformedChecksum(e), _)) =>
-                    $get_resp::BadRequest(ErrorResponse { success: false, error: "field-syntax".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::MissingOrMultipleExternalId(e), _)) => {
-                    $get_resp::BadRequest(ErrorResponse { success: false, error: "field-syntax".to_string(), message: e.to_string(), }) },
-                Err(Error(ErrorKind::OtherBadRequest(e), _)) =>
-                    $get_resp::BadRequest(ErrorResponse { success: false, error: "other".to_string(), message: e.to_string() }),
-                Err(e) => {
-                    error!("{}", e);
-                    capture_error_chain(&e);
-                    $get_resp::BadRequest(ErrorResponse { success: false, error: "internal".to_string(), message: e.to_string() })
-                },
+                Err(fe) => generic_err_responses!(fe, $get_resp),
             };
             Box::new(futures::done(Ok(ret)))
         }
@@ -530,22 +359,10 @@ macro_rules! wrap_fcid_handler {
             let ret = match (|| {
                 let fcid = FatcatId::from_str(&id)?;
                 self.$get_handler(&conn, fcid)
-            })() {
+            })().map_err(|e| FatcatError::from(e)) {
                 Ok(entity) =>
                     $get_resp::Found(entity),
-                Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
-                    $get_resp::NotFound(ErrorResponse { success: false, error: "not-found".to_string(), message: format!("Not found: {}", id) }),
-                Err(Error(ErrorKind::MalformedExternalId(e), _)) =>
-                    $get_resp::BadRequest(ErrorResponse { success: false, error: "field-syntax".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::NotInControlledVocabulary(e), _)) =>
-                    $get_resp::BadRequest(ErrorResponse { success: false, error: "field-syntax".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::OtherBadRequest(e), _)) =>
-                    $get_resp::BadRequest(ErrorResponse { success: false, error: "other".to_string(), message: e.to_string() }),
-                Err(e) => {
-                    error!("{}", e);
-                    capture_error_chain(&e);
-                    $get_resp::BadRequest(ErrorResponse { success: false, error: "internal".to_string(), message: e.to_string() })
-                },
+                Err(fe) => generic_err_responses!(fe, $get_resp),
             };
             Box::new(futures::done(Ok(ret)))
         }
@@ -569,24 +386,10 @@ macro_rules! wrap_fcid_hide_handler {
                     Some(param) => HideFlags::from_str(&param)?,
                 };
                 self.$get_handler(&conn, fcid, hide_flags)
-            })() {
+            })().map_err(|e| FatcatError::from(e)) {
                 Ok(entity) =>
                     $get_resp::Found(entity),
-                Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) =>
-                    $get_resp::NotFound(ErrorResponse { success: false,
-                                        error: "not-found".to_string(),
-                                        message: format!("Not found: {}", id) }),
-                Err(Error(ErrorKind::MalformedExternalId(e), _)) =>
-                    $get_resp::BadRequest(ErrorResponse { success: false, error: "field-syntax".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::NotInControlledVocabulary(e), _)) =>
-                    $get_resp::BadRequest(ErrorResponse { success: false, error: "field-syntax".to_string(), message: e.to_string() }),
-                Err(Error(ErrorKind::OtherBadRequest(e), _)) =>
-                    $get_resp::BadRequest(ErrorResponse { success: false, error: "other".to_string(), message: e.to_string() }),
-                Err(e) => {
-                    error!("{}", e);
-                    capture_error_chain(&e);
-                    $get_resp::BadRequest(ErrorResponse { success: false, error: "internal".to_string(), message: e.to_string() })
-                },
+                Err(fe) => generic_err_responses!(fe, $get_resp),
             };
             Box::new(futures::done(Ok(ret)))
         }
@@ -828,47 +631,13 @@ impl Api for Server {
             Some(param) => HideFlags::from_str(&param).unwrap(),
         };
         // No transaction for GET
-        let ret =
-            match self.lookup_file_handler(&conn, &md5, &sha1, &sha256, expand_flags, hide_flags) {
-                Ok(entity) => LookupFileResponse::FoundEntity(entity),
-                Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
-                    LookupFileResponse::NotFound(ErrorResponse {
-                        success: false,
-                        error: "not-found".to_string(),
-                        message: format!("Not found: {:?} / {:?} / {:?}", md5, sha1, sha256),
-                    })
-                }
-                Err(Error(ErrorKind::MalformedExternalId(e), _)) => {
-                    LookupFileResponse::BadRequest(ErrorResponse {
-                        success: false,
-                        error: "field-syntax".to_string(),
-                        message: e.to_string(),
-                    })
-                }
-                Err(Error(ErrorKind::MalformedChecksum(e), _)) => {
-                    LookupFileResponse::BadRequest(ErrorResponse {
-                        success: false,
-                        error: "field-syntax".to_string(),
-                        message: e.to_string(),
-                    })
-                }
-                Err(Error(ErrorKind::MissingOrMultipleExternalId(e), _)) => {
-                    LookupFileResponse::BadRequest(ErrorResponse {
-                        success: false,
-                        error: "field-syntax".to_string(),
-                        message: e.to_string(),
-                    })
-                }
-                Err(e) => {
-                    error!("{}", e);
-                    capture_error_chain(&e);
-                    LookupFileResponse::BadRequest(ErrorResponse {
-                        success: false,
-                        error: "internal".to_string(),
-                        message: e.to_string(),
-                    })
-                }
-            };
+        let ret = match self
+            .lookup_file_handler(&conn, &md5, &sha1, &sha256, expand_flags, hide_flags)
+            .map_err(|e| FatcatError::from(e))
+        {
+            Ok(entity) => LookupFileResponse::FoundEntity(entity),
+            Err(fe) => generic_err_responses!(fe, LookupFileResponse),
+        };
         Box::new(futures::done(Ok(ret)))
     }
 
@@ -894,51 +663,24 @@ impl Api for Server {
             Some(param) => HideFlags::from_str(&param).unwrap(),
         };
         // No transaction for GET
-        let ret = match self.lookup_release_handler(
-            &conn,
-            &doi,
-            &wikidata_qid,
-            &isbn13,
-            &pmid,
-            &pmcid,
-            &core_id,
-            expand_flags,
-            hide_flags,
-        ) {
+        let ret = match self
+            .lookup_release_handler(
+                &conn,
+                &doi,
+                &wikidata_qid,
+                &isbn13,
+                &pmid,
+                &pmcid,
+                &core_id,
+                expand_flags,
+                hide_flags,
+            )
+            .map_err(|e| FatcatError::from(e))
+        {
             Ok(entity) => LookupReleaseResponse::FoundEntity(entity),
-            Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
-                LookupReleaseResponse::NotFound(ErrorResponse {
-                    success: false,
-                    error: "not-found".to_string(),
-                    message: format!(
-                        "Not found: {:?} / {:?} / {:?} / {:?} / {:?} / {:?}",
-                        doi, wikidata_qid, isbn13, pmid, pmcid, core_id
-                    ),
-                })
-            }
-            Err(Error(ErrorKind::MalformedExternalId(e), _)) => {
-                LookupReleaseResponse::BadRequest(ErrorResponse {
-                    success: false,
-                    error: "field-syntax".to_string(),
-                    message: e.to_string(),
-                })
-            }
-            Err(Error(ErrorKind::MissingOrMultipleExternalId(e), _)) => {
-                LookupReleaseResponse::BadRequest(ErrorResponse {
-                    success: false,
-                    error: "field-syntax".to_string(),
-                    message: e.to_string(),
-                })
-            }
-            Err(e) => {
-                error!("{}", e);
-                capture_error_chain(&e);
-                LookupReleaseResponse::BadRequest(ErrorResponse {
-                    success: false,
-                    error: "internal".to_string(),
-                    message: e.to_string(),
-                })
-            }
+            // TODO: ensure good 'Not Found" error message here
+            // (was: "Not found: {:?} / {:?} / {:?} / {:?} / {:?} / {:?}", doi, wikidata_qid, isbn13, pmid, pmcid, core_id
+            Err(fe) => generic_err_responses!(fe, LookupReleaseResponse),
         };
         Box::new(futures::done(Ok(ret)))
     }
@@ -951,85 +693,33 @@ impl Api for Server {
         context: &Context,
     ) -> Box<Future<Item = UpdateEditorResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let ret = match conn.transaction(|| {
-            if Some(editor_id.clone()) != editor.editor_id {
-                return Err(
-                    ErrorKind::OtherBadRequest("editor_id doesn't match".to_string()).into(),
-                );
-            }
-            let auth_context = self.auth_confectionary.require_auth(
-                &conn,
-                &context.auth_data,
-                Some("update_editor"),
-            )?;
-            let editor_id = FatcatId::from_str(&editor_id)?;
-            // DANGER! these permissions are for username updates only!
-            if editor_id == auth_context.editor_id {
-                // self edit of username allowed
-                auth_context.require_role(FatcatRole::Editor)?;
-            } else {
-                // admin can update any username
-                auth_context.require_role(FatcatRole::Admin)?;
-            };
-            update_editor_username(&conn, editor_id, editor.username).map(|e| e.into_model())
-        }) {
+        let ret = match conn
+            .transaction(|| {
+                if Some(editor_id.clone()) != editor.editor_id {
+                    return Err(
+                        FatcatError::OtherBadRequest("editor_id doesn't match".to_string()).into(),
+                    );
+                }
+                let auth_context = self.auth_confectionary.require_auth(
+                    &conn,
+                    &context.auth_data,
+                    Some("update_editor"),
+                )?;
+                let editor_id = FatcatId::from_str(&editor_id)?;
+                // DANGER! these permissions are for username updates only!
+                if editor_id == auth_context.editor_id {
+                    // self edit of username allowed
+                    auth_context.require_role(FatcatRole::Editor)?;
+                } else {
+                    // admin can update any username
+                    auth_context.require_role(FatcatRole::Admin)?;
+                };
+                update_editor_username(&conn, editor_id, editor.username).map(|e| e.into_model())
+            })
+            .map_err(|e| FatcatError::from(e))
+        {
             Ok(editor) => UpdateEditorResponse::UpdatedEditor(editor),
-            Err(Error(ErrorKind::Diesel(e), _)) => {
-                UpdateEditorResponse::BadRequest(ErrorResponse {
-                    success: false,
-                    error: "database".to_string(),
-                    message: e.to_string(),
-                })
-            }
-            Err(Error(ErrorKind::Uuid(e), _)) => UpdateEditorResponse::BadRequest(ErrorResponse {
-                success: false,
-                error: "uuid".to_string(),
-                message: e.to_string(),
-            }),
-            Err(Error(ErrorKind::InvalidFatcatId(e), _)) => {
-                UpdateEditorResponse::BadRequest(ErrorResponse {
-                    success: false,
-                    error: "fatcat-id".to_string(),
-                    message: ErrorKind::InvalidFatcatId(e).to_string(),
-                })
-            }
-            Err(Error(ErrorKind::MalformedExternalId(e), _)) => {
-                UpdateEditorResponse::BadRequest(ErrorResponse {
-                    success: false,
-                    error: "field-syntax".to_string(),
-                    message: e.to_string(),
-                })
-            }
-            Err(Error(ErrorKind::InvalidCredentials(e), _)) => {
-                UpdateEditorResponse::Forbidden(ErrorResponse {
-                    success: false,
-                    error: "auth".to_string(),
-                    message: e.to_string(),
-                })
-            }
-            Err(Error(ErrorKind::InsufficientPrivileges(e), _)) => {
-                UpdateEditorResponse::Forbidden(ErrorResponse {
-                    success: false,
-                    error: "auth".to_string(),
-                    message: e.to_string(),
-                })
-            }
-            Err(Error(ErrorKind::OtherBadRequest(e), _)) => {
-                UpdateEditorResponse::BadRequest(ErrorResponse {
-                    success: false,
-                    error: "other".to_string(),
-                    message: e.to_string(),
-                })
-            }
-            Err(e) => {
-                error!("{}", e);
-                capture_error_chain(&e);
-                UpdateEditorResponse::GenericError(ErrorResponse {
-                    success: false,
-                    error: "internal".to_string(),
-                    message: e.to_string(),
-                })
-            }
+            Err(fe) => generic_err_responses!(fe, UpdateEditorResponse),
         };
         Box::new(futures::done(Ok(ret)))
     }
@@ -1040,55 +730,26 @@ impl Api for Server {
         context: &Context,
     ) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let ret = match conn.transaction(|| {
-            let editgroup_id = FatcatId::from_str(&editgroup_id)?;
-            let auth_context = self.auth_confectionary.require_auth(
-                &conn,
-                &context.auth_data,
-                Some("accept_editgroup"),
-            )?;
-            auth_context.require_role(FatcatRole::Admin)?;
-            // NOTE: this is currently redundant, but zero-cost
-            auth_context.require_editgroup(&conn, editgroup_id)?;
-            self.accept_editgroup_handler(&conn, editgroup_id)
-        }) {
+        let ret = match conn
+            .transaction(|| {
+                let editgroup_id = FatcatId::from_str(&editgroup_id)?;
+                let auth_context = self.auth_confectionary.require_auth(
+                    &conn,
+                    &context.auth_data,
+                    Some("accept_editgroup"),
+                )?;
+                auth_context.require_role(FatcatRole::Admin)?;
+                // NOTE: this is currently redundant, but zero-cost
+                auth_context.require_editgroup(&conn, editgroup_id)?;
+                self.accept_editgroup_handler(&conn, editgroup_id)
+            })
+            .map_err(|e| FatcatError::from(e))
+        {
             Ok(()) => AcceptEditgroupResponse::MergedSuccessfully(Success {
                 success: true,
                 message: "horray!".to_string(),
             }),
-            Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
-                AcceptEditgroupResponse::NotFound(ErrorResponse {
-                    success: false,
-                    error: "not-found".to_string(),
-                    message: format!("No such editgroup: {}", editgroup_id),
-                })
-            }
-            Err(Error(ErrorKind::EditgroupAlreadyAccepted(e), _)) => {
-                AcceptEditgroupResponse::BadRequest(ErrorResponse {
-                    success: false,
-                    error: "editgroup".to_string(),
-                    message: ErrorKind::EditgroupAlreadyAccepted(e).to_string(),
-                })
-            }
-            Err(Error(ErrorKind::InvalidCredentials(e), _)) => {
-                AcceptEditgroupResponse::Forbidden(ErrorResponse {
-                    success: false,
-                    error: "auth".to_string(),
-                    message: e.to_string(),
-                })
-            }
-            Err(Error(ErrorKind::InsufficientPrivileges(e), _)) => {
-                AcceptEditgroupResponse::Forbidden(ErrorResponse {
-                    success: false,
-                    error: "auth".to_string(),
-                    message: e.to_string(),
-                })
-            }
-            Err(e) => AcceptEditgroupResponse::GenericError(ErrorResponse {
-                success: false,
-                error: "internal".to_string(),
-                message: e.to_string(),
-            }),
+            Err(fe) => generic_auth_err_responses!(fe, AcceptEditgroupResponse),
         };
         Box::new(futures::done(Ok(ret)))
     }
@@ -1099,27 +760,15 @@ impl Api for Server {
         _context: &Context,
     ) -> Box<Future<Item = GetEditgroupResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let ret = match conn.transaction(|| {
-            let editgroup_id = FatcatId::from_str(&editgroup_id)?;
-            self.get_editgroup_handler(&conn, editgroup_id)
-        }) {
+        let ret = match conn
+            .transaction(|| {
+                let editgroup_id = FatcatId::from_str(&editgroup_id)?;
+                self.get_editgroup_handler(&conn, editgroup_id)
+            })
+            .map_err(|e| FatcatError::from(e))
+        {
             Ok(entity) => GetEditgroupResponse::Found(entity),
-            Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
-                GetEditgroupResponse::NotFound(ErrorResponse {
-                    success: false,
-                    error: "not-found".to_string(),
-                    message: format!("No such editgroup: {}", editgroup_id),
-                })
-            }
-            Err(e) =>
-            // TODO: dig in to error type here
-            {
-                GetEditgroupResponse::GenericError(ErrorResponse {
-                    success: false,
-                    error: "internal".to_string(),
-                    message: e.to_string(),
-                })
-            }
+            Err(fe) => generic_err_responses!(fe, GetEditgroupResponse),
         };
         Box::new(futures::done(Ok(ret)))
     }
@@ -1130,52 +779,41 @@ impl Api for Server {
         context: &Context,
     ) -> Box<Future<Item = CreateEditgroupResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let ret = match conn.transaction(|| {
-            let auth_context = self.auth_confectionary.require_auth(
-                &conn,
-                &context.auth_data,
-                Some("create_editgroup"),
-            )?;
-            auth_context.require_role(FatcatRole::Editor)?;
-            let mut entity = entity.clone();
-            match entity.editor_id.clone() {
-                Some(editor_id) => {
-                    if editor_id != auth_context.editor_id.to_string()
-                        && !auth_context.has_role(FatcatRole::Admin)
-                    {
-                        bail!("not authorized to create editgroups in others' names");
+        let ret = match conn
+            .transaction(|| {
+                let auth_context = self.auth_confectionary.require_auth(
+                    &conn,
+                    &context.auth_data,
+                    Some("create_editgroup"),
+                )?;
+                auth_context.require_role(FatcatRole::Editor)?;
+                let mut entity = entity.clone();
+                match entity.editor_id.clone() {
+                    Some(editor_id) => {
+                        if editor_id != auth_context.editor_id.to_string()
+                            && !auth_context.has_role(FatcatRole::Admin)
+                        {
+                            bail!("not authorized to create editgroups in others' names");
+                        }
                     }
-                }
-                None => {
-                    entity.editor_id = Some(auth_context.editor_id.to_string());
-                }
-            };
-            self.create_editgroup_handler(&conn, entity)
-        }) {
+                    None => {
+                        entity.editor_id = Some(auth_context.editor_id.to_string());
+                    }
+                };
+                self.create_editgroup_handler(&conn, entity)
+            })
+            .map_err(|e| FatcatError::from(e))
+        {
             Ok(eg) => CreateEditgroupResponse::SuccessfullyCreated(eg),
-            Err(Error(ErrorKind::InvalidCredentials(e), _)) => {
-                CreateEditgroupResponse::Forbidden(ErrorResponse {
-                    success: false,
-                    error: "auth".to_string(),
-                    message: e.to_string(),
-                })
-            }
-            Err(Error(ErrorKind::InsufficientPrivileges(e), _)) => {
-                CreateEditgroupResponse::Forbidden(ErrorResponse {
-                    success: false,
-                    error: "auth".to_string(),
-                    message: e.to_string(),
-                })
-            }
-            Err(e) =>
-            // TODO: dig in to error type here
-            {
-                CreateEditgroupResponse::GenericError(ErrorResponse {
-                    success: false,
-                    error: "internal".to_string(),
-                    message: e.to_string(),
-                })
-            }
+            Err(fe) => match fe {
+                NotFound(_, _) => CreateEditgroupResponse::NotFound(fe.into()),
+                DatabaseError(_) | InternalError(_) => {
+                    error!("{}", fe);
+                    capture_fail(&fe);
+                    CreateEditgroupResponse::GenericError(fe.into())
+                }
+                _ => CreateEditgroupResponse::BadRequest(fe.into()),
+            },
         };
         Box::new(futures::done(Ok(ret)))
     }
@@ -1187,17 +825,19 @@ impl Api for Server {
     ) -> Box<Future<Item = GetChangelogResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
         // No transaction for GET
-        let ret = match self.get_changelog_handler(&conn, limit) {
+        let ret = match self
+            .get_changelog_handler(&conn, limit)
+            .map_err(|e| FatcatError::from(e))
+        {
             Ok(changelog) => GetChangelogResponse::Success(changelog),
-            Err(e) => {
-                error!("{}", e);
-                capture_error_chain(&e);
-                GetChangelogResponse::GenericError(ErrorResponse {
-                    success: false,
-                    error: "internal".to_string(),
-                    message: e.to_string(),
-                })
-            }
+            Err(fe) => match fe {
+                DatabaseError(_) | InternalError(_) => {
+                    error!("{}", fe);
+                    capture_fail(&fe);
+                    GetChangelogResponse::GenericError(fe.into())
+                }
+                _ => GetChangelogResponse::BadRequest(fe.into()),
+            },
         };
         Box::new(futures::done(Ok(ret)))
     }
@@ -1209,24 +849,12 @@ impl Api for Server {
     ) -> Box<Future<Item = GetChangelogEntryResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
         // No transaction for GET
-        let ret = match self.get_changelog_entry_handler(&conn, id) {
+        let ret = match self
+            .get_changelog_entry_handler(&conn, id)
+            .map_err(|e| FatcatError::from(e))
+        {
             Ok(entry) => GetChangelogEntryResponse::FoundChangelogEntry(entry),
-            Err(Error(ErrorKind::Diesel(::diesel::result::Error::NotFound), _)) => {
-                GetChangelogEntryResponse::NotFound(ErrorResponse {
-                    success: false,
-                    error: "not-found".to_string(),
-                    message: format!("No such changelog entry: {}", id),
-                })
-            }
-            Err(e) => {
-                error!("{}", e);
-                capture_error_chain(&e);
-                GetChangelogEntryResponse::GenericError(ErrorResponse {
-                    success: false,
-                    error: "internal".to_string(),
-                    message: e.to_string(),
-                })
-            }
+            Err(fe) => generic_err_responses!(fe, GetChangelogEntryResponse),
         };
         Box::new(futures::done(Ok(ret)))
     }
@@ -1237,101 +865,35 @@ impl Api for Server {
         context: &Context,
     ) -> Box<Future<Item = AuthOidcResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let ret = match conn.transaction(|| {
-            let auth_context = self.auth_confectionary.require_auth(
-                &conn,
-                &context.auth_data,
-                Some("auth_oidc"),
-            )?;
-            auth_context.require_role(FatcatRole::Superuser)?;
-            let (editor, created) = self.auth_oidc_handler(&conn, params)?;
-            // create an auth token with 31 day duration
-            let token = self.auth_confectionary.create_token(
-                FatcatId::from_str(&editor.editor_id.clone().unwrap())?,
-                Some(chrono::Duration::days(31)),
-            )?;
-            let result = AuthOidcResult { editor, token };
-            Ok((result, created))
-        }) {
+        let ret = match conn
+            .transaction(|| {
+                let auth_context = self.auth_confectionary.require_auth(
+                    &conn,
+                    &context.auth_data,
+                    Some("auth_oidc"),
+                )?;
+                auth_context.require_role(FatcatRole::Superuser)?;
+                let (editor, created) = self.auth_oidc_handler(&conn, params)?;
+                // create an auth token with 31 day duration
+                let token = self.auth_confectionary.create_token(
+                    FatcatId::from_str(&editor.editor_id.clone().unwrap())?,
+                    Some(chrono::Duration::days(31)),
+                )?;
+                let result = AuthOidcResult { editor, token };
+                Ok((result, created))
+            })
+            .map_err(|e: Error| FatcatError::from(e))
+        {
             Ok((result, true)) => AuthOidcResponse::Created(result),
             Ok((result, false)) => AuthOidcResponse::Found(result),
-            Err(Error(ErrorKind::Diesel(e), _)) => AuthOidcResponse::BadRequest(ErrorResponse {
-                success: false,
-                error: "database".to_string(),
-                message: e.to_string(),
-            }),
-            Err(Error(ErrorKind::Uuid(e), _)) => AuthOidcResponse::BadRequest(ErrorResponse {
-                success: false,
-                error: "uuid".to_string(),
-                message: e.to_string(),
-            }),
-            Err(Error(ErrorKind::InvalidFatcatId(e), _)) => {
-                AuthOidcResponse::BadRequest(ErrorResponse {
-                    success: false,
-                    error: "fatcat-id".to_string(),
-                    message: ErrorKind::InvalidFatcatId(e).to_string(),
-                })
-            }
-            Err(Error(ErrorKind::MalformedExternalId(e), _)) => {
-                AuthOidcResponse::BadRequest(ErrorResponse {
-                    success: false,
-                    error: "field-syntax".to_string(),
-                    message: e.to_string(),
-                })
-            }
-            Err(Error(ErrorKind::MalformedChecksum(e), _)) => {
-                AuthOidcResponse::BadRequest(ErrorResponse {
-                    success: false,
-                    error: "field-syntax".to_string(),
-                    message: e.to_string(),
-                })
-            }
-            Err(Error(ErrorKind::NotInControlledVocabulary(e), _)) => {
-                AuthOidcResponse::BadRequest(ErrorResponse {
-                    success: false,
-                    error: "field-syntax".to_string(),
-                    message: e.to_string(),
-                })
-            }
-            Err(Error(ErrorKind::EditgroupAlreadyAccepted(e), _)) => {
-                AuthOidcResponse::BadRequest(ErrorResponse {
-                    success: false,
-                    error: "editgroup".to_string(),
-                    message: e.to_string(),
-                })
-            }
-            Err(Error(ErrorKind::InvalidCredentials(e), _)) =>
-            // TODO: why can't I NotAuthorized here?
-            {
-                AuthOidcResponse::Forbidden(ErrorResponse {
-                    success: false,
-                    error: "auth".to_string(),
-                    message: e.to_string(),
-                })
-            }
-            Err(Error(ErrorKind::InsufficientPrivileges(e), _)) => {
-                AuthOidcResponse::Forbidden(ErrorResponse {
-                    success: false,
-                    error: "auth".to_string(),
-                    message: e.to_string(),
-                })
-            }
-            Err(Error(ErrorKind::OtherBadRequest(e), _)) => {
-                AuthOidcResponse::BadRequest(ErrorResponse {
-                    success: false,
-                    error: "other".to_string(),
-                    message: e.to_string(),
-                })
-            }
-            Err(e) => {
-                error!("{}", e);
-                capture_error_chain(&e);
-                AuthOidcResponse::GenericError(ErrorResponse {
-                    success: false,
-                    error: "internal".to_string(),
-                    message: e.to_string(),
-                })
-            }
+            Err(fe) => match fe {
+                DatabaseError(_) | InternalError(_) => {
+                    error!("{}", fe);
+                    capture_fail(&fe);
+                    AuthOidcResponse::GenericError(fe.into())
+                }
+                _ => AuthOidcResponse::BadRequest(fe.into()),
+            },
         };
         Box::new(futures::done(Ok(ret)))
     }
@@ -1342,70 +904,41 @@ impl Api for Server {
         context: &Context,
     ) -> Box<Future<Item = AuthCheckResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let ret = match conn.transaction(|| {
-            let auth_context = self.auth_confectionary.require_auth(
-                &conn,
-                &context.auth_data,
-                Some("auth_check"),
-            )?;
-            if let Some(role) = role {
-                let role = match role.to_lowercase().as_ref() {
-                    "superuser" => FatcatRole::Superuser,
-                    "admin" => FatcatRole::Admin,
-                    "editor" => FatcatRole::Editor,
-                    "bot" => FatcatRole::Bot,
-                    "human" => FatcatRole::Human,
-                    "public" => FatcatRole::Public,
-                    _ => bail!("unknown auth role: {}", role),
+        let ret = match conn
+            .transaction(|| {
+                let auth_context = self.auth_confectionary.require_auth(
+                    &conn,
+                    &context.auth_data,
+                    Some("auth_check"),
+                )?;
+                if let Some(role) = role {
+                    let role = match role.to_lowercase().as_ref() {
+                        "superuser" => FatcatRole::Superuser,
+                        "admin" => FatcatRole::Admin,
+                        "editor" => FatcatRole::Editor,
+                        "bot" => FatcatRole::Bot,
+                        "human" => FatcatRole::Human,
+                        "public" => FatcatRole::Public,
+                        _ => bail!("unknown auth role: {}", role),
+                    };
+                    auth_context.require_role(role)?;
                 };
-                auth_context.require_role(role)?;
-            };
-            Ok(())
-        }) {
+                Ok(())
+            })
+            .map_err(|e| FatcatError::from(e))
+        {
             Ok(()) => AuthCheckResponse::Success(Success {
                 success: true,
                 message: "auth check successful!".to_string(),
             }),
-            Err(Error(ErrorKind::Diesel(e), _)) => AuthCheckResponse::BadRequest(ErrorResponse {
-                success: false,
-                error: "database".to_string(),
-                message: e.to_string(),
-            }),
-            Err(Error(ErrorKind::Uuid(e), _)) => AuthCheckResponse::BadRequest(ErrorResponse {
-                success: false,
-                error: "uuid".to_string(),
-                message: e.to_string(),
-            }),
-            Err(Error(ErrorKind::InvalidCredentials(e), _)) => {
-                AuthCheckResponse::Forbidden(ErrorResponse {
-                    success: false,
-                    error: "auth".to_string(),
-                    message: e.to_string(),
-                })
-            }
-            Err(Error(ErrorKind::InsufficientPrivileges(e), _)) => {
-                AuthCheckResponse::Forbidden(ErrorResponse {
-                    success: false,
-                    error: "auth".to_string(),
-                    message: e.to_string(),
-                })
-            }
-            Err(Error(ErrorKind::OtherBadRequest(e), _)) => {
-                AuthCheckResponse::BadRequest(ErrorResponse {
-                    success: false,
-                    error: "other".to_string(),
-                    message: e.to_string(),
-                })
-            }
-            Err(e) => {
-                error!("{}", e);
-                capture_error_chain(&e);
-                AuthCheckResponse::GenericError(ErrorResponse {
-                    success: false,
-                    error: "internal".to_string(),
-                    message: e.to_string(),
-                })
-            }
+            Err(fe) => match fe {
+                DatabaseError(_) | InternalError(_) => {
+                    error!("{}", fe);
+                    capture_fail(&fe);
+                    AuthCheckResponse::GenericError(fe.into())
+                }
+                _ => AuthCheckResponse::BadRequest(fe.into()),
+            },
         };
         Box::new(futures::done(Ok(ret)))
     }

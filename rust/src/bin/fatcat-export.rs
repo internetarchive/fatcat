@@ -6,9 +6,9 @@
 #[macro_use]
 extern crate clap;
 #[macro_use]
-extern crate error_chain;
-#[macro_use]
 extern crate log;
+#[macro_use]
+extern crate failure;
 
 use clap::{App, Arg};
 
@@ -20,7 +20,6 @@ use fatcat_api_spec::models::*;
 use std::str::FromStr;
 use uuid::Uuid;
 
-use error_chain::ChainedError;
 use std::thread;
 //use std::io::{Stdout,StdoutLock};
 use crossbeam_channel as channel;
@@ -63,22 +62,19 @@ macro_rules! generic_loop_work {
                         db_conn,
                         row.rev_id.expect("valid, non-deleted row"),
                         HideFlags::none(),
-                    )
-                    .chain_err(|| "reading entity from database")?;
-                    //let mut entity = ReleaseEntity::db_get_rev(db_conn, row.rev_id.expect("valid, non-deleted row"))?;
+                    )?; // .chain_err(|| "reading entity from database")?;
                     entity.state = Some("active".to_string()); // XXX
                     entity.ident = Some(row.ident_id.to_string());
                     if let Some(expand) = expand {
-                        entity
-                            .db_expand(db_conn, expand)
-                            .chain_err(|| "expanding sub-entities from database")?;
+                        entity.db_expand(db_conn, expand)?
+                        // chain_err(|| "expanding sub-entities from database")?;
                     }
                     output_sender.send(serde_json::to_string(&entity)?);
                 }
                 Ok(())
             })();
             if let Err(ref e) = result {
-                error!("{}", e.display_chain())
+                error!("{}", e); // e.display_chain())
             }
             result.unwrap()
         }

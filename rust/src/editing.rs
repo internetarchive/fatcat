@@ -24,7 +24,7 @@ impl EditContext {
             .count()
             .get_result(conn)?;
         if count > 0 {
-            return Err(ErrorKind::EditgroupAlreadyAccepted(self.editgroup_id.to_string()).into());
+            return Err(FatcatError::EditgroupAlreadyAccepted(self.editgroup_id.to_string()).into());
         }
         Ok(())
     }
@@ -104,7 +104,7 @@ pub fn accept_editgroup(conn: &DbConn, editgroup_id: FatcatId) -> Result<Changel
         .count()
         .get_result(conn)?;
     if count > 0 {
-        return Err(ErrorKind::EditgroupAlreadyAccepted(editgroup_id.to_string()).into());
+        return Err(FatcatError::EditgroupAlreadyAccepted(editgroup_id.to_string()).into());
     }
 
     // copy edit columns to ident table

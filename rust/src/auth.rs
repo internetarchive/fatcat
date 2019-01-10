@@ -58,11 +58,10 @@ impl AuthContext {
     pub fn require_role(&self, role: FatcatRole) -> Result<()> {
         match self.has_role(role) {
             true => Ok(()),
-            false => Err(ErrorKind::InsufficientPrivileges(format!(
+            false => Err(FatcatError::InsufficientPrivileges(format!(
                 "doesn't have required role: {:?}",
                 role
-            ))
-            .into()),
+            )))?,
         }
     }
 
@@ -75,10 +74,10 @@ impl AuthContext {
             .get_result(conn)?;
         match editgroup.editor_id == self.editor_id.to_uuid() {
             true => Ok(()),
-            false => Err(ErrorKind::InsufficientPrivileges(
-                "editor does not own this editgroup".to_string(),
-            )
-            .into()),
+            false => Err(FatcatError::InsufficientPrivileges(format!(
+                "editor does not own this editgroup ({})",
+                editgroup_id
+            )))?,
         }
     }
 }
@@ -245,7 +244,7 @@ impl AuthConfectionary {
             Ok(m) => m,
             Err(e) => {
                 // TODO: should be "chaining" here
-                return Err(ErrorKind::InvalidCredentials(format!(
+                return Err(FatcatError::InvalidCredentials(format!(
                     "macaroon deserialize error: {:?}",
                     e
                 ))
@@ -256,7 +255,7 @@ impl AuthConfectionary {
             Ok(m) => m,
             Err(e) => {
                 // TODO: should be "chaining" here
-                return Err(ErrorKind::InvalidCredentials(format!(
+                return Err(FatcatError::InvalidCredentials(format!(
                     "macaroon validate error: {:?}",
                     e
                 ))
@@ -274,7 +273,7 @@ impl AuthConfectionary {
         let editor_id = match editor_id {
             Some(id) => id,
             None => {
-                return Err(ErrorKind::InvalidCredentials(
+                return Err(FatcatError::InvalidCredentials(
                     "expected an editor_id caveat".to_string(),
                 )
                 .into());
@@ -299,7 +298,7 @@ impl AuthConfectionary {
         let created = match created {
             Some(c) => c,
             None => {
-                return Err(ErrorKind::InvalidCredentials(
+                return Err(FatcatError::InvalidCredentials(
                     "expected a 'created' (time >) caveat".to_string(),
                 )
                 .into());
@@ -313,7 +312,7 @@ impl AuthConfectionary {
         let auth_epoch = DateTime::<Utc>::from_utc(editor.auth_epoch, Utc);
         // allow a second of wiggle room for precision and, eg, tests
         if created < (auth_epoch - chrono::Duration::seconds(1)) {
-            return Err(ErrorKind::InvalidCredentials(
+            return Err(FatcatError::InvalidCredentials(
                 "token created before current auth_epoch (was probably revoked by editor)"
                     .to_string(),
             )
@@ -333,7 +332,7 @@ impl AuthConfectionary {
         let verify_key = match self.root_keys.get(mac.identifier()) {
             Some(key) => key,
             None => {
-                return Err(ErrorKind::InvalidCredentials(format!(
+                return Err(FatcatError::InvalidCredentials(format!(
                     "no valid auth signing key for identifier: {}",
                     mac.identifier()
                 ))
@@ -343,16 +342,18 @@ impl AuthConfectionary {
         match mac.verify(verify_key, &mut verifier) {
             Ok(true) => (),
             Ok(false) => {
-                return Err(ErrorKind::InvalidCredentials(
+                return Err(FatcatError::InvalidCredentials(
                     "auth token (macaroon) not valid (signature and/or caveats failed)".to_string(),
                 )
                 .into());
             }
             Err(e) => {
                 // TODO: chain
-                return Err(
-                    ErrorKind::InvalidCredentials(format!("token parsing failed: {:?}", e)).into(),
-                );
+                return Err(FatcatError::InvalidCredentials(format!(
+                    "token parsing failed: {:?}",
+                    e
+                ))
+                .into());
             }
         }
         Ok(editor)
@@ -369,7 +370,7 @@ impl AuthConfectionary {
                 let header: Vec<String> =
                     header.split_whitespace().map(|s| s.to_string()).collect();
                 if !(header.len() == 2 && header[0] == "Bearer") {
-                    return Err(ErrorKind::InvalidCredentials(
+                    return Err(FatcatError::InvalidCredentials(
                         "invalid Bearer Auth HTTP header".to_string(),
                     )
                     .into());
@@ -378,7 +379,7 @@ impl AuthConfectionary {
             }
             None => None,
             _ => {
-                return Err(ErrorKind::InvalidCredentials(
+                return Err(FatcatError::InvalidCredentials(
                     "Authentication HTTP Header should either be empty or a Beaerer API key"
                         .to_string(),
                 )
@@ -404,7 +405,7 @@ impl AuthConfectionary {
     ) -> Result<AuthContext> {
         match self.parse_swagger(conn, auth_data, endpoint)? {
             Some(auth) => Ok(auth),
-            None => Err(ErrorKind::InvalidCredentials("no token supplied".to_string()).into()),
+            None => Err(FatcatError::InvalidCredentials("no token supplied".to_string()).into()),
         }
     }
 

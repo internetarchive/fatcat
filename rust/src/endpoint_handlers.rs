@@ -129,7 +129,9 @@ impl Server {
                     .first(conn)?
             }
             _ => {
-                return Err(ErrorKind::MissingOrMultipleExternalId("in lookup".to_string()).into());
+                return Err(
+                    FatcatError::MissingOrMultipleExternalId("in lookup".to_string()).into(),
+                );
             }
         };
 
@@ -166,7 +168,9 @@ impl Server {
                     .first(conn)?
             }
             _ => {
-                return Err(ErrorKind::MissingOrMultipleExternalId("in lookup".to_string()).into());
+                return Err(
+                    FatcatError::MissingOrMultipleExternalId("in lookup".to_string()).into(),
+                );
             }
         };
 
@@ -234,7 +238,9 @@ impl Server {
                     .first(conn)?
             }
             _ => {
-                return Err(ErrorKind::MissingOrMultipleExternalId("in lookup".to_string()).into());
+                return Err(
+                    FatcatError::MissingOrMultipleExternalId("in lookup".to_string()).into(),
+                );
             }
         };
 
@@ -313,7 +319,7 @@ impl Server {
                 }
                 _ => {
                     return Err(
-                        ErrorKind::MissingOrMultipleExternalId("in lookup".to_string()).into(),
+                        FatcatError::MissingOrMultipleExternalId("in lookup".to_string()).into(),
                     );
                 }
             };

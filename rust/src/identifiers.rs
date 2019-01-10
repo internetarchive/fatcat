@@ -53,12 +53,12 @@ impl FatcatId {
 /// Convert fatcat IDs (base32 strings) to UUID
 pub fn fcid2uuid(fcid: &str) -> Result<Uuid> {
     if fcid.len() != 26 {
-        return Err(ErrorKind::InvalidFatcatId(fcid.to_string()).into());
+        return Err(FatcatError::InvalidFatcatId(fcid.to_string()).into());
     }
     let mut raw = vec![0; 16];
     BASE32_NOPAD
         .decode_mut(fcid.to_uppercase().as_bytes(), &mut raw)
-        .map_err(|_dp| ErrorKind::InvalidFatcatId(fcid.to_string()))?;
+        .map_err(|_dp| FatcatError::InvalidFatcatId(fcid.to_string()))?;
     // unwrap() is safe here, because we know raw is always 16 bytes
     Ok(Uuid::from_bytes(&raw).unwrap())
 }
@@ -76,11 +76,10 @@ pub fn check_username(raw: &str) -> Result<()> {
     if RE.is_match(raw) {
         Ok(())
     } else {
-        Err(ErrorKind::MalformedExternalId(format!(
-            "not a valid username: '{}' (expected, eg, 'AcidBurn')",
-            raw
-        ))
-        .into())
+        Err(FatcatError::MalformedExternalId(
+            "username (expected, eg, 'AcidBurn')".to_string(),
+            raw.to_string(),
+        ))?
     }
 }
 
@@ -112,11 +111,10 @@ pub fn check_pmcid(raw: &str) -> Result<()> {
     if RE.is_match(raw) {
         Ok(())
     } else {
-        Err(ErrorKind::MalformedExternalId(format!(
-            "not a valid PubMed Central ID (PMCID): '{}' (expected, eg, 'PMC12345')",
-            raw
-        ))
-        .into())
+        Err(FatcatError::MalformedExternalId(
+            "PubMed Central ID (PMCID) (expected, eg, 'PMC12345')".to_string(),
+            raw.to_string(),
+        ))?
     }
 }
 
@@ -127,11 +125,10 @@ pub fn check_pmid(raw: &str) -> Result<()> {
     if RE.is_match(raw) {
         Ok(())
     } else {
-        Err(ErrorKind::MalformedExternalId(format!(
-            "not a valid PubMed ID (PMID): '{}' (expected, eg, '1234')",
-            raw
-        ))
-        .into())
+        Err(FatcatError::MalformedExternalId(
+            "PubMed ID (PMID) (expected, eg, '1234')".to_string(),
+            raw.to_string(),
+        ))?
     }
 }
 
@@ -142,11 +139,10 @@ pub fn check_wikidata_qid(raw: &str) -> Result<()> {
     if RE.is_match(raw) {
         Ok(())
     } else {
-        Err(ErrorKind::MalformedExternalId(format!(
-            "not a valid Wikidata QID: '{}' (expected, eg, 'Q1234')",
-            raw
-        ))
-        .into())
+        Err(FatcatError::MalformedExternalId(
+            "Wikidata QID (expected, eg, 'Q1234')".to_string(),
+            raw.to_string(),
+        ))?
     }
 }
 
@@ -157,11 +153,10 @@ pub fn check_doi(raw: &str) -> Result<()> {
     if RE.is_match(raw) {
         Ok(())
     } else {
-        Err(ErrorKind::MalformedExternalId(format!(
-            "not a valid DOI: '{}' (expected, eg, '10.1234/aksjdfh')",
-            raw
-        ))
-        .into())
+        Err(FatcatError::MalformedExternalId(
+            "DOI (expected, eg, '10.1234/aksjdfh')".to_string(),
+            raw.to_string(),
+        ))?
     }
 }
 
@@ -172,11 +167,10 @@ pub fn check_issn(raw: &str) -> Result<()> {
     if RE.is_match(raw) {
         Ok(())
     } else {
-        Err(ErrorKind::MalformedExternalId(format!(
-            "not a valid ISSN: '{}' (expected, eg, '1234-5678')",
-            raw
-        ))
-        .into())
+        Err(FatcatError::MalformedExternalId(
+            "ISSN (expected, eg, '1234-5678')".to_string(),
+            raw.to_string(),
+        ))?
     }
 }
 
@@ -187,11 +181,10 @@ pub fn check_orcid(raw: &str) -> Result<()> {
     if RE.is_match(raw) {
         Ok(())
     } else {
-        Err(ErrorKind::MalformedExternalId(format!(
-            "not a valid ORCID: '{}' (expected, eg, '0123-4567-3456-6789')",
-            raw
-        ))
-        .into())
+        Err(FatcatError::MalformedExternalId(
+            "ORCID (expected, eg, '0123-4567-3456-6789')".to_string(),
+            raw.to_string(),
+        ))?
     }
 }
 
@@ -210,11 +203,10 @@ pub fn check_md5(raw: &str) -> Result<()> {
     if RE.is_match(raw) {
         Ok(())
     } else {
-        Err(ErrorKind::MalformedChecksum(format!(
-            "not a valid MD5: '{}' (expected lower-case hex, eg, '1b39813549077b2347c0f370c3864b40')",
-            raw
-        ))
-        .into())
+        Err(FatcatError::MalformedChecksum(
+            "MD5".to_string(),
+            raw.to_string(),
+        ))?
     }
 }
 
@@ -234,11 +226,10 @@ pub fn check_sha1(raw: &str) -> Result<()> {
     if RE.is_match(raw) {
         Ok(())
     } else {
-        Err(ErrorKind::MalformedChecksum(format!(
-            "not a valid SHA-1: '{}' (expected lower-case hex, eg, 'e9dd75237c94b209dc3ccd52722de6931a310ba3')",
-            raw
-        ))
-        .into())
+        Err(FatcatError::MalformedChecksum(
+            "SHA-1".to_string(),
+            raw.to_string(),
+        ))?
     }
 }
 
@@ -258,11 +249,10 @@ pub fn check_sha256(raw: &str) -> Result<()> {
     if RE.is_match(raw) {
         Ok(())
     } else {
-        Err(ErrorKind::MalformedChecksum(format!(
-            "not a valid SHA-256: '{}' (expected lower-case hex, eg, 'cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452')",
-            raw
-        ))
-        .into())
+        Err(FatcatError::MalformedChecksum(
+            "SHA-256".to_string(),
+            raw.to_string(),
+        ))?
     }
 }
 
@@ -333,11 +323,10 @@ pub fn check_release_type(raw: &str) -> Result<()> {
             return Ok(());
         }
     }
-    Err(ErrorKind::NotInControlledVocabulary(format!(
-        "not a valid release_type: '{}' (expected a CSL type, eg, 'article-journal', 'book')",
-        raw
-    ))
-    .into())
+    Err(FatcatError::NotInControlledVocabulary(
+        "release_type (should be valid CSL, like 'article-journal')".to_string(),
+        raw.to_string(),
+    ))?
 }
 
 #[test]
@@ -375,11 +364,10 @@ pub fn check_contrib_role(raw: &str) -> Result<()> {
             return Ok(());
         }
     }
-    Err(ErrorKind::NotInControlledVocabulary(format!(
-        "not a valid contrib.role: '{}' (expected a CSL type, eg, 'author', 'editor')",
-        raw
-    ))
-    .into())
+    Err(FatcatError::NotInControlledVocabulary(
+        "contrib.role (should be valid CSL, like 'author', 'editor')".to_string(),
+        raw.to_string(),
+    ))?
 }
 
 #[test]
