@@ -5,7 +5,7 @@ use clap::{App, SubCommand};
 use fatcat::auth;
 use fatcat::editing;
 use fatcat::errors::*;
-use fatcat::identifiers::FatCatId;
+use fatcat::identifiers::FatcatId;
 use fatcat::server::*;
 use std::process;
 use std::str::FromStr;
@@ -82,17 +82,17 @@ fn main() -> Result<()> {
                 subm.is_present("bot"),
             )?;
             //println!("{:?}", editor);
-            println!("{}", FatCatId::from_uuid(&editor.id).to_string());
+            println!("{}", FatcatId::from_uuid(&editor.id).to_string());
         }
         ("create-token", Some(subm)) => {
-            let editor_id = FatCatId::from_str(subm.value_of("editor-id").unwrap())?;
+            let editor_id = FatcatId::from_str(subm.value_of("editor-id").unwrap())?;
             println!("{}", confectionary.create_token(editor_id, None)?);
         }
         ("inspect-token", Some(subm)) => {
             confectionary.inspect_token(&db_conn, subm.value_of("token").unwrap())?;
         }
         ("revoke-tokens", Some(subm)) => {
-            let editor_id = FatCatId::from_str(subm.value_of("editor-id").unwrap())?;
+            let editor_id = FatcatId::from_str(subm.value_of("editor-id").unwrap())?;
             fatcat::auth::revoke_tokens(&db_conn, editor_id)?;
             println!("success!");
         }

@@ -10,8 +10,8 @@ use fatcat_api_spec::models::*;
 use uuid::Uuid;
 
 pub struct EditContext {
-    pub editor_id: FatCatId,
-    pub editgroup_id: FatCatId,
+    pub editor_id: FatcatId,
+    pub editgroup_id: FatcatId,
     pub extra_json: Option<serde_json::Value>,
     pub autoaccept: bool,
 }
@@ -32,20 +32,20 @@ impl EditContext {
 
 pub fn make_edit_context(
     conn: &DbConn,
-    editor_id: FatCatId,
-    editgroup_id: Option<FatCatId>,
+    editor_id: FatcatId,
+    editgroup_id: Option<FatcatId>,
     autoaccept: bool,
 ) -> Result<EditContext> {
-    let editgroup_id: FatCatId = match (editgroup_id, autoaccept) {
+    let editgroup_id: FatcatId = match (editgroup_id, autoaccept) {
         (Some(eg), _) => eg,
         // If autoaccept and no editgroup_id passed, always create a new one for this transaction
         (None, true) => {
             let eg_row: EditgroupRow = diesel::insert_into(editgroup::table)
                 .values((editgroup::editor_id.eq(editor_id.to_uuid()),))
                 .get_result(conn)?;
-            FatCatId::from_uuid(&eg_row.id)
+            FatcatId::from_uuid(&eg_row.id)
         }
-        (None, false) => FatCatId::from_uuid(&create_editgroup(conn, editor_id.to_uuid())?),
+        (None, false) => FatcatId::from_uuid(&create_editgroup(conn, editor_id.to_uuid())?),
     };
     Ok(EditContext {
         editor_id,
@@ -74,7 +74,7 @@ pub fn create_editor(
 
 pub fn update_editor_username(
     conn: &DbConn,
-    editor_id: FatCatId,
+    editor_id: FatcatId,
     username: String,
 ) -> Result<EditorRow> {
     check_username(&username)?;
@@ -95,7 +95,7 @@ pub fn create_editgroup(conn: &DbConn, editor_id: Uuid) -> Result<Uuid> {
 }
 
 /// This function should always be run within a transaction
-pub fn accept_editgroup(conn: &DbConn, editgroup_id: FatCatId) -> Result<ChangelogRow> {
+pub fn accept_editgroup(conn: &DbConn, editgroup_id: FatcatId) -> Result<ChangelogRow> {
     // check that we haven't accepted already (in changelog)
     // NB: could leave this to a UNIQUE constraint
     // TODO: redundant with check_edit_context

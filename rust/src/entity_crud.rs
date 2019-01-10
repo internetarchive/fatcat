@@ -49,7 +49,7 @@ where
 
     // Generic Methods
     fn from_deleted_row(ident_row: Self::IdentRow) -> Result<Self>;
-    fn db_get(conn: &DbConn, ident: FatCatId, hide: HideFlags) -> Result<Self>;
+    fn db_get(conn: &DbConn, ident: FatcatId, hide: HideFlags) -> Result<Self>;
     fn db_get_rev(conn: &DbConn, rev_id: Uuid, hide: HideFlags) -> Result<Self>;
     fn db_expand(&mut self, conn: &DbConn, expand: ExpandFlags) -> Result<()>;
     fn db_create(&self, conn: &DbConn, edit_context: &EditContext) -> Result<Self::EditRow>;
@@ -62,22 +62,22 @@ where
         &self,
         conn: &DbConn,
         edit_context: &EditContext,
-        ident: FatCatId,
+        ident: FatcatId,
     ) -> Result<Self::EditRow>;
     fn db_delete(
         conn: &DbConn,
         edit_context: &EditContext,
-        ident: FatCatId,
+        ident: FatcatId,
     ) -> Result<Self::EditRow>;
     fn db_get_history(
         conn: &DbConn,
-        ident: FatCatId,
+        ident: FatcatId,
         limit: Option<i64>,
     ) -> Result<Vec<EntityHistoryEntry>>;
     fn db_get_edit(conn: &DbConn, edit_id: Uuid) -> Result<Self::EditRow>;
     fn db_delete_edit(conn: &DbConn, edit_id: Uuid) -> Result<()>;
-    fn db_get_redirects(conn: &DbConn, ident: FatCatId) -> Result<Vec<FatCatId>>;
-    fn db_accept_edits(conn: &DbConn, editgroup_id: FatCatId) -> Result<u64>;
+    fn db_get_redirects(conn: &DbConn, ident: FatcatId) -> Result<Vec<FatcatId>>;
+    fn db_accept_edits(conn: &DbConn, editgroup_id: FatcatId) -> Result<u64>;
 
     // Entity-specific Methods
     fn db_from_row(
@@ -260,7 +260,7 @@ fn test_hide_flags() {
 
 macro_rules! generic_db_get {
     ($ident_table:ident, $rev_table:ident) => {
-        fn db_get(conn: &DbConn, ident: FatCatId, hide: HideFlags) -> Result<Self> {
+        fn db_get(conn: &DbConn, ident: FatcatId, hide: HideFlags) -> Result<Self> {
             let res: Option<(Self::IdentRow, Self::RevRow)> = $ident_table::table
                 .find(ident.to_uuid())
                 .inner_join($rev_table::table)
@@ -378,7 +378,7 @@ macro_rules! generic_db_create_batch {
 
 macro_rules! generic_db_update {
     ($ident_table: ident, $edit_table: ident) => {
-        fn db_update(&self, conn: &DbConn, edit_context: &EditContext, ident: FatCatId) -> Result<Self::EditRow> {
+        fn db_update(&self, conn: &DbConn, edit_context: &EditContext, ident: FatcatId) -> Result<Self::EditRow> {
             let current: Self::IdentRow = $ident_table::table.find(ident.to_uuid()).first(conn)?;
             let no_redirect: Option<Uuid> = None;
             // TODO: is this actually true? or should we allow updates in the same editgroup?
@@ -400,7 +400,7 @@ macro_rules! generic_db_update {
                 }
                 // special case: redirect to another entity
                 if let Some(ref redirect_ident) = self.redirect {
-                    let redirect_ident = FatCatId::from_str(&redirect_ident)?.to_uuid();
+                    let redirect_ident = FatcatId::from_str(&redirect_ident)?.to_uuid();
                     if Some(redirect_ident) == current.redirect_id {
                         return Err(ErrorKind::OtherBadRequest(
                             "redundantly redirecting entity to it's current target currently isn't supported".to_string()).into());
@@ -472,7 +472,7 @@ macro_rules! generic_db_delete {
         fn db_delete(
             conn: &DbConn,
             edit_context: &EditContext,
-            ident: FatCatId,
+            ident: FatcatId,
         ) -> Result<Self::EditRow> {
             let current: Self::IdentRow = $ident_table::table.find(ident.to_uuid()).first(conn)?;
             if current.is_live != true {
@@ -508,7 +508,7 @@ macro_rules! generic_db_get_history {
     ($edit_table:ident) => {
         fn db_get_history(
             conn: &DbConn,
-            ident: FatCatId,
+            ident: FatcatId,
             limit: Option<i64>,
         ) -> Result<Vec<EntityHistoryEntry>> {
             let limit = limit.unwrap_or(50); // TODO: make a static
@@ -569,12 +569,12 @@ macro_rules! generic_db_delete_edit {
 
 macro_rules! generic_db_get_redirects {
     ($ident_table:ident) => {
-        fn db_get_redirects(conn: &DbConn, ident: FatCatId) -> Result<Vec<FatCatId>> {
+        fn db_get_redirects(conn: &DbConn, ident: FatcatId) -> Result<Vec<FatcatId>> {
             let res: Vec<Uuid> = $ident_table::table
                 .select($ident_table::id)
                 .filter($ident_table::redirect_id.eq(ident.to_uuid()))
                 .get_results(conn)?;
-            Ok(res.iter().map(|u| FatCatId::from_uuid(u)).collect())
+            Ok(res.iter().map(|u| FatcatId::from_uuid(u)).collect())
         }
     };
 }
@@ -619,7 +619,7 @@ macro_rules! generic_db_get_redirects {
 #[allow(unused_macros)]
 macro_rules! generic_db_accept_edits_batch {
     ($entity_name_str:expr, $ident_table:ident, $edit_table:ident) => {
-        fn db_accept_edits(conn: &DbConn, editgroup_id: FatCatId) -> Result<u64> {
+        fn db_accept_edits(conn: &DbConn, editgroup_id: FatcatId) -> Result<u64> {
             // NOTE: the checks and redirects can be skipped for accepts that are all inserts
             // (which I guess we only know for batch inserts with auto-accept?)
 
@@ -701,7 +701,7 @@ macro_rules! generic_db_accept_edits_batch {
 #[allow(unused_macros)]
 macro_rules! generic_db_accept_edits_each {
     ($ident_table:ident, $edit_table:ident) => {
-        fn db_accept_edits(conn: &DbConn, editgroup_id: FatCatId) -> Result<u64> {
+        fn db_accept_edits(conn: &DbConn, editgroup_id: FatcatId) -> Result<u64> {
             // 1. select edit rows (in sql)
             let edit_rows: Vec<Self::EditRow> = $edit_table::table
                 .filter($edit_table::editgroup_id.eq(&editgroup_id.to_uuid()))
@@ -777,11 +777,11 @@ impl EntityCrud for ContainerEntity {
             abbrev: None,
             coden: None,
             state: Some(ident_row.state().unwrap().shortname()),
-            ident: Some(FatCatId::from_uuid(&ident_row.id).to_string()),
+            ident: Some(FatcatId::from_uuid(&ident_row.id).to_string()),
             revision: ident_row.rev_id.map(|u| u.to_string()),
             redirect: ident_row
                 .redirect_id
-                .map(|u| FatCatId::from_uuid(&u).to_string()),
+                .map(|u| FatcatId::from_uuid(&u).to_string()),
             extra: None,
             edit_extra: None,
         })
@@ -796,8 +796,8 @@ impl EntityCrud for ContainerEntity {
         let (state, ident_id, redirect_id) = match ident_row {
             Some(i) => (
                 Some(i.state().unwrap().shortname()),
-                Some(FatCatId::from_uuid(&i.id).to_string()),
-                i.redirect_id.map(|u| FatCatId::from_uuid(&u).to_string()),
+                Some(FatcatId::from_uuid(&i.id).to_string()),
+                i.redirect_id.map(|u| FatcatId::from_uuid(&u).to_string()),
             ),
             None => (None, None, None),
         };
@@ -892,11 +892,11 @@ impl EntityCrud for CreatorEntity {
             orcid: None,
             wikidata_qid: None,
             state: Some(ident_row.state().unwrap().shortname()),
-            ident: Some(FatCatId::from_uuid(&ident_row.id).to_string()),
+            ident: Some(FatcatId::from_uuid(&ident_row.id).to_string()),
             revision: ident_row.rev_id.map(|u| u.to_string()),
             redirect: ident_row
                 .redirect_id
-                .map(|u| FatCatId::from_uuid(&u).to_string()),
+                .map(|u| FatcatId::from_uuid(&u).to_string()),
         })
     }
 
@@ -909,8 +909,8 @@ impl EntityCrud for CreatorEntity {
         let (state, ident_id, redirect_id) = match ident_row {
             Some(i) => (
                 Some(i.state().unwrap().shortname()),
-                Some(FatCatId::from_uuid(&i.id).to_string()),
-                i.redirect_id.map(|u| FatCatId::from_uuid(&u).to_string()),
+                Some(FatcatId::from_uuid(&i.id).to_string()),
+                i.redirect_id.map(|u| FatcatId::from_uuid(&u).to_string()),
             ),
             None => (None, None, None),
         };
@@ -1002,11 +1002,11 @@ impl EntityCrud for FileEntity {
             mimetype: None,
             release_ids: None,
             state: Some(ident_row.state().unwrap().shortname()),
-            ident: Some(FatCatId::from_uuid(&ident_row.id).to_string()),
+            ident: Some(FatcatId::from_uuid(&ident_row.id).to_string()),
             revision: ident_row.rev_id.map(|u| u.to_string()),
             redirect: ident_row
                 .redirect_id
-                .map(|u| FatCatId::from_uuid(&u).to_string()),
+                .map(|u| FatcatId::from_uuid(&u).to_string()),
             extra: None,
             edit_extra: None,
         })
@@ -1021,8 +1021,8 @@ impl EntityCrud for FileEntity {
         let (state, ident_id, redirect_id) = match ident_row {
             Some(i) => (
                 Some(i.state().unwrap().shortname()),
-                Some(FatCatId::from_uuid(&i.id).to_string()),
-                i.redirect_id.map(|u| FatCatId::from_uuid(&u).to_string()),
+                Some(FatcatId::from_uuid(&i.id).to_string()),
+                i.redirect_id.map(|u| FatcatId::from_uuid(&u).to_string()),
             ),
             None => (None, None, None),
         };
@@ -1037,11 +1037,11 @@ impl EntityCrud for FileEntity {
             })
             .collect();
 
-        let release_ids: Vec<FatCatId> = file_rev_release::table
+        let release_ids: Vec<FatcatId> = file_rev_release::table
             .filter(file_rev_release::file_rev.eq(rev_row.id))
             .get_results(conn)?
             .into_iter()
-            .map(|r: FileRevReleaseRow| FatCatId::from_uuid(&r.target_release_ident_id))
+            .map(|r: FileRevReleaseRow| FatcatId::from_uuid(&r.target_release_ident_id))
             .collect();
 
         Ok(FileEntity {
@@ -1104,7 +1104,7 @@ impl EntityCrud for FileEntity {
                         .map(|r| {
                             Ok(FileRevReleaseRow {
                                 file_rev: *rev_id,
-                                target_release_ident_id: FatCatId::from_str(r)?.to_uuid(),
+                                target_release_ident_id: FatcatId::from_str(r)?.to_uuid(),
                             })
                         })
                         .collect();
@@ -1175,11 +1175,11 @@ impl EntityCrud for FilesetEntity {
             urls: None,
             release_ids: None,
             state: Some(ident_row.state().unwrap().shortname()),
-            ident: Some(FatCatId::from_uuid(&ident_row.id).to_string()),
+            ident: Some(FatcatId::from_uuid(&ident_row.id).to_string()),
             revision: ident_row.rev_id.map(|u| u.to_string()),
             redirect: ident_row
                 .redirect_id
-                .map(|u| FatCatId::from_uuid(&u).to_string()),
+                .map(|u| FatcatId::from_uuid(&u).to_string()),
             extra: None,
             edit_extra: None,
         })
@@ -1194,8 +1194,8 @@ impl EntityCrud for FilesetEntity {
         let (state, ident_id, redirect_id) = match ident_row {
             Some(i) => (
                 Some(i.state().unwrap().shortname()),
-                Some(FatCatId::from_uuid(&i.id).to_string()),
-                i.redirect_id.map(|u| FatCatId::from_uuid(&u).to_string()),
+                Some(FatcatId::from_uuid(&i.id).to_string()),
+                i.redirect_id.map(|u| FatcatId::from_uuid(&u).to_string()),
             ),
             None => (None, None, None),
         };
@@ -1224,11 +1224,11 @@ impl EntityCrud for FilesetEntity {
             })
             .collect();
 
-        let release_ids: Vec<FatCatId> = fileset_rev_release::table
+        let release_ids: Vec<FatcatId> = fileset_rev_release::table
             .filter(fileset_rev_release::fileset_rev.eq(rev_row.id))
             .get_results(conn)?
             .into_iter()
-            .map(|r: FilesetRevReleaseRow| FatCatId::from_uuid(&r.target_release_ident_id))
+            .map(|r: FilesetRevReleaseRow| FatcatId::from_uuid(&r.target_release_ident_id))
             .collect();
 
         Ok(FilesetEntity {
@@ -1321,7 +1321,7 @@ impl EntityCrud for FilesetEntity {
                         .map(|r| {
                             Ok(FilesetRevReleaseRow {
                                 fileset_rev: *rev_id,
-                                target_release_ident_id: FatCatId::from_str(r)?.to_uuid(),
+                                target_release_ident_id: FatcatId::from_str(r)?.to_uuid(),
                             })
                         })
                         .collect();
@@ -1385,11 +1385,11 @@ impl EntityCrud for WebcaptureEntity {
             timestamp: None,
             release_ids: None,
             state: Some(ident_row.state().unwrap().shortname()),
-            ident: Some(FatCatId::from_uuid(&ident_row.id).to_string()),
+            ident: Some(FatcatId::from_uuid(&ident_row.id).to_string()),
             revision: ident_row.rev_id.map(|u| u.to_string()),
             redirect: ident_row
                 .redirect_id
-                .map(|u| FatCatId::from_uuid(&u).to_string()),
+                .map(|u| FatcatId::from_uuid(&u).to_string()),
             extra: None,
             edit_extra: None,
         })
@@ -1404,8 +1404,8 @@ impl EntityCrud for WebcaptureEntity {
         let (state, ident_id, redirect_id) = match ident_row {
             Some(i) => (
                 Some(i.state().unwrap().shortname()),
-                Some(FatCatId::from_uuid(&i.id).to_string()),
-                i.redirect_id.map(|u| FatCatId::from_uuid(&u).to_string()),
+                Some(FatcatId::from_uuid(&i.id).to_string()),
+                i.redirect_id.map(|u| FatcatId::from_uuid(&u).to_string()),
             ),
             None => (None, None, None),
         };
@@ -1435,11 +1435,11 @@ impl EntityCrud for WebcaptureEntity {
             })
             .collect();
 
-        let release_ids: Vec<FatCatId> = webcapture_rev_release::table
+        let release_ids: Vec<FatcatId> = webcapture_rev_release::table
             .filter(webcapture_rev_release::webcapture_rev.eq(rev_row.id))
             .get_results(conn)?
             .into_iter()
-            .map(|r: WebcaptureRevReleaseRow| FatCatId::from_uuid(&r.target_release_ident_id))
+            .map(|r: WebcaptureRevReleaseRow| FatcatId::from_uuid(&r.target_release_ident_id))
             .collect();
 
         Ok(WebcaptureEntity {
@@ -1539,7 +1539,7 @@ impl EntityCrud for WebcaptureEntity {
                         .map(|r| {
                             Ok(WebcaptureRevReleaseRow {
                                 webcapture_rev: *rev_id,
-                                target_release_ident_id: FatCatId::from_str(r)?.to_uuid(),
+                                target_release_ident_id: FatcatId::from_str(r)?.to_uuid(),
                             })
                         })
                         .collect();
@@ -1621,11 +1621,11 @@ impl EntityCrud for ReleaseEntity {
             abstracts: None,
 
             state: Some(ident_row.state().unwrap().shortname()),
-            ident: Some(FatCatId::from_uuid(&ident_row.id).to_string()),
+            ident: Some(FatcatId::from_uuid(&ident_row.id).to_string()),
             revision: ident_row.rev_id.map(|u| u.to_string()),
             redirect: ident_row
                 .redirect_id
-                .map(|u| FatCatId::from_uuid(&u).to_string()),
+                .map(|u| FatcatId::from_uuid(&u).to_string()),
             extra: None,
             edit_extra: None,
         })
@@ -1645,8 +1645,8 @@ impl EntityCrud for ReleaseEntity {
                 Some(ident) => match &self.redirect {
                     // If we're a redirect, then expand for the *target* identifier, not *our*
                     // identifier. Tricky!
-                    None => FatCatId::from_str(&ident)?,
-                    Some(redir) => FatCatId::from_str(&redir)?,
+                    None => FatcatId::from_str(&ident)?,
+                    Some(redir) => FatcatId::from_str(&redir)?,
                 },
             };
             self.files = Some(get_release_files(conn, ident, HideFlags::none())?);
@@ -1655,7 +1655,7 @@ impl EntityCrud for ReleaseEntity {
             if let Some(ref cid) = self.container_id {
                 self.container = Some(ContainerEntity::db_get(
                     conn,
-                    FatCatId::from_str(&cid)?,
+                    FatcatId::from_str(&cid)?,
                     HideFlags::none(),
                 )?);
             }
@@ -1666,7 +1666,7 @@ impl EntityCrud for ReleaseEntity {
                     if let Some(ref creator_id) = contrib.creator_id {
                         contrib.creator = Some(CreatorEntity::db_get(
                             conn,
-                            FatCatId::from_str(creator_id)?,
+                            FatcatId::from_str(creator_id)?,
                             HideFlags::none(),
                         )?);
                     }
@@ -1731,7 +1731,7 @@ impl EntityCrud for ReleaseEntity {
                 let mut model = (*model).clone();
                 if model.work_id.is_none() {
                     model.work_id =
-                        Some(FatCatId::from_uuid(&new_work_ids.pop().unwrap()).to_string())
+                        Some(FatcatId::from_uuid(&new_work_ids.pop().unwrap()).to_string())
                 }
                 model
             })
@@ -1782,8 +1782,8 @@ impl EntityCrud for ReleaseEntity {
         let (state, ident_id, redirect_id) = match ident_row {
             Some(i) => (
                 Some(i.state().unwrap().shortname()),
-                Some(FatCatId::from_uuid(&i.id).to_string()),
-                i.redirect_id.map(|u| FatCatId::from_uuid(&u).to_string()),
+                Some(FatcatId::from_uuid(&i.id).to_string()),
+                i.redirect_id.map(|u| FatcatId::from_uuid(&u).to_string()),
             ),
             None => (None, None, None),
         };
@@ -1806,7 +1806,7 @@ impl EntityCrud for ReleaseEntity {
                         locator: r.locator,
                         target_release_id: r
                             .target_release_ident_id
-                            .map(|v| FatCatId::from_uuid(&v).to_string()),
+                            .map(|v| FatcatId::from_uuid(&v).to_string()),
                     })
                     .collect(),
             ),
@@ -1830,7 +1830,7 @@ impl EntityCrud for ReleaseEntity {
                         extra: c.extra_json,
                         creator_id: c
                             .creator_ident_id
-                            .map(|v| FatCatId::from_uuid(&v).to_string()),
+                            .map(|v| FatcatId::from_uuid(&v).to_string()),
                         creator: None,
                     })
                     .collect(),
@@ -1879,10 +1879,10 @@ impl EntityCrud for ReleaseEntity {
             container: None,
             container_id: rev_row
                 .container_ident_id
-                .map(|u| FatCatId::from_uuid(&u).to_string()),
+                .map(|u| FatcatId::from_uuid(&u).to_string()),
             publisher: rev_row.publisher,
             language: rev_row.language,
-            work_id: Some(FatCatId::from_uuid(&rev_row.work_ident_id).to_string()),
+            work_id: Some(FatcatId::from_uuid(&rev_row.work_ident_id).to_string()),
             refs,
             contribs,
             abstracts,
@@ -1951,11 +1951,11 @@ impl EntityCrud for ReleaseEntity {
                     pages: model.pages.clone(),
                     work_ident_id: match model.work_id.clone() {
                         None => bail!("release_revs must have a work_id by the time they are inserted; this is an internal soundness error"),
-                        Some(s) => FatCatId::from_str(&s)?.to_uuid(),
+                        Some(s) => FatcatId::from_str(&s)?.to_uuid(),
                     },
                     container_ident_id: match model.container_id.clone() {
                         None => None,
-                        Some(s) => Some(FatCatId::from_str(&s)?.to_uuid()),
+                        Some(s) => Some(FatcatId::from_str(&s)?.to_uuid()),
                     },
                     publisher: model.publisher.clone(),
                     language: model.language.clone(),
@@ -1983,7 +1983,7 @@ impl EntityCrud for ReleaseEntity {
                                 release_rev: *rev_id,
                                 target_release_ident_id: match r.target_release_id.clone() {
                                     None => None,
-                                    Some(v) => Some(FatCatId::from_str(&v)?.to_uuid()),
+                                    Some(v) => Some(FatcatId::from_str(&v)?.to_uuid()),
                                 },
                                 index_val: r.index.map(|v| v as i32),
                                 key: r.key.clone(),
@@ -2009,7 +2009,7 @@ impl EntityCrud for ReleaseEntity {
                                 release_rev: *rev_id,
                                 creator_ident_id: match c.creator_id.clone() {
                                     None => None,
-                                    Some(v) => Some(FatCatId::from_str(&v)?.to_uuid()),
+                                    Some(v) => Some(FatcatId::from_str(&v)?.to_uuid()),
                                 },
                                 raw_name: c.raw_name.clone(),
                                 index_val: c.index.map(|v| v as i32),
@@ -2111,11 +2111,11 @@ impl EntityCrud for WorkEntity {
 
         Ok(WorkEntity {
             state: Some(ident_row.state().unwrap().shortname()),
-            ident: Some(FatCatId::from_uuid(&ident_row.id).to_string()),
+            ident: Some(FatcatId::from_uuid(&ident_row.id).to_string()),
             revision: ident_row.rev_id.map(|u| u.to_string()),
             redirect: ident_row
                 .redirect_id
-                .map(|u| FatCatId::from_uuid(&u).to_string()),
+                .map(|u| FatcatId::from_uuid(&u).to_string()),
             extra: None,
             edit_extra: None,
         })
@@ -2130,8 +2130,8 @@ impl EntityCrud for WorkEntity {
         let (state, ident_id, redirect_id) = match ident_row {
             Some(i) => (
                 Some(i.state().unwrap().shortname()),
-                Some(FatCatId::from_uuid(&i.id).to_string()),
-                i.redirect_id.map(|u| FatCatId::from_uuid(&u).to_string()),
+                Some(FatcatId::from_uuid(&i.id).to_string()),
+                i.redirect_id.map(|u| FatcatId::from_uuid(&u).to_string()),
             ),
             None => (None, None, None),
         };

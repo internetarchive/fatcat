@@ -23,8 +23,8 @@ macro_rules! entity_batch_handler {
             conn: &DbConn,
             entity_list: &[models::$model],
             autoaccept: bool,
-            editor_id: FatCatId,
-            editgroup_id: Option<FatCatId>,
+            editor_id: FatcatId,
+            editgroup_id: Option<FatcatId>,
         ) -> Result<Vec<EntityEdit>> {
 
             let edit_context = make_edit_context(conn, editor_id, editgroup_id, autoaccept)?;
@@ -44,7 +44,7 @@ macro_rules! entity_batch_handler {
 
 pub fn get_release_files(
     conn: &DbConn,
-    ident: FatCatId,
+    ident: FatcatId,
     hide_flags: HideFlags,
 ) -> Result<Vec<FileEntity>> {
     let rows: Vec<(FileRevRow, FileIdentRow, FileRevReleaseRow)> = file_rev::table
@@ -62,7 +62,7 @@ pub fn get_release_files(
 
 pub fn get_release_filesets(
     conn: &DbConn,
-    ident: FatCatId,
+    ident: FatcatId,
     hide_flags: HideFlags,
 ) -> Result<Vec<FilesetEntity>> {
     let rows: Vec<(FilesetRevRow, FilesetIdentRow, FilesetRevReleaseRow)> = fileset_rev::table
@@ -80,7 +80,7 @@ pub fn get_release_filesets(
 
 pub fn get_release_webcaptures(
     conn: &DbConn,
-    ident: FatCatId,
+    ident: FatcatId,
     hide_flags: HideFlags,
 ) -> Result<Vec<WebcaptureEntity>> {
     let rows: Vec<(
@@ -178,7 +178,7 @@ impl Server {
     pub fn get_creator_releases_handler(
         &self,
         conn: &DbConn,
-        ident: FatCatId,
+        ident: FatcatId,
         hide_flags: HideFlags,
     ) -> Result<Vec<ReleaseEntity>> {
         // TODO: some kind of unique or group-by?
@@ -326,7 +326,7 @@ impl Server {
     pub fn get_release_files_handler(
         &self,
         conn: &DbConn,
-        ident: FatCatId,
+        ident: FatcatId,
         hide_flags: HideFlags,
     ) -> Result<Vec<FileEntity>> {
         get_release_files(conn, ident, hide_flags)
@@ -335,7 +335,7 @@ impl Server {
     pub fn get_release_filesets_handler(
         &self,
         conn: &DbConn,
-        ident: FatCatId,
+        ident: FatcatId,
         hide_flags: HideFlags,
     ) -> Result<Vec<FilesetEntity>> {
         get_release_filesets(conn, ident, hide_flags)
@@ -344,7 +344,7 @@ impl Server {
     pub fn get_release_webcaptures_handler(
         &self,
         conn: &DbConn,
-        ident: FatCatId,
+        ident: FatcatId,
         hide_flags: HideFlags,
     ) -> Result<Vec<WebcaptureEntity>> {
         get_release_webcaptures(conn, ident, hide_flags)
@@ -353,7 +353,7 @@ impl Server {
     pub fn get_work_releases_handler(
         &self,
         conn: &DbConn,
-        ident: FatCatId,
+        ident: FatcatId,
         hide_flags: HideFlags,
     ) -> Result<Vec<ReleaseEntity>> {
         let rows: Vec<(ReleaseRevRow, ReleaseIdentRow)> = release_rev::table
@@ -368,7 +368,7 @@ impl Server {
             .collect()
     }
 
-    pub fn accept_editgroup_handler(&self, conn: &DbConn, editgroup_id: FatCatId) -> Result<()> {
+    pub fn accept_editgroup_handler(&self, conn: &DbConn, editgroup_id: FatcatId) -> Result<()> {
         accept_editgroup(conn, editgroup_id)?;
         Ok(())
     }
@@ -380,7 +380,7 @@ impl Server {
     ) -> Result<Editgroup> {
         let row: EditgroupRow = insert_into(editgroup::table)
             .values((
-                editgroup::editor_id.eq(FatCatId::from_str(&entity.editor_id.unwrap())?.to_uuid()),
+                editgroup::editor_id.eq(FatcatId::from_str(&entity.editor_id.unwrap())?.to_uuid()),
                 editgroup::description.eq(entity.description),
                 editgroup::extra_json.eq(entity.extra),
             ))
@@ -398,7 +398,7 @@ impl Server {
     pub fn get_editgroup_handler(
         &self,
         conn: &DbConn,
-        editgroup_id: FatCatId,
+        editgroup_id: FatcatId,
     ) -> Result<Editgroup> {
         let row: EditgroupRow = editgroup::table.find(editgroup_id.to_uuid()).first(conn)?;
 
@@ -471,7 +471,7 @@ impl Server {
         Ok(eg)
     }
 
-    pub fn get_editor_handler(&self, conn: &DbConn, editor_id: FatCatId) -> Result<Editor> {
+    pub fn get_editor_handler(&self, conn: &DbConn, editor_id: FatcatId) -> Result<Editor> {
         let row: EditorRow = editor::table.find(editor_id.to_uuid()).first(conn)?;
         Ok(row.into_model())
     }
@@ -479,7 +479,7 @@ impl Server {
     pub fn get_editor_changelog_handler(
         &self,
         conn: &DbConn,
-        editor_id: FatCatId,
+        editor_id: FatcatId,
     ) -> Result<Vec<ChangelogEntry>> {
         // TODO: single query
         let editor: EditorRow = editor::table.find(editor_id.to_uuid()).first(conn)?;
@@ -528,7 +528,7 @@ impl Server {
     pub fn get_changelog_entry_handler(&self, conn: &DbConn, index: i64) -> Result<ChangelogEntry> {
         let cl_row: ChangelogRow = changelog::table.find(index).first(conn)?;
         let editgroup =
-            self.get_editgroup_handler(conn, FatCatId::from_uuid(&cl_row.editgroup_id))?;
+            self.get_editgroup_handler(conn, FatcatId::from_uuid(&cl_row.editgroup_id))?;
 
         let mut entry = cl_row.into_model();
         entry.editgroup = Some(editgroup);

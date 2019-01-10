@@ -44,9 +44,9 @@ arg_enum! {
 }
 
 struct IdentRow {
-    ident_id: FatCatId,
+    ident_id: FatcatId,
     rev_id: Option<Uuid>,
-    redirect_id: Option<FatCatId>,
+    redirect_id: Option<FatcatId>,
 }
 
 macro_rules! generic_loop_work {
@@ -116,14 +116,14 @@ fn parse_line(s: &str) -> Result<IdentRow> {
         bail!("Invalid input line");
     }
     Ok(IdentRow {
-        ident_id: FatCatId::from_uuid(&Uuid::from_str(&fields[0])?),
+        ident_id: FatcatId::from_uuid(&Uuid::from_str(&fields[0])?),
         rev_id: match fields[1].as_ref() {
             "" => None,
             val => Some(Uuid::from_str(&val)?),
         },
         redirect_id: match fields[2].as_ref() {
             "" => None,
-            val => Some(FatCatId::from_uuid(&Uuid::from_str(&val)?)),
+            val => Some(FatcatId::from_uuid(&Uuid::from_str(&val)?)),
         },
     })
 }

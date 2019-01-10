@@ -3,51 +3,50 @@ use data_encoding::BASE32_NOPAD;
 use regex::Regex;
 use serde_json;
 use std::str::FromStr;
+use std::{convert, fmt};
 use uuid::Uuid;
-use std::{fmt, convert};
-
 
 #[derive(Clone, Copy, PartialEq, Debug)]
-pub struct FatCatId(Uuid);
+pub struct FatcatId(Uuid);
 
-impl fmt::Display for FatCatId {
+impl fmt::Display for FatcatId {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", uuid2fcid(&self.to_uuid()))
     }
 }
 
-impl FromStr for FatCatId {
+impl FromStr for FatcatId {
     type Err = Error;
-    fn from_str(s: &str) -> Result<FatCatId> {
-        fcid2uuid(s).map(FatCatId)
+    fn from_str(s: &str) -> Result<FatcatId> {
+        fcid2uuid(s).map(FatcatId)
     }
 }
 
-impl convert::AsRef<Uuid> for FatCatId {
+impl convert::AsRef<Uuid> for FatcatId {
     fn as_ref(&self) -> &Uuid {
         &self.0
     }
 }
 
-impl convert::Into<Uuid> for FatCatId {
+impl convert::Into<Uuid> for FatcatId {
     fn into(self) -> Uuid {
         self.0
     }
 }
 
-impl convert::From<Uuid> for FatCatId {
-    fn from(u: Uuid) -> FatCatId {
-        FatCatId(u)
+impl convert::From<Uuid> for FatcatId {
+    fn from(u: Uuid) -> FatcatId {
+        FatcatId(u)
     }
 }
 
-impl FatCatId {
+impl FatcatId {
     pub fn to_uuid(&self) -> Uuid {
         self.0
     }
     // TODO: make it possible to just pass 'Uuid' in addition to '&Uuid'
-    pub fn from_uuid(u: &Uuid) -> FatCatId {
-        FatCatId(*u)
+    pub fn from_uuid(u: &Uuid) -> FatcatId {
+        FatcatId(*u)
     }
 }
 

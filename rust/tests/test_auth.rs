@@ -1,5 +1,5 @@
 use fatcat::auth::AuthConfectionary;
-use fatcat::identifiers::FatCatId;
+use fatcat::identifiers::FatcatId;
 use fatcat::{auth, server};
 use std::str::FromStr;
 
@@ -8,7 +8,7 @@ fn test_macaroons() {
     // Test everything we can without connecting to database
 
     let c = AuthConfectionary::new_dummy();
-    let editor_id = FatCatId::from_str("q3nouwy3nnbsvo3h5klxsx4a7y").unwrap();
+    let editor_id = FatcatId::from_str("q3nouwy3nnbsvo3h5klxsx4a7y").unwrap();
 
     // create token w/o expiration
     c.create_token(editor_id, None).unwrap();
@@ -25,7 +25,7 @@ fn test_auth_db() {
     let server = server::create_test_server().unwrap();
     let conn = server.db_pool.get().expect("db_pool error");
     let c = AuthConfectionary::new_dummy();
-    let editor_id = FatCatId::from_str("aaaaaaaaaaaabkvkaaaaaaaaae").unwrap();
+    let editor_id = FatcatId::from_str("aaaaaaaaaaaabkvkaaaaaaaaae").unwrap();
 
     // create token
     let token = c.create_token(editor_id, None).unwrap();

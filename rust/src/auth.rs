@@ -32,7 +32,7 @@ pub enum FatcatRole {
 
 #[derive(Clone)]
 pub struct AuthContext {
-    pub editor_id: FatCatId,
+    pub editor_id: FatcatId,
     editor_row: EditorRow,
 }
 
@@ -66,7 +66,7 @@ impl AuthContext {
         }
     }
 
-    pub fn require_editgroup(&self, conn: &DbConn, editgroup_id: FatCatId) -> Result<()> {
+    pub fn require_editgroup(&self, conn: &DbConn, editgroup_id: FatcatId) -> Result<()> {
         if self.has_role(FatcatRole::Admin) {
             return Ok(());
         }
@@ -214,7 +214,7 @@ impl AuthConfectionary {
 
     pub fn create_token(
         &self,
-        editor_id: FatCatId,
+        editor_id: FatcatId,
         duration: Option<chrono::Duration>,
     ) -> Result<String> {
         let mut mac = Macaroon::create(&self.location, &self.key, &self.identifier)
@@ -264,10 +264,10 @@ impl AuthConfectionary {
             }
         };
         let mut verifier = Verifier::new();
-        let mut editor_id: Option<FatCatId> = None;
+        let mut editor_id: Option<FatcatId> = None;
         for caveat in mac.first_party_caveats() {
             if caveat.predicate().starts_with("editor_id = ") {
-                editor_id = Some(FatCatId::from_str(caveat.predicate().get(12..).unwrap())?);
+                editor_id = Some(FatcatId::from_str(caveat.predicate().get(12..).unwrap())?);
                 break;
             }
         }
@@ -391,7 +391,7 @@ impl AuthConfectionary {
         };
         let editor_row = self.parse_macaroon_token(conn, &token, endpoint)?;
         Ok(Some(AuthContext {
-            editor_id: FatCatId::from_uuid(&editor_row.id),
+            editor_id: FatcatId::from_uuid(&editor_row.id),
             editor_row,
         }))
     }
@@ -436,7 +436,7 @@ pub fn create_key() -> String {
     BASE64.encode(&key)
 }
 
-pub fn revoke_tokens(conn: &DbConn, editor_id: FatCatId) -> Result<()> {
+pub fn revoke_tokens(conn: &DbConn, editor_id: FatcatId) -> Result<()> {
     diesel::update(editor::table.filter(editor::id.eq(&editor_id.to_uuid())))
         .set(editor::auth_epoch.eq(Utc::now()))
         .execute(conn)?;
@@ -459,7 +459,7 @@ pub fn print_editors(conn: &DbConn) -> Result<()> {
     for e in all_editors {
         println!(
             "{}\t{}/{}/{}\t{}\t{}\t{:?}",
-            FatCatId::from_uuid(&e.id).to_string(),
+            FatcatId::from_uuid(&e.id).to_string(),
             e.is_superuser,
             e.is_admin,
             e.is_bot,

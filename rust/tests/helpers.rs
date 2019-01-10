@@ -1,5 +1,5 @@
 use fatcat::auth::MacaroonAuthMiddleware;
-use fatcat::identifiers::FatCatId;
+use fatcat::identifiers::FatcatId;
 use fatcat::server;
 use fatcat_api_spec::client::Client;
 use fatcat_api_spec::Context;
@@ -9,9 +9,8 @@ use iron::{status, Chain, Headers, Iron, Listening};
 use iron_test::response;
 use std::str::FromStr;
 
-
 pub static TEST_ADMIN_EDITOR_ID: &str = "aaaaaaaaaaaabkvkaaaaaaaaae";
-//static TEST_ADMIN_EDITOR_ID: FatCatId = FatCatId::from_str("aaaaaaaaaaaabkvkaaaaaaaaae").unwrap();
+//static TEST_ADMIN_EDITOR_ID: FatcatId = FatcatId::from_str("aaaaaaaaaaaabkvkaaaaaaaaae").unwrap();
 
 // A current problem with this method is that if the test fails (eg, panics, assert fails), the
 // server never gets closed, and the server thread hangs forever.
@@ -22,7 +21,7 @@ pub fn setup_client() -> (Client, Context, Listening) {
     let server = server::create_test_server().unwrap();
 
     // setup auth as admin user
-    let admin_id = FatCatId::from_str(TEST_ADMIN_EDITOR_ID).unwrap();
+    let admin_id = FatcatId::from_str(TEST_ADMIN_EDITOR_ID).unwrap();
     let token = server
         .auth_confectionary
         .create_token(admin_id, None)
@@ -59,7 +58,7 @@ pub fn setup_http() -> (
     let conn = server.db_pool.get().expect("db_pool error");
 
     // setup auth as admin user
-    let admin_id = FatCatId::from_str(TEST_ADMIN_EDITOR_ID).unwrap();
+    let admin_id = FatcatId::from_str(TEST_ADMIN_EDITOR_ID).unwrap();
     let token = server
         .auth_confectionary
         .create_token(admin_id, None)
