@@ -2573,6 +2573,10 @@ paths:
           description: Bad Request
           schema:
             $ref: "#/definitions/error_response"
+        404: # added only for response type consistency
+          description: Not Found
+          schema:
+            $ref: "#/definitions/error_response"
         500:
           description: Generic Error
           schema:
@@ -2657,6 +2661,10 @@ paths:
             type: array
             items:
               $ref: "#/definitions/changelog_entry"
+        400: # added only for response type consistency
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/error_response"
         500:
           description: Generic Error
           schema:
@@ -2677,6 +2685,10 @@ paths:
           description: Found Changelog Entry
           schema:
             $ref: "#/definitions/changelog_entry"
+        400: # added only for response type consistency
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/error_response"
         404:
           description: Not Found
           schema:

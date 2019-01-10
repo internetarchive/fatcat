@@ -3431,6 +3431,18 @@ where
                             }
                             Ok(response)
                         }
+                        CreateEditgroupResponse::NotFound(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(404), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_EDITGROUP_NOT_FOUND.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+                            if !unused_elements.is_empty() {
+                                response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));
+                            }
+                            Ok(response)
+                        }
                         CreateEditgroupResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
@@ -3486,6 +3498,16 @@ where
 
                             let mut response = Response::with((status::Status::from_u16(200), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_CHANGELOG_SUCCESS.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                        GetChangelogResponse::BadRequest(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(400), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::GET_CHANGELOG_BAD_REQUEST.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 
@@ -3555,6 +3577,16 @@ where
 
                             let mut response = Response::with((status::Status::from_u16(200), body_string));
                             response.headers.set(ContentType(mimetypes::responses::GET_CHANGELOG_ENTRY_FOUND_CHANGELOG_ENTRY.clone()));
+
+                            context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
+
+                            Ok(response)
+                        }
+                        GetChangelogEntryResponse::BadRequest(body) => {
+                            let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
+
+                            let mut response = Response::with((status::Status::from_u16(400), body_string));
+                            response.headers.set(ContentType(mimetypes::responses::GET_CHANGELOG_ENTRY_BAD_REQUEST.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
 

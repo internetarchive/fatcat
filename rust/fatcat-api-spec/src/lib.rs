@@ -448,6 +448,8 @@ pub enum CreateEditgroupResponse {
     NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
     /// Forbidden
     Forbidden(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
     /// Generic Error
     GenericError(models::ErrorResponse),
 }
@@ -456,6 +458,8 @@ pub enum CreateEditgroupResponse {
 pub enum GetChangelogResponse {
     /// Success
     Success(Vec<models::ChangelogEntry>),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
     /// Generic Error
     GenericError(models::ErrorResponse),
 }
@@ -464,6 +468,8 @@ pub enum GetChangelogResponse {
 pub enum GetChangelogEntryResponse {
     /// Found Changelog Entry
     FoundChangelogEntry(models::ChangelogEntry),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error

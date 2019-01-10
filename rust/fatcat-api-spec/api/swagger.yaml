@@ -6318,6 +6318,15 @@ paths:
           uppercase_operation_id: "CREATE_EDITGROUP"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "CREATE_EDITGROUP"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         500:
           description: "Generic Error"
           schema:
@@ -6508,6 +6517,15 @@ paths:
           uppercase_operation_id: "GET_CHANGELOG"
           uppercase_data_type: "VEC<CHANGELOGENTRY>"
           producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_CHANGELOG"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
         500:
           description: "Generic Error"
           schema:
@@ -6544,6 +6562,15 @@ paths:
           x-uppercaseResponseId: "FOUND_CHANGELOG_ENTRY"
           uppercase_operation_id: "GET_CHANGELOG_ENTRY"
           uppercase_data_type: "CHANGELOGENTRY"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_CHANGELOG_ENTRY"
+          uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
           description: "Not Found"

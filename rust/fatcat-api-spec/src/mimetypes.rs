@@ -602,6 +602,10 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for CreateEditgroup
     lazy_static! {
+        pub static ref CREATE_EDITGROUP_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateEditgroup
+    lazy_static! {
         pub static ref CREATE_EDITGROUP_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for GetChangelog
@@ -610,11 +614,19 @@ pub mod responses {
     }
     /// Create Mime objects for the response content types for GetChangelog
     lazy_static! {
+        pub static ref GET_CHANGELOG_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetChangelog
+    lazy_static! {
         pub static ref GET_CHANGELOG_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for GetChangelogEntry
     lazy_static! {
         pub static ref GET_CHANGELOG_ENTRY_FOUND_CHANGELOG_ENTRY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetChangelogEntry
+    lazy_static! {
+        pub static ref GET_CHANGELOG_ENTRY_BAD_REQUEST: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for GetChangelogEntry
     lazy_static! {
