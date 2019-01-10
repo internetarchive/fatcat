@@ -31,20 +31,74 @@ class ErrorResponse(object):
                             and the value is json key in definition.
     """
     swagger_types = {
+        'success': 'bool',
+        'error': 'str',
         'message': 'str'
     }
 
     attribute_map = {
+        'success': 'success',
+        'error': 'error',
         'message': 'message'
     }
 
-    def __init__(self, message=None):  # noqa: E501
+    def __init__(self, success=None, error=None, message=None):  # noqa: E501
         """ErrorResponse - a model defined in Swagger"""  # noqa: E501
 
+        self._success = None
+        self._error = None
         self._message = None
         self.discriminator = None
 
+        self.success = success
+        self.error = error
         self.message = message
+
+    @property
+    def success(self):
+        """Gets the success of this ErrorResponse.  # noqa: E501
+
+
+        :return: The success of this ErrorResponse.  # noqa: E501
+        :rtype: bool
+        """
+        return self._success
+
+    @success.setter
+    def success(self, success):
+        """Sets the success of this ErrorResponse.
+
+
+        :param success: The success of this ErrorResponse.  # noqa: E501
+        :type: bool
+        """
+        if success is None:
+            raise ValueError("Invalid value for `success`, must not be `None`")  # noqa: E501
+
+        self._success = success
+
+    @property
+    def error(self):
+        """Gets the error of this ErrorResponse.  # noqa: E501
+
+
+        :return: The error of this ErrorResponse.  # noqa: E501
+        :rtype: str
+        """
+        return self._error
+
+    @error.setter
+    def error(self, error):
+        """Sets the error of this ErrorResponse.
+
+
+        :param error: The error of this ErrorResponse.  # noqa: E501
+        :type: str
+        """
+        if error is None:
+            raise ValueError("Invalid value for `error`, must not be `None`")  # noqa: E501
+
+        self._error = error
 
     @property
     def message(self):

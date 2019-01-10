@@ -31,20 +31,47 @@ class Success(object):
                             and the value is json key in definition.
     """
     swagger_types = {
+        'success': 'bool',
         'message': 'str'
     }
 
     attribute_map = {
+        'success': 'success',
         'message': 'message'
     }
 
-    def __init__(self, message=None):  # noqa: E501
+    def __init__(self, success=None, message=None):  # noqa: E501
         """Success - a model defined in Swagger"""  # noqa: E501
 
+        self._success = None
         self._message = None
         self.discriminator = None
 
+        self.success = success
         self.message = message
+
+    @property
+    def success(self):
+        """Gets the success of this Success.  # noqa: E501
+
+
+        :return: The success of this Success.  # noqa: E501
+        :rtype: bool
+        """
+        return self._success
+
+    @success.setter
+    def success(self, success):
+        """Sets the success of this Success.
+
+
+        :param success: The success of this Success.  # noqa: E501
+        :type: bool
+        """
+        if success is None:
+            raise ValueError("Invalid value for `success`, must not be `None`")  # noqa: E501
+
+        self._success = success
 
     @property
     def message(self):
