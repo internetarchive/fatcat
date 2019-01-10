@@ -4,13 +4,15 @@ use regex::Regex;
 use serde_json;
 use std::str::FromStr;
 use uuid::Uuid;
+use std::fmt;
+
 
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct FatCatId(Uuid);
 
-impl ToString for FatCatId {
-    fn to_string(&self) -> String {
-        uuid2fcid(&self.to_uuid())
+impl fmt::Display for FatCatId {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", uuid2fcid(&self.to_uuid()))
     }
 }
 
