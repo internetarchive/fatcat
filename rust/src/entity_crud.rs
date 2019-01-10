@@ -273,7 +273,12 @@ macro_rules! generic_db_get {
                 },
                 None => {
                     // return a stub (deleted) entity if it's just deleted state
-                    let ident_row: Self::IdentRow = $ident_table::table.find(ident.to_uuid()).first(conn)?;
+                    let ident_row: Self::IdentRow = match $ident_table::table.find(ident.to_uuid()).first(conn) {
+                        Ok(row) => row,
+                        Err(diesel::result::Error::NotFound) =>
+                            Err(FatcatError::NotFound(stringify!($ident_table).to_string(), ident.to_string()))?,
+                        Err(e) => Err(e)?,
+                    };
                     if ident_row.rev_id.is_none() {
                         Self::from_deleted_row(ident_row)
                     } else {
@@ -288,7 +293,12 @@ macro_rules! generic_db_get {
 macro_rules! generic_db_get_rev {
     ($rev_table:ident) => {
         fn db_get_rev(conn: &DbConn, rev_id: Uuid, hide: HideFlags) -> Result<Self> {
-            let rev = $rev_table::table.find(rev_id).first(conn)?;
+            let rev = match $rev_table::table.find(rev_id).first(conn) {
+                Ok(rev) => rev,
+                Err(diesel::result::Error::NotFound) =>
+                    Err(FatcatError::NotFound(stringify!($rev_table).to_string(), rev_id.to_string()))?,
+                Err(e) => Err(e)?,
+            };
 
             Self::db_from_row(conn, rev, None, hide)
         }

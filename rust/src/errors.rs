@@ -113,9 +113,12 @@ impl Into<models::ErrorResponse> for FatcatError {
 }
 
 impl From<diesel::result::Error> for FatcatError {
-    /// The "not found" case should be handled in user code
     fn from(inner: diesel::result::Error) -> FatcatError {
-        FatcatError::DatabaseError(inner.to_string())
+        match inner {
+            diesel::result::Error::NotFound => FatcatError::NotFound("unknown".to_string(), "N/A".to_string()),
+            diesel::result::Error::DatabaseError(_, _) => FatcatError::ConstraintViolation(inner.to_string()),
+            _ => FatcatError::InternalError(inner.to_string())
+        }
     }
 }
 
@@ -165,34 +168,13 @@ impl From<failure::Error> for FatcatError {
         if let Some(_) = error.downcast_ref::<std::fmt::Error>() {
             return error.downcast::<std::fmt::Error>().unwrap().into();
         }
-        // TODO: more downcast catching?
+        if let Some(_) = error.downcast_ref::<diesel::result::Error>() {
+            return error.downcast::<diesel::result::Error>().unwrap().into();
+        }
+        if let Some(_) = error.downcast_ref::<uuid::ParseError>() {
+            return error.downcast::<uuid::ParseError>().unwrap().into();
+        }
         FatcatError::InternalError(error.to_string())
     }
 }
 
-/*
-// Allows adding more context via a String
-impl From<Context<String>> for FatcatError {
-    fn from(inner: Context<String>) -> FatcatError {
-        FatcatError::InternalError(inner.context())
-    }
-}
-
-// Allows adding more context via a &str
-impl From<Context<&'static str>> for FatcatError {
-    fn from(inner: Context<&'static str>) -> FatcatError {
-        FatcatError::InternalError(inner.context().to_string())
-    }
-}
-*/
-
-/* XXX:
-Fmt(::std::fmt::Error);
-Diesel(::diesel::result::Error);
-R2d2(::diesel::r2d2::Error);
-Uuid(::uuid::ParseError);
-Io(::std::io::Error) #[cfg(unix)];
-Serde(::serde_json::Error);
-Utf8Decode(::std::string::FromUtf8Error);
-StringDecode(::data_encoding::DecodeError);
-*/
