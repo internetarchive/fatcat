@@ -45,11 +45,26 @@ CREATE TABLE editgroup (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     editor_id           UUID REFERENCES editor(id) NOT NULL,
     created             TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
+    submitted           TIMESTAMP WITH TIME ZONE,
+    is_accepted         BOOLEAN DEFAULT false NOT NULL,
     extra_json          JSONB,
     description         TEXT
 );
 
-CREATE INDEX editgroup_created_idx ON editgroup(created);
+-- for fast "recent, reviewable" and "work in progress" queries
+CREATE INDEX editgroup_submitted_idx ON editgroup(is_accepted, submitted);
+CREATE INDEX editgroup_editor_idx ON editgroup(is_accepted, editor_id);
+
+CREATE TABLE editgroup_annotation (
+    id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    editgroup_id        UUID REFERENCES editgroup(id) NOT NULL,
+    editor_id           UUID REFERENCES editor(id) NOT NULL,
+    created             TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
+    comment_markdown    TEXT,
+    extra_json          JSONB
+);
+
+CREATE INDEX editgroup_annotation_created_idx ON editgroup_annotation(editgroup_id, created);
 
 CREATE TABLE changelog (
     id                  BIGSERIAL PRIMARY KEY,
