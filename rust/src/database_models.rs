@@ -4,7 +4,7 @@ use crate::database_schema::*;
 use crate::errors::*;
 use crate::identifiers::uuid2fcid;
 use chrono;
-use fatcat_api_spec::models::{ChangelogEntry, Editgroup, Editor, EntityEdit};
+use fatcat_api_spec::models::{ChangelogEntry, Editgroup, EditgroupAnnotation, Editor, EntityEdit};
 use serde_json;
 use uuid::Uuid;
 
@@ -556,8 +556,8 @@ pub struct EditgroupRow {
     pub created: chrono::NaiveDateTime,
     pub submitted: Option<chrono::NaiveDateTime>,
     pub is_accepted: bool,
-    pub extra_json: Option<serde_json::Value>,
     pub description: Option<String>,
+    pub extra_json: Option<serde_json::Value>,
 }
 
 impl EditgroupRow {
@@ -574,6 +574,30 @@ impl EditgroupRow {
             extra: self.extra_json,
             annotations: None,
             edits: None,
+        }
+    }
+}
+
+#[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
+#[table_name = "editgroup_annotation"]
+pub struct EditgroupAnnotationRow {
+    pub id: Uuid,
+    pub editgroup_id: Uuid,
+    pub editor_id: Uuid,
+    pub created: chrono::NaiveDateTime,
+    pub comment_markdown: Option<String>,
+    pub extra_json: Option<serde_json::Value>,
+}
+
+impl EditgroupAnnotationRow {
+    pub fn into_model(self) -> EditgroupAnnotation {
+        EditgroupAnnotation {
+            annotation_id: Some(self.id.to_string()),
+            editgroup_id: Some(uuid2fcid(&self.editgroup_id)),
+            editor_id: Some(uuid2fcid(&self.editor_id)),
+            created: Some(chrono::DateTime::from_utc(self.created, chrono::Utc)),
+            comment_markdown: self.comment_markdown,
+            extra: self.extra_json,
         }
     }
 }

@@ -104,6 +104,7 @@ pub struct ExpandFlags {
     pub container: bool,
     pub releases: bool,
     pub creators: bool,
+    pub editors: bool,
 }
 
 impl FromStr for ExpandFlags {
@@ -123,6 +124,7 @@ impl ExpandFlags {
             container: list.contains(&"container"),
             releases: list.contains(&"releases"),
             creators: list.contains(&"creators"),
+            editors: list.contains(&"editors"),
         }
     }
     pub fn none() -> ExpandFlags {
@@ -133,6 +135,7 @@ impl ExpandFlags {
             container: false,
             releases: false,
             creators: false,
+            editors: false,
         }
     }
 }
@@ -150,6 +153,7 @@ fn test_expand_flags() {
         "other_thing",
         "releases",
         "creators",
+        "editors",
     ]);
     assert!(
         all == ExpandFlags {
@@ -159,6 +163,7 @@ fn test_expand_flags() {
             container: true,
             releases: true,
             creators: true
+            editors: true
         }
     );
     assert!(ExpandFlags::from_str("").unwrap().files == false);
@@ -176,6 +181,7 @@ fn test_expand_flags() {
             container: true,
             releases: true,
             creators: true
+            editors: true
         }
     );
 }

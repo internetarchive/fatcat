@@ -7,7 +7,7 @@ use crate::database_models::*;
 use crate::database_schema::*;
 use crate::entity_crud::EntityCrud;
 use crate::errors::{FatcatError, Result};
-use crate::identifiers::{check_username, FatcatId};
+use crate::identifiers::FatcatId;
 use crate::server::DbConn;
 use diesel;
 use diesel::prelude::*;
