@@ -8,11 +8,8 @@
 
 use diesel::prelude::*;
 use fatcat::database_schema::*;
-use fatcat::editing::create_editgroup;
-use fatcat::identifiers::*;
 use iron::status;
 use iron_test::request;
-use std::str::FromStr;
 
 mod helpers;
 
@@ -485,8 +482,7 @@ fn test_reverse_lookups() {
 #[test]
 fn test_post_container() {
     let (headers, router, conn) = helpers::setup_http();
-    let editor_id = FatcatId::from_str(helpers::TEST_ADMIN_EDITOR_ID).unwrap();
-    let editgroup_id = FatcatId::from_uuid(&create_editgroup(&conn, editor_id.to_uuid()).unwrap());
+    let editgroup_id = helpers::quick_editgroup(&conn);
 
     helpers::check_http_response(
         request::post(
@@ -509,7 +505,7 @@ fn test_post_batch_container() {
 
     helpers::check_http_response(
         request::post(
-            "http://localhost:9411/v0/container/batch",
+            "http://localhost:9411/v0/container/batch?autoaccept=true",
             headers,
             r#"[{"name": "test journal"}, {"name": "another test journal"}]"#,
             &router,
@@ -522,8 +518,7 @@ fn test_post_batch_container() {
 #[test]
 fn test_post_creator() {
     let (headers, router, conn) = helpers::setup_http();
-    let editor_id = FatcatId::from_str(helpers::TEST_ADMIN_EDITOR_ID).unwrap();
-    let editgroup_id = FatcatId::from_uuid(&create_editgroup(&conn, editor_id.to_uuid()).unwrap());
+    let editgroup_id = helpers::quick_editgroup(&conn);
 
     helpers::check_http_response(
         request::post(
@@ -543,8 +538,7 @@ fn test_post_creator() {
 #[test]
 fn test_post_file() {
     let (headers, router, conn) = helpers::setup_http();
-    let editor_id = FatcatId::from_str(helpers::TEST_ADMIN_EDITOR_ID).unwrap();
-    let editgroup_id = FatcatId::from_uuid(&create_editgroup(&conn, editor_id.to_uuid()).unwrap());
+    let editgroup_id = helpers::quick_editgroup(&conn);
 
     helpers::check_http_response(
         request::post(
@@ -613,8 +607,7 @@ fn test_post_file() {
 #[test]
 fn test_post_fileset() {
     let (headers, router, conn) = helpers::setup_http();
-    let editor_id = FatcatId::from_str(helpers::TEST_ADMIN_EDITOR_ID).unwrap();
-    let editgroup_id = FatcatId::from_uuid(&create_editgroup(&conn, editor_id.to_uuid()).unwrap());
+    let editgroup_id = helpers::quick_editgroup(&conn);
 
     helpers::check_http_response(
         request::post(
@@ -673,8 +666,7 @@ fn test_post_fileset() {
 #[test]
 fn test_post_webcapture() {
     let (headers, router, conn) = helpers::setup_http();
-    let editor_id = FatcatId::from_str(helpers::TEST_ADMIN_EDITOR_ID).unwrap();
-    let editgroup_id = FatcatId::from_uuid(&create_editgroup(&conn, editor_id.to_uuid()).unwrap());
+    let editgroup_id = helpers::quick_editgroup(&conn);
 
     helpers::check_http_response(
         request::post(
@@ -743,8 +735,7 @@ fn test_post_webcapture() {
 #[test]
 fn test_post_release() {
     let (headers, router, conn) = helpers::setup_http();
-    let editor_id = FatcatId::from_str(helpers::TEST_ADMIN_EDITOR_ID).unwrap();
-    let editgroup_id = FatcatId::from_uuid(&create_editgroup(&conn, editor_id.to_uuid()).unwrap());
+    let editgroup_id = helpers::quick_editgroup(&conn);
 
     helpers::check_http_response(
         request::post(
@@ -846,8 +837,7 @@ fn test_post_release() {
 #[test]
 fn test_post_work() {
     let (headers, router, conn) = helpers::setup_http();
-    let editor_id = FatcatId::from_str(helpers::TEST_ADMIN_EDITOR_ID).unwrap();
-    let editgroup_id = FatcatId::from_uuid(&create_editgroup(&conn, editor_id.to_uuid()).unwrap());
+    let editgroup_id = helpers::quick_editgroup(&conn);
 
     helpers::check_http_response(
         request::post(
@@ -870,8 +860,7 @@ fn test_post_work() {
 #[test]
 fn test_update_work() {
     let (headers, router, conn) = helpers::setup_http();
-    let editor_id = FatcatId::from_str(helpers::TEST_ADMIN_EDITOR_ID).unwrap();
-    let editgroup_id = FatcatId::from_uuid(&create_editgroup(&conn, editor_id.to_uuid()).unwrap());
+    let editgroup_id = helpers::quick_editgroup(&conn);
 
     helpers::check_http_response(
         request::post(
@@ -904,8 +893,7 @@ fn test_update_work() {
 #[test]
 fn test_delete_work() {
     let (headers, router, conn) = helpers::setup_http();
-    let editor_id = FatcatId::from_str(helpers::TEST_ADMIN_EDITOR_ID).unwrap();
-    let editgroup_id = FatcatId::from_uuid(&create_editgroup(&conn, editor_id.to_uuid()).unwrap());
+    let editgroup_id = helpers::quick_editgroup(&conn);
 
     helpers::check_http_response(
         request::delete(
@@ -935,8 +923,7 @@ fn test_delete_work() {
 #[test]
 fn test_accept_editgroup() {
     let (headers, router, conn) = helpers::setup_http();
-    let editor_id = FatcatId::from_str(helpers::TEST_ADMIN_EDITOR_ID).unwrap();
-    let editgroup_id = FatcatId::from_uuid(&create_editgroup(&conn, editor_id.to_uuid()).unwrap());
+    let editgroup_id = helpers::quick_editgroup(&conn);
 
     let c: i64 = container_ident::table
         .filter(container_ident::is_live.eq(false))
@@ -1054,8 +1041,7 @@ fn test_changelog() {
 #[test]
 fn test_400() {
     let (headers, router, conn) = helpers::setup_http();
-    let editor_id = FatcatId::from_str(helpers::TEST_ADMIN_EDITOR_ID).unwrap();
-    let editgroup_id = FatcatId::from_uuid(&create_editgroup(&conn, editor_id.to_uuid()).unwrap());
+    let editgroup_id = helpers::quick_editgroup(&conn);
 
     helpers::check_http_response(
         request::post(
@@ -1111,7 +1097,7 @@ fn test_edit_gets() {
 
     helpers::check_http_response(
         request::get(
-            "http://localhost:9411/v0/editor/aaaaaaaaaaaabkvkaaaaaaaaae/changelog",
+            "http://localhost:9411/v0/editor/aaaaaaaaaaaabkvkaaaaaaaaae/editgroups",
             headers.clone(),
             &router,
         ),
@@ -1133,8 +1119,7 @@ fn test_edit_gets() {
 #[test]
 fn test_bad_external_idents() {
     let (headers, router, conn) = helpers::setup_http();
-    let editor_id = FatcatId::from_str(helpers::TEST_ADMIN_EDITOR_ID).unwrap();
-    let editgroup_id = FatcatId::from_uuid(&create_editgroup(&conn, editor_id.to_uuid()).unwrap());
+    let editgroup_id = helpers::quick_editgroup(&conn);
 
     // Bad wikidata QID
     helpers::check_http_response(
@@ -1258,8 +1243,7 @@ fn test_bad_external_idents() {
 #[test]
 fn test_abstracts() {
     let (headers, router, conn) = helpers::setup_http();
-    let editor_id = FatcatId::from_str(helpers::TEST_ADMIN_EDITOR_ID).unwrap();
-    let editgroup_id = FatcatId::from_uuid(&create_editgroup(&conn, editor_id.to_uuid()).unwrap());
+    let editgroup_id = helpers::quick_editgroup(&conn);
 
     helpers::check_http_response(
         request::post(
@@ -1356,8 +1340,7 @@ fn test_abstracts() {
 #[test]
 fn test_contribs() {
     let (headers, router, conn) = helpers::setup_http();
-    let editor_id = FatcatId::from_str(helpers::TEST_ADMIN_EDITOR_ID).unwrap();
-    let editgroup_id = FatcatId::from_uuid(&create_editgroup(&conn, editor_id.to_uuid()).unwrap());
+    let editgroup_id = helpers::quick_editgroup(&conn);
 
     helpers::check_http_response(
         request::post(
@@ -1401,7 +1384,7 @@ fn test_contribs() {
 
 #[test]
 fn test_post_batch_autoaccept() {
-    let (headers, router, _conn) = helpers::setup_http();
+    let (headers, router, conn) = helpers::setup_http();
 
     // "true"
     helpers::check_http_response(
@@ -1416,9 +1399,13 @@ fn test_post_batch_autoaccept() {
     );
 
     // "n"
+    let editgroup_id = helpers::quick_editgroup(&conn);
     helpers::check_http_response(
         request::post(
-            "http://localhost:9411/v0/container/batch?autoaccept=n",
+            &format!(
+                "http://localhost:9411/v0/container/batch?autoaccept=n&editgroup_id={}",
+                editgroup_id
+            ),
             headers.clone(),
             r#"[{"name": "test journal"}, {"name": "another test journal"}]"#,
             &router,
@@ -1443,8 +1430,7 @@ fn test_post_batch_autoaccept() {
 #[test]
 fn test_release_dates() {
     let (headers, router, conn) = helpers::setup_http();
-    let editor_id = FatcatId::from_str(helpers::TEST_ADMIN_EDITOR_ID).unwrap();
-    let editgroup_id = FatcatId::from_uuid(&create_editgroup(&conn, editor_id.to_uuid()).unwrap());
+    let editgroup_id = helpers::quick_editgroup(&conn);
 
     // Ok
     helpers::check_http_response(
@@ -1612,8 +1598,7 @@ fn test_release_dates() {
 #[test]
 fn test_release_types() {
     let (headers, router, conn) = helpers::setup_http();
-    let editor_id = FatcatId::from_str(helpers::TEST_ADMIN_EDITOR_ID).unwrap();
-    let editgroup_id = FatcatId::from_uuid(&create_editgroup(&conn, editor_id.to_uuid()).unwrap());
+    let editgroup_id = helpers::quick_editgroup(&conn);
 
     // Ok
     helpers::check_http_response(

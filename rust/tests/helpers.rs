@@ -1,7 +1,9 @@
 use fatcat::auth::MacaroonAuthMiddleware;
+use fatcat::editing_crud::EditgroupCrud;
 use fatcat::identifiers::FatcatId;
 use fatcat::server;
 use fatcat_api_spec::client::Client;
+use fatcat_api_spec::models::Editgroup;
 use fatcat_api_spec::Context;
 use iron::headers::{Authorization, Bearer, ContentType};
 use iron::mime::Mime;
@@ -90,4 +92,20 @@ pub fn check_http_response(
     if let Some(thing) = in_body {
         assert!(body.contains(thing));
     }
+}
+
+pub fn quick_editgroup(conn: &server::DbConn) -> FatcatId {
+    let editor_id = FatcatId::from_str(TEST_ADMIN_EDITOR_ID).unwrap();
+    let eg = Editgroup {
+        editgroup_id: None,
+        editor_id: Some(editor_id.to_string()),
+        editor: None,
+        submitted: None,
+        description: None,
+        extra: None,
+        annotations: None,
+        edits: None,
+    };
+    let row = eg.db_create(conn, false).unwrap();
+    FatcatId::from_uuid(&row.id)
 }
