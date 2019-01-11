@@ -11,18 +11,16 @@
 
 <p>Changes accepted (aka, merged editgroups):
 <table class="ui table">
-  <thead><tr><th>Changelog<br>Index
-             <th>Timestamp (UTC)
+  <thead><tr><th>Created (UTC)
              <th>Editgroup
              <th>Editor
              <th>Description
   <tbody>
-  {% for entry in changelog_entries %}
-  <tr><td><a href="/changelog/{{ entry.index }}">{{ entry.index }}</a>
-      <td>{{ entry.timestamp }}
-      <td><code><a href="/editgroup/{{ entry.editgroup_id }}">{{ entry.editgroup_id }}</a></code>
-      <td><code><a href="/editor/{{ entry.editgroup.editor_id }}">{{ entry.editgroup.editor_id }}</a></code>
-      <td>{% if entry.editgroup.description != None %}{{ entry.editgroup.description }}{% endif %}
+  {% for editgroup in editgroups %}
+  <tr><td>{{ editgroup.created }}
+      <td><code><a href="/editgroup/{{ editgroup.editgroup_id }}">{{ editgroup.editgroup_id }}</a></code>
+      <td><code><a href="/editor/{{ editgroup.editor_id }}">{{ editgroup.editor_id }}</a></code>
+      <td>{% if editgroup.description != None %}{{ editgroup.description }}{% endif %}
   {% endfor %}
 </table>
 

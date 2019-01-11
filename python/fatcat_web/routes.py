@@ -313,15 +313,15 @@ def editor_view(ident):
         abort(ae.status)
     return render_template('editor_view.html', editor=entity)
 
-@app.route('/editor/<ident>/changelog', methods=['GET'])
+@app.route('/editor/<ident>/editgroups', methods=['GET'])
 def editor_changelog(ident):
     try:
         editor = api.get_editor(ident)
-        changelog_entries = api.get_editor_changelog(ident)
+        editgroups = api.get_editor_editgroups(ident, limit=50)
     except ApiException as ae:
         abort(ae.status)
-    return render_template('editor_changelog.html', editor=editor,
-        changelog_entries=changelog_entries)
+    return render_template('editor_editgroups.html', editor=editor,
+        editgroups=editgroups)
 
 # Not implemented
 #@app.route('/editor/<ident>/wip', methods=['GET'])
