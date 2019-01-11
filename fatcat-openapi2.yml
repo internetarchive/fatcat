@@ -465,11 +465,18 @@ definitions:
         <<: *FATCATIDENT
       editor_id:
         <<: *FATCATIDENT
+      submitted:
+        type: string
+        format: date-time
       description:
         type: string
       extra:
         type: object
         additionalProperties: {}
+      annotations:
+        type: array
+        items:
+          $ref: "#/definitions/editgroup_annotation"
       edits:
         type: object
         properties:
@@ -501,6 +508,23 @@ definitions:
             type: array
             items:
               $ref: "#/definitions/entity_edit"
+  editgroup_annotation:
+    type: object
+    properties:
+      annotation_id:
+        <<: *FATCATUUID
+      editgroup_id:
+        <<: *FATCATIDENT
+      editor_id:
+        <<: *FATCATIDENT
+      created:
+        type: string
+        format: date-time
+      comment_markdown:
+        type: string
+      extra:
+        type: object
+        additionalProperties: {}
   changelog_entry:
     type: object
     required:
@@ -2524,21 +2548,37 @@ paths:
           schema:
             $ref: "#/definitions/error_response"
         <<: *AUTHRESPONSES
-  /editor/{editor_id}/changelog:
+  /editor/{editor_id}/editgroups:
     parameters:
       - name: editor_id
         in: path
         type: string
         required: true
     get:
-      operationId: "get_editor_changelog"
+      operationId: "get_editor_editgroups"
+      parameters:
+        - name: limit
+          in: query
+          type: integer
+          format: int64
+          required: false
+        - name: before
+          in: query
+          type: string
+          format: date-time
+          required: false
+        - name: since
+          in: query
+          type: string
+          format: date-time
+          required: false
       responses:
         200:
           description: Found
           schema:
             type: array
             items:
-              $ref: "#/definitions/changelog_entry"
+              $ref: "#/definitions/editgroup"
         400:
           description: Bad Request
           schema:
@@ -2551,6 +2591,52 @@ paths:
           description: Generic Error
           schema:
             $ref: "#/definitions/error_response"
+  /editor/{editor_id}/annotations:
+    parameters:
+      - name: editor_id
+        in: path
+        required: true
+        <<: *FATCATIDENT
+    get:
+      operationId: "get_editor_annotations"
+      tags: # TAGLINE
+        - edit-lifecycle # TAGLINE
+      parameters:
+        - name: limit
+          in: query
+          type: integer
+          format: int64
+          required: false
+        - name: before
+          in: query
+          type: string
+          format: date-time
+          required: false
+        - name: since
+          in: query
+          type: string
+          format: date-time
+          required: false
+      responses:
+        200:
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/editgroup_annotation"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/error_response"
+        404:
+          description: Not Found
+          schema:
+            $ref: "#/definitions/error_response"
+        500:
+          description: Generic Error
+          schema:
+            $ref: "#/definitions/error_response"
+        <<: *AUTHRESPONSES
   /editgroup:
     post:
       operationId: "create_editgroup"
@@ -2609,6 +2695,38 @@ paths:
           description: Generic Error
           schema:
             $ref: "#/definitions/error_response"
+    put:
+      operationId: "update_editgroup"
+      security:
+        - Bearer: []
+      parameters:
+        - name: editgroup
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/editgroup"
+        - name: submit
+          in: query
+          type: boolean
+          required: false
+      responses:
+        200:
+          description: Updated Editgroup
+          schema:
+            $ref: "#/definitions/editgroup"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/error_response"
+        404:
+          description: Not Found
+          schema:
+            $ref: "#/definitions/error_response"
+        500:
+          description: Generic Error
+          schema:
+            $ref: "#/definitions/error_response"
+        <<: *AUTHRESPONSES
   /editgroup/{editgroup_id}/accept:
     parameters:
       - name: editgroup_id
@@ -2643,6 +2761,123 @@ paths:
           schema:
             $ref: "#/definitions/error_response"
         <<: *AUTHRESPONSES
+  /editgroup/{editgroup_id}/annotations:
+    parameters:
+      - name: editgroup_id
+        in: path
+        required: true
+        <<: *FATCATIDENT
+    get:
+      operationId: "get_editgroup_annotations"
+      tags: # TAGLINE
+        - edit-lifecycle # TAGLINE
+      security:
+        - Bearer: []
+      parameters:
+        - name: expand
+          in: query
+          type: string
+          required: false
+          description: "List of sub-entities to expand in response. For editgroups: 'editors'"
+      responses:
+        200:
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/editgroup_annotation"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/error_response"
+        404:
+          description: Not Found
+          schema:
+            $ref: "#/definitions/error_response"
+        500:
+          description: Generic Error
+          schema:
+            $ref: "#/definitions/error_response"
+        <<: *AUTHRESPONSES
+  /editgroup/{editgroup_id}/annotation:
+    parameters:
+      - name: editgroup_id
+        in: path
+        required: true
+        <<: *FATCATIDENT
+    post:
+      operationId: "create_editgroup_annotation"
+      tags: # TAGLINE
+        - edit-lifecycle # TAGLINE
+      security:
+        - Bearer: []
+      parameters:
+        - name: annotation
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/editgroup_annotation"
+      responses:
+        201:
+          description: Created
+          schema:
+            $ref: "#/definitions/editgroup_annotation"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/error_response"
+        404:
+          description: Not Found
+          schema:
+            $ref: "#/definitions/error_response"
+        500:
+          description: Generic Error
+          schema:
+            $ref: "#/definitions/error_response"
+        <<: *AUTHRESPONSES
+  /editgroup/reviewable:
+    get:
+      operationId: "get_editgroups_reviewable"
+      parameters:
+        - name: expand
+          in: query
+          type: string
+          required: false
+          description: "List of sub-entities to expand in response. For editgroups: 'editors'"
+        - name: limit
+          in: query
+          type: integer
+          format: int64
+          required: false
+        - name: before
+          in: query
+          type: string
+          format: date-time
+          required: false
+        - name: since
+          in: query
+          type: string
+          format: date-time
+          required: false
+      responses:
+        200:
+          description: Found
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/editgroup"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/error_response"
+        404:
+          description: Not Found
+          schema:
+            $ref: "#/definitions/error_response"
+        500:
+          description: Generic Error
+          schema:
+            $ref: "#/definitions/error_response"
   /changelog:
     parameters:
       - name: limit
