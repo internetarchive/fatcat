@@ -106,7 +106,8 @@ impl Into<models::ErrorResponse> for FatcatError {
         // TODO: something more complex? context?
         models::ErrorResponse {
             success: false,
-            error: self.name().unwrap_or("other").to_string(),
+            // enum variant name, without fields. whew, what a pile
+            error: format!("{:?}", self).split('(').collect::<Vec<&str>>()[0].to_string(),
             message: self.to_string(),
         }
     }
