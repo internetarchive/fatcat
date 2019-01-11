@@ -314,7 +314,7 @@ def editor_view(ident):
     return render_template('editor_view.html', editor=entity)
 
 @app.route('/editor/<ident>/editgroups', methods=['GET'])
-def editor_changelog(ident):
+def editor_editgroups(ident):
     try:
         editor = api.get_editor(ident)
         editgroups = api.get_editor_editgroups(ident, limit=50)
@@ -322,18 +322,6 @@ def editor_changelog(ident):
         abort(ae.status)
     return render_template('editor_editgroups.html', editor=editor,
         editgroups=editgroups)
-
-# Not implemented
-#@app.route('/editor/<ident>/wip', methods=['GET'])
-#def editor_wip(ident):
-#    raise NotImplementedError
-#    try:
-#        editor = api.get_editor(ident)
-#        entries = api.get_editor_wip(ident)
-#    except ApiException as ae:
-#        abort(ae.status)
-#    return render_template('editor_changelog.html', editor=editor,
-#        entries=entries)
 
 @app.route('/changelog', methods=['GET'])
 def changelog_view():
