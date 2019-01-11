@@ -170,9 +170,10 @@ fn test_expand_flags() {
     assert!(ExpandFlags::from_str("files").unwrap().files == true);
     assert!(ExpandFlags::from_str("something,,files").unwrap().files == true);
     assert!(ExpandFlags::from_str("file").unwrap().files == false);
-    let all =
-        ExpandFlags::from_str("files,container,other_thing,releases,creators,filesets,webcaptures")
-            .unwrap();
+    let all = ExpandFlags::from_str(
+        "files,container,other_thing,releases,creators,editors,filesets,webcaptures",
+    )
+    .unwrap();
     assert!(
         all == ExpandFlags {
             files: true,
