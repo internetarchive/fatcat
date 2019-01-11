@@ -238,6 +238,10 @@ pub struct Editgroup {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub editor: Option<models::Editor>,
 
+    #[serde(rename = "changelog_index")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub changelog_index: Option<i64>,
+
     #[serde(rename = "submitted")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub submitted: Option<chrono::DateTime<chrono::Utc>>,
@@ -265,6 +269,7 @@ impl Editgroup {
             editgroup_id: None,
             editor_id: None,
             editor: None,
+            changelog_index: None,
             submitted: None,
             description: None,
             extra: None,

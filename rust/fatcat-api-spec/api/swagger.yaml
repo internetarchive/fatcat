@@ -8102,6 +8102,7 @@ definitions:
           editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
           is_bot: true
           username: "zerocool93"
+        changelog_index: 1048576
         submitted: "2000-01-23T04:56:07.000+00:00"
         extra: "{}"
         edits:
@@ -8254,6 +8255,7 @@ definitions:
             editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
             is_bot: true
             username: "zerocool93"
+          changelog_index: 1048576
           submitted: "2000-01-23T04:56:07.000+00:00"
           extra: "{}"
           edits:
@@ -8501,6 +8503,10 @@ definitions:
         pattern: "[a-zA-Z2-7]{26}"
       editor:
         $ref: "#/definitions/editor"
+      changelog_index:
+        type: "integer"
+        format: "int64"
+        example: 1048576
       submitted:
         type: "string"
         format: "date-time"
@@ -8521,6 +8527,7 @@ definitions:
         editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
         is_bot: true
         username: "zerocool93"
+      changelog_index: 1048576
       submitted: "2000-01-23T04:56:07.000+00:00"
       extra: "{}"
       edits:
@@ -8731,6 +8738,7 @@ definitions:
           editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
           is_bot: true
           username: "zerocool93"
+        changelog_index: 1048576
         submitted: "2000-01-23T04:56:07.000+00:00"
         extra: "{}"
         edits:

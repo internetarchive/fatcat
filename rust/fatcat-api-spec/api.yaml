@@ -467,6 +467,10 @@ definitions:
         <<: *FATCATIDENT
       editor:
         $ref: "#/definitions/editor"
+      changelog_index: # not returned in all contexts...
+        type: integer
+        example: 1048576
+        format: int64
       submitted:
         type: string
         format: date-time
