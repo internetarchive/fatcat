@@ -8096,6 +8096,12 @@ definitions:
         $ref: "#/definitions/changelog_entry"
     example:
       editgroup:
+        editor:
+          is_admin: true
+          is_active: true
+          editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          is_bot: true
+          username: "zerocool93"
         submitted: "2000-01-23T04:56:07.000+00:00"
         extra: "{}"
         edits:
@@ -8208,12 +8214,24 @@ definitions:
         description: "description"
         annotations:
         - annotation_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+          editor:
+            is_admin: true
+            is_active: true
+            editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            is_bot: true
+            username: "zerocool93"
           created: "2000-01-23T04:56:07.000+00:00"
           extra: "{}"
           editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
           editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
           comment_markdown: "comment_markdown"
         - annotation_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+          editor:
+            is_admin: true
+            is_active: true
+            editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            is_bot: true
+            username: "zerocool93"
           created: "2000-01-23T04:56:07.000+00:00"
           extra: "{}"
           editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -8230,6 +8248,12 @@ definitions:
         revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       changelog_entry:
         editgroup:
+          editor:
+            is_admin: true
+            is_active: true
+            editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            is_bot: true
+            username: "zerocool93"
           submitted: "2000-01-23T04:56:07.000+00:00"
           extra: "{}"
           edits:
@@ -8342,12 +8366,24 @@ definitions:
           description: "description"
           annotations:
           - annotation_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+            editor:
+              is_admin: true
+              is_active: true
+              editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+              is_bot: true
+              username: "zerocool93"
             created: "2000-01-23T04:56:07.000+00:00"
             extra: "{}"
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
             editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
             comment_markdown: "comment_markdown"
           - annotation_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+            editor:
+              is_admin: true
+              is_active: true
+              editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+              is_bot: true
+              username: "zerocool93"
             created: "2000-01-23T04:56:07.000+00:00"
             extra: "{}"
             editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -8463,6 +8499,8 @@ definitions:
         minLength: 26
         maxLength: 26
         pattern: "[a-zA-Z2-7]{26}"
+      editor:
+        $ref: "#/definitions/editor"
       submitted:
         type: "string"
         format: "date-time"
@@ -8477,6 +8515,12 @@ definitions:
       edits:
         $ref: "#/definitions/editgroup_edits"
     example:
+      editor:
+        is_admin: true
+        is_active: true
+        editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        is_bot: true
+        username: "zerocool93"
       submitted: "2000-01-23T04:56:07.000+00:00"
       extra: "{}"
       edits:
@@ -8589,12 +8633,24 @@ definitions:
       description: "description"
       annotations:
       - annotation_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+        editor:
+          is_admin: true
+          is_active: true
+          editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          is_bot: true
+          username: "zerocool93"
         created: "2000-01-23T04:56:07.000+00:00"
         extra: "{}"
         editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
         editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
         comment_markdown: "comment_markdown"
       - annotation_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+        editor:
+          is_admin: true
+          is_active: true
+          editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          is_bot: true
+          username: "zerocool93"
         created: "2000-01-23T04:56:07.000+00:00"
         extra: "{}"
         editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -8626,6 +8682,8 @@ definitions:
         minLength: 26
         maxLength: 26
         pattern: "[a-zA-Z2-7]{26}"
+      editor:
+        $ref: "#/definitions/editor"
       created:
         type: "string"
         format: "date-time"
@@ -8635,6 +8693,12 @@ definitions:
         type: "object"
     example:
       annotation_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+      editor:
+        is_admin: true
+        is_active: true
+        editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        is_bot: true
+        username: "zerocool93"
       created: "2000-01-23T04:56:07.000+00:00"
       extra: "{}"
       editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -8661,6 +8725,12 @@ definitions:
         $ref: "#/definitions/editgroup"
     example:
       editgroup:
+        editor:
+          is_admin: true
+          is_active: true
+          editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          is_bot: true
+          username: "zerocool93"
         submitted: "2000-01-23T04:56:07.000+00:00"
         extra: "{}"
         edits:
@@ -8773,12 +8843,24 @@ definitions:
         description: "description"
         annotations:
         - annotation_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+          editor:
+            is_admin: true
+            is_active: true
+            editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            is_bot: true
+            username: "zerocool93"
           created: "2000-01-23T04:56:07.000+00:00"
           extra: "{}"
           editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
           editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
           comment_markdown: "comment_markdown"
         - annotation_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+          editor:
+            is_admin: true
+            is_active: true
+            editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            is_bot: true
+            username: "zerocool93"
           created: "2000-01-23T04:56:07.000+00:00"
           extra: "{}"
           editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"

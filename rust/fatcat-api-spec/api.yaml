@@ -465,6 +465,8 @@ definitions:
         <<: *FATCATIDENT
       editor_id:
         <<: *FATCATIDENT
+      editor:
+        $ref: "#/definitions/editor"
       submitted:
         type: string
         format: date-time
@@ -517,6 +519,8 @@ definitions:
         <<: *FATCATIDENT
       editor_id:
         <<: *FATCATIDENT
+      editor:
+        $ref: "#/definitions/editor"
       created:
         type: string
         format: date-time

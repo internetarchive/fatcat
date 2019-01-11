@@ -234,6 +234,10 @@ pub struct Editgroup {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub editor_id: Option<String>,
 
+    #[serde(rename = "editor")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub editor: Option<models::Editor>,
+
     #[serde(rename = "submitted")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub submitted: Option<chrono::DateTime<chrono::Utc>>,
@@ -260,6 +264,7 @@ impl Editgroup {
         Editgroup {
             editgroup_id: None,
             editor_id: None,
+            editor: None,
             submitted: None,
             description: None,
             extra: None,
@@ -286,6 +291,10 @@ pub struct EditgroupAnnotation {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub editor_id: Option<String>,
 
+    #[serde(rename = "editor")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub editor: Option<models::Editor>,
+
     #[serde(rename = "created")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub created: Option<chrono::DateTime<chrono::Utc>>,
@@ -305,6 +314,7 @@ impl EditgroupAnnotation {
             annotation_id: None,
             editgroup_id: None,
             editor_id: None,
+            editor: None,
             created: None,
             comment_markdown: None,
             extra: None,
