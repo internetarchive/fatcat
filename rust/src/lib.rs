@@ -14,6 +14,7 @@ pub mod auth;
 pub mod database_models;
 pub mod database_schema; // only public for tests
 pub mod editing;
+pub mod editing_crud;
 mod endpoint_handlers;
 mod endpoints;
 pub mod entity_crud;

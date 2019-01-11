@@ -2,11 +2,9 @@
 
 use clap::{App, SubCommand};
 
-use fatcat::auth;
-use fatcat::editing;
-use fatcat::errors::*;
+use fatcat::{auth, editing, server};
+use fatcat::errors::Result;
 use fatcat::identifiers::FatcatId;
-use fatcat::server::*;
 use std::process;
 use std::str::FromStr;
 
@@ -68,7 +66,7 @@ fn main() -> Result<()> {
     }
 
     // Then the ones that do
-    let db_conn = database_worker_pool()?.get().expect("database pool");
+    let db_conn = server::database_worker_pool()?.get().expect("database pool");
     let confectionary = auth::env_confectionary()?;
     match m.subcommand() {
         ("list-editors", Some(_subm)) => {

@@ -1,7 +1,7 @@
 //! API endpoint handlers
 
-use crate::auth::*;
-use crate::errors::*;
+use crate::auth::{AuthConfectionary, self};
+use crate::errors::Result;
 use chrono;
 use diesel;
 use diesel::pg::PgConnection;
@@ -44,7 +44,7 @@ pub fn create_server() -> Result<Server> {
     let db_pool = diesel::r2d2::Pool::builder()
         .build(manager)
         .expect("Failed to create database pool.");
-    let auth_confectionary = env_confectionary()?;
+    let auth_confectionary = auth::env_confectionary()?;
     let metrics = StatsdClient::from_sink("blackhole", NopMetricSink);
     Ok(Server {
         db_pool,

@@ -1,9 +1,9 @@
 use crate::database_models::*;
 use crate::database_schema::*;
 use crate::entity_crud::EntityCrud;
-use crate::errors::*;
-use crate::identifiers::*;
-use crate::server::*;
+use crate::errors::{Result, FatcatError};
+use crate::identifiers::{FatcatId, check_username};
+use crate::server::DbConn;
 use diesel;
 use diesel::prelude::*;
 use fatcat_api_spec::models::*;

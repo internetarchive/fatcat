@@ -7,12 +7,12 @@
 // using closures as a Result/? hack
 #![allow(clippy::redundant_closure_call)]
 
-use crate::auth::*;
+use crate::auth::FatcatRole;
 use crate::database_models::EntityEditRow;
 use crate::editing::*;
 use crate::entity_crud::{EntityCrud, ExpandFlags, HideFlags};
 use crate::errors::*;
-use crate::identifiers::*;
+use crate::identifiers::FatcatId;
 use crate::server::*;
 use diesel::Connection;
 use fatcat_api_spec::models;

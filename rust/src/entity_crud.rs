@@ -1,10 +1,10 @@
 use crate::database_models::*;
 use crate::database_schema::*;
-use crate::editing::*;
+use crate::editing::EditContext;
 use crate::endpoint_handlers::get_release_files;
 use crate::errors::*;
 use crate::identifiers::*;
-use crate::server::*;
+use crate::server::DbConn;
 use chrono;
 use diesel::prelude::*;
 use diesel::{self, insert_into};

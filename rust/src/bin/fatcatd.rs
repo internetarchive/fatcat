@@ -6,8 +6,8 @@ extern crate slog;
 extern crate hyper;
 
 use clap::{App, Arg};
-use fatcat::errors::*;
-use fatcat::server::*;
+use fatcat::errors::Result;
+use fatcat::server;
 use iron::middleware::AfterMiddleware;
 use iron::modifiers::RedirectRaw;
 use iron::{status, Chain, Iron, IronResult, Request, Response};
@@ -64,7 +64,7 @@ fn main() -> Result<()> {
         None
     };
 
-    let mut server = create_server()?;
+    let mut server = server::create_server()?;
 
     // metrics reporting
     match env::var("FATCAT_STATSD_HOST") {
