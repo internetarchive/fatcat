@@ -11,6 +11,7 @@ use crate::auth::FatcatRole;
 use crate::database_models::EntityEditRow;
 use crate::editing::*;
 use crate::entity_crud::{EntityCrud, ExpandFlags, HideFlags};
+use crate::editing_crud::{EditorCrud, EditgroupCrud, EditgroupAnnotationCrud};
 use crate::errors::*;
 use crate::identifiers::FatcatId;
 use crate::server::*;
@@ -23,6 +24,7 @@ use futures::{self, Future};
 use sentry::integrations::failure::capture_fail;
 use std::str::FromStr;
 use uuid::{self, Uuid};
+use std::cmp;
 
 // This makes response matching below *much* more terse
 use crate::errors::FatcatError::*;
@@ -744,7 +746,9 @@ impl Api for Server {
         let ret = match conn
             .transaction(|| {
                 let editor_id = FatcatId::from_str(&editor_id)?;
-                unimplemented!()
+                let limit = cmp::min(100, limit.unwrap_or(20)) as u64;
+                let row = Editgroup::db_get_range_for_editor(&conn, editor_id, limit, since, before)?;
+                Ok(row.into_iter().map(|eg| eg.into_model_partial()).collect())
             })
             .map_err(|e: Error| FatcatError::from(e))
         {
@@ -766,11 +770,13 @@ impl Api for Server {
         let ret = match conn
             .transaction(|| {
                 let editor_id = FatcatId::from_str(&editor_id)?;
-                unimplemented!()
+                let limit = cmp::min(100, limit.unwrap_or(20)) as u64;
+                let annotations = EditgroupAnnotation::db_get_range_for_editor(&conn, editor_id, limit, since, before)?;
+                Ok(annotations.into_iter().map(|a| a.into_model()).collect())
             })
             .map_err(|e: Error| FatcatError::from(e))
         {
-            Ok(editgroups) => GetEditorAnnotationsResponse::Success(editgroups),
+            Ok(annotations) => GetEditorAnnotationsResponse::Success(annotations),
             Err(fe) => generic_err_responses!(fe, GetEditorAnnotationsResponse),
         };
         Box::new(futures::done(Ok(ret)))
@@ -838,8 +844,17 @@ impl Api for Server {
         let ret = match conn
             .transaction(|| {
                 let editgroup_id = FatcatId::from_str(&editgroup_id)?;
-                unimplemented!()
-                // TODO: let expand_flags = ExpandFlags::from_str(&param)?;
+                let limit: u64 = 1000;
+                // TODO: controllable expansion... for now always expands editors
+                let annotations = EditgroupAnnotation::db_get_range_for_editgroup(&conn, editgroup_id, limit, None, None)?;
+                let mut annotations: Vec<EditgroupAnnotation> = annotations.into_iter().map(|a| a.into_model()).collect();
+                if let Some(expand) = expand {
+                    let expand = ExpandFlags::from_str(&expand)?;
+                    for a in annotations.iter_mut() {
+                        a.db_expand(&conn, expand)?;
+                    };
+                };
+                Ok(annotations)
             })
             .map_err(|e: Error| FatcatError::from(e))
         {
@@ -859,8 +874,18 @@ impl Api for Server {
     ) -> Box<Future<Item = GetEditgroupsReviewableResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
         let ret = match conn
-            .transaction(|| unimplemented!())
-            .map_err(|e: Error| FatcatError::from(e))
+            .transaction(|| {
+                let limit = cmp::min(100, limit.unwrap_or(20)) as u64;
+                let row = Editgroup::db_get_range_reviewable(&conn, limit, since, before)?;
+                let mut editgroups: Vec<Editgroup>  = row.into_iter().map(|eg| eg.into_model_partial()).collect();
+                if let Some(expand) = expand {
+                    let expand = ExpandFlags::from_str(&expand)?;
+                    for eg in editgroups.iter_mut() {
+                        eg.db_expand(&conn, expand)?;
+                    };
+                };
+                Ok(editgroups)
+            }).map_err(|e: Error| FatcatError::from(e))
         {
             Ok(editgroups) => GetEditgroupsReviewableResponse::Found(editgroups),
             Err(fe) => generic_err_responses!(fe, GetEditgroupsReviewableResponse),
@@ -916,6 +941,8 @@ impl Api for Server {
         Box::new(futures::done(Ok(ret)))
     }
 
+    /// Note: this currently won't return the full (hydrated) editgroup including all edits, just
+    /// the partial model.
     fn update_editgroup(
         &self,
         editgroup_id: String,
@@ -938,20 +965,15 @@ impl Api for Server {
                     &context.auth_data,
                     Some("update_editgroup"),
                 )?;
-                unimplemented!(); // submit
-                                  // XXX let existing = Editgroup::db_get(&conn, editgroup_id)?;
-                                  /*
-                                  if existing.editor_id == auth_context.editor_id.to_uuid() {
-                                      // self edit of editgroup allowed
-                                      auth_context.require_role(FatcatRole::Editor)?;
-                                  } else {
-                                      // admin can update any editgroup
-                                      auth_context.require_role(FatcatRole::Admin)?;
-                                  };
-                                  editgroup
-                                      .db_update(&conn, editgroup_id)
-                                      .map(|e| e.into_model())
-                                  */
+                let existing = Editgroup::db_get(&conn, editgroup_id)?;
+                if existing.editor_id == auth_context.editor_id.to_uuid() {
+                    // self edit of editgroup allowed
+                    auth_context.require_role(FatcatRole::Editor)?;
+                } else {
+                    // admin can update any editgroup
+                    auth_context.require_role(FatcatRole::Admin)?;
+                };
+                editgroup.db_update(&conn, editgroup_id, submit).map(|eg| eg.into_model_partial())
             })
             .map_err(|e: Error| FatcatError::from(e))
         {
@@ -991,8 +1013,8 @@ impl Api for Server {
                         annotation.editor_id = Some(auth_context.editor_id.to_string());
                     }
                 };
-                unimplemented!();
-                // TODO: self.create_editgroup_annotation_handler(&conn, annotation)
+                // TODO: verify editgroup_id
+                annotation.db_create(&conn).map(|a| a.into_model())
             })
             .map_err(|e: Error| FatcatError::from(e))
         {

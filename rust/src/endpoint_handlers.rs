@@ -9,15 +9,13 @@ use crate::database_models::*;
 use crate::database_schema::*;
 use crate::editing::*;
 use crate::entity_crud::{EntityCrud, ExpandFlags, HideFlags};
+use crate::editing_crud::{EditorCrud, EditgroupCrud};
 use crate::errors::*;
 use crate::identifiers::*;
 use crate::server::*;
-use chrono;
 use diesel::prelude::*;
-use diesel::{self, insert_into};
 use fatcat_api_spec::models;
 use fatcat_api_spec::models::*;
-use std::str::FromStr;
 
 macro_rules! entity_batch_handler {
     ($post_batch_handler:ident, $model:ident) => {
@@ -385,26 +383,10 @@ impl Server {
     pub fn create_editgroup_handler(
         &self,
         conn: &DbConn,
-        entity: models::Editgroup,
+        editgroup: models::Editgroup,
     ) -> Result<Editgroup> {
-        unimplemented!()
-        /*
-        let row: EditgroupRow = insert_into(editgroup::table)
-            .values((
-                editgroup::editor_id.eq(FatcatId::from_str(&entity.editor_id.unwrap())?.to_uuid()),
-                editgroup::description.eq(entity.description),
-                editgroup::extra_json.eq(entity.extra),
-            ))
-            .get_result(conn)?;
-
-        Ok(Editgroup {
-            editgroup_id: Some(uuid2fcid(&row.id)),
-            editor_id: Some(uuid2fcid(&row.editor_id)),
-            description: row.description,
-            edits: None,
-            extra: row.extra_json,
-        })
-        */
+        let row = editgroup.db_create(conn, false)?;
+        Ok(row.into_model_partial())
     }
 
     pub fn get_editgroup_handler(
@@ -412,7 +394,8 @@ impl Server {
         conn: &DbConn,
         editgroup_id: FatcatId,
     ) -> Result<Editgroup> {
-        let row: EditgroupRow = editgroup::table.find(editgroup_id.to_uuid()).first(conn)?;
+        let row: EditgroupRow = Editgroup::db_get(conn, editgroup_id)?;
+        let mut editgroup = row.into_model_partial();
 
         let edits = EditgroupEdits {
             containers: Some(
@@ -473,22 +456,12 @@ impl Server {
             ),
         };
 
-        unimplemented!();
-        // XXX:
-        /*
-        let eg = Editgroup {
-            editgroup_id: Some(uuid2fcid(&row.id)),
-            editor_id: Some(uuid2fcid(&row.editor_id)),
-            description: row.description,
-            edits: Some(edits),
-            extra: row.extra_json,
-        };
-        Ok(eg)
-        */
+        editgroup.edits = Some(edits);
+        Ok(editgroup)
     }
 
     pub fn get_editor_handler(&self, conn: &DbConn, editor_id: FatcatId) -> Result<Editor> {
-        let row: EditorRow = editor::table.find(editor_id.to_uuid()).first(conn)?;
+        let row: EditorRow = Editor::db_get(conn, editor_id)?;
         Ok(row.into_model())
     }
 
@@ -497,6 +470,7 @@ impl Server {
         conn: &DbConn,
         editor_id: FatcatId,
     ) -> Result<Vec<ChangelogEntry>> {
+        // XXX: delete me?
         // TODO: single query
         let editor: EditorRow = editor::table.find(editor_id.to_uuid()).first(conn)?;
         let changes: Vec<(ChangelogRow, EditgroupRow)> = changelog::table

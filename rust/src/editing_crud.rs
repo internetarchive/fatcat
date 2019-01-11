@@ -5,7 +5,6 @@ use crate::errors::*;
 use crate::identifiers::{self, FatcatId};
 use crate::server::DbConn;
 use diesel::prelude::*;
-use diesel::{self, insert_into};
 use fatcat_api_spec::models::*;
 use std::str::FromStr;
 use uuid::Uuid;
@@ -70,14 +69,14 @@ pub trait EditgroupCrud {
         conn: &DbConn,
         editor_id: FatcatId,
         limit: u64,
-        since: Option<()>,
-        before: Option<()>,
+        since: Option<chrono::DateTime<chrono::Utc>>,
+        before: Option<chrono::DateTime<chrono::Utc>>,
     ) -> Result<Vec<EditgroupRow>>;
     fn db_get_range_reviewable(
         conn: &DbConn,
         limit: u64,
-        since: Option<()>,
-        before: Option<()>,
+        since: Option<chrono::DateTime<chrono::Utc>>,
+        before: Option<chrono::DateTime<chrono::Utc>>,
     ) -> Result<Vec<EditgroupRow>>;
     fn db_create(&self, conn: &DbConn, autoaccept: bool) -> Result<EditgroupRow>;
     fn db_update(
@@ -121,8 +120,8 @@ impl EditgroupCrud for Editgroup {
         conn: &DbConn,
         editor_id: FatcatId,
         limit: u64,
-        since: Option<()>,
-        before: Option<()>,
+        since: Option<chrono::DateTime<chrono::Utc>>,
+        before: Option<chrono::DateTime<chrono::Utc>>,
     ) -> Result<Vec<EditgroupRow>> {
         // TODO: since/before
         let rows: Vec<EditgroupRow> = match (since, before) {
@@ -141,8 +140,8 @@ impl EditgroupCrud for Editgroup {
     fn db_get_range_reviewable(
         conn: &DbConn,
         limit: u64,
-        since: Option<()>,
-        before: Option<()>,
+        since: Option<chrono::DateTime<chrono::Utc>>,
+        before: Option<chrono::DateTime<chrono::Utc>>,
     ) -> Result<Vec<EditgroupRow>> {
         // TODO: since/before
         let rows: Vec<EditgroupRow> = match (since, before) {
@@ -218,19 +217,20 @@ impl EditgroupCrud for Editgroup {
 
 pub trait EditgroupAnnotationCrud {
     fn db_get(conn: &DbConn, annotation_id: Uuid) -> Result<EditgroupAnnotationRow>;
+    fn db_expand(&mut self, conn: &DbConn, expand: ExpandFlags) -> Result<()>;
     fn db_get_range_for_editor(
         conn: &DbConn,
         editor_id: FatcatId,
         limit: u64,
-        since: Option<()>,
-        before: Option<()>,
+        since: Option<chrono::DateTime<chrono::Utc>>,
+        before: Option<chrono::DateTime<chrono::Utc>>,
     ) -> Result<Vec<EditgroupAnnotationRow>>;
     fn db_get_range_for_editgroup(
         conn: &DbConn,
         editgroup_id: FatcatId,
         limit: u64,
-        since: Option<()>,
-        before: Option<()>,
+        since: Option<chrono::DateTime<chrono::Utc>>,
+        before: Option<chrono::DateTime<chrono::Utc>>,
     ) -> Result<Vec<EditgroupAnnotationRow>>;
     fn db_create(&self, conn: &DbConn) -> Result<EditgroupAnnotationRow>;
 }
@@ -243,12 +243,16 @@ impl EditgroupAnnotationCrud for EditgroupAnnotation {
         Ok(row)
     }
 
+    fn db_expand(&mut self, conn: &DbConn, expand: ExpandFlags) -> Result<()> {
+        unimplemented!()
+    }
+
     fn db_get_range_for_editor(
         conn: &DbConn,
         editor_id: FatcatId,
         limit: u64,
-        since: Option<()>,
-        before: Option<()>,
+        since: Option<chrono::DateTime<chrono::Utc>>,
+        before: Option<chrono::DateTime<chrono::Utc>>,
     ) -> Result<Vec<EditgroupAnnotationRow>> {
         // TODO: since/before
         let rows: Vec<EditgroupAnnotationRow> = match (since, before) {
@@ -265,8 +269,8 @@ impl EditgroupAnnotationCrud for EditgroupAnnotation {
         conn: &DbConn,
         editgroup_id: FatcatId,
         limit: u64,
-        since: Option<()>,
-        before: Option<()>,
+        since: Option<chrono::DateTime<chrono::Utc>>,
+        before: Option<chrono::DateTime<chrono::Utc>>,
     ) -> Result<Vec<EditgroupAnnotationRow>> {
         // TODO: since/before
         let rows: Vec<EditgroupAnnotationRow> = match (since, before) {
