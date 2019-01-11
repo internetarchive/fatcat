@@ -8,6 +8,7 @@ use diesel::pg::PgConnection;
 use diesel::r2d2::ConnectionManager;
 use dotenv::dotenv;
 use std::env;
+use cadence::{StatsdClient, NopMetricSink};
 
 #[cfg(feature = "postgres")]
 embed_migrations!("../migrations/");
@@ -32,6 +33,7 @@ pub fn database_worker_pool() -> Result<ConnectionPool> {
 pub struct Server {
     pub db_pool: ConnectionPool,
     pub auth_confectionary: AuthConfectionary,
+    pub metrics: StatsdClient,
 }
 
 /// Instantiate a new API server with a pooled database connection
@@ -39,13 +41,15 @@ pub fn create_server() -> Result<Server> {
     dotenv().ok();
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let manager = ConnectionManager::<PgConnection>::new(database_url);
-    let pool = diesel::r2d2::Pool::builder()
+    let db_pool = diesel::r2d2::Pool::builder()
         .build(manager)
         .expect("Failed to create database pool.");
-    let confectionary = env_confectionary()?;
+    let auth_confectionary = env_confectionary()?;
+    let metrics = StatsdClient::from_sink("blackhole", NopMetricSink);
     Ok(Server {
-        db_pool: pool,
-        auth_confectionary: confectionary,
+        db_pool,
+        auth_confectionary,
+        metrics,
     })
 }
 

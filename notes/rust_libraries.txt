@@ -8,6 +8,28 @@ libs:
 - cadence (emits statsd)
 - frank_jwt and JWT for (simple?) auth
 
+metrics:
+- best would be something with a configurable back-end, like 'log' for logging,
+  but supporing tags/labels. the prometheus model probably makes most sense by
+  default (really nice to be able to grab metrics with 'curl'/browser for
+  individual instances), but statsd seems to be what we run in production. not
+  spewing out lots of UDP by default seems like a good idea.
+- dipstick: has all the good features, and popular, but code quality has smells
+  ("a32dlkjhw"-style commit messages), and API doesn't seem very clean. Also
+  prometheus stuff not actually implemented
+- cadence: seems stable, somewhat popular, clean API. statsd-only for now, but
+  has custom backends that could be hooked on to. *super* few dependencies,
+  nice.
+- tic: many deps; doesn't seem stable or under development
+- rust-prometheus: developed by pingcap (large company). has push and pull
+  features. medum-sized deps; has feature flags
+
+A nice feature of a statsd solution is that collectd is usually running
+locally (on linux dev, or in production), and metrics can be sent there by
+default, like journald for logging.
+
+Seems like a decision between cadence (statsd) and rust-prometheus.
+
 similar:
 - https://github.com/DavidBM/templic-backend
 - https://github.com/alexanderbanks/rust-api

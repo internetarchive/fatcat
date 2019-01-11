@@ -22,6 +22,7 @@ use futures::{self, Future};
 use sentry::integrations::failure::capture_fail;
 use std::str::FromStr;
 use uuid::{self, Uuid};
+use cadence::prelude::*;
 
 // This makes response matching below *much* more terse
 use crate::errors::FatcatError::*;
@@ -121,8 +122,10 @@ macro_rules! wrap_entity_handlers {
                 edit_context.check(&conn)?;
                 entity.db_create(&conn, &edit_context)?.into_model()
             }).map_err(|e| FatcatError::from(e)) {
-                Ok(edit) =>
-                    $post_resp::CreatedEntity(edit),
+                Ok(edit) => {
+                    self.metrics.incr("entities.created").ok();
+                    $post_resp::CreatedEntity(edit)
+                },
                 Err(fe) => generic_auth_err_responses!(fe, $post_resp),
             };
             Box::new(futures::done(Ok(ret)))
@@ -146,8 +149,14 @@ macro_rules! wrap_entity_handlers {
                 } else { None };
                 self.$post_batch_handler(&conn, entity_list, autoaccept.unwrap_or(false), auth_context.editor_id, editgroup_id)
             }).map_err(|e| FatcatError::from(e)) {
-                Ok(edit) =>
-                    $post_batch_resp::CreatedEntities(edit),
+                Ok(edits) => {
+                    self.metrics.count("entities.created", edits.len() as i64).ok();
+                    if let Some(true) = autoaccept {
+                        self.metrics.incr("editgroup.created").ok();
+                        self.metrics.incr("editgroup.accepted").ok();
+                    };
+                    $post_batch_resp::CreatedEntities(edits)
+                },
                 Err(fe) => generic_auth_err_responses!(fe, $post_batch_resp),
             };
             Box::new(futures::done(Ok(ret)))
@@ -171,8 +180,10 @@ macro_rules! wrap_entity_handlers {
                 edit_context.check(&conn)?;
                 entity.db_update(&conn, &edit_context, entity_id)?.into_model()
             }).map_err(|e| FatcatError::from(e)) {
-                Ok(edit) =>
-                    $update_resp::UpdatedEntity(edit),
+                Ok(edit) => {
+                    self.metrics.incr("entities.updated").ok();
+                    $update_resp::UpdatedEntity(edit)
+                },
                 Err(fe) => generic_auth_err_responses!(fe, $update_resp),
             };
             Box::new(futures::done(Ok(ret)))
@@ -195,8 +206,10 @@ macro_rules! wrap_entity_handlers {
                 edit_context.check(&conn)?;
                 $model::db_delete(&conn, &edit_context, entity_id)?.into_model()
             }).map_err(|e| FatcatError::from(e)) {
-                Ok(edit) =>
-                    $delete_resp::DeletedEntity(edit),
+                Ok(edit) => {
+                    self.metrics.incr("entities.deleted").ok();
+                    $delete_resp::DeletedEntity(edit)
+                },
                 Err(fe) => generic_auth_err_responses!(fe, $delete_resp),
             };
             Box::new(futures::done(Ok(ret)))
@@ -745,10 +758,13 @@ impl Api for Server {
             })
             .map_err(|e| FatcatError::from(e))
         {
-            Ok(()) => AcceptEditgroupResponse::MergedSuccessfully(Success {
-                success: true,
-                message: "horray!".to_string(),
-            }),
+            Ok(()) => {
+                self.metrics.incr("editgroup.accepted").ok();
+                AcceptEditgroupResponse::MergedSuccessfully(Success {
+                    success: true,
+                    message: "horray!".to_string(),
+                })
+            },
             Err(fe) => generic_auth_err_responses!(fe, AcceptEditgroupResponse),
         };
         Box::new(futures::done(Ok(ret)))
@@ -804,7 +820,10 @@ impl Api for Server {
             })
             .map_err(|e| FatcatError::from(e))
         {
-            Ok(eg) => CreateEditgroupResponse::SuccessfullyCreated(eg),
+            Ok(eg) => {
+                self.metrics.incr("editgroup.created").ok();
+                CreateEditgroupResponse::SuccessfullyCreated(eg)
+            },
             Err(fe) => match fe {
                 NotFound(_, _) => CreateEditgroupResponse::NotFound(fe.into()),
                 DatabaseError(_) | InternalError(_) => {
@@ -884,8 +903,14 @@ impl Api for Server {
             })
             .map_err(|e: Error| FatcatError::from(e))
         {
-            Ok((result, true)) => AuthOidcResponse::Created(result),
-            Ok((result, false)) => AuthOidcResponse::Found(result),
+            Ok((result, true)) => {
+                self.metrics.incr("account.signup").ok();
+                AuthOidcResponse::Created(result)
+            },
+            Ok((result, false)) => {
+                self.metrics.incr("account.login").ok();
+                AuthOidcResponse::Found(result)
+            },
             Err(fe) => match fe {
                 DatabaseError(_) | InternalError(_) => {
                     error!("{}", fe);
