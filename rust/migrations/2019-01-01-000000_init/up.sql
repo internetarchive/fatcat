@@ -47,8 +47,8 @@ CREATE TABLE editgroup (
     created             TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
     submitted           TIMESTAMP WITH TIME ZONE,
     is_accepted         BOOLEAN DEFAULT false NOT NULL,
-    extra_json          JSONB,
-    description         TEXT
+    description         TEXT,
+    extra_json          JSONB
 );
 
 -- for fast "recent, reviewable" and "work in progress" queries
@@ -64,7 +64,8 @@ CREATE TABLE editgroup_annotation (
     extra_json          JSONB
 );
 
-CREATE INDEX editgroup_annotation_created_idx ON editgroup_annotation(editgroup_id, created);
+CREATE INDEX editgroup_annotation_editgroup_created_idx ON editgroup_annotation(editgroup_id, created);
+CREATE INDEX editgroup_annotation_editor_created_idx ON editgroup_annotation(editor_id, created);
 
 CREATE TABLE changelog (
     id                  BIGSERIAL PRIMARY KEY,

@@ -100,8 +100,8 @@ table! {
         created -> Timestamptz,
         submitted -> Nullable<Timestamptz>,
         is_accepted -> Bool,
-        extra_json -> Nullable<Jsonb>,
         description -> Nullable<Text>,
+        extra_json -> Nullable<Jsonb>,
     }
 }
 
