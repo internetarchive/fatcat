@@ -31,7 +31,7 @@ if __name__ == '__main__':
     #fatcat_client.configuration.api_key['Authorization'] = 'YOUR_API_KEY'
     #fatcat_client.configuration.api_key_prefix['Authorization'] = 'Bearer'
     local_conf = fatcat_client.Configuration()
-    local_conf.api_key["Authorization"] = "AgEPZGV2LmZhdGNhdC53aWtpAg4yMDE4LTEyLTMxLWRldgACJmVkaXRvcl9pZCA9IGFhYWFhYWFhYWFhYWJrdmthYWFhYWFhYWFlAAIeY3JlYXRlZCA9IDIwMTgtMTItMzFUMjE6MTU6NDdaAAAGIMWFZeZ54pH4OzNl5+U5X3p1H1rMioSuIldihuiM5XAw"
+    local_conf.api_key["Authorization"] = "AgEPZGV2LmZhdGNhdC53aWtpAhYyMDE5MDEwMS1kZXYtZHVtbXkta2V5AAImZWRpdG9yX2lkID0gYWFhYWFhYWFhYWFhYmt2a2FhYWFhYWFhYWkAAht0aW1lID4gMjAxOS0wMS0wOVQwMDo1Nzo1MloAAAYgnroNha1hSftChtxHGTnLEmM/pY8MeQS/jBSV0UNvXug="
     local_conf.api_key_prefix["Authorization"] = "Bearer"
     local_conf.host = 'http://localhost:9411/v0'
     local_conf.debug = True
