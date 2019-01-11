@@ -491,13 +491,19 @@ INSERT INTO editor (id, username, is_superuser, is_admin, is_bot, auth_epoch) VA
     ('00000000-0000-0000-AAAA-000000000005', 'webface-bot', true, true, true, '1970-01-01T01:01:01Z'),    -- aaaaaaaaaaaabkvkaaaaaaaaau
     ('00000000-0000-0000-AAAA-000000000006', 'bnewbold', false, true, false, '1970-01-01T01:01:01Z');     -- aaaaaaaaaaaabkvkaaaaaaaaay
 
-INSERT INTO editgroup (id, editor_id, description) VALUES
-    ('00000000-0000-0000-BBBB-000000000001', '00000000-0000-0000-AAAA-000000000001', 'first edit ever!'),       -- aaaaaaaaaaaabo53aaaaaaaaae
-    ('00000000-0000-0000-BBBB-000000000002', '00000000-0000-0000-AAAA-000000000001', 'another one!'),           -- aaaaaaaaaaaabo53aaaaaaaaai
-    ('00000000-0000-0000-BBBB-000000000003', '00000000-0000-0000-AAAA-000000000003', 'user edit'),              -- aaaaaaaaaaaabo53aaaaaaaaam
-    ('00000000-0000-0000-BBBB-000000000004', '00000000-0000-0000-AAAA-000000000002', 'uncommited edit'),        -- aaaaaaaaaaaabo53aaaaaaaaaq
-    ('00000000-0000-0000-BBBB-000000000005', '00000000-0000-0000-AAAA-000000000001', 'journal edit'),           -- aaaaaaaaaaaabo53aaaaaaaaau
-    ('00000000-0000-0000-BBBB-000000000006', '00000000-0000-0000-AAAA-000000000001', 'another journal edit');   -- aaaaaaaaaaaabo53aaaaaaaaay
+INSERT INTO editgroup (id, is_accepted, editor_id, description, submitted) VALUES
+    ('00000000-0000-0000-BBBB-000000000001',  true, '00000000-0000-0000-AAAA-000000000001', 'first edit ever!', NULL),      -- aaaaaaaaaaaabo53aaaaaaaaae
+    ('00000000-0000-0000-BBBB-000000000002',  true, '00000000-0000-0000-AAAA-000000000001', 'another one!', NULL),          -- aaaaaaaaaaaabo53aaaaaaaaai
+    ('00000000-0000-0000-BBBB-000000000003',  true, '00000000-0000-0000-AAAA-000000000003', 'user edit', NULL),             -- aaaaaaaaaaaabo53aaaaaaaaam
+    ('00000000-0000-0000-BBBB-000000000004',  true, '00000000-0000-0000-AAAA-000000000002', 'uncommited edit', NULL),       -- aaaaaaaaaaaabo53aaaaaaaaaq
+    ('00000000-0000-0000-BBBB-000000000005',  true, '00000000-0000-0000-AAAA-000000000001', 'journal edit', NULL),          -- aaaaaaaaaaaabo53aaaaaaaaau
+    ('00000000-0000-0000-BBBB-000000000006', false, '00000000-0000-0000-AAAA-000000000004', 'another journal edit', NULL),  -- aaaaaaaaaaaabo53aaaaaaaaay
+    ('00000000-0000-0000-BBBB-000000000007', false, '00000000-0000-0000-AAAA-000000000003', 'edit for submission', now());  -- aaaaaaaaaaaabo53aaaaaaaaa?
+
+INSERT INTO editgroup_annotation (editgroup_id, editor_id, comment_markdown) VALUES
+    ('00000000-0000-0000-BBBB-000000000007', '00000000-0000-0000-AAAA-000000000003', 'I love this edit!'),
+    ('00000000-0000-0000-BBBB-000000000007', '00000000-0000-0000-AAAA-000000000004', 'I have concerns about this edit...'),
+    ('00000000-0000-0000-BBBB-000000000007', '00000000-0000-0000-AAAA-000000000003', 'updated with changes, please re-review.');
 
 INSERT INTO changelog (editgroup_id) VALUES
     ('00000000-0000-0000-BBBB-000000000001'),
