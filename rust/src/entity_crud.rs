@@ -333,7 +333,7 @@ macro_rules! generic_db_create {
     ($ident_table: ident, $edit_table: ident) => {
         fn db_create(&self, conn: &DbConn, edit_context: &EditContext) -> Result<Self::EditRow> {
             if self.redirect.is_some() {
-                return Err(FatcatError::OtherBadRequest(
+                return Err(FatcatError::BadRequest(
                     "can't create an entity that redirects from the start".to_string()).into());
             }
             let rev_id = self.db_insert_rev(conn)?;
@@ -361,7 +361,7 @@ macro_rules! generic_db_create_batch {
             models: &[&Self],
         ) -> Result<Vec<Self::EditRow>> {
             if models.iter().any(|m| m.redirect.is_some()) {
-                return Err(FatcatError::OtherBadRequest(
+                return Err(FatcatError::BadRequest(
                     "can't create an entity that redirects from the start".to_string(),
                 )
                 .into());
@@ -420,14 +420,14 @@ macro_rules! generic_db_update {
             if self.state.is_none() {
 
                 if Some(ident.to_string()) == self.redirect {
-                    return Err(FatcatError::OtherBadRequest(
+                    return Err(FatcatError::BadRequest(
                         "tried to redirect entity to itself".to_string()).into());
                 }
                 // special case: redirect to another entity
                 if let Some(ref redirect_ident) = self.redirect {
                     let redirect_ident = FatcatId::from_str(&redirect_ident)?.to_uuid();
                     if Some(redirect_ident) == current.redirect_id {
-                        return Err(FatcatError::OtherBadRequest(
+                        return Err(FatcatError::BadRequest(
                             "redundantly redirecting entity to it's current target currently isn't supported".to_string()).into());
                     }
                     // TODO: if we get a diesel not-found here, should be a special error response?
@@ -435,8 +435,7 @@ macro_rules! generic_db_update {
                     if target.is_live != true {
                         // there is no race condition on this check because WIP -> is_live=true is
                         // a one-way operation
-                        // XXX:
-                        return Err(FatcatError::OtherBadRequest(
+                        return Err(FatcatError::BadRequest(
                             "attempted to redirect to a WIP entity".to_string()).into());
                     }
                     // Note: there is a condition where the target is already a redirect, but we
@@ -458,7 +457,7 @@ macro_rules! generic_db_update {
                 if let Some(ref rev_id) = self.revision {
                     let rev_id = Uuid::from_str(&rev_id)?;
                     if Some(rev_id) == current.rev_id {
-                        return Err(FatcatError::OtherBadRequest(
+                        return Err(FatcatError::BadRequest(
                             "reverted entity to it's current state; this isn't currently supported".to_string()).into());
                     }
                     let edit: Self::EditRow = insert_into($edit_table::table)
@@ -661,7 +660,7 @@ macro_rules! generic_db_accept_edits_batch {
                 .get_result(conn)?;
             if forward_recursive_redirects != 0 {
                 // TODO: revert transaction?
-                return Err(FatcatError::OtherBadRequest(
+                return Err(FatcatError::BadRequest(
                     "one or more (forward) recurisve redirects".to_string(),
                 )
                 .into());
@@ -680,7 +679,7 @@ macro_rules! generic_db_accept_edits_batch {
                 .get_result(conn)?;
             if backward_recursive_redirects != 0 {
                 // TODO: revert transaction?
-                return Err(FatcatError::OtherBadRequest(
+                return Err(FatcatError::BadRequest(
                     "one or more (backward) recurisve redirects".to_string(),
                 )
                 .into());
@@ -855,7 +854,7 @@ impl EntityCrud for ContainerEntity {
         }
 
         if models.iter().any(|m| m.name.is_none()) {
-            return Err(FatcatError::OtherBadRequest(
+            return Err(FatcatError::BadRequest(
                 "name is required for all Container entities".to_string(),
             )
             .into());
@@ -966,7 +965,7 @@ impl EntityCrud for CreatorEntity {
         }
 
         if models.iter().any(|m| m.display_name.is_none()) {
-            return Err(FatcatError::OtherBadRequest(
+            return Err(FatcatError::BadRequest(
                 "display_name is required for all Creator entities".to_string(),
             )
             .into());
@@ -1494,7 +1493,7 @@ impl EntityCrud for WebcaptureEntity {
                 }
             }
             if entity.timestamp.is_none() || entity.original_url.is_none() {
-                return Err(FatcatError::OtherBadRequest(
+                return Err(FatcatError::BadRequest(
                     "timestamp and original_url are required for webcapture entities".to_string(),
                 )
                 .into());
@@ -1703,7 +1702,7 @@ impl EntityCrud for ReleaseEntity {
 
     fn db_create(&self, conn: &DbConn, edit_context: &EditContext) -> Result<Self::EditRow> {
         if self.redirect.is_some() {
-            return Err(FatcatError::OtherBadRequest(
+            return Err(FatcatError::BadRequest(
                 "can't create an entity that redirects from the start".to_string(),
             )
             .into());
@@ -1721,7 +1720,7 @@ impl EntityCrud for ReleaseEntity {
         // This isn't the generic implementation because we need to create Work entities for each
         // of the release entities passed (at least in the common case)
         if models.iter().any(|m| m.redirect.is_some()) {
-            return Err(FatcatError::OtherBadRequest(
+            return Err(FatcatError::BadRequest(
                 "can't create an entity that redirects from the start".to_string(),
             )
             .into());
@@ -1948,7 +1947,7 @@ impl EntityCrud for ReleaseEntity {
         }
 
         if models.iter().any(|m| m.title.is_none()) {
-            return Err(FatcatError::OtherBadRequest(
+            return Err(FatcatError::BadRequest(
                 "title is required for all Release entities".to_string(),
             )
             .into());

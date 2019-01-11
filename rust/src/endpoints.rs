@@ -707,7 +707,7 @@ impl Api for Server {
             .transaction(|| {
                 if Some(editor_id.clone()) != editor.editor_id {
                     return Err(
-                        FatcatError::OtherBadRequest("editor_id doesn't match".to_string()).into(),
+                        FatcatError::BadRequest("editor_id doesn't match".to_string()).into(),
                     );
                 }
                 let auth_context = self.auth_confectionary.require_auth(
@@ -972,10 +972,9 @@ impl Api for Server {
             .transaction(|| {
                 let editgroup_id = FatcatId::from_str(&editgroup_id)?;
                 if Some(editgroup_id.to_string()) != editgroup.editgroup_id {
-                    return Err(FatcatError::OtherBadRequest(
-                        "editgroup_id doesn't match".to_string(),
-                    )
-                    .into());
+                    return Err(
+                        FatcatError::BadRequest("editgroup_id doesn't match".to_string()).into(),
+                    );
                 }
                 let auth_context = self.auth_confectionary.require_auth(
                     &conn,

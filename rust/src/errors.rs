@@ -93,11 +93,7 @@ pub enum FatcatError {
     #[fail(display = "unexpected internal error: {}", _0)]
     // Fmt, Io, Serde,
     InternalError(String),
-
-    // TODO: backwards compat; need to refactor out
-    #[fail(display = "unexpected internal error: {}", _0)]
-    OtherBadRequest(String), // NOTE: this enum is not exhaustive and shouldn't be matched over!
-}
+} // NOTE: this enum is not exhaustive and shouldn't be matched over!
 
 impl Into<models::ErrorResponse> for FatcatError {
     /// Format an error as an API response (ErrorResponse model, used by all HTTP 4xx and 5xx
