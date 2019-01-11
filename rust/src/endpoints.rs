@@ -14,6 +14,7 @@ use crate::entity_crud::{EntityCrud, ExpandFlags, HideFlags};
 use crate::errors::*;
 use crate::identifiers::FatcatId;
 use crate::server::*;
+use cadence::prelude::*;
 use diesel::Connection;
 use fatcat_api_spec::models;
 use fatcat_api_spec::models::*;
@@ -22,7 +23,6 @@ use futures::{self, Future};
 use sentry::integrations::failure::capture_fail;
 use std::str::FromStr;
 use uuid::{self, Uuid};
-use cadence::prelude::*;
 
 // This makes response matching below *much* more terse
 use crate::errors::FatcatError::*;
@@ -764,7 +764,7 @@ impl Api for Server {
                     success: true,
                     message: "horray!".to_string(),
                 })
-            },
+            }
             Err(fe) => generic_auth_err_responses!(fe, AcceptEditgroupResponse),
         };
         Box::new(futures::done(Ok(ret)))

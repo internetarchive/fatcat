@@ -1,8 +1,13 @@
+//! Helpers and types for dealing with the edit lifecycle.
+//!
+//! Does not contain the core code for creating/updating/reading/deleting the Editor, Annotation,
+//! and Changelog objects, which lives under `editing_crud`.
+
 use crate::database_models::*;
 use crate::database_schema::*;
 use crate::entity_crud::EntityCrud;
-use crate::errors::{Result, FatcatError};
-use crate::identifiers::{FatcatId, check_username};
+use crate::errors::{FatcatError, Result};
+use crate::identifiers::{check_username, FatcatId};
 use crate::server::DbConn;
 use diesel;
 use diesel::prelude::*;

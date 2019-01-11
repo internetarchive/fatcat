@@ -1,14 +1,14 @@
 //! API endpoint handlers
 
-use crate::auth::{AuthConfectionary, self};
+use crate::auth::{self, AuthConfectionary};
 use crate::errors::Result;
+use cadence::{NopMetricSink, StatsdClient};
 use chrono;
 use diesel;
 use diesel::pg::PgConnection;
 use diesel::r2d2::ConnectionManager;
 use dotenv::dotenv;
 use std::env;
-use cadence::{StatsdClient, NopMetricSink};
 
 #[cfg(feature = "postgres")]
 embed_migrations!("../migrations/");

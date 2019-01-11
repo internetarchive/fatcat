@@ -116,9 +116,13 @@ impl Into<models::ErrorResponse> for FatcatError {
 impl From<diesel::result::Error> for FatcatError {
     fn from(inner: diesel::result::Error) -> FatcatError {
         match inner {
-            diesel::result::Error::NotFound => FatcatError::NotFound("unknown".to_string(), "N/A".to_string()),
-            diesel::result::Error::DatabaseError(_, _) => FatcatError::ConstraintViolation(inner.to_string()),
-            _ => FatcatError::InternalError(inner.to_string())
+            diesel::result::Error::NotFound => {
+                FatcatError::NotFound("unknown".to_string(), "N/A".to_string())
+            }
+            diesel::result::Error::DatabaseError(_, _) => {
+                FatcatError::ConstraintViolation(inner.to_string())
+            }
+            _ => FatcatError::InternalError(inner.to_string()),
         }
     }
 }
@@ -178,4 +182,3 @@ impl From<failure::Error> for FatcatError {
         FatcatError::InternalError(error.to_string())
     }
 }
-

@@ -1,3 +1,10 @@
+//! Create/Update/Read/Delete methods for all entity types
+//!
+//! This module is very large (perhaps it should be split into per-entity files?), but it basically
+//! comes down to implementing the EntityCrud trait for each of the entity types. *All* entity
+//! reads and mutations should go through this file, which defines the mechanics of translation
+//! between the SQL schema and API (swagger) JSON models.
+
 use crate::database_models::*;
 use crate::database_schema::*;
 use crate::editing::EditContext;
@@ -5,7 +12,6 @@ use crate::endpoint_handlers::get_release_files;
 use crate::errors::*;
 use crate::identifiers::*;
 use crate::server::DbConn;
-use chrono;
 use diesel::prelude::*;
 use diesel::{self, insert_into};
 use fatcat_api_spec::models::*;
@@ -295,8 +301,10 @@ macro_rules! generic_db_get_rev {
         fn db_get_rev(conn: &DbConn, rev_id: Uuid, hide: HideFlags) -> Result<Self> {
             let rev = match $rev_table::table.find(rev_id).first(conn) {
                 Ok(rev) => rev,
-                Err(diesel::result::Error::NotFound) =>
-                    Err(FatcatError::NotFound(stringify!($rev_table).to_string(), rev_id.to_string()))?,
+                Err(diesel::result::Error::NotFound) => Err(FatcatError::NotFound(
+                    stringify!($rev_table).to_string(),
+                    rev_id.to_string(),
+                ))?,
                 Err(e) => Err(e)?,
             };
 

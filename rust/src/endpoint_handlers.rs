@@ -1,6 +1,9 @@
 //! API endpoint handlers
 //!
 //! This module contains actual implementations of endpoints with rust-style type signatures.
+//!
+//! The remaining functions here should probably be refactored away. The 'get_release_files' style
+//! functions should go in entity_crud (or some new
 
 use crate::database_models::*;
 use crate::database_schema::*;

@@ -1,4 +1,8 @@
 //! Editor bearer token authentication
+//!
+//! Code for dealing with API bearer tokens (macaroons), which encode the editor identifier as well
+//! as additional constraints (eg, to a particular endpoint or time span). Includes helpers for
+//! role-based authentication (RBAC).
 
 use data_encoding::BASE64;
 use macaroon::{Format, Macaroon, Verifier};

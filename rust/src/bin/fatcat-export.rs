@@ -15,15 +15,15 @@ use clap::{App, Arg};
 use fatcat::entity_crud::*;
 use fatcat::errors::Result;
 use fatcat::identifiers::FatcatId;
-use fatcat::server::{DbConn, self};
+use fatcat::server::{self, DbConn};
 use fatcat_api_spec::models::*;
 use std::str::FromStr;
 use uuid::Uuid;
 
-use std::thread;
 use crossbeam_channel as channel;
 use std::io::prelude::*;
 use std::io::{BufReader, BufWriter};
+use std::thread;
 
 const CHANNEL_BUFFER_LEN: usize = 200;
 
