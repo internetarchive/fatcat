@@ -36,18 +36,18 @@ use swagger::{ApiError, Context, XSpanId};
 use models;
 use {
     AcceptEditgroupResponse, Api, AuthCheckResponse, AuthOidcResponse, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse,
-    CreateEditgroupResponse, CreateFileBatchResponse, CreateFileResponse, CreateFilesetBatchResponse, CreateFilesetResponse, CreateReleaseBatchResponse, CreateReleaseResponse,
-    CreateWebcaptureBatchResponse, CreateWebcaptureResponse, CreateWorkBatchResponse, CreateWorkResponse, DeleteContainerEditResponse, DeleteContainerResponse, DeleteCreatorEditResponse,
-    DeleteCreatorResponse, DeleteFileEditResponse, DeleteFileResponse, DeleteFilesetEditResponse, DeleteFilesetResponse, DeleteReleaseEditResponse, DeleteReleaseResponse,
+    CreateEditgroupAnnotationResponse, CreateEditgroupResponse, CreateFileBatchResponse, CreateFileResponse, CreateFilesetBatchResponse, CreateFilesetResponse, CreateReleaseBatchResponse,
+    CreateReleaseResponse, CreateWebcaptureBatchResponse, CreateWebcaptureResponse, CreateWorkBatchResponse, CreateWorkResponse, DeleteContainerEditResponse, DeleteContainerResponse,
+    DeleteCreatorEditResponse, DeleteCreatorResponse, DeleteFileEditResponse, DeleteFileResponse, DeleteFilesetEditResponse, DeleteFilesetResponse, DeleteReleaseEditResponse, DeleteReleaseResponse,
     DeleteWebcaptureEditResponse, DeleteWebcaptureResponse, DeleteWorkEditResponse, DeleteWorkResponse, GetChangelogEntryResponse, GetChangelogResponse, GetContainerEditResponse,
     GetContainerHistoryResponse, GetContainerRedirectsResponse, GetContainerResponse, GetContainerRevisionResponse, GetCreatorEditResponse, GetCreatorHistoryResponse, GetCreatorRedirectsResponse,
-    GetCreatorReleasesResponse, GetCreatorResponse, GetCreatorRevisionResponse, GetEditgroupResponse, GetEditorChangelogResponse, GetEditorResponse, GetFileEditResponse, GetFileHistoryResponse,
-    GetFileRedirectsResponse, GetFileResponse, GetFileRevisionResponse, GetFilesetEditResponse, GetFilesetHistoryResponse, GetFilesetRedirectsResponse, GetFilesetResponse, GetFilesetRevisionResponse,
-    GetReleaseEditResponse, GetReleaseFilesResponse, GetReleaseFilesetsResponse, GetReleaseHistoryResponse, GetReleaseRedirectsResponse, GetReleaseResponse, GetReleaseRevisionResponse,
-    GetReleaseWebcapturesResponse, GetWebcaptureEditResponse, GetWebcaptureHistoryResponse, GetWebcaptureRedirectsResponse, GetWebcaptureResponse, GetWebcaptureRevisionResponse, GetWorkEditResponse,
-    GetWorkHistoryResponse, GetWorkRedirectsResponse, GetWorkReleasesResponse, GetWorkResponse, GetWorkRevisionResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse,
-    LookupReleaseResponse, UpdateContainerResponse, UpdateCreatorResponse, UpdateEditorResponse, UpdateFileResponse, UpdateFilesetResponse, UpdateReleaseResponse, UpdateWebcaptureResponse,
-    UpdateWorkResponse,
+    GetCreatorReleasesResponse, GetCreatorResponse, GetCreatorRevisionResponse, GetEditgroupAnnotationsResponse, GetEditgroupResponse, GetEditgroupsReviewableResponse, GetEditorAnnotationsResponse,
+    GetEditorEditgroupsResponse, GetEditorResponse, GetFileEditResponse, GetFileHistoryResponse, GetFileRedirectsResponse, GetFileResponse, GetFileRevisionResponse, GetFilesetEditResponse,
+    GetFilesetHistoryResponse, GetFilesetRedirectsResponse, GetFilesetResponse, GetFilesetRevisionResponse, GetReleaseEditResponse, GetReleaseFilesResponse, GetReleaseFilesetsResponse,
+    GetReleaseHistoryResponse, GetReleaseRedirectsResponse, GetReleaseResponse, GetReleaseRevisionResponse, GetReleaseWebcapturesResponse, GetWebcaptureEditResponse, GetWebcaptureHistoryResponse,
+    GetWebcaptureRedirectsResponse, GetWebcaptureResponse, GetWebcaptureRevisionResponse, GetWorkEditResponse, GetWorkHistoryResponse, GetWorkRedirectsResponse, GetWorkReleasesResponse,
+    GetWorkResponse, GetWorkRevisionResponse, LookupContainerResponse, LookupCreatorResponse, LookupFileResponse, LookupReleaseResponse, UpdateContainerResponse, UpdateCreatorResponse,
+    UpdateEditgroupResponse, UpdateEditorResponse, UpdateFileResponse, UpdateFilesetResponse, UpdateReleaseResponse, UpdateWebcaptureResponse, UpdateWorkResponse,
 };
 
 /// Convert input into a base path, e.g. "http://example:123". Also checks the scheme as it goes.
@@ -2203,6 +2203,86 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
+    fn get_editgroups_reviewable(
+        &self,
+        param_expand: Option<String>,
+        param_limit: Option<i64>,
+        param_before: Option<chrono::DateTime<chrono::Utc>>,
+        param_since: Option<chrono::DateTime<chrono::Utc>>,
+        context: &Context,
+    ) -> Box<Future<Item = GetEditgroupsReviewableResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
+        let query_limit = param_limit.map_or_else(String::new, |query| format!("limit={limit}&", limit = query.to_string()));
+        let query_before = param_before.map_or_else(String::new, |query| format!("before={before}&", before = query.to_string()));
+        let query_since = param_since.map_or_else(String::new, |query| format!("since={since}&", since = query.to_string()));
+
+        let url = format!(
+            "{}/v0/editgroup/reviewable?{expand}{limit}{before}{since}",
+            self.base_path,
+            expand = utf8_percent_encode(&query_expand, QUERY_ENCODE_SET),
+            limit = utf8_percent_encode(&query_limit, QUERY_ENCODE_SET),
+            before = utf8_percent_encode(&query_before, QUERY_ENCODE_SET),
+            since = utf8_percent_encode(&query_since, QUERY_ENCODE_SET)
+        );
+
+        let hyper_client = (self.hyper_client)();
+        let request = hyper_client.request(hyper::method::Method::Get, &url);
+        let mut custom_headers = hyper::header::Headers::new();
+
+        context.x_span_id.as_ref().map(|header| custom_headers.set(XSpanId(header.clone())));
+
+        let request = request.headers(custom_headers);
+
+        // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
+        fn parse_response(mut response: hyper::client::response::Response) -> Result<GetEditgroupsReviewableResponse, ApiError> {
+            match response.status.to_u16() {
+                200 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<Vec<models::Editgroup>>(&buf)?;
+
+                    Ok(GetEditgroupsReviewableResponse::Found(body))
+                }
+                400 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(GetEditgroupsReviewableResponse::BadRequest(body))
+                }
+                404 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(GetEditgroupsReviewableResponse::NotFound(body))
+                }
+                500 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(GetEditgroupsReviewableResponse::GenericError(body))
+                }
+                code => {
+                    let mut buf = [0; 100];
+                    let debug_body = match response.read(&mut buf) {
+                        Ok(len) => match str::from_utf8(&buf[..len]) {
+                            Ok(body) => Cow::from(body),
+                            Err(_) => Cow::from(format!("<Body was not UTF8: {:?}>", &buf[..len].to_vec())),
+                        },
+                        Err(e) => Cow::from(format!("<Failed to read body: {}>", e)),
+                    };
+                    Err(ApiError(format!("Unexpected response code {}:\n{:?}\n\n{}", code, response.headers, debug_body)))
+                }
+            }
+        }
+
+        let result = request.send().map_err(|e| ApiError(format!("No response received: {}", e))).and_then(parse_response);
+        Box::new(futures::done(result))
+    }
+
     fn get_editor(&self, param_editor_id: String, context: &Context) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send> {
         let url = format!(
             "{}/v0/editor/{editor_id}",
@@ -2267,11 +2347,26 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn get_editor_changelog(&self, param_editor_id: String, context: &Context) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send> {
+    fn get_editor_editgroups(
+        &self,
+        param_editor_id: String,
+        param_limit: Option<i64>,
+        param_before: Option<chrono::DateTime<chrono::Utc>>,
+        param_since: Option<chrono::DateTime<chrono::Utc>>,
+        context: &Context,
+    ) -> Box<Future<Item = GetEditorEditgroupsResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_limit = param_limit.map_or_else(String::new, |query| format!("limit={limit}&", limit = query.to_string()));
+        let query_before = param_before.map_or_else(String::new, |query| format!("before={before}&", before = query.to_string()));
+        let query_since = param_since.map_or_else(String::new, |query| format!("since={since}&", since = query.to_string()));
+
         let url = format!(
-            "{}/v0/editor/{editor_id}/changelog",
+            "{}/v0/editor/{editor_id}/editgroups?{limit}{before}{since}",
             self.base_path,
-            editor_id = utf8_percent_encode(&param_editor_id.to_string(), PATH_SEGMENT_ENCODE_SET)
+            editor_id = utf8_percent_encode(&param_editor_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            limit = utf8_percent_encode(&query_limit, QUERY_ENCODE_SET),
+            before = utf8_percent_encode(&query_before, QUERY_ENCODE_SET),
+            since = utf8_percent_encode(&query_since, QUERY_ENCODE_SET)
         );
 
         let hyper_client = (self.hyper_client)();
@@ -2283,35 +2378,136 @@ impl Api for Client {
         let request = request.headers(custom_headers);
 
         // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
-        fn parse_response(mut response: hyper::client::response::Response) -> Result<GetEditorChangelogResponse, ApiError> {
+        fn parse_response(mut response: hyper::client::response::Response) -> Result<GetEditorEditgroupsResponse, ApiError> {
             match response.status.to_u16() {
                 200 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
-                    let body = serde_json::from_str::<Vec<models::ChangelogEntry>>(&buf)?;
+                    let body = serde_json::from_str::<Vec<models::Editgroup>>(&buf)?;
 
-                    Ok(GetEditorChangelogResponse::Found(body))
+                    Ok(GetEditorEditgroupsResponse::Found(body))
                 }
                 400 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(GetEditorChangelogResponse::BadRequest(body))
+                    Ok(GetEditorEditgroupsResponse::BadRequest(body))
                 }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(GetEditorChangelogResponse::NotFound(body))
+                    Ok(GetEditorEditgroupsResponse::NotFound(body))
                 }
                 500 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(GetEditorChangelogResponse::GenericError(body))
+                    Ok(GetEditorEditgroupsResponse::GenericError(body))
+                }
+                code => {
+                    let mut buf = [0; 100];
+                    let debug_body = match response.read(&mut buf) {
+                        Ok(len) => match str::from_utf8(&buf[..len]) {
+                            Ok(body) => Cow::from(body),
+                            Err(_) => Cow::from(format!("<Body was not UTF8: {:?}>", &buf[..len].to_vec())),
+                        },
+                        Err(e) => Cow::from(format!("<Failed to read body: {}>", e)),
+                    };
+                    Err(ApiError(format!("Unexpected response code {}:\n{:?}\n\n{}", code, response.headers, debug_body)))
+                }
+            }
+        }
+
+        let result = request.send().map_err(|e| ApiError(format!("No response received: {}", e))).and_then(parse_response);
+        Box::new(futures::done(result))
+    }
+
+    fn update_editgroup(
+        &self,
+        param_editgroup_id: String,
+        param_editgroup: models::Editgroup,
+        param_submit: Option<bool>,
+        context: &Context,
+    ) -> Box<Future<Item = UpdateEditgroupResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_submit = param_submit.map_or_else(String::new, |query| format!("submit={submit}&", submit = query.to_string()));
+
+        let url = format!(
+            "{}/v0/editgroup/{editgroup_id}?{submit}",
+            self.base_path,
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            submit = utf8_percent_encode(&query_submit, QUERY_ENCODE_SET)
+        );
+
+        let body = serde_json::to_string(&param_editgroup).expect("impossible to fail to serialize");
+
+        let hyper_client = (self.hyper_client)();
+        let request = hyper_client.request(hyper::method::Method::Put, &url);
+        let mut custom_headers = hyper::header::Headers::new();
+
+        let request = request.body(&body);
+
+        custom_headers.set(ContentType(mimetypes::requests::UPDATE_EDITGROUP.clone()));
+        context.x_span_id.as_ref().map(|header| custom_headers.set(XSpanId(header.clone())));
+
+        let request = request.headers(custom_headers);
+
+        // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
+        fn parse_response(mut response: hyper::client::response::Response) -> Result<UpdateEditgroupResponse, ApiError> {
+            match response.status.to_u16() {
+                200 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::Editgroup>(&buf)?;
+
+                    Ok(UpdateEditgroupResponse::UpdatedEditgroup(body))
+                }
+                400 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(UpdateEditgroupResponse::BadRequest(body))
+                }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(UpdateEditgroupResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(UpdateEditgroupResponse::Forbidden(body))
+                }
+                404 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(UpdateEditgroupResponse::NotFound(body))
+                }
+                500 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(UpdateEditgroupResponse::GenericError(body))
                 }
                 code => {
                     let mut buf = [0; 100];
@@ -2602,6 +2798,102 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
+    fn create_editgroup_annotation(
+        &self,
+        param_editgroup_id: String,
+        param_annotation: models::EditgroupAnnotation,
+        context: &Context,
+    ) -> Box<Future<Item = CreateEditgroupAnnotationResponse, Error = ApiError> + Send> {
+        let url = format!(
+            "{}/v0/editgroup/{editgroup_id}/annotation",
+            self.base_path,
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET)
+        );
+
+        let body = serde_json::to_string(&param_annotation).expect("impossible to fail to serialize");
+
+        let hyper_client = (self.hyper_client)();
+        let request = hyper_client.request(hyper::method::Method::Post, &url);
+        let mut custom_headers = hyper::header::Headers::new();
+
+        let request = request.body(&body);
+
+        custom_headers.set(ContentType(mimetypes::requests::CREATE_EDITGROUP_ANNOTATION.clone()));
+        context.x_span_id.as_ref().map(|header| custom_headers.set(XSpanId(header.clone())));
+
+        let request = request.headers(custom_headers);
+
+        // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
+        fn parse_response(mut response: hyper::client::response::Response) -> Result<CreateEditgroupAnnotationResponse, ApiError> {
+            match response.status.to_u16() {
+                201 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::EditgroupAnnotation>(&buf)?;
+
+                    Ok(CreateEditgroupAnnotationResponse::Created(body))
+                }
+                400 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(CreateEditgroupAnnotationResponse::BadRequest(body))
+                }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(CreateEditgroupAnnotationResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(CreateEditgroupAnnotationResponse::Forbidden(body))
+                }
+                404 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(CreateEditgroupAnnotationResponse::NotFound(body))
+                }
+                500 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(CreateEditgroupAnnotationResponse::GenericError(body))
+                }
+                code => {
+                    let mut buf = [0; 100];
+                    let debug_body = match response.read(&mut buf) {
+                        Ok(len) => match str::from_utf8(&buf[..len]) {
+                            Ok(body) => Cow::from(body),
+                            Err(_) => Cow::from(format!("<Body was not UTF8: {:?}>", &buf[..len].to_vec())),
+                        },
+                        Err(e) => Cow::from(format!("<Failed to read body: {}>", e)),
+                    };
+                    Err(ApiError(format!("Unexpected response code {}:\n{:?}\n\n{}", code, response.headers, debug_body)))
+                }
+            }
+        }
+
+        let result = request.send().map_err(|e| ApiError(format!("No response received: {}", e))).and_then(parse_response);
+        Box::new(futures::done(result))
+    }
+
     fn get_changelog(&self, param_limit: Option<i64>, context: &Context) -> Box<Future<Item = GetChangelogResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_limit = param_limit.map_or_else(String::new, |query| format!("limit={limit}&", limit = query.to_string()));
@@ -2767,6 +3059,197 @@ impl Api for Client {
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
                     Ok(GetEditgroupResponse::GenericError(body))
+                }
+                code => {
+                    let mut buf = [0; 100];
+                    let debug_body = match response.read(&mut buf) {
+                        Ok(len) => match str::from_utf8(&buf[..len]) {
+                            Ok(body) => Cow::from(body),
+                            Err(_) => Cow::from(format!("<Body was not UTF8: {:?}>", &buf[..len].to_vec())),
+                        },
+                        Err(e) => Cow::from(format!("<Failed to read body: {}>", e)),
+                    };
+                    Err(ApiError(format!("Unexpected response code {}:\n{:?}\n\n{}", code, response.headers, debug_body)))
+                }
+            }
+        }
+
+        let result = request.send().map_err(|e| ApiError(format!("No response received: {}", e))).and_then(parse_response);
+        Box::new(futures::done(result))
+    }
+
+    fn get_editgroup_annotations(&self, param_editgroup_id: String, param_expand: Option<String>, context: &Context) -> Box<Future<Item = GetEditgroupAnnotationsResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
+
+        let url = format!(
+            "{}/v0/editgroup/{editgroup_id}/annotations?{expand}",
+            self.base_path,
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            expand = utf8_percent_encode(&query_expand, QUERY_ENCODE_SET)
+        );
+
+        let hyper_client = (self.hyper_client)();
+        let request = hyper_client.request(hyper::method::Method::Get, &url);
+        let mut custom_headers = hyper::header::Headers::new();
+
+        context.x_span_id.as_ref().map(|header| custom_headers.set(XSpanId(header.clone())));
+
+        let request = request.headers(custom_headers);
+
+        // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
+        fn parse_response(mut response: hyper::client::response::Response) -> Result<GetEditgroupAnnotationsResponse, ApiError> {
+            match response.status.to_u16() {
+                200 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<Vec<models::EditgroupAnnotation>>(&buf)?;
+
+                    Ok(GetEditgroupAnnotationsResponse::Success(body))
+                }
+                400 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(GetEditgroupAnnotationsResponse::BadRequest(body))
+                }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(GetEditgroupAnnotationsResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(GetEditgroupAnnotationsResponse::Forbidden(body))
+                }
+                404 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(GetEditgroupAnnotationsResponse::NotFound(body))
+                }
+                500 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(GetEditgroupAnnotationsResponse::GenericError(body))
+                }
+                code => {
+                    let mut buf = [0; 100];
+                    let debug_body = match response.read(&mut buf) {
+                        Ok(len) => match str::from_utf8(&buf[..len]) {
+                            Ok(body) => Cow::from(body),
+                            Err(_) => Cow::from(format!("<Body was not UTF8: {:?}>", &buf[..len].to_vec())),
+                        },
+                        Err(e) => Cow::from(format!("<Failed to read body: {}>", e)),
+                    };
+                    Err(ApiError(format!("Unexpected response code {}:\n{:?}\n\n{}", code, response.headers, debug_body)))
+                }
+            }
+        }
+
+        let result = request.send().map_err(|e| ApiError(format!("No response received: {}", e))).and_then(parse_response);
+        Box::new(futures::done(result))
+    }
+
+    fn get_editor_annotations(
+        &self,
+        param_editor_id: String,
+        param_limit: Option<i64>,
+        param_before: Option<chrono::DateTime<chrono::Utc>>,
+        param_since: Option<chrono::DateTime<chrono::Utc>>,
+        context: &Context,
+    ) -> Box<Future<Item = GetEditorAnnotationsResponse, Error = ApiError> + Send> {
+        // Query parameters
+        let query_limit = param_limit.map_or_else(String::new, |query| format!("limit={limit}&", limit = query.to_string()));
+        let query_before = param_before.map_or_else(String::new, |query| format!("before={before}&", before = query.to_string()));
+        let query_since = param_since.map_or_else(String::new, |query| format!("since={since}&", since = query.to_string()));
+
+        let url = format!(
+            "{}/v0/editor/{editor_id}/annotations?{limit}{before}{since}",
+            self.base_path,
+            editor_id = utf8_percent_encode(&param_editor_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            limit = utf8_percent_encode(&query_limit, QUERY_ENCODE_SET),
+            before = utf8_percent_encode(&query_before, QUERY_ENCODE_SET),
+            since = utf8_percent_encode(&query_since, QUERY_ENCODE_SET)
+        );
+
+        let hyper_client = (self.hyper_client)();
+        let request = hyper_client.request(hyper::method::Method::Get, &url);
+        let mut custom_headers = hyper::header::Headers::new();
+
+        context.x_span_id.as_ref().map(|header| custom_headers.set(XSpanId(header.clone())));
+
+        let request = request.headers(custom_headers);
+
+        // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
+        fn parse_response(mut response: hyper::client::response::Response) -> Result<GetEditorAnnotationsResponse, ApiError> {
+            match response.status.to_u16() {
+                200 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<Vec<models::EditgroupAnnotation>>(&buf)?;
+
+                    Ok(GetEditorAnnotationsResponse::Success(body))
+                }
+                400 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(GetEditorAnnotationsResponse::BadRequest(body))
+                }
+                401 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+                    header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
+                    let response_www_authenticate = response
+                        .headers
+                        .get::<ResponseWwwAuthenticate>()
+                        .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
+
+                    Ok(GetEditorAnnotationsResponse::NotAuthorized {
+                        body: body,
+                        www_authenticate: response_www_authenticate.0.clone(),
+                    })
+                }
+                403 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(GetEditorAnnotationsResponse::Forbidden(body))
+                }
+                404 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(GetEditorAnnotationsResponse::NotFound(body))
+                }
+                500 => {
+                    let mut buf = String::new();
+                    response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
+                    let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
+
+                    Ok(GetEditorAnnotationsResponse::GenericError(body))
                 }
                 code => {
                     let mut buf = [0; 100];

@@ -381,6 +381,18 @@ pub enum AuthOidcResponse {
 }
 
 #[derive(Debug, PartialEq)]
+pub enum GetEditgroupsReviewableResponse {
+    /// Found
+    Found(Vec<models::Editgroup>),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
 pub enum GetEditorResponse {
     /// Found
     Found(models::Editor),
@@ -393,11 +405,27 @@ pub enum GetEditorResponse {
 }
 
 #[derive(Debug, PartialEq)]
-pub enum GetEditorChangelogResponse {
+pub enum GetEditorEditgroupsResponse {
     /// Found
-    Found(Vec<models::ChangelogEntry>),
+    Found(Vec<models::Editgroup>),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum UpdateEditgroupResponse {
+    /// Updated Editgroup
+    UpdatedEditgroup(models::Editgroup),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -455,6 +483,22 @@ pub enum CreateEditgroupResponse {
 }
 
 #[derive(Debug, PartialEq)]
+pub enum CreateEditgroupAnnotationResponse {
+    /// Created
+    Created(models::EditgroupAnnotation),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
 pub enum GetChangelogResponse {
     /// Success
     Success(Vec<models::ChangelogEntry>),
@@ -482,6 +526,38 @@ pub enum GetEditgroupResponse {
     Found(models::Editgroup),
     /// Bad Request
     BadRequest(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum GetEditgroupAnnotationsResponse {
+    /// Success
+    Success(Vec<models::EditgroupAnnotation>),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
+    /// Not Found
+    NotFound(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
+pub enum GetEditorAnnotationsResponse {
+    /// Success
+    Success(Vec<models::EditgroupAnnotation>),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
     /// Not Found
     NotFound(models::ErrorResponse),
     /// Generic Error
@@ -1338,9 +1414,27 @@ pub trait Api {
 
     fn auth_oidc(&self, oidc_params: models::AuthOidc, context: &Context) -> Box<Future<Item = AuthOidcResponse, Error = ApiError> + Send>;
 
+    fn get_editgroups_reviewable(
+        &self,
+        expand: Option<String>,
+        limit: Option<i64>,
+        before: Option<chrono::DateTime<chrono::Utc>>,
+        since: Option<chrono::DateTime<chrono::Utc>>,
+        context: &Context,
+    ) -> Box<Future<Item = GetEditgroupsReviewableResponse, Error = ApiError> + Send>;
+
     fn get_editor(&self, editor_id: String, context: &Context) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send>;
 
-    fn get_editor_changelog(&self, editor_id: String, context: &Context) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send>;
+    fn get_editor_editgroups(
+        &self,
+        editor_id: String,
+        limit: Option<i64>,
+        before: Option<chrono::DateTime<chrono::Utc>>,
+        since: Option<chrono::DateTime<chrono::Utc>>,
+        context: &Context,
+    ) -> Box<Future<Item = GetEditorEditgroupsResponse, Error = ApiError> + Send>;
+
+    fn update_editgroup(&self, editgroup_id: String, editgroup: models::Editgroup, submit: Option<bool>, context: &Context) -> Box<Future<Item = UpdateEditgroupResponse, Error = ApiError> + Send>;
 
     fn update_editor(&self, editor_id: String, editor: models::Editor, context: &Context) -> Box<Future<Item = UpdateEditorResponse, Error = ApiError> + Send>;
 
@@ -1348,11 +1442,29 @@ pub trait Api {
 
     fn create_editgroup(&self, editgroup: models::Editgroup, context: &Context) -> Box<Future<Item = CreateEditgroupResponse, Error = ApiError> + Send>;
 
+    fn create_editgroup_annotation(
+        &self,
+        editgroup_id: String,
+        annotation: models::EditgroupAnnotation,
+        context: &Context,
+    ) -> Box<Future<Item = CreateEditgroupAnnotationResponse, Error = ApiError> + Send>;
+
     fn get_changelog(&self, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetChangelogResponse, Error = ApiError> + Send>;
 
     fn get_changelog_entry(&self, index: i64, context: &Context) -> Box<Future<Item = GetChangelogEntryResponse, Error = ApiError> + Send>;
 
     fn get_editgroup(&self, editgroup_id: String, context: &Context) -> Box<Future<Item = GetEditgroupResponse, Error = ApiError> + Send>;
+
+    fn get_editgroup_annotations(&self, editgroup_id: String, expand: Option<String>, context: &Context) -> Box<Future<Item = GetEditgroupAnnotationsResponse, Error = ApiError> + Send>;
+
+    fn get_editor_annotations(
+        &self,
+        editor_id: String,
+        limit: Option<i64>,
+        before: Option<chrono::DateTime<chrono::Utc>>,
+        since: Option<chrono::DateTime<chrono::Utc>>,
+        context: &Context,
+    ) -> Box<Future<Item = GetEditorAnnotationsResponse, Error = ApiError> + Send>;
 
     fn create_file(&self, entity: models::FileEntity, editgroup_id: String, context: &Context) -> Box<Future<Item = CreateFileResponse, Error = ApiError> + Send>;
 
@@ -1584,9 +1696,25 @@ pub trait ApiNoContext {
 
     fn auth_oidc(&self, oidc_params: models::AuthOidc) -> Box<Future<Item = AuthOidcResponse, Error = ApiError> + Send>;
 
+    fn get_editgroups_reviewable(
+        &self,
+        expand: Option<String>,
+        limit: Option<i64>,
+        before: Option<chrono::DateTime<chrono::Utc>>,
+        since: Option<chrono::DateTime<chrono::Utc>>,
+    ) -> Box<Future<Item = GetEditgroupsReviewableResponse, Error = ApiError> + Send>;
+
     fn get_editor(&self, editor_id: String) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send>;
 
-    fn get_editor_changelog(&self, editor_id: String) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send>;
+    fn get_editor_editgroups(
+        &self,
+        editor_id: String,
+        limit: Option<i64>,
+        before: Option<chrono::DateTime<chrono::Utc>>,
+        since: Option<chrono::DateTime<chrono::Utc>>,
+    ) -> Box<Future<Item = GetEditorEditgroupsResponse, Error = ApiError> + Send>;
+
+    fn update_editgroup(&self, editgroup_id: String, editgroup: models::Editgroup, submit: Option<bool>) -> Box<Future<Item = UpdateEditgroupResponse, Error = ApiError> + Send>;
 
     fn update_editor(&self, editor_id: String, editor: models::Editor) -> Box<Future<Item = UpdateEditorResponse, Error = ApiError> + Send>;
 
@@ -1594,11 +1722,23 @@ pub trait ApiNoContext {
 
     fn create_editgroup(&self, editgroup: models::Editgroup) -> Box<Future<Item = CreateEditgroupResponse, Error = ApiError> + Send>;
 
+    fn create_editgroup_annotation(&self, editgroup_id: String, annotation: models::EditgroupAnnotation) -> Box<Future<Item = CreateEditgroupAnnotationResponse, Error = ApiError> + Send>;
+
     fn get_changelog(&self, limit: Option<i64>) -> Box<Future<Item = GetChangelogResponse, Error = ApiError> + Send>;
 
     fn get_changelog_entry(&self, index: i64) -> Box<Future<Item = GetChangelogEntryResponse, Error = ApiError> + Send>;
 
     fn get_editgroup(&self, editgroup_id: String) -> Box<Future<Item = GetEditgroupResponse, Error = ApiError> + Send>;
+
+    fn get_editgroup_annotations(&self, editgroup_id: String, expand: Option<String>) -> Box<Future<Item = GetEditgroupAnnotationsResponse, Error = ApiError> + Send>;
+
+    fn get_editor_annotations(
+        &self,
+        editor_id: String,
+        limit: Option<i64>,
+        before: Option<chrono::DateTime<chrono::Utc>>,
+        since: Option<chrono::DateTime<chrono::Utc>>,
+    ) -> Box<Future<Item = GetEditorAnnotationsResponse, Error = ApiError> + Send>;
 
     fn create_file(&self, entity: models::FileEntity, editgroup_id: String) -> Box<Future<Item = CreateFileResponse, Error = ApiError> + Send>;
 
@@ -1877,12 +2017,32 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().auth_oidc(oidc_params, &self.context())
     }
 
+    fn get_editgroups_reviewable(
+        &self,
+        expand: Option<String>,
+        limit: Option<i64>,
+        before: Option<chrono::DateTime<chrono::Utc>>,
+        since: Option<chrono::DateTime<chrono::Utc>>,
+    ) -> Box<Future<Item = GetEditgroupsReviewableResponse, Error = ApiError> + Send> {
+        self.api().get_editgroups_reviewable(expand, limit, before, since, &self.context())
+    }
+
     fn get_editor(&self, editor_id: String) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send> {
         self.api().get_editor(editor_id, &self.context())
     }
 
-    fn get_editor_changelog(&self, editor_id: String) -> Box<Future<Item = GetEditorChangelogResponse, Error = ApiError> + Send> {
-        self.api().get_editor_changelog(editor_id, &self.context())
+    fn get_editor_editgroups(
+        &self,
+        editor_id: String,
+        limit: Option<i64>,
+        before: Option<chrono::DateTime<chrono::Utc>>,
+        since: Option<chrono::DateTime<chrono::Utc>>,
+    ) -> Box<Future<Item = GetEditorEditgroupsResponse, Error = ApiError> + Send> {
+        self.api().get_editor_editgroups(editor_id, limit, before, since, &self.context())
+    }
+
+    fn update_editgroup(&self, editgroup_id: String, editgroup: models::Editgroup, submit: Option<bool>) -> Box<Future<Item = UpdateEditgroupResponse, Error = ApiError> + Send> {
+        self.api().update_editgroup(editgroup_id, editgroup, submit, &self.context())
     }
 
     fn update_editor(&self, editor_id: String, editor: models::Editor) -> Box<Future<Item = UpdateEditorResponse, Error = ApiError> + Send> {
@@ -1897,6 +2057,10 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().create_editgroup(editgroup, &self.context())
     }
 
+    fn create_editgroup_annotation(&self, editgroup_id: String, annotation: models::EditgroupAnnotation) -> Box<Future<Item = CreateEditgroupAnnotationResponse, Error = ApiError> + Send> {
+        self.api().create_editgroup_annotation(editgroup_id, annotation, &self.context())
+    }
+
     fn get_changelog(&self, limit: Option<i64>) -> Box<Future<Item = GetChangelogResponse, Error = ApiError> + Send> {
         self.api().get_changelog(limit, &self.context())
     }
@@ -1907,6 +2071,20 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
 
     fn get_editgroup(&self, editgroup_id: String) -> Box<Future<Item = GetEditgroupResponse, Error = ApiError> + Send> {
         self.api().get_editgroup(editgroup_id, &self.context())
+    }
+
+    fn get_editgroup_annotations(&self, editgroup_id: String, expand: Option<String>) -> Box<Future<Item = GetEditgroupAnnotationsResponse, Error = ApiError> + Send> {
+        self.api().get_editgroup_annotations(editgroup_id, expand, &self.context())
+    }
+
+    fn get_editor_annotations(
+        &self,
+        editor_id: String,
+        limit: Option<i64>,
+        before: Option<chrono::DateTime<chrono::Utc>>,
+        since: Option<chrono::DateTime<chrono::Utc>>,
+    ) -> Box<Future<Item = GetEditorAnnotationsResponse, Error = ApiError> + Send> {
+        self.api().get_editor_annotations(editor_id, limit, before, since, &self.context())
     }
 
     fn create_file(&self, entity: models::FileEntity, editgroup_id: String) -> Box<Future<Item = CreateFileResponse, Error = ApiError> + Send> {

@@ -6206,9 +6206,9 @@ paths:
       HttpMethod: "Put"
       httpmethod: "put"
       noClientExample: true
-  /editor/{editor_id}/changelog:
+  /editor/{editor_id}/editgroups:
     get:
-      operationId: "get_editor_changelog"
+      operationId: "get_editor_editgroups"
       parameters:
       - name: "editor_id"
         in: "path"
@@ -6216,17 +6216,38 @@ paths:
         type: "string"
         formatString: "\\\"{}\\\""
         example: "\"editor_id_example\".to_string()"
+      - name: "limit"
+        in: "query"
+        required: false
+        type: "integer"
+        format: "int64"
+        formatString: "{:?}"
+        example: "Some(789)"
+      - name: "before"
+        in: "query"
+        required: false
+        type: "string"
+        format: "date-time"
+        formatString: "{:?}"
+        example: "None"
+      - name: "since"
+        in: "query"
+        required: false
+        type: "string"
+        format: "date-time"
+        formatString: "{:?}"
+        example: "None"
       responses:
         200:
           description: "Found"
           schema:
             type: "array"
             items:
-              $ref: "#/definitions/changelog_entry"
+              $ref: "#/definitions/editgroup"
           x-responseId: "Found"
           x-uppercaseResponseId: "FOUND"
-          uppercase_operation_id: "GET_EDITOR_CHANGELOG"
-          uppercase_data_type: "VEC<CHANGELOGENTRY>"
+          uppercase_operation_id: "GET_EDITOR_EDITGROUPS"
+          uppercase_data_type: "VEC<EDITGROUP>"
           producesJson: true
         400:
           description: "Bad Request"
@@ -6234,7 +6255,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
-          uppercase_operation_id: "GET_EDITOR_CHANGELOG"
+          uppercase_operation_id: "GET_EDITOR_EDITGROUPS"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
@@ -6243,7 +6264,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "GET_EDITOR_CHANGELOG"
+          uppercase_operation_id: "GET_EDITOR_EDITGROUPS"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         500:
@@ -6252,12 +6273,114 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "GET_EDITOR_CHANGELOG"
+          uppercase_operation_id: "GET_EDITOR_EDITGROUPS"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-      operation_id: "get_editor_changelog"
-      uppercase_operation_id: "GET_EDITOR_CHANGELOG"
-      path: "/editor/:editor_id/changelog"
+      operation_id: "get_editor_editgroups"
+      uppercase_operation_id: "GET_EDITOR_EDITGROUPS"
+      path: "/editor/:editor_id/editgroups"
+      HttpMethod: "Get"
+      httpmethod: "get"
+  /editor/{editor_id}/annotations:
+    get:
+      tags:
+      - "edit-lifecycle"
+      operationId: "get_editor_annotations"
+      parameters:
+      - name: "editor_id"
+        in: "path"
+        description: "base32-encoded unique identifier"
+        required: true
+        type: "string"
+        maxLength: 26
+        minLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
+        formatString: "\\\"{}\\\""
+        example: "\"editor_id_example\".to_string()"
+      - name: "limit"
+        in: "query"
+        required: false
+        type: "integer"
+        format: "int64"
+        formatString: "{:?}"
+        example: "Some(789)"
+      - name: "before"
+        in: "query"
+        required: false
+        type: "string"
+        format: "date-time"
+        formatString: "{:?}"
+        example: "None"
+      - name: "since"
+        in: "query"
+        required: false
+        type: "string"
+        format: "date-time"
+        formatString: "{:?}"
+        example: "None"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/editgroup_annotation"
+          x-responseId: "Success"
+          x-uppercaseResponseId: "SUCCESS"
+          uppercase_operation_id: "GET_EDITOR_ANNOTATIONS"
+          uppercase_data_type: "VEC<EDITGROUPANNOTATION>"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_EDITOR_ANNOTATIONS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "GET_EDITOR_ANNOTATIONS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        403:
+          description: "Forbidden"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "Forbidden"
+          x-uppercaseResponseId: "FORBIDDEN"
+          uppercase_operation_id: "GET_EDITOR_ANNOTATIONS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_EDITOR_ANNOTATIONS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_EDITOR_ANNOTATIONS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_editor_annotations"
+      uppercase_operation_id: "GET_EDITOR_ANNOTATIONS"
+      path: "/editor/:editor_id/annotations"
       HttpMethod: "Get"
       httpmethod: "get"
   /editgroup:
@@ -6402,6 +6525,103 @@ paths:
       path: "/editgroup/:editgroup_id"
       HttpMethod: "Get"
       httpmethod: "get"
+    put:
+      operationId: "update_editgroup"
+      parameters:
+      - name: "editgroup_id"
+        in: "path"
+        description: "base32-encoded unique identifier"
+        required: true
+        type: "string"
+        maxLength: 26
+        minLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
+      - in: "body"
+        name: "editgroup"
+        required: true
+        schema:
+          $ref: "#/definitions/editgroup"
+        uppercase_data_type: "EDITGROUP"
+        refName: "editgroup"
+        formatString: "{:?}"
+        example: "???"
+        model_key: "editgroup_edits"
+        uppercase_operation_id: "UPDATE_EDITGROUP"
+        consumesJson: true
+      - name: "submit"
+        in: "query"
+        required: false
+        type: "boolean"
+        formatString: "{:?}"
+        example: "Some(true)"
+      responses:
+        200:
+          description: "Updated Editgroup"
+          schema:
+            $ref: "#/definitions/editgroup"
+          x-responseId: "UpdatedEditgroup"
+          x-uppercaseResponseId: "UPDATED_EDITGROUP"
+          uppercase_operation_id: "UPDATE_EDITGROUP"
+          uppercase_data_type: "EDITGROUP"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "UPDATE_EDITGROUP"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "UPDATE_EDITGROUP"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        403:
+          description: "Forbidden"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "Forbidden"
+          x-uppercaseResponseId: "FORBIDDEN"
+          uppercase_operation_id: "UPDATE_EDITGROUP"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "UPDATE_EDITGROUP"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "UPDATE_EDITGROUP"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      security:
+      - Bearer: []
+      operation_id: "update_editgroup"
+      uppercase_operation_id: "UPDATE_EDITGROUP"
+      path: "/editgroup/:editgroup_id"
+      HttpMethod: "Put"
+      httpmethod: "put"
+      noClientExample: true
   /editgroup/{editgroup_id}/accept:
     post:
       tags:
@@ -6492,6 +6712,268 @@ paths:
       path: "/editgroup/:editgroup_id/accept"
       HttpMethod: "Post"
       httpmethod: "post"
+  /editgroup/{editgroup_id}/annotations:
+    get:
+      tags:
+      - "edit-lifecycle"
+      operationId: "get_editgroup_annotations"
+      parameters:
+      - name: "editgroup_id"
+        in: "path"
+        description: "base32-encoded unique identifier"
+        required: true
+        type: "string"
+        maxLength: 26
+        minLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
+      - name: "expand"
+        in: "query"
+        description: "List of sub-entities to expand in response. For editgroups:\
+          \ 'editors'"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"expand_example\".to_string())"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/editgroup_annotation"
+          x-responseId: "Success"
+          x-uppercaseResponseId: "SUCCESS"
+          uppercase_operation_id: "GET_EDITGROUP_ANNOTATIONS"
+          uppercase_data_type: "VEC<EDITGROUPANNOTATION>"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_EDITGROUP_ANNOTATIONS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "GET_EDITGROUP_ANNOTATIONS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        403:
+          description: "Forbidden"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "Forbidden"
+          x-uppercaseResponseId: "FORBIDDEN"
+          uppercase_operation_id: "GET_EDITGROUP_ANNOTATIONS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_EDITGROUP_ANNOTATIONS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_EDITGROUP_ANNOTATIONS"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      security:
+      - Bearer: []
+      operation_id: "get_editgroup_annotations"
+      uppercase_operation_id: "GET_EDITGROUP_ANNOTATIONS"
+      path: "/editgroup/:editgroup_id/annotations"
+      HttpMethod: "Get"
+      httpmethod: "get"
+  /editgroup/{editgroup_id}/annotation:
+    post:
+      tags:
+      - "edit-lifecycle"
+      operationId: "create_editgroup_annotation"
+      parameters:
+      - name: "editgroup_id"
+        in: "path"
+        description: "base32-encoded unique identifier"
+        required: true
+        type: "string"
+        maxLength: 26
+        minLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
+      - in: "body"
+        name: "annotation"
+        required: true
+        schema:
+          $ref: "#/definitions/editgroup_annotation"
+        uppercase_data_type: "EDITGROUPANNOTATION"
+        refName: "editgroup_annotation"
+        formatString: "{:?}"
+        example: "???"
+        model_key: "editgroup_edits"
+        uppercase_operation_id: "CREATE_EDITGROUP_ANNOTATION"
+        consumesJson: true
+      responses:
+        201:
+          description: "Created"
+          schema:
+            $ref: "#/definitions/editgroup_annotation"
+          x-responseId: "Created"
+          x-uppercaseResponseId: "CREATED"
+          uppercase_operation_id: "CREATE_EDITGROUP_ANNOTATION"
+          uppercase_data_type: "EDITGROUPANNOTATION"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "CREATE_EDITGROUP_ANNOTATION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "CREATE_EDITGROUP_ANNOTATION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        403:
+          description: "Forbidden"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "Forbidden"
+          x-uppercaseResponseId: "FORBIDDEN"
+          uppercase_operation_id: "CREATE_EDITGROUP_ANNOTATION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "CREATE_EDITGROUP_ANNOTATION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "CREATE_EDITGROUP_ANNOTATION"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      security:
+      - Bearer: []
+      operation_id: "create_editgroup_annotation"
+      uppercase_operation_id: "CREATE_EDITGROUP_ANNOTATION"
+      path: "/editgroup/:editgroup_id/annotation"
+      HttpMethod: "Post"
+      httpmethod: "post"
+      noClientExample: true
+  /editgroup/reviewable:
+    get:
+      operationId: "get_editgroups_reviewable"
+      parameters:
+      - name: "expand"
+        in: "query"
+        description: "List of sub-entities to expand in response. For editgroups:\
+          \ 'editors'"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"expand_example\".to_string())"
+      - name: "limit"
+        in: "query"
+        required: false
+        type: "integer"
+        format: "int64"
+        formatString: "{:?}"
+        example: "Some(789)"
+      - name: "before"
+        in: "query"
+        required: false
+        type: "string"
+        format: "date-time"
+        formatString: "{:?}"
+        example: "None"
+      - name: "since"
+        in: "query"
+        required: false
+        type: "string"
+        format: "date-time"
+        formatString: "{:?}"
+        example: "None"
+      responses:
+        200:
+          description: "Found"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/editgroup"
+          x-responseId: "Found"
+          x-uppercaseResponseId: "FOUND"
+          uppercase_operation_id: "GET_EDITGROUPS_REVIEWABLE"
+          uppercase_data_type: "VEC<EDITGROUP>"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "GET_EDITGROUPS_REVIEWABLE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "NotFound"
+          x-uppercaseResponseId: "NOT_FOUND"
+          uppercase_operation_id: "GET_EDITGROUPS_REVIEWABLE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "GET_EDITGROUPS_REVIEWABLE"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      operation_id: "get_editgroups_reviewable"
+      uppercase_operation_id: "GET_EDITGROUPS_REVIEWABLE"
+      path: "/editgroup/reviewable"
+      HttpMethod: "Get"
+      httpmethod: "get"
   /changelog:
     get:
       tags:
@@ -7614,6 +8096,7 @@ definitions:
         $ref: "#/definitions/changelog_entry"
     example:
       editgroup:
+        submitted: "2000-01-23T04:56:07.000+00:00"
         extra: "{}"
         edits:
           works:
@@ -7723,6 +8206,19 @@ definitions:
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
         description: "description"
+        annotations:
+        - annotation_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+          created: "2000-01-23T04:56:07.000+00:00"
+          extra: "{}"
+          editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          comment_markdown: "comment_markdown"
+        - annotation_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+          created: "2000-01-23T04:56:07.000+00:00"
+          extra: "{}"
+          editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          comment_markdown: "comment_markdown"
         editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
       edit:
         ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -7734,6 +8230,7 @@ definitions:
         revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       changelog_entry:
         editgroup:
+          submitted: "2000-01-23T04:56:07.000+00:00"
           extra: "{}"
           edits:
             works:
@@ -7843,6 +8340,19 @@ definitions:
               revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
           editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
           description: "description"
+          annotations:
+          - annotation_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+            created: "2000-01-23T04:56:07.000+00:00"
+            extra: "{}"
+            editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            comment_markdown: "comment_markdown"
+          - annotation_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+            created: "2000-01-23T04:56:07.000+00:00"
+            extra: "{}"
+            editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+            comment_markdown: "comment_markdown"
           editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
         index: 0
         editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -7953,13 +8463,21 @@ definitions:
         minLength: 26
         maxLength: 26
         pattern: "[a-zA-Z2-7]{26}"
+      submitted:
+        type: "string"
+        format: "date-time"
       description:
         type: "string"
       extra:
         type: "object"
+      annotations:
+        type: "array"
+        items:
+          $ref: "#/definitions/editgroup_annotation"
       edits:
         $ref: "#/definitions/editgroup_edits"
     example:
+      submitted: "2000-01-23T04:56:07.000+00:00"
       extra: "{}"
       edits:
         works:
@@ -8069,8 +8587,60 @@ definitions:
           revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
       description: "description"
+      annotations:
+      - annotation_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+        created: "2000-01-23T04:56:07.000+00:00"
+        extra: "{}"
+        editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        comment_markdown: "comment_markdown"
+      - annotation_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+        created: "2000-01-23T04:56:07.000+00:00"
+        extra: "{}"
+        editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        comment_markdown: "comment_markdown"
       editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
     upperCaseName: "EDITGROUP"
+  editgroup_annotation:
+    type: "object"
+    properties:
+      annotation_id:
+        type: "string"
+        example: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+        description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
+        minLength: 36
+        maxLength: 36
+        pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+      editgroup_id:
+        type: "string"
+        example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        description: "base32-encoded unique identifier"
+        minLength: 26
+        maxLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
+      editor_id:
+        type: "string"
+        example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        description: "base32-encoded unique identifier"
+        minLength: 26
+        maxLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
+      created:
+        type: "string"
+        format: "date-time"
+      comment_markdown:
+        type: "string"
+      extra:
+        type: "object"
+    example:
+      annotation_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+      created: "2000-01-23T04:56:07.000+00:00"
+      extra: "{}"
+      editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+      editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+      comment_markdown: "comment_markdown"
+    upperCaseName: "EDITGROUP_ANNOTATION"
   changelog_entry:
     type: "object"
     required:
@@ -8091,6 +8661,7 @@ definitions:
         $ref: "#/definitions/editgroup"
     example:
       editgroup:
+        submitted: "2000-01-23T04:56:07.000+00:00"
         extra: "{}"
         edits:
           works:
@@ -8200,6 +8771,19 @@ definitions:
             revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
         description: "description"
+        annotations:
+        - annotation_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+          created: "2000-01-23T04:56:07.000+00:00"
+          extra: "{}"
+          editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          comment_markdown: "comment_markdown"
+        - annotation_id: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
+          created: "2000-01-23T04:56:07.000+00:00"
+          extra: "{}"
+          editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
+          comment_markdown: "comment_markdown"
         editor_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
       index: 0
       editgroup_id: "q3nouwy3nnbsvo3h5klxsx4a7y"

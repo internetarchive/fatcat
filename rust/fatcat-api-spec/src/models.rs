@@ -234,6 +234,10 @@ pub struct Editgroup {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub editor_id: Option<String>,
 
+    #[serde(rename = "submitted")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub submitted: Option<chrono::DateTime<chrono::Utc>>,
+
     #[serde(rename = "description")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
@@ -241,6 +245,10 @@ pub struct Editgroup {
     #[serde(rename = "extra")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub extra: Option<serde_json::Value>,
+
+    #[serde(rename = "annotations")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub annotations: Option<Vec<models::EditgroupAnnotation>>,
 
     #[serde(rename = "edits")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -252,9 +260,54 @@ impl Editgroup {
         Editgroup {
             editgroup_id: None,
             editor_id: None,
+            submitted: None,
             description: None,
             extra: None,
+            annotations: None,
             edits: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct EditgroupAnnotation {
+    /// UUID (lower-case, dash-separated, hex-encoded 128-bit)
+    #[serde(rename = "annotation_id")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub annotation_id: Option<String>,
+
+    /// base32-encoded unique identifier
+    #[serde(rename = "editgroup_id")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub editgroup_id: Option<String>,
+
+    /// base32-encoded unique identifier
+    #[serde(rename = "editor_id")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub editor_id: Option<String>,
+
+    #[serde(rename = "created")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub created: Option<chrono::DateTime<chrono::Utc>>,
+
+    #[serde(rename = "comment_markdown")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub comment_markdown: Option<String>,
+
+    #[serde(rename = "extra")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub extra: Option<serde_json::Value>,
+}
+
+impl EditgroupAnnotation {
+    pub fn new() -> EditgroupAnnotation {
+        EditgroupAnnotation {
+            annotation_id: None,
+            editgroup_id: None,
+            editor_id: None,
+            created: None,
+            comment_markdown: None,
+            extra: None,
         }
     }
 }
