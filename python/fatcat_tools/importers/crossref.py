@@ -313,7 +313,7 @@ class CrossrefImporter(FatcatImporter):
             self.api.create_release(re, editgroup_id=editgroup_id)
             self.counts['insert'] += 1
 
-    def create_batch(self, batch, editgroup_id=None):
+    def create_batch(self, batch):
         """Current work/release pairing disallows batch creation of releases.
         Could do batch work creation and then match against releases, but meh."""
         release_batch = []
@@ -331,5 +331,5 @@ class CrossrefImporter(FatcatImporter):
                     re.container_id = container.ident
                     self._issnl_id_map[ce.issnl] = container.ident
                 release_batch.append(re)
-        self.api.create_release_batch(release_batch, autoaccept="true", editgroup_id=editgroup_id)
+        self.api.create_release_batch(release_batch, autoaccept="true")
         self.counts['insert'] += len(release_batch)

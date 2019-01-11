@@ -96,8 +96,9 @@ class FatcatImporter:
             if decode_kafka:
                 rows = [msg.value.decode('utf-8') for msg in rows]
             self.counts['processed_lines'] += len(rows)
-            eg = self._editgroup()
-            self.create_batch(rows, editgroup_id=eg.editgroup_id)
+            #eg = self._editgroup()
+            #self.create_batch(rows, editgroup_id=eg.editgroup_id)
+            self.create_batch(rows)
 
     def process_csv_source(self, source, group_size=100, delimiter=','):
         reader = csv.DictReader(source, delimiter=delimiter)

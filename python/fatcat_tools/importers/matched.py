@@ -142,15 +142,18 @@ class MatchedImporter(FatcatImporter):
                 self.api.update_file(fe.ident, fe, editgroup_id=editgroup_id)
                 self.counts['update'] += 1
 
-    def create_batch(self, batch, editgroup_id=None):
+    def create_batch(self, batch):
         """Reads and processes in batches (not API-call-per-line)"""
         objects = [self.parse_matched_dict(json.loads(l))
                    for l in batch if l != None]
         new_objects = [o for o in objects if o != None and o.ident == None]
         update_objects = [o for o in objects if o != None and o.ident != None]
-        for obj in update_objects:
-            self.api.update_file(obj.ident, obj, editgroup_id=editgroup_id)
+        if len(update_objects):
+            update_eg = self._editgroup().editgroup_id
+            for obj in update_objects:
+                self.api.update_file(obj.ident, obj, editgroup_id=update_eg)
+            self.api.accept_editgroup(update_eg)
         if len(new_objects) > 0:
-            self.api.create_file_batch(new_objects, autoaccept="true", editgroup_id=editgroup_id)
+            self.api.create_file_batch(new_objects, autoaccept="true")
         self.counts['update'] += len(update_objects)
         self.counts['insert'] += len(new_objects)
