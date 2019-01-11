@@ -81,6 +81,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**create_creator**](docs/DefaultApi.md#create_creator) | **POST** /creator | 
 *DefaultApi* | [**create_creator_batch**](docs/DefaultApi.md#create_creator_batch) | **POST** /creator/batch | 
 *DefaultApi* | [**create_editgroup**](docs/DefaultApi.md#create_editgroup) | **POST** /editgroup | 
+*DefaultApi* | [**create_editgroup_annotation**](docs/DefaultApi.md#create_editgroup_annotation) | **POST** /editgroup/{editgroup_id}/annotation | 
 *DefaultApi* | [**create_file**](docs/DefaultApi.md#create_file) | **POST** /file | 
 *DefaultApi* | [**create_file_batch**](docs/DefaultApi.md#create_file_batch) | **POST** /file/batch | 
 *DefaultApi* | [**create_fileset**](docs/DefaultApi.md#create_fileset) | **POST** /fileset | 
@@ -119,8 +120,11 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**get_creator_releases**](docs/DefaultApi.md#get_creator_releases) | **GET** /creator/{ident}/releases | 
 *DefaultApi* | [**get_creator_revision**](docs/DefaultApi.md#get_creator_revision) | **GET** /creator/rev/{rev_id} | 
 *DefaultApi* | [**get_editgroup**](docs/DefaultApi.md#get_editgroup) | **GET** /editgroup/{editgroup_id} | 
+*DefaultApi* | [**get_editgroup_annotations**](docs/DefaultApi.md#get_editgroup_annotations) | **GET** /editgroup/{editgroup_id}/annotations | 
+*DefaultApi* | [**get_editgroups_reviewable**](docs/DefaultApi.md#get_editgroups_reviewable) | **GET** /editgroup/reviewable | 
 *DefaultApi* | [**get_editor**](docs/DefaultApi.md#get_editor) | **GET** /editor/{editor_id} | 
-*DefaultApi* | [**get_editor_changelog**](docs/DefaultApi.md#get_editor_changelog) | **GET** /editor/{editor_id}/changelog | 
+*DefaultApi* | [**get_editor_annotations**](docs/DefaultApi.md#get_editor_annotations) | **GET** /editor/{editor_id}/annotations | 
+*DefaultApi* | [**get_editor_editgroups**](docs/DefaultApi.md#get_editor_editgroups) | **GET** /editor/{editor_id}/editgroups | 
 *DefaultApi* | [**get_file**](docs/DefaultApi.md#get_file) | **GET** /file/{ident} | 
 *DefaultApi* | [**get_file_edit**](docs/DefaultApi.md#get_file_edit) | **GET** /file/edit/{edit_id} | 
 *DefaultApi* | [**get_file_history**](docs/DefaultApi.md#get_file_history) | **GET** /file/{ident}/history | 
@@ -156,6 +160,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**lookup_release**](docs/DefaultApi.md#lookup_release) | **GET** /release/lookup | 
 *DefaultApi* | [**update_container**](docs/DefaultApi.md#update_container) | **PUT** /container/{ident} | 
 *DefaultApi* | [**update_creator**](docs/DefaultApi.md#update_creator) | **PUT** /creator/{ident} | 
+*DefaultApi* | [**update_editgroup**](docs/DefaultApi.md#update_editgroup) | **PUT** /editgroup/{editgroup_id} | 
 *DefaultApi* | [**update_editor**](docs/DefaultApi.md#update_editor) | **PUT** /editor/{editor_id} | 
 *DefaultApi* | [**update_file**](docs/DefaultApi.md#update_file) | **PUT** /file/{ident} | 
 *DefaultApi* | [**update_fileset**](docs/DefaultApi.md#update_fileset) | **PUT** /fileset/{ident} | 
@@ -172,6 +177,7 @@ Class | Method | HTTP request | Description
  - [ContainerEntity](docs/ContainerEntity.md)
  - [CreatorEntity](docs/CreatorEntity.md)
  - [Editgroup](docs/Editgroup.md)
+ - [EditgroupAnnotation](docs/EditgroupAnnotation.md)
  - [EditgroupEdits](docs/EditgroupEdits.md)
  - [Editor](docs/Editor.md)
  - [EntityEdit](docs/EntityEdit.md)

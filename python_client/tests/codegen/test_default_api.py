@@ -77,6 +77,12 @@ class TestDefaultApi(unittest.TestCase):
         """
         pass
 
+    def test_create_editgroup_annotation(self):
+        """Test case for create_editgroup_annotation
+
+        """
+        pass
+
     def test_create_file(self):
         """Test case for create_file
 
@@ -305,14 +311,32 @@ class TestDefaultApi(unittest.TestCase):
         """
         pass
 
+    def test_get_editgroup_annotations(self):
+        """Test case for get_editgroup_annotations
+
+        """
+        pass
+
+    def test_get_editgroups_reviewable(self):
+        """Test case for get_editgroups_reviewable
+
+        """
+        pass
+
     def test_get_editor(self):
         """Test case for get_editor
 
         """
         pass
 
-    def test_get_editor_changelog(self):
-        """Test case for get_editor_changelog
+    def test_get_editor_annotations(self):
+        """Test case for get_editor_annotations
+
+        """
+        pass
+
+    def test_get_editor_editgroups(self):
+        """Test case for get_editor_editgroups
 
         """
         pass
@@ -523,6 +547,12 @@ class TestDefaultApi(unittest.TestCase):
 
     def test_update_creator(self):
         """Test case for update_creator
+
+        """
+        pass
+
+    def test_update_editgroup(self):
+        """Test case for update_editgroup
 
         """
         pass

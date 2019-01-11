@@ -845,6 +845,119 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
+    def create_editgroup_annotation(self, editgroup_id, annotation, **kwargs):  # noqa: E501
+        """create_editgroup_annotation  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.create_editgroup_annotation(editgroup_id, annotation, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str editgroup_id: base32-encoded unique identifier (required)
+        :param EditgroupAnnotation annotation: (required)
+        :return: EditgroupAnnotation
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.create_editgroup_annotation_with_http_info(editgroup_id, annotation, **kwargs)  # noqa: E501
+        else:
+            (data) = self.create_editgroup_annotation_with_http_info(editgroup_id, annotation, **kwargs)  # noqa: E501
+            return data
+
+    def create_editgroup_annotation_with_http_info(self, editgroup_id, annotation, **kwargs):  # noqa: E501
+        """create_editgroup_annotation  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.create_editgroup_annotation_with_http_info(editgroup_id, annotation, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str editgroup_id: base32-encoded unique identifier (required)
+        :param EditgroupAnnotation annotation: (required)
+        :return: EditgroupAnnotation
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['editgroup_id', 'annotation']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method create_editgroup_annotation" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'editgroup_id' is set
+        if ('editgroup_id' not in params or
+                params['editgroup_id'] is None):
+            raise ValueError("Missing the required parameter `editgroup_id` when calling `create_editgroup_annotation`")  # noqa: E501
+        # verify the required parameter 'annotation' is set
+        if ('annotation' not in params or
+                params['annotation'] is None):
+            raise ValueError("Missing the required parameter `annotation` when calling `create_editgroup_annotation`")  # noqa: E501
+
+        if ('editgroup_id' in params and
+                len(params['editgroup_id']) > 26):
+            raise ValueError("Invalid value for parameter `editgroup_id` when calling `create_editgroup_annotation`, length must be less than or equal to `26`")  # noqa: E501
+        if ('editgroup_id' in params and
+                len(params['editgroup_id']) < 26):
+            raise ValueError("Invalid value for parameter `editgroup_id` when calling `create_editgroup_annotation`, length must be greater than or equal to `26`")  # noqa: E501
+        if 'editgroup_id' in params and not re.search('[a-zA-Z2-7]{26}', params['editgroup_id']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `editgroup_id` when calling `create_editgroup_annotation`, must conform to the pattern `/[a-zA-Z2-7]{26}/`")  # noqa: E501
+        collection_formats = {}
+
+        path_params = {}
+        if 'editgroup_id' in params:
+            path_params['editgroup_id'] = params['editgroup_id']  # noqa: E501
+
+        query_params = []
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        if 'annotation' in params:
+            body_params = params['annotation']
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = ['Bearer']  # noqa: E501
+
+        return self.api_client.call_api(
+            '/editgroup/{editgroup_id}/annotation', 'POST',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='EditgroupAnnotation',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
     def create_file(self, entity, editgroup_id, **kwargs):  # noqa: E501
         """create_file  # noqa: E501
 
@@ -4803,6 +4916,220 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
+    def get_editgroup_annotations(self, editgroup_id, **kwargs):  # noqa: E501
+        """get_editgroup_annotations  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_editgroup_annotations(editgroup_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str editgroup_id: base32-encoded unique identifier (required)
+        :param str expand: List of sub-entities to expand in response. For editgroups: 'editors'
+        :return: list[EditgroupAnnotation]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.get_editgroup_annotations_with_http_info(editgroup_id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.get_editgroup_annotations_with_http_info(editgroup_id, **kwargs)  # noqa: E501
+            return data
+
+    def get_editgroup_annotations_with_http_info(self, editgroup_id, **kwargs):  # noqa: E501
+        """get_editgroup_annotations  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_editgroup_annotations_with_http_info(editgroup_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str editgroup_id: base32-encoded unique identifier (required)
+        :param str expand: List of sub-entities to expand in response. For editgroups: 'editors'
+        :return: list[EditgroupAnnotation]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['editgroup_id', 'expand']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method get_editgroup_annotations" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'editgroup_id' is set
+        if ('editgroup_id' not in params or
+                params['editgroup_id'] is None):
+            raise ValueError("Missing the required parameter `editgroup_id` when calling `get_editgroup_annotations`")  # noqa: E501
+
+        if ('editgroup_id' in params and
+                len(params['editgroup_id']) > 26):
+            raise ValueError("Invalid value for parameter `editgroup_id` when calling `get_editgroup_annotations`, length must be less than or equal to `26`")  # noqa: E501
+        if ('editgroup_id' in params and
+                len(params['editgroup_id']) < 26):
+            raise ValueError("Invalid value for parameter `editgroup_id` when calling `get_editgroup_annotations`, length must be greater than or equal to `26`")  # noqa: E501
+        if 'editgroup_id' in params and not re.search('[a-zA-Z2-7]{26}', params['editgroup_id']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `editgroup_id` when calling `get_editgroup_annotations`, must conform to the pattern `/[a-zA-Z2-7]{26}/`")  # noqa: E501
+        collection_formats = {}
+
+        path_params = {}
+        if 'editgroup_id' in params:
+            path_params['editgroup_id'] = params['editgroup_id']  # noqa: E501
+
+        query_params = []
+        if 'expand' in params:
+            query_params.append(('expand', params['expand']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = ['Bearer']  # noqa: E501
+
+        return self.api_client.call_api(
+            '/editgroup/{editgroup_id}/annotations', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='list[EditgroupAnnotation]',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def get_editgroups_reviewable(self, **kwargs):  # noqa: E501
+        """get_editgroups_reviewable  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_editgroups_reviewable(async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str expand: List of sub-entities to expand in response. For editgroups: 'editors'
+        :param int limit:
+        :param datetime before:
+        :param datetime since:
+        :return: list[Editgroup]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.get_editgroups_reviewable_with_http_info(**kwargs)  # noqa: E501
+        else:
+            (data) = self.get_editgroups_reviewable_with_http_info(**kwargs)  # noqa: E501
+            return data
+
+    def get_editgroups_reviewable_with_http_info(self, **kwargs):  # noqa: E501
+        """get_editgroups_reviewable  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_editgroups_reviewable_with_http_info(async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str expand: List of sub-entities to expand in response. For editgroups: 'editors'
+        :param int limit:
+        :param datetime before:
+        :param datetime since:
+        :return: list[Editgroup]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['expand', 'limit', 'before', 'since']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method get_editgroups_reviewable" % key
+                )
+            params[key] = val
+        del params['kwargs']
+
+        collection_formats = {}
+
+        path_params = {}
+
+        query_params = []
+        if 'expand' in params:
+            query_params.append(('expand', params['expand']))  # noqa: E501
+        if 'limit' in params:
+            query_params.append(('limit', params['limit']))  # noqa: E501
+        if 'before' in params:
+            query_params.append(('before', params['before']))  # noqa: E501
+        if 'since' in params:
+            query_params.append(('since', params['since']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/editgroup/reviewable', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='list[Editgroup]',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
     def get_editor(self, editor_id, **kwargs):  # noqa: E501
         """get_editor  # noqa: E501
 
@@ -4900,43 +5227,49 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def get_editor_changelog(self, editor_id, **kwargs):  # noqa: E501
-        """get_editor_changelog  # noqa: E501
+    def get_editor_annotations(self, editor_id, **kwargs):  # noqa: E501
+        """get_editor_annotations  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.get_editor_changelog(editor_id, async=True)
+        >>> thread = api.get_editor_annotations(editor_id, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str editor_id: (required)
-        :return: list[ChangelogEntry]
+        :param str editor_id: base32-encoded unique identifier (required)
+        :param int limit:
+        :param datetime before:
+        :param datetime since:
+        :return: list[EditgroupAnnotation]
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.get_editor_changelog_with_http_info(editor_id, **kwargs)  # noqa: E501
+            return self.get_editor_annotations_with_http_info(editor_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.get_editor_changelog_with_http_info(editor_id, **kwargs)  # noqa: E501
+            (data) = self.get_editor_annotations_with_http_info(editor_id, **kwargs)  # noqa: E501
             return data
 
-    def get_editor_changelog_with_http_info(self, editor_id, **kwargs):  # noqa: E501
-        """get_editor_changelog  # noqa: E501
+    def get_editor_annotations_with_http_info(self, editor_id, **kwargs):  # noqa: E501
+        """get_editor_annotations  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.get_editor_changelog_with_http_info(editor_id, async=True)
+        >>> thread = api.get_editor_annotations_with_http_info(editor_id, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str editor_id: (required)
-        :return: list[ChangelogEntry]
+        :param str editor_id: base32-encoded unique identifier (required)
+        :param int limit:
+        :param datetime before:
+        :param datetime since:
+        :return: list[EditgroupAnnotation]
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['editor_id']  # noqa: E501
+        all_params = ['editor_id', 'limit', 'before', 'since']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -4947,15 +5280,23 @@ class DefaultApi(object):
             if key not in all_params:
                 raise TypeError(
                     "Got an unexpected keyword argument '%s'"
-                    " to method get_editor_changelog" % key
+                    " to method get_editor_annotations" % key
                 )
             params[key] = val
         del params['kwargs']
         # verify the required parameter 'editor_id' is set
         if ('editor_id' not in params or
                 params['editor_id'] is None):
-            raise ValueError("Missing the required parameter `editor_id` when calling `get_editor_changelog`")  # noqa: E501
+            raise ValueError("Missing the required parameter `editor_id` when calling `get_editor_annotations`")  # noqa: E501
 
+        if ('editor_id' in params and
+                len(params['editor_id']) > 26):
+            raise ValueError("Invalid value for parameter `editor_id` when calling `get_editor_annotations`, length must be less than or equal to `26`")  # noqa: E501
+        if ('editor_id' in params and
+                len(params['editor_id']) < 26):
+            raise ValueError("Invalid value for parameter `editor_id` when calling `get_editor_annotations`, length must be greater than or equal to `26`")  # noqa: E501
+        if 'editor_id' in params and not re.search('[a-zA-Z2-7]{26}', params['editor_id']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `editor_id` when calling `get_editor_annotations`, must conform to the pattern `/[a-zA-Z2-7]{26}/`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -4963,6 +5304,12 @@ class DefaultApi(object):
             path_params['editor_id'] = params['editor_id']  # noqa: E501
 
         query_params = []
+        if 'limit' in params:
+            query_params.append(('limit', params['limit']))  # noqa: E501
+        if 'before' in params:
+            query_params.append(('before', params['before']))  # noqa: E501
+        if 'since' in params:
+            query_params.append(('since', params['since']))  # noqa: E501
 
         header_params = {}
 
@@ -4982,14 +5329,123 @@ class DefaultApi(object):
         auth_settings = []  # noqa: E501
 
         return self.api_client.call_api(
-            '/editor/{editor_id}/changelog', 'GET',
+            '/editor/{editor_id}/annotations', 'GET',
             path_params,
             query_params,
             header_params,
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type='list[ChangelogEntry]',  # noqa: E501
+            response_type='list[EditgroupAnnotation]',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def get_editor_editgroups(self, editor_id, **kwargs):  # noqa: E501
+        """get_editor_editgroups  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_editor_editgroups(editor_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str editor_id: (required)
+        :param int limit:
+        :param datetime before:
+        :param datetime since:
+        :return: list[Editgroup]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.get_editor_editgroups_with_http_info(editor_id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.get_editor_editgroups_with_http_info(editor_id, **kwargs)  # noqa: E501
+            return data
+
+    def get_editor_editgroups_with_http_info(self, editor_id, **kwargs):  # noqa: E501
+        """get_editor_editgroups  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.get_editor_editgroups_with_http_info(editor_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str editor_id: (required)
+        :param int limit:
+        :param datetime before:
+        :param datetime since:
+        :return: list[Editgroup]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['editor_id', 'limit', 'before', 'since']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method get_editor_editgroups" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'editor_id' is set
+        if ('editor_id' not in params or
+                params['editor_id'] is None):
+            raise ValueError("Missing the required parameter `editor_id` when calling `get_editor_editgroups`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'editor_id' in params:
+            path_params['editor_id'] = params['editor_id']  # noqa: E501
+
+        query_params = []
+        if 'limit' in params:
+            query_params.append(('limit', params['limit']))  # noqa: E501
+        if 'before' in params:
+            query_params.append(('before', params['before']))  # noqa: E501
+        if 'since' in params:
+            query_params.append(('since', params['since']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = []  # noqa: E501
+
+        return self.api_client.call_api(
+            '/editor/{editor_id}/editgroups', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='list[Editgroup]',  # noqa: E501
             auth_settings=auth_settings,
             async=params.get('async'),
             _return_http_data_only=params.get('_return_http_data_only'),
@@ -8705,6 +9161,123 @@ class DefaultApi(object):
             post_params=form_params,
             files=local_var_files,
             response_type='EntityEdit',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def update_editgroup(self, editgroup_id, editgroup, **kwargs):  # noqa: E501
+        """update_editgroup  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.update_editgroup(editgroup_id, editgroup, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str editgroup_id: base32-encoded unique identifier (required)
+        :param Editgroup editgroup: (required)
+        :param bool submit:
+        :return: Editgroup
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.update_editgroup_with_http_info(editgroup_id, editgroup, **kwargs)  # noqa: E501
+        else:
+            (data) = self.update_editgroup_with_http_info(editgroup_id, editgroup, **kwargs)  # noqa: E501
+            return data
+
+    def update_editgroup_with_http_info(self, editgroup_id, editgroup, **kwargs):  # noqa: E501
+        """update_editgroup  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.update_editgroup_with_http_info(editgroup_id, editgroup, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str editgroup_id: base32-encoded unique identifier (required)
+        :param Editgroup editgroup: (required)
+        :param bool submit:
+        :return: Editgroup
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['editgroup_id', 'editgroup', 'submit']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method update_editgroup" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'editgroup_id' is set
+        if ('editgroup_id' not in params or
+                params['editgroup_id'] is None):
+            raise ValueError("Missing the required parameter `editgroup_id` when calling `update_editgroup`")  # noqa: E501
+        # verify the required parameter 'editgroup' is set
+        if ('editgroup' not in params or
+                params['editgroup'] is None):
+            raise ValueError("Missing the required parameter `editgroup` when calling `update_editgroup`")  # noqa: E501
+
+        if ('editgroup_id' in params and
+                len(params['editgroup_id']) > 26):
+            raise ValueError("Invalid value for parameter `editgroup_id` when calling `update_editgroup`, length must be less than or equal to `26`")  # noqa: E501
+        if ('editgroup_id' in params and
+                len(params['editgroup_id']) < 26):
+            raise ValueError("Invalid value for parameter `editgroup_id` when calling `update_editgroup`, length must be greater than or equal to `26`")  # noqa: E501
+        if 'editgroup_id' in params and not re.search('[a-zA-Z2-7]{26}', params['editgroup_id']):  # noqa: E501
+            raise ValueError("Invalid value for parameter `editgroup_id` when calling `update_editgroup`, must conform to the pattern `/[a-zA-Z2-7]{26}/`")  # noqa: E501
+        collection_formats = {}
+
+        path_params = {}
+        if 'editgroup_id' in params:
+            path_params['editgroup_id'] = params['editgroup_id']  # noqa: E501
+
+        query_params = []
+        if 'submit' in params:
+            query_params.append(('submit', params['submit']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        if 'editgroup' in params:
+            body_params = params['editgroup']
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = ['Bearer']  # noqa: E501
+
+        return self.api_client.call_api(
+            '/editgroup/{editgroup_id}', 'PUT',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='Editgroup',  # noqa: E501
             auth_settings=auth_settings,
             async=params.get('async'),
             _return_http_data_only=params.get('_return_http_data_only'),

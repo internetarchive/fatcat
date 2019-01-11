@@ -21,6 +21,7 @@ from fatcat_client.models.changelog_entry import ChangelogEntry
 from fatcat_client.models.container_entity import ContainerEntity
 from fatcat_client.models.creator_entity import CreatorEntity
 from fatcat_client.models.editgroup import Editgroup
+from fatcat_client.models.editgroup_annotation import EditgroupAnnotation
 from fatcat_client.models.editgroup_edits import EditgroupEdits
 from fatcat_client.models.editor import Editor
 from fatcat_client.models.entity_edit import EntityEdit
