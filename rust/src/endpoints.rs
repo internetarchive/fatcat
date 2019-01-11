@@ -619,11 +619,6 @@ impl Api for Server {
         GetCreatorReleasesResponse
     );
     wrap_fcid_handler!(get_editor, get_editor_handler, GetEditorResponse);
-    wrap_fcid_handler!(
-        get_editor_changelog,
-        get_editor_changelog_handler,
-        GetEditorChangelogResponse
-    );
 
     fn lookup_file(
         &self,
@@ -737,6 +732,50 @@ impl Api for Server {
         Box::new(futures::done(Ok(ret)))
     }
 
+    fn get_editor_editgroups(
+        &self,
+        editor_id: String,
+        limit: Option<i64>,
+        before: Option<chrono::DateTime<chrono::Utc>>,
+        since: Option<chrono::DateTime<chrono::Utc>>,
+        _context: &Context,
+    ) -> Box<Future<Item = GetEditorEditgroupsResponse, Error = ApiError> + Send> {
+        let conn = self.db_pool.get().expect("db_pool error");
+        let ret = match conn
+            .transaction(|| {
+                let editor_id = FatcatId::from_str(&editor_id)?;
+                unimplemented!()
+            })
+            .map_err(|e: Error| FatcatError::from(e))
+        {
+            Ok(editgroups) => GetEditorEditgroupsResponse::Found(editgroups),
+            Err(fe) => generic_err_responses!(fe, GetEditorEditgroupsResponse),
+        };
+        Box::new(futures::done(Ok(ret)))
+    }
+
+    fn get_editor_annotations(
+        &self,
+        editor_id: String,
+        limit: Option<i64>,
+        before: Option<chrono::DateTime<chrono::Utc>>,
+        since: Option<chrono::DateTime<chrono::Utc>>,
+        _context: &Context,
+    ) -> Box<Future<Item = GetEditorAnnotationsResponse, Error = ApiError> + Send> {
+        let conn = self.db_pool.get().expect("db_pool error");
+        let ret = match conn
+            .transaction(|| {
+                let editor_id = FatcatId::from_str(&editor_id)?;
+                unimplemented!()
+            })
+            .map_err(|e: Error| FatcatError::from(e))
+        {
+            Ok(editgroups) => GetEditorAnnotationsResponse::Success(editgroups),
+            Err(fe) => generic_err_responses!(fe, GetEditorAnnotationsResponse),
+        };
+        Box::new(futures::done(Ok(ret)))
+    }
+
     fn accept_editgroup(
         &self,
         editgroup_id: String,
@@ -789,6 +828,46 @@ impl Api for Server {
         Box::new(futures::done(Ok(ret)))
     }
 
+    fn get_editgroup_annotations(
+        &self,
+        editgroup_id: String,
+        expand: Option<String>,
+        _context: &Context,
+    ) -> Box<Future<Item = GetEditgroupAnnotationsResponse, Error = ApiError> + Send> {
+        let conn = self.db_pool.get().expect("db_pool error");
+        let ret = match conn
+            .transaction(|| {
+                let editgroup_id = FatcatId::from_str(&editgroup_id)?;
+                unimplemented!()
+                // TODO: let expand_flags = ExpandFlags::from_str(&param)?;
+            })
+            .map_err(|e: Error| FatcatError::from(e))
+        {
+            Ok(annotations) => GetEditgroupAnnotationsResponse::Success(annotations),
+            Err(fe) => generic_err_responses!(fe, GetEditgroupAnnotationsResponse),
+        };
+        Box::new(futures::done(Ok(ret)))
+    }
+
+    fn get_editgroups_reviewable(
+        &self,
+        expand: Option<String>,
+        limit: Option<i64>,
+        before: Option<chrono::DateTime<chrono::Utc>>,
+        since: Option<chrono::DateTime<chrono::Utc>>,
+        _context: &Context,
+    ) -> Box<Future<Item = GetEditgroupsReviewableResponse, Error = ApiError> + Send> {
+        let conn = self.db_pool.get().expect("db_pool error");
+        let ret = match conn
+            .transaction(|| unimplemented!())
+            .map_err(|e: Error| FatcatError::from(e))
+        {
+            Ok(editgroups) => GetEditgroupsReviewableResponse::Found(editgroups),
+            Err(fe) => generic_err_responses!(fe, GetEditgroupsReviewableResponse),
+        };
+        Box::new(futures::done(Ok(ret)))
+    }
+
     fn create_editgroup(
         &self,
         entity: models::Editgroup,
@@ -823,7 +902,7 @@ impl Api for Server {
             Ok(eg) => {
                 self.metrics.incr("editgroup.created").ok();
                 CreateEditgroupResponse::SuccessfullyCreated(eg)
-            },
+            }
             Err(fe) => match fe {
                 NotFound(_, _) => CreateEditgroupResponse::NotFound(fe.into()),
                 DatabaseError(_) | InternalError(_) => {
@@ -833,6 +912,92 @@ impl Api for Server {
                 }
                 _ => CreateEditgroupResponse::BadRequest(fe.into()),
             },
+        };
+        Box::new(futures::done(Ok(ret)))
+    }
+
+    fn update_editgroup(
+        &self,
+        editgroup_id: String,
+        editgroup: models::Editgroup,
+        submit: Option<bool>,
+        context: &Context,
+    ) -> Box<Future<Item = UpdateEditgroupResponse, Error = ApiError> + Send> {
+        let conn = self.db_pool.get().expect("db_pool error");
+        let ret = match conn
+            .transaction(|| {
+                let editgroup_id = FatcatId::from_str(&editgroup_id)?;
+                if Some(editgroup_id.to_string()) != editgroup.editgroup_id {
+                    return Err(FatcatError::OtherBadRequest(
+                        "editgroup_id doesn't match".to_string(),
+                    )
+                    .into());
+                }
+                let auth_context = self.auth_confectionary.require_auth(
+                    &conn,
+                    &context.auth_data,
+                    Some("update_editgroup"),
+                )?;
+                unimplemented!(); // submit
+                                  // XXX let existing = Editgroup::db_get(&conn, editgroup_id)?;
+                                  /*
+                                  if existing.editor_id == auth_context.editor_id.to_uuid() {
+                                      // self edit of editgroup allowed
+                                      auth_context.require_role(FatcatRole::Editor)?;
+                                  } else {
+                                      // admin can update any editgroup
+                                      auth_context.require_role(FatcatRole::Admin)?;
+                                  };
+                                  editgroup
+                                      .db_update(&conn, editgroup_id)
+                                      .map(|e| e.into_model())
+                                  */
+            })
+            .map_err(|e: Error| FatcatError::from(e))
+        {
+            Ok(editgroup) => UpdateEditgroupResponse::UpdatedEditgroup(editgroup),
+            Err(fe) => generic_err_responses!(fe, UpdateEditgroupResponse),
+        };
+        Box::new(futures::done(Ok(ret)))
+    }
+
+    fn create_editgroup_annotation(
+        &self,
+        editgroup_id: String,
+        annotation: models::EditgroupAnnotation,
+        context: &Context,
+    ) -> Box<Future<Item = CreateEditgroupAnnotationResponse, Error = ApiError> + Send> {
+        let conn = self.db_pool.get().expect("db_pool error");
+        let ret = match conn
+            .transaction(|| {
+                let auth_context = self.auth_confectionary.require_auth(
+                    &conn,
+                    &context.auth_data,
+                    Some("create_editgroup_annotation"),
+                )?;
+                auth_context.require_role(FatcatRole::Editor)?;
+                let editgroup_id = FatcatId::from_str(&editgroup_id)?;
+                let mut annotation = annotation.clone();
+                annotation.editgroup_id = Some(editgroup_id.to_string());
+                match annotation.editor_id.clone() {
+                    Some(editor_id) => {
+                        if editor_id != auth_context.editor_id.to_string()
+                            && !auth_context.has_role(FatcatRole::Superuser)
+                        {
+                            bail!("not authorized to annotate in others' names");
+                        }
+                    }
+                    None => {
+                        annotation.editor_id = Some(auth_context.editor_id.to_string());
+                    }
+                };
+                unimplemented!();
+                // TODO: self.create_editgroup_annotation_handler(&conn, annotation)
+            })
+            .map_err(|e: Error| FatcatError::from(e))
+        {
+            Ok(annotation) => CreateEditgroupAnnotationResponse::Created(annotation),
+            Err(fe) => generic_auth_err_responses!(fe, CreateEditgroupAnnotationResponse),
         };
         Box::new(futures::done(Ok(ret)))
     }
@@ -906,11 +1071,11 @@ impl Api for Server {
             Ok((result, true)) => {
                 self.metrics.incr("account.signup").ok();
                 AuthOidcResponse::Created(result)
-            },
+            }
             Ok((result, false)) => {
                 self.metrics.incr("account.login").ok();
                 AuthOidcResponse::Found(result)
-            },
+            }
             Err(fe) => match fe {
                 DatabaseError(_) | InternalError(_) => {
                     error!("{}", fe);

@@ -60,45 +60,6 @@ pub fn make_edit_context(
     })
 }
 
-pub fn create_editor(
-    conn: &DbConn,
-    username: String,
-    is_admin: bool,
-    is_bot: bool,
-) -> Result<EditorRow> {
-    check_username(&username)?;
-    let ed: EditorRow = diesel::insert_into(editor::table)
-        .values((
-            editor::username.eq(username),
-            editor::is_admin.eq(is_admin),
-            editor::is_bot.eq(is_bot),
-        ))
-        .get_result(conn)?;
-    Ok(ed)
-}
-
-pub fn update_editor_username(
-    conn: &DbConn,
-    editor_id: FatcatId,
-    username: String,
-) -> Result<EditorRow> {
-    check_username(&username)?;
-    diesel::update(editor::table.find(editor_id.to_uuid()))
-        .set(editor::username.eq(username))
-        .execute(conn)?;
-    let editor: EditorRow = editor::table.find(editor_id.to_uuid()).get_result(conn)?;
-    Ok(editor)
-}
-
-/// This function should always be run within a transaction
-pub fn create_editgroup(conn: &DbConn, editor_id: Uuid) -> Result<Uuid> {
-    // need to insert and update
-    let eg_row: EditgroupRow = diesel::insert_into(editgroup::table)
-        .values((editgroup::editor_id.eq(editor_id),))
-        .get_result(conn)?;
-    Ok(eg_row.id)
-}
-
 /// This function should always be run within a transaction
 pub fn accept_editgroup(conn: &DbConn, editgroup_id: FatcatId) -> Result<ChangelogRow> {
     // check that we haven't accepted already (in changelog)
@@ -127,4 +88,25 @@ pub fn accept_editgroup(conn: &DbConn, editgroup_id: FatcatId) -> Result<Changel
         .get_result(conn)?;
 
     Ok(entry)
+}
+
+pub fn create_editgroup(conn: &DbConn, editor_id: Uuid) -> Result<Uuid> {
+    unimplemented!()
+}
+
+pub fn create_editor(
+    conn: &DbConn,
+    username: String,
+    is_admin: bool,
+    is_bot: bool,
+) -> Result<EditorRow> {
+    unimplemented!()
+}
+
+pub fn update_editor_username(
+    conn: &DbConn,
+    editor_id: FatcatId,
+    username: String,
+) -> Result<EditorRow> {
+    unimplemented!()
 }

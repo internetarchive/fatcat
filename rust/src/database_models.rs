@@ -554,6 +554,8 @@ pub struct EditgroupRow {
     pub id: Uuid,
     pub editor_id: Uuid,
     pub created: chrono::NaiveDateTime,
+    pub submitted: Option<chrono::NaiveDateTime>,
+    pub is_accepted: bool,
     pub extra_json: Option<serde_json::Value>,
     pub description: Option<String>,
 }
@@ -565,8 +567,12 @@ impl EditgroupRow {
         Editgroup {
             editgroup_id: Some(uuid2fcid(&self.id)),
             editor_id: Some(uuid2fcid(&self.editor_id)),
+            submitted: self
+                .submitted
+                .map(|v| chrono::DateTime::from_utc(v, chrono::Utc)),
             description: self.description,
             extra: self.extra_json,
+            annotations: None,
             edits: None,
         }
     }

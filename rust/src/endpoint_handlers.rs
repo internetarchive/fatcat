@@ -387,6 +387,8 @@ impl Server {
         conn: &DbConn,
         entity: models::Editgroup,
     ) -> Result<Editgroup> {
+        unimplemented!()
+        /*
         let row: EditgroupRow = insert_into(editgroup::table)
             .values((
                 editgroup::editor_id.eq(FatcatId::from_str(&entity.editor_id.unwrap())?.to_uuid()),
@@ -402,6 +404,7 @@ impl Server {
             edits: None,
             extra: row.extra_json,
         })
+        */
     }
 
     pub fn get_editgroup_handler(
@@ -470,6 +473,9 @@ impl Server {
             ),
         };
 
+        unimplemented!();
+        // XXX:
+        /*
         let eg = Editgroup {
             editgroup_id: Some(uuid2fcid(&row.id)),
             editor_id: Some(uuid2fcid(&row.editor_id)),
@@ -478,6 +484,7 @@ impl Server {
             extra: row.extra_json,
         };
         Ok(eg)
+        */
     }
 
     pub fn get_editor_handler(&self, conn: &DbConn, editor_id: FatcatId) -> Result<Editor> {

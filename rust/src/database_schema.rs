@@ -98,8 +98,21 @@ table! {
         id -> Uuid,
         editor_id -> Uuid,
         created -> Timestamptz,
+        submitted -> Nullable<Timestamptz>,
+        is_accepted -> Bool,
         extra_json -> Nullable<Jsonb>,
         description -> Nullable<Text>,
+    }
+}
+
+table! {
+    editgroup_annotation (id) {
+        id -> Uuid,
+        editgroup_id -> Uuid,
+        editor_id -> Uuid,
+        created -> Timestamptz,
+        comment_markdown -> Nullable<Text>,
+        extra_json -> Nullable<Jsonb>,
     }
 }
 
@@ -406,6 +419,8 @@ joinable!(container_ident -> container_rev (rev_id));
 joinable!(creator_edit -> editgroup (editgroup_id));
 joinable!(creator_ident -> creator_rev (rev_id));
 joinable!(editgroup -> editor (editor_id));
+joinable!(editgroup_annotation -> editgroup (editgroup_id));
+joinable!(editgroup_annotation -> editor (editor_id));
 joinable!(file_edit -> editgroup (editgroup_id));
 joinable!(file_ident -> file_rev (rev_id));
 joinable!(file_rev_release -> file_rev (file_rev));
@@ -447,6 +462,7 @@ allow_tables_to_appear_in_same_query!(
     creator_ident,
     creator_rev,
     editgroup,
+    editgroup_annotation,
     editor,
     file_edit,
     file_ident,
