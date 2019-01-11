@@ -10,8 +10,8 @@
 use crate::auth::FatcatRole;
 use crate::database_models::EntityEditRow;
 use crate::editing::*;
+use crate::editing_crud::{EditgroupAnnotationCrud, EditgroupCrud, EditorCrud};
 use crate::entity_crud::{EntityCrud, ExpandFlags, HideFlags};
-use crate::editing_crud::{EditorCrud, EditgroupCrud, EditgroupAnnotationCrud};
 use crate::errors::*;
 use crate::identifiers::FatcatId;
 use crate::server::*;
@@ -22,9 +22,9 @@ use fatcat_api_spec::models::*;
 use fatcat_api_spec::*;
 use futures::{self, Future};
 use sentry::integrations::failure::capture_fail;
+use std::cmp;
 use std::str::FromStr;
 use uuid::{self, Uuid};
-use std::cmp;
 
 // This makes response matching below *much* more terse
 use crate::errors::FatcatError::*;
@@ -724,7 +724,12 @@ impl Api for Server {
                     // admin can update any username
                     auth_context.require_role(FatcatRole::Admin)?;
                 };
-                update_editor_username(&conn, editor_id, editor.username).map(|e| e.into_model())
+                // only update fixed set of fields (username)
+                let mut existing = Editor::db_get(&conn, editor_id)?.into_model();
+                existing.username = editor.username;
+                existing
+                    .db_update_username(&conn, editor_id)
+                    .map(|e| e.into_model())
             })
             .map_err(|e| FatcatError::from(e))
         {
@@ -747,7 +752,8 @@ impl Api for Server {
             .transaction(|| {
                 let editor_id = FatcatId::from_str(&editor_id)?;
                 let limit = cmp::min(100, limit.unwrap_or(20)) as u64;
-                let row = Editgroup::db_get_range_for_editor(&conn, editor_id, limit, since, before)?;
+                let row =
+                    Editgroup::db_get_range_for_editor(&conn, editor_id, limit, since, before)?;
                 Ok(row.into_iter().map(|eg| eg.into_model_partial()).collect())
             })
             .map_err(|e: Error| FatcatError::from(e))
@@ -771,7 +777,9 @@ impl Api for Server {
             .transaction(|| {
                 let editor_id = FatcatId::from_str(&editor_id)?;
                 let limit = cmp::min(100, limit.unwrap_or(20)) as u64;
-                let annotations = EditgroupAnnotation::db_get_range_for_editor(&conn, editor_id, limit, since, before)?;
+                let annotations = EditgroupAnnotation::db_get_range_for_editor(
+                    &conn, editor_id, limit, since, before,
+                )?;
                 Ok(annotations.into_iter().map(|a| a.into_model()).collect())
             })
             .map_err(|e: Error| FatcatError::from(e))
@@ -846,13 +854,20 @@ impl Api for Server {
                 let editgroup_id = FatcatId::from_str(&editgroup_id)?;
                 let limit: u64 = 1000;
                 // TODO: controllable expansion... for now always expands editors
-                let annotations = EditgroupAnnotation::db_get_range_for_editgroup(&conn, editgroup_id, limit, None, None)?;
-                let mut annotations: Vec<EditgroupAnnotation> = annotations.into_iter().map(|a| a.into_model()).collect();
+                let annotations = EditgroupAnnotation::db_get_range_for_editgroup(
+                    &conn,
+                    editgroup_id,
+                    limit,
+                    None,
+                    None,
+                )?;
+                let mut annotations: Vec<EditgroupAnnotation> =
+                    annotations.into_iter().map(|a| a.into_model()).collect();
                 if let Some(expand) = expand {
                     let expand = ExpandFlags::from_str(&expand)?;
                     for a in annotations.iter_mut() {
                         a.db_expand(&conn, expand)?;
-                    };
+                    }
                 };
                 Ok(annotations)
             })
@@ -877,15 +892,17 @@ impl Api for Server {
             .transaction(|| {
                 let limit = cmp::min(100, limit.unwrap_or(20)) as u64;
                 let row = Editgroup::db_get_range_reviewable(&conn, limit, since, before)?;
-                let mut editgroups: Vec<Editgroup>  = row.into_iter().map(|eg| eg.into_model_partial()).collect();
+                let mut editgroups: Vec<Editgroup> =
+                    row.into_iter().map(|eg| eg.into_model_partial()).collect();
                 if let Some(expand) = expand {
                     let expand = ExpandFlags::from_str(&expand)?;
                     for eg in editgroups.iter_mut() {
                         eg.db_expand(&conn, expand)?;
-                    };
+                    }
                 };
                 Ok(editgroups)
-            }).map_err(|e: Error| FatcatError::from(e))
+            })
+            .map_err(|e: Error| FatcatError::from(e))
         {
             Ok(editgroups) => GetEditgroupsReviewableResponse::Found(editgroups),
             Err(fe) => generic_err_responses!(fe, GetEditgroupsReviewableResponse),
@@ -973,7 +990,9 @@ impl Api for Server {
                     // admin can update any editgroup
                     auth_context.require_role(FatcatRole::Admin)?;
                 };
-                editgroup.db_update(&conn, editgroup_id, submit).map(|eg| eg.into_model_partial())
+                editgroup
+                    .db_update(&conn, editgroup_id, submit)
+                    .map(|eg| eg.into_model_partial())
             })
             .map_err(|e: Error| FatcatError::from(e))
         {

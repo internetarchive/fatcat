@@ -8,8 +8,8 @@
 use crate::database_models::*;
 use crate::database_schema::*;
 use crate::editing::*;
+use crate::editing_crud::{EditgroupCrud, EditorCrud};
 use crate::entity_crud::{EntityCrud, ExpandFlags, HideFlags};
-use crate::editing_crud::{EditorCrud, EditgroupCrud};
 use crate::errors::*;
 use crate::identifiers::*;
 use crate::server::*;
@@ -472,7 +472,7 @@ impl Server {
     ) -> Result<Vec<ChangelogEntry>> {
         // XXX: delete me?
         // TODO: single query
-        let editor: EditorRow = editor::table.find(editor_id.to_uuid()).first(conn)?;
+        let editor: EditorRow = Editor::db_get(&conn, editor_id)?;
         let changes: Vec<(ChangelogRow, EditgroupRow)> = changelog::table
             .inner_join(editgroup::table)
             .filter(editgroup::editor_id.eq(editor.id))
@@ -545,17 +545,24 @@ impl Server {
             Some((editor, _)) => (editor.clone(), false),
             None => {
                 let username = format!("{}-{}", params.preferred_username, params.provider);
-                let editor = create_editor(conn, username, false, false)?;
+                let editor = Editor {
+                    editor_id: None,
+                    username: username,
+                    is_admin: Some(false),
+                    is_bot: Some(false),
+                    is_active: Some(true),
+                };
+                let row = editor.db_create(conn)?;
                 // create an auth login row so the user can log back in
                 diesel::insert_into(auth_oidc::table)
                     .values((
-                        auth_oidc::editor_id.eq(editor.id),
+                        auth_oidc::editor_id.eq(row.id),
                         auth_oidc::provider.eq(params.provider),
                         auth_oidc::oidc_iss.eq(params.iss),
                         auth_oidc::oidc_sub.eq(params.sub),
                     ))
                     .execute(conn)?;
-                (editor, true)
+                (row, true)
             }
         };
 

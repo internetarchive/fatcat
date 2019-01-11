@@ -11,12 +11,14 @@ use swagger::auth::{AuthData, Authorization, Scopes};
 
 use crate::database_models::*;
 use crate::database_schema::*;
+use crate::editing_crud::{EditgroupCrud, EditorCrud};
 use crate::errors::*;
 use crate::identifiers::*;
 use crate::server::*;
 use chrono::prelude::*;
 use diesel;
 use diesel::prelude::*;
+use fatcat_api_spec::models::{Editgroup, Editor};
 use std::collections::HashMap;
 use std::env;
 use std::str::FromStr;
@@ -73,9 +75,7 @@ impl AuthContext {
         if self.has_role(FatcatRole::Admin) {
             return Ok(());
         }
-        let editgroup: EditgroupRow = editgroup::table
-            .find(editgroup_id.to_uuid())
-            .get_result(conn)?;
+        let editgroup: EditgroupRow = Editgroup::db_get(conn, editgroup_id)?;
         match editgroup.editor_id == self.editor_id.to_uuid() {
             true => Ok(()),
             false => Err(FatcatError::InsufficientPrivileges(format!(
@@ -312,7 +312,7 @@ impl AuthConfectionary {
             "time > {}",
             created.to_rfc3339_opts(SecondsFormat::Secs, true)
         ));
-        let editor: EditorRow = editor::table.find(&editor_id.to_uuid()).get_result(conn)?;
+        let editor: EditorRow = Editor::db_get(conn, editor_id)?;
         let auth_epoch = DateTime::<Utc>::from_utc(editor.auth_epoch, Utc);
         // allow a second of wiggle room for precision and, eg, tests
         if created < (auth_epoch - chrono::Duration::seconds(1)) {

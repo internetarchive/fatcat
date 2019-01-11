@@ -567,6 +567,7 @@ impl EditgroupRow {
         Editgroup {
             editgroup_id: Some(uuid2fcid(&self.id)),
             editor_id: Some(uuid2fcid(&self.editor_id)),
+            editor: None,
             submitted: self
                 .submitted
                 .map(|v| chrono::DateTime::from_utc(v, chrono::Utc)),
@@ -595,6 +596,7 @@ impl EditgroupAnnotationRow {
             annotation_id: Some(self.id.to_string()),
             editgroup_id: Some(uuid2fcid(&self.editgroup_id)),
             editor_id: Some(uuid2fcid(&self.editor_id)),
+            editor: None,
             created: Some(chrono::DateTime::from_utc(self.created, chrono::Utc)),
             comment_markdown: self.comment_markdown,
             extra: self.extra_json,

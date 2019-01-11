@@ -2,9 +2,11 @@
 
 use clap::{App, SubCommand};
 
+use fatcat::editing_crud::EditorCrud;
 use fatcat::errors::Result;
 use fatcat::identifiers::FatcatId;
-use fatcat::{auth, editing, server};
+use fatcat::{auth, server};
+use fatcat_api_spec::models::Editor;
 use std::process;
 use std::str::FromStr;
 
@@ -75,14 +77,16 @@ fn main() -> Result<()> {
             fatcat::auth::print_editors(&db_conn)?;
         }
         ("create-editor", Some(subm)) => {
-            let editor = editing::create_editor(
-                &db_conn,
-                subm.value_of("username").unwrap().to_string(),
-                subm.is_present("admin"),
-                subm.is_present("bot"),
-            )?;
+            let editor = Editor {
+                editor_id: None,
+                username: subm.value_of("username").unwrap().to_string(),
+                is_admin: Some(subm.is_present("admin")),
+                is_bot: Some(subm.is_present("bot")),
+                is_active: Some(true),
+            };
+            let editor_row = editor.db_create(&db_conn)?;
             //println!("{:?}", editor);
-            println!("{}", FatcatId::from_uuid(&editor.id).to_string());
+            println!("{}", FatcatId::from_uuid(&editor_row.id).to_string());
         }
         ("create-token", Some(subm)) => {
             let editor_id = FatcatId::from_str(subm.value_of("editor-id").unwrap())?;

@@ -5,6 +5,7 @@
 
 use crate::database_models::*;
 use crate::database_schema::*;
+use crate::editing_crud::EditgroupCrud;
 use crate::entity_crud::EntityCrud;
 use crate::errors::{FatcatError, Result};
 use crate::identifiers::FatcatId;
@@ -12,7 +13,6 @@ use crate::server::DbConn;
 use diesel;
 use diesel::prelude::*;
 use fatcat_api_spec::models::*;
-use uuid::Uuid;
 
 pub struct EditContext {
     pub editor_id: FatcatId,
@@ -41,16 +41,28 @@ pub fn make_edit_context(
     editgroup_id: Option<FatcatId>,
     autoaccept: bool,
 ) -> Result<EditContext> {
+    // *either* autoaccept is false and editgroup_id is Some, *or* autoaccept is true and
+    // editgroup_id is None
     let editgroup_id: FatcatId = match (editgroup_id, autoaccept) {
-        (Some(eg), _) => eg,
-        // If autoaccept and no editgroup_id passed, always create a new one for this transaction
+        (Some(eg), false) => eg,
         (None, true) => {
-            let eg_row: EditgroupRow = diesel::insert_into(editgroup::table)
-                .values((editgroup::editor_id.eq(editor_id.to_uuid()),))
-                .get_result(conn)?;
-            FatcatId::from_uuid(&eg_row.id)
+            let eg = Editgroup {
+                editgroup_id: None,
+                editor_id: Some(editor_id.to_string()),
+                editor: None,
+                submitted: None,
+                description: None,
+                extra: None,
+                annotations: None,
+                edits: None,
+            };
+            let row = eg.db_create(conn, autoaccept)?;
+            FatcatId::from_uuid(&row.id)
         }
-        (None, false) => FatcatId::from_uuid(&create_editgroup(conn, editor_id.to_uuid())?),
+        _ => {
+            // TODO: better error response
+            bail!("unsupported editgroup context");
+        }
     };
     Ok(EditContext {
         editor_id,
@@ -87,26 +99,10 @@ pub fn accept_editgroup(conn: &DbConn, editgroup_id: FatcatId) -> Result<Changel
         .values((changelog::editgroup_id.eq(editgroup_id.to_uuid()),))
         .get_result(conn)?;
 
+    // update editgroup row with is_accepted
+    diesel::update(editgroup::table.find(editgroup_id.to_uuid()))
+        .set(editgroup::is_accepted.eq(true))
+        .execute(conn)?;
+
     Ok(entry)
-}
-
-pub fn create_editgroup(conn: &DbConn, editor_id: Uuid) -> Result<Uuid> {
-    unimplemented!()
-}
-
-pub fn create_editor(
-    conn: &DbConn,
-    username: String,
-    is_admin: bool,
-    is_bot: bool,
-) -> Result<EditorRow> {
-    unimplemented!()
-}
-
-pub fn update_editor_username(
-    conn: &DbConn,
-    editor_id: FatcatId,
-    username: String,
-) -> Result<EditorRow> {
-    unimplemented!()
 }

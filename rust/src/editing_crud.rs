@@ -19,12 +19,11 @@ use uuid::Uuid;
  * Generic verbs/actions look like:
  *
  * - db_get (single)
- * - db_get_range (group; by timestamp)
+ * - db_get_range (group; by timestamp, with limits)
  * - db_create (single)
  * - db_update (single)
  * - db_expand (single)
  *
- * Annotations can be fetch with a join on either editgroup or editor, with same range parameters.
  */
 
 pub trait EditorCrud {
@@ -42,14 +41,14 @@ impl EditorCrud for Editor {
         identifiers::check_username(&self.username)?;
         let is_admin = self.is_admin.unwrap_or(false);
         let is_bot = self.is_bot.unwrap_or(false);
-        let ed: EditorRow = diesel::insert_into(editor::table)
+        let row: EditorRow = diesel::insert_into(editor::table)
             .values((
                 editor::username.eq(&self.username),
                 editor::is_admin.eq(is_admin),
                 editor::is_bot.eq(is_bot),
             ))
             .get_result(conn)?;
-        Ok(ed)
+        Ok(row)
     }
 
     fn db_update_username(&self, conn: &DbConn, editor_id: FatcatId) -> Result<EditorRow> {
@@ -88,8 +87,8 @@ pub trait EditgroupCrud {
 }
 
 impl EditgroupCrud for Editgroup {
-    // XXX: this should probably *alwas* retun changelog status as well. If we do that, can we get rid
-    // of the is_accepted thing? no, still want it as denormalized speed-up in some queries/filters.
+    // XXX: this could *alwas* return changelog status as well. If we do that, can we get rid of
+    // the is_accepted thing? no, still want it as denormalized speed-up in some queries/filters.
 
     /// This method does *not* expand the 'edits'; currently that's still done in the endpoint
     /// handler, but it probably should be done in this trait with a db_expand()
@@ -111,8 +110,16 @@ impl EditgroupCrud for Editgroup {
         Ok(row)
     }
 
+    /// Note: this *still* doesn't epand the 'edits', at least yet.
     fn db_expand(&mut self, conn: &DbConn, expand: ExpandFlags) -> Result<()> {
-        // XXX: impl
+        if expand.editors {
+            let editor_id = FatcatId::from_str(
+                self.editor_id
+                    .as_ref()
+                    .expect("tried to expand bare Editor model"),
+            )?;
+            self.editor = Some(Editor::db_get(conn, editor_id)?.into_model());
+        }
         Ok(())
     }
 
@@ -244,7 +251,15 @@ impl EditgroupAnnotationCrud for EditgroupAnnotation {
     }
 
     fn db_expand(&mut self, conn: &DbConn, expand: ExpandFlags) -> Result<()> {
-        unimplemented!()
+        if expand.editors {
+            let editor_id = FatcatId::from_str(
+                self.editor_id
+                    .as_ref()
+                    .expect("tried to expand bare Editor model"),
+            )?;
+            self.editor = Some(Editor::db_get(conn, editor_id)?.into_model());
+        }
+        Ok(())
     }
 
     fn db_get_range_for_editor(

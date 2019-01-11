@@ -162,8 +162,8 @@ fn test_expand_flags() {
             webcaptures: true,
             container: true,
             releases: true,
-            creators: true
-            editors: true
+            creators: true,
+            editors: true,
         }
     );
     assert!(ExpandFlags::from_str("").unwrap().files == false);
@@ -181,8 +181,8 @@ fn test_expand_flags() {
             webcaptures: true,
             container: true,
             releases: true,
-            creators: true
-            editors: true
+            creators: true,
+            editors: true,
         }
     );
 }
