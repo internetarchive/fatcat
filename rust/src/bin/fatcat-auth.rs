@@ -32,7 +32,7 @@ fn main() -> Result<()> {
                 .about("Creates a new auth token (macaroon) for the given editor")
                 .args_from_usage(
                     "<editor-id> 'id of the editor (fatcatid, not username)'
-                     --env-format 'outputs in a format that shells can source'", // TODO
+                     --env-format 'outputs in a format that shells can source'",
                 ),
         )
         .subcommand(
@@ -43,9 +43,7 @@ fn main() -> Result<()> {
         .subcommand(
             SubCommand::with_name("create-key")
                 .about("Creates a new auth secret key (aka, root/signing key for tokens)")
-                .args_from_usage(
-                    "--env-format 'outputs in a format that shells can source'", // TODO
-                ),
+                .args_from_usage("--env-format 'outputs in a format that shells can source'"),
         )
         .subcommand(
             SubCommand::with_name("revoke-tokens")
@@ -60,8 +58,13 @@ fn main() -> Result<()> {
 
     // First, the commands with no db or confectionary needed
     match m.subcommand() {
-        ("create-key", Some(_subm)) => {
-            println!("{}", fatcat::auth::create_key());
+        ("create-key", Some(subm)) => {
+            let key = fatcat::auth::create_key();
+            if subm.is_present("env-format") {
+                println!("AUTH_SECRET_KEY=\"{}\"", key);
+            } else {
+                println!("{}", key);
+            }
             return Ok(());
         }
         _ => (),
@@ -90,7 +93,12 @@ fn main() -> Result<()> {
         }
         ("create-token", Some(subm)) => {
             let editor_id = FatcatId::from_str(subm.value_of("editor-id").unwrap())?;
-            println!("{}", confectionary.create_token(editor_id, None)?);
+            let token = confectionary.create_token(editor_id, None)?;
+            if subm.is_present("env-format") {
+                println!("FATCAT_AUTH_TOKEN=\"{}\"", token);
+            } else {
+                println!("{}", token);
+            }
         }
         ("inspect-token", Some(subm)) => {
             confectionary.inspect_token(&db_conn, subm.value_of("token").unwrap())?;
