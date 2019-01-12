@@ -498,7 +498,7 @@ INSERT INTO editgroup (id, is_accepted, editor_id, description, submitted) VALUE
     ('00000000-0000-0000-BBBB-000000000004',  true, '00000000-0000-0000-AAAA-000000000002', 'uncommited edit', NULL),       -- aaaaaaaaaaaabo53aaaaaaaaaq
     ('00000000-0000-0000-BBBB-000000000005',  true, '00000000-0000-0000-AAAA-000000000001', 'journal edit', NULL),          -- aaaaaaaaaaaabo53aaaaaaaaau
     ('00000000-0000-0000-BBBB-000000000006', false, '00000000-0000-0000-AAAA-000000000004', 'another journal edit', NULL),  -- aaaaaaaaaaaabo53aaaaaaaaay
-    ('00000000-0000-0000-BBBB-000000000007', false, '00000000-0000-0000-AAAA-000000000003', 'edit for submission', now());  -- aaaaaaaaaaaabo53aaaaaaaaa?
+    ('00000000-0000-0000-BBBB-000000000007', false, '00000000-0000-0000-AAAA-000000000003', 'edit for submission', now());  -- aaaaaaaaaaaabo53aaaaaaaaa4
 
 INSERT INTO editgroup_annotation (editgroup_id, editor_id, comment_markdown) VALUES
     ('00000000-0000-0000-BBBB-000000000007', '00000000-0000-0000-AAAA-000000000003', 'I love this edit!'),
