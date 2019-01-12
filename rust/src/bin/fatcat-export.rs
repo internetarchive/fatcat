@@ -61,7 +61,7 @@ macro_rules! generic_loop_work {
                         row.rev_id.expect("valid, non-deleted row"),
                         HideFlags::none(),
                     )?; // .chain_err(|| "reading entity from database")?;
-                    entity.state = Some("active".to_string()); // XXX
+                    entity.state = Some("active".to_string()); // only active lines were passed
                     entity.ident = Some(row.ident_id.to_string());
                     if let Some(expand) = expand {
                         entity.db_expand(db_conn, expand)?
@@ -92,7 +92,7 @@ fn loop_printer(
     done_sender: channel::Sender<()>,
 ) -> Result<()> {
     let output = std::io::stdout();
-    // XXX should log...
+    // TODO: should log?
     // let mut buf_output = BufWriter::new(output.lock());
     let mut buf_output = BufWriter::new(output);
     for line in output_receiver {
