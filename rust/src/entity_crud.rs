@@ -550,7 +550,7 @@ macro_rules! generic_db_get_history {
                 .map(|(eg_row, cl_row, e_row)| {
                     Ok(EntityHistoryEntry {
                         edit: e_row.into_model()?,
-                        editgroup: eg_row.into_model_partial(),
+                        editgroup: eg_row.into_model_partial(None),
                         changelog_entry: cl_row.into_model(),
                     })
                 })

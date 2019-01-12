@@ -386,7 +386,7 @@ impl Server {
         editgroup: models::Editgroup,
     ) -> Result<Editgroup> {
         let row = editgroup.db_create(conn, false)?;
-        Ok(row.into_model_partial())
+        Ok(row.into_model_partial(None))
     }
 
     pub fn get_editgroup_handler(
@@ -394,8 +394,8 @@ impl Server {
         conn: &DbConn,
         editgroup_id: FatcatId,
     ) -> Result<Editgroup> {
-        let row: EditgroupRow = Editgroup::db_get(conn, editgroup_id)?;
-        let mut editgroup = row.into_model_partial();
+        let (eg_row, cl_row) = Editgroup::db_get_with_changelog(conn, editgroup_id)?;
+        let mut editgroup = eg_row.into_model_partial(cl_row.map(|cl| cl.id));
 
         let edits = EditgroupEdits {
             containers: Some(
@@ -465,31 +465,6 @@ impl Server {
         Ok(row.into_model())
     }
 
-    pub fn get_editor_changelog_handler(
-        &self,
-        conn: &DbConn,
-        editor_id: FatcatId,
-    ) -> Result<Vec<ChangelogEntry>> {
-        // XXX: delete me?
-        // TODO: single query
-        let editor: EditorRow = Editor::db_get(&conn, editor_id)?;
-        let changes: Vec<(ChangelogRow, EditgroupRow)> = changelog::table
-            .inner_join(editgroup::table)
-            .filter(editgroup::editor_id.eq(editor.id))
-            .load(conn)?;
-
-        let entries = changes
-            .into_iter()
-            .map(|(cl_row, eg_row)| ChangelogEntry {
-                index: cl_row.id,
-                editgroup: Some(eg_row.into_model_partial()),
-                editgroup_id: uuid2fcid(&cl_row.editgroup_id),
-                timestamp: chrono::DateTime::from_utc(cl_row.timestamp, chrono::Utc),
-            })
-            .collect();
-        Ok(entries)
-    }
-
     pub fn get_changelog_handler(
         &self,
         conn: &DbConn,
@@ -507,7 +482,7 @@ impl Server {
             .into_iter()
             .map(|(cl_row, eg_row)| ChangelogEntry {
                 index: cl_row.id,
-                editgroup: Some(eg_row.into_model_partial()),
+                editgroup: Some(eg_row.into_model_partial(None)),
                 editgroup_id: uuid2fcid(&cl_row.editgroup_id),
                 timestamp: chrono::DateTime::from_utc(cl_row.timestamp, chrono::Utc),
             })

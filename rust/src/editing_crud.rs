@@ -63,6 +63,10 @@ impl EditorCrud for Editor {
 
 pub trait EditgroupCrud {
     fn db_get(conn: &DbConn, editgroup_id: FatcatId) -> Result<EditgroupRow>;
+    fn db_get_with_changelog(
+        conn: &DbConn,
+        editgroup_id: FatcatId,
+    ) -> Result<(EditgroupRow, Option<ChangelogRow>)>;
     fn db_expand(&mut self, conn: &DbConn, expand: ExpandFlags) -> Result<()>;
     fn db_get_range_for_editor(
         conn: &DbConn,
@@ -70,7 +74,7 @@ pub trait EditgroupCrud {
         limit: u64,
         since: Option<chrono::DateTime<chrono::Utc>>,
         before: Option<chrono::DateTime<chrono::Utc>>,
-    ) -> Result<Vec<EditgroupRow>>;
+    ) -> Result<Vec<(EditgroupRow, Option<ChangelogRow>)>>;
     fn db_get_range_reviewable(
         conn: &DbConn,
         limit: u64,
@@ -87,30 +91,35 @@ pub trait EditgroupCrud {
 }
 
 impl EditgroupCrud for Editgroup {
-    // XXX: this could *alwas* return changelog status as well. If we do that, can we get rid of
-    // the is_accepted thing? no, still want it as denormalized speed-up in some queries/filters.
-
     /// This method does *not* expand the 'edits'; currently that's still done in the endpoint
     /// handler, but it probably should be done in this trait with a db_expand()
     fn db_get(conn: &DbConn, editgroup_id: FatcatId) -> Result<EditgroupRow> {
-        let row: EditgroupRow = editgroup::table
-            .find(editgroup_id.to_uuid())
-            .get_result(conn)?;
-
-        // Note: for now this is really conservative and verifies the is_accepted flag every time
-        let count: i64 = changelog::table
-            .filter(changelog::editgroup_id.eq(editgroup_id.to_uuid()))
-            .count()
-            .get_result(conn)?;
-        ensure!(
-            (count > 0) == row.is_accepted,
-            "internal database consistency error on editgroup: {}",
-            editgroup_id
-        );
+        // Note: at least for now, continue to fetch along with changelog to ensure is_accepted is
+        // consistent.
+        let (row, _): (EditgroupRow, Option<ChangelogRow>) =
+            Self::db_get_with_changelog(conn, editgroup_id)?;
         Ok(row)
     }
 
-    /// Note: this *still* doesn't epand the 'edits', at least yet.
+    fn db_get_with_changelog(
+        conn: &DbConn,
+        editgroup_id: FatcatId,
+    ) -> Result<(EditgroupRow, Option<ChangelogRow>)> {
+        let (eg_row, cl_row): (EditgroupRow, Option<ChangelogRow>) = editgroup::table
+            .left_outer_join(changelog::table)
+            .filter(editgroup::id.eq(editgroup_id.to_uuid()))
+            .first(conn)?;
+
+        ensure!(
+            cl_row.is_some() == eg_row.is_accepted,
+            "internal database consistency error on editgroup: {}",
+            editgroup_id
+        );
+        Ok((eg_row, cl_row))
+    }
+
+    /// Note: this *still* doesn't epand the 'edits', at least yet. *Only* the direct editgrop
+    /// 'GET' handler does that.
     fn db_expand(&mut self, conn: &DbConn, expand: ExpandFlags) -> Result<()> {
         if expand.editors {
             let editor_id = FatcatId::from_str(
@@ -129,17 +138,34 @@ impl EditgroupCrud for Editgroup {
         limit: u64,
         since: Option<chrono::DateTime<chrono::Utc>>,
         before: Option<chrono::DateTime<chrono::Utc>>,
-    ) -> Result<Vec<EditgroupRow>> {
-        // TODO: since/before
-        let rows: Vec<EditgroupRow> = match (since, before) {
-            _ => {
+    ) -> Result<Vec<(EditgroupRow, Option<ChangelogRow>)>> {
+        let rows: Vec<(EditgroupRow, Option<ChangelogRow>)> = match (since, before) {
+            (Some(since), None) => {
                 editgroup::table
+                    .left_outer_join(changelog::table)
                     .filter(editgroup::editor_id.eq(editor_id.to_uuid()))
-                    // XXX: .filter(editgroup::created
+                    .filter(editgroup::created.gt(since))
+                    .order_by(editgroup::created.asc())
+                    .limit(limit as i64)
+                    .get_results(conn)?
+            },
+            (_, Some(before)) => {
+                editgroup::table
+                    .left_outer_join(changelog::table)
+                    .filter(editgroup::editor_id.eq(editor_id.to_uuid()))
+                    .filter(editgroup::created.lt(before))
                     .order_by(editgroup::created.desc())
                     .limit(limit as i64)
                     .get_results(conn)?
-            }
+            },
+            (None, None) => {
+                editgroup::table
+                    .left_outer_join(changelog::table)
+                    .filter(editgroup::editor_id.eq(editor_id.to_uuid()))
+                    .order_by(editgroup::created.desc())
+                    .limit(limit as i64)
+                    .get_results(conn)?
+            },
         };
         Ok(rows)
     }
@@ -150,14 +176,33 @@ impl EditgroupCrud for Editgroup {
         since: Option<chrono::DateTime<chrono::Utc>>,
         before: Option<chrono::DateTime<chrono::Utc>>,
     ) -> Result<Vec<EditgroupRow>> {
-        // TODO: since/before
         let rows: Vec<EditgroupRow> = match (since, before) {
-            _ => editgroup::table
-                .filter(editgroup::is_accepted.eq(false))
-                .filter(editgroup::submitted.is_not_null())
-                .order_by(editgroup::created.desc())
-                .limit(limit as i64)
-                .get_results(conn)?,
+            (Some(since), None) => {
+                editgroup::table
+                    .filter(editgroup::is_accepted.eq(false))
+                    .filter(editgroup::submitted.is_not_null())
+                    .filter(editgroup::submitted.gt(since))
+                    .order_by(editgroup::submitted.asc())
+                    .limit(limit as i64)
+                    .get_results(conn)?
+            },
+            (_, Some(before)) => {
+                editgroup::table
+                    .filter(editgroup::is_accepted.eq(false))
+                    .filter(editgroup::submitted.is_not_null())
+                    .filter(editgroup::submitted.lt(before))
+                    .order_by(editgroup::submitted.desc())
+                    .limit(limit as i64)
+                    .get_results(conn)?
+            },
+            (None, None) => {
+                editgroup::table
+                    .filter(editgroup::is_accepted.eq(false))
+                    .filter(editgroup::submitted.is_not_null())
+                    .order_by(editgroup::created.desc())
+                    .limit(limit as i64)
+                    .get_results(conn)?
+            },
         };
         Ok(rows)
     }
@@ -269,13 +314,30 @@ impl EditgroupAnnotationCrud for EditgroupAnnotation {
         since: Option<chrono::DateTime<chrono::Utc>>,
         before: Option<chrono::DateTime<chrono::Utc>>,
     ) -> Result<Vec<EditgroupAnnotationRow>> {
-        // TODO: since/before
         let rows: Vec<EditgroupAnnotationRow> = match (since, before) {
-            _ => editgroup_annotation::table
-                .filter(editgroup_annotation::editor_id.eq(editor_id.to_uuid()))
-                .order_by(editgroup_annotation::created.desc())
-                .limit(limit as i64)
-                .get_results(conn)?,
+            (Some(since), None) => {
+                 editgroup_annotation::table
+                    .filter(editgroup_annotation::editor_id.eq(editor_id.to_uuid()))
+                    .filter(editgroup_annotation::created.gt(since))
+                    .order_by(editgroup_annotation::created.asc())
+                    .limit(limit as i64)
+                    .get_results(conn)?
+            },
+            (_, Some(before)) => {
+                 editgroup_annotation::table
+                    .filter(editgroup_annotation::editor_id.eq(editor_id.to_uuid()))
+                    .filter(editgroup_annotation::created.lt(before))
+                    .order_by(editgroup_annotation::created.desc())
+                    .limit(limit as i64)
+                    .get_results(conn)?
+            },
+            (None, None) => {
+                 editgroup_annotation::table
+                    .filter(editgroup_annotation::editor_id.eq(editor_id.to_uuid()))
+                    .order_by(editgroup_annotation::created.desc())
+                    .limit(limit as i64)
+                    .get_results(conn)?
+            },
         };
         Ok(rows)
     }
@@ -287,13 +349,30 @@ impl EditgroupAnnotationCrud for EditgroupAnnotation {
         since: Option<chrono::DateTime<chrono::Utc>>,
         before: Option<chrono::DateTime<chrono::Utc>>,
     ) -> Result<Vec<EditgroupAnnotationRow>> {
-        // TODO: since/before
         let rows: Vec<EditgroupAnnotationRow> = match (since, before) {
-            _ => editgroup_annotation::table
-                .filter(editgroup_annotation::editgroup_id.eq(editgroup_id.to_uuid()))
-                .order_by(editgroup_annotation::created.desc())
-                .limit(limit as i64)
-                .get_results(conn)?,
+            (Some(since), None) => {
+                 editgroup_annotation::table
+                    .filter(editgroup_annotation::editgroup_id.eq(editgroup_id.to_uuid()))
+                    .filter(editgroup_annotation::created.gt(since))
+                    .order_by(editgroup_annotation::created.asc())
+                    .limit(limit as i64)
+                    .get_results(conn)?
+            },
+            (_, Some(before)) => {
+                 editgroup_annotation::table
+                    .filter(editgroup_annotation::editgroup_id.eq(editgroup_id.to_uuid()))
+                    .filter(editgroup_annotation::created.lt(before))
+                    .order_by(editgroup_annotation::created.desc())
+                    .limit(limit as i64)
+                    .get_results(conn)?
+            },
+            (None, None) => {
+                 editgroup_annotation::table
+                    .filter(editgroup_annotation::editgroup_id.eq(editgroup_id.to_uuid()))
+                    .order_by(editgroup_annotation::created.desc())
+                    .limit(limit as i64)
+                    .get_results(conn)?
+            },
         };
         Ok(rows)
     }

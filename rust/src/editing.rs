@@ -50,6 +50,7 @@ pub fn make_edit_context(
                 editgroup_id: None,
                 editor_id: Some(editor_id.to_string()),
                 editor: None,
+                changelog_index: None,
                 submitted: None,
                 description: None,
                 extra: None,
