@@ -999,6 +999,17 @@ fn test_accept_editgroup() {
         None,
     );
 
+    helpers::check_http_response(
+        request::post(
+            &format!("http://localhost:9411/v0/editgroup/{}/accept", editgroup_id),
+            headers.clone(),
+            "",
+            &router,
+        ),
+        status::BadRequest,
+        None,
+    );
+
     let c: i64 = container_ident::table
         .filter(container_ident::is_live.eq(false))
         .count()
@@ -1661,5 +1672,144 @@ fn test_create_editgroup() {
         ),
         status::Created,
         None,
+    );
+}
+
+#[test]
+fn test_get_editgroup() {
+    let (headers, router, _conn) = helpers::setup_http();
+
+    helpers::check_http_response(
+        request::get(
+            "http://localhost:9411/v0/editgroup/aaaaaaaaaaaabo53aaaaaaaaae",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("changelog_index"),
+    );
+
+    helpers::check_http_response(
+        request::get(
+            "http://localhost:9411/v0/editor/aaaaaaaaaaaabkvkaaaaaaaaam/editgroups",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("user edit"),
+    );
+
+    helpers::check_http_response(
+        request::get(
+            "http://localhost:9411/v0/editgroup/reviewable",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("edit for submission"),
+    );
+}
+
+#[test]
+fn test_put_editgroup() {
+    let (headers, router, conn) = helpers::setup_http();
+    let editgroup_id = helpers::quick_editgroup(&conn);
+
+    helpers::check_http_response(
+        request::put(
+            &format!(
+                "http://localhost:9411/v0/editgroup/{}?submit=false",
+                editgroup_id
+            ),
+            headers.clone(),
+            &format!(r#"{{"editgroup_id": "{}"}}"#, editgroup_id),
+            &router,
+        ),
+        status::Ok,
+        None,
+    );
+
+    helpers::check_http_response(
+        request::put(
+            &format!(
+                "http://localhost:9411/v0/editgroup/{}?submit=true",
+                editgroup_id
+            ),
+            headers.clone(),
+            &format!(r#"{{"editgroup_id": "{}"}}"#, editgroup_id),
+            &router,
+        ),
+        status::Ok,
+        None,
+    );
+
+    helpers::check_http_response(
+        request::get(
+            &format!("http://localhost:9411/v0/editgroup/reviewable"),
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("quick test editgroup"),
+    );
+}
+
+#[test]
+fn test_editgroup_annotations() {
+    let (headers, router, conn) = helpers::setup_http();
+    let editgroup_id = helpers::quick_editgroup(&conn);
+
+    // pre-existing
+    helpers::check_http_response(
+        request::get(
+            "http://localhost:9411/v0/editgroup/aaaaaaaaaaaabo53aaaaaaaaa4/annotations",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("love this edit"),
+    );
+
+    helpers::check_http_response(
+        request::post(
+            &format!(
+                "http://localhost:9411/v0/editgroup/{}/annotation",
+                editgroup_id
+            ),
+            headers.clone(),
+            r#"{"comment_markdown": "new special test annotation",
+                "extra": {
+                    "bogus-key": "bogus-value"}
+               }"#,
+            &router,
+        ),
+        status::Created,
+        None,
+    );
+
+    helpers::check_http_response(
+        request::get(
+            &format!(
+                "http://localhost:9411/v0/editgroup/{}/annotations",
+                editgroup_id
+            ),
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("special test annotation"),
+    );
+
+    helpers::check_http_response(
+        request::get(
+            &format!(
+                "http://localhost:9411/v0/editor/{}/annotations",
+                helpers::TEST_ADMIN_EDITOR_ID
+            ),
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("special test annotation"),
     );
 }

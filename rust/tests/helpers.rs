@@ -94,6 +94,7 @@ pub fn check_http_response(
     }
 }
 
+#[allow(dead_code)]
 pub fn quick_editgroup(conn: &server::DbConn) -> FatcatId {
     let editor_id = FatcatId::from_str(TEST_ADMIN_EDITOR_ID).unwrap();
     let eg = Editgroup {
@@ -102,7 +103,7 @@ pub fn quick_editgroup(conn: &server::DbConn) -> FatcatId {
         editor: None,
         changelog_index: None,
         submitted: None,
-        description: None,
+        description: Some("quick test editgroup".to_string()),
         extra: None,
         annotations: None,
         edits: None,
