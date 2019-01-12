@@ -140,32 +140,26 @@ impl EditgroupCrud for Editgroup {
         before: Option<chrono::DateTime<chrono::Utc>>,
     ) -> Result<Vec<(EditgroupRow, Option<ChangelogRow>)>> {
         let rows: Vec<(EditgroupRow, Option<ChangelogRow>)> = match (since, before) {
-            (Some(since), None) => {
-                editgroup::table
-                    .left_outer_join(changelog::table)
-                    .filter(editgroup::editor_id.eq(editor_id.to_uuid()))
-                    .filter(editgroup::created.gt(since))
-                    .order_by(editgroup::created.asc())
-                    .limit(limit as i64)
-                    .get_results(conn)?
-            },
-            (_, Some(before)) => {
-                editgroup::table
-                    .left_outer_join(changelog::table)
-                    .filter(editgroup::editor_id.eq(editor_id.to_uuid()))
-                    .filter(editgroup::created.lt(before))
-                    .order_by(editgroup::created.desc())
-                    .limit(limit as i64)
-                    .get_results(conn)?
-            },
-            (None, None) => {
-                editgroup::table
-                    .left_outer_join(changelog::table)
-                    .filter(editgroup::editor_id.eq(editor_id.to_uuid()))
-                    .order_by(editgroup::created.desc())
-                    .limit(limit as i64)
-                    .get_results(conn)?
-            },
+            (Some(since), None) => editgroup::table
+                .left_outer_join(changelog::table)
+                .filter(editgroup::editor_id.eq(editor_id.to_uuid()))
+                .filter(editgroup::created.gt(since))
+                .order_by(editgroup::created.asc())
+                .limit(limit as i64)
+                .get_results(conn)?,
+            (_, Some(before)) => editgroup::table
+                .left_outer_join(changelog::table)
+                .filter(editgroup::editor_id.eq(editor_id.to_uuid()))
+                .filter(editgroup::created.lt(before))
+                .order_by(editgroup::created.desc())
+                .limit(limit as i64)
+                .get_results(conn)?,
+            (None, None) => editgroup::table
+                .left_outer_join(changelog::table)
+                .filter(editgroup::editor_id.eq(editor_id.to_uuid()))
+                .order_by(editgroup::created.desc())
+                .limit(limit as i64)
+                .get_results(conn)?,
         };
         Ok(rows)
     }
@@ -177,32 +171,26 @@ impl EditgroupCrud for Editgroup {
         before: Option<chrono::DateTime<chrono::Utc>>,
     ) -> Result<Vec<EditgroupRow>> {
         let rows: Vec<EditgroupRow> = match (since, before) {
-            (Some(since), None) => {
-                editgroup::table
-                    .filter(editgroup::is_accepted.eq(false))
-                    .filter(editgroup::submitted.is_not_null())
-                    .filter(editgroup::submitted.gt(since))
-                    .order_by(editgroup::submitted.asc())
-                    .limit(limit as i64)
-                    .get_results(conn)?
-            },
-            (_, Some(before)) => {
-                editgroup::table
-                    .filter(editgroup::is_accepted.eq(false))
-                    .filter(editgroup::submitted.is_not_null())
-                    .filter(editgroup::submitted.lt(before))
-                    .order_by(editgroup::submitted.desc())
-                    .limit(limit as i64)
-                    .get_results(conn)?
-            },
-            (None, None) => {
-                editgroup::table
-                    .filter(editgroup::is_accepted.eq(false))
-                    .filter(editgroup::submitted.is_not_null())
-                    .order_by(editgroup::created.desc())
-                    .limit(limit as i64)
-                    .get_results(conn)?
-            },
+            (Some(since), None) => editgroup::table
+                .filter(editgroup::is_accepted.eq(false))
+                .filter(editgroup::submitted.is_not_null())
+                .filter(editgroup::submitted.gt(since))
+                .order_by(editgroup::submitted.asc())
+                .limit(limit as i64)
+                .get_results(conn)?,
+            (_, Some(before)) => editgroup::table
+                .filter(editgroup::is_accepted.eq(false))
+                .filter(editgroup::submitted.is_not_null())
+                .filter(editgroup::submitted.lt(before))
+                .order_by(editgroup::submitted.desc())
+                .limit(limit as i64)
+                .get_results(conn)?,
+            (None, None) => editgroup::table
+                .filter(editgroup::is_accepted.eq(false))
+                .filter(editgroup::submitted.is_not_null())
+                .order_by(editgroup::created.desc())
+                .limit(limit as i64)
+                .get_results(conn)?,
         };
         Ok(rows)
     }
@@ -315,29 +303,23 @@ impl EditgroupAnnotationCrud for EditgroupAnnotation {
         before: Option<chrono::DateTime<chrono::Utc>>,
     ) -> Result<Vec<EditgroupAnnotationRow>> {
         let rows: Vec<EditgroupAnnotationRow> = match (since, before) {
-            (Some(since), None) => {
-                 editgroup_annotation::table
-                    .filter(editgroup_annotation::editor_id.eq(editor_id.to_uuid()))
-                    .filter(editgroup_annotation::created.gt(since))
-                    .order_by(editgroup_annotation::created.asc())
-                    .limit(limit as i64)
-                    .get_results(conn)?
-            },
-            (_, Some(before)) => {
-                 editgroup_annotation::table
-                    .filter(editgroup_annotation::editor_id.eq(editor_id.to_uuid()))
-                    .filter(editgroup_annotation::created.lt(before))
-                    .order_by(editgroup_annotation::created.desc())
-                    .limit(limit as i64)
-                    .get_results(conn)?
-            },
-            (None, None) => {
-                 editgroup_annotation::table
-                    .filter(editgroup_annotation::editor_id.eq(editor_id.to_uuid()))
-                    .order_by(editgroup_annotation::created.desc())
-                    .limit(limit as i64)
-                    .get_results(conn)?
-            },
+            (Some(since), None) => editgroup_annotation::table
+                .filter(editgroup_annotation::editor_id.eq(editor_id.to_uuid()))
+                .filter(editgroup_annotation::created.gt(since))
+                .order_by(editgroup_annotation::created.asc())
+                .limit(limit as i64)
+                .get_results(conn)?,
+            (_, Some(before)) => editgroup_annotation::table
+                .filter(editgroup_annotation::editor_id.eq(editor_id.to_uuid()))
+                .filter(editgroup_annotation::created.lt(before))
+                .order_by(editgroup_annotation::created.desc())
+                .limit(limit as i64)
+                .get_results(conn)?,
+            (None, None) => editgroup_annotation::table
+                .filter(editgroup_annotation::editor_id.eq(editor_id.to_uuid()))
+                .order_by(editgroup_annotation::created.desc())
+                .limit(limit as i64)
+                .get_results(conn)?,
         };
         Ok(rows)
     }
@@ -350,29 +332,23 @@ impl EditgroupAnnotationCrud for EditgroupAnnotation {
         before: Option<chrono::DateTime<chrono::Utc>>,
     ) -> Result<Vec<EditgroupAnnotationRow>> {
         let rows: Vec<EditgroupAnnotationRow> = match (since, before) {
-            (Some(since), None) => {
-                 editgroup_annotation::table
-                    .filter(editgroup_annotation::editgroup_id.eq(editgroup_id.to_uuid()))
-                    .filter(editgroup_annotation::created.gt(since))
-                    .order_by(editgroup_annotation::created.asc())
-                    .limit(limit as i64)
-                    .get_results(conn)?
-            },
-            (_, Some(before)) => {
-                 editgroup_annotation::table
-                    .filter(editgroup_annotation::editgroup_id.eq(editgroup_id.to_uuid()))
-                    .filter(editgroup_annotation::created.lt(before))
-                    .order_by(editgroup_annotation::created.desc())
-                    .limit(limit as i64)
-                    .get_results(conn)?
-            },
-            (None, None) => {
-                 editgroup_annotation::table
-                    .filter(editgroup_annotation::editgroup_id.eq(editgroup_id.to_uuid()))
-                    .order_by(editgroup_annotation::created.desc())
-                    .limit(limit as i64)
-                    .get_results(conn)?
-            },
+            (Some(since), None) => editgroup_annotation::table
+                .filter(editgroup_annotation::editgroup_id.eq(editgroup_id.to_uuid()))
+                .filter(editgroup_annotation::created.gt(since))
+                .order_by(editgroup_annotation::created.asc())
+                .limit(limit as i64)
+                .get_results(conn)?,
+            (_, Some(before)) => editgroup_annotation::table
+                .filter(editgroup_annotation::editgroup_id.eq(editgroup_id.to_uuid()))
+                .filter(editgroup_annotation::created.lt(before))
+                .order_by(editgroup_annotation::created.desc())
+                .limit(limit as i64)
+                .get_results(conn)?,
+            (None, None) => editgroup_annotation::table
+                .filter(editgroup_annotation::editgroup_id.eq(editgroup_id.to_uuid()))
+                .order_by(editgroup_annotation::created.desc())
+                .limit(limit as i64)
+                .get_results(conn)?,
         };
         Ok(rows)
     }
@@ -392,6 +368,8 @@ impl EditgroupAnnotationCrud for EditgroupAnnotation {
             .values((
                 editgroup_annotation::editor_id.eq(editor_id.to_uuid()),
                 editgroup_annotation::editgroup_id.eq(editgroup_id.to_uuid()),
+                editgroup_annotation::comment_markdown.eq(&self.comment_markdown),
+                editgroup_annotation::extra_json.eq(&self.extra),
             ))
             .get_result(conn)?;
         Ok(ed)

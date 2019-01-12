@@ -29,7 +29,9 @@ impl EditContext {
             .count()
             .get_result(conn)?;
         if count > 0 {
-            return Err(FatcatError::EditgroupAlreadyAccepted(self.editgroup_id.to_string()).into());
+            Err(FatcatError::EditgroupAlreadyAccepted(
+                self.editgroup_id.to_string(),
+            ))?;
         }
         Ok(())
     }
@@ -60,10 +62,9 @@ pub fn make_edit_context(
             let row = eg.db_create(conn, autoaccept)?;
             FatcatId::from_uuid(&row.id)
         }
-        _ => {
-            // TODO: better error response
-            bail!("unsupported editgroup context");
-        }
+        _ => Err(FatcatError::BadRequest(
+            "unsupported batch editgroup/accept combination".to_string(),
+        ))?,
     };
     Ok(EditContext {
         editor_id,
