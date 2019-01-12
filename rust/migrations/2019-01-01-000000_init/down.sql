@@ -2,6 +2,7 @@
 -- in opposite order as up.sql
 
 DROP TABLE IF EXISTS release_contrib CASCADE;
+DROP TABLE IF EXISTS refs_blob CASCADE;
 DROP TABLE IF EXISTS release_ref CASCADE;
 DROP TABLE IF EXISTS file_rev_release CASCADE;
 DROP TABLE IF EXISTS fileset_rev_release CASCADE;
