@@ -376,6 +376,7 @@ pub struct ReleaseRevRow {
     pub extra_json: Option<serde_json::Value>,
     pub work_ident_id: Uuid,
     pub container_ident_id: Option<Uuid>,
+    pub refs_blob_sha1: Option<String>,
     pub title: String,
     pub release_type: Option<String>,
     pub release_status: Option<String>,
@@ -400,6 +401,7 @@ pub struct ReleaseRevNewRow {
     pub extra_json: Option<serde_json::Value>,
     pub work_ident_id: Uuid,
     pub container_ident_id: Option<Uuid>,
+    pub refs_blob_sha1: Option<String>,
     pub title: String,
     pub release_type: Option<String>,
     pub release_status: Option<String>,
@@ -491,33 +493,28 @@ pub struct ReleaseContribNewRow {
     pub extra_json: Option<serde_json::Value>,
 }
 
-#[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
+#[derive(Debug, Queryable, Insertable, Associations, AsChangeset)]
 #[table_name = "release_ref"]
 pub struct ReleaseRefRow {
-    pub id: i64,
     pub release_rev: Uuid,
-    pub target_release_ident_id: Option<Uuid>,
-    pub index_val: Option<i32>,
-    pub key: Option<String>,
-    pub extra_json: Option<serde_json::Value>,
-    pub container_name: Option<String>,
-    pub year: Option<i32>,
-    pub title: Option<String>,
-    pub locator: Option<String>,
+    pub index_val: i32,
+    pub target_release_ident_id: Uuid,
 }
 
-#[derive(Debug, Insertable, AsChangeset)]
-#[table_name = "release_ref"]
-pub struct ReleaseRefNewRow {
-    pub release_rev: Uuid,
-    pub target_release_ident_id: Option<Uuid>,
-    pub index_val: Option<i32>,
+/* These fields now interned in JSON blob
     pub key: Option<String>,
     pub extra_json: Option<serde_json::Value>,
     pub container_name: Option<String>,
     pub year: Option<i32>,
     pub title: Option<String>,
     pub locator: Option<String>,
+*/
+
+#[derive(Debug, Queryable, Insertable, Associations, AsChangeset)]
+#[table_name = "refs_blob"]
+pub struct RefsBlobRow {
+    pub sha1: String,
+    pub refs_json: serde_json::Value,
 }
 
 #[derive(Debug, Queryable, Insertable, Associations, AsChangeset)]

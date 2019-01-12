@@ -1812,28 +1812,26 @@ impl EntityCrud for ReleaseEntity {
             None => (None, None, None),
         };
 
-        let refs: Option<Vec<ReleaseRef>> = match hide.refs {
-            true => None,
-            false => Some(
-                release_ref::table
+        let refs: Option<Vec<ReleaseRef>> = match (hide.refs, rev_row.refs_blob_sha1) {
+            (true, _) => None,
+            (false, None) => None,
+            (false, Some(sha1)) => Some({
+                let refs_blob: RefsBlobRow = refs_blob::table
+                    .find(sha1) // checked in match
+                    .get_result(conn)?;
+                let mut refs: Vec<ReleaseRef> = serde_json::from_value(refs_blob.refs_json)?;
+                let ref_rows: Vec<ReleaseRefRow> = release_ref::table
                     .filter(release_ref::release_rev.eq(rev_row.id))
                     .order(release_ref::index_val.asc())
-                    .get_results(conn)?
-                    .into_iter()
-                    .map(|r: ReleaseRefRow| ReleaseRef {
-                        index: r.index_val.map(|v| v as i64),
-                        key: r.key,
-                        extra: r.extra_json,
-                        container_name: r.container_name,
-                        year: r.year.map(|v| v as i64),
-                        title: r.title,
-                        locator: r.locator,
-                        target_release_id: r
-                            .target_release_ident_id
-                            .map(|v| FatcatId::from_uuid(&v).to_string()),
-                    })
-                    .collect(),
-            ),
+                    .get_results(conn)?;
+                for index in 0..refs.len() {
+                    refs[index].index = Some(index as i64)
+                }
+                for row in ref_rows {
+                    refs[row.index_val as usize].target_release_id = Some(FatcatId::from_uuid(&row.target_release_ident_id).to_string());
+                }
+                refs
+            }),
         };
 
         let contribs: Option<Vec<ReleaseContrib>> = match hide.contribs {
@@ -1953,12 +1951,56 @@ impl EntityCrud for ReleaseEntity {
             .into());
         }
 
+        // First, calculate and upsert any refs JSON blobs and record the SHA1 keys, so they can be
+        // included in the release_rev row itself
+        let mut refs_blob_rows: Vec<RefsBlobRow> = vec![];
+        let mut refs_blob_sha1: Vec<Option<String>> = vec![];
+        for model in models.iter() {
+            match &model.refs {
+                None => {
+                    refs_blob_sha1.push(None);
+                },
+                Some(ref_list) => {
+                    // Have to strip out target refs and indexes, or hashing won't work well when
+                    // these change
+                    let ref_list: Vec<ReleaseRef> = ref_list
+                        .iter()
+                        .map(|r| {
+                            let mut r = r.clone();
+                            r.target_release_id = None;
+                            r.index = None;
+                            r
+                        })
+                        .collect();
+                    // TODO: maybe `canonical_json` crate?
+                    let refs_json = serde_json::to_value(ref_list)?;
+                    let refs_str = refs_json.to_string();
+                    let sha1 = Sha1::from(refs_str).hexdigest();
+                    let blob = RefsBlobRow { sha1: sha1.clone(), refs_json };
+                    refs_blob_rows.push(blob);
+                    refs_blob_sha1.push(Some(sha1));
+                }
+            };
+        }
+
+        if !refs_blob_rows.is_empty() {
+            // Sort of an "upsert"; only inserts new abstract rows if they don't already exist
+            insert_into(refs_blob::table)
+                .values(&refs_blob_rows)
+                .on_conflict(refs_blob::sha1)
+                .do_nothing()
+                .execute(conn)?;
+        }
+
+        // Then the main release_revs themselves
         let rev_ids: Vec<Uuid> = insert_into(release_rev::table)
             .values(
                 models
                     .iter()
-                    .map(|model| {
+                    .zip(refs_blob_sha1.into_iter())
+                    .map(|(model, refs_sha1)| {
                         Ok(ReleaseRevNewRow {
+                    refs_blob_sha1: refs_sha1,
                     title: model.title.clone().unwrap(), // titles checked above
                     release_type: model.release_type.clone(),
                     release_status: model.release_status.clone(),
@@ -1991,34 +2033,30 @@ impl EntityCrud for ReleaseEntity {
             .returning(release_rev::id)
             .get_results(conn)?;
 
-        let mut release_ref_rows: Vec<ReleaseRefNewRow> = vec![];
+        let mut release_ref_rows: Vec<ReleaseRefRow> = vec![];
         let mut release_contrib_rows: Vec<ReleaseContribNewRow> = vec![];
         let mut abstract_rows: Vec<AbstractsRow> = vec![];
         let mut release_abstract_rows: Vec<ReleaseRevAbstractNewRow> = vec![];
 
         for (model, rev_id) in models.iter().zip(rev_ids.iter()) {
+
+            // We didn't know the release_rev id to insert here, so need to re-iterate over refs
             match &model.refs {
                 None => (),
                 Some(ref_list) => {
-                    let these_ref_rows: Vec<ReleaseRefNewRow> = ref_list
+                    let these_ref_rows: Vec<ReleaseRefRow> = ref_list
                         .iter()
-                        .map(|r| {
-                            Ok(ReleaseRefNewRow {
+                        .enumerate()
+                        .filter(|(_, r)| r.target_release_id.is_some())
+                        .map(|(index, r)| {
+                            Ok(ReleaseRefRow {
                                 release_rev: *rev_id,
-                                target_release_ident_id: match r.target_release_id.clone() {
-                                    None => None,
-                                    Some(v) => Some(FatcatId::from_str(&v)?.to_uuid()),
-                                },
-                                index_val: r.index.map(|v| v as i32),
-                                key: r.key.clone(),
-                                container_name: r.container_name.clone(),
-                                year: r.year.map(|v| v as i32),
-                                title: r.title.clone(),
-                                locator: r.locator.clone(),
-                                extra_json: r.extra.clone(),
+                                // unwrap() checked by is_some() filter
+                                target_release_ident_id: FatcatId::from_str(&r.target_release_id.clone().unwrap())?.to_uuid(),
+                                index_val: index as i32,
                             })
                         })
-                        .collect::<Result<Vec<ReleaseRefNewRow>>>()?;
+                        .collect::<Result<Vec<ReleaseRefRow>>>()?;
                     release_ref_rows.extend(these_ref_rows);
                 }
             };
@@ -2053,7 +2091,7 @@ impl EntityCrud for ReleaseEntity {
                     .iter()
                     .filter(|ea| ea.content.is_some())
                     .map(|c| AbstractsRow {
-                        sha1: Sha1::from(c.content.clone().unwrap()).hexdigest(),
+                        sha1: Sha1::from(c.content.as_ref().unwrap()).hexdigest(),
                         content: c.content.clone().unwrap(),
                     })
                     .collect();
