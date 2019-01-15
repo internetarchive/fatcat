@@ -1819,7 +1819,8 @@ impl EntityCrud for ReleaseEntity {
                 let refs_blob: RefsBlobRow = refs_blob::table
                     .find(sha1) // checked in match
                     .get_result(conn)?;
-                let mut refs: Vec<ReleaseRef> = serde_json::from_value(refs_blob.refs_json)?;
+                let refs: Vec<RefsBlobJson> = serde_json::from_value(refs_blob.refs_json)?;
+                let mut refs: Vec<ReleaseRef> = refs.into_iter().map(|j| j.into_model()).collect();
                 let ref_rows: Vec<ReleaseRefRow> = release_ref::table
                     .filter(release_ref::release_rev.eq(rev_row.id))
                     .order(release_ref::index_val.asc())
@@ -1967,10 +1968,10 @@ impl EntityCrud for ReleaseEntity {
                     }
                     // Have to strip out target refs and indexes, or hashing won't work well when
                     // these change
-                    let ref_list: Vec<ReleaseRef> = ref_list
+                    let ref_list: Vec<RefsBlobJson> = ref_list
                         .iter()
-                        .map(|r| {
-                            let mut r = r.clone();
+                        .map(|r: &ReleaseRef| {
+                            let mut r = RefsBlobJson::from_model(r);
                             r.target_release_id = None;
                             r.index = None;
                             r
