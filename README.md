@@ -48,7 +48,7 @@ schema, lives under `./python_client/`.
     - [x] JSON(B) "extra" metadata fields
     - [x] full rev1 schema for all entities
     - [x] file sets and web captures
-    - [ ] editgroup review: comments? actions?
+    - [x] editgroup review: annotations
 - HTTP API Server
     - [x] base32 encoding of UUID identifiers
     - [x] inverse many-to-many helpers (files-by-release, release-by-creator)
@@ -62,6 +62,6 @@ schema, lives under `./python_client/`.
     - [x] Basic logging
     - [x] Swagger-UI 
     - [x] Bulk metadata exports
-    - [ ] Sentry (error reporting)
-    - [ ] Metrics
+    - [x] Sentry (error reporting)
+    - [x] Metrics
 
