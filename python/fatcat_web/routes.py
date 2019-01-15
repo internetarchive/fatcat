@@ -58,8 +58,8 @@ def container_create():
         if k.startswith('container_'):
             params[k[10:]] = request.form[k]
     container = None
-    edit = api.create_container(container, params=params)
-    return redirect("/container/{}".format(edit.ident))
+    #edit = api.create_container(container, params=params)
+    #return redirect("/container/{}".format(edit.ident))
 
 @app.route('/container/lookup', methods=['GET'])
 def container_lookup():
@@ -209,8 +209,8 @@ def release_create():
         if k.startswith('release_'):
             params[k[10:]] = request.form[k]
     release = None
-    edit = api.create_release(release, params=params)
-    return redirect("/release/{}".format(edit.ident))
+    #edit = api.create_release(release, params=params)
+    #return redirect("/release/{}".format(edit.ident))
 
 @app.route('/release/<ident>/history', methods=['GET'])
 def release_history(ident):
