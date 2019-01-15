@@ -1,13 +1,8 @@
 
-Idea for further module simplification: move codegen'd library into it's own
-directory (with it's own README, tests, etc), and reference it here via
-symlink.
-
 - schema.org metadata for releases
 
 additional tests
 - full object fields actually getting passed e2e (for rich_app)
-- implicit editor.active_edit_group behavior
 - modify existing release via edit mechanism (and commit)
 - redirect a release to another (merge)
 - update (via edit) a redirect release

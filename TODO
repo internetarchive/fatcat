@@ -1,13 +1,21 @@
 
 ## In Progress
 
+- basic python tests for editgroup, annotation, submission changes
+- python tests for new autoaccept behavior
+- python tests for citation table storage efficiency changes
+    => should there be a distinction between empty list and no references?
+       yes, eg if expanded or not hidden
+    => postgres manual checks that this is working
+    => also benchmark (both speed and efficiency)
+
 ## Next Up
 
+- "don't clobber" mode/flag for crossref import (and others?)
+- update_file requires 'id'. should it be 'ident'?
+    => something different about file vs. release
 - guide updates for auth
-- remove the concept of "active editgroup", and simplify autoaccept batch path
 - refactor webface views to use shared entity_view.html template
-- fix returned error messages; should return type (shortname), and then actual
-  message/description
 - handle 'wip' status entities in web UI
 - elastic inserter should handle deletions and redirects; if state isn't
   active, delete the document
@@ -15,7 +23,30 @@
        they don't show up in results
     => refactor inserter to be a class (eg, for command line use)
     => end-to-end test of this behavior?
-- un-accepted editgroup access: by created/updated, accepted/not
+- date handling is really pretty bad for releases; mangling those Jan1/Dec31 
+    => elastic schema should have a year field (integer)
+- document: elastic query date syntax is like: date:[2018-10-01 TO 2018-12-31]
+- elastic transform should only include authors, not editors (?)
+- webcapture timestamp schema cleanup (both CDX and base)
+    => dt.to_rfc3339_opts(SecondsFormat::Secs, true)
+    => but this is mostly buried in serialization code?
+- fake DOI (use in examples): 10.5555/12345678
+- URL location duplication (especially IA/wayback)
+    => eg, https://fatcat.wiki/file/2g4sz57j3bgcfpwkgz5bome3re
+    => UNIQ index on {release_rev, url}?
+- shadow library manifest importer
+- import from arabesque output (eg, specific crawls)
+- elastic iteration
+    => any_abstract broken?
+    => blank author names? maybe in crossref import; fatcat-api and schema
+       should both prevent
+- handle very large author/reference lists (instead of dropping)
+    => https://api.crossref.org/v1/works/http://dx.doi.org/10.1007/978-3-319-46095-6_7
+    => 7000+ authors (!)
+
+## Bugs (or at least need tests)
+
+- autoaccept seems to have silently not actually merged editgroup
 
 ## Ideas
 
@@ -36,18 +67,42 @@
     => /{entity}/edit/{edit_id}
     => /{entity}/{ident}/redirects
     => /{entity}/{ident}/history
+- investigate data quality by looking at, eg, most popular author strings, most
+  popular titles, duplicated containers, etc
 
 ## Production blockers
 
 - privacy policy, and link from: create account, create edit
+- update /about page
 - refactors and correctness in rust/TODO
-- metrics
-- sentry
 - importers: don't insert wayback links with short timestamps
+
+## Production Sanity
+
+- fatcat-web is not Type=simple (systemd)
+- postgresql replication
+- pg_dump/load test
+- haproxy somewhere/how
+- logging iteration: larger journald buffers? point somewhere?
 
 ## Metadata Import
 
+- web.archive.org response not SHA1 match? => need /<dt>id_/ thing
+- XML etc in metadata
+    => (python) tests for these!
+    https://qa.fatcat.wiki/release/b3a2jvhvbvc6rlbdkpw4ukuzyi
+    https://qa.fatcat.wiki/release/search?q=xmlns
+    https://qa.fatcat.wiki/release/search?q=%26amp%3B
+    https://qa.fatcat.wiki/release/search?q=%26gt%3B
+- better/complete reltypes probably good (eg, list of IRs, academic domain)
+- 'expand' in lookups (derp! for single hit lookups)
+- include crossref-capitalized DOI in extra
+- some "Elsevier " stuff as publisher
+    => also title https://fatcat.wiki/release/uyjzaq3xjnd6tcrqy3vcucczsi
+- crossref import: don't store citation unstructured if len() == 0:
+    {"crossref": {"unstructured": ""}}
 - cleaning/matching: https://ftfy.readthedocs.io/en/latest/
+    => and try out beautifulsoup (https://stackoverflow.com/a/34532382/4682349)
 - manifest: multiple URLs per SHA1
 - crossref: relations ("is-preprint-of")
 - crossref: two phase: no citations, then matched citations (via DOI table)
@@ -58,6 +113,7 @@
     => at least one author (?)
     => make this a method on Release object
     => or just set release_type as "stub"?
+- special "alias" DOIs... in crossref metadata?
 
 new importers:
 - pubmed (medline) (filtered)
@@ -89,6 +145,10 @@ new importers:
     => or maybe rust?
 - bibtext (etc) export
 
+## Metadata Harvesting
+
+- datacite ingest seems to have failed... got a non-HTTP-200 status code, but also "got 50 (161950 of 21084)"
+
 ## Schema / Entity Fields
 
 - arxiv_id field (keep flip-flopping)
@@ -98,10 +158,16 @@ new importers:
 - `retracted`, `translation`, and perhaps `corrected` as flags on releases,
   instead of release_status?
 - 'part-of' relation for releases (release to release) and possibly containers
-- `container-type` field for containers (journal, conference, book series, etc)
+- `container_type` field for containers (journal, conference, book series, etc)
 
 ## Other / Backburner
 
+- fileset/webcapture webface anything
+- display abstracts better. no hashes or metadata; prefer plain or HTML,
+  convert JATS if necessary
+- switch from slog to simple pretty_env_log
+- format returned datetimes with only second precision, not millisecond (RFC mode)
+    => burried in model serialization internals
 - refactor openapi schema to use shared response types
 - consider using "HTTP 202: Accepted" for entity-mutating calls
 - basic python hbase/elastic matcher
