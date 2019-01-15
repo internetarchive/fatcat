@@ -88,7 +88,6 @@ fn main() -> Result<()> {
             server.metrics.incr("restart").unwrap();
         }
     };
-    info!(logger, "{:#?}", server.metrics);
 
     info!(
         logger,
