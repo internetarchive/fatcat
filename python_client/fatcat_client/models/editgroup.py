@@ -38,6 +38,7 @@ class Editgroup(object):
         'editgroup_id': 'str',
         'editor_id': 'str',
         'editor': 'Editor',
+        'changelog_index': 'int',
         'submitted': 'datetime',
         'description': 'str',
         'extra': 'object',
@@ -49,6 +50,7 @@ class Editgroup(object):
         'editgroup_id': 'editgroup_id',
         'editor_id': 'editor_id',
         'editor': 'editor',
+        'changelog_index': 'changelog_index',
         'submitted': 'submitted',
         'description': 'description',
         'extra': 'extra',
@@ -56,12 +58,13 @@ class Editgroup(object):
         'edits': 'edits'
     }
 
-    def __init__(self, editgroup_id=None, editor_id=None, editor=None, submitted=None, description=None, extra=None, annotations=None, edits=None):  # noqa: E501
+    def __init__(self, editgroup_id=None, editor_id=None, editor=None, changelog_index=None, submitted=None, description=None, extra=None, annotations=None, edits=None):  # noqa: E501
         """Editgroup - a model defined in Swagger"""  # noqa: E501
 
         self._editgroup_id = None
         self._editor_id = None
         self._editor = None
+        self._changelog_index = None
         self._submitted = None
         self._description = None
         self._extra = None
@@ -75,6 +78,8 @@ class Editgroup(object):
             self.editor_id = editor_id
         if editor is not None:
             self.editor = editor
+        if changelog_index is not None:
+            self.changelog_index = changelog_index
         if submitted is not None:
             self.submitted = submitted
         if description is not None:
@@ -164,6 +169,27 @@ class Editgroup(object):
         """
 
         self._editor = editor
+
+    @property
+    def changelog_index(self):
+        """Gets the changelog_index of this Editgroup.  # noqa: E501
+
+
+        :return: The changelog_index of this Editgroup.  # noqa: E501
+        :rtype: int
+        """
+        return self._changelog_index
+
+    @changelog_index.setter
+    def changelog_index(self, changelog_index):
+        """Sets the changelog_index of this Editgroup.
+
+
+        :param changelog_index: The changelog_index of this Editgroup.  # noqa: E501
+        :type: int
+        """
+
+        self._changelog_index = changelog_index
 
     @property
     def submitted(self):
