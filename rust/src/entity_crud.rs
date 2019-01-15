@@ -1814,7 +1814,7 @@ impl EntityCrud for ReleaseEntity {
 
         let refs: Option<Vec<ReleaseRef>> = match (hide.refs, rev_row.refs_blob_sha1) {
             (true, _) => None,
-            (false, None) => None,
+            (false, None) => Some(vec![]),
             (false, Some(sha1)) => Some({
                 let refs_blob: RefsBlobRow = refs_blob::table
                     .find(sha1) // checked in match
@@ -1961,6 +1961,10 @@ impl EntityCrud for ReleaseEntity {
                     refs_blob_sha1.push(None);
                 },
                 Some(ref_list) => {
+                    if ref_list.is_empty() {
+                        refs_blob_sha1.push(None);
+                        continue
+                    }
                     // Have to strip out target refs and indexes, or hashing won't work well when
                     // these change
                     let ref_list: Vec<ReleaseRef> = ref_list
