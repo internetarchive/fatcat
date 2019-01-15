@@ -28,6 +28,7 @@ def api():
     conf.api_key["Authorization"] = os.getenv("FATCAT_API_AUTH_TOKEN")
     conf.api_key_prefix["Authorization"] = "Bearer"
     api_client = fatcat_client.DefaultApi(fatcat_client.ApiClient(conf))
+    api_client.editor_id = "aaaaaaaaaaaabkvkaaaaaaaaae"
     return api_client
 
 def test_get_changelog_entry(api):
@@ -38,33 +39,6 @@ def test_get_changelog_entry(api):
 ## Helpers ##################################################################
 
 def quick_eg(api_inst):
-    eg = api_inst.create_editgroup(
-        fatcat_client.Editgroup(editor_id='aaaaaaaaaaaabkvkaaaaaaaaae'))
+    eg = api_inst.create_editgroup(fatcat_client.Editgroup())
     return eg
 
-# TODO: what are these even here for?
-def check_entity_fields(e):
-    for key in ('rev', 'is_live', 'redirect_id'):
-        assert key in e
-    for key in ('id',):
-        assert e[key] is not None
-
-def check_release(e):
-    for key in ('work', 'release_type'):
-        assert key in e
-    for key in ('title', ):
-        assert e[key] is not None
-    for key in ('refs', 'creators'):
-        assert type(e[key]) == list
-
-def check_creator(e):
-    for key in ('name',):
-        assert e[key] is not None
-
-def check_container(e):
-    for key in ('name',):
-        assert e[key] is not None
-
-def check_file(e):
-    for key in ('size', 'sha1'):
-        assert e[key] is not None
