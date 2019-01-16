@@ -143,13 +143,19 @@ macro_rules! wrap_entity_handlers {
             let conn = self.db_pool.get().expect("db_pool error");
             let ret = match conn.transaction(|| {
                 let auth_context = self.auth_confectionary.require_auth(&conn, &context.auth_data, Some(stringify!($post_batch_fn)))?;
-                auth_context.require_role(FatcatRole::Editor)?;
+                let autoaccept = autoaccept.unwrap_or(false);
+                if autoaccept {
+                    auth_context.require_role(FatcatRole::Admin)?;
+                } else {
+                    auth_context.require_role(FatcatRole::Editor)?;
+                };
                 let editgroup_id = if let Some(s) = editgroup_id {
+                    // make_edit_context() checks for "both editgroup_id and autosubmit" error case
                     let eg_id = FatcatId::from_str(&s)?;
                     auth_context.require_editgroup(&conn, eg_id)?;
                     Some(eg_id)
                 } else { None };
-                self.$post_batch_handler(&conn, entity_list, autoaccept.unwrap_or(false), auth_context.editor_id, editgroup_id)
+                self.$post_batch_handler(&conn, entity_list, autoaccept, auth_context.editor_id, editgroup_id)
             }).map_err(|e| FatcatError::from(e)) {
                 Ok(edits) => {
                     self.metrics.count("entities.created", edits.len() as i64).ok();
