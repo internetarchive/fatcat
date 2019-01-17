@@ -82,6 +82,12 @@ CREATE TABLE abstracts (
     content             TEXT NOT NULL
 );
 
+CREATE TABLE refs_blob (
+    -- fixed size hash (in hex). TODO: switch to bytes
+    sha1                TEXT PRIMARY KEY CHECK (octet_length(sha1) = 40),
+    refs_json           JSONB NOT NULL
+);
+
 -------------------- Creators -----------------------------------------------
 CREATE TABLE creator_rev (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -326,6 +332,7 @@ CREATE TABLE release_rev (
 
     work_ident_id       UUID NOT NULL, -- FOREIGN KEY; see ALRTER below
     container_ident_id  UUID REFERENCES container_ident(id),
+    refs_blob_sha1      TEXT REFERENCES refs_blob(sha1),
     title               TEXT NOT NULL,
     release_type        TEXT, -- TODO: enum
     release_status      TEXT, -- TODO: enum
@@ -436,20 +443,19 @@ CREATE INDEX release_contrib_rev_idx ON release_contrib(release_rev);
 CREATE INDEX release_contrib_creator_idx ON release_contrib(creator_ident_id);
 
 CREATE TABLE release_ref (
-    id                      BIGSERIAL PRIMARY KEY,
     release_rev             UUID REFERENCES release_rev(id) NOT NULL,
-    target_release_ident_id UUID REFERENCES release_ident(id), -- or work?
-    index_val               INTEGER,
-    key                     TEXT,
-    extra_json              JSONB, -- title, year, container_title, locator (aka, page), oci_id
-    container_name          TEXT,
-    year                    INTEGER,
-    title                   TEXT,
-    locator                 TEXT
-    -- TODO: oci_id (TEXT)
+    index_val               INTEGER NOT NULL,
+    target_release_ident_id UUID REFERENCES release_ident(id) NOT NULL,
+    -- all other fields are interned in refs_blob as JSONB
+    -- key                     TEXT,
+    -- extra_json              JSONB, -- title, year, container_title, locator (aka, page), oci_id
+    -- container_name          TEXT,
+    -- year                    INTEGER,
+    -- title                   TEXT,
+    -- locator                 TEXT
+    PRIMARY KEY(release_rev, index_val)
 );
 
-CREATE INDEX release_ref_rev_idx ON release_ref(release_rev);
 CREATE INDEX release_ref_target_release_idx ON release_ref(target_release_ident_id);
 
 CREATE TABLE file_rev_release (
@@ -632,10 +638,14 @@ INSERT INTO work_edit (ident_id, rev_id, redirect_id, editgroup_id, prev_rev) VA
     ('00000000-0000-0000-5555-000000000002', '00000000-0000-0000-5555-FFF000000002', null, '00000000-0000-0000-BBBB-000000000004', null),
     ('00000000-0000-0000-5555-000000000002', '00000000-0000-0000-5555-FFF000000003', null, '00000000-0000-0000-BBBB-000000000005', '00000000-0000-0000-5555-FFF000000002');
 
-INSERT INTO release_rev (id, work_ident_id, container_ident_id, title, release_type, release_status, release_date, release_year, doi, wikidata_qid, pmid, pmcid, isbn13, core_id, volume, issue, pages, publisher, language) VALUES
-    ('00000000-0000-0000-4444-FFF000000001', '00000000-0000-0000-5555-000000000001',                                   null,                                  'example title',             null,         null,         null, null,                           null,      null,    null,     null,               null,       null, null, null,  null, null, null),
-    ('00000000-0000-0000-4444-FFF000000002', '00000000-0000-0000-5555-000000000002', '00000000-0000-0000-1111-000000000001',                                 'bigger example', 'article-journal',        null, '2018-01-01', 2018,                   '10.123/abc', 'Q55555', '54321', 'PMC555','978-3-16-148410-0', '42022773', '12', 'IV', '5-9', 'bogus publishing group', 'cn'),
-    ('00000000-0000-0000-4444-FFF000000003', '00000000-0000-0000-5555-000000000003', '00000000-0000-0000-1111-000000000003', 'Why Most Published Research Findings Are False', 'article-journal', 'published', '2005-08-30', 2005, '10.1371/journal.pmed.0020124',     null,    null,     null,               null,       null, '2', '8', 'e124', 'Public Library of Science', 'en');
+INSERT INTO refs_blob (sha1, refs_json) VALUES
+    ('22222222c2979a62d29b18b537e50b2b093be27e', '[{}, {}, {}, {}, {"extra": {"unstructured":"citation note"}}]'),
+    ('33333333c2979a62d29b18b537e50b2b093be27e', '[{"extra": {"unstructured": "Ioannidis JP, Haidich AB, Lau J. Any casualties in the clash of randomised and observational evidence? BMJ. 2001;322:879–880"}}, {"extra": {"unstructured":"Lawlor DA, Davey Smith G, Kundu D, Bruckdorfer KR, Ebrahim S. Those confounded vitamins: What can we learn from the differences between observational versus randomised trial evidence? Lancet. 2004;363:1724–1727."}}, {"extra": {"unstructured":"Vandenbroucke JP. When are observational studies as credible as randomised trials? Lancet. 2004;363:1728–1731."}}, {"extra": {"unstructured":"Michiels S, Koscielny S, Hill C. Prediction of cancer outcome with microarrays: A multiple random validation strategy. Lancet. 2005;365:488–492."}}, {"extra": {"unstructured":"Ioannidis JPA, Ntzani EE, Trikalinos TA, Contopoulos-Ioannidis DG. Replication validity of genetic association studies. Nat Genet. 2001;29:306–309."}}, {"extra": {"unstructured":"Colhoun HM, McKeigue PM, Davey Smith G. Problems of reporting genetic associations with complex outcomes. Lancet. 2003;361:865–872."}}]');
+
+INSERT INTO release_rev (id, work_ident_id, container_ident_id, title, release_type, release_status, release_date, release_year, doi, wikidata_qid, pmid, pmcid, isbn13, core_id, volume, issue, pages, publisher, language, refs_blob_sha1) VALUES
+    ('00000000-0000-0000-4444-FFF000000001', '00000000-0000-0000-5555-000000000001',                                   null,                                  'example title',             null,         null,         null, null,                           null,      null,    null,     null,               null,       null, null, null,  null, null, null, null),
+    ('00000000-0000-0000-4444-FFF000000002', '00000000-0000-0000-5555-000000000002', '00000000-0000-0000-1111-000000000001',                                 'bigger example', 'article-journal',        null, '2018-01-01', 2018,                   '10.123/abc', 'Q55555', '54321', 'PMC555','978-3-16-148410-0', '42022773', '12', 'IV', '5-9', 'bogus publishing group', 'cn', '22222222c2979a62d29b18b537e50b2b093be27e'),
+    ('00000000-0000-0000-4444-FFF000000003', '00000000-0000-0000-5555-000000000003', '00000000-0000-0000-1111-000000000003', 'Why Most Published Research Findings Are False', 'article-journal', 'published', '2005-08-30', 2005, '10.1371/journal.pmed.0020124',     null,    null,     null,               null,       null, '2', '8', 'e124', 'Public Library of Science', 'en', '33333333c2979a62d29b18b537e50b2b093be27e');
 
 INSERT INTO release_ident (id, is_live, rev_id, redirect_id) VALUES
     ('00000000-0000-0000-4444-000000000001', true, '00000000-0000-0000-4444-FFF000000001', null), -- aaaaaaaaaaaaarceaaaaaaaaae
@@ -656,15 +666,14 @@ INSERT INTO release_contrib (release_rev, creator_ident_id, raw_name, role, inde
     ('00000000-0000-0000-4444-FFF000000002', '00000000-0000-0000-2222-000000000002', 'some contrib', 'editor', 4),
     ('00000000-0000-0000-4444-FFF000000003', '00000000-0000-0000-2222-000000000003', 'John P. A. Ioannidis', 'author', 0);
 
-INSERT INTO release_ref (release_rev, target_release_ident_id, index_val, extra_json) VALUES
-    ('00000000-0000-0000-4444-FFF000000002', null, null, null),
-    ('00000000-0000-0000-4444-FFF000000002', '00000000-0000-0000-4444-000000000001', 4, '{"unstructured":"citation note"}'),
-    ('00000000-0000-0000-4444-FFF000000003', null, 0, '{"unstructured": "Ioannidis JP, Haidich AB, Lau J. Any casualties in the clash of randomised and observational evidence? BMJ. 2001;322:879–880"}'),
-    ('00000000-0000-0000-4444-FFF000000003', null, 1, '{"unstructured":"Lawlor DA, Davey Smith G, Kundu D, Bruckdorfer KR, Ebrahim S. Those confounded vitamins: What can we learn from the differences between observational versus randomised trial evidence? Lancet. 2004;363:1724–1727."}'),
-    ('00000000-0000-0000-4444-FFF000000003', null, 2, '{"unstructured":"Vandenbroucke JP. When are observational studies as credible as randomised trials? Lancet. 2004;363:1728–1731."}'),
-    ('00000000-0000-0000-4444-FFF000000003', null, 3, '{"unstructured":"Michiels S, Koscielny S, Hill C. Prediction of cancer outcome with microarrays: A multiple random validation strategy. Lancet. 2005;365:488–492."}'),
-    ('00000000-0000-0000-4444-FFF000000003', null, 4, '{"unstructured":"Ioannidis JPA, Ntzani EE, Trikalinos TA, Contopoulos-Ioannidis DG. Replication validity of genetic association studies. Nat Genet. 2001;29:306–309."}'),
-    ('00000000-0000-0000-4444-FFF000000003', null, 5, '{"unstructured":"Colhoun HM, McKeigue PM, Davey Smith G. Problems of reporting genetic associations with complex outcomes. Lancet. 2003;361:865–872."}');
+INSERT INTO release_ref (release_rev, index_val, target_release_ident_id) VALUES
+    ('00000000-0000-0000-4444-FFF000000002', 4, '00000000-0000-0000-4444-000000000001'), -- '{"unstructured":"citation note"}'),
+    ('00000000-0000-0000-4444-FFF000000003', 0, '00000000-0000-0000-4444-000000000001'), --'{"unstructured": "Ioannidis JP, Haidich AB, Lau J. Any casualties in the clash of randomised and observational evidence? BMJ. 2001;322:879–880"}'),
+    ('00000000-0000-0000-4444-FFF000000003', 1, '00000000-0000-0000-4444-000000000001'), --'{"unstructured":"Lawlor DA, Davey Smith G, Kundu D, Bruckdorfer KR, Ebrahim S. Those confounded vitamins: What can we learn from the differences between observational versus randomised trial evidence? Lancet. 2004;363:1724–1727."}'),
+    ('00000000-0000-0000-4444-FFF000000003', 2, '00000000-0000-0000-4444-000000000001'), --'{"unstructured":"Vandenbroucke JP. When are observational studies as credible as randomised trials? Lancet. 2004;363:1728–1731."}'),
+    ('00000000-0000-0000-4444-FFF000000003', 3, '00000000-0000-0000-4444-000000000001'), --'{"unstructured":"Michiels S, Koscielny S, Hill C. Prediction of cancer outcome with microarrays: A multiple random validation strategy. Lancet. 2005;365:488–492."}'),
+    ('00000000-0000-0000-4444-FFF000000003', 4, '00000000-0000-0000-4444-000000000001'), --'{"unstructured":"Ioannidis JPA, Ntzani EE, Trikalinos TA, Contopoulos-Ioannidis DG. Replication validity of genetic association studies. Nat Genet. 2001;29:306–309."}'),
+    ('00000000-0000-0000-4444-FFF000000003', 5, '00000000-0000-0000-4444-000000000001'); --'{"unstructured":"Colhoun HM, McKeigue PM, Davey Smith G. Problems of reporting genetic associations with complex outcomes. Lancet. 2003;361:865–872."}');
 
 INSERT INTO file_rev_release (file_rev, target_release_ident_id) VALUES
     ('00000000-0000-0000-3333-FFF000000002', '00000000-0000-0000-4444-000000000002'),

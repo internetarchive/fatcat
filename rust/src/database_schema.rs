@@ -239,6 +239,13 @@ table! {
 }
 
 table! {
+    refs_blob (sha1) {
+        sha1 -> Text,
+        refs_json -> Jsonb,
+    }
+}
+
+table! {
     release_contrib (id) {
         id -> Int8,
         release_rev -> Uuid,
@@ -273,17 +280,10 @@ table! {
 }
 
 table! {
-    release_ref (id) {
-        id -> Int8,
+    release_ref (release_rev, index_val) {
         release_rev -> Uuid,
-        target_release_ident_id -> Nullable<Uuid>,
-        index_val -> Nullable<Int4>,
-        key -> Nullable<Text>,
-        extra_json -> Nullable<Jsonb>,
-        container_name -> Nullable<Text>,
-        year -> Nullable<Int4>,
-        title -> Nullable<Text>,
-        locator -> Nullable<Text>,
+        index_val -> Int4,
+        target_release_ident_id -> Uuid,
     }
 }
 
@@ -293,6 +293,7 @@ table! {
         extra_json -> Nullable<Jsonb>,
         work_ident_id -> Uuid,
         container_ident_id -> Nullable<Uuid>,
+        refs_blob_sha1 -> Nullable<Text>,
         title -> Text,
         release_type -> Nullable<Text>,
         release_status -> Nullable<Text>,
@@ -439,6 +440,7 @@ joinable!(release_ident -> release_rev (rev_id));
 joinable!(release_ref -> release_ident (target_release_ident_id));
 joinable!(release_ref -> release_rev (release_rev));
 joinable!(release_rev -> container_ident (container_ident_id));
+joinable!(release_rev -> refs_blob (refs_blob_sha1));
 joinable!(release_rev -> work_ident (work_ident_id));
 joinable!(release_rev_abstract -> abstracts (abstract_sha1));
 joinable!(release_rev_abstract -> release_rev (release_rev));
@@ -475,6 +477,7 @@ allow_tables_to_appear_in_same_query!(
     fileset_rev_file,
     fileset_rev_release,
     fileset_rev_url,
+    refs_blob,
     release_contrib,
     release_edit,
     release_ident,

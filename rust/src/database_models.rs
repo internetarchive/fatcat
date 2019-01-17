@@ -4,7 +4,7 @@ use crate::database_schema::*;
 use crate::errors::*;
 use crate::identifiers::uuid2fcid;
 use chrono;
-use fatcat_api_spec::models::{ChangelogEntry, Editgroup, EditgroupAnnotation, Editor, EntityEdit};
+use fatcat_api_spec::models::{ChangelogEntry, Editgroup, EditgroupAnnotation, Editor, EntityEdit, ReleaseRef};
 use serde_json;
 use uuid::Uuid;
 
@@ -376,6 +376,7 @@ pub struct ReleaseRevRow {
     pub extra_json: Option<serde_json::Value>,
     pub work_ident_id: Uuid,
     pub container_ident_id: Option<Uuid>,
+    pub refs_blob_sha1: Option<String>,
     pub title: String,
     pub release_type: Option<String>,
     pub release_status: Option<String>,
@@ -400,6 +401,7 @@ pub struct ReleaseRevNewRow {
     pub extra_json: Option<serde_json::Value>,
     pub work_ident_id: Uuid,
     pub container_ident_id: Option<Uuid>,
+    pub refs_blob_sha1: Option<String>,
     pub title: String,
     pub release_type: Option<String>,
     pub release_status: Option<String>,
@@ -491,33 +493,100 @@ pub struct ReleaseContribNewRow {
     pub extra_json: Option<serde_json::Value>,
 }
 
-#[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
+#[derive(Debug, Queryable, Insertable, Associations, AsChangeset)]
 #[table_name = "release_ref"]
 pub struct ReleaseRefRow {
-    pub id: i64,
     pub release_rev: Uuid,
-    pub target_release_ident_id: Option<Uuid>,
-    pub index_val: Option<i32>,
+    pub index_val: i32,
+    pub target_release_ident_id: Uuid,
+}
+
+#[derive(Debug, Queryable, Insertable, Associations, AsChangeset)]
+#[table_name = "refs_blob"]
+pub struct RefsBlobRow {
+    pub sha1: String,
+    pub refs_json: serde_json::Value,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+/// This model is a stable representation of what goes in a RefsBlobRow `refs_json` field (an array
+/// of this model). We could rely on the `ReleaseRef` API spec model directly, but that would lock
+/// the database contents to the API spec rigidly; by defining this struct independently, we can
+/// migrate the schemas. To start, this is a direct copy of the `ReleaseRef` model.
+pub struct RefsBlobJson {
+    #[serde(rename = "index")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub index: Option<i64>,
+
+    /// base32-encoded unique identifier
+    #[serde(rename = "target_release_id")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub target_release_id: Option<String>,
+
+    #[serde(rename = "extra")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub extra: Option<serde_json::Value>,
+
+    #[serde(rename = "key")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub key: Option<String>,
-    pub extra_json: Option<serde_json::Value>,
+
+    #[serde(rename = "year")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub year: Option<i64>,
+
+    #[serde(rename = "container_name")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub container_name: Option<String>,
-    pub year: Option<i32>,
+
+    #[serde(rename = "title")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
+
+    #[serde(rename = "locator")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub locator: Option<String>,
 }
 
-#[derive(Debug, Insertable, AsChangeset)]
-#[table_name = "release_ref"]
-pub struct ReleaseRefNewRow {
-    pub release_rev: Uuid,
-    pub target_release_ident_id: Option<Uuid>,
-    pub index_val: Option<i32>,
-    pub key: Option<String>,
-    pub extra_json: Option<serde_json::Value>,
-    pub container_name: Option<String>,
-    pub year: Option<i32>,
-    pub title: Option<String>,
-    pub locator: Option<String>,
+impl RefsBlobJson {
+    pub fn into_model(self) -> ReleaseRef {
+        ReleaseRef {
+            index: self.index,
+            target_release_id: self.target_release_id,
+            extra: self.extra,
+            key: self.key,
+            year: self.year,
+            container_name: self.container_name,
+            title: self.title,
+            locator: self.locator,
+        }
+    }
+
+    pub fn to_model(&self) -> ReleaseRef {
+        ReleaseRef {
+            index: self.index,
+            target_release_id: self.target_release_id.clone(),
+            extra: self.extra.clone(),
+            key: self.key.clone(),
+            year: self.year,
+            container_name: self.container_name.clone(),
+            title: self.title.clone(),
+            locator: self.locator.clone(),
+        }
+    }
+
+    pub fn from_model(model: &ReleaseRef) -> RefsBlobJson {
+        RefsBlobJson {
+            index: model.index,
+            target_release_id: model.target_release_id.clone(),
+            extra: model.extra.clone(),
+            key: model.key.clone(),
+            year: model.year,
+            container_name: model.container_name.clone(),
+            title: model.title.clone(),
+            locator: model.locator.clone(),
+        }
+    }
 }
 
 #[derive(Debug, Queryable, Insertable, Associations, AsChangeset)]

@@ -143,7 +143,7 @@ Raw Object:
 {% endif %}
 
 <br>
-{% if release.refs.size != 0 %}
+{% if release.refs != None and release.refs.size != 0 %}
 <h3>References</h3>
 This release citing other releases.
 <ol>

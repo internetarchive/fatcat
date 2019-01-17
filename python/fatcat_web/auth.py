@@ -90,7 +90,10 @@ def handle_ia_xauth(email, password):
             'secret': Config.IA_XAUTH_CLIENT_SECRET,
         })
     if resp.status_code == 401 or (not resp.json().get('success')):
-        flash("Internet Archive email/password didn't match: {}".format(resp.json()['values']['reason']))
+        try:
+            flash("Internet Archive email/password didn't match: {}".format(resp.json()['values']['reason']))
+        except:
+            print("IA XAuth fail: {}".format(resp.content))
         return render_template('auth_ia_login.html', email=email), resp.status_code
     elif resp.status_code != 200:
         flash("Internet Archive login failed (internal error?)")
