@@ -25,7 +25,7 @@ def truthy(s):
     else:
         return None
 
-class IssnImporter(FatcatImporter):
+class JournalMetadataImporter(FatcatImporter):
     """
     Imports journal metadata ("containers") by ISSN, currently from a custom
     (data munged) .csv file format
@@ -40,12 +40,12 @@ class IssnImporter(FatcatImporter):
         eg_desc = kwargs.get('editgroup_description',
             "Automated import of container-level metadata, by ISSN. Metadata from Internet Archive munging.")
         eg_extra = kwargs.get('editgroup_extra', dict())
-        eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.IssnImporter')
+        eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.JournalMetadataImporter')
         super().__init__(api,
             editgroup_description=eg_desc,
             editgroup_extra=eg_extra)
 
-    def parse_issn_row(self, row):
+    def parse_journal_metadata_row(self, row):
         """
         row is a python dict (parsed from CSV).
         returns a ContainerEntity (or None if invalid or couldn't parse)
@@ -75,14 +75,14 @@ class IssnImporter(FatcatImporter):
         return ce
 
     def create_row(self, row, editgroup_id=None):
-        ce = self.parse_issn_row(row)
+        ce = self.parse_journal_metadata_row(row)
         if ce is not None:
             self.api.create_container(ce, editgroup_id=editgroup_id)
             self.counts['insert'] += 1
 
     def create_batch(self, batch):
         """Reads and processes in batches (not API-call-per-line)"""
-        objects = [self.parse_issn_row(l)
+        objects = [self.parse_journal_metadata_row(l)
                    for l in batch if (l is not None)]
         objects = [o for o in objects if (o is not None)]
         self.api.create_container_batch(objects, autoaccept="true")

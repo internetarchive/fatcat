@@ -6,7 +6,7 @@
 import os, sys, argparse
 from fatcat_tools import authenticated_api
 from fatcat_tools.importers import CrossrefImporter, OrcidImporter, \
-    IssnImporter, MatchedImporter, GrobidMetadataImporter, make_kafka_consumer
+    JournalMetadataImporter, MatchedImporter, GrobidMetadataImporter, make_kafka_consumer
 
 
 def run_crossref(args):
@@ -27,8 +27,8 @@ def run_orcid(args):
     foi.process_batch(args.json_file, size=args.batch_size)
     foi.describe_run()
 
-def run_issn(args):
-    fii = IssnImporter(args.api)
+def run_journal_metadata(args):
+    fii = JournalMetadataImporter(args.api)
     fii.process_csv_batch(args.csv_file, size=args.batch_size)
     fii.describe_run()
 
@@ -98,15 +98,15 @@ def main():
         help="size of batch to send",
         default=50, type=int)
 
-    sub_issn = subparsers.add_parser('issn')
-    sub_issn.set_defaults(
-        func=run_issn,
-        auth_var="FATCAT_AUTH_WORKER_ISSN",
+    sub_journal_metadata = subparsers.add_parser('journal-metadata')
+    sub_journal_metadata.set_defaults(
+        func=run_journal_metadata,
+        auth_var="FATCAT_AUTH_WORKER_JOURNAL_METADATA",
     )
-    sub_issn.add_argument('csv_file',
+    sub_journal_metadata.add_argument('csv_file',
         help="Journal ISSN CSV metadata file to import from (or stdin)",
         default=sys.stdin, type=argparse.FileType('r'))
-    sub_issn.add_argument('--batch-size',
+    sub_journal_metadata.add_argument('--batch-size',
         help="size of batch to send",
         default=50, type=int)
 
