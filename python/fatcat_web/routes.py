@@ -4,7 +4,7 @@ import json
 from flask import Flask, render_template, send_from_directory, request, \
     url_for, abort, g, redirect, jsonify, session, flash
 from flask_login import login_required
-from fatcat_web import app, api, auth_api
+from fatcat_web import app, api, auth_api, priv_api
 from fatcat_web.auth import handle_token_login, handle_logout, load_user, handle_ia_xauth
 from fatcat_client.rest import ApiException
 from fatcat_web.search import do_search
@@ -368,6 +368,8 @@ def search():
 @app.route('/auth/login')
 def login():
     # show the user a list of login options
+    if not priv_api:
+        flash("This web interface not configured with credentials to actually allow login (other than via token)")
     return render_template('auth_login.html')
 
 @app.route('/auth/ia/login', methods=['GET', 'POST'])
