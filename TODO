@@ -1,32 +1,24 @@
 
 ## In Progress
 
-- basic python tests for editgroup, annotation, submission changes
-- python tests for new autoaccept behavior
-- python tests for citation table storage efficiency changes
-    => should there be a distinction between empty list and no references?
-       yes, eg if expanded or not hidden
-    => postgres manual checks that this is working
-    => also benchmark (both speed and efficiency)
+- check that any needed/new indices are in place
+    => seems to at least superficially work
+- benchmark citation efficiency (in QA)
+
+- all query params need to be strings, and parse in rust :(
+    since=(datetime.datetime.utcnow() + datetime.timedelta(seconds=1)).isoformat()+"Z"
+- doc: python client API needs to have booleans set as, eg, 'true'/'false' (str) (!?!?)
+    "note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response"
 
 ## Next Up
 
 - "don't clobber" mode/flag for crossref import (and others?)
-- update_file requires 'id'. should it be 'ident'?
-    => something different about file vs. release
-- guide updates for auth
-- refactor webface views to use shared entity_view.html template
-- handle 'wip' status entities in web UI
 - elastic inserter should handle deletions and redirects; if state isn't
   active, delete the document
     => don't delete, just store state. but need to "blank" redirects and WIP so
        they don't show up in results
     => refactor inserter to be a class (eg, for command line use)
     => end-to-end test of this behavior?
-- date handling is really pretty bad for releases; mangling those Jan1/Dec31 
-    => elastic schema should have a year field (integer)
-- document: elastic query date syntax is like: date:[2018-10-01 TO 2018-12-31]
-- elastic transform should only include authors, not editors (?)
 - webcapture timestamp schema cleanup (both CDX and base)
     => dt.to_rfc3339_opts(SecondsFormat::Secs, true)
     => but this is mostly buried in serialization code?
@@ -43,6 +35,9 @@
 - handle very large author/reference lists (instead of dropping)
     => https://api.crossref.org/v1/works/http://dx.doi.org/10.1007/978-3-319-46095-6_7
     => 7000+ authors (!)
+- guide updates for auth
+- refactor webface views to use shared entity_view.html template
+- handle 'wip' status entities in web UI
 
 ## Bugs (or at least need tests)
 
@@ -151,6 +146,7 @@ new importers:
 
 ## Schema / Entity Fields
 
+- elastic transform should only include authors, not editors (?)
 - arxiv_id field (keep flip-flopping)
 - original_title field (internationalization, "original language")
 - `doi` field for containers (at least for "journal" type; maybe for "series"
@@ -162,6 +158,7 @@ new importers:
 
 ## Other / Backburner
 
+- document: elastic query date syntax is like: date:[2018-10-01 TO 2018-12-31]
 - fileset/webcapture webface anything
 - display abstracts better. no hashes or metadata; prefer plain or HTML,
   convert JATS if necessary
