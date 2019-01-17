@@ -1813,3 +1813,86 @@ fn test_editgroup_annotations() {
         Some("special test annotation"),
     );
 }
+
+#[test]
+fn test_query_params() {
+    let (headers, router, _conn) = helpers::setup_http();
+
+    helpers::check_http_response(
+        request::get(
+            "http://localhost:9411/v0/changelog?limit=true",
+            headers.clone(),
+            &router,
+        ),
+        status::BadRequest,
+        Some("integer"),
+    );
+
+    helpers::check_http_response(
+        request::get(
+            &format!("http://localhost:9411/v0/editgroup/reviewable?since=asdf"),
+            headers.clone(),
+            &router,
+        ),
+        status::BadRequest,
+        Some("datetime"),
+    );
+
+    helpers::check_http_response(
+        request::get(
+            &format!("http://localhost:9411/v0/editgroup/reviewable?since=1999-06-05T12:34:00Z"),
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        None,
+    );
+
+    // Python3: datetime.datetime.utcnow().isoformat() + "Z"
+    helpers::check_http_response(
+        request::get(
+            &format!(
+                "http://localhost:9411/v0/editgroup/reviewable?since=2019-01-17T23:32:03.269010Z"
+            ),
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        None,
+    );
+
+    // Python3: datetime.datetime.now(datetime.timezone.utc).isoformat()
+    /* TODO: this doesn't work currently :(
+    helpers::check_http_response(
+        request::get(
+            &format!("http://localhost:9411/v0/editgroup/reviewable?since=2019-01-17T23:30:45.799289+00:00"),
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        None,
+    );
+    */
+
+    helpers::check_http_response(
+        request::post(
+            "http://localhost:9411/v0/container/batch?autoaccept=asdf",
+            headers.clone(),
+            r#"[{"name": "test journal"}, {"name": "another test journal"}]"#,
+            &router,
+        ),
+        status::BadRequest,
+        Some("boolean"),
+    );
+
+    helpers::check_http_response(
+        request::post(
+            "http://localhost:9411/v0/container/batch?autoaccept=True",
+            headers.clone(),
+            r#"[{"name": "test journal"}, {"name": "another test journal"}]"#,
+            &router,
+        ),
+        status::Created,
+        None,
+    );
+}
