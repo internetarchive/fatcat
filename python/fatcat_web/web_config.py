@@ -19,7 +19,7 @@ class Config(object):
     GIT_REVISION = subprocess.check_output(["git", "describe", "--always"]).strip().decode('utf-8')
 
     # This is, effectively, the QA/PROD flag
-    FATCAT_DOMAIN = os.environ.get("FATCAT_DOMAIN", default="qa.fatcat.wiki")
+    FATCAT_DOMAIN = os.environ.get("FATCAT_DOMAIN", default="dev.fatcat.wiki")
     FATCAT_API_AUTH_TOKEN = os.environ.get("FATCAT_API_AUTH_TOKEN", default=None)
     FATCAT_API_HOST = os.environ.get("FATCAT_API_HOST", default="https://{}/v0".format(FATCAT_DOMAIN))
 
@@ -39,10 +39,11 @@ class Config(object):
     IA_XAUTH_CLIENT_SECRET = os.environ.get("IA_XAUTH_CLIENT_SECRET", default=None)
 
     # protect cookies (which include API tokens)
-    SESSION_COOKIE_HTTPONLY = True
-    SESSION_COOKIE_SECURE = True
-    SESSION_COOKIE_SAMESITE = 'Lax'
-    PERMANENT_SESSION_LIFETIME = 2678400 # 31 days, in seconds
+    if FATCAT_DOMAIN != "dev.fatcat.wiki":
+        SESSION_COOKIE_HTTPONLY = True
+        SESSION_COOKIE_SECURE = True
+        SESSION_COOKIE_SAMESITE = 'Lax'
+        PERMANENT_SESSION_LIFETIME = 2678400 # 31 days, in seconds
 
     try:
         GIT_RELEASE = raven.fetch_git_sha('..')
