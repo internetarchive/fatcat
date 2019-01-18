@@ -26,12 +26,18 @@ def release_to_elasticsearch(release):
     Raises exception on error (never returns None)
     """
 
-    if release.state != 'active':
-        raise ValueError("Entity is not 'active'")
+    if release.state in ('redirect', 'deleted'):
+        return dict(
+            ident = release.ident,
+            state = release.state,
+        )
+    elif release.state != 'active'
+        raise ValueError("Unhandled release state: {}".format(release.state))
 
     # First, the easy ones (direct copy)
     t = dict(
         ident = release.ident,
+        state = release.state,
         revision = release.revision,
         title = release.title,
         release_type = release.release_type,
