@@ -4,7 +4,9 @@ use crate::database_schema::*;
 use crate::errors::*;
 use crate::identifiers::uuid2fcid;
 use chrono;
-use fatcat_api_spec::models::{ChangelogEntry, Editgroup, EditgroupAnnotation, Editor, EntityEdit, ReleaseRef};
+use fatcat_api_spec::models::{
+    ChangelogEntry, Editgroup, EditgroupAnnotation, Editor, EntityEdit, ReleaseRef,
+};
 use serde_json;
 use uuid::Uuid;
 

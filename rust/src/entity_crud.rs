@@ -1829,7 +1829,8 @@ impl EntityCrud for ReleaseEntity {
                     refs[index].index = Some(index as i64)
                 }
                 for row in ref_rows {
-                    refs[row.index_val as usize].target_release_id = Some(FatcatId::from_uuid(&row.target_release_ident_id).to_string());
+                    refs[row.index_val as usize].target_release_id =
+                        Some(FatcatId::from_uuid(&row.target_release_ident_id).to_string());
                 }
                 refs
             }),
@@ -1960,11 +1961,11 @@ impl EntityCrud for ReleaseEntity {
             match &model.refs {
                 None => {
                     refs_blob_sha1.push(None);
-                },
+                }
                 Some(ref_list) => {
                     if ref_list.is_empty() {
                         refs_blob_sha1.push(None);
-                        continue
+                        continue;
                     }
                     // Have to strip out target refs and indexes, or hashing won't work well when
                     // these change
@@ -1981,7 +1982,10 @@ impl EntityCrud for ReleaseEntity {
                     let refs_json = serde_json::to_value(ref_list)?;
                     let refs_str = refs_json.to_string();
                     let sha1 = Sha1::from(refs_str).hexdigest();
-                    let blob = RefsBlobRow { sha1: sha1.clone(), refs_json };
+                    let blob = RefsBlobRow {
+                        sha1: sha1.clone(),
+                        refs_json,
+                    };
                     refs_blob_rows.push(blob);
                     refs_blob_sha1.push(Some(sha1));
                 }
@@ -2044,7 +2048,6 @@ impl EntityCrud for ReleaseEntity {
         let mut release_abstract_rows: Vec<ReleaseRevAbstractNewRow> = vec![];
 
         for (model, rev_id) in models.iter().zip(rev_ids.iter()) {
-
             // We didn't know the release_rev id to insert here, so need to re-iterate over refs
             match &model.refs {
                 None => (),
@@ -2057,7 +2060,10 @@ impl EntityCrud for ReleaseEntity {
                             Ok(ReleaseRefRow {
                                 release_rev: *rev_id,
                                 // unwrap() checked by is_some() filter
-                                target_release_ident_id: FatcatId::from_str(&r.target_release_id.clone().unwrap())?.to_uuid(),
+                                target_release_ident_id: FatcatId::from_str(
+                                    &r.target_release_id.clone().unwrap(),
+                                )?
+                                .to_uuid(),
                                 index_val: index as i32,
                             })
                         })
