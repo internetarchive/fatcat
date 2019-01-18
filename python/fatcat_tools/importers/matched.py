@@ -154,6 +154,6 @@ class MatchedImporter(FatcatImporter):
                 self.api.update_file(obj.ident, obj, editgroup_id=update_eg)
             self.api.accept_editgroup(update_eg)
         if len(new_objects) > 0:
-            self.api.create_file_batch(new_objects, autoaccept="true")
+            self.api.create_file_batch(new_objects, autoaccept=True)
         self.counts['update'] += len(update_objects)
         self.counts['insert'] += len(new_objects)

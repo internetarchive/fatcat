@@ -79,5 +79,5 @@ class OrcidImporter(FatcatImporter):
         objects = [self.parse_orcid_dict(json.loads(l))
                    for l in batch if l != None]
         objects = [o for o in objects if o != None]
-        self.api.create_creator_batch(objects, autoaccept="true")
+        self.api.create_creator_batch(objects, autoaccept=True)
         self.counts['insert'] += len(objects)

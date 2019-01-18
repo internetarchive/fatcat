@@ -331,5 +331,5 @@ class CrossrefImporter(FatcatImporter):
                     re.container_id = container.ident
                     self._issnl_id_map[ce.issnl] = container.ident
                 release_batch.append(re)
-        self.api.create_release_batch(release_batch, autoaccept="true")
+        self.api.create_release_batch(release_batch, autoaccept=True)
         self.counts['insert'] += len(release_batch)

@@ -85,5 +85,5 @@ class JournalMetadataImporter(FatcatImporter):
         objects = [self.parse_journal_metadata_row(l)
                    for l in batch if (l is not None)]
         objects = [o for o in objects if (o is not None)]
-        self.api.create_container_batch(objects, autoaccept="true")
+        self.api.create_container_batch(objects, autoaccept=True)
         self.counts['insert'] += len(objects)
