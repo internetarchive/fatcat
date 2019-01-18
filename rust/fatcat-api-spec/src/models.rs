@@ -1008,6 +1008,7 @@ pub struct WebcaptureEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub release_ids: Option<Vec<String>>,
 
+    /// same format as CDX line timestamp (UTC, etc). Corresponds to the overall capture timestamp. Can be the earliest or average of CDX timestamps if that makes sense.
     #[serde(rename = "timestamp")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub timestamp: Option<chrono::DateTime<chrono::Utc>>,
@@ -1091,8 +1092,9 @@ pub struct WebcaptureEntityCdx {
     #[serde(rename = "surt")]
     pub surt: String,
 
+    /// UTC, 'Z'-terminated, second (or better) precision
     #[serde(rename = "timestamp")]
-    pub timestamp: String,
+    pub timestamp: chrono::DateTime<chrono::Utc>,
 
     #[serde(rename = "url")]
     pub url: String,
@@ -1114,7 +1116,7 @@ pub struct WebcaptureEntityCdx {
 }
 
 impl WebcaptureEntityCdx {
-    pub fn new(surt: String, timestamp: String, url: String, sha1: String) -> WebcaptureEntityCdx {
+    pub fn new(surt: String, timestamp: chrono::DateTime<chrono::Utc>, url: String, sha1: String) -> WebcaptureEntityCdx {
         WebcaptureEntityCdx {
             surt: surt,
             timestamp: timestamp,
