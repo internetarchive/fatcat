@@ -26,20 +26,20 @@ def test_editgroup_submit(api):
     wip = api.get_editor_editgroups(eg.editor_id, limit=100)
     assert eg.editgroup_id in [v.editgroup_id for v in wip]
 
-    api.update_editgroup(eg.editgroup_id, eg2, submit='true')
+    api.update_editgroup(eg.editgroup_id, eg2, submit=True)
     eg3 = api.get_editgroup(eg.editgroup_id)
     assert eg3.submitted
     reviewable = api.get_editgroups_reviewable(limit=100)
     assert eg.editgroup_id in [v.editgroup_id for v in reviewable]
 
-    api.update_editgroup(eg.editgroup_id, eg2, submit='false')
+    api.update_editgroup(eg.editgroup_id, eg2, submit=False)
     eg3 = api.get_editgroup(eg.editgroup_id)
     assert not eg3.submitted
     reviewable = api.get_editgroups_reviewable(limit=100)
     assert eg.editgroup_id not in [v.editgroup_id for v in reviewable]
 
     # put back in reviewable
-    api.update_editgroup(eg.editgroup_id, eg2, submit='true')
+    api.update_editgroup(eg.editgroup_id, eg2, submit=True)
     reviewable = api.get_editgroups_reviewable(limit=100)
     assert eg.editgroup_id in [v.editgroup_id for v in reviewable]
 
@@ -53,7 +53,7 @@ def test_editgroup_submit(api):
     assert eg3.changelog_index
 
     with pytest.raises(fatcat_client.rest.ApiException):
-        api.update_editgroup(eg.editgroup_id, eg3, submit='true')
+        api.update_editgroup(eg.editgroup_id, eg3, submit=True)
     with pytest.raises(fatcat_client.rest.ApiException):
         eg3.description = "something"
         api.update_editgroup(eg.editgroup_id, eg3)
@@ -66,11 +66,11 @@ def test_editgroup_ordering(api):
     api.update_editgroup(
         eg1.editgroup_id,
         Editgroup(editgroup_id=eg1.editgroup_id, description="FAIL"),
-        submit='true')
+        submit=True)
     api.update_editgroup(
         eg2.editgroup_id,
         Editgroup(editgroup_id=eg2.editgroup_id, description="FAIL"),
-        submit='true')
+        submit=True)
 
     r1 = api.get_editgroups_reviewable()
     #print(r1)
@@ -97,10 +97,10 @@ def test_editgroup_autoaccept(api):
         edits = api.create_creator_batch([c1, c2])
 
     with pytest.raises(fatcat_client.rest.ApiException):
-        edits = api.create_creator_batch([c1, c2], editgroup_id=eg.editgroup_id, autoaccept='true')
+        edits = api.create_creator_batch([c1, c2], editgroup_id=eg.editgroup_id, autoaccept=True)
 
     edits1 = api.create_creator_batch([c1, c2], editgroup_id=eg.editgroup_id)
-    edits2 = api.create_creator_batch([c1, c2], autoaccept='true')
+    edits2 = api.create_creator_batch([c1, c2], autoaccept=True)
 
     assert edits1[0].editgroup_id == eg.editgroup_id
     assert edits1[0].editgroup_id != edits2[1].editgroup_id
