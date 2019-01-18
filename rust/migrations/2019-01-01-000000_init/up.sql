@@ -195,7 +195,7 @@ CREATE INDEX file_rev_sha256_idx ON file_rev(sha256);
 CREATE TABLE file_rev_url (
     id                  BIGSERIAL PRIMARY KEY,
     file_rev            UUID REFERENCES file_rev(id) NOT NULL,
-    rel                 TEXT NOT NULL, -- TODO: enum? web, webarchive, repo, etc TODO: default web?
+    rel                 TEXT NOT NULL, -- TODO: enum? web, webarchive, repo, etc
     url                 TEXT NOT NULL
 );
 
@@ -232,7 +232,7 @@ CREATE TABLE fileset_rev (
 CREATE TABLE fileset_rev_url (
     id                  BIGSERIAL PRIMARY KEY,
     fileset_rev         UUID REFERENCES fileset_rev(id) NOT NULL,
-    rel                 TEXT NOT NULL, -- TODO: enum? web, webarchive, repo, etc TODO: default web?
+    rel                 TEXT NOT NULL, -- TODO: enum? web, webarchive, repo, etc
     url                 TEXT NOT NULL
 );
 
@@ -284,7 +284,7 @@ CREATE TABLE webcapture_rev (
 CREATE TABLE webcapture_rev_url (
     id                  BIGSERIAL PRIMARY KEY,
     webcapture_rev      UUID REFERENCES webcapture_rev(id) NOT NULL,
-    rel                 TEXT NOT NULL, -- TODO: enum? web, webarchive, repo, etc TODO: default web?
+    rel                 TEXT NOT NULL, -- TODO: enum? web, webarchive, repo, etc
     url                 TEXT NOT NULL
 );
 
@@ -294,7 +294,7 @@ CREATE TABLE webcapture_rev_cdx (
     id                  BIGSERIAL PRIMARY KEY,
     webcapture_rev      UUID REFERENCES webcapture_rev(id) NOT NULL,
     surt                TEXT NOT NULL,
-    timestamp           TEXT NOT NULL, -- TODO: timestamp type?
+    timestamp           TIMESTAMP WITH TIME ZONE NOT NULL,
     url                 TEXT NOT NULL,
     mimetype            TEXT,
     status_code         BIGINT,
@@ -605,9 +605,9 @@ INSERT INTO webcapture_rev (id, original_url, timestamp) VALUES
     ('00000000-0000-0000-7777-FFF000000003', 'https://asheesh.org', '2003-02-17T04:47:21Z');
 
 INSERT INTO webcapture_rev_cdx (webcapture_rev, surt, timestamp, url, mimetype, status_code, sha1, sha256) VALUES
-    ('00000000-0000-0000-7777-FFF000000002', 'org,example)/', 19960102123456, 'http://example.org', null, 200, '5886903ba5aeaf7446fe9f77bd03adfc029cedf0', null),
-    ('00000000-0000-0000-7777-FFF000000003', 'org,asheesh)/', 20030217044721, 'http://asheesh.org:80/', 'text/html', 200, '5886903ba5aeaf7446fe9f77bd03adfc029cedf0', 'ffc1005680cb620eec4c913437dfabbf311b535cfe16cbaeb2faec1f92afc362'),
-    ('00000000-0000-0000-7777-FFF000000003', 'org,asheesh)/robots.txt', 20030217044719, 'http://asheesh.org:80/robots.txt', 'text/html', 404, 'a637f1d27d9bcb237310ed29f19c07e1c8cf0aa5', 'ffc1005680cb620eec4c913437dfabbf311b535cfe16cbaeb2faec1f92afc362');
+    ('00000000-0000-0000-7777-FFF000000002', 'org,example)/', '1996-01-02T12:34:56Z', 'http://example.org', null, 200, '5886903ba5aeaf7446fe9f77bd03adfc029cedf0', null),
+    ('00000000-0000-0000-7777-FFF000000003', 'org,asheesh)/', '2003-02-17T04:47:21Z', 'http://asheesh.org:80/', 'text/html', 200, '5886903ba5aeaf7446fe9f77bd03adfc029cedf0', 'ffc1005680cb620eec4c913437dfabbf311b535cfe16cbaeb2faec1f92afc362'),
+    ('00000000-0000-0000-7777-FFF000000003', 'org,asheesh)/robots.txt', '2003-02-17T04:47:19Z', 'http://asheesh.org:80/robots.txt', 'text/html', 404, 'a637f1d27d9bcb237310ed29f19c07e1c8cf0aa5', 'ffc1005680cb620eec4c913437dfabbf311b535cfe16cbaeb2faec1f92afc362');
 
 INSERT INTO webcapture_rev_url (webcapture_rev, rel, url) VALUES
     ('00000000-0000-0000-7777-FFF000000002', 'wayback', 'http://web.archive.org/201801010001/http://example.org'),
