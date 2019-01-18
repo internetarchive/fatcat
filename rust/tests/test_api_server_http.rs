@@ -1409,7 +1409,7 @@ fn test_post_batch_autoaccept() {
         None,
     );
 
-    // "n"
+    // "n" (TODO)
     let editgroup_id = helpers::quick_editgroup(&conn);
     helpers::check_http_response(
         request::post(
@@ -1421,7 +1421,7 @@ fn test_post_batch_autoaccept() {
             r#"[{"name": "test journal"}, {"name": "another test journal"}]"#,
             &router,
         ),
-        status::Created,
+        status::BadRequest, // TODO
         None,
     );
 
