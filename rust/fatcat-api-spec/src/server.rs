@@ -262,7 +262,12 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_autoaccept = query_params.get("autoaccept").and_then(|list| list.first()).and_then(|x| x.parse::<bool>().ok());
+                let param_autoaccept = query_params
+                    .get("autoaccept")
+                    .and_then(|list| list.first())
+                    .and_then(|x| Some(x.to_lowercase().parse::<bool>()))
+                    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
+                    .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected boolean)".to_string())))?;
                 let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
                 // Body parameters (note that non-required body parameters will ignore garbage
@@ -837,7 +842,12 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_limit = query_params.get("limit").and_then(|list| list.first()).and_then(|x| x.parse::<i64>().ok());
+                let param_limit = query_params
+                    .get("limit")
+                    .and_then(|list| list.first())
+                    .and_then(|x| Some(x.parse::<i64>()))
+                    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
+                    .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected integer)".to_string())))?;
 
                 match api.get_container_history(param_ident, param_limit, context).wait() {
                     Ok(rsp) => match rsp {
@@ -1488,7 +1498,12 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_autoaccept = query_params.get("autoaccept").and_then(|list| list.first()).and_then(|x| x.parse::<bool>().ok());
+                let param_autoaccept = query_params
+                    .get("autoaccept")
+                    .and_then(|list| list.first())
+                    .and_then(|x| Some(x.to_lowercase().parse::<bool>()))
+                    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
+                    .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected boolean)".to_string())))?;
                 let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
                 // Body parameters (note that non-required body parameters will ignore garbage
@@ -2063,7 +2078,12 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_limit = query_params.get("limit").and_then(|list| list.first()).and_then(|x| x.parse::<i64>().ok());
+                let param_limit = query_params
+                    .get("limit")
+                    .and_then(|list| list.first())
+                    .and_then(|x| Some(x.parse::<i64>()))
+                    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
+                    .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected integer)".to_string())))?;
 
                 match api.get_creator_history(param_ident, param_limit, context).wait() {
                     Ok(rsp) => match rsp {
@@ -2901,9 +2921,24 @@ where
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
                 let param_expand = query_params.get("expand").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
-                let param_limit = query_params.get("limit").and_then(|list| list.first()).and_then(|x| x.parse::<i64>().ok());
-                let param_before = query_params.get("before").and_then(|list| list.first()).and_then(|x| x.parse::<chrono::DateTime<chrono::Utc>>().ok());
-                let param_since = query_params.get("since").and_then(|list| list.first()).and_then(|x| x.parse::<chrono::DateTime<chrono::Utc>>().ok());
+                let param_limit = query_params
+                    .get("limit")
+                    .and_then(|list| list.first())
+                    .and_then(|x| Some(x.parse::<i64>()))
+                    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
+                    .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected integer)".to_string())))?;
+                let param_before = query_params
+                    .get("before")
+                    .and_then(|list| list.first())
+                    .and_then(|x| Some(x.parse::<chrono::DateTime<chrono::Utc>>()))
+                    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
+                    .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected UTC datetime in ISO/RFC format)".to_string())))?;
+                let param_since = query_params
+                    .get("since")
+                    .and_then(|list| list.first())
+                    .and_then(|x| Some(x.parse::<chrono::DateTime<chrono::Utc>>()))
+                    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
+                    .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected UTC datetime in ISO/RFC format)".to_string())))?;
 
                 match api.get_editgroups_reviewable(param_expand, param_limit, param_before, param_since, context).wait() {
                     Ok(rsp) => match rsp {
@@ -3085,9 +3120,24 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_limit = query_params.get("limit").and_then(|list| list.first()).and_then(|x| x.parse::<i64>().ok());
-                let param_before = query_params.get("before").and_then(|list| list.first()).and_then(|x| x.parse::<chrono::DateTime<chrono::Utc>>().ok());
-                let param_since = query_params.get("since").and_then(|list| list.first()).and_then(|x| x.parse::<chrono::DateTime<chrono::Utc>>().ok());
+                let param_limit = query_params
+                    .get("limit")
+                    .and_then(|list| list.first())
+                    .and_then(|x| Some(x.parse::<i64>()))
+                    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
+                    .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected integer)".to_string())))?;
+                let param_before = query_params
+                    .get("before")
+                    .and_then(|list| list.first())
+                    .and_then(|x| Some(x.parse::<chrono::DateTime<chrono::Utc>>()))
+                    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
+                    .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected UTC datetime in ISO/RFC format)".to_string())))?;
+                let param_since = query_params
+                    .get("since")
+                    .and_then(|list| list.first())
+                    .and_then(|x| Some(x.parse::<chrono::DateTime<chrono::Utc>>()))
+                    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
+                    .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected UTC datetime in ISO/RFC format)".to_string())))?;
 
                 match api.get_editor_editgroups(param_editor_id, param_limit, param_before, param_since, context).wait() {
                     Ok(rsp) => match rsp {
@@ -3182,7 +3232,12 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_submit = query_params.get("submit").and_then(|list| list.first()).and_then(|x| x.parse::<bool>().ok());
+                let param_submit = query_params
+                    .get("submit")
+                    .and_then(|list| list.first())
+                    .and_then(|x| Some(x.to_lowercase().parse::<bool>()))
+                    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
+                    .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected boolean)".to_string())))?;
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -3882,7 +3937,12 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_limit = query_params.get("limit").and_then(|list| list.first()).and_then(|x| x.parse::<i64>().ok());
+                let param_limit = query_params
+                    .get("limit")
+                    .and_then(|list| list.first())
+                    .and_then(|x| Some(x.parse::<i64>()))
+                    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
+                    .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected integer)".to_string())))?;
 
                 match api.get_changelog(param_limit, context).wait() {
                     Ok(rsp) => match rsp {
@@ -4261,9 +4321,24 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_limit = query_params.get("limit").and_then(|list| list.first()).and_then(|x| x.parse::<i64>().ok());
-                let param_before = query_params.get("before").and_then(|list| list.first()).and_then(|x| x.parse::<chrono::DateTime<chrono::Utc>>().ok());
-                let param_since = query_params.get("since").and_then(|list| list.first()).and_then(|x| x.parse::<chrono::DateTime<chrono::Utc>>().ok());
+                let param_limit = query_params
+                    .get("limit")
+                    .and_then(|list| list.first())
+                    .and_then(|x| Some(x.parse::<i64>()))
+                    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
+                    .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected integer)".to_string())))?;
+                let param_before = query_params
+                    .get("before")
+                    .and_then(|list| list.first())
+                    .and_then(|x| Some(x.parse::<chrono::DateTime<chrono::Utc>>()))
+                    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
+                    .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected UTC datetime in ISO/RFC format)".to_string())))?;
+                let param_since = query_params
+                    .get("since")
+                    .and_then(|list| list.first())
+                    .and_then(|x| Some(x.parse::<chrono::DateTime<chrono::Utc>>()))
+                    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
+                    .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected UTC datetime in ISO/RFC format)".to_string())))?;
 
                 match api.get_editor_annotations(param_editor_id, param_limit, param_before, param_since, context).wait() {
                     Ok(rsp) => match rsp {
@@ -4512,7 +4587,12 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_autoaccept = query_params.get("autoaccept").and_then(|list| list.first()).and_then(|x| x.parse::<bool>().ok());
+                let param_autoaccept = query_params
+                    .get("autoaccept")
+                    .and_then(|list| list.first())
+                    .and_then(|x| Some(x.to_lowercase().parse::<bool>()))
+                    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
+                    .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected boolean)".to_string())))?;
                 let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
                 // Body parameters (note that non-required body parameters will ignore garbage
@@ -5087,7 +5167,12 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_limit = query_params.get("limit").and_then(|list| list.first()).and_then(|x| x.parse::<i64>().ok());
+                let param_limit = query_params
+                    .get("limit")
+                    .and_then(|list| list.first())
+                    .and_then(|x| Some(x.parse::<i64>()))
+                    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
+                    .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected integer)".to_string())))?;
 
                 match api.get_file_history(param_ident, param_limit, context).wait() {
                     Ok(rsp) => match rsp {
@@ -5739,7 +5824,12 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_autoaccept = query_params.get("autoaccept").and_then(|list| list.first()).and_then(|x| x.parse::<bool>().ok());
+                let param_autoaccept = query_params
+                    .get("autoaccept")
+                    .and_then(|list| list.first())
+                    .and_then(|x| Some(x.to_lowercase().parse::<bool>()))
+                    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
+                    .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected boolean)".to_string())))?;
                 let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
                 // Body parameters (note that non-required body parameters will ignore garbage
@@ -6314,7 +6404,12 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_limit = query_params.get("limit").and_then(|list| list.first()).and_then(|x| x.parse::<i64>().ok());
+                let param_limit = query_params
+                    .get("limit")
+                    .and_then(|list| list.first())
+                    .and_then(|x| Some(x.parse::<i64>()))
+                    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
+                    .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected integer)".to_string())))?;
 
                 match api.get_fileset_history(param_ident, param_limit, context).wait() {
                     Ok(rsp) => match rsp {
@@ -6884,7 +6979,12 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_autoaccept = query_params.get("autoaccept").and_then(|list| list.first()).and_then(|x| x.parse::<bool>().ok());
+                let param_autoaccept = query_params
+                    .get("autoaccept")
+                    .and_then(|list| list.first())
+                    .and_then(|x| Some(x.to_lowercase().parse::<bool>()))
+                    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
+                    .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected boolean)".to_string())))?;
                 let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
                 // Body parameters (note that non-required body parameters will ignore garbage
@@ -7791,7 +7891,12 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_limit = query_params.get("limit").and_then(|list| list.first()).and_then(|x| x.parse::<i64>().ok());
+                let param_limit = query_params
+                    .get("limit")
+                    .and_then(|list| list.first())
+                    .and_then(|x| Some(x.parse::<i64>()))
+                    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
+                    .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected integer)".to_string())))?;
 
                 match api.get_release_history(param_ident, param_limit, context).wait() {
                     Ok(rsp) => match rsp {
@@ -8542,7 +8647,12 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_autoaccept = query_params.get("autoaccept").and_then(|list| list.first()).and_then(|x| x.parse::<bool>().ok());
+                let param_autoaccept = query_params
+                    .get("autoaccept")
+                    .and_then(|list| list.first())
+                    .and_then(|x| Some(x.to_lowercase().parse::<bool>()))
+                    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
+                    .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected boolean)".to_string())))?;
                 let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
                 // Body parameters (note that non-required body parameters will ignore garbage
@@ -9117,7 +9227,12 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_limit = query_params.get("limit").and_then(|list| list.first()).and_then(|x| x.parse::<i64>().ok());
+                let param_limit = query_params
+                    .get("limit")
+                    .and_then(|list| list.first())
+                    .and_then(|x| Some(x.parse::<i64>()))
+                    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
+                    .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected integer)".to_string())))?;
 
                 match api.get_webcapture_history(param_ident, param_limit, context).wait() {
                     Ok(rsp) => match rsp {
@@ -9541,7 +9656,12 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_autoaccept = query_params.get("autoaccept").and_then(|list| list.first()).and_then(|x| x.parse::<bool>().ok());
+                let param_autoaccept = query_params
+                    .get("autoaccept")
+                    .and_then(|list| list.first())
+                    .and_then(|x| Some(x.to_lowercase().parse::<bool>()))
+                    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
+                    .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected boolean)".to_string())))?;
                 let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
                 // Body parameters (note that non-required body parameters will ignore garbage
@@ -10116,7 +10236,12 @@ where
 
                 // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
                 let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_limit = query_params.get("limit").and_then(|list| list.first()).and_then(|x| x.parse::<i64>().ok());
+                let param_limit = query_params
+                    .get("limit")
+                    .and_then(|list| list.first())
+                    .and_then(|x| Some(x.parse::<i64>()))
+                    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
+                    .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected integer)".to_string())))?;
 
                 match api.get_work_history(param_ident, param_limit, context).wait() {
                     Ok(rsp) => match rsp {
