@@ -249,7 +249,7 @@ definitions:
     properties:
       <<: *ENTITYPROPS
       cdx:
-        # limit of 200 CDX lines, at least to start
+        # limit of 200 CDX lines, at least to start?
         type: array
         items:
           type: object
@@ -264,7 +264,9 @@ definitions:
               example: "org,asheesh)/apus/ch1/node15.html"
             timestamp:
               type: string
-              example: "20020429162520"
+              format: date-time
+              example: "2016-09-19T17:20:24Z"
+              description: "UTC, 'Z'-terminated, second (or better) precision"
             url:
               type: string
               # NOTE: not format:url to allow alternatives
@@ -302,6 +304,7 @@ definitions:
       timestamp:
         type: string
         format: date-time
+        description: "same format as CDX line timestamp (UTC, etc). Corresponds to the overall capture timestamp. Can be the earliest or average of CDX timestamps if that makes sense."
       release_ids:
         type: array
         items:
