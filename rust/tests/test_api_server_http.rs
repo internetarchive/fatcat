@@ -694,7 +694,7 @@ fn test_post_webcapture() {
                 "timestamp": "2018-12-28T05:06:07Z",
                 "cdx": [
                     {"surt": "org,asheesh,)/robots.txt",
-                     "timestamp": "20181228050607",
+                     "timestamp": "2018-12-28T05:06:07Z",
                      "url": "https://asheesh.org/robots.txt",
                      "status_code": 200,
                      "mimetype": "text/html",

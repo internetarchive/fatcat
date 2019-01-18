@@ -3,7 +3,7 @@
 use crate::database_schema::*;
 use crate::errors::*;
 use crate::identifiers::uuid2fcid;
-use chrono;
+use chrono::Utc;
 use fatcat_api_spec::models::{
     ChangelogEntry, Editgroup, EditgroupAnnotation, Editor, EntityEdit, ReleaseRef,
 };
@@ -307,7 +307,7 @@ pub struct WebcaptureRevCdxRow {
     pub id: i64,
     pub webcapture_rev: Uuid,
     pub surt: String,
-    pub timestamp: String,
+    pub timestamp: chrono::DateTime<Utc>,
     pub url: String,
     pub mimetype: Option<String>,
     pub status_code: Option<i64>,
@@ -320,7 +320,7 @@ pub struct WebcaptureRevCdxRow {
 pub struct WebcaptureRevCdxNewRow {
     pub webcapture_rev: Uuid,
     pub surt: String,
-    pub timestamp: String,
+    pub timestamp: chrono::DateTime<Utc>,
     pub url: String,
     pub mimetype: Option<String>,
     pub status_code: Option<i64>,

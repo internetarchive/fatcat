@@ -359,7 +359,7 @@ table! {
         id -> Int8,
         webcapture_rev -> Uuid,
         surt -> Text,
-        timestamp -> Text,
+        timestamp -> Timestamptz,
         url -> Text,
         mimetype -> Nullable<Text>,
         status_code -> Nullable<Int8>,
