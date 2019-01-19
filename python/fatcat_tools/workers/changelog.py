@@ -93,7 +93,7 @@ class EntityUpdatesWorker(FatcatWorker):
                 release_edits = cle['editgroup']['edits']['releases']
                 for re in release_edits:
                     ident = re['ident']
-                    release = self.api.get_release(ident, expand="files,container")
+                    release = self.api.get_release(ident, expand="files,filesets,webcaptures,container")
                     release_dict = self.api.api_client.sanitize_for_serialization(release)
                     producer.produce(
                         message=json.dumps(release_dict).encode('utf-8'),
