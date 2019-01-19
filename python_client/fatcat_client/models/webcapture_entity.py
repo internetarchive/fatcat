@@ -125,6 +125,7 @@ class WebcaptureEntity(object):
     def timestamp(self):
         """Gets the timestamp of this WebcaptureEntity.  # noqa: E501
 
+        same format as CDX line timestamp (UTC, etc). Corresponds to the overall capture timestamp. Can be the earliest or average of CDX timestamps if that makes sense.  # noqa: E501
 
         :return: The timestamp of this WebcaptureEntity.  # noqa: E501
         :rtype: datetime
@@ -135,6 +136,7 @@ class WebcaptureEntity(object):
     def timestamp(self, timestamp):
         """Sets the timestamp of this WebcaptureEntity.
 
+        same format as CDX line timestamp (UTC, etc). Corresponds to the overall capture timestamp. Can be the earliest or average of CDX timestamps if that makes sense.  # noqa: E501
 
         :param timestamp: The timestamp of this WebcaptureEntity.  # noqa: E501
         :type: datetime

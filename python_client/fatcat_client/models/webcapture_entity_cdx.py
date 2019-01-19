@@ -32,7 +32,7 @@ class WebcaptureEntityCdx(object):
     """
     swagger_types = {
         'surt': 'str',
-        'timestamp': 'str',
+        'timestamp': 'datetime',
         'url': 'str',
         'mimetype': 'str',
         'status_code': 'int',
@@ -100,9 +100,10 @@ class WebcaptureEntityCdx(object):
     def timestamp(self):
         """Gets the timestamp of this WebcaptureEntityCdx.  # noqa: E501
 
+        UTC, 'Z'-terminated, second (or better) precision  # noqa: E501
 
         :return: The timestamp of this WebcaptureEntityCdx.  # noqa: E501
-        :rtype: str
+        :rtype: datetime
         """
         return self._timestamp
 
@@ -110,9 +111,10 @@ class WebcaptureEntityCdx(object):
     def timestamp(self, timestamp):
         """Sets the timestamp of this WebcaptureEntityCdx.
 
+        UTC, 'Z'-terminated, second (or better) precision  # noqa: E501
 
         :param timestamp: The timestamp of this WebcaptureEntityCdx.  # noqa: E501
-        :type: str
+        :type: datetime
         """
         if timestamp is None:
             raise ValueError("Invalid value for `timestamp`, must not be `None`")  # noqa: E501
