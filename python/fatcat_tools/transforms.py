@@ -31,7 +31,7 @@ def release_to_elasticsearch(release):
             ident = release.ident,
             state = release.state,
         )
-    elif release.state != 'active'
+    elif release.state != 'active':
         raise ValueError("Unhandled release state: {}".format(release.state))
 
     # First, the easy ones (direct copy)
