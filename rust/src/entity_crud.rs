@@ -8,7 +8,7 @@
 use crate::database_models::*;
 use crate::database_schema::*;
 use crate::editing::EditContext;
-use crate::endpoint_handlers::get_release_files;
+use crate::endpoint_handlers::{get_release_files, get_release_filesets, get_release_webcaptures};
 use crate::errors::*;
 use crate::identifiers::*;
 use crate::server::DbConn;
@@ -1674,6 +1674,26 @@ impl EntityCrud for ReleaseEntity {
                 },
             };
             self.files = Some(get_release_files(conn, ident, HideFlags::none())?);
+        }
+        if expand.filesets && self.ident.is_some() {
+            let ident = match &self.ident {
+                None => bail!("Can't expand filesets on a non-concrete entity"), // redundant with above is_some()
+                Some(ident) => match &self.redirect {
+                    None => FatcatId::from_str(&ident)?,
+                    Some(redir) => FatcatId::from_str(&redir)?,
+                },
+            };
+            self.filesets = Some(get_release_filesets(conn, ident, HideFlags::none())?);
+        }
+        if expand.webcaptures && self.ident.is_some() {
+            let ident = match &self.ident {
+                None => bail!("Can't expand webcaptures on a non-concrete entity"), // redundant with above is_some()
+                Some(ident) => match &self.redirect {
+                    None => FatcatId::from_str(&ident)?,
+                    Some(redir) => FatcatId::from_str(&redir)?,
+                },
+            };
+            self.webcaptures = Some(get_release_webcaptures(conn, ident, HideFlags::none())?);
         }
         if expand.container {
             if let Some(ref cid) = self.container_id {
