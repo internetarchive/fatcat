@@ -27,9 +27,25 @@ Specifically, the "variables" and type definitions: <http://docs.citationstyles.
 - rights/license (for explicit OA)
 - version (eg, for software, standards)
 - url (eg, for blog posts and other web content; canonical only)
+- authority (for things like patents)
+- collection_title (for book series)
+- short_title
+- edition (eg, "4th")
+- event (eg, conference)
+- chapter_number
+- submitted
+
+"extra" for citations:
+- most of the above, or any fields from 'release"
+- authors (an array)
+- url
+- issue, volume, date, edition
+- accessed_date
+
+release_date aligns with... 'issued'? not original-date
+pages aligns with 'page'. Should this be 'locator'?
 
 other things:
-- align cite-items even closer with CSL? assuming this is what crossref is doing
 - anything specially needed for a blog post? url (original/canonical)?
 - press_release
 
