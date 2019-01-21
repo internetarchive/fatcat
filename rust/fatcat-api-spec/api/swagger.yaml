@@ -5041,6 +5041,18 @@ paths:
         type: "string"
         formatString: "{:?}"
         example: "Some(\"core_id_example\".to_string())"
+      - name: "arxiv_id"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"arxiv_id_example\".to_string())"
+      - name: "jstor_id"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"jstor_id_example\".to_string())"
       - name: "expand"
         in: "query"
         description: "List of sub-entities to expand in response."

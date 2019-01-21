@@ -2220,6 +2220,14 @@ paths:
           in: query
           type: string
           required: false
+        - name: arxiv_id
+          in: query
+          type: string
+          required: false
+        - name: jstor_id
+          in: query
+          type: string
+          required: false
         - name: expand
           in: query
           type: string

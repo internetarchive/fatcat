@@ -554,6 +554,8 @@ fn main() {
                     Some("pmid_example".to_string()),
                     Some("pmcid_example".to_string()),
                     Some("core_id_example".to_string()),
+                    Some("arxiv_id_example".to_string()),
+                    Some("jstor_id_example".to_string()),
                     Some("expand_example".to_string()),
                     Some("hide_example".to_string()),
                 )

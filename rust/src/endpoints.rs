@@ -665,6 +665,8 @@ impl Api for Server {
         pmid: Option<String>,
         pmcid: Option<String>,
         core_id: Option<String>,
+        arxiv_id: Option<String>,
+        jstor_id: Option<String>,
         expand: Option<String>,
         hide: Option<String>,
         _context: &Context,
@@ -688,6 +690,8 @@ impl Api for Server {
                 &pmid,
                 &pmcid,
                 &core_id,
+                &arxiv_id,
+                &jstor_id,
                 expand_flags,
                 hide_flags,
             )

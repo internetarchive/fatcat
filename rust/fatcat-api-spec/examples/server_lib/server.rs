@@ -826,19 +826,23 @@ impl Api for Server {
         pmid: Option<String>,
         pmcid: Option<String>,
         core_id: Option<String>,
+        arxiv_id: Option<String>,
+        jstor_id: Option<String>,
         expand: Option<String>,
         hide: Option<String>,
         context: &Context,
     ) -> Box<Future<Item = LookupReleaseResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "lookup_release({:?}, {:?}, {:?}, {:?}, {:?}, {:?}, {:?}, {:?}) - X-Span-ID: {:?}",
+            "lookup_release({:?}, {:?}, {:?}, {:?}, {:?}, {:?}, {:?}, {:?}, {:?}, {:?}) - X-Span-ID: {:?}",
             doi,
             wikidata_qid,
             isbn13,
             pmid,
             pmcid,
             core_id,
+            arxiv_id,
+            jstor_id,
             expand,
             hide,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()

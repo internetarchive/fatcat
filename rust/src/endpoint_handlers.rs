@@ -259,12 +259,14 @@ impl Server {
         pmid: &Option<String>,
         pmcid: &Option<String>,
         core_id: &Option<String>,
+        arxiv_id: &Option<String>,
+        jstor_id: &Option<String>,
         expand_flags: ExpandFlags,
         hide_flags: HideFlags,
     ) -> Result<ReleaseEntity> {
         let (ident, rev): (ReleaseIdentRow, ReleaseRevRow) =
-            match (doi, wikidata_qid, isbn13, pmid, pmcid, core_id) {
-                (Some(doi), None, None, None, None, None) => {
+            match (doi, wikidata_qid, isbn13, pmid, pmcid, core_id, arxiv_id, jstor_id) {
+                (Some(doi), None, None, None, None, None, None, None) => {
                     check_doi(doi)?;
                     release_ident::table
                         .inner_join(release_rev::table)
@@ -273,7 +275,7 @@ impl Server {
                         .filter(release_ident::redirect_id.is_null())
                         .first(conn)?
                 }
-                (None, Some(wikidata_qid), None, None, None, None) => {
+                (None, Some(wikidata_qid), None, None, None, None, None, None) => {
                     check_wikidata_qid(wikidata_qid)?;
                     release_ident::table
                         .inner_join(release_rev::table)
@@ -282,7 +284,7 @@ impl Server {
                         .filter(release_ident::redirect_id.is_null())
                         .first(conn)?
                 }
-                (None, None, Some(isbn13), None, None, None) => {
+                (None, None, Some(isbn13), None, None, None, None, None) => {
                     // TODO: check_isbn13(isbn13)?;
                     release_ident::table
                         .inner_join(release_rev::table)
@@ -291,7 +293,7 @@ impl Server {
                         .filter(release_ident::redirect_id.is_null())
                         .first(conn)?
                 }
-                (None, None, None, Some(pmid), None, None) => {
+                (None, None, None, Some(pmid), None, None, None, None) => {
                     check_pmid(pmid)?;
                     release_ident::table
                         .inner_join(release_rev::table)
@@ -300,7 +302,7 @@ impl Server {
                         .filter(release_ident::redirect_id.is_null())
                         .first(conn)?
                 }
-                (None, None, None, None, Some(pmcid), None) => {
+                (None, None, None, None, Some(pmcid), None, None, None) => {
                     check_pmcid(pmcid)?;
                     release_ident::table
                         .inner_join(release_rev::table)
@@ -309,11 +311,29 @@ impl Server {
                         .filter(release_ident::redirect_id.is_null())
                         .first(conn)?
                 }
-                (None, None, None, None, None, Some(core_id)) => {
+                (None, None, None, None, None, Some(core_id), None, None) => {
                     // TODO: check_core_id(core_id)?;
                     release_ident::table
                         .inner_join(release_rev::table)
                         .filter(release_rev::core_id.eq(core_id))
+                        .filter(release_ident::is_live.eq(true))
+                        .filter(release_ident::redirect_id.is_null())
+                        .first(conn)?
+                }
+                (None, None, None, None, None, None, Some(arxiv_id), None) => {
+                    // TODO: check_arxiv_id(arxiv_id)?;
+                    release_ident::table
+                        .inner_join(release_rev::table)
+                        .filter(release_rev::arxiv_id.eq(arxiv_id))
+                        .filter(release_ident::is_live.eq(true))
+                        .filter(release_ident::redirect_id.is_null())
+                        .first(conn)?
+                }
+                (None, None, None, None, None, None, None, Some(jstor_id)) => {
+                    // TODO: check_jstor_id(jstor_id)?;
+                    release_ident::table
+                        .inner_join(release_rev::table)
+                        .filter(release_rev::jstor_id.eq(jstor_id))
                         .filter(release_ident::is_live.eq(true))
                         .filter(release_ident::redirect_id.is_null())
                         .first(conn)?

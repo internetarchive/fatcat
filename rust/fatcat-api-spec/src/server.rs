@@ -8256,11 +8256,25 @@ where
                 let param_pmid = query_params.get("pmid").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_pmcid = query_params.get("pmcid").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_core_id = query_params.get("core_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_arxiv_id = query_params.get("arxiv_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_jstor_id = query_params.get("jstor_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_expand = query_params.get("expand").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
                 match api
-                    .lookup_release(param_doi, param_wikidata_qid, param_isbn13, param_pmid, param_pmcid, param_core_id, param_expand, param_hide, context)
+                    .lookup_release(
+                        param_doi,
+                        param_wikidata_qid,
+                        param_isbn13,
+                        param_pmid,
+                        param_pmcid,
+                        param_core_id,
+                        param_arxiv_id,
+                        param_jstor_id,
+                        param_expand,
+                        param_hide,
+                        context,
+                    )
                     .wait()
                 {
                     Ok(rsp) => match rsp {

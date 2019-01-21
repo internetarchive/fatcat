@@ -1568,6 +1568,8 @@ pub trait Api {
         pmid: Option<String>,
         pmcid: Option<String>,
         core_id: Option<String>,
+        arxiv_id: Option<String>,
+        jstor_id: Option<String>,
         expand: Option<String>,
         hide: Option<String>,
         context: &Context,
@@ -1833,6 +1835,8 @@ pub trait ApiNoContext {
         pmid: Option<String>,
         pmcid: Option<String>,
         core_id: Option<String>,
+        arxiv_id: Option<String>,
+        jstor_id: Option<String>,
         expand: Option<String>,
         hide: Option<String>,
     ) -> Box<Future<Item = LookupReleaseResponse, Error = ApiError> + Send>;
@@ -2248,10 +2252,13 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         pmid: Option<String>,
         pmcid: Option<String>,
         core_id: Option<String>,
+        arxiv_id: Option<String>,
+        jstor_id: Option<String>,
         expand: Option<String>,
         hide: Option<String>,
     ) -> Box<Future<Item = LookupReleaseResponse, Error = ApiError> + Send> {
-        self.api().lookup_release(doi, wikidata_qid, isbn13, pmid, pmcid, core_id, expand, hide, &self.context())
+        self.api()
+            .lookup_release(doi, wikidata_qid, isbn13, pmid, pmcid, core_id, arxiv_id, jstor_id, expand, hide, &self.context())
     }
 
     fn update_release(&self, ident: String, entity: models::ReleaseEntity, editgroup_id: String) -> Box<Future<Item = UpdateReleaseResponse, Error = ApiError> + Send> {
