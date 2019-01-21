@@ -26,6 +26,10 @@ tags: # TAGLINE
    descriptions: "Creator entities: such as authors" # TAGLINE
  - name: files # TAGLINE
    descriptions: "File entities" # TAGLINE
+ - name: filesets # TAGLINE
+   descriptions: "Fileset entities" # TAGLINE
+ - name: webcaptures # TAGLINE
+   descriptions: "Webcapture entities" # TAGLINE
  - name: releases # TAGLINE
    descriptions: "Release entities: individual articles, pre-prints, books" # TAGLINE
  - name: works # TAGLINE
@@ -132,16 +136,15 @@ definitions:
         type: string
         example: "Journal of Important Results"
         description: "Required for valid entities"
+      container_type:
+        type: string
+        description: "Eg, 'journal'"
       publisher:
         type: string
         example: "Society of Curious Students"
       issnl:
         <<: *FATCATISSN
       wikidata_qid:
-        type: string
-      abbrev:
-        type: string
-      coden:
         type: string
   creator_entity:
     type: object
@@ -316,7 +319,10 @@ definitions:
       <<: *ENTITYPROPS
       title:
         type: string
-        description: "Required for valid entities"
+        description: "Required for valid entities. The title used in citations and for display; usually English"
+      original_title:
+        type: string
+        description: "Title in original language (or, the language of the full text of this release)"
       work_id:
         type: string
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -346,7 +352,7 @@ definitions:
         example: "book"
       release_status:
         type: string
-        example: "preprint"
+        example: "preprint, retracted"
       release_date:
         type: string
         format: date
@@ -370,6 +376,10 @@ definitions:
       core_id:
         type: string
         #format: custom
+      arxiv_id:
+        type: string
+      jstor_id:
+        type: string
       volume:
         type: string
       issue:
@@ -382,6 +392,9 @@ definitions:
       language:
         description: "Two-letter RFC1766/ISO639-1 language code, with extensions"
         type: string
+      license_slug:
+        type: string
+        description: "Short version of license name. Eg, 'CC-BY'"
       contribs:
         type: array
         items:
@@ -591,11 +604,14 @@ definitions:
         description: "Optional; GET-only"
       raw_name:
         type: string
+      role:
+        type: string
+      raw_affiliation:
+        type: string
+        description: "Raw affiliation string as displayed in text"
       extra:
         type: object
         additionalProperties: {}
-      role:
-        type: string
   auth_oidc:
     type: object
     required:

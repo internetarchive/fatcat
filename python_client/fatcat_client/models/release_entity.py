@@ -42,11 +42,14 @@ class ReleaseEntity(object):
         'abstracts': 'list[ReleaseEntityAbstracts]',
         'refs': 'list[ReleaseRef]',
         'contribs': 'list[ReleaseContrib]',
+        'license_slug': 'str',
         'language': 'str',
         'publisher': 'str',
         'pages': 'str',
         'issue': 'str',
         'volume': 'str',
+        'jstor_id': 'str',
+        'arxiv_id': 'str',
         'core_id': 'str',
         'pmcid': 'str',
         'pmid': 'str',
@@ -63,6 +66,7 @@ class ReleaseEntity(object):
         'files': 'list[FileEntity]',
         'container': 'ContainerEntity',
         'work_id': 'str',
+        'original_title': 'str',
         'title': 'str',
         'state': 'str',
         'ident': 'str',
@@ -76,11 +80,14 @@ class ReleaseEntity(object):
         'abstracts': 'abstracts',
         'refs': 'refs',
         'contribs': 'contribs',
+        'license_slug': 'license_slug',
         'language': 'language',
         'publisher': 'publisher',
         'pages': 'pages',
         'issue': 'issue',
         'volume': 'volume',
+        'jstor_id': 'jstor_id',
+        'arxiv_id': 'arxiv_id',
         'core_id': 'core_id',
         'pmcid': 'pmcid',
         'pmid': 'pmid',
@@ -97,6 +104,7 @@ class ReleaseEntity(object):
         'files': 'files',
         'container': 'container',
         'work_id': 'work_id',
+        'original_title': 'original_title',
         'title': 'title',
         'state': 'state',
         'ident': 'ident',
@@ -106,17 +114,20 @@ class ReleaseEntity(object):
         'edit_extra': 'edit_extra'
     }
 
-    def __init__(self, abstracts=None, refs=None, contribs=None, language=None, publisher=None, pages=None, issue=None, volume=None, core_id=None, pmcid=None, pmid=None, isbn13=None, wikidata_qid=None, doi=None, release_year=None, release_date=None, release_status=None, release_type=None, container_id=None, webcaptures=None, filesets=None, files=None, container=None, work_id=None, title=None, state=None, ident=None, revision=None, redirect=None, extra=None, edit_extra=None):  # noqa: E501
+    def __init__(self, abstracts=None, refs=None, contribs=None, license_slug=None, language=None, publisher=None, pages=None, issue=None, volume=None, jstor_id=None, arxiv_id=None, core_id=None, pmcid=None, pmid=None, isbn13=None, wikidata_qid=None, doi=None, release_year=None, release_date=None, release_status=None, release_type=None, container_id=None, webcaptures=None, filesets=None, files=None, container=None, work_id=None, original_title=None, title=None, state=None, ident=None, revision=None, redirect=None, extra=None, edit_extra=None):  # noqa: E501
         """ReleaseEntity - a model defined in Swagger"""  # noqa: E501
 
         self._abstracts = None
         self._refs = None
         self._contribs = None
+        self._license_slug = None
         self._language = None
         self._publisher = None
         self._pages = None
         self._issue = None
         self._volume = None
+        self._jstor_id = None
+        self._arxiv_id = None
         self._core_id = None
         self._pmcid = None
         self._pmid = None
@@ -133,6 +144,7 @@ class ReleaseEntity(object):
         self._files = None
         self._container = None
         self._work_id = None
+        self._original_title = None
         self._title = None
         self._state = None
         self._ident = None
@@ -148,6 +160,8 @@ class ReleaseEntity(object):
             self.refs = refs
         if contribs is not None:
             self.contribs = contribs
+        if license_slug is not None:
+            self.license_slug = license_slug
         if language is not None:
             self.language = language
         if publisher is not None:
@@ -158,6 +172,10 @@ class ReleaseEntity(object):
             self.issue = issue
         if volume is not None:
             self.volume = volume
+        if jstor_id is not None:
+            self.jstor_id = jstor_id
+        if arxiv_id is not None:
+            self.arxiv_id = arxiv_id
         if core_id is not None:
             self.core_id = core_id
         if pmcid is not None:
@@ -190,6 +208,8 @@ class ReleaseEntity(object):
             self.container = container
         if work_id is not None:
             self.work_id = work_id
+        if original_title is not None:
+            self.original_title = original_title
         if title is not None:
             self.title = title
         if state is not None:
@@ -267,6 +287,29 @@ class ReleaseEntity(object):
         """
 
         self._contribs = contribs
+
+    @property
+    def license_slug(self):
+        """Gets the license_slug of this ReleaseEntity.  # noqa: E501
+
+        Short version of license name. Eg, 'CC-BY'  # noqa: E501
+
+        :return: The license_slug of this ReleaseEntity.  # noqa: E501
+        :rtype: str
+        """
+        return self._license_slug
+
+    @license_slug.setter
+    def license_slug(self, license_slug):
+        """Sets the license_slug of this ReleaseEntity.
+
+        Short version of license name. Eg, 'CC-BY'  # noqa: E501
+
+        :param license_slug: The license_slug of this ReleaseEntity.  # noqa: E501
+        :type: str
+        """
+
+        self._license_slug = license_slug
 
     @property
     def language(self):
@@ -374,6 +417,48 @@ class ReleaseEntity(object):
         """
 
         self._volume = volume
+
+    @property
+    def jstor_id(self):
+        """Gets the jstor_id of this ReleaseEntity.  # noqa: E501
+
+
+        :return: The jstor_id of this ReleaseEntity.  # noqa: E501
+        :rtype: str
+        """
+        return self._jstor_id
+
+    @jstor_id.setter
+    def jstor_id(self, jstor_id):
+        """Sets the jstor_id of this ReleaseEntity.
+
+
+        :param jstor_id: The jstor_id of this ReleaseEntity.  # noqa: E501
+        :type: str
+        """
+
+        self._jstor_id = jstor_id
+
+    @property
+    def arxiv_id(self):
+        """Gets the arxiv_id of this ReleaseEntity.  # noqa: E501
+
+
+        :return: The arxiv_id of this ReleaseEntity.  # noqa: E501
+        :rtype: str
+        """
+        return self._arxiv_id
+
+    @arxiv_id.setter
+    def arxiv_id(self, arxiv_id):
+        """Sets the arxiv_id of this ReleaseEntity.
+
+
+        :param arxiv_id: The arxiv_id of this ReleaseEntity.  # noqa: E501
+        :type: str
+        """
+
+        self._arxiv_id = arxiv_id
 
     @property
     def core_id(self):
@@ -720,10 +805,33 @@ class ReleaseEntity(object):
         self._work_id = work_id
 
     @property
+    def original_title(self):
+        """Gets the original_title of this ReleaseEntity.  # noqa: E501
+
+        Title in original language (or, the language of the full text of this release)  # noqa: E501
+
+        :return: The original_title of this ReleaseEntity.  # noqa: E501
+        :rtype: str
+        """
+        return self._original_title
+
+    @original_title.setter
+    def original_title(self, original_title):
+        """Sets the original_title of this ReleaseEntity.
+
+        Title in original language (or, the language of the full text of this release)  # noqa: E501
+
+        :param original_title: The original_title of this ReleaseEntity.  # noqa: E501
+        :type: str
+        """
+
+        self._original_title = original_title
+
+    @property
     def title(self):
         """Gets the title of this ReleaseEntity.  # noqa: E501
 
-        Required for valid entities  # noqa: E501
+        Required for valid entities. The title used in citations and for display; usually English  # noqa: E501
 
         :return: The title of this ReleaseEntity.  # noqa: E501
         :rtype: str
@@ -734,7 +842,7 @@ class ReleaseEntity(object):
     def title(self, title):
         """Sets the title of this ReleaseEntity.
 
-        Required for valid entities  # noqa: E501
+        Required for valid entities. The title used in citations and for display; usually English  # noqa: E501
 
         :param title: The title of this ReleaseEntity.  # noqa: E501
         :type: str

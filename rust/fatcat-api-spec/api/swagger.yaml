@@ -11,6 +11,8 @@ tags:
 - name: "containers"
 - name: "creators"
 - name: "files"
+- name: "filesets"
+- name: "webcaptures"
 - name: "releases"
 - name: "works"
 - name: "edit-lifecycle"
@@ -7273,10 +7275,6 @@ definitions:
   container_entity:
     type: "object"
     properties:
-      coden:
-        type: "string"
-      abbrev:
-        type: "string"
       wikidata_qid:
         type: "string"
       issnl:
@@ -7288,6 +7286,9 @@ definitions:
       publisher:
         type: "string"
         example: "Society of Curious Students"
+      container_type:
+        type: "string"
+        description: "Eg, 'journal'"
       name:
         type: "string"
         example: "Journal of Important Results"
@@ -7326,13 +7327,12 @@ definitions:
         - "deleted"
     example:
       redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
-      coden: "coden"
       ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
       extra: "{}"
+      container_type: "container_type"
       name: "Journal of Important Results"
       publisher: "Society of Curious Students"
       issnl: "1234-5678"
-      abbrev: "abbrev"
       wikidata_qid: "wikidata_qid"
       state: "wip"
       edit_extra: "{}"
@@ -7687,6 +7687,9 @@ definitions:
         type: "array"
         items:
           $ref: "#/definitions/release_contrib"
+      license_slug:
+        type: "string"
+        description: "Short version of license name. Eg, 'CC-BY'"
       language:
         type: "string"
         description: "Two-letter RFC1766/ISO639-1 language code, with extensions"
@@ -7698,6 +7701,10 @@ definitions:
         type: "string"
         example: "12"
       volume:
+        type: "string"
+      jstor_id:
+        type: "string"
+      arxiv_id:
         type: "string"
       core_id:
         type: "string"
@@ -7721,7 +7728,7 @@ definitions:
         format: "date"
       release_status:
         type: "string"
-        example: "preprint"
+        example: "preprint, retracted"
       release_type:
         type: "string"
         example: "book"
@@ -7749,9 +7756,14 @@ definitions:
       work_id:
         type: "string"
         example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+      original_title:
+        type: "string"
+        description: "Title in original language (or, the language of the full text\
+          \ of this release)"
       title:
         type: "string"
-        description: "Required for valid entities"
+        description: "Required for valid entities. The title used in citations and\
+          \ for display; usually English"
       state:
         type: "string"
         enum:
@@ -7787,13 +7799,12 @@ definitions:
     example:
       container:
         redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
-        coden: "coden"
         ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
         extra: "{}"
+        container_type: "container_type"
         name: "Journal of Important Results"
         publisher: "Society of Curious Students"
         issnl: "1234-5678"
-        abbrev: "abbrev"
         wikidata_qid: "wikidata_qid"
         state: "wip"
         edit_extra: "{}"
@@ -7865,7 +7876,8 @@ definitions:
       language: "language"
       title: "title"
       contribs:
-      - creator:
+      - raw_affiliation: "raw_affiliation"
+        creator:
           redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
           surname: "surname"
           ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -7882,7 +7894,8 @@ definitions:
         extra: "{}"
         creator_id: "creator_id"
         index: 1
-      - creator:
+      - raw_affiliation: "raw_affiliation"
+        creator:
           redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
           surname: "surname"
           ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -7904,9 +7917,11 @@ definitions:
       extra: "{}"
       state: "wip"
       edit_extra: "{}"
+      jstor_id: "jstor_id"
       redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
       work_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
       issue: "12"
+      original_title: "original_title"
       abstracts:
       - sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
         mimetype: "application/xml+jats"
@@ -7920,9 +7935,10 @@ definitions:
       release_type: "book"
       wikidata_qid: "wikidata_qid"
       pmid: "pmid"
-      release_status: "preprint"
+      release_status: "preprint, retracted"
       revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       volume: "volume"
+      license_slug: "license_slug"
       refs:
       - target_release_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
         container_name: "container_name"
@@ -7982,6 +7998,7 @@ definitions:
         - "q3nouwy3nnbsvo3h5klxsx4a7y"
         edit_extra: "{}"
         md5: "1b39813549077b2347c0f370c3864b40"
+      arxiv_id: "arxiv_id"
       filesets:
       - redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
         urls:
@@ -8932,11 +8949,15 @@ definitions:
         $ref: "#/definitions/creator_entity"
       raw_name:
         type: "string"
-      extra:
-        type: "object"
       role:
         type: "string"
+      raw_affiliation:
+        type: "string"
+        description: "Raw affiliation string as displayed in text"
+      extra:
+        type: "object"
     example:
+      raw_affiliation: "raw_affiliation"
       creator:
         redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
         surname: "surname"

@@ -79,14 +79,6 @@ impl ChangelogEntry {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ContainerEntity {
-    #[serde(rename = "coden")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub coden: Option<String>,
-
-    #[serde(rename = "abbrev")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub abbrev: Option<String>,
-
     #[serde(rename = "wikidata_qid")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub wikidata_qid: Option<String>,
@@ -98,6 +90,11 @@ pub struct ContainerEntity {
     #[serde(rename = "publisher")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub publisher: Option<String>,
+
+    /// Eg, 'journal'
+    #[serde(rename = "container_type")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub container_type: Option<String>,
 
     /// Required for valid entities
     #[serde(rename = "name")]
@@ -136,11 +133,10 @@ pub struct ContainerEntity {
 impl ContainerEntity {
     pub fn new() -> ContainerEntity {
         ContainerEntity {
-            coden: None,
-            abbrev: None,
             wikidata_qid: None,
             issnl: None,
             publisher: None,
+            container_type: None,
             name: None,
             edit_extra: None,
             extra: None,
@@ -709,13 +705,18 @@ pub struct ReleaseContrib {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub raw_name: Option<String>,
 
-    #[serde(rename = "extra")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub extra: Option<serde_json::Value>,
-
     #[serde(rename = "role")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub role: Option<String>,
+
+    /// Raw affiliation string as displayed in text
+    #[serde(rename = "raw_affiliation")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub raw_affiliation: Option<String>,
+
+    #[serde(rename = "extra")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub extra: Option<serde_json::Value>,
 }
 
 impl ReleaseContrib {
@@ -725,8 +726,9 @@ impl ReleaseContrib {
             creator_id: None,
             creator: None,
             raw_name: None,
-            extra: None,
             role: None,
+            raw_affiliation: None,
+            extra: None,
         }
     }
 }
@@ -744,6 +746,11 @@ pub struct ReleaseEntity {
     #[serde(rename = "contribs")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub contribs: Option<Vec<models::ReleaseContrib>>,
+
+    /// Short version of license name. Eg, 'CC-BY'
+    #[serde(rename = "license_slug")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub license_slug: Option<String>,
 
     /// Two-letter RFC1766/ISO639-1 language code, with extensions
     #[serde(rename = "language")]
@@ -765,6 +772,14 @@ pub struct ReleaseEntity {
     #[serde(rename = "volume")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub volume: Option<String>,
+
+    #[serde(rename = "jstor_id")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub jstor_id: Option<String>,
+
+    #[serde(rename = "arxiv_id")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub arxiv_id: Option<String>,
 
     #[serde(rename = "core_id")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -834,7 +849,12 @@ pub struct ReleaseEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub work_id: Option<String>,
 
-    /// Required for valid entities
+    /// Title in original language (or, the language of the full text of this release)
+    #[serde(rename = "original_title")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub original_title: Option<String>,
+
+    /// Required for valid entities. The title used in citations and for display; usually English
     #[serde(rename = "title")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
@@ -874,11 +894,14 @@ impl ReleaseEntity {
             abstracts: None,
             refs: None,
             contribs: None,
+            license_slug: None,
             language: None,
             publisher: None,
             pages: None,
             issue: None,
             volume: None,
+            jstor_id: None,
+            arxiv_id: None,
             core_id: None,
             pmcid: None,
             pmid: None,
@@ -895,6 +918,7 @@ impl ReleaseEntity {
             files: None,
             container: None,
             work_id: None,
+            original_title: None,
             title: None,
             state: None,
             ident: None,

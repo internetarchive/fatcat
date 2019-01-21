@@ -37,8 +37,9 @@ class ReleaseContrib(object):
         'creator_id': 'str',
         'creator': 'CreatorEntity',
         'raw_name': 'str',
-        'extra': 'object',
-        'role': 'str'
+        'role': 'str',
+        'raw_affiliation': 'str',
+        'extra': 'object'
     }
 
     attribute_map = {
@@ -46,19 +47,21 @@ class ReleaseContrib(object):
         'creator_id': 'creator_id',
         'creator': 'creator',
         'raw_name': 'raw_name',
-        'extra': 'extra',
-        'role': 'role'
+        'role': 'role',
+        'raw_affiliation': 'raw_affiliation',
+        'extra': 'extra'
     }
 
-    def __init__(self, index=None, creator_id=None, creator=None, raw_name=None, extra=None, role=None):  # noqa: E501
+    def __init__(self, index=None, creator_id=None, creator=None, raw_name=None, role=None, raw_affiliation=None, extra=None):  # noqa: E501
         """ReleaseContrib - a model defined in Swagger"""  # noqa: E501
 
         self._index = None
         self._creator_id = None
         self._creator = None
         self._raw_name = None
-        self._extra = None
         self._role = None
+        self._raw_affiliation = None
+        self._extra = None
         self.discriminator = None
 
         if index is not None:
@@ -69,10 +72,12 @@ class ReleaseContrib(object):
             self.creator = creator
         if raw_name is not None:
             self.raw_name = raw_name
-        if extra is not None:
-            self.extra = extra
         if role is not None:
             self.role = role
+        if raw_affiliation is not None:
+            self.raw_affiliation = raw_affiliation
+        if extra is not None:
+            self.extra = extra
 
     @property
     def index(self):
@@ -161,27 +166,6 @@ class ReleaseContrib(object):
         self._raw_name = raw_name
 
     @property
-    def extra(self):
-        """Gets the extra of this ReleaseContrib.  # noqa: E501
-
-
-        :return: The extra of this ReleaseContrib.  # noqa: E501
-        :rtype: object
-        """
-        return self._extra
-
-    @extra.setter
-    def extra(self, extra):
-        """Sets the extra of this ReleaseContrib.
-
-
-        :param extra: The extra of this ReleaseContrib.  # noqa: E501
-        :type: object
-        """
-
-        self._extra = extra
-
-    @property
     def role(self):
         """Gets the role of this ReleaseContrib.  # noqa: E501
 
@@ -201,6 +185,50 @@ class ReleaseContrib(object):
         """
 
         self._role = role
+
+    @property
+    def raw_affiliation(self):
+        """Gets the raw_affiliation of this ReleaseContrib.  # noqa: E501
+
+        Raw affiliation string as displayed in text  # noqa: E501
+
+        :return: The raw_affiliation of this ReleaseContrib.  # noqa: E501
+        :rtype: str
+        """
+        return self._raw_affiliation
+
+    @raw_affiliation.setter
+    def raw_affiliation(self, raw_affiliation):
+        """Sets the raw_affiliation of this ReleaseContrib.
+
+        Raw affiliation string as displayed in text  # noqa: E501
+
+        :param raw_affiliation: The raw_affiliation of this ReleaseContrib.  # noqa: E501
+        :type: str
+        """
+
+        self._raw_affiliation = raw_affiliation
+
+    @property
+    def extra(self):
+        """Gets the extra of this ReleaseContrib.  # noqa: E501
+
+
+        :return: The extra of this ReleaseContrib.  # noqa: E501
+        :rtype: object
+        """
+        return self._extra
+
+    @extra.setter
+    def extra(self, extra):
+        """Sets the extra of this ReleaseContrib.
+
+
+        :param extra: The extra of this ReleaseContrib.  # noqa: E501
+        :type: object
+        """
+
+        self._extra = extra
 
     def to_dict(self):
         """Returns the model properties as a dict"""

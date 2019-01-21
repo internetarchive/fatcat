@@ -31,11 +31,10 @@ class ContainerEntity(object):
                             and the value is json key in definition.
     """
     swagger_types = {
-        'coden': 'str',
-        'abbrev': 'str',
         'wikidata_qid': 'str',
         'issnl': 'str',
         'publisher': 'str',
+        'container_type': 'str',
         'name': 'str',
         'edit_extra': 'object',
         'extra': 'object',
@@ -46,11 +45,10 @@ class ContainerEntity(object):
     }
 
     attribute_map = {
-        'coden': 'coden',
-        'abbrev': 'abbrev',
         'wikidata_qid': 'wikidata_qid',
         'issnl': 'issnl',
         'publisher': 'publisher',
+        'container_type': 'container_type',
         'name': 'name',
         'edit_extra': 'edit_extra',
         'extra': 'extra',
@@ -60,14 +58,13 @@ class ContainerEntity(object):
         'state': 'state'
     }
 
-    def __init__(self, coden=None, abbrev=None, wikidata_qid=None, issnl=None, publisher=None, name=None, edit_extra=None, extra=None, redirect=None, revision=None, ident=None, state=None):  # noqa: E501
+    def __init__(self, wikidata_qid=None, issnl=None, publisher=None, container_type=None, name=None, edit_extra=None, extra=None, redirect=None, revision=None, ident=None, state=None):  # noqa: E501
         """ContainerEntity - a model defined in Swagger"""  # noqa: E501
 
-        self._coden = None
-        self._abbrev = None
         self._wikidata_qid = None
         self._issnl = None
         self._publisher = None
+        self._container_type = None
         self._name = None
         self._edit_extra = None
         self._extra = None
@@ -77,16 +74,14 @@ class ContainerEntity(object):
         self._state = None
         self.discriminator = None
 
-        if coden is not None:
-            self.coden = coden
-        if abbrev is not None:
-            self.abbrev = abbrev
         if wikidata_qid is not None:
             self.wikidata_qid = wikidata_qid
         if issnl is not None:
             self.issnl = issnl
         if publisher is not None:
             self.publisher = publisher
+        if container_type is not None:
+            self.container_type = container_type
         if name is not None:
             self.name = name
         if edit_extra is not None:
@@ -101,48 +96,6 @@ class ContainerEntity(object):
             self.ident = ident
         if state is not None:
             self.state = state
-
-    @property
-    def coden(self):
-        """Gets the coden of this ContainerEntity.  # noqa: E501
-
-
-        :return: The coden of this ContainerEntity.  # noqa: E501
-        :rtype: str
-        """
-        return self._coden
-
-    @coden.setter
-    def coden(self, coden):
-        """Sets the coden of this ContainerEntity.
-
-
-        :param coden: The coden of this ContainerEntity.  # noqa: E501
-        :type: str
-        """
-
-        self._coden = coden
-
-    @property
-    def abbrev(self):
-        """Gets the abbrev of this ContainerEntity.  # noqa: E501
-
-
-        :return: The abbrev of this ContainerEntity.  # noqa: E501
-        :rtype: str
-        """
-        return self._abbrev
-
-    @abbrev.setter
-    def abbrev(self, abbrev):
-        """Sets the abbrev of this ContainerEntity.
-
-
-        :param abbrev: The abbrev of this ContainerEntity.  # noqa: E501
-        :type: str
-        """
-
-        self._abbrev = abbrev
 
     @property
     def wikidata_qid(self):
@@ -212,6 +165,29 @@ class ContainerEntity(object):
         """
 
         self._publisher = publisher
+
+    @property
+    def container_type(self):
+        """Gets the container_type of this ContainerEntity.  # noqa: E501
+
+        Eg, 'journal'  # noqa: E501
+
+        :return: The container_type of this ContainerEntity.  # noqa: E501
+        :rtype: str
+        """
+        return self._container_type
+
+    @container_type.setter
+    def container_type(self, container_type):
+        """Sets the container_type of this ContainerEntity.
+
+        Eg, 'journal'  # noqa: E501
+
+        :param container_type: The container_type of this ContainerEntity.  # noqa: E501
+        :type: str
+        """
+
+        self._container_type = container_type
 
     @property
     def name(self):
