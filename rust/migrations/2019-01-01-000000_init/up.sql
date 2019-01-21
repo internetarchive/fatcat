@@ -140,14 +140,12 @@ CREATE TABLE container_rev (
     extra_json          JSONB,
 
     name                TEXT NOT NULL,
+    container_type      TEXT,
     publisher           TEXT,
     -- fixed size identifier
     issnl               TEXT CHECK(octet_length(issnl) = 9),
     -- limited size for data quality
-    wikidata_qid        TEXT CHECK(octet_length(wikidata_qid) <= 12),
-    abbrev              TEXT,
-    -- limited size for data quality
-    coden               TEXT CHECK(octet_length(coden) <= 6)
+    wikidata_qid        TEXT CHECK(octet_length(wikidata_qid) <= 12)
 );
 
 CREATE INDEX container_rev_issnl_idx ON container_rev(issnl);
@@ -335,6 +333,7 @@ CREATE TABLE release_rev (
     container_ident_id  UUID REFERENCES container_ident(id),
     refs_blob_sha1      TEXT REFERENCES refs_blob(sha1),
     title               TEXT NOT NULL,
+    original_title      TEXT,
     release_type        TEXT, -- TODO: enum
     release_status      TEXT, -- TODO: enum
     release_date        DATE,
@@ -346,11 +345,14 @@ CREATE TABLE release_rev (
     wikidata_qid        TEXT CHECK(octet_length(wikidata_qid) <= 12),
     isbn13              TEXT CHECK(octet_length(isbn13) = 17),
     core_id             TEXT CHECK(octet_length(core_id) <= 12),
+    arxiv_id            TEXT CHECK(octet_length(arxiv_id) <= 12),
+    jstor_id            TEXT CHECK(octet_length(jstor_id) <= 12),
     volume              TEXT,
     issue               TEXT,
     pages               TEXT,
     publisher           TEXT, -- for books, NOT if container exists
-    language            TEXT  -- primary language of the work's fulltext; RFC1766/ISO639-1
+    language            TEXT, -- primary language of the work's fulltext; RFC1766/ISO639-1
+    license_slug        TEXT
     -- TODO: oclc_ocn (TEXT or BIGINT)
     -- TODO: identifier table?
 );
@@ -436,6 +438,7 @@ CREATE TABLE release_contrib (
     creator_ident_id    UUID REFERENCES creator_ident(id),
     raw_name            TEXT,
     role                TEXT, -- TODO: enum?
+    raw_affiliation     TEXT,
     index_val           INTEGER,
     extra_json          JSONB
 );
@@ -523,10 +526,10 @@ INSERT INTO abstracts (sha1, content) VALUES
     ('1ba86bf8c2979a62d29b18b537e50b2b093be27e', 'some long abstract in plain text'),
     ('0da908ab584b5e445a06beb172e3fab8cb5169e3', '<jats>A longer, more correct abstract should in theory go here</jats>');
 
-INSERT INTO container_rev (id, name, publisher, issnl, abbrev, coden, extra_json) VALUES
-    ('00000000-0000-0000-1111-FFF000000001', 'MySpace Blog', null, null, null, null, null),
-    ('00000000-0000-0000-1111-FFF000000002', 'Journal of Trivial Results', 'bogus publishing group', '1234-5678', 'Triv. Res.', 'CDNXYZ', '{"is_oa": false, "in_doaj": false}'),
-    ('00000000-0000-0000-1111-FFF000000003', 'PLOS Medicine', 'Public Library of Science', '1549-1277', 'PLoS med.', null, '{"is_oa": true, "in_doaj": true}');
+INSERT INTO container_rev (id, name, publisher, issnl, extra_json) VALUES
+    ('00000000-0000-0000-1111-FFF000000001', 'MySpace Blog', null, null, null),
+    ('00000000-0000-0000-1111-FFF000000002', 'Journal of Trivial Results', 'bogus publishing group', '1234-5678', '{"is_oa": false, "in_doaj": false}'),
+    ('00000000-0000-0000-1111-FFF000000003', 'PLOS Medicine', 'Public Library of Science', '1549-1277', '{"is_oa": true, "in_doaj": true}');
 
 INSERT INTO container_ident (id, is_live, rev_id, redirect_id) VALUES
     ('00000000-0000-0000-1111-000000000001', true, '00000000-0000-0000-1111-FFF000000001', null), -- aaaaaaaaaaaaaeiraaaaaaaaae
