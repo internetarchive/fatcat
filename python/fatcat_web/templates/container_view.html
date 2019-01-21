@@ -15,12 +15,6 @@
 
 <p><b>Publisher:</b>
 {% if container.publisher != None %}{{ container.publisher }}{% else %}<i>Unknown</i>{% endif %}
-{% if container.coden != None %}
-<br><b>CODEN<sup><a href="https://en.wikipedia.org/wiki/CODEN">?</a></sup>:</b> &nbsp;<code>{{ container.coden }}</code>
-{% endif %}
-{% if container.abbrev != None %}
-<br><b>Abbrev.:</b> &nbsp;<code>{{ container.abbrev }}</code>
-{% endif %}
 {% if (container.extra != None) and (container.extra['url'] != None) and (container.extra['url']|length > 0) %}
 <br><b>Homepage:</b> <a href="{{ container.extra['url'] }}">&nbsp;<code>{{ container.extra['url'] }}</code></a>
 {% endif %}

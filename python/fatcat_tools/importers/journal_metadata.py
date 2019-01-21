@@ -69,8 +69,6 @@ class JournalMetadataImporter(FatcatImporter):
             issnl=issnl,
             name=title,
             publisher=or_none(row['publisher']),
-            abbrev=None,
-            coden=None,
             extra=extra)
         return ce
 
