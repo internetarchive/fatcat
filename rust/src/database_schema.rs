@@ -51,11 +51,10 @@ table! {
         id -> Uuid,
         extra_json -> Nullable<Jsonb>,
         name -> Text,
+        container_type -> Nullable<Text>,
         publisher -> Nullable<Text>,
         issnl -> Nullable<Text>,
         wikidata_qid -> Nullable<Text>,
-        abbrev -> Nullable<Text>,
-        coden -> Nullable<Text>,
     }
 }
 
@@ -252,6 +251,7 @@ table! {
         creator_ident_id -> Nullable<Uuid>,
         raw_name -> Nullable<Text>,
         role -> Nullable<Text>,
+        raw_affiliation -> Nullable<Text>,
         index_val -> Nullable<Int4>,
         extra_json -> Nullable<Jsonb>,
     }
@@ -295,6 +295,7 @@ table! {
         container_ident_id -> Nullable<Uuid>,
         refs_blob_sha1 -> Nullable<Text>,
         title -> Text,
+        original_title -> Nullable<Text>,
         release_type -> Nullable<Text>,
         release_status -> Nullable<Text>,
         release_date -> Nullable<Date>,
@@ -305,11 +306,14 @@ table! {
         wikidata_qid -> Nullable<Text>,
         isbn13 -> Nullable<Text>,
         core_id -> Nullable<Text>,
+        arxiv_id -> Nullable<Text>,
+        jstor_id -> Nullable<Text>,
         volume -> Nullable<Text>,
         issue -> Nullable<Text>,
         pages -> Nullable<Text>,
         publisher -> Nullable<Text>,
         language -> Nullable<Text>,
+        license_slug -> Nullable<Text>,
     }
 }
 

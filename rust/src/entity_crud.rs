@@ -798,8 +798,7 @@ impl EntityCrud for ContainerEntity {
             wikidata_qid: None,
             publisher: None,
             name: None,
-            abbrev: None,
-            coden: None,
+            container_type: None,
             state: Some(ident_row.state().unwrap().shortname()),
             ident: Some(FatcatId::from_uuid(&ident_row.id).to_string()),
             revision: ident_row.rev_id.map(|u| u.to_string()),
@@ -831,8 +830,7 @@ impl EntityCrud for ContainerEntity {
             wikidata_qid: rev_row.wikidata_qid,
             publisher: rev_row.publisher,
             name: Some(rev_row.name),
-            abbrev: rev_row.abbrev,
-            coden: rev_row.coden,
+            container_type: rev_row.container_type,
             state,
             ident: ident_id,
             revision: Some(rev_row.id.to_string()),
@@ -869,8 +867,7 @@ impl EntityCrud for ContainerEntity {
                         publisher: model.publisher.clone(),
                         issnl: model.issnl.clone(),
                         wikidata_qid: model.wikidata_qid.clone(),
-                        abbrev: model.abbrev.clone(),
-                        coden: model.coden.clone(),
+                        container_type: model.container_type.clone(),
                         extra_json: model.extra.clone(),
                     })
                     .collect::<Vec<ContainerRevNewRow>>(),
@@ -1619,6 +1616,7 @@ impl EntityCrud for ReleaseEntity {
 
         Ok(ReleaseEntity {
             title: None,
+            original_title: None,
             release_type: None,
             release_status: None,
             release_date: None,
@@ -1627,8 +1625,10 @@ impl EntityCrud for ReleaseEntity {
             pmid: None,
             pmcid: None,
             isbn13: None,
-            core_id: None,
             wikidata_qid: None,
+            core_id: None,
+            arxiv_id: None,
+            jstor_id: None,
             volume: None,
             issue: None,
             pages: None,
@@ -1639,6 +1639,7 @@ impl EntityCrud for ReleaseEntity {
             container_id: None,
             publisher: None,
             language: None,
+            license_slug: None,
             work_id: None,
             refs: None,
             contribs: None,
@@ -1871,6 +1872,7 @@ impl EntityCrud for ReleaseEntity {
                         index: c.index_val.map(|v| v as i64),
                         raw_name: c.raw_name,
                         role: c.role,
+                        raw_affiliation: c.raw_affiliation,
                         extra: c.extra_json,
                         creator_id: c
                             .creator_ident_id
@@ -1904,6 +1906,7 @@ impl EntityCrud for ReleaseEntity {
 
         Ok(ReleaseEntity {
             title: Some(rev_row.title),
+            original_title: rev_row.original_title,
             release_type: rev_row.release_type,
             release_status: rev_row.release_status,
             release_date: rev_row.release_date,
@@ -1912,8 +1915,10 @@ impl EntityCrud for ReleaseEntity {
             pmid: rev_row.pmid,
             pmcid: rev_row.pmcid,
             isbn13: rev_row.isbn13,
-            core_id: rev_row.core_id,
             wikidata_qid: rev_row.wikidata_qid,
+            core_id: rev_row.core_id,
+            arxiv_id: rev_row.arxiv_id,
+            jstor_id: rev_row.jstor_id,
             volume: rev_row.volume,
             issue: rev_row.issue,
             pages: rev_row.pages,
@@ -1926,6 +1931,7 @@ impl EntityCrud for ReleaseEntity {
                 .map(|u| FatcatId::from_uuid(&u).to_string()),
             publisher: rev_row.publisher,
             language: rev_row.language,
+            license_slug: rev_row.license_slug,
             work_id: Some(FatcatId::from_uuid(&rev_row.work_ident_id).to_string()),
             refs,
             contribs,
@@ -1954,6 +1960,7 @@ impl EntityCrud for ReleaseEntity {
             if let Some(ref extid) = entity.wikidata_qid {
                 check_wikidata_qid(extid)?;
             }
+            // TODO: JSTOR and arxiv IDs
             if let Some(ref release_type) = entity.release_type {
                 check_release_type(release_type)?;
             }
@@ -2031,6 +2038,7 @@ impl EntityCrud for ReleaseEntity {
                         Ok(ReleaseRevNewRow {
                     refs_blob_sha1: refs_sha1,
                     title: model.title.clone().unwrap(), // titles checked above
+                    original_title: model.original_title.clone(),
                     release_type: model.release_type.clone(),
                     release_status: model.release_status.clone(),
                     release_date: model.release_date,
@@ -2041,6 +2049,8 @@ impl EntityCrud for ReleaseEntity {
                     wikidata_qid: model.wikidata_qid.clone(),
                     isbn13: model.isbn13.clone(),
                     core_id: model.core_id.clone(),
+                    arxiv_id: model.arxiv_id.clone(),
+                    jstor_id: model.jstor_id.clone(),
                     volume: model.volume.clone(),
                     issue: model.issue.clone(),
                     pages: model.pages.clone(),
@@ -2054,6 +2064,7 @@ impl EntityCrud for ReleaseEntity {
                     },
                     publisher: model.publisher.clone(),
                     language: model.language.clone(),
+                    license_slug: model.license_slug.clone(),
                     extra_json: model.extra.clone()
                 })
                     })
@@ -2107,6 +2118,7 @@ impl EntityCrud for ReleaseEntity {
                                 raw_name: c.raw_name.clone(),
                                 index_val: c.index.map(|v| v as i32),
                                 role: c.role.clone(),
+                                raw_affiliation: c.raw_affiliation.clone(),
                                 extra_json: c.extra.clone(),
                             })
                         })

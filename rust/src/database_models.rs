@@ -129,11 +129,10 @@ pub struct ContainerRevRow {
     pub id: Uuid,
     pub extra_json: Option<serde_json::Value>,
     pub name: String,
+    pub container_type: Option<String>,
     pub publisher: Option<String>,
     pub issnl: Option<String>,
     pub wikidata_qid: Option<String>,
-    pub abbrev: Option<String>,
-    pub coden: Option<String>,
 }
 
 #[derive(Debug, Associations, AsChangeset, Insertable)]
@@ -141,11 +140,10 @@ pub struct ContainerRevRow {
 pub struct ContainerRevNewRow {
     pub extra_json: Option<serde_json::Value>,
     pub name: String,
+    pub container_type: Option<String>,
     pub publisher: Option<String>,
     pub issnl: Option<String>,
     pub wikidata_qid: Option<String>,
-    pub abbrev: Option<String>,
-    pub coden: Option<String>,
 }
 
 entity_structs!(
@@ -380,6 +378,7 @@ pub struct ReleaseRevRow {
     pub container_ident_id: Option<Uuid>,
     pub refs_blob_sha1: Option<String>,
     pub title: String,
+    pub original_title: Option<String>,
     pub release_type: Option<String>,
     pub release_status: Option<String>,
     pub release_date: Option<chrono::NaiveDate>,
@@ -390,11 +389,14 @@ pub struct ReleaseRevRow {
     pub wikidata_qid: Option<String>,
     pub isbn13: Option<String>,
     pub core_id: Option<String>,
+    pub arxiv_id: Option<String>,
+    pub jstor_id: Option<String>,
     pub volume: Option<String>,
     pub issue: Option<String>,
     pub pages: Option<String>,
     pub publisher: Option<String>,
     pub language: Option<String>,
+    pub license_slug: Option<String>,
 }
 
 #[derive(Debug, Associations, AsChangeset, Insertable)]
@@ -405,6 +407,7 @@ pub struct ReleaseRevNewRow {
     pub container_ident_id: Option<Uuid>,
     pub refs_blob_sha1: Option<String>,
     pub title: String,
+    pub original_title: Option<String>,
     pub release_type: Option<String>,
     pub release_status: Option<String>,
     pub release_date: Option<chrono::NaiveDate>,
@@ -415,11 +418,14 @@ pub struct ReleaseRevNewRow {
     pub wikidata_qid: Option<String>,
     pub isbn13: Option<String>,
     pub core_id: Option<String>,
+    pub arxiv_id: Option<String>,
+    pub jstor_id: Option<String>,
     pub volume: Option<String>,
     pub issue: Option<String>,
     pub pages: Option<String>,
     pub publisher: Option<String>,
     pub language: Option<String>,
+    pub license_slug: Option<String>,
 }
 
 entity_structs!(
@@ -480,6 +486,7 @@ pub struct ReleaseContribRow {
     pub creator_ident_id: Option<Uuid>,
     pub raw_name: Option<String>,
     pub role: Option<String>,
+    pub raw_affiliation: Option<String>,
     pub index_val: Option<i32>,
     pub extra_json: Option<serde_json::Value>,
 }
@@ -491,6 +498,7 @@ pub struct ReleaseContribNewRow {
     pub creator_ident_id: Option<Uuid>,
     pub raw_name: Option<String>,
     pub role: Option<String>,
+    pub raw_affiliation: Option<String>,
     pub index_val: Option<i32>,
     pub extra_json: Option<serde_json::Value>,
 }
