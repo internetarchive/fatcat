@@ -1,0 +1,422 @@
+
+## master / eea40c6c713a35e19eb005a322b2075018a32e3e
+
+    sudo service fatcat-api stop
+    # as postgres user: diesel database reset
+    sudo service elasticsearch stop
+    sudo service postgresql restart
+    sudo service fatcat-api start
+    # reset postgres stats
+
+    time ./fatcat_import.py issn /srv/fatcat/datasets/journal_extra_metadata.csv
+
+    Processed 53300 lines, inserted 53283, updated 0.
+    real    1m10.618s
+    user    0m8.812s
+    sys     0m0.316s
+
+
+    time parallel --bar --pipepart -j8 -a /srv/fatcat/datasets/public_profiles_1_2_json.all.json ./fatcat_import.py orcid -
+
+    Processed 48900 lines, inserted 48731, updated 0. (times 80x)
+    real    17m16.242s
+    user    26m45.464s
+    sys     1m37.052s
+
+    ~300 TPS
+    35% fatcatd CPU
+    bunch of python3 around 25-30% CPU. overall only ~12% CPU.
+    all disk write. autovacuum in progress (why? is this a naive importer?)
+
+    time zcat /srv/fatcat/datasets/crossref-works.2018-09-05.1mil.json.gz | time parallel -j20 --round-robin --pipe ./fatcat_import.py crossref - /srv/fatcat/datasets/20180216.ISSN-to-ISSN-L.txt --extid-map-file /srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3
+
+    ~200% fatcatd CPU; 75% parallel; then postgres; then python3
+    overall 40% user, 6% system
+    10808 TPS (!)
+    autovacuum on release_rev
+    TODO: logs are going to rsyslog and disk (causing disk contention)
+
+    Processed 50450 lines, inserted 46166, updated 0. (unsure how many chunks)
+    905112inputs+2125192outputs (9major+2694248minor)pagefaults 0swaps
+    real    5m54.368s
+    user    33m1.724s
+    sys     1m52.404s
+
+    
+    # did not run:
+    #time zcat /srv/fatcat/datasets/2018-09-23-0405.30-dumpgrobidmetainsertable.longtail_join.filtered.tsv.gz | pv -l | time parallel -j12 --round-robin --pipe ./fatcat_import.py grobid-metadata -
+
+
+Results:
+
+							  table_name                          | table_size | indexes_size | total_size 
+	--------------------------------------------------------------+------------+--------------+------------
+	 "public"."creator_rev"                                       | 371 MB     | 457 MB       | 827 MB
+	 "public"."creator_edit"                                      | 377 MB     | 420 MB       | 797 MB
+	 "public"."creator_ident"                                     | 255 MB     | 412 MB       | 667 MB
+	 "public"."release_rev"                                       | 382 MB     | 261 MB       | 643 MB
+	 "public"."release_ref"                                       | 437 MB     | 152 MB       | 589 MB
+	 "public"."release_contrib"                                   | 154 MB     | 141 MB       | 295 MB
+	 "public"."release_edit"                                      | 89 MB      | 99 MB        | 188 MB
+	 "public"."work_edit"                                         | 89 MB      | 98 MB        | 187 MB
+	 "public"."release_ident"                                     | 60 MB      | 97 MB        | 157 MB
+	 "public"."work_ident"                                        | 60 MB      | 97 MB        | 157 MB
+	 "public"."work_rev"                                          | 39 MB      | 36 MB        | 75 MB
+	 "public"."container_rev"                                     | 16 MB      | 6040 kB      | 22 MB
+	 "public"."editgroup"                                         | 8520 kB    | 14 MB        | 22 MB
+	 "public"."abstracts"                                         | 19 MB      | 1648 kB      | 21 MB
+	 "public"."changelog"                                         | 6632 kB    | 6600 kB      | 13 MB
+	 "public"."container_edit"                                    | 5824 kB    | 6208 kB      | 12 MB
+	 "public"."container_ident"                                   | 4160 kB    | 6376 kB      | 10 MB
+	 "public"."release_rev_abstract"                              | 2448 kB    | 3000 kB      | 5448 kB
+
+		   relname        | too_much_seq |      case      | rel_size  | seq_scan | idx_scan 
+	----------------------+--------------+----------------+-----------+----------+----------
+	 release_ref          |            6 | Missing Index? | 457768960 |        6 |        0
+	 release_rev_abstract |            3 | Missing Index? |   2473984 |        3 |        0
+	 release_contrib      |            3 | Missing Index? | 161882112 |        3 |        0
+	 release_edit         |       -14934 | OK             |  93069312 |        2 |    14936
+	 work_edit            |       -14936 | OK             |  93003776 |        2 |    14938
+	 container_edit       |       -14977 | OK             |   5931008 |        2 |    14979
+	 creator_edit         |       -14977 | OK             | 395403264 |        2 |    14979
+	 abstracts            |       -39370 | OK             |  19357696 |        1 |    39371
+	 changelog            |      -108251 | OK             |   6766592 |      627 |   108878
+	 container_rev        |      -179447 | OK             |  17104896 |        3 |   179450
+	 container_ident      |      -590029 | OK             |   4235264 |        3 |   590032
+	 release_ident        |      -929184 | OK             |  62881792 |     5331 |   934515
+	 work_rev             |     -1837772 | OK             |  40828928 |        1 |  1837773
+	 work_ident           |     -1845253 | OK             |  62873600 |     6980 |  1852233
+	 creator_ident        |     -3930575 | OK             | 267001856 |        3 |  3930578
+	 editgroup            |     -5848807 | OK             |   8691712 |    31878 |  5880685
+	 release_rev          |     -6081392 | OK             | 400916480 |        9 |  6081401
+	 creator_rev          |     -7818340 | OK             | 388743168 |        3 |  7818343
+
+	select count(*) from release_ref;
+	1701210
+
+	Size:    4.61G
+
+
+## citation-efficiency / 8a0d963beb2fa6766a7141df39dc322abea1b9a0
+
+    sudo service fatcat-api stop
+    # as postgres user: diesel database reset
+    sudo service elasticsearch stop
+    sudo service postgresql restart
+    sudo service fatcat-api start
+
+
+    time ./fatcat_import.py issn /srv/fatcat/datasets/journal_extra_metadata.csv
+
+	Processed 53300 lines, inserted 53283, updated 0.
+
+	real    1m9.867s
+	user    0m8.580s
+	sys     0m0.292s
+
+
+    time parallel --bar --pipepart -j8 -a /srv/fatcat/datasets/public_profiles_1_2_json.all.json ./fatcat_import.py orcid -
+
+	real    17m20.110s
+	user    26m56.660s
+	sys     1m37.280s
+
+
+    time zcat /srv/fatcat/datasets/crossref-works.2018-09-05.1mil.json.gz | time parallel -j20 --round-robin --pipe ./fatcat_import.py crossref - /srv/fatcat/datasets/20180216.ISSN-to-ISSN-L.txt --extid-map-file /srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3
+
+	12043 TPS
+	225% fatcatd, 33% total usr CPU, 5% sys
+	autovacuum in progress
+
+	1916.81user 110.41system 5:23.08elapsed 627%CPU (0avgtext+0avgdata 411056maxresident)k
+	47920inputs+2021736outputs (4major+2734186minor)pagefaults 0swaps
+	real    5m23.095s
+	user    32m10.964s
+	sys     1m51.800s
+
+							  table_name                          | table_size | indexes_size | total_size 
+	--------------------------------------------------------------+------------+--------------+------------
+	 "public"."creator_rev"                                       | 371 MB     | 456 MB       | 827 MB
+	 "public"."creator_edit"                                      | 377 MB     | 421 MB       | 798 MB
+	 "public"."creator_ident"                                     | 255 MB     | 412 MB       | 667 MB
+	 "public"."release_rev"                                       | 385 MB     | 260 MB       | 645 MB
+	 "public"."release_contrib"                                   | 154 MB     | 141 MB       | 295 MB
+	 "public"."refs_blob"                                         | 197 MB     | 6064 kB      | 203 MB
+	 "public"."release_edit"                                      | 89 MB      | 98 MB        | 187 MB
+	 "public"."work_edit"                                         | 89 MB      | 98 MB        | 187 MB
+	 "public"."work_ident"                                        | 60 MB      | 97 MB        | 157 MB
+	 "public"."release_ident"                                     | 60 MB      | 97 MB        | 156 MB
+	 "public"."work_rev"                                          | 39 MB      | 36 MB        | 75 MB
+	 "public"."container_rev"                                     | 16 MB      | 6056 kB      | 22 MB
+	 "public"."editgroup"                                         | 8472 kB    | 13 MB        | 22 MB
+	 "public"."abstracts"                                         | 19 MB      | 1672 kB      | 21 MB
+	 "public"."changelog"                                         | 6544 kB    | 6592 kB      | 13 MB
+	 "public"."container_edit"                                    | 5832 kB    | 6096 kB      | 12 MB
+	 "public"."container_ident"                                   | 4120 kB    | 6352 kB      | 10 MB
+	 "public"."release_rev_abstract"                              | 2432 kB    | 3040 kB      | 5472 kB
+
+		   relname        | too_much_seq |      case      | rel_size  | seq_scan | idx_scan 
+	----------------------+--------------+----------------+-----------+----------+----------
+	 release_rev_abstract |            3 | Missing Index? |   2457600 |        3 |        0
+	 release_contrib      |            3 | Missing Index? | 161800192 |        3 |        0
+	 release_edit         |       -14348 | OK             |  93044736 |        2 |    14350
+	 work_edit            |       -14419 | OK             |  93044736 |        2 |    14421
+	 creator_edit         |       -14977 | OK             | 395321344 |        2 |    14979
+	 container_edit       |       -14977 | OK             |   5939200 |        2 |    14979
+	 abstracts            |       -39364 | OK             |  19365888 |        1 |    39365
+	 changelog            |      -109498 | OK             |   6676480 |        2 |   109500
+	 refs_blob            |      -141113 | OK             |  50651136 |        1 |   141114
+	 container_rev        |      -179441 | OK             |  17096704 |        3 |   179444
+	 container_ident      |      -589642 | OK             |   4194304 |        3 |   589645
+	 release_ident        |      -929175 | OK             |  62840832 |     3548 |   932723
+	 work_rev             |     -1836990 | OK             |  40787968 |        1 |  1836991
+	 work_ident           |     -1844214 | OK             |  62849024 |     4071 |  1848285
+	 creator_ident        |     -3930572 | OK             | 267010048 |        3 |  3930575
+	 release_rev          |     -4378297 | OK             | 403906560 |        9 |  4378306
+	 editgroup            |     -5911871 | OK             |   8642560 |        3 |  5911874
+	 creator_rev          |     -7818337 | OK             | 388710400 |        3 |  7818340
+
+	select count(*) from release_ref;
+	7
+
+	select count(*) from refs_blob;
+	70169
+
+	Size:    4.23G
+
+Total row size is more than halved, and index by almost two orders of
+magnitude, with about the same (or even faster) insert time. Success!
+
+Raw release JSON (crossref-works.2018-09-05.1mil.json) was first million lines
+(not randomized). 217 MB gzip, about 2.1 GB uncompressed.
+
+Continuing with a full import...
+
+	time xzcat /srv/fatcat/datasets/crossref-works.2018-09-05.json.xz | time parallel -j20 --round-robin --pipe ./fatcat_import.py crossref - /srv/fatcat/datasets/20180216.ISSN-to-ISSN-L.txt --extid-map-file /srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3
+
+    217758.13user 10299.22system 19:56:34elapsed 317%CPU (0avgtext+0avgdata 437384maxresident)k
+    88774752inputs+356480424outputs (573520major+35809039minor)pagefaults 0swaps
+
+    real    1196m34.828s => 20 hours
+    user    3713m5.376s
+    sys     177m48.364s
+
+       relname        | too_much_seq | case |  rel_size   | seq_scan | idx_scan  
+----------------------+--------------+------+-------------+----------+-----------
+ release_edit         |       -89909 | OK   |  8641216512 |        2 |     89911
+ work_edit            |       -89980 | OK   |  8641134592 |        2 |     89982
+ creator_edit         |       -90540 | OK   |   395321344 |        8 |     90548
+ container_edit       |       -90544 | OK   |     9494528 |        4 |     90548
+ release_contrib      |      -918913 | OK   | 22936829952 |        3 |    918916
+ release_rev_abstract |      -919036 | OK   |   271998976 |        3 |    919039
+ container_rev        |     -1029775 | OK   |    21168128 |        3 |   1029778
+ changelog            |     -1941085 | OK   |   117219328 |        2 |   1941087
+ abstracts            |     -4633441 | OK   |  2443132928 |        1 |   4633442
+ creator_ident        |     -7165562 | OK   |   267010048 |        3 |   7165565
+ creator_rev          |     -9432011 | OK   |   388710400 |        3 |   9432014
+ refs_blob            |    -34911929 | OK   | 12710191104 |        2 |  34911931
+ container_ident      |    -66613383 | OK   |     7626752 |        3 |  66613386
+ release_ident        |    -86429880 | OK   |  5833670656 |     3548 |  86433428
+ work_rev             |   -170840559 | OK   |  3784466432 |        1 | 170840560
+ work_ident           |   -170923520 | OK   |  5833400320 |     4071 | 170927591
+ editgroup            |   -176784137 | OK   |   149798912 |        3 | 176784140
+ release_rev          |   -478829274 | OK   | 43008122880 |        9 | 478829283
+
+                          table_name                          | table_size | indexes_size | total_size 
+--------------------------------------------------------------+------------+--------------+------------
+ "public"."release_rev"                                       | 40 GB      | 23 GB        | 63 GB
+ "public"."refs_blob"                                         | 54 GB      | 1479 MB      | 56 GB
+ "public"."release_contrib"                                   | 21 GB      | 19 GB        | 40 GB
+ "public"."release_edit"                                      | 8243 MB    | 9154 MB      | 17 GB
+ "public"."work_edit"                                         | 8243 MB    | 9150 MB      | 17 GB
+ "public"."release_ident"                                     | 5565 MB    | 9017 MB      | 14 GB
+ "public"."work_ident"                                        | 5565 MB    | 9006 MB      | 14 GB
+ "public"."work_rev"                                          | 3610 MB    | 3343 MB      | 6953 MB
+ "public"."abstracts"                                         | 2382 MB    | 191 MB       | 2573 MB
+ "public"."creator_rev"                                       | 371 MB     | 456 MB       | 827 MB
+ "public"."creator_edit"                                      | 377 MB     | 421 MB       | 798 MB
+ "public"."creator_ident"                                     | 255 MB     | 412 MB       | 667 MB
+ "public"."release_rev_abstract"                              | 259 MB     | 336 MB       | 596 MB
+ "public"."editgroup"                                         | 143 MB     | 237 MB       | 380 MB
+ "public"."changelog"                                         | 112 MB     | 116 MB       | 228 MB
+ "public"."container_rev"                                     | 20 MB      | 9248 kB      | 29 MB
+ "public"."container_edit"                                    | 9304 kB    | 8872 kB      | 18 MB
+ "public"."container_ident"                                   | 7472 kB    | 9112 kB      | 16 MB
+
+	Size:  234.86G
+
+
+    time zcat /srv/fatcat/datasets/ia_papers_manifest_2018-01-25.matched.json.gz | pv -l | time parallel -j12 --round-robin --pipe ./fatcat_import.py matched --no-file-updates -
+
+    Processed 531750 lines, inserted 455063, updated 0.
+    Command exited with non-zero status 1
+    12904.53user 485.22system 2:10:40elapsed 170%CPU (0avgtext+0avgdata 63300maxresident)k
+    98696inputs+3452984outputs (154major+287476minor)pagefaults 0swaps
+
+    real    130m40.181s
+    user    215m34.456s
+    sys     8m10.064s
+
+
+    time zcat /srv/fatcat/datasets/2018-08-27-2352.17-matchcrossref.insertable.json.gz | pv -l | time parallel -j12 --round-robin --pipe ./fatcat_import.py matched -
+
+    Processed 486350 lines, inserted 247482, updated 171906.
+    20591.62user 844.63system 3:21:40elapsed 177%CPU (0avgtext+0avgdata 41488maxresident)k
+    80768inputs+2522808outputs (110major+251307minor)pagefaults 0swaps
+
+    real    201m40.885s
+    user    343m34.616s
+    sys     14m8.364s
+
+
+    time zcat /srv/fatcat/datasets/2018-09-23-0405.30-dumpgrobidmetainsertable.longtail_join.filtered.tsv.gz | pv -l | time parallel -j12 --round-robin --pipe ./fatcat_import.py grobid-metadata -
+
+    Processed 133303 lines, inserted 123905, updated 0.
+    10636.02user 424.26system 2:20:14elapsed 131%CPU (0avgtext+0avgdata 65232maxresident)k
+    23984inputs+20285752outputs (119major+1344072minor)pagefaults 0swaps
+
+    real    140m14.397s
+    user    180m0.592s
+    sys     7m30.664s
+
+Re-summarize:
+
+    select count(*) from file_rev_release;
+    12510846
+
+    select count(*) from container_ident where is_live='f';
+    0
+    select count(*) from release_ident where is_live='f';
+    0
+    select count(*) from work_ident where is_live='f';
+    0
+    select count(*) from creator_ident where is_live='f';
+    1
+    select count(*) from file_ident where is_live='f';
+    0
+
+    Size:  261.59G
+	=> releases and works about 242 GB of this
+
+                          table_name                          | table_size | indexes_size | total_size 
+--------------------------------------------------------------+------------+--------------+------------
+ "public"."release_rev"                                       | 40 GB      | 24 GB        | 64 GB
+ "public"."refs_blob"                                         | 58 GB      | 1576 MB      | 60 GB
+ "public"."release_contrib"                                   | 22 GB      | 19 GB        | 41 GB
+ "public"."release_edit"                                      | 8386 MB    | 9300 MB      | 17 GB
+ "public"."work_edit"                                         | 8386 MB    | 9297 MB      | 17 GB
+ "public"."release_ident"                                     | 5690 MB    | 9199 MB      | 15 GB
+ "public"."work_ident"                                        | 5690 MB    | 9191 MB      | 15 GB
+ "public"."file_rev_url"                                      | 6151 MB    | 2346 MB      | 8496 MB
+ "public"."work_rev"                                          | 3673 MB    | 3402 MB      | 7075 MB
+ "public"."abstracts"                                         | 3807 MB    | 277 MB       | 4085 MB
+ "public"."file_rev"                                          | 1403 MB    | 2309 MB      | 3712 MB
+ "public"."file_edit"                                         | 1181 MB    | 1236 MB      | 2417 MB
+ "public"."file_rev_release"                                  | 721 MB     | 1266 MB      | 1987 MB
+ "public"."file_ident"                                        | 691 MB     | 1163 MB      | 1854 MB
+ "public"."release_rev_abstract"                              | 374 MB     | 495 MB       | 869 MB
+ "public"."creator_rev"                                       | 371 MB     | 456 MB       | 827 MB
+ "public"."creator_edit"                                      | 377 MB     | 421 MB       | 798 MB
+ "public"."creator_ident"                                     | 255 MB     | 412 MB       | 667 MB
+ "public"."editgroup"                                         | 194 MB     | 299 MB       | 493 MB
+ "public"."changelog"                                         | 134 MB     | 138 MB       | 272 MB
+ "public"."container_rev"                                     | 20 MB      | 9248 kB      | 29 MB
+ "public"."container_edit"                                    | 9304 kB    | 8872 kB      | 18 MB
+ "public"."container_ident"                                   | 7472 kB    | 9112 kB      | 16 MB
+
+       relname        | too_much_seq | case |  rel_size   | seq_scan | idx_scan  
+----------------------+--------------+------+-------------+----------+-----------
+ release_edit         |      -486322 | OK   |  8791547904 |       14 |    486336
+ work_edit            |      -486391 | OK   |  8791498752 |        8 |    486399
+ file_edit            |      -486945 | OK   |  1237671936 |        4 |    486949
+ creator_edit         |      -486949 | OK   |   395321344 |        8 |    486957
+ container_edit       |      -486953 | OK   |     9494528 |        4 |    486957
+ container_rev        |     -1029946 | OK   |    21168128 |        3 |   1029949
+ file_rev_url         |     -2166783 | OK   |  6448095232 |        2 |   2166785
+ file_rev_release     |     -2166811 | OK   |   756015104 |        7 |   2166818
+ changelog            |     -7336464 | OK   |   140369920 |        2 |   7336466
+ abstracts            |     -7447647 | OK   |  3716759552 |        1 |   7447648
+ creator_ident        |     -7561970 | OK   |   267010048 |        6 |   7561976
+ creator_rev          |     -9432017 | OK   |   388710400 |        3 |   9432020
+ release_contrib      |    -11915853 | OK   | 23410876416 |        3 |  11915856
+ release_rev_abstract |    -11917411 | OK   |   392249344 |        3 |  11917414
+ file_ident           |    -23530866 | OK   |   724213760 |    60366 |  23591232
+ refs_blob            |    -40651974 | OK   | 13605445632 |        2 |  40651976
+ container_ident      |    -67010119 | OK   |     7626752 |        5 |  67010124
+ file_rev             |    -84478325 | OK   |  1470947328 |       10 |  84478335
+ release_ident        |   -114803381 | OK   |  5964980224 |     3551 | 114806932
+ work_rev             |   -173810916 | OK   |  3850354688 |        1 | 173810917
+ work_ident           |   -177260615 | OK   |  5964554240 |     4074 | 177264689
+ editgroup            |   -192178637 | OK   |   203137024 |        3 | 192178640
+ release_rev          |   -501596237 | OK   | 43460804608 |        9 | 501596246
+(23 rows)
+
+
+	bnewbold@wbgrp-svc500$ df -h /
+	Filesystem      Size  Used Avail Use% Mounted on
+	/dev/vda1       858G  409G  407G  51% /
+
+	bnewbold@wbgrp-svc500$ sudo du -sh /var/lib/postgresql/11/main/
+	263G    /var/lib/postgresql/11/main/
+
+At this point slightly contaminated by running re-import for a minute before cancelling...
+
+	select count(*) from refs_blob;
+	18,517,091
+
+	select count(*) from release_ident;
+	86,905,233
+
+Re-importing crossref dump to simulate double size database:
+
+	time xzcat /srv/fatcat/datasets/crossref-works.2018-09-05.json.xz | time parallel -j20 --round-robin --pipe ./fatcat_import.py crossref - /srv/fatcat/datasets/20180216.ISSN-to-ISSN-L.txt --extid-map-file /srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3
+
+	Processed 4989650 lines, inserted 538846, updated 0. (etc)
+    208873.41user 8805.46system 12:40:59elapsed 476%CPU (0avgtext+0avgdata 419868maxresident)k
+    43945800inputs+268799736outputs (210727major+21027251minor)pagefaults 0swaps
+
+    real    760m59.324s
+    user    3567m3.524s
+    sys     152m56.692s
+
+                          table_name                          | table_size | indexes_size | total_size 
+--------------------------------------------------------------+------------+--------------+------------
+ "public"."release_rev"                                       | 47 GB      | 27 GB        | 74 GB
+ "public"."refs_blob"                                         | 72 GB      | 1898 MB      | 73 GB
+ "public"."release_contrib"                                   | 26 GB      | 23 GB        | 49 GB
+ "public"."release_edit"                                      | 9418 MB    | 10 GB        | 19 GB
+ "public"."work_edit"                                         | 9418 MB    | 10 GB        | 19 GB
+ "public"."work_ident"                                        | 6386 MB    | 10 GB        | 16 GB
+ "public"."release_ident"                                     | 6387 MB    | 10 GB        | 16 GB
+ "public"."file_rev_url"                                      | 6151 MB    | 2346 MB      | 8496 MB
+ "public"."work_rev"                                          | 4125 MB    | 3828 MB      | 7952 MB
+ "public"."abstracts"                                         | 4134 MB    | 303 MB       | 4437 MB
+ "public"."file_rev"                                          | 1403 MB    | 2309 MB      | 3712 MB
+ "public"."file_edit"                                         | 1181 MB    | 1236 MB      | 2417 MB
+ "public"."file_rev_release"                                  | 721 MB     | 1266 MB      | 1987 MB
+ "public"."file_ident"                                        | 691 MB     | 1163 MB      | 1854 MB
+ "public"."release_rev_abstract"                              | 409 MB     | 539 MB       | 948 MB
+ "public"."editgroup"                                         | 340 MB     | 543 MB       | 883 MB
+ "public"."creator_rev"                                       | 371 MB     | 456 MB       | 827 MB
+ "public"."creator_edit"                                      | 377 MB     | 421 MB       | 798 MB
+ "public"."creator_ident"                                     | 255 MB     | 412 MB       | 667 MB
+ "public"."changelog"                                         | 250 MB     | 259 MB       | 508 MB
+ "public"."container_rev"                                     | 20 MB      | 9272 kB      | 29 MB
+ "public"."container_edit"                                    | 9472 kB    | 8880 kB      | 18 MB
+ "public"."container_ident"                                   | 7592 kB    | 9136 kB      | 16 MB
+
+	Size:  301.96G
+
+	select count(*) from refs_blob;
+	22,322,741
+
+	select count(*) from release_ident;
+	97,597,519
+
+	changelog: 4,286,296
+
+Huh. Expected this to basically double size... what happened? Doing fetches?
+
+So... it was doing fetches (no 'no_release_updates' flag passed), but still
+inserted 5 million? also not good.
+
