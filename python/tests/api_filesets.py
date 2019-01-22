@@ -14,30 +14,31 @@ def test_fileset(api):
     r1 = ReleaseEntity(title="test fileset release")
     r1edit = api.create_release(r1, editgroup_id=eg.editgroup_id)
 
-    fs1 = FilesetEntity()
-    fs1.manifest = [
-        FilesetEntityManifest(
-            path="data/thing.tar.gz",
-            size=54321,
-            md5="540da3ea6e448d8dfb057c05225f853a",
-            sha1="1dab6a0e110f9b5d70b18db0abf051f7f93faf06",
-            sha256="c7b49f3e84cd1b7cb0b0e3e9f632b7be7e21b4dc229df23331f880a8a7dfa75a",
-            extra={"a": 1, "b": 3},
-        ),
-        FilesetEntityManifest(
-            path="README.md",
-            size=54210,
-            md5="5f83592b5249671719bbed6ce91ecfa8",
-            sha1="455face3598611458efe1f072e58624790a67266",
-            sha256="429bcafa4d3d0072d5b2511e12c85c1aac1d304011d1c406da14707f7b9cd905",
-            extra={"x": 1, "y": "q"},
-        ),
-    ]
-    fs1.urls = [
-        FileEntityUrls(url="https://archive.org/download/fileset-123/", rel="repository"),
-        FileEntityUrls(url="https://humble-host.com/~user123/dataset/", rel="web"),
-    ]
-    fs1.release_ids = [r1edit.ident]
+    fs1 = FilesetEntity(
+        manifest = [
+            FilesetEntityManifest(
+                path="data/thing.tar.gz",
+                size=54321,
+                md5="540da3ea6e448d8dfb057c05225f853a",
+                sha1="1dab6a0e110f9b5d70b18db0abf051f7f93faf06",
+                sha256="c7b49f3e84cd1b7cb0b0e3e9f632b7be7e21b4dc229df23331f880a8a7dfa75a",
+                extra={"a": 1, "b": 3},
+            ),
+            FilesetEntityManifest(
+                path="README.md",
+                size=54210,
+                md5="5f83592b5249671719bbed6ce91ecfa8",
+                sha1="455face3598611458efe1f072e58624790a67266",
+                sha256="429bcafa4d3d0072d5b2511e12c85c1aac1d304011d1c406da14707f7b9cd905",
+                extra={"x": 1, "y": "q"},
+            ),
+        ],
+        urls = [
+            FileEntityUrls(url="https://archive.org/download/fileset-123/", rel="repository"),
+            FileEntityUrls(url="https://humble-host.com/~user123/dataset/", rel="web"),
+        ],
+        release_ids = [r1edit.ident],
+    )
 
     fs1edit = api.create_fileset(fs1, editgroup_id=eg.editgroup_id)
     api.accept_editgroup(eg.editgroup_id)
@@ -52,6 +53,13 @@ def test_fileset(api):
     r1 = api.get_release(r1edit.ident, expand="filesets")
     assert r1.filesets[0].manifest == fs1.manifest
 
+def test_fileset_examples(api):
+    fs3 = api.get_fileset('aaaaaaaaaaaaaztgaaaaaaaaam')
+
+    assert fs3.urls[0].url == 'http://other-personal-blog.name/dataset/'
+    assert fs3.urls[1].rel == 'archive'
+    assert fs3.manifest[1].md5 == 'f4de91152c7ab9fdc2a128f962faebff'
+    assert fs3.manifest[1].extra['mimetype'] == 'application/gzip'
 
 def test_bad_fileset(api):
 

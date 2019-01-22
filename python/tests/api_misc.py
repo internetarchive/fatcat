@@ -8,14 +8,6 @@ from fatcat_client.rest import ApiException
 from fixtures import *
 
 
-def test_lookups(api):
-
-    api.lookup_creator(orcid='0000-0003-3118-6859')
-    api.lookup_container(issnl='1549-1277')
-    api.lookup_file(sha256='ffc1005680cb620eec4c913437dfabbf311b535cfe16cbaeb2faec1f92afc362')
-    api.lookup_release(pmid='54321')
-    api.lookup_release(isbn13='978-3-16-148410-0')
-
 def test_lookup_hide_extend(api):
 
     r = api.lookup_release(doi='10.1371/journal.pmed.0020124')

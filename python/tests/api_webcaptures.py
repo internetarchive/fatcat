@@ -19,33 +19,33 @@ def test_webcapture(api):
         original_url = "http://example.site",
         #timestamp = "2012-01-02T03:04:05Z",
         timestamp = datetime.datetime.now(datetime.timezone.utc),
+        cdx = [
+            WebcaptureEntityCdx(
+                surt="site,example,)/data/thing.tar.gz",
+                #timestamp="2012-01-02T03:04:05Z",
+                timestamp=datetime.datetime.now(datetime.timezone.utc),
+                url="http://example.site/data/thing.tar.gz",
+                mimetype="application/gzip",
+                status_code=200,
+                sha1="455face3598611458efe1f072e58624790a67266",
+                sha256="c7b49f3e84cd1b7cb0b0e3e9f632b7be7e21b4dc229df23331f880a8a7dfa75a",
+            ),
+            WebcaptureEntityCdx(
+                surt="site,example,)/README.md",
+                #timestamp="2012-01-02T03:04:05Z",
+                timestamp=datetime.datetime.now(datetime.timezone.utc),
+                url="http://example.site/README.md",
+                mimetype="text/markdown",
+                status_code=200,
+                sha1="455face3598611458efe1f072e58624790a67266",
+                sha256="429bcafa4d3d0072d5b2511e12c85c1aac1d304011d1c406da14707f7b9cd905",
+            ),
+        ],
+        archive_urls = [
+            FileEntityUrls(rel="wayback", url="https://web.archive.org/web/"),
+        ],
+        release_ids = [r1edit.ident],
     )
-    wc1.cdx = [
-        WebcaptureEntityCdx(
-            surt="site,example,)/data/thing.tar.gz",
-            #timestamp="2012-01-02T03:04:05Z",
-            timestamp=datetime.datetime.now(datetime.timezone.utc),
-            url="http://example.site/data/thing.tar.gz",
-            mimetype="application/gzip",
-            status_code=200,
-            sha1="455face3598611458efe1f072e58624790a67266",
-            sha256="c7b49f3e84cd1b7cb0b0e3e9f632b7be7e21b4dc229df23331f880a8a7dfa75a",
-        ),
-        WebcaptureEntityCdx(
-            surt="site,example,)/README.md",
-            #timestamp="2012-01-02T03:04:05Z",
-            timestamp=datetime.datetime.now(datetime.timezone.utc),
-            url="http://example.site/README.md",
-            mimetype="text/markdown",
-            status_code=200,
-            sha1="455face3598611458efe1f072e58624790a67266",
-            sha256="429bcafa4d3d0072d5b2511e12c85c1aac1d304011d1c406da14707f7b9cd905",
-        ),
-    ]
-    wc1.archive_urls = [
-        FileEntityUrls(rel="wayback", url="https://web.archive.org/web/"),
-    ]
-    wc1.release_ids = [r1edit.ident]
 
     wc1edit = api.create_webcapture(wc1, editgroup_id=eg.editgroup_id)
     api.accept_editgroup(eg.editgroup_id)
@@ -67,6 +67,13 @@ def test_webcapture(api):
     r1 = api.get_release(r1edit.ident, expand="webcaptures")
     print(r1)
     assert r1.webcaptures[0].cdx == wc1.cdx
+
+def test_webcapture_examples(api):
+    wc3 = api.get_webcapture('aaaaaaaaaaaaa53xaaaaaaaaam')
+
+    assert wc3.cdx[0].surt == 'org,asheesh)/'
+    assert wc3.cdx[1].sha1 == 'a637f1d27d9bcb237310ed29f19c07e1c8cf0aa5'
+    assert wc3.archive_urls[1].rel == 'warc'
 
 
 def test_bad_webcapture(api):
