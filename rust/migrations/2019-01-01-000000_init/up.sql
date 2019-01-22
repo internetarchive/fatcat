@@ -363,6 +363,8 @@ CREATE INDEX release_rev_pmcid_idx ON release_rev(pmcid);
 CREATE INDEX release_rev_wikidata_idx ON release_rev(wikidata_qid);
 CREATE INDEX release_rev_isbn13_idx ON release_rev(isbn13);
 CREATE INDEX release_rev_core_idx ON release_rev(core_id);
+CREATE INDEX release_rev_arxiv_idx ON release_rev(arxiv_id);
+CREATE INDEX release_rev_jstor_idx ON release_rev(jstor_id);
 CREATE INDEX release_rev_work_idx ON release_rev(work_ident_id);
 
 CREATE TABLE release_rev_abstract (
