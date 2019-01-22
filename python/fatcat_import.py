@@ -113,7 +113,7 @@ def main():
     sub_matched = subparsers.add_parser('matched')
     sub_matched.set_defaults(
         func=run_matched,
-        auth_var="FATCAT_AUTH_WORKER_MATCHED",
+        auth_var="FATCAT_API_AUTH_TOKEN",
     )
     sub_matched.add_argument('json_file',
         help="JSON file to import from (or stdin)",
@@ -128,7 +128,7 @@ def main():
     sub_grobid_metadata = subparsers.add_parser('grobid-metadata')
     sub_grobid_metadata.set_defaults(
         func=run_grobid_metadata,
-        auth_var="FATCAT_AUTH_WORKER_GROBID_METADATA",
+        auth_var="FATCAT_API_AUTH_TOKEN",
     )
     sub_grobid_metadata.add_argument('tsv_file',
         help="TSV file to import from (or stdin)",
