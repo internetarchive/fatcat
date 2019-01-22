@@ -1,0 +1,65 @@
+
+Looking at the Microsoft Academic Graph schema: https://docs.microsoft.com/en-us/academic-services/graph/reference-data-schema
+
+My take-aways from this are:
+
+- should allow storing raw affiliations today in release_contrib rows, and some
+  day have a foreign key to institution there
+- maybe should have an "original_title" field for releases? though could go in
+  'extra' (along with subtitle)
+- have a well-known 'extra' key to use saving citation context in references
+
+
+## Data Model (high-level)
+
+Includes rich affiliation (at the per-paper level) and "field of study"
+tagging.
+
+No work/release distinction.
+
+There are URLs, but no file-level metadata.
+
+Don't store full abstracts for legal reasons.
+
+
+## Details (lower-level)
+
+Across many entities, there are "normalized" and "display" names.
+
+Some stats are aggregated: paper and citation counts
+
+#### Affilitions
+
+Institution names: "normalized" vs. "display"
+
+"GRID" id?
+
+What is the WikiPage? Wikipedia?
+
+#### Authors
+
+Saves "last known" affiliation.
+
+#### Field of Study
+
+Nested hierarchy
+
+#### Citations
+
+"Context" table stores... presumably text around the citaiton itself.
+
+"References" table stores little metadata about the citation itself.
+
+#### Papers
+
+Paper URLs now have types (an int).
+
+"Paper Title" / "Original Title" / "Book Title"
+
+Year and Date separately (same as fatcat)
+
+Stores first and last page separately.
+
+"Original Venue" (string), presumably name of the container/journal
+
+Has arbitrary resources (URLs)
