@@ -5,7 +5,7 @@ import json
 import base64
 import datetime
 import fatcat_client
-from .common import EntityImporter
+from .common import EntityImporter, clean
 
 MAX_ABSTRACT_BYTES=4096
 
@@ -82,7 +82,7 @@ class GrobidMetadataImporter(EntityImporter):
             abobj = dict(
                 mimetype="text/plain",
                 language=None,
-                content=obj.get('abstract').strip())
+                content=clean(obj.get('abstract')))
             abstracts = [abobj]
         else:
             abstracts = None
@@ -91,17 +91,18 @@ class GrobidMetadataImporter(EntityImporter):
         for i, a in enumerate(obj.get('authors', [])):
             contribs.append(fatcat_client.ReleaseContrib(
                 index=i,
-                raw_name=a['name'],
+                raw_name=clean(a['name']),
                 role="author",
                 extra=None))
 
+        # XXX: why is this a dict()? not covered by tests?
         refs = []
         for raw in obj.get('citations', []):
             cite_extra = dict()
             ref = dict()
-            ref['key'] = raw.get('id')
+            ref['key'] = clean(raw.get('id'))
             if raw.get('title'):
-                ref['title'] = raw['title'].strip()
+                ref['title'] = clean(raw['title'])
             if raw.get('date'):
                 try:
                     year = int(raw['date'].strip()[:4])
@@ -110,9 +111,9 @@ class GrobidMetadataImporter(EntityImporter):
                     pass
             for key in ('volume', 'url', 'issue', 'publisher'):
                 if raw.get(key):
-                    cite_extra[key] = raw[key].strip()
+                    cite_extra[key] = clean(raw[key])
             if raw.get('authors'):
-                cite_extra['authors'] = [a['name'] for a in raw['authors']]
+                cite_extra['authors'] = [clean(a['name']) for a in raw['authors']]
             if cite_extra:
                 cite_extra = dict(grobid=cite_extra)
             else:
@@ -141,15 +142,15 @@ class GrobidMetadataImporter(EntityImporter):
             extra = None
 
         re = fatcat_client.ReleaseEntity(
-            title=obj['title'].strip(),
+            title=clean(obj['title'], force_xml=True),
             release_type="article-journal",
             release_date=release_date,
             release_year=release_year,
             contribs=contribs,
             refs=refs,
-            publisher=obj['journal'].get('publisher'),
-            volume=obj['journal'].get('volume'),
-            issue=obj['journal'].get('issue'),
+            publisher=clean(obj['journal'].get('publisher')),
+            volume=clean(obj['journal'].get('volume')),
+            issue=clean(obj['journal'].get('issue')),
             abstracts=abstracts,
             extra=extra)
         return re

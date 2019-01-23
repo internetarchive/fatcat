@@ -3,6 +3,7 @@ import re
 import sys
 import csv
 import json
+import ftfy
 import itertools
 import subprocess
 from collections import Counter
@@ -11,6 +12,36 @@ import pykafka
 import fatcat_client
 from fatcat_client.rest import ApiException
 
+
+def clean(thing, force_xml=False):
+    """
+    This function is appropriate to be called on any random, non-markup string,
+    such as author names, titles, etc.
+
+    It will try to clean up commong unicode mangles, HTML characters, etc.
+
+    This will detect XML/HTML and "do the right thing" (aka, not remove
+    entities like '&amp' if there are tags in the string), unless you pass the
+    'force_xml' parameter, which might be appropriate for, eg, names and
+    titles, which generally should be projected down to plain text.
+
+    Also strips extra whitespace.
+    """
+    if not thing:
+        return thing
+    fix_entities = 'auto'
+    if force_xml:
+        fix_entities = True
+    return ftfy.fix_text(thing, fix_entities=fix_entities).strip()
+
+def test_clean():
+
+    assert clean(None) == None
+    assert clean('') == ''
+    assert clean('123') == '123'
+    assert clean('a&amp;b') == 'a&b'
+    assert clean('<b>a&amp;b</b>') == '<b>a&amp;b</b>'
+    assert clean('<b>a&amp;b</b>', force_xml=True) == '<b>a&b</b>'
 
 class EntityImporter:
     """

@@ -32,6 +32,7 @@ python-dateutil = "*"
 sickle = "*"
 python-snappy = "*"
 pymacaroons = "*"
+ftfy= "*"
 
 [requires]
 # Python 3.5 is the bundled (system) version of python for Ubuntu 16.04

@@ -3,7 +3,7 @@ import sys
 import json
 import itertools
 import fatcat_client
-from .common import EntityImporter
+from .common import EntityImporter, clean
 
 def value_or_none(e):
     if type(e) == dict:
@@ -63,9 +63,9 @@ class OrcidImporter(EntityImporter):
             return None
         ce = fatcat_client.CreatorEntity(
             orcid=orcid,
-            given_name=given,
-            surname=sur,
-            display_name=display,
+            given_name=clean(given),
+            surname=clean(sur),
+            display_name=clean(display),
             extra=extra)
         return ce
 

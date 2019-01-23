@@ -6,7 +6,7 @@ import datetime
 import itertools
 import subprocess
 import fatcat_client
-from .common import EntityImporter
+from .common import EntityImporter, clean
 
 
 # The docs/guide should be the cannonical home for these mappings; update there
@@ -169,7 +169,7 @@ class CrossrefImporter(EntityImporter):
                         raw_affiliation = am.get('affiliation')[0]['name']
                     if len(am.get('affiliation')) > 1:
                         # note: affiliation => affiliations
-                        extra['affiliations'] = [a['name'] for a in am.get('affiliation')[1:]]
+                        extra['affiliations'] = [clean(a['name']) for a in am.get('affiliation')[1:]]
                 if am.get('sequence') and am.get('sequence') != "additional":
                     extra['sequence'] = am.get('sequence')
                 if not extra:
@@ -178,8 +178,8 @@ class CrossrefImporter(EntityImporter):
                 contribs.append(fatcat_client.ReleaseContrib(
                     creator_id=creator_id,
                     index=index,
-                    raw_name=raw_name,
-                    raw_affiliation=raw_affiliation,
+                    raw_name=clean(raw_name),
+                    raw_affiliation=clean(raw_affiliation),
                     role=ctype,
                     extra=extra))
             return contribs
@@ -199,9 +199,9 @@ class CrossrefImporter(EntityImporter):
             and obj.get('container-title') and len(obj['container-title']) > 0):
             ce = fatcat_client.ContainerEntity(
                 issnl=issnl,
-                publisher=publisher,
+                publisher=clean(publisher),
                 container_type=self.map_container_type(release_type),
-                name=obj['container-title'][0])
+                name=clean(obj['container-title'][0], force_xml=True))
             ce_edit = self.create_container(ce)
             container_id = ce_edit.ident
 
@@ -257,10 +257,10 @@ class CrossrefImporter(EntityImporter):
                 # doing lookups would be a second import pass
                 target_release_id=None,
                 key=key,
-                year=year,
-                container_name=container_name,
-                title=ref_title,
-                locator=ref_locator,
+                year=clean(year),
+                container_name=clean(container_name),
+                title=clean(ref_title),
+                locator=clean(ref_locator),
                 # TODO: just dump JSON somewhere here?
                 extra=extra))
 
@@ -269,7 +269,7 @@ class CrossrefImporter(EntityImporter):
         if obj.get('abstract') != None:
             abstracts.append(fatcat_client.ReleaseEntityAbstracts(
                 mimetype="application/xml+jats",
-                content=obj.get('abstract')))
+                content=clean(obj.get('abstract'))))
 
         # extra fields
         extra = dict()
@@ -279,13 +279,16 @@ class CrossrefImporter(EntityImporter):
             # TODO: unpack "container-title" array
             val = obj.get(key)
             if val:
-                extra[key] = val
+                if type(val) == str:
+                    extra[key] = clean(val)
+                else:
+                    extra[key] = val
         if 'license' in extra and extra['license']:
             for i in range(len(extra['license'])):
                 if 'start' in extra['license'][i]:
                     extra['license'][i]['start'] = extra['license'][i]['start']['date-time']
         if len(obj['title']) > 1:
-            extra['other-titles'] = obj['title'][1:]
+            extra['other-titles'] = [clean(t) for t in obj['title'][1:]]
         # TODO: this should be top-level
         extra['is_kept'] = len(obj.get('archive', [])) > 0
 
@@ -329,13 +332,13 @@ class CrossrefImporter(EntityImporter):
         re = fatcat_client.ReleaseEntity(
             work_id=None,
             container_id=container_id,
-            title=obj.get('title', [None])[0],
-            original_title=obj.get('original-title', [None])[0],
+            title=clean(obj.get('title', [None])[0], force_xml=True),
+            original_title=clean(obj.get('original-title', [None])[0]),
             release_type=release_type,
             release_status=release_status,
             release_date=release_date,
             release_year=release_year,
-            publisher=publisher,
+            publisher=clean(publisher),
             doi=obj['DOI'].lower(),
             pmid=extids['pmid'],
             pmcid=extids['pmcid'],
@@ -344,9 +347,9 @@ class CrossrefImporter(EntityImporter):
             core_id=extids['core_id'],
             arxiv_id=extids['arxiv_id'],
             jstor_id=extids['jstor_id'],
-            volume=obj.get('volume'),
-            issue=obj.get('issue'),
-            pages=obj.get('page'),
+            volume=clean(obj.get('volume')),
+            issue=clean(obj.get('issue')),
+            pages=clean(obj.get('page')),
             language=None,  # crossref doesn't supply language info
             license_slug=license_slug,
             extra=dict(crossref=extra),

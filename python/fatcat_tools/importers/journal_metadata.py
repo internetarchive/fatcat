@@ -3,7 +3,7 @@ import sys
 import json
 import itertools
 import fatcat_client
-from .common import EntityImporter
+from .common import EntityImporter, clean
 
 
 def or_none(s):
@@ -72,8 +72,8 @@ class JournalMetadataImporter(EntityImporter):
         )
         ce = fatcat_client.ContainerEntity(
             issnl=issnl,
-            name=title,
-            publisher=or_none(row['publisher']),
+            name=clean(title),
+            publisher=or_none(clean(row['publisher'])),
             extra=extra)
         return ce
 

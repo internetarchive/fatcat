@@ -4,7 +4,7 @@ import json
 import sqlite3
 import itertools
 import fatcat_client
-from .common import EntityImporter
+from .common import EntityImporter, clean
 
 
 class MatchedImporter(EntityImporter):
