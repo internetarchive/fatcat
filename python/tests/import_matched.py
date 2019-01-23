@@ -1,7 +1,7 @@
 
 import json
 import pytest
-from fatcat_tools.importers import MatchedImporter
+from fatcat_tools.importers import MatchedImporter, JsonLinePusher
 from fixtures import api
 
 
@@ -12,11 +12,12 @@ def matched_importer(api):
 # TODO: use API to check that entities actually created...
 def test_matched_importer_batch(matched_importer):
     with open('tests/files/example_matched.json', 'r') as f:
-        matched_importer.process_batch(f)
+        JsonLinePusher(matched_importer, f).run()
 
 def test_matched_importer(matched_importer):
     with open('tests/files/example_matched.json', 'r') as f:
-        matched_importer.process_source(f)
+        matched_importer.bezerk_mode = True
+        JsonLinePusher(matched_importer, f).run()
 
     # fetch most recent editgroup
     changes = matched_importer.api.get_changelog(limit=1)
@@ -29,7 +30,7 @@ def test_matched_importer(matched_importer):
 def test_matched_dict_parse(matched_importer):
     with open('tests/files/example_matched.json', 'r') as f:
         raw = json.loads(f.readline())
-        f = matched_importer.parse_matched_dict(raw)
+        f = matched_importer.parse_record(raw)
         assert f.sha1 == "00242a192acc258bdfdb151943419437f440c313"
         assert f.md5 == "f4de91152c7ab9fdc2a128f962faebff"
         assert f.mimetype == "application/pdf"

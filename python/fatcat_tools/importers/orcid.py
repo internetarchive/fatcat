@@ -3,7 +3,7 @@ import sys
 import json
 import itertools
 import fatcat_client
-from .common import FatcatImporter
+from .common import EntityImporter
 
 def value_or_none(e):
     if type(e) == dict:
@@ -20,7 +20,7 @@ def value_or_none(e):
             return None
     return e
 
-class OrcidImporter(FatcatImporter):
+class OrcidImporter(EntityImporter):
 
     def __init__(self, api, **kwargs):
 
@@ -32,14 +32,16 @@ class OrcidImporter(FatcatImporter):
             editgroup_description=eg_desc,
             editgroup_extra=eg_extra)
 
-    def parse_orcid_dict(self, obj):
+    def want(self, raw_record):
+        return True
+
+    def parse_record(self, obj):
         """
         obj is a python dict (parsed from json).
         returns a CreatorEntity
         """
         name = obj['person']['name']
-        if name is None:
-            return None
+        assert name
         extra = None
         given = value_or_none(name.get('given-names'))
         sur = value_or_none(name.get('family-name'))
@@ -67,17 +69,24 @@ class OrcidImporter(FatcatImporter):
             extra=extra)
         return ce
 
-    def create_row(self, row, editgroup_id=None):
-        obj = json.loads(row)
-        ce = self.parse_orcid_dict(obj)
-        if ce is not None:
-            self.api.create_creator(ce, editgroup_id=editgroup_id)
-            self.counts['insert'] += 1
+    def try_update(self, raw_record):
+        existing = None
+        try:
+            existing = self.api.lookup_creator(orcid=raw_record.orcid)
+        except fatcat_client.rest.ApiException as err:
+            if err.status != 404:
+                raise err
 
-    def create_batch(self, batch):
-        """Reads and processes in batches (not API-call-per-line)"""
-        objects = [self.parse_orcid_dict(json.loads(l))
-                   for l in batch if l != None]
-        objects = [o for o in objects if o != None]
-        self.api.create_creator_batch(objects, autoaccept=True)
-        self.counts['insert'] += len(objects)
+        # eventually we'll want to support "updates", but for now just skip if
+        # entity already exists
+        if existing:
+            self.counts['exists'] += 1
+            return False
+        
+        return True
+
+    def insert_batch(self, batch):
+        self.api.create_creator_batch(batch,
+            autoaccept=True,
+            description=self.editgroup_description,
+            extra=json.dumps(self.editgroup_extra))

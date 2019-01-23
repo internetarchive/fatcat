@@ -12,7 +12,7 @@ To run an import you combine two classes; one each of:
 
 """
 
-from .common import FatcatImporter, JsonLinePusher, make_kafka_consumer
+from .common import EntityImporter, JsonLinePusher, LinePusher, CsvPusher, KafkaJsonPusher, make_kafka_consumer
 from .crossref import CrossrefImporter, CROSSREF_TYPE_MAP
 from .grobid_metadata import GrobidMetadataImporter
 from .journal_metadata import JournalMetadataImporter

@@ -4,16 +4,10 @@ import json
 import sqlite3
 import itertools
 import fatcat_client
-from .common import FatcatImporter
+from .common import EntityImporter
 
-#row = row.split('\t')
-#assert len(row) == 2
-#sha1 = row[0].replace('sha1:')
-#sha1 = base64.b16encode(base64.b32decode(sha1)).lower()
-#print(sha1)
-#dois = [d.lower() for d in json.loads(row[1])]
 
-class MatchedImporter(FatcatImporter):
+class MatchedImporter(EntityImporter):
     """
     Importer for "file to crossref DOI" matches.
 
@@ -59,26 +53,13 @@ class MatchedImporter(FatcatImporter):
             rel = "repository"
         elif "//web.archive.org/" in raw or "//archive.is/" in raw:
             rel = "webarchive"
-        return fatcat_client.FileEntityUrls(url=raw, rel=rel)
+        return (rel, raw)
 
-    def parse_matched_dict(self, obj):
-        sha1 = obj['sha1']
+    def want(self, raw_record):
+        return True
+
+    def parse_record(self, obj):
         dois = [d.lower() for d in obj.get('dois', [])]
-
-        # lookup sha1, or create new entity
-        fe = None
-        if not self.skip_file_updates:
-            try:
-                fe = self.api.lookup_file(sha1=sha1)
-            except fatcat_client.rest.ApiException as err:
-                if err.status != 404:
-                    raise err
-        if fe is None:
-            fe = fatcat_client.FileEntity(
-                sha1=sha1,
-                release_ids=[],
-                urls=[],
-            )
 
         # lookup dois
         re_list = set()
@@ -93,67 +74,78 @@ class MatchedImporter(FatcatImporter):
                 print("DOI not found: {}".format(doi))
             else:
                 re_list.add(re.ident)
-        if len(re_list) == 0:
+        release_ids = list(re_list)
+        if len(release_ids) == 0:
             return None
-        if fe.release_ids == set(re_list):
-            return None
-        re_list.update(fe.release_ids)
-        fe.release_ids = list(re_list)
 
         # parse URLs and CDX
-        existing_urls = [feu.url for feu in fe.urls]
+        urls = set()
         for url in obj.get('url', []):
-            if url not in existing_urls:
-                url = self.make_url(url)
-                if url != None:
-                    fe.urls.append(url)
+            url = self.make_url(url)
+            if url != None:
+                urls.add(url)
         for cdx in obj.get('cdx', []):
             original = cdx['url']
             wayback = "https://web.archive.org/web/{}/{}".format(
                 cdx['dt'],
                 original)
-            if wayback not in existing_urls:
-                fe.urls.append(
-                    fatcat_client.FileEntityUrls(url=wayback, rel="webarchive"))
-            if original not in existing_urls:
-                url = self.make_url(original)
-                if url != None:
-                    fe.urls.append(url)
+            urls.add(("webarchive", wayback))
+            url = self.make_url(original)
+            if url != None:
+                urls.add(url)
+        urls = [fatcat_client.FileEntityUrls(rel, url) for (rel, url) in urls]
+        if len(urls) == 0:
+            return None
 
-        if obj.get('size') != None:
-            fe.size = int(obj['size'])
-        fe.sha256 = obj.get('sha256', fe.sha256)
-        fe.md5 = obj.get('md5', fe.sha256)
-        if obj.get('mimetype') is None:
-            if fe.mimetype is None:
-                fe.mimetype = self.default_mime
-        else:
-            fe.mimetype = obj.get('mimetype')
+        size = obj.get('size')
+        if size:
+            size = int(size)
+
+        fe = fatcat_client.FileEntity(
+            md5=obj.get('md5'),
+            sha1=obj['sha1'],
+            sha256=obj.get('sha256'),
+            size=size,
+            mimetype=obj.get('mimetype'),
+            release_ids=release_ids,
+            urls=urls,
+        )
         return fe
 
-    def create_row(self, row, editgroup_id=None):
-        obj = json.loads(row)
-        fe = self.parse_matched_dict(obj)
-        if fe is not None:
-            if fe.ident is None:
-                self.api.create_file(fe, editgroup_id=editgroup_id)
-                self.counts['insert'] += 1
-            else:
-                self.api.update_file(fe.ident, fe, editgroup_id=editgroup_id)
-                self.counts['update'] += 1
+    def try_update(self, fe):
+        # lookup sha1, or create new entity
+        existing = None
+        if not self.skip_file_updates:
+            try:
+                existing = self.api.lookup_file(sha1=fe.sha1)
+            except fatcat_client.rest.ApiException as err:
+                if err.status != 404:
+                    raise err
 
-    def create_batch(self, batch):
-        """Reads and processes in batches (not API-call-per-line)"""
-        objects = [self.parse_matched_dict(json.loads(l))
-                   for l in batch if l != None]
-        new_objects = [o for o in objects if o != None and o.ident == None]
-        update_objects = [o for o in objects if o != None and o.ident != None]
-        if len(update_objects):
-            update_eg = self._editgroup().editgroup_id
-            for obj in update_objects:
-                self.api.update_file(obj.ident, obj, editgroup_id=update_eg)
-            self.api.accept_editgroup(update_eg)
-        if len(new_objects) > 0:
-            self.api.create_file_batch(new_objects, autoaccept=True)
-        self.counts['update'] += len(update_objects)
-        self.counts['insert'] += len(new_objects)
+        if not existing:
+            # new match; go ahead and insert
+            return True
+
+        fe.release_ids = list(set(fe.release_ids + existing.release_ids))
+        if set(fe.release_ids) == set(existing.release_ids) and len(existing.urls) > 0:
+            # no new release matches *and* there are already existing URLs
+            self.counts['exists'] += 1
+            return False
+
+        # merge the existing into this one and update
+        existing.urls = list(set(fe.urls + existing.urls))
+        existing.release_ids = list(set(fe.release_ids + existing.release_ids))
+        existing.mimetype = existing.mimetype or fe.mimetype
+        existing.size = existing.size or fe.size
+        existing.md5 = existing.md5 or fe.md5
+        existing.sha256 = existing.sha256 or fe.sha256
+        self.api.update_file(existing.ident, existing)
+        self.counts['update'] += 1
+        return False
+
+    def insert_batch(self, batch):
+        self.api.create_file_batch(batch,
+            autoaccept=True,
+            description=self.editgroup_description,
+            extra=json.dumps(self.editgroup_extra))
+

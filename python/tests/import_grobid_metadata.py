@@ -3,7 +3,7 @@ import os
 import json
 import base64
 import pytest
-from fatcat_tools.importers import GrobidMetadataImporter
+from fatcat_tools.importers import GrobidMetadataImporter, LinePusher
 from fixtures import api
 
 """
@@ -15,10 +15,6 @@ side-effects. Should probably be disabled or re-written.
 def grobid_metadata_importer(api):
     yield GrobidMetadataImporter(api)
 
-# TODO: use API to check that entities actually created...
-#def test_grobid_metadata_importer_batch(grobid_metadata_importer):
-#    with open('tests/files/example_grobid_metadata_lines.tsv', 'r') as f:
-#        grobid_metadata_importer.process_batch(f)
 
 def test_grobid_metadata_parse(grobid_metadata_importer):
     with open('tests/files/example_grobid_metadata_lines.tsv', 'r') as f:
@@ -52,9 +48,11 @@ def test_file_metadata_parse(grobid_metadata_importer):
         assert fe.urls[0].rel == "webarchive"
         assert len(fe.release_ids) == 0
 
+# TODO: use API to check that entities actually created...
 def test_grobid_metadata_importer(grobid_metadata_importer):
     with open('tests/files/example_grobid_metadata_lines.tsv', 'r') as f:
-        grobid_metadata_importer.process_source(f)
+        grobid_metadata_importer.bezerk_mode = True
+        LinePusher(grobid_metadata_importer, f).run()
 
     # fetch most recent editgroup
     changes = grobid_metadata_importer.api.get_changelog(limit=1)

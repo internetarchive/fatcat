@@ -11,7 +11,7 @@ def test_elasticsearch_convert(crossref_importer):
     with open('tests/files/crossref-works.single.json', 'r') as f:
         # not a single line
         raw = json.loads(f.read())
-        (r, c) = crossref_importer.parse_crossref_dict(raw)
+        r = crossref_importer.parse_record(raw)
     r.state = 'active'
     release_to_elasticsearch(r)
 

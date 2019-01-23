@@ -359,9 +359,9 @@ class CrossrefImporter(EntityImporter):
     def try_update(self, re):
 
         # lookup existing DOI (don't need to try other ext idents for crossref)
-        existing_release = None
+        existing = None
         try:
-            existing_release = self.api.lookup_release(doi=re.doi)
+            existing = self.api.lookup_release(doi=re.doi)
         except fatcat_client.rest.ApiException as err:
             if err.status != 404:
                 raise err
@@ -370,12 +370,15 @@ class CrossrefImporter(EntityImporter):
 
         # eventually we'll want to support "updates", but for now just skip if
         # entity already exists
-        if existing_release:
+        if existing:
             self.counts['exists'] += 1
             return False
         
         return True
 
     def insert_batch(self, batch):
-        self.api.create_release_batch(batch, autoaccept=True)
+        self.api.create_release_batch(batch,
+            autoaccept=True,
+            description=self.editgroup_description,
+            extra=json.dumps(self.editgroup_extra))
 

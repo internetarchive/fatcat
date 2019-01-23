@@ -5,12 +5,22 @@ import json
 import base64
 import datetime
 import fatcat_client
-from .common import FatcatImporter
+from .common import EntityImporter
 
 MAX_ABSTRACT_BYTES=4096
 
 
-class GrobidMetadataImporter(FatcatImporter):
+class GrobidMetadataImporter(EntityImporter):
+    """
+    This is a complex case: we need to parse and create both file and release entities.
+
+    The "primary" entity here is really File, not Release. If a matching File
+    exists, we bail in want(); if not we insert the Release during parsing, and
+    insert both.
+
+    TODO: should instead check if the File has any releases; if not, insert and update.
+    TODO: relaxing 'None' constraint on parse_record() might make this refactor-able.
+    """
 
     def __init__(self, api, **kwargs):
 
@@ -23,10 +33,52 @@ class GrobidMetadataImporter(FatcatImporter):
             editgroup_extra=eg_extra)
         self.default_link_rel = kwargs.get("default_link_rel", "web")
 
-    def parse_grobid_json(self, obj):
+    def want(self, raw_record):
 
-        if not obj.get('title'):
-            return None
+        fields = raw_record.split('\t')
+        sha1_key = fields[0]
+        sha1 = base64.b16encode(base64.b32decode(sha1_key.replace('sha1:', ''))).decode('ascii').lower()
+        #cdx = json.loads(fields[1])
+        #mimetype = fields[2]
+        #file_size = int(fields[3])
+        grobid_meta = json.loads(fields[4])
+
+        if not grobid_meta.get('title'):
+            return False
+
+        # lookup existing file SHA1
+        try:
+            existing_file = self.api.lookup_file(sha1=sha1)
+        except fatcat_client.rest.ApiException as err:
+            if err.status != 404:
+                raise err
+            existing_file = None
+
+        # if file is already in here, presumably not actually long-tail
+        # TODO: this is where we should check if the file actually has
+        # release_ids and/or URLs associated with it
+        if existing_file and not self.bezerk_mode:
+            return False
+        return True
+
+    def parse_record(self, row):
+
+        fields = row.split('\t')
+        sha1_key = fields[0]
+        cdx = json.loads(fields[1])
+        mimetype = fields[2]
+        file_size = int(fields[3])
+        grobid_meta = json.loads(fields[4])
+        fe = self.parse_file_metadata(sha1_key, cdx, mimetype, file_size)
+        re = self.parse_grobid_json(grobid_meta)
+        assert (fe and re)
+
+        release_edit = self.create_release(re)
+        fe.release_ids.append(release_edit.ident)
+        return fe
+
+    def parse_grobid_json(self, obj):
+        assert obj.get('title')
 
         extra = dict()
 
@@ -122,17 +174,6 @@ class GrobidMetadataImporter(FatcatImporter):
 
         sha1 = base64.b16encode(base64.b32decode(sha1_key.replace('sha1:', ''))).decode('ascii').lower()
 
-        # lookup existing SHA1, or create new entity
-        try:
-            existing_file = self.api.lookup_file(sha1=sha1)
-        except fatcat_client.rest.ApiException as err:
-            if err.status != 404:
-                raise err
-            existing_file = None
-
-        if existing_file:
-            # if file is already in here, presumably not actually long-tail
-            return None
         fe = fatcat_client.FileEntity(
             sha1=sha1,
             size=int(file_size),
@@ -143,6 +184,7 @@ class GrobidMetadataImporter(FatcatImporter):
 
         # parse URLs and CDX
         original = cdx['url']
+        assert len(cdx['dt']) >= 8
         wayback = "https://web.archive.org/web/{}/{}".format(
             cdx['dt'],
             original)
@@ -154,23 +196,13 @@ class GrobidMetadataImporter(FatcatImporter):
 
         return fe
 
-    def create_row(self, row, editgroup_id=None):
-        if not row:
-            return
-        fields = row.split('\t')
-        sha1_key = fields[0]
-        cdx = json.loads(fields[1])
-        mimetype = fields[2]
-        file_size = int(fields[3])
-        grobid_meta = json.loads(fields[4])
-        fe = self.parse_file_metadata(sha1_key, cdx, mimetype, file_size)
-        re = self.parse_grobid_json(grobid_meta)
-        if fe and re:
-            release_entity = self.api.create_release(re, editgroup_id=editgroup_id)
-            # release ident can't already be in release list because we just
-            # created it
-            fe.release_ids.append(release_entity.ident)
-            file_entity = self.api.create_file(fe, editgroup_id=editgroup_id)
-            self.counts['insert'] += 1
+    def try_update(entity):
+        # we did this in want()
+        return True
 
-    # NB: batch mode not implemented
+    def insert_batch(self, batch):
+        self.api.create_file_batch(batch,
+            autoaccept=True,
+            description=self.editgroup_description,
+            extra=json.dumps(self.editgroup_extra))
+

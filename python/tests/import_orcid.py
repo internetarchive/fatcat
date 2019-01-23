@@ -1,7 +1,7 @@
 
 import json
 import pytest
-from fatcat_tools.importers import OrcidImporter
+from fatcat_tools.importers import OrcidImporter, JsonLinePusher
 from fixtures import api
 
 
@@ -9,18 +9,16 @@ from fixtures import api
 def orcid_importer(api):
     yield OrcidImporter(api)
 
-# TODO: use API to check that entities actually created...
-def test_orcid_importer_batch(orcid_importer):
-    with open('tests/files/0000-0001-8254-7103.json', 'r') as f:
-        orcid_importer.process_batch(f)
-
 def test_orcid_importer_badid(orcid_importer):
     with open('tests/files/0000-0001-8254-710X.json', 'r') as f:
-        orcid_importer.process_batch(f)
+        pusher = JsonLinePusher(orcid_importer, f)
+        pusher.run()
 
+# TODO: use API to check that entities actually created...
 def test_orcid_importer(orcid_importer):
     with open('tests/files/0000-0001-8254-7103.json', 'r') as f:
-        orcid_importer.process_source(f)
+        orcid_importer.bezerk_mode = True
+        JsonLinePusher(orcid_importer, f).run()
 
     # fetch most recent editgroup
     changes = orcid_importer.api.get_changelog(limit=1)
@@ -32,14 +30,15 @@ def test_orcid_importer(orcid_importer):
 
 def test_orcid_importer_x(orcid_importer):
     with open('tests/files/0000-0003-3953-765X.json', 'r') as f:
-        orcid_importer.process_source(f)
+        pusher = JsonLinePusher(orcid_importer, f)
+        pusher.run()
     c = orcid_importer.api.lookup_creator(orcid="0000-0003-3953-765X")
     assert c is not None
 
 def test_orcid_dict_parse(orcid_importer):
     with open('tests/files/0000-0001-8254-7103.json', 'r') as f:
         raw = json.loads(f.readline())
-        c = orcid_importer.parse_orcid_dict(raw)
+        c = orcid_importer.parse_record(raw)
         assert c.given_name == "Man-Hui"
         assert c.surname == "Li"
         assert c.display_name == "Man-Hui Li"

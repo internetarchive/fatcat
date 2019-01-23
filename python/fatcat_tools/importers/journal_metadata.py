@@ -3,7 +3,7 @@ import sys
 import json
 import itertools
 import fatcat_client
-from .common import FatcatImporter
+from .common import EntityImporter
 
 
 def or_none(s):
@@ -25,7 +25,7 @@ def truthy(s):
     else:
         return None
 
-class JournalMetadataImporter(FatcatImporter):
+class JournalMetadataImporter(EntityImporter):
     """
     Imports journal metadata ("containers") by ISSN, currently from a custom
     (data munged) .csv file format
@@ -45,7 +45,12 @@ class JournalMetadataImporter(FatcatImporter):
             editgroup_description=eg_desc,
             editgroup_extra=eg_extra)
 
-    def parse_journal_metadata_row(self, row):
+    def want(self, raw_record):
+        if raw_record.get('ISSN-L'):
+            return True
+        return False
+
+    def parse_record(self, row):
         """
         row is a python dict (parsed from CSV).
         returns a ContainerEntity (or None if invalid or couldn't parse)
@@ -72,16 +77,28 @@ class JournalMetadataImporter(FatcatImporter):
             extra=extra)
         return ce
 
-    def create_row(self, row, editgroup_id=None):
-        ce = self.parse_journal_metadata_row(row)
-        if ce is not None:
-            self.api.create_container(ce, editgroup_id=editgroup_id)
-            self.counts['insert'] += 1
+    def try_update(self, ce):
 
-    def create_batch(self, batch):
-        """Reads and processes in batches (not API-call-per-line)"""
-        objects = [self.parse_journal_metadata_row(l)
-                   for l in batch if (l is not None)]
-        objects = [o for o in objects if (o is not None)]
-        self.api.create_container_batch(objects, autoaccept=True)
-        self.counts['insert'] += len(objects)
+        existing = None
+        try:
+            existing = self.api.lookup_container(issnl=ce.issnl)
+        except fatcat_client.rest.ApiException as err:
+            if err.status != 404:
+                raise err
+            # doesn't exist, need to update
+            return True
+
+        # eventually we'll want to support "updates", but for now just skip if
+        # entity already exists
+        if existing:
+            self.counts['exists'] += 1
+            return False
+        
+        return True
+
+    def insert_batch(self, batch):
+        self.api.create_container_batch(batch,
+            autoaccept=True,
+            description=self.editgroup_description,
+            extra=json.dumps(self.editgroup_extra))
+
