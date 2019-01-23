@@ -36,6 +36,7 @@ def test_crossref_importer(crossref_importer):
     assert eg.extra['git_rev']
     assert "fatcat_tools.CrossrefImporter" in eg.extra['agent']
 
+    last_index = crossref_importer.api.get_changelog(limit=1)[0].index
     with open('tests/files/crossref-works.2018-01-21.badsample.json', 'r') as f:
         crossref_importer.bezerk_mode = False
         crossref_importer.reset()
@@ -43,6 +44,7 @@ def test_crossref_importer(crossref_importer):
     assert counts['insert'] == 0
     assert counts['exists'] == 14
     assert counts['skip'] == 0
+    assert last_index == crossref_importer.api.get_changelog(limit=1)[0].index
 
 def test_crossref_mappings(crossref_importer):
     assert crossref_importer.map_release_type('journal-article') == "article-journal"
