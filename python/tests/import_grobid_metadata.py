@@ -50,13 +50,14 @@ def test_file_metadata_parse(grobid_metadata_importer):
 
 # TODO: use API to check that entities actually created...
 def test_grobid_metadata_importer(grobid_metadata_importer):
+    last_index = grobid_metadata_importer.api.get_changelog(limit=1)[0].index
     with open('tests/files/example_grobid_metadata_lines.tsv', 'r') as f:
         grobid_metadata_importer.bezerk_mode = True
         LinePusher(grobid_metadata_importer, f).run()
 
     # fetch most recent editgroup
-    changes = grobid_metadata_importer.api.get_changelog(limit=1)
-    eg = changes[0].editgroup
+    change = grobid_metadata_importer.api.get_changelog_entry(index=last_index+1)
+    eg = change.editgroup
     assert eg.description
     assert "grobid" in eg.description.lower()
     assert eg.extra['git_rev']

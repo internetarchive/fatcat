@@ -14,14 +14,14 @@ def test_journal_metadata_importer_batch(journal_metadata_importer):
         CsvPusher(journal_metadata_importer, f).run()
 
 def test_journal_metadata_importer(journal_metadata_importer):
+    last_index = journal_metadata_importer.api.get_changelog(limit=1)[0].index
     with open('tests/files/journal_extra_metadata.snip.csv', 'r') as f:
         journal_metadata_importer.bezerk_mode = True
-        journal_metadata_importer.serial_mode = True
         CsvPusher(journal_metadata_importer, f).run()
 
     # fetch most recent editgroup
-    changes = journal_metadata_importer.api.get_changelog(limit=1)
-    eg = changes[0].editgroup
+    change = journal_metadata_importer.api.get_changelog_entry(index=last_index+1)
+    eg = change.editgroup
     assert eg.description
     assert "container" in eg.description.lower()
     assert eg.extra['git_rev']

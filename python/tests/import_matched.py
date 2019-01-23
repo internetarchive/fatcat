@@ -15,13 +15,14 @@ def test_matched_importer_batch(matched_importer):
         JsonLinePusher(matched_importer, f).run()
 
 def test_matched_importer(matched_importer):
+    last_index = matched_importer.api.get_changelog(limit=1)[0].index
     with open('tests/files/example_matched.json', 'r') as f:
         matched_importer.bezerk_mode = True
         JsonLinePusher(matched_importer, f).run()
 
     # fetch most recent editgroup
-    changes = matched_importer.api.get_changelog(limit=1)
-    eg = changes[0].editgroup
+    change = matched_importer.api.get_changelog_entry(index=last_index+1)
+    eg = change.editgroup
     assert eg.description
     assert "file-to-release" in eg.description.lower()
     assert eg.extra['git_rev']

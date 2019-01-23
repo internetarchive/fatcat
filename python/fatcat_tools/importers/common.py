@@ -49,7 +49,6 @@ class EntityImporter:
         
         self.api = api
         self.bezerk_mode = kwargs.get('bezerk_mode', False)
-        self.serial_mode = kwargs.get('serial_mode', False)
         self.edit_batch_size = kwargs.get('edit_batch_size', 100)
         self.editgroup_description = kwargs.get('editgroup_description')
         self.editgroup_extra = kwargs.get('editgroup_extra')

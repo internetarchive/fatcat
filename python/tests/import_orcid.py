@@ -16,13 +16,14 @@ def test_orcid_importer_badid(orcid_importer):
 
 # TODO: use API to check that entities actually created...
 def test_orcid_importer(orcid_importer):
+    last_index = orcid_importer.api.get_changelog(limit=1)[0].index
     with open('tests/files/0000-0001-8254-7103.json', 'r') as f:
         orcid_importer.bezerk_mode = True
         JsonLinePusher(orcid_importer, f).run()
 
     # fetch most recent editgroup
-    changes = orcid_importer.api.get_changelog(limit=1)
-    eg = changes[0].editgroup
+    change = orcid_importer.api.get_changelog_entry(index=last_index+1)
+    eg = change.editgroup
     assert eg.description
     assert "orcid" in eg.description.lower()
     assert eg.extra['git_rev']

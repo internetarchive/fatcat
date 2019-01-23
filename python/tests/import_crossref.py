@@ -20,12 +20,13 @@ def test_crossref_importer_batch(crossref_importer):
         JsonLinePusher(crossref_importer, f).run()
 
 def test_crossref_importer(crossref_importer):
+    last_index = crossref_importer.api.get_changelog(limit=1)[0].index
     with open('tests/files/crossref-works.2018-01-21.badsample.json', 'r') as f:
         crossref_importer.bezerk_mode = True
         JsonLinePusher(crossref_importer, f).run()
     # fetch most recent editgroup
-    changes = crossref_importer.api.get_changelog(limit=1)
-    eg = changes[0].editgroup
+    change = crossref_importer.api.get_changelog_entry(index=last_index+1)
+    eg = change.editgroup
     assert eg.description
     assert "crossref" in eg.description.lower()
     assert eg.extra['git_rev']
