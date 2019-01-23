@@ -61,7 +61,8 @@ def test_crossref_dict_parse(crossref_importer):
         assert len(r.contribs) == 5
         assert r.contribs[0].raw_name == "Marcelo D. Radicioni"
         assert r.contribs[0].index == 0
-        assert r.contribs[1].extra['affiliations'] == ["Some University"]
+        assert r.contribs[1].raw_affiliation == "Some University"
+        assert r.contribs[1].extra['affiliations'] == ["Some Department"]
         assert r.contribs[1].role == "author"
         assert r.contribs[3].role == "editor"
         assert r.contribs[3].index is None

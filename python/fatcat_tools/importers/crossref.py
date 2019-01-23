@@ -32,6 +32,31 @@ CROSSREF_TYPE_MAP = {
     'standard': 'standard',
 }
 
+CONTAINER_TYPE_MAP = {
+    'article-journal': 'journal',
+    'paper-conference': 'conference',
+    'book': 'book-series',
+}
+
+# TODO:
+LICENSE_SLUG_MAP = {
+    "http://creativecommons.org/licenses/by/3.0/": "CC-BY",
+    "http://creativecommons.org/licenses/by/4.0/": "CC-BY",
+    "http://creativecommons.org/licenses/by-sa/3.0/": "CC-BY-SA",
+    "http://creativecommons.org/licenses/by-sa/4.0/": "CC-BY-SA",
+    "http://creativecommons.org/licenses/by-nd/3.0/": "CC-BY-ND",
+    "http://creativecommons.org/licenses/by-nd/4.0/": "CC-BY-ND",
+    "http://creativecommons.org/licenses/by-nc/3.0/": "CC-BY-NC",
+    "http://creativecommons.org/licenses/by-nc/4.0/": "CC-BY-NC",
+    "http://creativecommons.org/licenses/by-nc-sa/3.0/": "CC-BY-NC-SA",
+    "http://creativecommons.org/licenses/by-nc-sa/4.0/": "CC-BY-NC-SA",
+    "http://creativecommons.org/licenses/by-nc-nd/3.0/": "CC-BY-NC-ND",
+    "http://creativecommons.org/licenses/by-nc-nd/4.0/": "CC-BY-NC-ND",
+    "http://www.elsevier.com/open-access/userlicense/1.0/": "ELSEVIER-USER-1.0",
+    # http://onlinelibrary.wiley.com/termsAndConditions doesn't seem like a license
+    # http://www.springer.com/tdm doesn't seem like a license
+}
+
 class CrossrefImporter(FatcatImporter):
     """
     Importer for Crossref metadata.
@@ -66,17 +91,21 @@ class CrossrefImporter(FatcatImporter):
 
     def lookup_ext_ids(self, doi):
         if self.extid_map_db is None:
-            return dict(core_id=None, pmid=None, pmcid=None, wikidata_qid=None)
+            return dict(core_id=None, pmid=None, pmcid=None, wikidata_qid=None, arxiv_id=None, jstor_id=None)
         row = self.extid_map_db.execute("SELECT core, pmid, pmcid, wikidata FROM ids WHERE doi=? LIMIT 1",
             [doi.lower()]).fetchone()
         if row is None:
-            return dict(core_id=None, pmid=None, pmcid=None, wikidata_qid=None)
+            return dict(core_id=None, pmid=None, pmcid=None, wikidata_qid=None, arxiv_id=None, jstor_id=None)
         row = [str(cell or '') or None for cell in row]
         return dict(
             core_id=row[0],
             pmid=row[1],
             pmcid=row[2],
-            wikidata_qid=row[3])
+            wikidata_qid=row[3],
+            # TODO:
+            arxiv_id=None,
+            jstor_id=None,
+        )
 
     def map_release_type(self, crossref_type):
         return CROSSREF_TYPE_MAP.get(crossref_type)
@@ -97,6 +126,8 @@ class CrossrefImporter(FatcatImporter):
                 'standard-series', 'report-series', 'book-series', 'book-set',
                 'book-track', 'proceedings-series'):
             return None
+
+        release_type = self.map_release_type(obj['type'])
 
         # lookup existing DOI
         existing_release = None
@@ -132,9 +163,13 @@ class CrossrefImporter(FatcatImporter):
                     index = i
                 else:
                     index = None
+                raw_affiliation = None
                 if am.get('affiliation'):
-                    # note: affiliation => affiliations
-                    extra['affiliations'] = am.get('affiliation')
+                    if len(am.get('affiliation')) > 0:
+                        raw_affiliation = am.get('affiliation')[0]['name']
+                    if len(am.get('affiliation')) > 1:
+                        # note: affiliation => affiliations
+                        extra['affiliations'] = [a['name'] for a in am.get('affiliation')[1:]]
                 if am.get('sequence') and am.get('sequence') != "additional":
                     extra['sequence'] = am.get('sequence')
                 if not extra:
@@ -144,6 +179,7 @@ class CrossrefImporter(FatcatImporter):
                     creator_id=creator_id,
                     index=index,
                     raw_name=raw_name,
+                    raw_affiliation=raw_affiliation,
                     role=ctype,
                     extra=extra))
             return contribs
@@ -165,7 +201,18 @@ class CrossrefImporter(FatcatImporter):
             ce = fatcat_client.ContainerEntity(
                 issnl=issnl,
                 publisher=publisher,
+                container_type=CONTAINER_TYPE_MAP.get(release_type),
                 name=obj['container-title'][0])
+
+        # license slug
+        license_slug = None
+        for l in obj.get('license', []):
+            if l['content-version'] not in ('vor', 'unspecified'):
+                continue
+            slug = LICENSE_SLUG_MAP.get(l['URL'])
+            if slug:
+                license_slug = slug
+                break
 
         # references
         refs = []
@@ -188,10 +235,14 @@ class CrossrefImporter(FatcatImporter):
             container_name = rm.get('volume-title')
             if not container_name:
                 container_name = rm.get('journal-title')
+            ref_locator = rm.get('first-page')
+            ref_title = rm.get('title')
+            if extra.get('DOI'):
+                extra['doi'] = extra['DOI']
             extra.pop('DOI', None)
             extra.pop('key', None)
             extra.pop('year', None)
-            extra.pop('volume-name', None)
+            extra.pop('volume-title', None)
             extra.pop('journal-title', None)
             extra.pop('title', None)
             extra.pop('first-page', None)
@@ -207,8 +258,8 @@ class CrossrefImporter(FatcatImporter):
                 key=key,
                 year=year,
                 container_name=container_name,
-                title=rm.get('title'),
-                locator=rm.get('first-page'),
+                title=ref_title,
+                locator=ref_locator,
                 # TODO: just dump JSON somewhere here?
                 extra=extra))
 
@@ -277,26 +328,32 @@ class CrossrefImporter(FatcatImporter):
 
         re = fatcat_client.ReleaseEntity(
             work_id=None,
-            title=obj.get('title', [None])[0],
-            contribs=contribs,
-            refs=refs,
             container_id=container_id,
-            publisher=publisher,
-            release_type=self.map_release_type(obj['type']),
+            title=obj.get('title', [None])[0],
+            original_title=obj.get('original-title', [None])[0],
+            release_type=release_type,
             release_status=release_status,
+            release_date=release_date,
+            release_year=release_year,
+            publisher=publisher,
             doi=obj['DOI'].lower(),
-            isbn13=isbn13,
-            core_id=extids['core_id'],
             pmid=extids['pmid'],
             pmcid=extids['pmcid'],
             wikidata_qid=extids['wikidata_qid'],
-            release_date=release_date,
-            release_year=release_year,
-            issue=obj.get('issue'),
+            isbn13=isbn13,
+            core_id=extids['core_id'],
+            arxiv_id=extids['arxiv_id'],
+            jstor_id=extids['jstor_id'],
             volume=obj.get('volume'),
+            issue=obj.get('issue'),
             pages=obj.get('page'),
+            language=None,  # crossref doesn't supply language info
+            license_slug=license_slug,
+            extra=dict(crossref=extra),
             abstracts=abstracts,
-            extra=dict(crossref=extra))
+            contribs=contribs,
+            refs=refs,
+        )
         return (re, ce)
 
     def create_row(self, row, editgroup_id=None):
@@ -304,6 +361,8 @@ class CrossrefImporter(FatcatImporter):
             return
         obj = json.loads(row)
         entities = self.parse_crossref_dict(obj)
+        # XXX:
+        print(entities)
         if entities is not None:
             (re, ce) = entities
             if ce is not None:

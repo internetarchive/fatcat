@@ -84,7 +84,7 @@
     {
       "given": "Carlos G.",
       "family": "Diaz",
-      "affiliation": ["Some University"]
+      "affiliation": [{"name": "Some University"}, {"name": "Some Department"}]
     },
     {
       "given": "Francisco M.",

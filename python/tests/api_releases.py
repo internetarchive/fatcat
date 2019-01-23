@@ -19,7 +19,7 @@ def test_release(api):
         original_title="оригинальное название",
         release_type="post-weblog",
         release_status="pre-print",
-        #release_date=datetime.datetime.utcnow(),
+        # XXX: release_date=datetime.datetime.utcnow(),
         release_year=2015,
         doi="10.5555/12345678",
         pmid="12345",
