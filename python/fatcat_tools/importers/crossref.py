@@ -6,7 +6,7 @@ import datetime
 import itertools
 import subprocess
 import fatcat_client
-from .common import FatcatImporter
+from .common import EntityImporter
 
 
 # The docs/guide should be the cannonical home for these mappings; update there
@@ -57,7 +57,7 @@ LICENSE_SLUG_MAP = {
     # http://www.springer.com/tdm doesn't seem like a license
 }
 
-class CrossrefImporter(FatcatImporter):
+class CrossrefImporter(EntityImporter):
     """
     Importer for Crossref metadata.
 
@@ -76,9 +76,9 @@ class CrossrefImporter(FatcatImporter):
             issn_map_file=issn_map_file,
             editgroup_description=eg_desc,
             editgroup_extra=eg_extra)
+
+        self.create_containers = kwargs.get('create_containers')
         extid_map_file = kwargs.get('extid_map_file')
-        create_containers = kwargs.get('create_containers')
-        check_existing = kwargs.get('check_existing')
         self.extid_map_db = None
         if extid_map_file:
             db_uri = "file:{}?mode=ro".format(extid_map_file)
@@ -86,8 +86,8 @@ class CrossrefImporter(FatcatImporter):
             self.extid_map_db = sqlite3.connect(db_uri, uri=True)
         else:
             print("Not using external ID map")
-        self.create_containers = create_containers
-        self.check_existing = check_existing
+
+        self.read_issn_map_file(issn_map_file)
 
     def lookup_ext_ids(self, doi):
         if self.extid_map_db is None:
@@ -110,38 +110,38 @@ class CrossrefImporter(FatcatImporter):
     def map_release_type(self, crossref_type):
         return CROSSREF_TYPE_MAP.get(crossref_type)
 
-    def parse_crossref_dict(self, obj):
-        """
-        obj is a python dict (parsed from json).
-        returns a ReleaseEntity
-        """
+    def map_container_type(self, crossref_type):
+        return CONTAINER_TYPE_MAP.get(release_type)
 
-        # Do require the 'title' keys to exsit, as release entities do
-        if (not 'title' in obj) or (not obj['title']):
-            return None
+    def want(self, obj):
 
         # Ways to be out of scope (provisionally)
         # journal-issue and journal-volume map to None, but allowed for now
         if obj.get('type') in (None, 'journal', 'proceedings',
                 'standard-series', 'report-series', 'book-series', 'book-set',
                 'book-track', 'proceedings-series'):
-            return None
+            return False
+
+        # Do require the 'title' keys to exsit, as release entities do
+        if (not 'title' in obj) or (not obj['title']):
+            return False
+
+        # Can't handle such large lists yet
+        authors = len(obj.get('author', []))
+        abstracts = len(obj.get('abstract', []))
+        refs = len(obj.get('reference', []))
+        if max(authors, abstracts, refs) > 750:
+            return False
+
+        return True
+
+    def parse_record(self, obj):
+        """
+        obj is a python dict (parsed from json).
+        returns a ReleaseEntity
+        """
 
         release_type = self.map_release_type(obj['type'])
-
-        # lookup existing DOI
-        existing_release = None
-        if self.check_existing:
-            try:
-                existing_release = self.api.lookup_release(doi=obj['DOI'].lower())
-            except fatcat_client.rest.ApiException as err:
-                if err.status != 404:
-                    raise err
-
-        # eventually we'll want to support "updates", but for now just skip if
-        # entity already exists
-        if existing_release:
-            return None
 
         # contribs
         def do_contribs(obj_list, ctype):
@@ -195,14 +195,15 @@ class CrossrefImporter(FatcatImporter):
             container_id = self.lookup_issnl(issnl)
         publisher = obj.get('publisher')
 
-        ce = None
         if (container_id is None and self.create_containers and (issnl is not None)
             and obj.get('container-title') and len(obj['container-title']) > 0):
             ce = fatcat_client.ContainerEntity(
                 issnl=issnl,
                 publisher=publisher,
-                container_type=CONTAINER_TYPE_MAP.get(release_type),
+                container_type=self.map_container_type(release_type),
                 name=obj['container-title'][0])
+            ce_edit = self.create_container(ce)
+            container_id = ce_edit.ident
 
         # license slug
         license_slug = None
@@ -309,8 +310,7 @@ class CrossrefImporter(FatcatImporter):
 
         # TODO: filter out huge releases; we'll get them later (and fix bug in
         # fatcatd)
-        if max(len(contribs), len(refs), len(abstracts)) > 750:
-            return None
+        assert max(len(contribs), len(refs), len(abstracts)) <= 750
 
         # release date parsing is amazingly complex
         raw_date = obj['issued']['date-parts'][0]
@@ -354,41 +354,28 @@ class CrossrefImporter(FatcatImporter):
             contribs=contribs,
             refs=refs,
         )
-        return (re, ce)
+        return re
 
-    def create_row(self, row, editgroup_id=None):
-        if row is None:
-            return
-        obj = json.loads(row)
-        entities = self.parse_crossref_dict(obj)
-        # XXX:
-        print(entities)
-        if entities is not None:
-            (re, ce) = entities
-            if ce is not None:
-                container = self.api.create_container(ce, editgroup_id=editgroup_id)
-                re.container_id = container.ident
-                self._issnl_id_map[ce.issnl] = container.ident
-            self.api.create_release(re, editgroup_id=editgroup_id)
-            self.counts['insert'] += 1
+    def try_update(self, re):
 
-    def create_batch(self, batch):
-        """Current work/release pairing disallows batch creation of releases.
-        Could do batch work creation and then match against releases, but meh."""
-        release_batch = []
-        for row in batch:
-            if row is None:
-                continue
-            obj = json.loads(row)
-            entities = self.parse_crossref_dict(obj)
-            if entities is not None:
-                (re, ce) = entities
-                if ce is not None:
-                    ce_eg = self.api.create_editgroup(fatcat_client.Editgroup())
-                    container = self.api.create_container(ce, editgroup_id=ce_eg.editgroup_id)
-                    self.api.accept_editgroup(ce_eg.editgroup_id)
-                    re.container_id = container.ident
-                    self._issnl_id_map[ce.issnl] = container.ident
-                release_batch.append(re)
-        self.api.create_release_batch(release_batch, autoaccept=True)
-        self.counts['insert'] += len(release_batch)
+        # lookup existing DOI (don't need to try other ext idents for crossref)
+        existing_release = None
+        try:
+            existing_release = self.api.lookup_release(doi=re.doi)
+        except fatcat_client.rest.ApiException as err:
+            if err.status != 404:
+                raise err
+            # doesn't exist, need to update
+            return True
+
+        # eventually we'll want to support "updates", but for now just skip if
+        # entity already exists
+        if existing_release:
+            self.counts['exists'] += 1
+            return False
+        
+        return True
+
+    def insert_batch(self, batch):
+        self.api.create_release_batch(batch, autoaccept=True)
+

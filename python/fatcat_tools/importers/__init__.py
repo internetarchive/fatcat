@@ -12,11 +12,11 @@ To run an import you combine two classes; one each of:
 
 """
 
-from .common import FatcatImporter, make_kafka_consumer
+from .common import FatcatImporter, JsonLinePusher, make_kafka_consumer
 from .crossref import CrossrefImporter, CROSSREF_TYPE_MAP
 from .grobid_metadata import GrobidMetadataImporter
 from .journal_metadata import JournalMetadataImporter
 from .matched import MatchedImporter
 from .orcid import OrcidImporter
-from .kafka_source import KafkaSource
-from .file_source import FileSource
+#from .kafka_source import KafkaSource
+#from .file_source import FileSource

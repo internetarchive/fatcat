@@ -31,10 +31,13 @@ class EntityImporter:
     This class exposes helpers for implementations:
 
         self.api
-        self.create_related_*(entity) for all entity types
+        self.create_<entity>(entity) -> EntityEdit
+            for related entity types
         self.push_entity(entity)
-        self.counts['exits'] += 1 (if didn't update or insert because of existing)
-        self.counts['update'] += 1 (if updated an entity)
+        self.counts['exits'] += 1
+            if didn't update or insert because of existing)
+        self.counts['update'] += 1
+            if updated an entity
     """
 
     def __init__(self, api, **kwargs):
@@ -53,14 +56,20 @@ class EntityImporter:
         self._editgroup_id = None
         self._entity_queue = []
 
+        self._issnl_id_map = dict()
+        self._orcid_id_map = dict()
+        self._orcid_regex = re.compile("^\\d{4}-\\d{4}-\\d{4}-\\d{3}[\\dX]$")
+        self._doi_id_map = dict()
+
     def push_record(self, raw_record):
         """
         Returns nothing.
         """
-        if (not raw_record) or (not self.want(raw_record):
+        if (not raw_record) or (not self.want(raw_record)):
             self.counts['skip'] += 1
             return
         entity = self.parse_record(raw_record)
+        assert entity
         if self.bezerk_mode:
             self.push_entity(entity)
             return
@@ -68,7 +77,7 @@ class EntityImporter:
             self.push_entity(entity)
         return
 
-    def finish(self, raw_record):
+    def finish(self):
         if self._edit_count > 0:
             self.api.accept_editgroup(self._editgroup_id)
             self._editgroup_id = None
@@ -79,8 +88,9 @@ class EntityImporter:
             self.counts['insert'] += len(_entity_queue)
             self._entity_queue = 0
 
-        self.counts['total'] = counts['skip'] + counts['insert'] + \
-            counts['update'] + counts['exists']
+        self.counts['total'] = 0
+        for key in ('skip', 'insert', 'update', 'exists'):
+            self.counts['total'] += self.counts[key]
         return self.counts
 
     def _get_editgroup(self, edits=1):
@@ -100,8 +110,8 @@ class EntityImporter:
 
     def create_container(self, entity):
         eg = self._get_editgroup()
-        self.api.create_container(entity, editgroup_id=eg.editgroup_id)
         self.counts['sub.container'] += 1
+        return self.api.create_container(entity, editgroup_id=eg.editgroup_id)
 
     def updated(self):
         """
@@ -147,6 +157,79 @@ class EntityImporter:
     def insert_batch(self, raw_record):
         raise NotImplementedError
 
+    def is_orcid(self, orcid):
+        return self._orcid_regex.match(orcid) is not None
+
+    def lookup_orcid(self, orcid):
+        """Caches calls to the Orcid lookup API endpoint in a local dict"""
+        if not self.is_orcid(orcid):
+            return None
+        if orcid in self._orcid_id_map:
+            return self._orcid_id_map[orcid]
+        creator_id = None
+        try:
+            rv = self.api.lookup_creator(orcid=orcid)
+            creator_id = rv.ident
+        except ApiException as ae:
+            # If anything other than a 404 (not found), something is wrong
+            assert ae.status == 404
+        self._orcid_id_map[orcid] = creator_id # might be None
+        return creator_id
+
+    def is_doi(self, doi):
+        return doi.startswith("10.") and doi.count("/") >= 1
+
+    def lookup_doi(self, doi):
+        """Caches calls to the doi lookup API endpoint in a local dict"""
+        assert self.is_doi(doi)
+        doi = doi.lower()
+        if doi in self._doi_id_map:
+            return self._doi_id_map[doi]
+        release_id = None
+        try:
+            rv = self.api.lookup_release(doi=doi)
+            release_id = rv.ident
+        except ApiException as ae:
+            # If anything other than a 404 (not found), something is wrong
+            assert ae.status == 404
+        self._doi_id_map[doi] = release_id # might be None
+        return release_id
+
+    def is_issnl(self, issnl):
+        return len(issnl) == 9 and issnl[4] == '-'
+
+    def lookup_issnl(self, issnl):
+        """Caches calls to the ISSN-L lookup API endpoint in a local dict"""
+        if issnl in self._issnl_id_map:
+            return self._issnl_id_map[issnl]
+        container_id = None
+        try:
+            rv = self.api.lookup_container(issnl=issnl)
+            container_id = rv.ident
+        except ApiException as ae:
+            # If anything other than a 404 (not found), something is wrong
+            assert ae.status == 404
+        self._issnl_id_map[issnl] = container_id # might be None
+        return container_id
+
+    def read_issn_map_file(self, issn_map_file):
+        print("Loading ISSN map file...")
+        self._issn_issnl_map = dict()
+        for line in issn_map_file:
+            if line.startswith("ISSN") or len(line) == 0:
+                continue
+            (issn, issnl) = line.split()[0:2]
+            self._issn_issnl_map[issn] = issnl
+            # double mapping makes lookups easy
+            self._issn_issnl_map[issnl] = issnl
+        print("Got {} ISSN-L mappings.".format(len(self._issn_issnl_map)))
+
+    def issn2issnl(self, issn):
+        if issn is None:
+            return None
+        return self._issn_issnl_map.get(issn)
+
+
 
 class RecordPusher:
     """
@@ -155,15 +238,7 @@ class RecordPusher:
     """
 
     def __init__(self, importer, **kwargs):
-
-        eg_extra = kwargs.get('editgroup_extra', dict())
-        eg_extra['git_rev'] = eg_extra.get('git_rev',
-            subprocess.check_output(["git", "describe", "--always"]).strip()).decode('utf-8')
-        eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.EntityImporter')
-        
-        self.api = api
-        self.bezerk_mode = kwargs.get('bezerk_mode', False)
-        self._editgroup_description = kwargs.get('editgroup_description')
+        self.importer = importer
 
     def run(self):
         """
@@ -175,6 +250,21 @@ class RecordPusher:
             print(self.importer.finish())
         """
         raise NotImplementedError
+
+
+class JsonLinePusher:
+
+    def __init__(self, importer, in_file, **kwargs):
+        self.importer = importer
+        self.in_file = in_file
+
+    def run(self):
+        for line in self.in_file:
+            if not line:
+                continue
+            record = json.loads(line)
+            self.importer.push_record(record)
+        print(self.importer.finish())
 
 
 # from: https://docs.python.org/3/library/itertools.html

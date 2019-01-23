@@ -1,27 +1,29 @@
 
 import json
 import pytest
-from fatcat_tools.importers import CrossrefImporter
+from fatcat_tools.importers import CrossrefImporter, JsonLinePusher
 from fixtures import api
 
 
 @pytest.fixture(scope="function")
 def crossref_importer(api):
     with open('tests/files/ISSN-to-ISSN-L.snip.txt', 'r') as issn_file:
-        yield CrossrefImporter(api, issn_file, extid_map_file='tests/files/example_map.sqlite3', check_existing=False)
+        yield CrossrefImporter(api, issn_file, extid_map_file='tests/files/example_map.sqlite3', bezerk_mode=True)
 
 @pytest.fixture(scope="function")
 def crossref_importer_existing(api):
     with open('tests/files/ISSN-to-ISSN-L.snip.txt', 'r') as issn_file:
-        yield CrossrefImporter(api, issn_file, extid_map_file='tests/files/example_map.sqlite3', check_existing=True)
+        yield CrossrefImporter(api, issn_file, extid_map_file='tests/files/example_map.sqlite3', bezerk_mode=False)
 
 def test_crossref_importer_batch(crossref_importer):
     with open('tests/files/crossref-works.2018-01-21.badsample.json', 'r') as f:
-        crossref_importer.process_batch(f)
+        pusher = JsonLinePusher(crossref_importer, f)
+        pusher.run()
 
 def test_crossref_importer(crossref_importer):
     with open('tests/files/crossref-works.2018-01-21.badsample.json', 'r') as f:
-        crossref_importer.process_source(f)
+        pusher = JsonLinePusher(crossref_importer, f)
+        pusher.run()
     # fetch most recent editgroup
     changes = crossref_importer.api.get_changelog(limit=1)
     eg = changes[0].editgroup
@@ -39,13 +41,14 @@ def test_crossref_mappings(crossref_importer):
 def test_crossref_importer_create(crossref_importer):
     crossref_importer.create_containers = True
     with open('tests/files/crossref-works.2018-01-21.badsample.json', 'r') as f:
-        crossref_importer.process_source(f)
+        pusher = JsonLinePusher(crossref_importer, f)
+        pusher.run()
 
 def test_crossref_dict_parse(crossref_importer):
     with open('tests/files/crossref-works.single.json', 'r') as f:
         # not a single line
         raw = json.loads(f.read())
-        (r, c) = crossref_importer.parse_crossref_dict(raw)
+        r = crossref_importer.parse_record(raw)
         extra = r.extra['crossref']
         assert r.title == "Renormalized perturbation theory by the moment method for degenerate states: Anharmonic oscillators"
         assert r.doi == "10.1002/(sici)1097-461x(1998)66:4<261::aid-qua1>3.0.co;2-t"
@@ -79,8 +82,10 @@ def test_crossref_dict_parse(crossref_importer):
 def test_stateful_checking(crossref_importer_existing):
     with open('tests/files/crossref-works.single.json', 'r') as f:
         # not a single line, a whole document
-        raw = json.loads(f.read())
+        raw = f.read()
         # might not exist yet...
-        crossref_importer_existing.process_source([json.dumps(raw)])
-        # ok, make sure we get 'None' back
-        assert crossref_importer_existing.parse_crossref_dict(raw) is None
+        crossref_importer_existing.push_record(json.loads(raw))
+        crossref_importer_existing.finish()
+        # make sure we wouldn't insert again
+        entity = crossref_importer_existing.parse_record(json.loads(raw))
+        assert crossref_importer_existing.try_update(entity) is False
