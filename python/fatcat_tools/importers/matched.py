@@ -42,7 +42,6 @@ class MatchedImporter(EntityImporter):
             editgroup_extra=eg_extra)
         self.default_link_rel = kwargs.get("default_link_rel", "web")
         self.default_mime = kwargs.get("default_mime", None)
-        self.skip_file_updates = kwargs.get("skip_file_updates", False)
 
     def make_url(self, raw):
         rel = self.default_link_rel
@@ -115,16 +114,11 @@ class MatchedImporter(EntityImporter):
     def try_update(self, fe):
         # lookup sha1, or create new entity
         existing = None
-        if not self.skip_file_updates:
-            try:
-                existing = self.api.lookup_file(sha1=fe.sha1)
-            except fatcat_client.rest.ApiException as err:
-                if err.status != 404:
-                    raise err
-
-        if not existing:
-            # new match; go ahead and insert
-            return True
+        try:
+            existing = self.api.lookup_file(sha1=fe.sha1)
+        except fatcat_client.rest.ApiException as err:
+            if err.status != 404:
+                raise err
 
         fe.release_ids = list(set(fe.release_ids + existing.release_ids))
         if set(fe.release_ids) == set(existing.release_ids) and len(existing.urls) > 0:
