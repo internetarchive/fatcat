@@ -120,7 +120,7 @@ macro_rules! wrap_entity_handlers {
                 let auth_context = self.auth_confectionary.require_auth(&conn, &context.auth_data, Some(stringify!($post_fn)))?;
                 auth_context.require_role(FatcatRole::Editor)?;
                 auth_context.require_editgroup(&conn, editgroup_id)?;
-                let edit_context = make_edit_context(&conn, auth_context.editor_id, Some(editgroup_id), false)?;
+                let edit_context = make_edit_context(&conn, auth_context.editor_id, Some(editgroup_id), false, None, None)?;
                 edit_context.check(&conn)?;
                 entity.db_create(&conn, &edit_context)?.into_model()
             }).map_err(|e| FatcatError::from(e)) {
@@ -138,6 +138,8 @@ macro_rules! wrap_entity_handlers {
             entity_list: &Vec<models::$model>,
             autoaccept: Option<bool>,
             editgroup_id: Option<String>,
+            description: Option<String>,
+            extra: Option<String>,
             context: &Context,
         ) -> Box<Future<Item = $post_batch_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
@@ -155,7 +157,11 @@ macro_rules! wrap_entity_handlers {
                     auth_context.require_editgroup(&conn, eg_id)?;
                     Some(eg_id)
                 } else { None };
-                self.$post_batch_handler(&conn, entity_list, autoaccept, auth_context.editor_id, editgroup_id)
+                let extra: Option<serde_json::Value> = match extra {
+                    Some(v) => serde_json::from_str(&v)?,
+                    None => None,
+                };
+                self.$post_batch_handler(&conn, entity_list, autoaccept, auth_context.editor_id, editgroup_id, description, extra)
             }).map_err(|e| FatcatError::from(e)) {
                 Ok(edits) => {
                     self.metrics.count("entities.created", edits.len() as i64).ok();
@@ -184,7 +190,7 @@ macro_rules! wrap_entity_handlers {
                 auth_context.require_role(FatcatRole::Editor)?;
                 let entity_id = FatcatId::from_str(&ident)?;
                 auth_context.require_editgroup(&conn, editgroup_id)?;
-                let edit_context = make_edit_context(&conn, auth_context.editor_id, Some(editgroup_id), false)?;
+                let edit_context = make_edit_context(&conn, auth_context.editor_id, Some(editgroup_id), false, None, None)?;
                 edit_context.check(&conn)?;
                 entity.db_update(&conn, &edit_context, entity_id)?.into_model()
             }).map_err(|e| FatcatError::from(e)) {
@@ -210,7 +216,7 @@ macro_rules! wrap_entity_handlers {
                 auth_context.require_role(FatcatRole::Editor)?;
                 let entity_id = FatcatId::from_str(&ident)?;
                 auth_context.require_editgroup(&conn, editgroup_id)?;
-                let edit_context = make_edit_context(&conn, auth_context.editor_id, Some(editgroup_id), false)?;
+                let edit_context = make_edit_context(&conn, auth_context.editor_id, Some(editgroup_id), false, None, None)?;
                 edit_context.check(&conn)?;
                 $model::db_delete(&conn, &edit_context, entity_id)?.into_model()
             }).map_err(|e| FatcatError::from(e)) {

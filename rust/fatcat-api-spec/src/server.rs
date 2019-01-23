@@ -269,6 +269,8 @@ where
                     .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
                     .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected boolean)".to_string())))?;
                 let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_description = query_params.get("description").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_extra = query_params.get("extra").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -295,7 +297,10 @@ where
                 };
                 let param_entity_list = param_entity_list.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity_list".to_string())))?;
 
-                match api.create_container_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup_id, context).wait() {
+                match api
+                    .create_container_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup_id, param_description, param_extra, context)
+                    .wait()
+                {
                     Ok(rsp) => match rsp {
                         CreateContainerBatchResponse::CreatedEntities(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -1505,6 +1510,8 @@ where
                     .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
                     .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected boolean)".to_string())))?;
                 let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_description = query_params.get("description").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_extra = query_params.get("extra").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -1531,7 +1538,10 @@ where
                 };
                 let param_entity_list = param_entity_list.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity_list".to_string())))?;
 
-                match api.create_creator_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup_id, context).wait() {
+                match api
+                    .create_creator_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup_id, param_description, param_extra, context)
+                    .wait()
+                {
                     Ok(rsp) => match rsp {
                         CreateCreatorBatchResponse::CreatedEntities(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -4594,6 +4604,8 @@ where
                     .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
                     .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected boolean)".to_string())))?;
                 let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_description = query_params.get("description").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_extra = query_params.get("extra").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -4620,7 +4632,10 @@ where
                 };
                 let param_entity_list = param_entity_list.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity_list".to_string())))?;
 
-                match api.create_file_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup_id, context).wait() {
+                match api
+                    .create_file_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup_id, param_description, param_extra, context)
+                    .wait()
+                {
                     Ok(rsp) => match rsp {
                         CreateFileBatchResponse::CreatedEntities(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -5831,6 +5846,8 @@ where
                     .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
                     .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected boolean)".to_string())))?;
                 let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_description = query_params.get("description").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_extra = query_params.get("extra").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -5857,7 +5874,10 @@ where
                 };
                 let param_entity_list = param_entity_list.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity_list".to_string())))?;
 
-                match api.create_fileset_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup_id, context).wait() {
+                match api
+                    .create_fileset_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup_id, param_description, param_extra, context)
+                    .wait()
+                {
                     Ok(rsp) => match rsp {
                         CreateFilesetBatchResponse::CreatedEntities(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -6986,6 +7006,8 @@ where
                     .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
                     .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected boolean)".to_string())))?;
                 let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_description = query_params.get("description").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_extra = query_params.get("extra").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -7012,7 +7034,10 @@ where
                 };
                 let param_entity_list = param_entity_list.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity_list".to_string())))?;
 
-                match api.create_release_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup_id, context).wait() {
+                match api
+                    .create_release_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup_id, param_description, param_extra, context)
+                    .wait()
+                {
                     Ok(rsp) => match rsp {
                         CreateReleaseBatchResponse::CreatedEntities(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -8668,6 +8693,8 @@ where
                     .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
                     .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected boolean)".to_string())))?;
                 let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_description = query_params.get("description").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_extra = query_params.get("extra").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -8694,7 +8721,10 @@ where
                 };
                 let param_entity_list = param_entity_list.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity_list".to_string())))?;
 
-                match api.create_webcapture_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup_id, context).wait() {
+                match api
+                    .create_webcapture_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup_id, param_description, param_extra, context)
+                    .wait()
+                {
                     Ok(rsp) => match rsp {
                         CreateWebcaptureBatchResponse::CreatedEntities(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -9677,6 +9707,8 @@ where
                     .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
                     .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected boolean)".to_string())))?;
                 let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_description = query_params.get("description").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_extra = query_params.get("extra").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -9703,7 +9735,10 @@ where
                 };
                 let param_entity_list = param_entity_list.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity_list".to_string())))?;
 
-                match api.create_work_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup_id, context).wait() {
+                match api
+                    .create_work_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup_id, param_description, param_extra, context)
+                    .wait()
+                {
                     Ok(rsp) => match rsp {
                         CreateWorkBatchResponse::CreatedEntities(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");

@@ -445,6 +445,8 @@ class DefaultApi(object):
         :param list[ContainerEntity] entity_list: (required)
         :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
         :param str editgroup_id: Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)
+        :param str description:
+        :param str extra:
         :return: list[EntityEdit]
                  If the method is called asynchronously,
                  returns the request thread.
@@ -468,12 +470,14 @@ class DefaultApi(object):
         :param list[ContainerEntity] entity_list: (required)
         :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
         :param str editgroup_id: Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)
+        :param str description:
+        :param str extra:
         :return: list[EntityEdit]
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['entity_list', 'autoaccept', 'editgroup_id']  # noqa: E501
+        all_params = ['entity_list', 'autoaccept', 'editgroup_id', 'description', 'extra']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -502,6 +506,10 @@ class DefaultApi(object):
             query_params.append(('autoaccept', params['autoaccept']))  # noqa: E501
         if 'editgroup_id' in params:
             query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
+        if 'description' in params:
+            query_params.append(('description', params['description']))  # noqa: E501
+        if 'extra' in params:
+            query_params.append(('extra', params['extra']))  # noqa: E501
 
         header_params = {}
 
@@ -655,6 +663,8 @@ class DefaultApi(object):
         :param list[CreatorEntity] entity_list: (required)
         :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
         :param str editgroup_id: Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)
+        :param str description:
+        :param str extra:
         :return: list[EntityEdit]
                  If the method is called asynchronously,
                  returns the request thread.
@@ -678,12 +688,14 @@ class DefaultApi(object):
         :param list[CreatorEntity] entity_list: (required)
         :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
         :param str editgroup_id: Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)
+        :param str description:
+        :param str extra:
         :return: list[EntityEdit]
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['entity_list', 'autoaccept', 'editgroup_id']  # noqa: E501
+        all_params = ['entity_list', 'autoaccept', 'editgroup_id', 'description', 'extra']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -712,6 +724,10 @@ class DefaultApi(object):
             query_params.append(('autoaccept', params['autoaccept']))  # noqa: E501
         if 'editgroup_id' in params:
             query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
+        if 'description' in params:
+            query_params.append(('description', params['description']))  # noqa: E501
+        if 'extra' in params:
+            query_params.append(('extra', params['extra']))  # noqa: E501
 
         header_params = {}
 
@@ -1075,6 +1091,8 @@ class DefaultApi(object):
         :param list[FileEntity] entity_list: (required)
         :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
         :param str editgroup_id: Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)
+        :param str description:
+        :param str extra:
         :return: list[EntityEdit]
                  If the method is called asynchronously,
                  returns the request thread.
@@ -1098,12 +1116,14 @@ class DefaultApi(object):
         :param list[FileEntity] entity_list: (required)
         :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
         :param str editgroup_id: Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)
+        :param str description:
+        :param str extra:
         :return: list[EntityEdit]
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['entity_list', 'autoaccept', 'editgroup_id']  # noqa: E501
+        all_params = ['entity_list', 'autoaccept', 'editgroup_id', 'description', 'extra']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -1132,6 +1152,10 @@ class DefaultApi(object):
             query_params.append(('autoaccept', params['autoaccept']))  # noqa: E501
         if 'editgroup_id' in params:
             query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
+        if 'description' in params:
+            query_params.append(('description', params['description']))  # noqa: E501
+        if 'extra' in params:
+            query_params.append(('extra', params['extra']))  # noqa: E501
 
         header_params = {}
 
@@ -1285,6 +1309,8 @@ class DefaultApi(object):
         :param list[FilesetEntity] entity_list: (required)
         :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
         :param str editgroup_id: Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)
+        :param str description:
+        :param str extra:
         :return: list[EntityEdit]
                  If the method is called asynchronously,
                  returns the request thread.
@@ -1308,12 +1334,14 @@ class DefaultApi(object):
         :param list[FilesetEntity] entity_list: (required)
         :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
         :param str editgroup_id: Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)
+        :param str description:
+        :param str extra:
         :return: list[EntityEdit]
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['entity_list', 'autoaccept', 'editgroup_id']  # noqa: E501
+        all_params = ['entity_list', 'autoaccept', 'editgroup_id', 'description', 'extra']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -1342,6 +1370,10 @@ class DefaultApi(object):
             query_params.append(('autoaccept', params['autoaccept']))  # noqa: E501
         if 'editgroup_id' in params:
             query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
+        if 'description' in params:
+            query_params.append(('description', params['description']))  # noqa: E501
+        if 'extra' in params:
+            query_params.append(('extra', params['extra']))  # noqa: E501
 
         header_params = {}
 
@@ -1495,6 +1527,8 @@ class DefaultApi(object):
         :param list[ReleaseEntity] entity_list: (required)
         :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
         :param str editgroup_id: Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)
+        :param str description:
+        :param str extra:
         :return: list[EntityEdit]
                  If the method is called asynchronously,
                  returns the request thread.
@@ -1518,12 +1552,14 @@ class DefaultApi(object):
         :param list[ReleaseEntity] entity_list: (required)
         :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
         :param str editgroup_id: Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)
+        :param str description:
+        :param str extra:
         :return: list[EntityEdit]
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['entity_list', 'autoaccept', 'editgroup_id']  # noqa: E501
+        all_params = ['entity_list', 'autoaccept', 'editgroup_id', 'description', 'extra']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -1552,6 +1588,10 @@ class DefaultApi(object):
             query_params.append(('autoaccept', params['autoaccept']))  # noqa: E501
         if 'editgroup_id' in params:
             query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
+        if 'description' in params:
+            query_params.append(('description', params['description']))  # noqa: E501
+        if 'extra' in params:
+            query_params.append(('extra', params['extra']))  # noqa: E501
 
         header_params = {}
 
@@ -1705,6 +1745,8 @@ class DefaultApi(object):
         :param list[WebcaptureEntity] entity_list: (required)
         :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
         :param str editgroup_id: Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)
+        :param str description:
+        :param str extra:
         :return: list[EntityEdit]
                  If the method is called asynchronously,
                  returns the request thread.
@@ -1728,12 +1770,14 @@ class DefaultApi(object):
         :param list[WebcaptureEntity] entity_list: (required)
         :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
         :param str editgroup_id: Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)
+        :param str description:
+        :param str extra:
         :return: list[EntityEdit]
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['entity_list', 'autoaccept', 'editgroup_id']  # noqa: E501
+        all_params = ['entity_list', 'autoaccept', 'editgroup_id', 'description', 'extra']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -1762,6 +1806,10 @@ class DefaultApi(object):
             query_params.append(('autoaccept', params['autoaccept']))  # noqa: E501
         if 'editgroup_id' in params:
             query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
+        if 'description' in params:
+            query_params.append(('description', params['description']))  # noqa: E501
+        if 'extra' in params:
+            query_params.append(('extra', params['extra']))  # noqa: E501
 
         header_params = {}
 
@@ -1915,6 +1963,8 @@ class DefaultApi(object):
         :param list[WorkEntity] entity_list: (required)
         :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
         :param str editgroup_id: Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)
+        :param str description:
+        :param str extra:
         :return: list[EntityEdit]
                  If the method is called asynchronously,
                  returns the request thread.
@@ -1938,12 +1988,14 @@ class DefaultApi(object):
         :param list[WorkEntity] entity_list: (required)
         :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
         :param str editgroup_id: Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)
+        :param str description:
+        :param str extra:
         :return: list[EntityEdit]
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['entity_list', 'autoaccept', 'editgroup_id']  # noqa: E501
+        all_params = ['entity_list', 'autoaccept', 'editgroup_id', 'description', 'extra']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -1972,6 +2024,10 @@ class DefaultApi(object):
             query_params.append(('autoaccept', params['autoaccept']))  # noqa: E501
         if 'editgroup_id' in params:
             query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
+        if 'description' in params:
+            query_params.append(('description', params['description']))  # noqa: E501
+        if 'extra' in params:
+            query_params.append(('extra', params['extra']))  # noqa: E501
 
         header_params = {}
 

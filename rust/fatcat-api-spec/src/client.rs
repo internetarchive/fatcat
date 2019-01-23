@@ -272,17 +272,23 @@ impl Api for Client {
         param_entity_list: &Vec<models::ContainerEntity>,
         param_autoaccept: Option<bool>,
         param_editgroup_id: Option<String>,
+        param_description: Option<String>,
+        param_extra: Option<String>,
         context: &Context,
     ) -> Box<Future<Item = CreateContainerBatchResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_autoaccept = param_autoaccept.map_or_else(String::new, |query| format!("autoaccept={autoaccept}&", autoaccept = query.to_string()));
         let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
+        let query_description = param_description.map_or_else(String::new, |query| format!("description={description}&", description = query.to_string()));
+        let query_extra = param_extra.map_or_else(String::new, |query| format!("extra={extra}&", extra = query.to_string()));
 
         let url = format!(
-            "{}/v0/container/batch?{autoaccept}{editgroup_id}",
+            "{}/v0/container/batch?{autoaccept}{editgroup_id}{description}{extra}",
             self.base_path,
             autoaccept = utf8_percent_encode(&query_autoaccept, QUERY_ENCODE_SET),
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
+            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET),
+            description = utf8_percent_encode(&query_description, QUERY_ENCODE_SET),
+            extra = utf8_percent_encode(&query_extra, QUERY_ENCODE_SET)
         );
 
         let body = serde_json::to_string(&param_entity_list).expect("impossible to fail to serialize");
@@ -1167,17 +1173,23 @@ impl Api for Client {
         param_entity_list: &Vec<models::CreatorEntity>,
         param_autoaccept: Option<bool>,
         param_editgroup_id: Option<String>,
+        param_description: Option<String>,
+        param_extra: Option<String>,
         context: &Context,
     ) -> Box<Future<Item = CreateCreatorBatchResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_autoaccept = param_autoaccept.map_or_else(String::new, |query| format!("autoaccept={autoaccept}&", autoaccept = query.to_string()));
         let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
+        let query_description = param_description.map_or_else(String::new, |query| format!("description={description}&", description = query.to_string()));
+        let query_extra = param_extra.map_or_else(String::new, |query| format!("extra={extra}&", extra = query.to_string()));
 
         let url = format!(
-            "{}/v0/creator/batch?{autoaccept}{editgroup_id}",
+            "{}/v0/creator/batch?{autoaccept}{editgroup_id}{description}{extra}",
             self.base_path,
             autoaccept = utf8_percent_encode(&query_autoaccept, QUERY_ENCODE_SET),
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
+            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET),
+            description = utf8_percent_encode(&query_description, QUERY_ENCODE_SET),
+            extra = utf8_percent_encode(&query_extra, QUERY_ENCODE_SET)
         );
 
         let body = serde_json::to_string(&param_entity_list).expect("impossible to fail to serialize");
@@ -3364,17 +3376,23 @@ impl Api for Client {
         param_entity_list: &Vec<models::FileEntity>,
         param_autoaccept: Option<bool>,
         param_editgroup_id: Option<String>,
+        param_description: Option<String>,
+        param_extra: Option<String>,
         context: &Context,
     ) -> Box<Future<Item = CreateFileBatchResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_autoaccept = param_autoaccept.map_or_else(String::new, |query| format!("autoaccept={autoaccept}&", autoaccept = query.to_string()));
         let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
+        let query_description = param_description.map_or_else(String::new, |query| format!("description={description}&", description = query.to_string()));
+        let query_extra = param_extra.map_or_else(String::new, |query| format!("extra={extra}&", extra = query.to_string()));
 
         let url = format!(
-            "{}/v0/file/batch?{autoaccept}{editgroup_id}",
+            "{}/v0/file/batch?{autoaccept}{editgroup_id}{description}{extra}",
             self.base_path,
             autoaccept = utf8_percent_encode(&query_autoaccept, QUERY_ENCODE_SET),
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
+            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET),
+            description = utf8_percent_encode(&query_description, QUERY_ENCODE_SET),
+            extra = utf8_percent_encode(&query_extra, QUERY_ENCODE_SET)
         );
 
         let body = serde_json::to_string(&param_entity_list).expect("impossible to fail to serialize");
@@ -4256,17 +4274,23 @@ impl Api for Client {
         param_entity_list: &Vec<models::FilesetEntity>,
         param_autoaccept: Option<bool>,
         param_editgroup_id: Option<String>,
+        param_description: Option<String>,
+        param_extra: Option<String>,
         context: &Context,
     ) -> Box<Future<Item = CreateFilesetBatchResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_autoaccept = param_autoaccept.map_or_else(String::new, |query| format!("autoaccept={autoaccept}&", autoaccept = query.to_string()));
         let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
+        let query_description = param_description.map_or_else(String::new, |query| format!("description={description}&", description = query.to_string()));
+        let query_extra = param_extra.map_or_else(String::new, |query| format!("extra={extra}&", extra = query.to_string()));
 
         let url = format!(
-            "{}/v0/fileset/batch?{autoaccept}{editgroup_id}",
+            "{}/v0/fileset/batch?{autoaccept}{editgroup_id}{description}{extra}",
             self.base_path,
             autoaccept = utf8_percent_encode(&query_autoaccept, QUERY_ENCODE_SET),
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
+            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET),
+            description = utf8_percent_encode(&query_description, QUERY_ENCODE_SET),
+            extra = utf8_percent_encode(&query_extra, QUERY_ENCODE_SET)
         );
 
         let body = serde_json::to_string(&param_entity_list).expect("impossible to fail to serialize");
@@ -5071,17 +5095,23 @@ impl Api for Client {
         param_entity_list: &Vec<models::ReleaseEntity>,
         param_autoaccept: Option<bool>,
         param_editgroup_id: Option<String>,
+        param_description: Option<String>,
+        param_extra: Option<String>,
         context: &Context,
     ) -> Box<Future<Item = CreateReleaseBatchResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_autoaccept = param_autoaccept.map_or_else(String::new, |query| format!("autoaccept={autoaccept}&", autoaccept = query.to_string()));
         let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
+        let query_description = param_description.map_or_else(String::new, |query| format!("description={description}&", description = query.to_string()));
+        let query_extra = param_extra.map_or_else(String::new, |query| format!("extra={extra}&", extra = query.to_string()));
 
         let url = format!(
-            "{}/v0/release/batch?{autoaccept}{editgroup_id}",
+            "{}/v0/release/batch?{autoaccept}{editgroup_id}{description}{extra}",
             self.base_path,
             autoaccept = utf8_percent_encode(&query_autoaccept, QUERY_ENCODE_SET),
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
+            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET),
+            description = utf8_percent_encode(&query_description, QUERY_ENCODE_SET),
+            extra = utf8_percent_encode(&query_extra, QUERY_ENCODE_SET)
         );
 
         let body = serde_json::to_string(&param_entity_list).expect("impossible to fail to serialize");
@@ -6278,17 +6308,23 @@ impl Api for Client {
         param_entity_list: &Vec<models::WebcaptureEntity>,
         param_autoaccept: Option<bool>,
         param_editgroup_id: Option<String>,
+        param_description: Option<String>,
+        param_extra: Option<String>,
         context: &Context,
     ) -> Box<Future<Item = CreateWebcaptureBatchResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_autoaccept = param_autoaccept.map_or_else(String::new, |query| format!("autoaccept={autoaccept}&", autoaccept = query.to_string()));
         let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
+        let query_description = param_description.map_or_else(String::new, |query| format!("description={description}&", description = query.to_string()));
+        let query_extra = param_extra.map_or_else(String::new, |query| format!("extra={extra}&", extra = query.to_string()));
 
         let url = format!(
-            "{}/v0/webcapture/batch?{autoaccept}{editgroup_id}",
+            "{}/v0/webcapture/batch?{autoaccept}{editgroup_id}{description}{extra}",
             self.base_path,
             autoaccept = utf8_percent_encode(&query_autoaccept, QUERY_ENCODE_SET),
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
+            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET),
+            description = utf8_percent_encode(&query_description, QUERY_ENCODE_SET),
+            extra = utf8_percent_encode(&query_extra, QUERY_ENCODE_SET)
         );
 
         let body = serde_json::to_string(&param_entity_list).expect("impossible to fail to serialize");
@@ -6999,17 +7035,23 @@ impl Api for Client {
         param_entity_list: &Vec<models::WorkEntity>,
         param_autoaccept: Option<bool>,
         param_editgroup_id: Option<String>,
+        param_description: Option<String>,
+        param_extra: Option<String>,
         context: &Context,
     ) -> Box<Future<Item = CreateWorkBatchResponse, Error = ApiError> + Send> {
         // Query parameters
         let query_autoaccept = param_autoaccept.map_or_else(String::new, |query| format!("autoaccept={autoaccept}&", autoaccept = query.to_string()));
         let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
+        let query_description = param_description.map_or_else(String::new, |query| format!("description={description}&", description = query.to_string()));
+        let query_extra = param_extra.map_or_else(String::new, |query| format!("extra={extra}&", extra = query.to_string()));
 
         let url = format!(
-            "{}/v0/work/batch?{autoaccept}{editgroup_id}",
+            "{}/v0/work/batch?{autoaccept}{editgroup_id}{description}{extra}",
             self.base_path,
             autoaccept = utf8_percent_encode(&query_autoaccept, QUERY_ENCODE_SET),
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
+            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET),
+            description = utf8_percent_encode(&query_description, QUERY_ENCODE_SET),
+            extra = utf8_percent_encode(&query_extra, QUERY_ENCODE_SET)
         );
 
         let body = serde_json::to_string(&param_entity_list).expect("impossible to fail to serialize");

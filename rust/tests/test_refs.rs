@@ -17,7 +17,8 @@ fn test_refs_blob() {
     let conn = server.db_pool.get().expect("db_pool error");
     let editor_id = FatcatId::from_str(helpers::TEST_ADMIN_EDITOR_ID).unwrap();
     let editgroup_id = helpers::quick_editgroup(&conn);
-    let edit_context = make_edit_context(&conn, editor_id, Some(editgroup_id), false).unwrap();
+    let edit_context =
+        make_edit_context(&conn, editor_id, Some(editgroup_id), false, None, None).unwrap();
 
     // this release entity should be unchanged after being inserted/fetched
     let mut r1 = ReleaseEntity::new();
@@ -153,7 +154,8 @@ fn test_refs_blob() {
     // update r1 with new target_idents (r3); SHA1 row still shouldn't change
     accept_editgroup(&conn, editgroup_id).unwrap();
     let editgroup_id = helpers::quick_editgroup(&conn);
-    let edit_context = make_edit_context(&conn, editor_id, Some(editgroup_id), false).unwrap();
+    let edit_context =
+        make_edit_context(&conn, editor_id, Some(editgroup_id), false, None, None).unwrap();
 
     let _edit4 = r3b
         .db_update(&conn, &edit_context, edit1.ident_id.into())

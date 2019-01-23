@@ -46,14 +46,18 @@ impl Api for Server {
         entity_list: &Vec<models::ContainerEntity>,
         autoaccept: Option<bool>,
         editgroup_id: Option<String>,
+        description: Option<String>,
+        extra: Option<String>,
         context: &Context,
     ) -> Box<Future<Item = CreateContainerBatchResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "create_container_batch({:?}, {:?}, {:?}) - X-Span-ID: {:?}",
+            "create_container_batch({:?}, {:?}, {:?}, {:?}, {:?}) - X-Span-ID: {:?}",
             entity_list,
             autoaccept,
             editgroup_id,
+            description,
+            extra,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
         );
         Box::new(futures::failed("Generic failure".into()))
@@ -171,14 +175,18 @@ impl Api for Server {
         entity_list: &Vec<models::CreatorEntity>,
         autoaccept: Option<bool>,
         editgroup_id: Option<String>,
+        description: Option<String>,
+        extra: Option<String>,
         context: &Context,
     ) -> Box<Future<Item = CreateCreatorBatchResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "create_creator_batch({:?}, {:?}, {:?}) - X-Span-ID: {:?}",
+            "create_creator_batch({:?}, {:?}, {:?}, {:?}, {:?}) - X-Span-ID: {:?}",
             entity_list,
             autoaccept,
             editgroup_id,
+            description,
+            extra,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
         );
         Box::new(futures::failed("Generic failure".into()))
@@ -465,14 +473,18 @@ impl Api for Server {
         entity_list: &Vec<models::FileEntity>,
         autoaccept: Option<bool>,
         editgroup_id: Option<String>,
+        description: Option<String>,
+        extra: Option<String>,
         context: &Context,
     ) -> Box<Future<Item = CreateFileBatchResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "create_file_batch({:?}, {:?}, {:?}) - X-Span-ID: {:?}",
+            "create_file_batch({:?}, {:?}, {:?}, {:?}, {:?}) - X-Span-ID: {:?}",
             entity_list,
             autoaccept,
             editgroup_id,
+            description,
+            extra,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
         );
         Box::new(futures::failed("Generic failure".into()))
@@ -592,14 +604,18 @@ impl Api for Server {
         entity_list: &Vec<models::FilesetEntity>,
         autoaccept: Option<bool>,
         editgroup_id: Option<String>,
+        description: Option<String>,
+        extra: Option<String>,
         context: &Context,
     ) -> Box<Future<Item = CreateFilesetBatchResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "create_fileset_batch({:?}, {:?}, {:?}) - X-Span-ID: {:?}",
+            "create_fileset_batch({:?}, {:?}, {:?}, {:?}, {:?}) - X-Span-ID: {:?}",
             entity_list,
             autoaccept,
             editgroup_id,
+            description,
+            extra,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
         );
         Box::new(futures::failed("Generic failure".into()))
@@ -697,14 +713,18 @@ impl Api for Server {
         entity_list: &Vec<models::ReleaseEntity>,
         autoaccept: Option<bool>,
         editgroup_id: Option<String>,
+        description: Option<String>,
+        extra: Option<String>,
         context: &Context,
     ) -> Box<Future<Item = CreateReleaseBatchResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "create_release_batch({:?}, {:?}, {:?}) - X-Span-ID: {:?}",
+            "create_release_batch({:?}, {:?}, {:?}, {:?}, {:?}) - X-Span-ID: {:?}",
             entity_list,
             autoaccept,
             editgroup_id,
+            description,
+            extra,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
         );
         Box::new(futures::failed("Generic failure".into()))
@@ -878,14 +898,18 @@ impl Api for Server {
         entity_list: &Vec<models::WebcaptureEntity>,
         autoaccept: Option<bool>,
         editgroup_id: Option<String>,
+        description: Option<String>,
+        extra: Option<String>,
         context: &Context,
     ) -> Box<Future<Item = CreateWebcaptureBatchResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "create_webcapture_batch({:?}, {:?}, {:?}) - X-Span-ID: {:?}",
+            "create_webcapture_batch({:?}, {:?}, {:?}, {:?}, {:?}) - X-Span-ID: {:?}",
             entity_list,
             autoaccept,
             editgroup_id,
+            description,
+            extra,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
         );
         Box::new(futures::failed("Generic failure".into()))
@@ -972,14 +996,18 @@ impl Api for Server {
         entity_list: &Vec<models::WorkEntity>,
         autoaccept: Option<bool>,
         editgroup_id: Option<String>,
+        description: Option<String>,
+        extra: Option<String>,
         context: &Context,
     ) -> Box<Future<Item = CreateWorkBatchResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
-            "create_work_batch({:?}, {:?}, {:?}) - X-Span-ID: {:?}",
+            "create_work_batch({:?}, {:?}, {:?}, {:?}, {:?}) - X-Span-ID: {:?}",
             entity_list,
             autoaccept,
             editgroup_id,
+            description,
+            extra,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
         );
         Box::new(futures::failed("Generic failure".into()))

@@ -135,6 +135,18 @@ paths:
         type: "string"
         formatString: "{:?}"
         example: "Some(\"editgroup_id_example\".to_string())"
+      - name: "description"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"description_example\".to_string())"
+      - name: "extra"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"extra_example\".to_string())"
       - in: "body"
         name: "entity_list"
         required: true
@@ -981,6 +993,18 @@ paths:
         type: "string"
         formatString: "{:?}"
         example: "Some(\"editgroup_id_example\".to_string())"
+      - name: "description"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"description_example\".to_string())"
+      - name: "extra"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"extra_example\".to_string())"
       - in: "body"
         name: "entity_list"
         required: true
@@ -1891,6 +1915,18 @@ paths:
         type: "string"
         formatString: "{:?}"
         example: "Some(\"editgroup_id_example\".to_string())"
+      - name: "description"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"description_example\".to_string())"
+      - name: "extra"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"extra_example\".to_string())"
       - in: "body"
         name: "entity_list"
         required: true
@@ -2750,6 +2786,18 @@ paths:
         type: "string"
         formatString: "{:?}"
         example: "Some(\"editgroup_id_example\".to_string())"
+      - name: "description"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"description_example\".to_string())"
+      - name: "extra"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"extra_example\".to_string())"
       - in: "body"
         name: "entity_list"
         required: true
@@ -3519,6 +3567,18 @@ paths:
         type: "string"
         formatString: "{:?}"
         example: "Some(\"editgroup_id_example\".to_string())"
+      - name: "description"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"description_example\".to_string())"
+      - name: "extra"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"extra_example\".to_string())"
       - in: "body"
         name: "entity_list"
         required: true
@@ -4288,6 +4348,18 @@ paths:
         type: "string"
         formatString: "{:?}"
         example: "Some(\"editgroup_id_example\".to_string())"
+      - name: "description"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"description_example\".to_string())"
+      - name: "extra"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"extra_example\".to_string())"
       - in: "body"
         name: "entity_list"
         required: true
@@ -5360,6 +5432,18 @@ paths:
         type: "string"
         formatString: "{:?}"
         example: "Some(\"editgroup_id_example\".to_string())"
+      - name: "description"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"description_example\".to_string())"
+      - name: "extra"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"extra_example\".to_string())"
       - in: "body"
         name: "entity_list"
         required: true

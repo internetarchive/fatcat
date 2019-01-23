@@ -26,9 +26,11 @@ macro_rules! entity_batch_handler {
             autoaccept: bool,
             editor_id: FatcatId,
             editgroup_id: Option<FatcatId>,
+            description: Option<String>,
+            extra: Option<serde_json::Value>,
         ) -> Result<Vec<EntityEdit>> {
 
-            let edit_context = make_edit_context(conn, editor_id, editgroup_id, autoaccept)?;
+            let edit_context = make_edit_context(conn, editor_id, editgroup_id, autoaccept, description, extra)?;
             edit_context.check(&conn)?;
             let model_list: Vec<&models::$model> = entity_list.iter().map(|e| e).collect();
             let edits = $model::db_create_batch(conn, &edit_context, model_list.as_slice())?;
@@ -264,86 +266,94 @@ impl Server {
         expand_flags: ExpandFlags,
         hide_flags: HideFlags,
     ) -> Result<ReleaseEntity> {
-        let (ident, rev): (ReleaseIdentRow, ReleaseRevRow) =
-            match (doi, wikidata_qid, isbn13, pmid, pmcid, core_id, arxiv_id, jstor_id) {
-                (Some(doi), None, None, None, None, None, None, None) => {
-                    check_doi(doi)?;
-                    release_ident::table
-                        .inner_join(release_rev::table)
-                        .filter(release_rev::doi.eq(doi))
-                        .filter(release_ident::is_live.eq(true))
-                        .filter(release_ident::redirect_id.is_null())
-                        .first(conn)?
-                }
-                (None, Some(wikidata_qid), None, None, None, None, None, None) => {
-                    check_wikidata_qid(wikidata_qid)?;
-                    release_ident::table
-                        .inner_join(release_rev::table)
-                        .filter(release_rev::wikidata_qid.eq(wikidata_qid))
-                        .filter(release_ident::is_live.eq(true))
-                        .filter(release_ident::redirect_id.is_null())
-                        .first(conn)?
-                }
-                (None, None, Some(isbn13), None, None, None, None, None) => {
-                    // TODO: check_isbn13(isbn13)?;
-                    release_ident::table
-                        .inner_join(release_rev::table)
-                        .filter(release_rev::isbn13.eq(isbn13))
-                        .filter(release_ident::is_live.eq(true))
-                        .filter(release_ident::redirect_id.is_null())
-                        .first(conn)?
-                }
-                (None, None, None, Some(pmid), None, None, None, None) => {
-                    check_pmid(pmid)?;
-                    release_ident::table
-                        .inner_join(release_rev::table)
-                        .filter(release_rev::pmid.eq(pmid))
-                        .filter(release_ident::is_live.eq(true))
-                        .filter(release_ident::redirect_id.is_null())
-                        .first(conn)?
-                }
-                (None, None, None, None, Some(pmcid), None, None, None) => {
-                    check_pmcid(pmcid)?;
-                    release_ident::table
-                        .inner_join(release_rev::table)
-                        .filter(release_rev::pmcid.eq(pmcid))
-                        .filter(release_ident::is_live.eq(true))
-                        .filter(release_ident::redirect_id.is_null())
-                        .first(conn)?
-                }
-                (None, None, None, None, None, Some(core_id), None, None) => {
-                    // TODO: check_core_id(core_id)?;
-                    release_ident::table
-                        .inner_join(release_rev::table)
-                        .filter(release_rev::core_id.eq(core_id))
-                        .filter(release_ident::is_live.eq(true))
-                        .filter(release_ident::redirect_id.is_null())
-                        .first(conn)?
-                }
-                (None, None, None, None, None, None, Some(arxiv_id), None) => {
-                    // TODO: check_arxiv_id(arxiv_id)?;
-                    release_ident::table
-                        .inner_join(release_rev::table)
-                        .filter(release_rev::arxiv_id.eq(arxiv_id))
-                        .filter(release_ident::is_live.eq(true))
-                        .filter(release_ident::redirect_id.is_null())
-                        .first(conn)?
-                }
-                (None, None, None, None, None, None, None, Some(jstor_id)) => {
-                    // TODO: check_jstor_id(jstor_id)?;
-                    release_ident::table
-                        .inner_join(release_rev::table)
-                        .filter(release_rev::jstor_id.eq(jstor_id))
-                        .filter(release_ident::is_live.eq(true))
-                        .filter(release_ident::redirect_id.is_null())
-                        .first(conn)?
-                }
-                _ => {
-                    return Err(
-                        FatcatError::MissingOrMultipleExternalId("in lookup".to_string()).into(),
-                    );
-                }
-            };
+        let (ident, rev): (ReleaseIdentRow, ReleaseRevRow) = match (
+            doi,
+            wikidata_qid,
+            isbn13,
+            pmid,
+            pmcid,
+            core_id,
+            arxiv_id,
+            jstor_id,
+        ) {
+            (Some(doi), None, None, None, None, None, None, None) => {
+                check_doi(doi)?;
+                release_ident::table
+                    .inner_join(release_rev::table)
+                    .filter(release_rev::doi.eq(doi))
+                    .filter(release_ident::is_live.eq(true))
+                    .filter(release_ident::redirect_id.is_null())
+                    .first(conn)?
+            }
+            (None, Some(wikidata_qid), None, None, None, None, None, None) => {
+                check_wikidata_qid(wikidata_qid)?;
+                release_ident::table
+                    .inner_join(release_rev::table)
+                    .filter(release_rev::wikidata_qid.eq(wikidata_qid))
+                    .filter(release_ident::is_live.eq(true))
+                    .filter(release_ident::redirect_id.is_null())
+                    .first(conn)?
+            }
+            (None, None, Some(isbn13), None, None, None, None, None) => {
+                // TODO: check_isbn13(isbn13)?;
+                release_ident::table
+                    .inner_join(release_rev::table)
+                    .filter(release_rev::isbn13.eq(isbn13))
+                    .filter(release_ident::is_live.eq(true))
+                    .filter(release_ident::redirect_id.is_null())
+                    .first(conn)?
+            }
+            (None, None, None, Some(pmid), None, None, None, None) => {
+                check_pmid(pmid)?;
+                release_ident::table
+                    .inner_join(release_rev::table)
+                    .filter(release_rev::pmid.eq(pmid))
+                    .filter(release_ident::is_live.eq(true))
+                    .filter(release_ident::redirect_id.is_null())
+                    .first(conn)?
+            }
+            (None, None, None, None, Some(pmcid), None, None, None) => {
+                check_pmcid(pmcid)?;
+                release_ident::table
+                    .inner_join(release_rev::table)
+                    .filter(release_rev::pmcid.eq(pmcid))
+                    .filter(release_ident::is_live.eq(true))
+                    .filter(release_ident::redirect_id.is_null())
+                    .first(conn)?
+            }
+            (None, None, None, None, None, Some(core_id), None, None) => {
+                // TODO: check_core_id(core_id)?;
+                release_ident::table
+                    .inner_join(release_rev::table)
+                    .filter(release_rev::core_id.eq(core_id))
+                    .filter(release_ident::is_live.eq(true))
+                    .filter(release_ident::redirect_id.is_null())
+                    .first(conn)?
+            }
+            (None, None, None, None, None, None, Some(arxiv_id), None) => {
+                // TODO: check_arxiv_id(arxiv_id)?;
+                release_ident::table
+                    .inner_join(release_rev::table)
+                    .filter(release_rev::arxiv_id.eq(arxiv_id))
+                    .filter(release_ident::is_live.eq(true))
+                    .filter(release_ident::redirect_id.is_null())
+                    .first(conn)?
+            }
+            (None, None, None, None, None, None, None, Some(jstor_id)) => {
+                // TODO: check_jstor_id(jstor_id)?;
+                release_ident::table
+                    .inner_join(release_rev::table)
+                    .filter(release_rev::jstor_id.eq(jstor_id))
+                    .filter(release_ident::is_live.eq(true))
+                    .filter(release_ident::redirect_id.is_null())
+                    .first(conn)?
+            }
+            _ => {
+                return Err(
+                    FatcatError::MissingOrMultipleExternalId("in lookup".to_string()).into(),
+                );
+            }
+        };
 
         let mut entity = ReleaseEntity::db_from_row(conn, rev, Some(ident), hide_flags)?;
         entity.db_expand(&conn, expand_flags)?;

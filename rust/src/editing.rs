@@ -42,6 +42,8 @@ pub fn make_edit_context(
     editor_id: FatcatId,
     editgroup_id: Option<FatcatId>,
     autoaccept: bool,
+    description: Option<String>,
+    extra: Option<serde_json::Value>,
 ) -> Result<EditContext> {
     // *either* autoaccept is false and editgroup_id is Some, *or* autoaccept is true and
     // editgroup_id is None
@@ -54,8 +56,8 @@ pub fn make_edit_context(
                 editor: None,
                 changelog_index: None,
                 submitted: None,
-                description: None,
-                extra: None,
+                description: description,
+                extra: extra,
                 annotations: None,
                 edits: None,
             };
