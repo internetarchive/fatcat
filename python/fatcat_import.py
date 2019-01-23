@@ -1,47 +1,40 @@
 #!/usr/bin/env python3
 
-"""
-"""
-
 import os, sys, argparse
 from fatcat_tools import authenticated_api
-from fatcat_tools.importers import CrossrefImporter, OrcidImporter, \
-    JournalMetadataImporter, MatchedImporter, GrobidMetadataImporter, make_kafka_consumer
+from fatcat_tools.importers import *
 
 
 def run_crossref(args):
-    fci = CrossrefImporter(args.api, args.issn_map_file,
+    fci = CrossrefImporter(args.api,
+        args.issn_map_file,
         extid_map_file=args.extid_map_file,
-        create_containers=(not args.no_create_containers),
-        check_existing=(not args.no_release_updates))
+        edit_batch_size=args.batch_size,
+        bezerk_mode=args.bezerk_mode)
     if args.kafka_mode:
-        consumer = make_kafka_consumer(
-            args.kafka_hosts, args.kafka_env, "api-crossref", "fatcat-import")
-        fci.process_batch(consumer, size=args.batch_size, decode_kafka=True)
+        KafkaJsonPusher(fci, args.kafka_hosts, args.kafka_env, "api-crossref", "fatcat-import").run()
     else:
-        fci.process_batch(args.json_file, size=args.batch_size)
-    fci.describe_run()
+        JsonLinePusher(fci).run()
 
 def run_orcid(args):
-    foi = OrcidImporter(args.api)
-    foi.process_batch(args.json_file, size=args.batch_size)
-    foi.describe_run()
+    foi = OrcidImporter(args.api,
+        edit_batch_size=args.batch_size)
+    JsonLinePusher(foi, args.json_file).run()
 
 def run_journal_metadata(args):
-    fii = JournalMetadataImporter(args.api)
-    fii.process_csv_batch(args.csv_file, size=args.batch_size)
-    fii.describe_run()
+    fii = JournalMetadataImporter(args.api,
+        edit_batch_size=args.batch_size)
+    CsvLinePusher(fii, args.csv_file).run()
 
 def run_matched(args):
     fmi = MatchedImporter(args.api,
-        skip_file_updates=args.no_file_updates)
-    fmi.process_batch(args.json_file, size=args.batch_size)
-    fmi.describe_run()
+        bezerk_mode=args.bezerk_mode,
+        edit_batch_size=args.batch_size)
+    JsonLinePusher(fmi, args.json_file).run()
 
 def run_grobid_metadata(args):
-    fmi = GrobidMetadataImporter(args.api)
-    fmi.process_source(args.tsv_file, group_size=args.group_size)
-    fmi.describe_run()
+    fmi = GrobidMetadataImporter(args.api, edit_batch_size=args.batch_size)
+    LinePusher(fmi, args.tsv_file).run()
 
 def main():
     parser = argparse.ArgumentParser()
@@ -73,18 +66,15 @@ def main():
     sub_crossref.add_argument('--extid-map-file',
         help="DOI-to-other-identifiers sqlite3 database",
         default=None, type=str)
-    sub_crossref.add_argument('--no-create-containers',
-        action='store_true',
-        help="skip creation of new container entities based on ISSN")
     sub_crossref.add_argument('--batch-size',
         help="size of batch to send",
         default=50, type=int)
     sub_crossref.add_argument('--kafka-mode',
         action='store_true',
         help="consume from kafka topic (not stdin)")
-    sub_crossref.add_argument('--no-release-updates',
+    sub_crossref.add_argument('--bezerk-mode',
         action='store_true',
-        help="don't lookup existing DOIs, just insert (only for bootstrap)")
+        help="don't lookup existing DOIs, just insert (clobbers; only for fast bootstrap)")
 
     sub_orcid = subparsers.add_parser('orcid')
     sub_orcid.set_defaults(
@@ -118,12 +108,12 @@ def main():
     sub_matched.add_argument('json_file',
         help="JSON file to import from (or stdin)",
         default=sys.stdin, type=argparse.FileType('r'))
-    sub_matched.add_argument('--no-file-updates',
-        action='store_true',
-        help="don't lookup existing files, just insert (only for bootstrap)")
     sub_matched.add_argument('--batch-size',
         help="size of batch to send",
         default=50, type=int)
+    sub_matched.add_argument('--bezerk-mode',
+        action='store_true',
+        help="don't lookup existing files, just insert (clobbers; only for fast bootstrap)")
 
     sub_grobid_metadata = subparsers.add_parser('grobid-metadata')
     sub_grobid_metadata.set_defaults(
@@ -144,6 +134,7 @@ def main():
 
     args.api = authenticated_api(
         args.host_url,
+        # token is an optional kwarg (can be empty string, None, etc)
         token=os.environ.get(args.auth_var))
     args.func(args)
 
