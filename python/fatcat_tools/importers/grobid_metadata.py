@@ -34,31 +34,6 @@ class GrobidMetadataImporter(EntityImporter):
         self.default_link_rel = kwargs.get("default_link_rel", "web")
 
     def want(self, raw_record):
-
-        fields = raw_record.split('\t')
-        sha1_key = fields[0]
-        sha1 = base64.b16encode(base64.b32decode(sha1_key.replace('sha1:', ''))).decode('ascii').lower()
-        #cdx = json.loads(fields[1])
-        #mimetype = fields[2]
-        #file_size = int(fields[3])
-        grobid_meta = json.loads(fields[4])
-
-        if not grobid_meta.get('title'):
-            return False
-
-        # lookup existing file SHA1
-        try:
-            existing_file = self.api.lookup_file(sha1=sha1)
-        except fatcat_client.rest.ApiException as err:
-            if err.status != 404:
-                raise err
-            existing_file = None
-
-        # if file is already in here, presumably not actually long-tail
-        # TODO: this is where we should check if the file actually has
-        # release_ids and/or URLs associated with it
-        if existing_file and not self.bezerk_mode:
-            return False
         return True
 
     def parse_record(self, row):
@@ -71,14 +46,35 @@ class GrobidMetadataImporter(EntityImporter):
         grobid_meta = json.loads(fields[4])
         fe = self.parse_file_metadata(sha1_key, cdx, mimetype, file_size)
         re = self.parse_grobid_json(grobid_meta)
-        assert (fe and re)
+
+        if not (fe and re):
+            return None
+
+        # lookup existing file SHA1
+        existing = None
+        try:
+            existing = self.api.lookup_file(sha1=fe.sha1)
+        except fatcat_client.rest.ApiException as err:
+            if err.status != 404:
+                raise err
+
+        # if file is already in here, presumably not actually long-tail
+        # HACK: this is doing an exists check in parse_record(), which is weird
+        # TODO: this is where we should check if the file actually has
+        # release_ids and/or URLs associated with it
+        if existing and not self.bezerk_mode:
+            self.counts['exists'] += 1
+            self.counts['skip'] -= 1
+            return None
 
         release_edit = self.create_release(re)
         fe.release_ids.append(release_edit.ident)
         return fe
 
     def parse_grobid_json(self, obj):
-        assert obj.get('title')
+
+        if not obj.get('title'):
+            return None
 
         extra = dict()
 
@@ -196,8 +192,8 @@ class GrobidMetadataImporter(EntityImporter):
 
         return fe
 
-    def try_update(entity):
-        # we did this in want()
+    def try_update(self, entity):
+        # did the exists check in 'parse_record()', because we needed to create a release
         return True
 
     def insert_batch(self, batch):

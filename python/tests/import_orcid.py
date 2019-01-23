@@ -11,15 +11,17 @@ def orcid_importer(api):
 
 def test_orcid_importer_badid(orcid_importer):
     with open('tests/files/0000-0001-8254-710X.json', 'r') as f:
-        pusher = JsonLinePusher(orcid_importer, f)
-        pusher.run()
+        JsonLinePusher(orcid_importer, f).run()
 
 # TODO: use API to check that entities actually created...
 def test_orcid_importer(orcid_importer):
     last_index = orcid_importer.api.get_changelog(limit=1)[0].index
     with open('tests/files/0000-0001-8254-7103.json', 'r') as f:
         orcid_importer.bezerk_mode = True
-        JsonLinePusher(orcid_importer, f).run()
+        counts = JsonLinePusher(orcid_importer, f).run()
+    assert counts['insert'] == 1
+    assert counts['exists'] == 0
+    assert counts['skip'] == 0
 
     # fetch most recent editgroup
     change = orcid_importer.api.get_changelog_entry(index=last_index+1)
@@ -29,10 +31,17 @@ def test_orcid_importer(orcid_importer):
     assert eg.extra['git_rev']
     assert "fatcat_tools.OrcidImporter" in eg.extra['agent']
 
+    with open('tests/files/0000-0001-8254-7103.json', 'r') as f:
+        orcid_importer.reset()
+        orcid_importer.bezerk_mode = False
+        counts = JsonLinePusher(orcid_importer, f).run()
+    assert counts['insert'] == 0
+    assert counts['exists'] == 1
+    assert counts['skip'] == 0
+
 def test_orcid_importer_x(orcid_importer):
     with open('tests/files/0000-0003-3953-765X.json', 'r') as f:
-        pusher = JsonLinePusher(orcid_importer, f)
-        pusher.run()
+        JsonLinePusher(orcid_importer, f).run()
     c = orcid_importer.api.lookup_creator(orcid="0000-0003-3953-765X")
     assert c is not None
 

@@ -10,7 +10,7 @@ def matched_importer(api):
     yield MatchedImporter(api)
 
 # TODO: use API to check that entities actually created...
-def test_matched_importer_batch(matched_importer):
+def test_matched_importer(matched_importer):
     with open('tests/files/example_matched.json', 'r') as f:
         JsonLinePusher(matched_importer, f).run()
 
@@ -18,7 +18,10 @@ def test_matched_importer(matched_importer):
     last_index = matched_importer.api.get_changelog(limit=1)[0].index
     with open('tests/files/example_matched.json', 'r') as f:
         matched_importer.bezerk_mode = True
-        JsonLinePusher(matched_importer, f).run()
+        counts = JsonLinePusher(matched_importer, f).run()
+    assert counts['insert'] == 2
+    assert counts['exists'] == 0
+    assert counts['skip'] == 11
 
     # fetch most recent editgroup
     change = matched_importer.api.get_changelog_entry(index=last_index+1)
@@ -27,6 +30,15 @@ def test_matched_importer(matched_importer):
     assert "file-to-release" in eg.description.lower()
     assert eg.extra['git_rev']
     assert "fatcat_tools.MatchedImporter" in eg.extra['agent']
+
+    # re-insert; should skip
+    with open('tests/files/example_matched.json', 'r') as f:
+        matched_importer.reset()
+        matched_importer.bezerk_mode = False
+        counts = JsonLinePusher(matched_importer, f).run()
+    assert counts['insert'] == 0
+    assert counts['exists'] == 2
+    assert counts['skip'] == 11
 
 def test_matched_dict_parse(matched_importer):
     with open('tests/files/example_matched.json', 'r') as f:

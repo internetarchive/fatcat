@@ -23,7 +23,11 @@ def test_crossref_importer(crossref_importer):
     last_index = crossref_importer.api.get_changelog(limit=1)[0].index
     with open('tests/files/crossref-works.2018-01-21.badsample.json', 'r') as f:
         crossref_importer.bezerk_mode = True
-        JsonLinePusher(crossref_importer, f).run()
+        counts = JsonLinePusher(crossref_importer, f).run()
+    assert counts['insert'] == 14
+    assert counts['exists'] == 0
+    assert counts['skip'] == 0
+
     # fetch most recent editgroup
     change = crossref_importer.api.get_changelog_entry(index=last_index+1)
     eg = change.editgroup
@@ -31,6 +35,14 @@ def test_crossref_importer(crossref_importer):
     assert "crossref" in eg.description.lower()
     assert eg.extra['git_rev']
     assert "fatcat_tools.CrossrefImporter" in eg.extra['agent']
+
+    with open('tests/files/crossref-works.2018-01-21.badsample.json', 'r') as f:
+        crossref_importer.bezerk_mode = False
+        crossref_importer.reset()
+        counts = JsonLinePusher(crossref_importer, f).run()
+    assert counts['insert'] == 0
+    assert counts['exists'] == 14
+    assert counts['skip'] == 0
 
 def test_crossref_mappings(crossref_importer):
     assert crossref_importer.map_release_type('journal-article') == "article-journal"
@@ -41,8 +53,7 @@ def test_crossref_mappings(crossref_importer):
 def test_crossref_importer_create(crossref_importer):
     crossref_importer.create_containers = True
     with open('tests/files/crossref-works.2018-01-21.badsample.json', 'r') as f:
-        pusher = JsonLinePusher(crossref_importer, f)
-        pusher.run()
+        JsonLinePusher(crossref_importer, f).run()
 
 def test_crossref_dict_parse(crossref_importer):
     with open('tests/files/crossref-works.single.json', 'r') as f:

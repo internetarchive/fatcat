@@ -48,12 +48,15 @@ def test_file_metadata_parse(grobid_metadata_importer):
         assert fe.urls[0].rel == "webarchive"
         assert len(fe.release_ids) == 0
 
-# TODO: use API to check that entities actually created...
 def test_grobid_metadata_importer(grobid_metadata_importer):
     last_index = grobid_metadata_importer.api.get_changelog(limit=1)[0].index
     with open('tests/files/example_grobid_metadata_lines.tsv', 'r') as f:
         grobid_metadata_importer.bezerk_mode = True
-        LinePusher(grobid_metadata_importer, f).run()
+        counts = LinePusher(grobid_metadata_importer, f).run()
+    assert counts['insert'] == 10
+    assert counts['inserted.release'] == 10
+    assert counts['exists'] == 0
+    assert counts['skip'] == 0
 
     # fetch most recent editgroup
     change = grobid_metadata_importer.api.get_changelog_entry(index=last_index+1)
@@ -62,3 +65,12 @@ def test_grobid_metadata_importer(grobid_metadata_importer):
     assert "grobid" in eg.description.lower()
     assert eg.extra['git_rev']
     assert "fatcat_tools.GrobidMetadataImporter" in eg.extra['agent']
+
+    with open('tests/files/example_grobid_metadata_lines.tsv', 'r') as f:
+        grobid_metadata_importer.reset()
+        grobid_metadata_importer.bezerk_mode = False
+        counts = LinePusher(grobid_metadata_importer, f).run()
+    assert counts['insert'] == 0
+    assert counts['inserted.release'] == 0
+    assert counts['exists'] == 10
+    assert counts['skip'] == 0
