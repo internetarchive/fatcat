@@ -111,6 +111,30 @@ def test_editgroup_autoaccept(api):
     assert eg2.changelog_index
     #print(edits1)
     #print(eg1.edits.creators)
-    assert eg1.edits.creators[0].ident == edits1[0].ident
-    assert eg2.edits.creators[0].ident == edits2[0].ident
+    assert eg1.edits.creators[0].ident in [t.ident for t in edits1]
+    assert eg2.edits.creators[0].ident in [t.ident for t in edits2]
 
+
+def test_batch_params(api):
+
+    eg = quick_eg(api)
+    c1 = CreatorEntity(display_name="test autoaccept")
+    c2 = CreatorEntity(display_name="test another autoaccept")
+
+    with pytest.raises(fatcat_client.rest.ApiException):
+        edits = api.create_creator_batch([c1, c2])
+
+    desc = "test description"
+    extra = dict(a=75, q="thing")
+    edits = api.create_creator_batch([c1, c2], autoaccept=True, description=desc, extra=json.dumps(extra))
+    eg = api.get_editgroup(edits[0].editgroup_id)
+
+    assert eg.description == desc
+    assert eg.extra == extra
+
+    # currently must manually json dumps() extra field
+    with pytest.raises(fatcat_client.rest.ApiException):
+        api.create_creator_batch([c1, c2], autoaccept=True, description=desc, extra=extra)
+
+    with pytest.raises(fatcat_client.rest.ApiException):
+        api.create_creator_batch([c1, c2], autoaccept=True, description=desc, extra="{")
