@@ -597,8 +597,7 @@ definitions:
         type: integer
         format: int64
       creator_id:
-        type: string
-        #format: ident
+        <<: *FATCATIDENT
       creator:
         $ref: "#/definitions/creator_entity"
         description: "Optional; GET-only"
@@ -866,8 +865,7 @@ paths:
           schema:
             type: array
             items:
-              type: string
-              #format: ident
+              <<: *FATCATIDENT
         <<: *ENTITYRESPONSES
   /container/lookup:
     get:
@@ -1155,8 +1153,7 @@ paths:
           schema:
             type: array
             items:
-              type: string
-              #format: ident
+              <<: *FATCATIDENT
         <<: *ENTITYRESPONSES
   /creator/lookup:
     get:
@@ -1421,8 +1418,7 @@ paths:
           schema:
             type: array
             items:
-              type: string
-              #format: ident
+              <<: *FATCATIDENT
         <<: *ENTITYRESPONSES
   /file/lookup:
     get:
@@ -1692,8 +1688,7 @@ paths:
           schema:
             type: array
             items:
-              type: string
-              #format: ident
+              <<: *FATCATIDENT
         <<: *ENTITYRESPONSES
   /fileset/edit/{edit_id}:
     get:
@@ -1929,8 +1924,7 @@ paths:
           schema:
             type: array
             items:
-              type: string
-              #format: ident
+              <<: *FATCATIDENT
         <<: *ENTITYRESPONSES
   /webcapture/edit/{edit_id}:
     get:
@@ -2235,8 +2229,7 @@ paths:
           schema:
             type: array
             items:
-              type: string
-              #format: ident
+              <<: *FATCATIDENT
         <<: *ENTITYRESPONSES
   /release/lookup:
     get:
@@ -2526,8 +2519,7 @@ paths:
           schema:
             type: array
             items:
-              type: string
-              #format: ident
+              <<: *FATCATIDENT
         <<: *ENTITYRESPONSES
   /work/{ident}/releases:
     parameters:
