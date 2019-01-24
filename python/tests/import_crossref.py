@@ -1,5 +1,5 @@
 
-import json
+import json, gzip
 import pytest
 from fatcat_tools.importers import CrossrefImporter, JsonLinePusher
 from fixtures import api
@@ -15,9 +15,17 @@ def crossref_importer_existing(api):
     with open('tests/files/ISSN-to-ISSN-L.snip.txt', 'r') as issn_file:
         yield CrossrefImporter(api, issn_file, extid_map_file='tests/files/example_map.sqlite3', bezerk_mode=False)
 
-def test_crossref_importer_batch(crossref_importer):
-    with open('tests/files/crossref-works.2018-01-21.badsample.json', 'r') as f:
-        JsonLinePusher(crossref_importer, f).run()
+def test_crossref_importer_huge(crossref_importer):
+    last_index = crossref_importer.api.get_changelog(limit=1)[0].index
+    with gzip.open('tests/files/huge_crossref_doi.json.gz', 'rt') as f:
+        crossref_importer.bezerk_mode = True
+        line = f.readline()
+        mega_blob = [line for i in range(95)]
+        counts = JsonLinePusher(crossref_importer, mega_blob).run()
+    assert counts['insert'] == 95
+    change = crossref_importer.api.get_changelog_entry(index=last_index+1)
+    release = crossref_importer.api.get_release(change.editgroup.edits.releases[0].ident)
+    assert len(release.contribs) == 1014
 
 def test_crossref_importer(crossref_importer):
     last_index = crossref_importer.api.get_changelog(limit=1)[0].index

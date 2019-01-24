@@ -303,9 +303,12 @@ class CrossrefImporter(EntityImporter):
         # external identifiers
         extids = self.lookup_ext_ids(doi=obj['DOI'].lower())
 
-        # TODO: filter out huge releases; we'll get them later (and fix bug in
-        # fatcatd)
-        if max(len(contribs), len(refs), len(abstracts)) > 750:
+        # filter out unreasonably huge releases
+        if len(abstracts) > 100:
+            return None
+        if len(refs) > 2000:
+            return None
+        if len(refs) > 5000:
             return None
 
         # release date parsing is amazingly complex
@@ -322,11 +325,16 @@ class CrossrefImporter(EntityImporter):
             release_year = raw_date[0]
             release_date = None
 
+        original_title = None
+        if obj.get('original-title'):
+            original_title = clean(obj.get('original-title')[0], force_xml=True)
+        if obj.get('title'):
+            title = clean(obj.get('title')[0], force_xml=True)
         re = fatcat_client.ReleaseEntity(
             work_id=None,
             container_id=container_id,
-            title=clean(obj.get('title', [None])[0], force_xml=True),
-            original_title=clean(obj.get('original-title', [None])[0]),
+            title=title,
+            original_title=original_title,
             release_type=release_type,
             release_status=release_status,
             release_date=release_date,

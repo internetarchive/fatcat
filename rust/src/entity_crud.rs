@@ -1964,7 +1964,26 @@ impl EntityCrud for ReleaseEntity {
             if let Some(ref release_type) = entity.release_type {
                 check_release_type(release_type)?;
             }
+            if let Some(ref abstracts) = entity.abstracts {
+                if abstracts.len() > 200 {
+                    return Err(FatcatError::BadRequest(
+                        "too many abstracts (sanity cap is 200)".to_string(),
+                    ).into())
+                }
+            }
+            if let Some(ref refs) = entity.abstracts {
+                if refs.len() > 10000 {
+                    return Err(FatcatError::BadRequest(
+                        "too many refs (sanity cap is 10000)".to_string(),
+                    ).into())
+                }
+            }
             if let Some(ref contribs) = entity.contribs {
+                if contribs.len() > 10000 {
+                    return Err(FatcatError::BadRequest(
+                        "too many contributors (sanity cap is 10000)".to_string(),
+                    ).into())
+                }
                 for contrib in contribs {
                     if let Some(ref role) = contrib.role {
                         check_contrib_role(role)?;
@@ -2160,18 +2179,20 @@ impl EntityCrud for ReleaseEntity {
             }
         }
 
-        if !release_ref_rows.is_empty() {
+        // can't insert more than 65k rows at a time, so take chunks
+        for release_ref_batch in release_ref_rows.chunks(2000) {
             insert_into(release_ref::table)
-                .values(release_ref_rows)
+                .values(release_ref_batch)
                 .execute(conn)?;
         }
 
-        if !release_contrib_rows.is_empty() {
+        for release_contrib_batch in release_contrib_rows.chunks(2000) {
             insert_into(release_contrib::table)
-                .values(release_contrib_rows)
+                .values(release_contrib_batch)
                 .execute(conn)?;
         }
 
+        // limit is much smaller for abstracts, so don't need to batch
         if !abstract_rows.is_empty() {
             // Sort of an "upsert"; only inserts new abstract rows if they don't already exist
             insert_into(abstracts::table)
