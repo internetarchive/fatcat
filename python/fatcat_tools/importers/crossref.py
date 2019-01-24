@@ -114,25 +114,10 @@ class CrossrefImporter(EntityImporter):
         return CONTAINER_TYPE_MAP.get(release_type)
 
     def want(self, obj):
-
-        # Ways to be out of scope (provisionally)
-        # journal-issue and journal-volume map to None, but allowed for now
-        if obj.get('type') in (None, 'journal', 'proceedings',
-                'standard-series', 'report-series', 'book-series', 'book-set',
-                'book-track', 'proceedings-series'):
+        if not obj.get('title'):
             return False
 
-        # Do require the 'title' keys to exsit, as release entities do
-        if (not 'title' in obj) or (not obj['title']):
-            return False
-
-        # Can't handle such large lists yet
-        authors = len(obj.get('author', []))
-        abstracts = len(obj.get('abstract', []))
-        refs = len(obj.get('reference', []))
-        if max(authors, abstracts, refs) > 750:
-            return False
-
+        # do most of these checks in-line below
         return True
 
     def parse_record(self, obj):
@@ -140,6 +125,17 @@ class CrossrefImporter(EntityImporter):
         obj is a python dict (parsed from json).
         returns a ReleaseEntity
         """
+
+        # Ways to be out of scope (provisionally)
+        # journal-issue and journal-volume map to None, but allowed for now
+        if obj.get('type') in (None, 'journal', 'proceedings',
+                'standard-series', 'report-series', 'book-series', 'book-set',
+                'book-track', 'proceedings-series'):
+            return None
+
+        # Do require the 'title' keys to exsit, as release entities do
+        if (not 'title' in obj) or (not obj['title']):
+            return None
 
         release_type = self.map_release_type(obj['type'])
 
@@ -168,10 +164,10 @@ class CrossrefImporter(EntityImporter):
                     if len(am.get('affiliation')) > 0:
                         raw_affiliation = am.get('affiliation')[0]['name']
                     if len(am.get('affiliation')) > 1:
-                        # note: affiliation => affiliations
-                        extra['affiliations'] = [clean(a['name']) for a in am.get('affiliation')[1:]]
+                        # note: affiliation => more_affiliations
+                        extra['more_affiliations'] = [clean(a['name']) for a in am.get('affiliation')[1:]]
                 if am.get('sequence') and am.get('sequence') != "additional":
-                    extra['sequence'] = am.get('sequence')
+                    extra['seq'] = clean(am.get('sequence'))
                 if not extra:
                     extra = None
                 assert ctype in ("author", "editor", "translator")
@@ -207,28 +203,28 @@ class CrossrefImporter(EntityImporter):
 
         # license slug
         license_slug = None
+        license_extra = []
         for l in obj.get('license', []):
             if l['content-version'] not in ('vor', 'unspecified'):
                 continue
             slug = LICENSE_SLUG_MAP.get(l['URL'])
             if slug:
                 license_slug = slug
-                break
+            if 'start' in l:
+                l['start'] = l['start']['date-time']
+            license_extra.append(l)
 
         # references
         refs = []
         for i, rm in enumerate(obj.get('reference', [])):
             try:
                 year = int(rm.get('year'))
-                # NOTE: will need to update/config in the future!
+                # TODO: will need to update/config in the future!
                 # NOTE: are there crossref works with year < 100?
                 if year > 2025 or year < 100:
                     year = None
             except:
                 year = None
-            extra = rm.copy()
-            if rm.get('DOI'):
-                extra['doi'] = rm.get('DOI').lower()
             key = rm.get('key')
             if key and key.startswith(obj['DOI'].upper()):
                 key = key.replace(obj['DOI'].upper() + "-", '')
@@ -236,18 +232,18 @@ class CrossrefImporter(EntityImporter):
             container_name = rm.get('volume-title')
             if not container_name:
                 container_name = rm.get('journal-title')
-            ref_locator = rm.get('first-page')
-            ref_title = rm.get('title')
-            if extra.get('DOI'):
-                extra['doi'] = extra['DOI']
-            extra.pop('DOI', None)
-            extra.pop('key', None)
-            extra.pop('year', None)
-            extra.pop('volume-title', None)
-            extra.pop('journal-title', None)
-            extra.pop('title', None)
-            extra.pop('first-page', None)
-            extra.pop('doi-asserted-by', None)
+            elif rm.get('journal-title'):
+                extra['journal-title'] = rm['journal-title']
+            extra = dict()
+            if rm.get('DOI'):
+                extra['doi'] = rm.get('DOI').lower()
+            # TODO: what fields here? CSL citation stuff
+            for k in ('authors', 'editor', 'edition', 'authority', 'version',
+                    'genre', 'url', 'event', 'issue', 'volume', 'date',
+                    'accessed_date', 'issued', 'page', 'medium',
+                    'collection_title', 'chapter_number'):
+                if clean(rm.get(k)):
+                    extra[k] = clean(rm[k])
             if extra:
                 extra = dict(crossref=extra)
             else:
@@ -259,8 +255,8 @@ class CrossrefImporter(EntityImporter):
                 key=key,
                 year=clean(year),
                 container_name=clean(container_name),
-                title=clean(ref_title),
-                locator=clean(ref_locator),
+                title=clean(rm.get('title')),
+                locator=clean(rm.get('first-page')),
                 # TODO: just dump JSON somewhere here?
                 extra=extra))
 
@@ -273,24 +269,20 @@ class CrossrefImporter(EntityImporter):
 
         # extra fields
         extra = dict()
-        for key in ('subject', 'type', 'license', 'alternative-id',
-                'container-title', 'original-title', 'subtitle', 'archive',
-                'funder', 'group-title'):
-            # TODO: unpack "container-title" array
+        for key in ('subject', 'type', 'alternative-id', 'container-title',
+                'subtitle', 'archive', 'funder', 'group-title'):
+            # TODO: unpack "container-title" array?
             val = obj.get(key)
             if val:
                 if type(val) == str:
                     extra[key] = clean(val)
                 else:
                     extra[key] = val
-        if 'license' in extra and extra['license']:
-            for i in range(len(extra['license'])):
-                if 'start' in extra['license'][i]:
-                    extra['license'][i]['start'] = extra['license'][i]['start']['date-time']
+        if license_extra:
+            extra['license'] = license_extra
+
         if len(obj['title']) > 1:
             extra['other-titles'] = [clean(t) for t in obj['title'][1:]]
-        # TODO: this should be top-level
-        extra['is_kept'] = len(obj.get('archive', [])) > 0
 
         # ISBN
         isbn13 = None
@@ -313,7 +305,8 @@ class CrossrefImporter(EntityImporter):
 
         # TODO: filter out huge releases; we'll get them later (and fix bug in
         # fatcatd)
-        assert max(len(contribs), len(refs), len(abstracts)) <= 750
+        if max(len(contribs), len(refs), len(abstracts)) > 750:
+            return None
 
         # release date parsing is amazingly complex
         raw_date = obj['issued']['date-parts'][0]
