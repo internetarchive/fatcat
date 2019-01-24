@@ -48,7 +48,7 @@ CREATE TABLE editgroup (
     created             TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
     submitted           TIMESTAMP WITH TIME ZONE,
     is_accepted         BOOLEAN DEFAULT false NOT NULL,
-    description         TEXT,
+    description         TEXT CHECK (octet_length(description) >= 1),
     extra_json          JSONB
 );
 
@@ -61,7 +61,7 @@ CREATE TABLE editgroup_annotation (
     editgroup_id        UUID REFERENCES editgroup(id) NOT NULL,
     editor_id           UUID REFERENCES editor(id) NOT NULL,
     created             TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
-    comment_markdown    TEXT,
+    comment_markdown    TEXT CHECK (octet_length(comment_markdown) >= 1),
     extra_json          JSONB
 );
 
@@ -80,7 +80,7 @@ CREATE INDEX changelog_editgroup_idx ON changelog(editgroup_id);
 CREATE TABLE abstracts (
     -- fixed size hash (in hex). TODO: switch to bytes
     sha1                TEXT PRIMARY KEY CHECK (octet_length(sha1) = 40),
-    content             TEXT NOT NULL
+    content             TEXT NOT NULL CHECK (octet_length(content) >= 8)
 );
 
 CREATE TABLE refs_blob (
@@ -94,9 +94,9 @@ CREATE TABLE creator_rev (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     extra_json          JSONB,
 
-    display_name        TEXT NOT NULL,
-    given_name          TEXT,
-    surname             TEXT,
+    display_name        TEXT NOT NULL CHECK (octet_length(display_name) >= 1),
+    given_name          TEXT CHECK (octet_length(given_name) >= 1),
+    surname             TEXT CHECK (octet_length(surname) >= 1),
     -- fixed size identifier
     orcid               TEXT CHECK(octet_length(orcid) = 19),
     -- limited size for data quality
@@ -139,9 +139,9 @@ CREATE TABLE container_rev (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     extra_json          JSONB,
 
-    name                TEXT NOT NULL,
+    name                TEXT NOT NULL CHECK (octet_length(name) >= 1),
     container_type      TEXT,
-    publisher           TEXT,
+    publisher           TEXT CHECK (octet_length(publisher) >= 1),
     -- fixed size identifier
     issnl               TEXT CHECK(octet_length(issnl) = 9),
     -- limited size for data quality
@@ -180,10 +180,10 @@ CREATE TABLE file_rev (
 
     size_bytes          BIGINT,
     -- fixed size hashes (in hex). TODO: switch to binary type type
-    sha1                TEXT CHECK(octet_length(sha1) = 40),
-    sha256              TEXT CHECK(octet_length(sha256) = 64),
-    md5                 TEXT CHECK(octet_length(md5) = 32),
-    mimetype            TEXT
+    sha1                TEXT CHECK (octet_length(sha1) = 40),
+    sha256              TEXT CHECK (octet_length(sha256) = 64),
+    md5                 TEXT CHECK (octet_length(md5) = 32),
+    mimetype            TEXT CHECK (octet_length(mimetype) >= 3)
 );
 
 CREATE INDEX file_rev_sha1_idx ON file_rev(sha1);
@@ -193,8 +193,8 @@ CREATE INDEX file_rev_sha256_idx ON file_rev(sha256);
 CREATE TABLE file_rev_url (
     id                  BIGSERIAL PRIMARY KEY,
     file_rev            UUID REFERENCES file_rev(id) NOT NULL,
-    rel                 TEXT NOT NULL, -- TODO: enum? web, webarchive, repo, etc
-    url                 TEXT NOT NULL
+    rel                 TEXT NOT NULL CHECK (octet_length(rel) >= 1), -- TODO: enum? web, webarchive, repo, etc
+    url                 TEXT NOT NULL CHECK (octet_length(url) >= 1)
 );
 
 CREATE INDEX file_rev_url_rev_idx ON file_rev_url(file_rev);
@@ -230,8 +230,8 @@ CREATE TABLE fileset_rev (
 CREATE TABLE fileset_rev_url (
     id                  BIGSERIAL PRIMARY KEY,
     fileset_rev         UUID REFERENCES fileset_rev(id) NOT NULL,
-    rel                 TEXT NOT NULL, -- TODO: enum? web, webarchive, repo, etc
-    url                 TEXT NOT NULL
+    rel                 TEXT NOT NULL CHECK (octet_length(rel) >= 1), -- TODO: enum? web, webarchive, repo, etc
+    url                 TEXT NOT NULL CHECK (octet_length(url) >= 1)
 );
 
 CREATE INDEX fileset_rev_url_rev_idx ON fileset_rev_url(fileset_rev);
@@ -239,7 +239,7 @@ CREATE INDEX fileset_rev_url_rev_idx ON fileset_rev_url(fileset_rev);
 CREATE TABLE fileset_rev_file (
     id                  BIGSERIAL PRIMARY KEY,
     fileset_rev         UUID REFERENCES fileset_rev(id) NOT NULL,
-    path_name           TEXT NOT NULL,
+    path_name           TEXT NOT NULL CHECK (octet_length(path_name) >= 1),
     size_bytes          BIGINT NOT NULL,
     md5                 TEXT CHECK(octet_length(md5) = 32),
     sha1                TEXT CHECK(octet_length(sha1) = 40),
@@ -275,15 +275,15 @@ CREATE TABLE webcapture_rev (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     extra_json          JSONB,
 
-    original_url        TEXT NOT NULL,
+    original_url        TEXT NOT NULL CHECK (octet_length(original_url) >= 1),
     timestamp           TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
 CREATE TABLE webcapture_rev_url (
     id                  BIGSERIAL PRIMARY KEY,
     webcapture_rev      UUID REFERENCES webcapture_rev(id) NOT NULL,
-    rel                 TEXT NOT NULL, -- TODO: enum? web, webarchive, repo, etc
-    url                 TEXT NOT NULL
+    rel                 TEXT NOT NULL CHECK (octet_length(rel) >= 1), -- TODO: enum? web, webarchive, repo, etc
+    url                 TEXT NOT NULL CHECK (octet_length(url) >= 1)
 );
 
 CREATE INDEX webcapture_rev_url_rev_idx ON webcapture_rev_url(webcapture_rev);
@@ -291,10 +291,10 @@ CREATE INDEX webcapture_rev_url_rev_idx ON webcapture_rev_url(webcapture_rev);
 CREATE TABLE webcapture_rev_cdx (
     id                  BIGSERIAL PRIMARY KEY,
     webcapture_rev      UUID REFERENCES webcapture_rev(id) NOT NULL,
-    surt                TEXT NOT NULL,
+    surt                TEXT NOT NULL CHECK (octet_length(surt) >= 1),
     timestamp           TIMESTAMP WITH TIME ZONE NOT NULL,
-    url                 TEXT NOT NULL,
-    mimetype            TEXT,
+    url                 TEXT NOT NULL CHECK (octet_length(url) >= 1),
+    mimetype            TEXT CHECK (octet_length(mimetype) >= 1),
     status_code         BIGINT,
     sha1                TEXT CHECK(octet_length(sha1) = 40) NOT NULL,
     sha256              TEXT CHECK(octet_length(sha256) = 64)
@@ -332,27 +332,27 @@ CREATE TABLE release_rev (
     work_ident_id       UUID NOT NULL, -- FOREIGN KEY; see ALRTER below
     container_ident_id  UUID REFERENCES container_ident(id),
     refs_blob_sha1      TEXT REFERENCES refs_blob(sha1),
-    title               TEXT NOT NULL,
-    original_title      TEXT,
+    title               TEXT NOT NULL CHECK (octet_length(title) >= 1),
+    original_title      TEXT CHECK (octet_length(original_title) >= 1),
     release_type        TEXT, -- TODO: enum
     release_status      TEXT, -- TODO: enum
     release_date        DATE,
     release_year        BIGINT,
-    doi                 TEXT,
+    doi                 TEXT CHECK (octet_length(doi) >= 7),
     -- CHECK for length limit for data quality
-    pmid                TEXT CHECK(octet_length(pmid) <= 12),
-    pmcid               TEXT CHECK(octet_length(pmcid) <= 12),
-    wikidata_qid        TEXT CHECK(octet_length(wikidata_qid) <= 12),
-    isbn13              TEXT CHECK(octet_length(isbn13) = 17),
-    core_id             TEXT CHECK(octet_length(core_id) <= 12),
-    arxiv_id            TEXT CHECK(octet_length(arxiv_id) <= 12),
-    jstor_id            TEXT CHECK(octet_length(jstor_id) <= 12),
-    volume              TEXT,
-    issue               TEXT,
-    pages               TEXT,
-    publisher           TEXT, -- for books, NOT if container exists
-    language            TEXT, -- primary language of the work's fulltext; RFC1766/ISO639-1
-    license_slug        TEXT
+    pmid                TEXT CHECK (octet_length(pmid) <= 12),
+    pmcid               TEXT CHECK (octet_length(pmcid) <= 12),
+    wikidata_qid        TEXT CHECK (octet_length(wikidata_qid) <= 12),
+    isbn13              TEXT CHECK (octet_length(isbn13) = 17),
+    core_id             TEXT CHECK (octet_length(core_id) <= 12),
+    arxiv_id            TEXT CHECK (octet_length(arxiv_id) <= 12),
+    jstor_id            TEXT CHECK (octet_length(jstor_id) <= 12),
+    volume              TEXT CHECK (octet_length(volume) >= 1),
+    issue               TEXT CHECK (octet_length(issue) >= 1),
+    pages               TEXT CHECK (octet_length(pages) >= 1),
+    publisher           TEXT CHECK (octet_length(publisher) >= 1), -- for books, NOT if container exists
+    language            TEXT CHECK (octet_length(language) >= 1), -- primary language of the work's fulltext; RFC1766/ISO639-1
+    license_slug        TEXT CHECK (octet_length(license_slug) >= 1)
     -- TODO: oclc_ocn (TEXT or BIGINT)
     -- TODO: identifier table?
 );
@@ -371,8 +371,8 @@ CREATE TABLE release_rev_abstract (
     id              BIGSERIAL PRIMARY KEY,
     release_rev     UUID REFERENCES release_rev(id) NOT NULL,
     abstract_sha1   TEXT REFERENCES abstracts(sha1) NOT NULL,
-    mimetype        TEXT,
-    lang            TEXT
+    mimetype        TEXT CHECK (octet_length(mimetype) >= 1),
+    lang            TEXT CHECK (octet_length(lang) >= 1)
 );
 
 CREATE INDEX release_rev_abstract_rev_idx ON release_rev_abstract(release_rev);
@@ -438,9 +438,9 @@ CREATE TABLE release_contrib (
     id                  BIGSERIAL PRIMARY KEY,
     release_rev         UUID REFERENCES release_rev(id) NOT NULL,
     creator_ident_id    UUID REFERENCES creator_ident(id),
-    raw_name            TEXT,
+    raw_name            TEXT CHECK (octet_length(raw_name) >= 1),
     role                TEXT, -- TODO: enum?
-    raw_affiliation     TEXT,
+    raw_affiliation     TEXT CHECK (octet_length(raw_affiliation) >= 1),
     index_val           INTEGER,
     extra_json          JSONB
 );
