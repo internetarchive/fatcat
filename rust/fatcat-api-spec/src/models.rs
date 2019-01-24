@@ -692,6 +692,7 @@ pub struct ReleaseContrib {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub index: Option<i64>,
 
+    /// base32-encoded unique identifier
     #[serde(rename = "creator_id")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub creator_id: Option<String>,

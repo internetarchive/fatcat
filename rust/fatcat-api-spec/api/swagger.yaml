@@ -629,6 +629,11 @@ paths:
             type: "array"
             items:
               type: "string"
+              example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+              description: "base32-encoded unique identifier"
+              minLength: 26
+              maxLength: 26
+              pattern: "[a-zA-Z2-7]{26}"
           x-responseId: "FoundEntityRedirects"
           x-uppercaseResponseId: "FOUND_ENTITY_REDIRECTS"
           uppercase_operation_id: "GET_CONTAINER_REDIRECTS"
@@ -1551,6 +1556,11 @@ paths:
             type: "array"
             items:
               type: "string"
+              example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+              description: "base32-encoded unique identifier"
+              minLength: 26
+              maxLength: 26
+              pattern: "[a-zA-Z2-7]{26}"
           x-responseId: "FoundEntityRedirects"
           x-uppercaseResponseId: "FOUND_ENTITY_REDIRECTS"
           uppercase_operation_id: "GET_CREATOR_REDIRECTS"
@@ -2409,6 +2419,11 @@ paths:
             type: "array"
             items:
               type: "string"
+              example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+              description: "base32-encoded unique identifier"
+              minLength: 26
+              maxLength: 26
+              pattern: "[a-zA-Z2-7]{26}"
           x-responseId: "FoundEntityRedirects"
           x-uppercaseResponseId: "FOUND_ENTITY_REDIRECTS"
           uppercase_operation_id: "GET_FILE_REDIRECTS"
@@ -3280,6 +3295,11 @@ paths:
             type: "array"
             items:
               type: "string"
+              example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+              description: "base32-encoded unique identifier"
+              minLength: 26
+              maxLength: 26
+              pattern: "[a-zA-Z2-7]{26}"
           x-responseId: "FoundEntityRedirects"
           x-uppercaseResponseId: "FOUND_ENTITY_REDIRECTS"
           uppercase_operation_id: "GET_FILESET_REDIRECTS"
@@ -4061,6 +4081,11 @@ paths:
             type: "array"
             items:
               type: "string"
+              example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+              description: "base32-encoded unique identifier"
+              minLength: 26
+              maxLength: 26
+              pattern: "[a-zA-Z2-7]{26}"
           x-responseId: "FoundEntityRedirects"
           x-uppercaseResponseId: "FOUND_ENTITY_REDIRECTS"
           uppercase_operation_id: "GET_WEBCAPTURE_REDIRECTS"
@@ -5034,6 +5059,11 @@ paths:
             type: "array"
             items:
               type: "string"
+              example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+              description: "base32-encoded unique identifier"
+              minLength: 26
+              maxLength: 26
+              pattern: "[a-zA-Z2-7]{26}"
           x-responseId: "FoundEntityRedirects"
           x-uppercaseResponseId: "FOUND_ENTITY_REDIRECTS"
           uppercase_operation_id: "GET_RELEASE_REDIRECTS"
@@ -5926,6 +5956,11 @@ paths:
             type: "array"
             items:
               type: "string"
+              example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+              description: "base32-encoded unique identifier"
+              minLength: 26
+              maxLength: 26
+              pattern: "[a-zA-Z2-7]{26}"
           x-responseId: "FoundEntityRedirects"
           x-uppercaseResponseId: "FOUND_ENTITY_REDIRECTS"
           uppercase_operation_id: "GET_WORK_REDIRECTS"
@@ -7988,7 +8023,7 @@ definitions:
         raw_name: "raw_name"
         role: "role"
         extra: "{}"
-        creator_id: "creator_id"
+        creator_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
         index: 1
       - raw_affiliation: "raw_affiliation"
         creator:
@@ -8006,7 +8041,7 @@ definitions:
         raw_name: "raw_name"
         role: "role"
         extra: "{}"
-        creator_id: "creator_id"
+        creator_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
         index: 1
       pages: "pages"
       core_id: "core_id"
@@ -9040,6 +9075,11 @@ definitions:
         format: "int64"
       creator_id:
         type: "string"
+        example: "q3nouwy3nnbsvo3h5klxsx4a7y"
+        description: "base32-encoded unique identifier"
+        minLength: 26
+        maxLength: 26
+        pattern: "[a-zA-Z2-7]{26}"
       creator:
         description: "Optional; GET-only"
         $ref: "#/definitions/creator_entity"
@@ -9069,7 +9109,7 @@ definitions:
       raw_name: "raw_name"
       role: "role"
       extra: "{}"
-      creator_id: "creator_id"
+      creator_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
       index: 1
     upperCaseName: "RELEASE_CONTRIB"
   auth_oidc:

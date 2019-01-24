@@ -104,6 +104,7 @@ class ReleaseContrib(object):
     def creator_id(self):
         """Gets the creator_id of this ReleaseContrib.  # noqa: E501
 
+        base32-encoded unique identifier  # noqa: E501
 
         :return: The creator_id of this ReleaseContrib.  # noqa: E501
         :rtype: str
@@ -114,10 +115,17 @@ class ReleaseContrib(object):
     def creator_id(self, creator_id):
         """Sets the creator_id of this ReleaseContrib.
 
+        base32-encoded unique identifier  # noqa: E501
 
         :param creator_id: The creator_id of this ReleaseContrib.  # noqa: E501
         :type: str
         """
+        if creator_id is not None and len(creator_id) > 26:
+            raise ValueError("Invalid value for `creator_id`, length must be less than or equal to `26`")  # noqa: E501
+        if creator_id is not None and len(creator_id) < 26:
+            raise ValueError("Invalid value for `creator_id`, length must be greater than or equal to `26`")  # noqa: E501
+        if creator_id is not None and not re.search('[a-zA-Z2-7]{26}', creator_id):  # noqa: E501
+            raise ValueError("Invalid value for `creator_id`, must be a follow pattern or equal to `/[a-zA-Z2-7]{26}/`")  # noqa: E501
 
         self._creator_id = creator_id
 
