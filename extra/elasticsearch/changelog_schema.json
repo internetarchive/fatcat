@@ -1,0 +1,39 @@
+{
+"settings": {
+    "index": {
+        "analysis": {
+            "analyzer": {
+                "default": {
+                    "type": "custom",
+                    "tokenizer": "standard",
+                    "filter": [ "lowercase", "asciifolding" ]
+                }
+            }
+        }
+    }
+},
+"mappings": {
+    "changelog": {
+        "properties": {
+            "index":            { "type": "integer" },
+            "editgorup_id":     { "type": "keyword" },
+            "timestamp":        { "type": "datetime" },
+            "username":         { "type": "keyword" },
+            "is_bot":           { "type": "boolean" },
+            "is_admin":         { "type": "boolean" },
+            "agent":            { "type": "keyword" },
+            "containers":       { "type": "integer" },
+            "creators":         { "type": "integer" },
+            "files":            { "type": "integer" },
+            "filessets":        { "type": "integer" },
+            "webcaptures":      { "type": "integer" },
+            "releases":         { "type": "integer" },
+            "works":            { "type": "integer" },
+            "created":          { "type": "integer" },
+            "updated":          { "type": "integer" },
+            "deleted":          { "type": "integer" },
+            "total":            { "type": "integer" }
+        }
+    }
+}
+}
