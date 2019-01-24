@@ -32,6 +32,7 @@ class GrobidMetadataImporter(EntityImporter):
             editgroup_description=eg_desc,
             editgroup_extra=eg_extra)
         self.default_link_rel = kwargs.get("default_link_rel", "web")
+        self.longtail_oa = kwargs.get("longtail_oa", False)
 
     def want(self, raw_record):
         return True
@@ -130,11 +131,12 @@ class GrobidMetadataImporter(EntityImporter):
         if obj.get('doi'):
             extra['doi'] = obj['doi']
         if obj['journal'] and obj['journal'].get('name'):
-            extra['container_name'] = obj['journal']['name']
-
-        extra['is_longtail_oa'] = True
+            extra['container_name'] = clean(obj['journal']['name'])
 
         # TODO: ISSN/eISSN handling? or just journal name lookup?
+
+        if self.longtail_oa:
+            extra['longtail_oa'] = True
 
         if extra:
             extra = dict(grobid=extra)

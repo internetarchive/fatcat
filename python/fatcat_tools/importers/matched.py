@@ -120,6 +120,9 @@ class MatchedImporter(EntityImporter):
             if err.status != 404:
                 raise err
 
+        if not existing:
+            return True
+
         fe.release_ids = list(set(fe.release_ids + existing.release_ids))
         if set(fe.release_ids) == set(existing.release_ids) and len(existing.urls) > 0:
             # no new release matches *and* there are already existing URLs
@@ -127,13 +130,14 @@ class MatchedImporter(EntityImporter):
             return False
 
         # merge the existing into this one and update
-        existing.urls = list(set(fe.urls + existing.urls))
+        existing.urls = list(set([(u.rel, u.url) for u in fe.urls + existing.urls]))
+        existing.urls = [fatcat_client.FileEntityUrls(rel=rel, url=url) for (rel, url) in existing.urls]
         existing.release_ids = list(set(fe.release_ids + existing.release_ids))
         existing.mimetype = existing.mimetype or fe.mimetype
         existing.size = existing.size or fe.size
         existing.md5 = existing.md5 or fe.md5
         existing.sha256 = existing.sha256 or fe.sha256
-        self.api.update_file(existing.ident, existing)
+        self.api.update_file(existing.ident, existing, editgroup_id=self._get_editgroup())
         self.counts['update'] += 1
         return False
 

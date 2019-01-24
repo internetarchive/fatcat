@@ -111,7 +111,7 @@ class CrossrefImporter(EntityImporter):
         return CROSSREF_TYPE_MAP.get(crossref_type)
 
     def map_container_type(self, crossref_type):
-        return CONTAINER_TYPE_MAP.get(release_type)
+        return CONTAINER_TYPE_MAP.get(crossref_type)
 
     def want(self, obj):
         if not obj.get('title'):
@@ -238,7 +238,7 @@ class CrossrefImporter(EntityImporter):
             if rm.get('DOI'):
                 extra['doi'] = rm.get('DOI').lower()
             # TODO: what fields here? CSL citation stuff
-            for k in ('authors', 'editor', 'edition', 'authority', 'version',
+            for k in ('author', 'editor', 'edition', 'authority', 'version',
                     'genre', 'url', 'event', 'issue', 'volume', 'date',
                     'accessed_date', 'issued', 'page', 'medium',
                     'collection_title', 'chapter_number'):
@@ -253,7 +253,7 @@ class CrossrefImporter(EntityImporter):
                 # doing lookups would be a second import pass
                 target_release_id=None,
                 key=key,
-                year=clean(year),
+                year=year,
                 container_name=clean(container_name),
                 title=clean(rm.get('title')),
                 locator=clean(rm.get('first-page')),
