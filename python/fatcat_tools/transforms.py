@@ -97,7 +97,7 @@ def release_to_elasticsearch(release):
         t['in_shadow'] = extra.get('in_shadow')
         if extra.get('grobid') and extra['grobid'].get('is_longtail_oa'):
             t['container_is_longtail_oa'] = True
-    t['any_abstract'] = bool(release.abstracts)
+    t['any_abstract'] = len(release.abstracts) > 0
     t['is_kept'] = container_is_kept or extra.get('is_kept', False)
 
     t['ref_count'] = len(release.refs or [])
