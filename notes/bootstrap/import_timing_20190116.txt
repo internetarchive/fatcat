@@ -420,3 +420,73 @@ Huh. Expected this to basically double size... what happened? Doing fetches?
 So... it was doing fetches (no 'no_release_updates' flag passed), but still
 inserted 5 million? also not good.
 
+    time xzcat /srv/fatcat/datasets/crossref-works.2018-09-05.json.xz | time parallel -j20 --round-robin --pipe ./fatcat_import.py crossref - /srv/fatcat/datasets/20180216.ISSN-to-ISSN-L.txt --extid-map-file /srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3 --no-release-updates
+
+    Processed 5001450 lines, inserted 4811233, updated 0.
+    138166.58user 5605.61system 43:47:54elapsed 91%CPU (0avgtext+0avgdata 426964maxresident)k
+    208379288inputs+488675440outputs (267864major+49077696minor)pagefaults 0swaps
+
+    real    2627m55.003s
+    user    2386m11.476s
+    sys     99m0.408s
+
+							  table_name                          | table_size | indexes_size | total_size 
+	--------------------------------------------------------------+------------+--------------+------------
+	 "public"."release_rev"                                       | 93 GB      | 53 GB        | 146 GB
+	 "public"."release_contrib"                                   | 52 GB      | 45 GB        | 97 GB
+	 "public"."refs_blob"                                         | 72 GB      | 1898 MB      | 73 GB
+	 "public"."release_edit"                                      | 18 GB      | 20 GB        | 39 GB
+	 "public"."work_edit"                                         | 18 GB      | 20 GB        | 39 GB
+	 "public"."work_ident"                                        | 12 GB      | 20 GB        | 32 GB
+	 "public"."release_ident"                                     | 12 GB      | 20 GB        | 32 GB
+	 "public"."work_rev"                                          | 8185 MB    | 7596 MB      | 15 GB
+	 "public"."file_rev_url"                                      | 6151 MB    | 2346 MB      | 8496 MB
+	 "public"."abstracts"                                         | 4134 MB    | 303 MB       | 4437 MB
+	 "public"."file_rev"                                          | 1403 MB    | 2309 MB      | 3712 MB
+	 "public"."file_edit"                                         | 1181 MB    | 1236 MB      | 2417 MB
+	 "public"."file_rev_release"                                  | 721 MB     | 1266 MB      | 1987 MB
+	 "public"."file_ident"                                        | 691 MB     | 1163 MB      | 1854 MB
+	 "public"."release_rev_abstract"                              | 700 MB     | 919 MB       | 1619 MB
+	 "public"."editgroup"                                         | 486 MB     | 788 MB       | 1275 MB
+	 "public"."creator_rev"                                       | 371 MB     | 456 MB       | 827 MB
+	 "public"."creator_edit"                                      | 377 MB     | 421 MB       | 798 MB
+	 "public"."changelog"                                         | 365 MB     | 381 MB       | 746 MB
+	 "public"."creator_ident"                                     | 255 MB     | 412 MB       | 667 MB
+	 "public"."container_rev"                                     | 20 MB      | 9272 kB      | 29 MB
+	 "public"."container_edit"                                    | 9472 kB    | 8880 kB      | 18 MB
+	 "public"."container_ident"                                   | 7592 kB    | 9136 kB      | 16 MB
+
+		   relname        | too_much_seq | case |   rel_size   | seq_scan |  idx_scan  
+	----------------------+--------------+------+--------------+----------+------------
+	 release_edit         |      -487544 | OK   |  19594010624 |       26 |     487570
+	 work_edit            |      -487615 | OK   |  19594043392 |       26 |     487641
+	 file_edit            |      -488168 | OK   |   1237671936 |       19 |     488187
+	 creator_edit         |      -488173 | OK   |    395321344 |       26 |     488199
+	 container_edit       |      -488306 | OK   |      9666560 |       49 |     488355
+	 file_rev_url         |     -2166808 | OK   |   6448095232 |        2 |    2166810
+	 file_rev_release     |     -2166881 | OK   |    756015104 |        7 |    2166888
+	 container_rev        |     -2264841 | OK   |     21364736 |        3 |    2264844
+	 changelog            |    -11338986 | OK   |    382525440 |        2 |   11338988
+	 creator_rev          |    -12726261 | OK   |    388710400 |        3 |   12726264
+	 creator_ident        |    -14563891 | OK   |    267010048 |        6 |   14563897
+	 abstracts            |    -15594992 | OK   |   4052975616 |        1 |   15594993
+	 file_ident           |    -23532116 | OK   |    724213760 |    60366 |   23592482
+	 file_rev             |    -84478438 | OK   |   1470947328 |       10 |   84478448
+	 release_contrib      |    -97501069 | OK   |  55310950400 |        3 |   97501072
+	 release_rev_abstract |    -97505413 | OK   |    734248960 |        3 |   97505416
+	 refs_blob            |   -108179066 | OK   |  15747162112 |       11 |  108179077
+	 container_ident      |   -152392399 | OK   |      7749632 |        5 |  152392404
+	 release_ident        |   -307197678 | OK   |  13256884224 |     3557 |  307201235
+	 work_rev             |   -387420683 | OK   |   8580505600 |        1 |  387420684
+	 work_ident           |   -390871805 | OK   |  13256515584 |     4074 |  390875879
+	 editgroup            |   -409831715 | OK   |    509853696 |        3 |  409831718
+	 release_rev          |  -1112440989 | OK   | 100107378688 |        9 | 1112440998
+
+	Size:  501.37G
+
+	select count(*) from refs_blob;
+	22,322,742
+
+	select count(*) from release_ident;
+	193,709,943
+
