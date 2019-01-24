@@ -101,3 +101,16 @@ def test_release_examples(api):
     assert r1.contribs[0].role == "editor"
     assert r1.abstracts[0].mimetype == "application/xml+jats"
 
+def test_empty_fields(api):
+
+    eg = quick_eg(api)
+
+    r1 = ReleaseEntity(title="something", contribs=[ReleaseContrib(raw_name="somebody")])
+    r1edit = api.create_release(r1, editgroup_id=eg.editgroup_id)
+
+    with pytest.raises(fatcat_client.rest.ApiException):
+        r2 = ReleaseEntity(title="")
+        api.create_release(r2, editgroup_id=eg.editgroup_id)
+    with pytest.raises(fatcat_client.rest.ApiException):
+        r2 = ReleaseEntity(title="something", contribs=[ReleaseContrib(raw_name="")])
+        api.create_release(r2, editgroup_id=eg.editgroup_id)
