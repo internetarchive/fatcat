@@ -47,6 +47,66 @@ def test_clean():
     assert clean('<b>a&amp;b</b>') == '<b>a&amp;b</b>'
     assert clean('<b>a&amp;b</b>', force_xml=True) == '<b>a&b</b>'
 
+DOMAIN_REL_MAP = {
+    "archive.org": "repository",
+    "arxiv.org": "repository",
+    "babel.hathitrust.org": "repository",
+    "cds.cern.ch": "repository",
+    "citeseerx.ist.psu.edu": "repository",
+    "deepblue.lib.umich.edu": "repository",
+    "europepmc.org": "repository",
+    "hal.inria.fr": "repository",
+    "scielo.isciii.es": "repository",
+    "www.dtic.mil": "repository",
+    "www.jstage.jst.go.jp": "repository",
+    "www.jstor.org": "repository",
+    "www.ncbi.nlm.nih.gov": "repository",
+    "www.scielo.br": "repository",
+    "www.scielo.cl": "repository",
+    "www.scielo.org.mx": "repository",
+    "zenodo.org": "repository",
+
+    "academic.oup.com": "publisher",
+    "cdn.elifesciences.org": "publisher",
+    "cell.com": "publisher",
+    "dl.acm.org": "publisher",
+    "downloads.hindawi.com": "publisher",
+    "elifesciences.org": "publisher",
+    "iopscience.iop.org": "publisher",
+    "journals.plos.org": "publisher",
+    "link.springer.com": "publisher",
+    "onlinelibrary.wiley.com": "publisher",
+    "works.bepress.com": "publisher",
+    "www.biomedcentral.com": "publisher",
+    "www.cell.com": "publisher",
+    "www.nature.com": "publisher",
+    "www.pnas.org": "publisher",
+    "www.tandfonline.com": "publisher",
+
+    "www.researchgate.net": "social",
+    "academia.edu": "social",
+
+    "wayback.archive-it.org": "webarchive",
+    "web.archive.org": "webarchive",
+    "archive.is": "webarchive",
+}
+
+def make_rel_url(raw_url, default_link_rel="web"):
+    # this is where we map specific domains to rel types, and also filter out
+    # bad domains, invalid URLs, etc
+    rel = default_link_rel
+    for domain, domain_rel in DOMAIN_REL_MAP.items():
+        if "//{}/".format(domain) in raw_url:
+            rel = domain_rel
+            break
+    return (rel, raw_url)
+
+def test_make_rel_url():
+    assert make_rel_url("http://example.com/thing.pdf")[0] == "web"
+    assert make_rel_url("http://example.com/thing.pdf", default_link_rel="jeans")[0] == "jeans"
+    assert make_rel_url("https://web.archive.org/web/*/http://example.com/thing.pdf")[0] == "webarchive"
+    assert make_rel_url("http://cell.com/thing.pdf")[0] == "publisher"
+
 class EntityImporter:
     """
     Base class for fatcat entity importers.

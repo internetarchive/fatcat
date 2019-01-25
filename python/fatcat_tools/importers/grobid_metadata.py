@@ -5,7 +5,7 @@ import json
 import base64
 import datetime
 import fatcat_client
-from .common import EntityImporter, clean
+from .common import EntityImporter, clean, make_rel_url
 
 MAX_ABSTRACT_BYTES=4096
 
@@ -157,18 +157,6 @@ class GrobidMetadataImporter(EntityImporter):
             extra=extra)
         return re
 
-    # TODO: make this a common function somewhere
-    def make_url(self, raw):
-        rel = self.default_link_rel
-        # TODO: this is where we could map specific domains to rel types,
-        # and also filter out bad domains, invalid URLs, etc
-        if "//archive.org/" in raw or "//arxiv.org/" in raw:
-            # TODO: special-case the arxiv.org bulk mirror?
-            rel = "repository"
-        elif "//web.archive.org/" in raw or "//archive.is/" in raw:
-            rel = "webarchive"
-        return fatcat_client.FileEntityUrls(url=raw, rel=rel)
-
     def parse_file_metadata(self, sha1_key, cdx, mimetype, file_size):
 
         sha1 = base64.b16encode(base64.b32decode(sha1_key.replace('sha1:', ''))).decode('ascii').lower()
@@ -189,9 +177,9 @@ class GrobidMetadataImporter(EntityImporter):
             original)
         fe.urls.append(
             fatcat_client.FileEntityUrls(url=wayback, rel="webarchive"))
-        original_url = self.make_url(original)
+        original_url = make_rel_url(original, default_link_rel=self.default_link_rel)
         if original_url is not None:
-            fe.urls.append(original_url)
+            fe.urls.append(fatcat_client.FileEntityUrls(rel=original_url[0], url=original_url[1]))
 
         return fe
 

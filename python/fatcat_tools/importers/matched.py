@@ -4,7 +4,7 @@ import json
 import sqlite3
 import itertools
 import fatcat_client
-from .common import EntityImporter, clean
+from .common import EntityImporter, clean, make_rel_url
 
 
 class MatchedImporter(EntityImporter):
@@ -43,17 +43,6 @@ class MatchedImporter(EntityImporter):
         self.default_link_rel = kwargs.get("default_link_rel", "web")
         self.default_mime = kwargs.get("default_mime", None)
 
-    def make_url(self, raw):
-        rel = self.default_link_rel
-        # TODO: this is where we could map specific domains to rel types,
-        # and also filter out bad domains, invalid URLs, etc
-        if "//archive.org/" in raw or "//arxiv.org/" in raw:
-            # TODO: special-case the arxiv.org bulk mirror?
-            rel = "repository"
-        elif "//web.archive.org/" in raw or "//archive.is/" in raw:
-            rel = "webarchive"
-        return (rel, raw)
-
     def want(self, raw_record):
         return True
 
@@ -80,7 +69,7 @@ class MatchedImporter(EntityImporter):
         # parse URLs and CDX
         urls = set()
         for url in obj.get('url', []):
-            url = self.make_url(url)
+            url = make_rel_url(url, default_link_rel=self.default_link_rel)
             if url != None:
                 urls.add(url)
         for cdx in obj.get('cdx', []):
@@ -89,7 +78,7 @@ class MatchedImporter(EntityImporter):
                 cdx['dt'],
                 original)
             urls.add(("webarchive", wayback))
-            url = self.make_url(original)
+            url = make_rel_url(original, default_link_rel=self.default_link_rel)
             if url != None:
                 urls.add(url)
         urls = [fatcat_client.FileEntityUrls(rel, url) for (rel, url) in urls]
