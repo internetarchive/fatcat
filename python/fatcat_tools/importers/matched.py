@@ -126,7 +126,7 @@ class MatchedImporter(EntityImporter):
         existing.size = existing.size or fe.size
         existing.md5 = existing.md5 or fe.md5
         existing.sha256 = existing.sha256 or fe.sha256
-        self.api.update_file(existing.ident, existing, editgroup_id=self._get_editgroup())
+        self.api.update_file(existing.ident, existing, editgroup_id=self.get_editgroup_id())
         self.counts['update'] += 1
         return False
 

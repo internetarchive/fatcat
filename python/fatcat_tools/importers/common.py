@@ -126,6 +126,7 @@ class EntityImporter:
     This class exposes helpers for implementations:
 
         self.api
+        self.get_editgroup_id()
         self.create_<entity>(entity) -> EntityEdit
             for related entity types
         self.push_entity(entity)
@@ -194,7 +195,7 @@ class EntityImporter:
             self.counts['total'] += self.counts[key]
         return self.counts
 
-    def _get_editgroup(self, edits=1):
+    def get_editgroup_id(self, edits=1):
         if self._edit_count >= self.edit_batch_size:
             self.api.accept_editgroup(self._editgroup_id)
             self._editgroup_id = None
@@ -211,17 +212,17 @@ class EntityImporter:
         return self._editgroup_id
 
     def create_container(self, entity):
-        eg_id = self._get_editgroup()
+        eg_id = self.get_editgroup_id()
         self.counts['inserted.container'] += 1
         return self.api.create_container(entity, editgroup_id=eg_id)
 
     def create_release(self, entity):
-        eg_id = self._get_editgroup()
+        eg_id = self.get_editgroup_id()
         self.counts['inserted.release'] += 1
         return self.api.create_release(entity, editgroup_id=eg_id)
 
     def create_file(self, entity):
-        eg_id = self._get_editgroup()
+        eg_id = self.get_editgroup_id()
         self.counts['inserted.file'] += 1
         return self.api.create_file(entity, editgroup_id=eg_id)
 
