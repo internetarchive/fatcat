@@ -50,6 +50,12 @@ We have fulltext via long-tail; only Google also has a copy:
     "arXiv overlay journal"
     sha1=0d39d932aad191fe8ed07572d96260ee4fad26aa
 
+Very large authorship/reference lists:
+
+- 10.1038/nature.2015.17567 (not in crossref metadata)
+- 10.1038/nature14474
+- 10.1534/g3.114.015966
+
 ## Missing
 
 "ACE: A Novel Software Platform to Ensure the Integrity [...]"
