@@ -106,6 +106,8 @@ guide.
   Wikidata entities should be associated with at most a single `release`. In
   the future it may be possible to associate Wikidata entities with `work`
   entities instead. See the "External Identifiers" section of style guide.
+- `arxiv_id` (string) external identifier to a (version-specific) [arxiv.org]()
+  work
 - `volume` (string): optionally, stores the specific volume of a serial
   publication this release was published in.
         type: string
@@ -262,11 +264,21 @@ Controlled vocabulary for `role` field on `contribs`:
 
 Current "extra" fields, flags, and content:
 - `crossref` (object), for extra crossref-specific metadata
-- `is_retracted` (boolean flag) if this work has been retracted
+    - `subject` (array of strings) for subject/category of content
+    - `type` (string) raw/original Crossref type
+    - `alternative-id` (array of strings)
+    - `archive` (array of strings), indicating preservation services deposited
+    - `funder` (object/dictionary)
+- `aliases` (array of strings) for additional titles this release might be
+  known by
+- `container_name` (string) if not matched to a container entity
+- `subtitle` (string)
+- `group-title` (string) for releases within an collection/group
+- `is_retracted` (boolean flag) if this work has been retracted (in addition to
+  `release_status` getting updated)
 - `translation_of` (release identifier) if this release is a translation of
   another (usually under the same work)
-- `arxiv_id` (string) external identifier to a (version-specific) [arxiv.org]()
-  work
+
 
 [arxiv.org]: https://arxiv.org
 

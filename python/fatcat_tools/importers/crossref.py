@@ -152,8 +152,8 @@ class CrossrefImporter(EntityImporter):
                 elif am.get('family'):
                     raw_name = am['family']
                 else:
-                    # TODO: defaults back to a pseudo-null value
-                    raw_name = am.get('given', '<blank>')
+                    # TODO: can end up empty
+                    raw_name = am.get('given')
                 extra = dict()
                 if ctype == "author":
                     index = i
@@ -244,9 +244,7 @@ class CrossrefImporter(EntityImporter):
                     'collection_title', 'chapter_number'):
                 if clean(rm.get(k)):
                     extra[k] = clean(rm[k])
-            if extra:
-                extra = dict(crossref=extra)
-            else:
+            if not extra:
                 extra = None
             refs.append(fatcat_client.ReleaseRef(
                 index=i,
@@ -269,20 +267,31 @@ class CrossrefImporter(EntityImporter):
 
         # extra fields
         extra = dict()
-        for key in ('subject', 'type', 'alternative-id', 'container-title',
-                'subtitle', 'archive', 'funder', 'group-title'):
-            # TODO: unpack "container-title" array?
+        extra_crossref = dict()
+        # top-level extra keys
+        if not container_id:
+            if obj.get('container-title'):
+                extra['container_name'] = clean(obj['container-title'][0])
+        for key in ('group-title', 'subtitle'):
             val = obj.get(key)
             if val:
                 if type(val) == str:
                     extra[key] = clean(val)
                 else:
                     extra[key] = val
+        # crossref-nested extra keys
+        for key in ('subject', 'type', 'alternative-id', 'archive', 'funder'):
+            val = obj.get(key)
+            if val:
+                if type(val) == str:
+                    extra_crossref[key] = clean(val)
+                else:
+                    extra_crossref[key] = val
         if license_extra:
-            extra['license'] = license_extra
+            extra_crossref['license'] = license_extra
 
         if len(obj['title']) > 1:
-            extra['other-titles'] = [clean(t) for t in obj['title'][1:]]
+            extra['aliases'] = [clean(t) for t in obj['title'][1:]]
 
         # ISBN
         isbn13 = None
@@ -325,11 +334,18 @@ class CrossrefImporter(EntityImporter):
             release_year = raw_date[0]
             release_date = None
 
+
         original_title = None
         if obj.get('original-title'):
             original_title = clean(obj.get('original-title')[0], force_xml=True)
         if obj.get('title'):
             title = clean(obj.get('title')[0], force_xml=True)
+
+        if extra_crossref:
+            extra['crossref'] = extra_crossref
+        if not extra:
+            extra = None
+
         re = fatcat_client.ReleaseEntity(
             work_id=None,
             container_id=container_id,
@@ -353,7 +369,7 @@ class CrossrefImporter(EntityImporter):
             pages=clean(obj.get('page')),
             language=None,  # crossref doesn't supply language info
             license_slug=license_slug,
-            extra=dict(crossref=extra),
+            extra=extra,
             abstracts=abstracts,
             contribs=contribs,
             refs=refs,

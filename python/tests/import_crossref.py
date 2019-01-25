@@ -70,34 +70,47 @@ def test_crossref_dict_parse(crossref_importer):
         # not a single line
         raw = json.loads(f.read())
         r = crossref_importer.parse_record(raw)
-        extra = r.extra['crossref']
+        # ensure the API server is ok with format
+        JsonLinePusher(crossref_importer, [json.dumps(raw)]).run()
+
+        print(r.extra)
         assert r.title == "Renormalized perturbation theory by the moment method for degenerate states: Anharmonic oscillators"
         assert r.doi == "10.1002/(sici)1097-461x(1998)66:4<261::aid-qua1>3.0.co;2-t"
         assert r.publisher == "Wiley-Blackwell"
-        print(extra)
-        assert extra['container-title'] == ["International Journal of Quantum Chemistry"]
         assert r.release_type == "article-journal"
         assert r.release_status == "published"
+        assert r.license_slug == "CC-BY-NC-ND"
+        assert r.original_title == "Renormalized perturbation theory auf deutsch"
         assert r.isbn13 == "978-3-16-148410-0"
-        assert 'subtitle' not in extra
-        assert 'archive' not in extra
-        assert 'funder' not in extra
-        assert len(r.contribs) == 5
+        assert 'subtitle' not in r.extra
+        assert 'subtitle' not in r.extra['crossref']
+        assert 'funder' not in r.extra
+        assert 'funder' not in r.extra['crossref']
+        # matched by ISSN, so shouldn't be in there
+        #assert extra['container_name'] == "International Journal of Quantum Chemistry"
+        assert r.extra['aliases'] == ["some other title"]
+        assert r.extra['crossref']['archive'] == ['Portico', 'LOCKSS']
+        assert len(r.contribs) == 6
         assert r.contribs[0].raw_name == "Marcelo D. Radicioni"
         assert r.contribs[0].index == 0
+        assert r.contribs[0].extra['seq'] == "first"
         assert r.contribs[1].raw_affiliation == "Some University"
         assert r.contribs[1].extra['more_affiliations'] == ["Some Department"]
         assert r.contribs[1].role == "author"
-        assert r.contribs[3].role == "editor"
-        assert r.contribs[3].index is None
-        assert r.contribs[4].role == "translator"
+        assert r.contribs[4].role == "editor"
         assert r.contribs[4].index is None
+        assert r.contribs[4].extra is None
+        assert r.contribs[5].role == "translator"
+        assert r.contribs[5].index is None
         assert len(r.refs) == 25
         assert r.refs[0].key == "BIB1"
         assert r.refs[0].year == 1972
         assert r.refs[0].locator == "1734"
         assert r.refs[0].container_name == "J. Chem. Phys."
-        assert r.refs[0].extra['crossref'] == {"volume": "57", "author": "Swenson", "doi": "10.1063/1.1678462"}
+        assert r.refs[0].extra == {"volume": "57", "author": "Swenson", "doi": "10.1063/1.1678462", "medium": "DVD"}
+        assert r.refs[2].key == 'BIB3'
+        assert r.refs[2].extra.get('author') is None
+        assert r.refs[2].container_name == "Hypervirial Theorem's, Lecture Notes in Chemistry <3"
         assert r.refs[3].container_name == "Large Order Perturbation Theory and Summation Methods in Quantum Mechanics, Lecture Notes in Chemistry"
 
 def test_stateful_checking(crossref_importer_existing):

@@ -154,9 +154,9 @@ This release citing other releases.
       {% if ref.container_name %}{{ ref.container_name }}.{% endif %}
       {% if ref.year %}{{ ref.year }}{% endif %}
       {% if ref.locator %}{{ ref.locator }}{% endif %}
-    {% elif ref.extra and ref.extra.crossref %}
-      {% if ref.extra.crossref.get('author') %}{{ ref.extra.crossref['author'] }}.{% endif %}
-      {% if ref.extra.crossref.get('article-title') %}{{ ref.extra.crossref['article-title'] }}.{% endif %}
+    {% elif ref.extra %}
+      {% if ref.extra.get('author') %}{{ ref.extra['author'] }}.{% endif %}
+      {% if ref.extra.get('article-title') %}{{ ref.extra['article-title'] }}.{% endif %}
       {% if ref.container_name %}{{ ref.container_name }}.{% endif %}
       {% if ref.year %}{{ ref.year }}.{% endif %}
     {% elif ref.extra and ref.extra.unstructured %}

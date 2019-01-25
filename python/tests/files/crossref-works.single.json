@@ -36,6 +36,10 @@
       },
       "delay-in-days": 6452,
       "content-version": "tdm"
+    },
+    {
+      "URL": "http://creativecommons.org/licenses/by-nc-nd/3.0/",
+      "content-version": "vor"
     }
   ],
   "content-domain": {
@@ -71,7 +75,11 @@
   "source": "Crossref",
   "is-referenced-by-count": 5,
   "title": [
-    "Renormalized perturbation theory by the moment method for degenerate states: Anharmonic oscillators"
+    "Renormalized perturbation theory by the moment method for degenerate states: Anharmonic oscillators",
+    "some other title"
+  ],
+  "original-title": [
+    "Renormalized perturbation theory auf deutsch"
   ],
   "prefix": "10.1002",
   "volume": "66",
@@ -79,7 +87,8 @@
     {
       "given": "Marcelo D.",
       "family": "Radicioni",
-      "affiliation": []
+      "affiliation": [],
+      "sequence": "first"
     },
     {
       "given": "Carlos G.",
@@ -89,6 +98,11 @@
     {
       "given": "Francisco M.",
       "family": "Fern�ndez",
+      "affiliation": []
+    },
+    {
+      "given": "",
+      "family": "",
       "affiliation": []
     }
   ],
@@ -108,6 +122,7 @@
   ],
   "member": "311",
   "ISBN": ["85-359-0277-5", "978-3-16-148410-0"],
+  "archive": ["Portico", "LOCKSS"],
   "reference": [
     {
       "key": "10.1002/(SICI)1097-461X(1998)66:4<261::AID-QUA1>3.0.CO;2-T-BIB1",
@@ -115,6 +130,7 @@
       "volume": "57",
       "first-page": "1734",
       "year": "1972",
+      "medium": "DVD",
       "journal-title": "J. Chem. Phys.",
       "DOI": "10.1063/1.1678462",
       "doi-asserted-by": "crossref"
@@ -131,11 +147,11 @@
     },
     {
       "key": "10.1002/(SICI)1097-461X(1998)66:4<261::AID-QUA1>3.0.CO;2-T-BIB3",
-      "author": "Fernández",
+      "author": "",
       "volume": "43",
       "year": "1987",
       "unstructured": "and Hypervirial Theorems, Lecture Notes in Chemistry, Vol. 43, (Springer, Berlin, 1987).",
-      "volume-title": "Hypervirial Theorems, Lecture Notes in Chemistry",
+      "volume-title": "Hypervirial Theorem&#x2019;s, Lecture Notes in Chemistry &lt;3",
       "DOI": "10.1007/978-3-642-93349-3",
       "doi-asserted-by": "crossref"
     },
