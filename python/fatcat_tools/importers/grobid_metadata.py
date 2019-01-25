@@ -77,7 +77,7 @@ class GrobidMetadataImporter(EntityImporter):
         if not obj.get('title'):
             return None
 
-        extra = dict()
+        extra_grobid = dict()
 
         if obj.get('abstract') and len(obj.get('abstract')) < MAX_ABSTRACT_BYTES:
             abobj = dict(
@@ -128,19 +128,20 @@ class GrobidMetadataImporter(EntityImporter):
             # only returns year, ever?
             release_year = int(obj['date'][:4])
 
+        extra = dict()
+
         if obj.get('doi'):
-            extra['doi'] = obj['doi']
+            extra_grobid['doi'] = obj['doi']
         if obj['journal'] and obj['journal'].get('name'):
             extra['container_name'] = clean(obj['journal']['name'])
 
         # TODO: ISSN/eISSN handling? or just journal name lookup?
 
+        if extra_grobid:
+            extra['grobid'] = extra_grobid
         if self.longtail_oa:
             extra['longtail_oa'] = True
-
-        if extra:
-            extra = dict(grobid=extra)
-        else:
+        if not extra:
             extra = None
 
         re = fatcat_client.ReleaseEntity(
