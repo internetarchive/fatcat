@@ -24,7 +24,7 @@ def run_orcid(args):
 def run_journal_metadata(args):
     fii = JournalMetadataImporter(args.api,
         edit_batch_size=args.batch_size)
-    CsvLinePusher(fii, args.csv_file).run()
+    JsonLinePusher(fii, args.json_file).run()
 
 def run_matched(args):
     fmi = MatchedImporter(args.api,
@@ -93,8 +93,8 @@ def main():
         func=run_journal_metadata,
         auth_var="FATCAT_AUTH_WORKER_JOURNAL_METADATA",
     )
-    sub_journal_metadata.add_argument('csv_file',
-        help="Journal ISSN CSV metadata file to import from (or stdin)",
+    sub_journal_metadata.add_argument('json_file',
+        help="Journal JSON metadata file to import from (or stdin)",
         default=sys.stdin, type=argparse.FileType('r'))
     sub_journal_metadata.add_argument('--batch-size',
         help="size of batch to send",
