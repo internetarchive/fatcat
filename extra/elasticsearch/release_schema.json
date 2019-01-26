@@ -68,7 +68,7 @@
             "in_dweb":              { "type": "boolean" },
             "in_web":               { "type": "boolean" },
             "in_ia":                { "type": "boolean" },
-            "in_sim":               { "type": "boolean" },
+            "in_ia_sim":            { "type": "boolean" },
             "in_shadows":           { "type": "boolean" },
 
             "author":         { "type": "alias", "path": "contrib_names" },
