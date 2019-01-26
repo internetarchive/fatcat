@@ -17,7 +17,7 @@ A few sources of normalization/mappings:
     - Original:
     - Snapshot: <https://archive.org/download/issn_issnl_mappings/20180216.ISSN-to-ISSN-L.txt>
 - ISO 639-1 language codes: https://datahub.io/core/language-codes
-- ISO 3166-1 alpha-2 nation codes
+- ISO 3166-1 alpha-2 country codes
 
 In order of precedence (first higher than later):
 
@@ -59,6 +59,22 @@ General form here is to build a huge python dict in memory, keyed by the
 ISSN-L, then write out to disk as JSON. Then the journal-metadata importer
 takes a subset of fields and inserts to fatcat. Lastly, the elasticsearch
 transformer takes a subset/combination of 
+
+## ISSN-L Munging
+
+Unfortunately, there seem to be plenty of legitimate ISSNs that don't end up in
+the ISSN-L table. On the portal.issn.org public site, these are listed as:
+
+    "This provisional record has been produced before publication of the
+    resource.  The published resource has not yet been checked by the ISSN
+    Network.It is only available to subscribing users."
+
+For example:
+
+- 2199-3246/2199-3254: Digital Experiences in Mathematics Education
+
+Instead of just dropping these entirely, we're currently munging these by
+putting the electronic or print ISSN in the ISSN-L position.
 
 ## Python Helpers/Libraries
 
