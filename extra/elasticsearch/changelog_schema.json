@@ -16,8 +16,9 @@
     "changelog": {
         "properties": {
             "index":            { "type": "integer" },
-            "editgorup_id":     { "type": "keyword" },
-            "timestamp":        { "type": "datetime" },
+            "editgroup_id":     { "type": "keyword" },
+            "timestamp":        { "type": "date" },
+            "editor_id":        { "type": "keyword" },
             "username":         { "type": "keyword" },
             "is_bot":           { "type": "boolean" },
             "is_admin":         { "type": "boolean" },

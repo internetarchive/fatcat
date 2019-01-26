@@ -231,20 +231,12 @@ def container_to_elasticsearch(entity):
         container_type = entity.container_type,
         issnl = entity.issnl,
         wikidata_qid = entity.wikidata_qid,
-
-        entity_status = entity.entity_status,
-        language = entity.language,
-        license = entity.license_slug,
-        doi = entity.doi,
-        pmid = entity.pmid,
-        isbn13 = entity.isbn13,
-        core_id = entity.core_id,
-        arxiv_id = entity.core_id,
-        jstor_id = entity.jstor_id,
     )
 
     # TODO: region, discipline
     # TODO: single primary language?
+    if not entity.extra:
+        entity.extra = dict()
     for key in ('country', 'languages', 'mimetypes', 'first_year', 'last_year'):
         if entity.extra.get(key):
             t[key] = entity.extra[key]
@@ -285,13 +277,46 @@ def container_to_elasticsearch(entity):
         if extra['ia'].get('sim'):
             any_ia_sim = True
 
-    t['in_doaj'] = is_doaj
-    t['in_road'] = is_road
+    t['in_doaj'] = in_doaj
+    t['in_road'] = in_road
     t['in_doi'] = in_doi
     t['in_sherpa_romeo'] = in_sherpa_romeo
-    t['is_oa'] = in_doaj or in_road or is_longtail_oa or ia_oa
+    t['is_oa'] = in_doaj or in_road or is_longtail_oa or is_oa
     t['is_longtail_oa'] = is_longtail_oa
     t['any_kbart'] = any_ia_sim
     t['any_jstor'] = any_ia_sim
     t['any_ia_sim'] = bool(any_ia_sim)
+    return t
+
+
+def changelog_to_elasticsearch(entity):
+
+    editgroup = entity.editgroup
+    t = dict(
+        index=entity.index,
+        editgroup_id=entity.editgroup_id,
+        timestamp=entity.timestamp,
+        editor_id=editgroup.editor_id,
+    )
+
+    extra = editgroup.extra or dict()
+    if extra.get('agent'):
+        t['agent'] = extra['agent']
+
+    t['containers'] = len(editgroup.edits.containers)
+    t['creators'] = len(editgroup.edits.containers)
+    t['files'] = len(editgroup.edits.containers)
+    t['filesets'] = len(editgroup.edits.containers)
+    t['webcaptures'] = len(editgroup.edits.containers)
+    t['releases'] = len(editgroup.edits.containers)
+    t['works'] = len(editgroup.edits.containers)
+
+    # TODO: parse and pull out counts
+    #created = 0
+    #updated = 0
+    #deleted = 0
+    #t['created'] = created
+    #t['updated'] = updated
+    #t['deleted'] = deleted
+    #t['total'] = created + updated + deleted
     return t

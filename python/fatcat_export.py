@@ -12,9 +12,10 @@ import json
 import argparse
 import fatcat_client
 from fatcat_client.rest import ApiException
-from fatcat_client import ReleaseEntity
+from fatcat_client import ReleaseEntity, ContainerEntity, ChangelogEntry
 from fatcat_tools import uuid2fcid, entity_from_json, entity_to_dict, \
-    release_to_elasticsearch, public_api
+    release_to_elasticsearch, container_to_elasticsearch, \
+    changelog_to_elasticsearch, public_api
 
 
 def run_export_releases(args):
@@ -30,9 +31,27 @@ def run_transform_releases(args):
         line = line.strip()
         if not line:
             continue
-        release = entity_from_json(line, ReleaseEntity)
+        entity = entity_from_json(line, ReleaseEntity)
         args.json_output.write(
-            json.dumps(release_to_elasticsearch(release)) + '\n')
+            json.dumps(release_to_elasticsearch(entity)) + '\n')
+
+def run_transform_containers(args):
+    for line in args.json_input:
+        line = line.strip()
+        if not line:
+            continue
+        entity = entity_from_json(line, ContainerEntity)
+        args.json_output.write(
+            json.dumps(container_to_elasticsearch(entity)) + '\n')
+
+def run_transform_changelogs(args):
+    for line in args.json_input:
+        line = line.strip()
+        if not line:
+            continue
+        entity = entity_from_json(line, ChangelogEntry)
+        args.json_output.write(
+            json.dumps(changelog_to_elasticsearch(entity)) + '\n')
 
 def run_export_changelog(args):
     api = args.api
@@ -71,6 +90,24 @@ def main():
         help="JSON-per-line of release entities",
         default=sys.stdin, type=argparse.FileType('r'))
     sub_transform_releases.add_argument('json_output',
+        help="where to send output",
+        default=sys.stdout, type=argparse.FileType('w'))
+
+    sub_transform_containers = subparsers.add_parser('transform-containers')
+    sub_transform_containers.set_defaults(func=run_transform_containers)
+    sub_transform_containers.add_argument('json_input',
+        help="JSON-per-line of container entities",
+        default=sys.stdin, type=argparse.FileType('r'))
+    sub_transform_containers.add_argument('json_output',
+        help="where to send output",
+        default=sys.stdout, type=argparse.FileType('w'))
+
+    sub_transform_changelogs = subparsers.add_parser('transform-changelogs')
+    sub_transform_changelogs.set_defaults(func=run_transform_changelogs)
+    sub_transform_changelogs.add_argument('json_input',
+        help="JSON-per-line of changelog entries",
+        default=sys.stdin, type=argparse.FileType('r'))
+    sub_transform_changelogs.add_argument('json_output',
         help="where to send output",
         default=sys.stdout, type=argparse.FileType('w'))
 

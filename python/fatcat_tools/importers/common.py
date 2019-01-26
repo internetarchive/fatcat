@@ -236,8 +236,8 @@ class EntityImporter:
         self._entity_queue.append(entity)
         if len(self._entity_queue) >= self.edit_batch_size:
             self.insert_batch(self._entity_queue)
-            self.counts['insert'] += len(_entity_queue)
-            self._entity_queue = 0
+            self.counts['insert'] += len(self._entity_queue)
+            self._entity_queue = []
 
     def want(self, raw_record):
         """

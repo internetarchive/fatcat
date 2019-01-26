@@ -38,13 +38,17 @@ There is a Dockerfile in this directory which includes this installation.
 
 Drop and rebuild the schema:
 
-    http delete :9200/fatcat
-    http put :9200/fatcat < release_schema.json
+    http delete :9200/fatcat_release
+    http delete :9200/fatcat_container
+    http delete :9200/fatcat_changelog
+    http put :9200/fatcat_release < release_schema.json
+    http put :9200/fatcat_container < container_schema.json
+    http put :9200/fatcat_changelog < changelog_schema.json
 
 Put a single object (good for debugging):
 
-    head -n1 examples.json | http post :9200/fatcat/release/0
-    http get :9200/fatcat/release/0
+    head -n1 examples.json | http post :9200/fatcat_release/release/0
+    http get :9200/fatcat_release/release/0
 
 Bulk insert from a file on disk:
 
@@ -53,14 +57,14 @@ Bulk insert from a file on disk:
 Or, in a bulk production live-stream conversion:
 
     export LC_ALL=C.UTF-8
-    time zcat /srv/fatcat/snapshots/fatcat_release_dump_expanded.json.gz | ./fatcat_export.py transform-releases - - | esbulk -verbose -size 20000 -id ident -w 8 -index fatcat -type release
+    time zcat /srv/fatcat_release/snapshots/fatcat_release_dump_expanded.json.gz | ./fatcat_export.py transform-releases - - | esbulk -verbose -size 20000 -id ident -w 8 -index fatcat -type release
 
 ## Full-Text Querying
 
 A generic full-text "query string" query look like this (replace "blood" with
 actual query string, and "size" field with the max results to return):
 
-    GET /fatcat/release/_search
+    GET /fatcat_release/release/_search
     {
       "query": {
         "query_string": {

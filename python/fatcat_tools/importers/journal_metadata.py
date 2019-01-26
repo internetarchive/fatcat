@@ -44,7 +44,7 @@ class JournalMetadataImporter(EntityImporter):
             editgroup_extra=eg_extra)
 
     def want(self, raw_record):
-        if raw_record.get('issnl'):
+        if raw_record.get('issnl') and raw_record.get('name'):
             return True
         return False
 
@@ -54,6 +54,10 @@ class JournalMetadataImporter(EntityImporter):
 
         returns a ContainerEntity (or None if invalid or couldn't parse)
         """
+
+        if not row.get('name'):
+            # Name is required (by schema)
+            return None
 
         extra = dict()
         for key in ('issne', 'issnp', 'languages', 'country', 'urls', 'abbrev',
@@ -76,8 +80,10 @@ class JournalMetadataImporter(EntityImporter):
         extra_ia = dict()
         # TODO: would like an ia.longtail_ia flag
         if row.get('sim'):
+            # NB: None case of the .get() here is blech, but othrwise
+            # extra['ia'].get('sim') would be false-y, breaking 'any_ia_sim' later on
             extra_ia['sim'] = {
-                'year_spans': row['sim']['year_spans'],
+                'year_spans': row['sim'].get('year_spans'),
             }
         if extra_ia:
             extra['ia'] = extra_ia
