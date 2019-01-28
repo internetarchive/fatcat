@@ -63,7 +63,7 @@ def main():
         default="http://localhost:9200")
     sub_elasticsearch_release.add_argument('--elasticsearch-index',
         help="elasticsearch index to push into",
-        default="fatcat")
+        default="fatcat_release")
 
     args = parser.parse_args()
     if not args.__dict__.get("func"):

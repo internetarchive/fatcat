@@ -25,7 +25,8 @@ class Config(object):
 
     # can set this to https://search.fatcat.wiki for some experimentation
     ELASTICSEARCH_BACKEND = os.environ.get("ELASTICSEARCH_BACKEND", default="http://localhost:9200")
-    ELASTICSEARCH_INDEX = os.environ.get("ELASTICSEARCH_INDEX", default="fatcat")
+    ELASTICSEARCH_RELEASE_INDEX = os.environ.get("ELASTICSEARCH_RELEASE_INDEX", default="fatcat_release")
+    ELASTICSEARCH_CONTAINER_INDEX = os.environ.get("ELASTICSEARCH_CONTAINER_INDEX", default="fatcat_container")
 
     # for flask things, like session cookies
     FLASK_SECRET_KEY = os.environ.get("FLASK_SECRET_KEY", default=None)

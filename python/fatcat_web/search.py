@@ -33,7 +33,7 @@ def do_search(q, limit=50, fulltext_only=True):
 
     #print(search_request)
     resp = requests.get("%s/%s/_search" %
-            (app.config['ELASTICSEARCH_BACKEND'], app.config['ELASTICSEARCH_INDEX']),
+            (app.config['ELASTICSEARCH_BACKEND'], app.config['ELASTICSEARCH_RELEASE_INDEX']),
         json=search_request)
 
     if resp.status_code != 200:
