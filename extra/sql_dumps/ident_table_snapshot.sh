@@ -28,6 +28,8 @@ tar -C /tmp -c --gzip --verbose \
     fatcat_ident_containers.tsv \
     fatcat_ident_creators.tsv \
     fatcat_ident_files.tsv \
+    fatcat_ident_filesets.tsv \
+    fatcat_ident_webcaptures.tsv \
     fatcat_ident_releases.tsv \
     fatcat_ident_works.tsv
 

@@ -24,3 +24,31 @@ forwarding anyways.
     # Run on database server, write to file on remote host
     psql fatcat < dump_abstracts.sql | egrep -v ^BEGIN$ | egrep -v ^ROLLBACK$ | pv -l | gzip | ssh user@host 'cat > abstracts.json.gz'
 
+## HOWTO: Full private database backup and restore
+
+    export DATESLUG="`date +%Y-%m-%d.%H%M%S`"
+    sudo -u postgres pg_dump --verbose --format=tar fatcat_prod | gzip > /srv/fatcat/snapshots/fatcat_private_dbdump_${DATESLUG}.tar.gz
+
+NOTE: by using the "directory" export (along with `--file`) instead of "tar"
+export, it would be possible to use parallel dumping. However, this would put
+additional load on both the database and underlying disk. Could also cause
+issues with users/permissions.
+
+To restore, CAREFULLY, run:
+
+    sudo -u postgres pg_restore --clean --if-exists --create -exit-on-error --jobs=16 DUMP_FILE.tar.gz
+
+To just inspect a dump:
+
+    pg_restore -l DUMP_FILE.tar.gz
+
+## HOWTO: Public database dump
+
+This dump will contain all tables in the backend schema, except for "private"
+authentication tables. For local or non-production machines, might need to
+replace the `fatcat_prod` database name.
+
+    export DATESLUG="`date +%Y-%m-%d.%H%M%S`"
+    sudo -u postgres pg_dump --verbose --format=tar --exclude-table-data=auth_oidc fatcat_prod | gzip > /srv/fatcat/snapshots/fatcat_public_dbdump_${DATESLUG}.tar.gz
+
+Can also run using the remote/SSH options above.
