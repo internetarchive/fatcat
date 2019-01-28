@@ -1,23 +1,25 @@
 
 
 import collections
-from fatcat_client import ReleaseEntity, ApiClient
+from fatcat_client import ApiClient
 
-def entity_to_dict(entity):
+def entity_to_dict(entity, api_client=None):
     """
     Hack to take advantage of the code-generated serialization code
     """
-    ac = ApiClient()
-    return ac.sanitize_for_serialization(entity)
+    if not api_client:
+        api_client = ApiClient()
+    return api_client.sanitize_for_serialization(entity)
 
-def entity_from_json(json_str, entity_type):
+def entity_from_json(json_str, entity_type, api_client=None):
     """
     Hack to take advantage of the code-generated deserialization code
     """
-    ac = ApiClient()
+    if not api_client:
+        api_client = ApiClient()
     thing = collections.namedtuple('Thing', ['data'])
     thing.data = json_str
-    return ac.deserialize(thing, entity_type)
+    return api_client.deserialize(thing, entity_type)
 
 def check_kbart(year, archive):
     if not archive or not archive.get('year_spans'):
@@ -284,7 +286,7 @@ def container_to_elasticsearch(entity):
     t['is_oa'] = in_doaj or in_road or is_longtail_oa or is_oa
     t['is_longtail_oa'] = is_longtail_oa
     t['any_kbart'] = any_ia_sim
-    t['any_jstor'] = any_ia_sim
+    t['any_jstor'] = any_jstor
     t['any_ia_sim'] = bool(any_ia_sim)
     return t
 

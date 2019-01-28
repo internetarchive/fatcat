@@ -4,7 +4,7 @@ import time
 import requests
 from pykafka.common import OffsetType
 
-from fatcat_client import ReleaseEntity
+from fatcat_client import ReleaseEntity, ApiClient
 from fatcat_tools import *
 from .worker_common import FatcatWorker
 
@@ -28,6 +28,7 @@ class ElasticsearchReleaseWorker(FatcatWorker):
 
     def run(self):
         consume_topic = self.kafka.topics[self.consume_topic]
+        ac = ApiClient()
 
         consumer = consume_topic.get_balanced_consumer(
             consumer_group=self.consumer_group,
@@ -40,7 +41,7 @@ class ElasticsearchReleaseWorker(FatcatWorker):
 
         for msg in consumer:
             json_str = msg.value.decode('utf-8')
-            release = entity_from_json(json_str, ReleaseEntity)
+            release = entity_from_json(json_str, ReleaseEntity, api_client=ac)
             #print(release)
             elasticsearch_endpoint = "{}/{}/release/{}".format(
                 self.elasticsearch_backend,

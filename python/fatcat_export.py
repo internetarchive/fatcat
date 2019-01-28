@@ -19,19 +19,18 @@ from fatcat_tools import uuid2fcid, entity_from_json, entity_to_dict, \
 
 
 def run_export_releases(args):
-    api = args.api
     for line in args.ident_file:
         ident = uuid2fcid(line.split()[0])
-        release = api.get_release(ident=ident, expand="all")
+        release = args.api.get_release(ident=ident, expand="all")
         args.json_output.write(
-            json.dumps(entity_to_dict(release)) + "\n")
+            json.dumps(entity_to_dict(release), api_client=args.api.api_client) + "\n")
 
 def run_transform_releases(args):
     for line in args.json_input:
         line = line.strip()
         if not line:
             continue
-        entity = entity_from_json(line, ReleaseEntity)
+        entity = entity_from_json(line, ReleaseEntity, api_client=args.api.api_client)
         args.json_output.write(
             json.dumps(release_to_elasticsearch(entity)) + '\n')
 
@@ -40,7 +39,7 @@ def run_transform_containers(args):
         line = line.strip()
         if not line:
             continue
-        entity = entity_from_json(line, ContainerEntity)
+        entity = entity_from_json(line, ContainerEntity, api_client=args.api.api_client)
         args.json_output.write(
             json.dumps(container_to_elasticsearch(entity)) + '\n')
 
@@ -49,21 +48,20 @@ def run_transform_changelogs(args):
         line = line.strip()
         if not line:
             continue
-        entity = entity_from_json(line, ChangelogEntry)
+        entity = entity_from_json(line, ChangelogEntry, api_client=args.api.api_client)
         args.json_output.write(
             json.dumps(changelog_to_elasticsearch(entity)) + '\n')
 
 def run_export_changelog(args):
-    api = args.api
     end = args.end
     if end is None:
-        latest = api.get_changelog(limit=1)[0]
+        latest = args.api.get_changelog(limit=1)[0]
         end = latest.index
 
     for i in range(args.start, end):
-        entry = api.get_changelog_entry(index=i)
+        entry = args.api.get_changelog_entry(index=i)
         args.json_output.write(
-            json.dumps(entity_to_dict(entry)) + "\n")
+            json.dumps(entity_to_dict(entry, api_client=args.api.api_client)) + "\n")
 
 def main():
     parser = argparse.ArgumentParser()
