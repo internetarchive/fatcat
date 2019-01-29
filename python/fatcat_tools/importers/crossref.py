@@ -338,11 +338,15 @@ class CrossrefImporter(EntityImporter):
         original_title = None
         if obj.get('original-title'):
             original_title = clean(obj.get('original-title')[0], force_xml=True)
+            if len(original_title) < 2:
+                original_title = None
+
+        title = None
         if obj.get('title'):
             title = clean(obj.get('title')[0], force_xml=True)
-        if not title or len(title) < 2:
-            # title can't be just a single character
-            return None
+            if len(title) < 2:
+                # title can't be just a single character
+                return None
 
         if extra_crossref:
             extra['crossref'] = extra_crossref
