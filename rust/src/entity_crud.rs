@@ -1968,21 +1968,24 @@ impl EntityCrud for ReleaseEntity {
                 if abstracts.len() > 200 {
                     return Err(FatcatError::BadRequest(
                         "too many abstracts (sanity cap is 200)".to_string(),
-                    ).into())
+                    )
+                    .into());
                 }
             }
             if let Some(ref refs) = entity.abstracts {
                 if refs.len() > 10000 {
                     return Err(FatcatError::BadRequest(
                         "too many refs (sanity cap is 10000)".to_string(),
-                    ).into())
+                    )
+                    .into());
                 }
             }
             if let Some(ref contribs) = entity.contribs {
                 if contribs.len() > 10000 {
                     return Err(FatcatError::BadRequest(
                         "too many contributors (sanity cap is 10000)".to_string(),
-                    ).into())
+                    )
+                    .into());
                 }
                 for contrib in contribs {
                     if let Some(ref role) = contrib.role {
