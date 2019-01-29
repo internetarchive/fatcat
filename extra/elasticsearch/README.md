@@ -52,12 +52,13 @@ Put a single object (good for debugging):
 
 Bulk insert from a file on disk:
 
-    esbulk -verbose -id ident -index fatcat -type release examples.json
+    esbulk -verbose -id ident -index fatcat_release -type release examples.json
 
 Or, in a bulk production live-stream conversion:
 
     export LC_ALL=C.UTF-8
-    time zcat /srv/fatcat_release/snapshots/fatcat_release_dump_expanded.json.gz | ./fatcat_export.py transform-releases - - | esbulk -verbose -size 20000 -id ident -w 8 -index fatcat -type release
+    time zcat /srv/fatcat/snapshots/release_export_expanded.json.gz | pv -l | ./fatcat_export.py transform-releases - - | esbulk -verbose -size 20000 -id ident -w 8 -index fatcat_release -type release
+    time zcat /srv/fatcat/snapshots/container_export.json.gz | pv -l | ./fatcat_export.py transform-container - - | esbulk -verbose -size 20000 -id ident -w 8 -index fatcat_container -type container
 
 ## Full-Text Querying
 
