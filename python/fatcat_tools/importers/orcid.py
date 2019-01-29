@@ -30,7 +30,8 @@ class OrcidImporter(EntityImporter):
         eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.OrcidImporter')
         super().__init__(api,
             editgroup_description=eg_desc,
-            editgroup_extra=eg_extra)
+            editgroup_extra=eg_extra,
+            **kwargs)
 
     def want(self, raw_record):
         return True

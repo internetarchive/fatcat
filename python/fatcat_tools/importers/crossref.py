@@ -75,7 +75,8 @@ class CrossrefImporter(EntityImporter):
         super().__init__(api,
             issn_map_file=issn_map_file,
             editgroup_description=eg_desc,
-            editgroup_extra=eg_extra)
+            editgroup_extra=eg_extra,
+            **kwargs)
 
         self.create_containers = kwargs.get('create_containers')
         extid_map_file = kwargs.get('extid_map_file')

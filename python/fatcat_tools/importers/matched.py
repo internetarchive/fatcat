@@ -39,7 +39,8 @@ class MatchedImporter(EntityImporter):
         eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.MatchedImporter')
         super().__init__(api,
             editgroup_description=eg_desc,
-            editgroup_extra=eg_extra)
+            editgroup_extra=eg_extra,
+            **kwargs)
         self.default_link_rel = kwargs.get("default_link_rel", "web")
         self.default_mime = kwargs.get("default_mime", None)
 

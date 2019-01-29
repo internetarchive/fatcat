@@ -30,7 +30,8 @@ class GrobidMetadataImporter(EntityImporter):
         eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.GrobidMetadataImporter')
         super().__init__(api,
             editgroup_description=eg_desc,
-            editgroup_extra=eg_extra)
+            editgroup_extra=eg_extra,
+            **kwargs)
         self.default_link_rel = kwargs.get("default_link_rel", "web")
         self.longtail_oa = kwargs.get("longtail_oa", False)
 
