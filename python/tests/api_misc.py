@@ -28,3 +28,15 @@ def test_lookup_hide_extend(api):
     assert r.files is None
     assert r.container.issnl
     assert r.abstracts == []
+
+def test_unexpected_body(api):
+
+    eg = quick_eg(api)
+
+    # all the fields!
+    f1 = FileEntity(
+        sha1="88888888888888892dd2657a1e3c992b5dc45dd2",
+    )
+    f1.urls = [dict(url="http://thing", rel="repository", asdf="blue")]
+    api.create_file(f1, editgroup_id=eg.editgroup_id)
+
