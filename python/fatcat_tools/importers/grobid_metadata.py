@@ -79,7 +79,8 @@ class GrobidMetadataImporter(EntityImporter):
 
         extra_grobid = dict()
 
-        if obj.get('abstract') and len(obj.get('abstract')) < MAX_ABSTRACT_BYTES:
+        abstract = obj.get('abstract')
+        if abstract and len(abstract) < MAX_ABSTRACT_BYTES and len(abstract) > 10:
             abobj = dict(
                 mimetype="text/plain",
                 language=None,
