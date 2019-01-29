@@ -205,12 +205,12 @@ def release_to_elasticsearch(entity):
 
     if is_longtail_oa:
         is_oa = True
-    t['is_oa'] = is_oa
-    t['is_longtail_oa'] = is_longtail_oa
-    t['in_kbart'] = in_kbart
-    t['in_jstor'] = in_jstor
-    t['in_web'] = in_web
-    t['in_dweb'] = in_dweb
+    t['is_oa'] = bool(is_oa)
+    t['is_longtail_oa'] = bool(is_longtail_oa)
+    t['in_kbart'] = bool(in_kbart)
+    t['in_jstor'] = bool(in_jstor)
+    t['in_web'] = bool(in_web)
+    t['in_dweb'] = bool(in_dweb)
     t['in_ia'] = bool(in_ia)
     t['is_preserved'] = bool(is_preserved or in_ia or in_kbart or in_jstor)
     return t
@@ -288,14 +288,14 @@ def container_to_elasticsearch(entity):
         if extra['ia'].get('sim'):
             any_ia_sim = True
 
-    t['in_doaj'] = in_doaj
-    t['in_road'] = in_road
-    t['in_doi'] = in_doi
-    t['in_sherpa_romeo'] = in_sherpa_romeo
-    t['is_oa'] = in_doaj or in_road or is_longtail_oa or is_oa
-    t['is_longtail_oa'] = is_longtail_oa
-    t['any_kbart'] = any_kbart
-    t['any_jstor'] = any_jstor
+    t['in_doaj'] = bool(in_doaj)
+    t['in_road'] = bool(in_road)
+    t['in_doi'] = bool(in_doi)
+    t['in_sherpa_romeo'] = bool(in_sherpa_romeo)
+    t['is_oa'] = bool(in_doaj or in_road or is_longtail_oa or is_oa)
+    t['is_longtail_oa'] = bool(is_longtail_oa)
+    t['any_kbart'] = bool(any_kbart)
+    t['any_jstor'] = bool(any_jstor)
     t['any_ia_sim'] = bool(any_ia_sim)
     return t
 
