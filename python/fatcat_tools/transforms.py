@@ -30,7 +30,6 @@ def entity_from_json(json_str, entity_type, api_client=None):
     return api_client.deserialize(thing, entity_type)
 
 def check_kbart(year, archive):
-    print(archive)
     if not archive or not archive.get('year_spans'):
         return None
     for span in archive['year_spans']:
