@@ -33,7 +33,7 @@ def clean(thing, force_xml=False):
     if force_xml:
         fix_entities = True
     fixed = ftfy.fix_text(thing, fix_entities=fix_entities).strip()
-    if not fixed:
+    if not fixed or len(fixed) <= 1:
         # wasn't zero-length before, but is now; return None
         return None
     return fixed
