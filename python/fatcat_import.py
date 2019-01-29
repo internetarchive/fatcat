@@ -14,7 +14,7 @@ def run_crossref(args):
     if args.kafka_mode:
         KafkaJsonPusher(fci, args.kafka_hosts, args.kafka_env, "api-crossref", "fatcat-import").run()
     else:
-        JsonLinePusher(fci).run()
+        JsonLinePusher(fci, args.json_file).run()
 
 def run_orcid(args):
     foi = OrcidImporter(args.api,
