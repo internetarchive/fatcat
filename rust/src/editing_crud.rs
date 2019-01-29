@@ -118,7 +118,7 @@ impl EditgroupCrud for Editgroup {
         Ok((eg_row, cl_row))
     }
 
-    /// Note: this *still* doesn't epand the 'edits', at least yet. *Only* the direct editgrop
+    /// Note: this *still* doesn't expand the 'edits', at least yet. *Only* the direct editgroup
     /// 'GET' handler does that.
     fn db_expand(&mut self, conn: &DbConn, expand: ExpandFlags) -> Result<()> {
         if expand.editors {
