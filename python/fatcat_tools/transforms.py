@@ -295,7 +295,7 @@ def container_to_elasticsearch(entity):
     t['in_sherpa_romeo'] = in_sherpa_romeo
     t['is_oa'] = in_doaj or in_road or is_longtail_oa or is_oa
     t['is_longtail_oa'] = is_longtail_oa
-    t['any_kbart'] = any_ia_sim
+    t['any_kbart'] = any_kbart
     t['any_jstor'] = any_jstor
     t['any_ia_sim'] = bool(any_ia_sim)
     return t
