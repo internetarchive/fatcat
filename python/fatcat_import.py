@@ -52,6 +52,9 @@ def main():
     parser.add_argument('--kafka-env',
         default="qa",
         help="Kafka topic namespace to use (eg, prod, qa)")
+    parser.add_argument('--batch-size',
+        help="size of batch to send",
+        default=100, type=int)
     subparsers = parser.add_subparsers()
 
     sub_crossref = subparsers.add_parser('crossref')
@@ -68,9 +71,6 @@ def main():
     sub_crossref.add_argument('--extid-map-file',
         help="DOI-to-other-identifiers sqlite3 database",
         default=None, type=str)
-    sub_crossref.add_argument('--batch-size',
-        help="size of batch to send",
-        default=50, type=int)
     sub_crossref.add_argument('--kafka-mode',
         action='store_true',
         help="consume from kafka topic (not stdin)")
@@ -86,9 +86,6 @@ def main():
     sub_orcid.add_argument('json_file',
         help="orcid JSON file to import from (or stdin)",
         default=sys.stdin, type=argparse.FileType('r'))
-    sub_orcid.add_argument('--batch-size',
-        help="size of batch to send",
-        default=50, type=int)
 
     sub_journal_metadata = subparsers.add_parser('journal-metadata')
     sub_journal_metadata.set_defaults(
@@ -98,9 +95,6 @@ def main():
     sub_journal_metadata.add_argument('json_file',
         help="Journal JSON metadata file to import from (or stdin)",
         default=sys.stdin, type=argparse.FileType('r'))
-    sub_journal_metadata.add_argument('--batch-size',
-        help="size of batch to send",
-        default=50, type=int)
 
     sub_matched = subparsers.add_parser('matched')
     sub_matched.set_defaults(
@@ -110,9 +104,6 @@ def main():
     sub_matched.add_argument('json_file',
         help="JSON file to import from (or stdin)",
         default=sys.stdin, type=argparse.FileType('r'))
-    sub_matched.add_argument('--batch-size',
-        help="size of batch to send",
-        default=50, type=int)
     sub_matched.add_argument('--bezerk-mode',
         action='store_true',
         help="don't lookup existing files, just insert (clobbers; only for fast bootstrap)")
@@ -133,7 +124,7 @@ def main():
         help="if this is an import of longtail OA content (sets an 'extra' flag)")
     sub_grobid_metadata.add_argument('--bezerk-mode',
         action='store_true',
-        help="don't lookup existing DOIs, just insert (clobbers; only for fast bootstrap)")
+        help="don't lookup existing files, just insert (clobbers; only for fast bootstrap)")
 
     args = parser.parse_args()
     if not args.__dict__.get("func"):
