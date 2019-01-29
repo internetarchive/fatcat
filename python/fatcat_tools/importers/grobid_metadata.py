@@ -144,8 +144,12 @@ class GrobidMetadataImporter(EntityImporter):
         if not extra:
             extra = None
 
+        title = clean(obj['title'], force_xml=True)
+        if not title or len(title) < 2:
+            return None
+
         re = fatcat_client.ReleaseEntity(
-            title=clean(obj['title'], force_xml=True),
+            title=title,
             release_type="article-journal",
             release_date=release_date,
             release_year=release_year,
