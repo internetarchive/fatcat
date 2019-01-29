@@ -81,7 +81,7 @@ class MatchedImporter(EntityImporter):
             url = make_rel_url(original, default_link_rel=self.default_link_rel)
             if url != None:
                 urls.add(url)
-        urls = [fatcat_client.FileEntityUrls(rel, url) for (rel, url) in urls]
+        urls = [fatcat_client.FileEntityUrls(rel=rel, url=url) for (rel, url) in urls]
         if len(urls) == 0:
             return None
 
