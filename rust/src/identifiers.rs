@@ -1,7 +1,6 @@
 use crate::errors::*;
 use data_encoding::BASE32_NOPAD;
 use regex::Regex;
-use serde_json;
 use std::str::FromStr;
 use std::{convert, fmt};
 use uuid::Uuid;
