@@ -85,6 +85,10 @@ pub enum FatcatError {
     // Diesel constraint that we think is a user error
     ConstraintViolation(String),
 
+    #[fail(display = "generic database 'not-found'")]
+    // This should generally get caught and handled
+    DatabaseRowNotFound,
+
     // TODO: can these hold context instead of Inner?
     #[fail(display = "unexpected database error: {}", _0)]
     // other Diesel, R2d2 errors which we don't think are user errors (eg, connection failure)
@@ -112,9 +116,7 @@ impl Into<models::ErrorResponse> for FatcatError {
 impl From<diesel::result::Error> for FatcatError {
     fn from(inner: diesel::result::Error) -> FatcatError {
         match inner {
-            diesel::result::Error::NotFound => {
-                FatcatError::NotFound("unknown".to_string(), "N/A".to_string())
-            }
+            diesel::result::Error::NotFound => FatcatError::DatabaseRowNotFound,
             diesel::result::Error::DatabaseError(_, _) => {
                 FatcatError::ConstraintViolation(inner.to_string())
             }

@@ -34,7 +34,7 @@ macro_rules! generic_auth_err_responses {
     ($val:ident, $resp_type:ident) => {
         //use crate::errors::FatcatError::*;
         match $val {
-            NotFound(_, _) => $resp_type::NotFound($val.into()),
+            NotFound(_, _) | DatabaseRowNotFound => $resp_type::NotFound($val.into()),
             InvalidCredentials(_) | InsufficientPrivileges(_) => $resp_type::Forbidden($val.into()),
             DatabaseError(_) | InternalError(_) => {
                 error!("{}", $val);
@@ -50,7 +50,7 @@ macro_rules! generic_err_responses {
     ($val:ident, $resp_type:ident) => {
         //use crate::errors::FatcatError::*;
         match $val {
-            NotFound(_, _) => $resp_type::NotFound($val.into()),
+            NotFound(_, _) | DatabaseRowNotFound => $resp_type::NotFound($val.into()),
             DatabaseError(_) | InternalError(_) => {
                 error!("{}", $val);
                 capture_fail(&$val);
@@ -967,7 +967,9 @@ impl Api for Server {
                 CreateEditgroupResponse::SuccessfullyCreated(eg)
             }
             Err(fe) => match fe {
-                NotFound(_, _) => CreateEditgroupResponse::NotFound(fe.into()),
+                NotFound(_, _) | DatabaseRowNotFound => {
+                    CreateEditgroupResponse::NotFound(fe.into())
+                }
                 DatabaseError(_) | InternalError(_) => {
                     error!("{}", fe);
                     capture_fail(&fe);
@@ -1137,6 +1139,9 @@ impl Api for Server {
                 AuthOidcResponse::Found(result)
             }
             Err(fe) => match fe {
+                InvalidCredentials(_) | InsufficientPrivileges(_) => {
+                    AuthOidcResponse::Forbidden(fe.into())
+                }
                 DatabaseError(_) | InternalError(_) => {
                     error!("{}", fe);
                     capture_fail(&fe);
@@ -1182,6 +1187,9 @@ impl Api for Server {
                 message: "auth check successful!".to_string(),
             }),
             Err(fe) => match fe {
+                InvalidCredentials(_) | InsufficientPrivileges(_) => {
+                    AuthCheckResponse::Forbidden(fe.into())
+                }
                 DatabaseError(_) | InternalError(_) => {
                     error!("{}", fe);
                     capture_fail(&fe);

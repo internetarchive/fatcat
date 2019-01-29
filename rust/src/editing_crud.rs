@@ -33,7 +33,15 @@ pub trait EditorCrud {
 }
 impl EditorCrud for Editor {
     fn db_get(conn: &DbConn, editor_id: FatcatId) -> Result<EditorRow> {
-        let editor: EditorRow = editor::table.find(editor_id.to_uuid()).get_result(conn)?;
+        let editor: EditorRow = match editor::table.find(editor_id.to_uuid()).get_result(conn) {
+            Ok(ed) => ed,
+            Err(diesel::result::Error::NotFound) => {
+                return Err(
+                    FatcatError::NotFound("editor".to_string(), editor_id.to_string()).into(),
+                );
+            }
+            other => other?,
+        };
         Ok(editor)
     }
 
@@ -105,10 +113,21 @@ impl EditgroupCrud for Editgroup {
         conn: &DbConn,
         editgroup_id: FatcatId,
     ) -> Result<(EditgroupRow, Option<ChangelogRow>)> {
-        let (eg_row, cl_row): (EditgroupRow, Option<ChangelogRow>) = editgroup::table
+        let (eg_row, cl_row): (EditgroupRow, Option<ChangelogRow>) = match editgroup::table
             .left_outer_join(changelog::table)
             .filter(editgroup::id.eq(editgroup_id.to_uuid()))
-            .first(conn)?;
+            .first(conn)
+        {
+            Ok(eg) => eg,
+            Err(diesel::result::Error::NotFound) => {
+                return Err(FatcatError::NotFound(
+                    "editgroup".to_string(),
+                    editgroup_id.to_string(),
+                )
+                .into());
+            }
+            other => other?,
+        };
 
         ensure!(
             cl_row.is_some() == eg_row.is_accepted,
@@ -277,9 +296,20 @@ pub trait EditgroupAnnotationCrud {
 
 impl EditgroupAnnotationCrud for EditgroupAnnotation {
     fn db_get(conn: &DbConn, annotation_id: Uuid) -> Result<EditgroupAnnotationRow> {
-        let row: EditgroupAnnotationRow = editgroup_annotation::table
+        let row: EditgroupAnnotationRow = match editgroup_annotation::table
             .find(annotation_id)
-            .get_result(conn)?;
+            .get_result(conn)
+        {
+            Ok(ea) => ea,
+            Err(diesel::result::Error::NotFound) => {
+                return Err(FatcatError::NotFound(
+                    "editgroup_annotation".to_string(),
+                    annotation_id.to_string(),
+                )
+                .into());
+            }
+            other => other?,
+        };
         Ok(row)
     }
 
