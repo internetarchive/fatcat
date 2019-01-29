@@ -229,6 +229,7 @@ class CrossrefImporter(EntityImporter):
                     year = None
             except:
                 year = None
+            ref_extra = dict()
             key = rm.get('key')
             if key and key.startswith(obj['DOI'].upper()):
                 key = key.replace(obj['DOI'].upper() + "-", '')
@@ -237,10 +238,9 @@ class CrossrefImporter(EntityImporter):
             if not container_name:
                 container_name = rm.get('journal-title')
             elif rm.get('journal-title'):
-                extra['journal-title'] = rm['journal-title']
-            extra = dict()
+                ref_extra['journal-title'] = rm['journal-title']
             if rm.get('DOI'):
-                extra['doi'] = rm.get('DOI').lower()
+                ref_extra['doi'] = rm.get('DOI').lower()
             # TODO: what fields here? CSL citation stuff
             for k in ('author', 'editor', 'edition', 'authority', 'version',
                     'genre', 'url', 'event', 'issue', 'volume', 'date',
@@ -248,8 +248,8 @@ class CrossrefImporter(EntityImporter):
                     'collection_title', 'chapter_number'):
                 if clean(rm.get(k)):
                     extra[k] = clean(rm[k])
-            if not extra:
-                extra = None
+            if not ref_extra:
+                ref_extra = None
             refs.append(fatcat_client.ReleaseRef(
                 index=i,
                 # doing lookups would be a second import pass
@@ -260,7 +260,7 @@ class CrossrefImporter(EntityImporter):
                 title=clean(rm.get('title')),
                 locator=clean(rm.get('first-page')),
                 # TODO: just dump JSON somewhere here?
-                extra=extra))
+                extra=ref_extra))
 
         # abstracts
         abstracts = []
