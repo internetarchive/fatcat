@@ -28,7 +28,7 @@ def clean(thing, force_xml=False):
     Also strips extra whitespace.
     """
     if not thing:
-        return thing
+        return None
     fix_entities = 'auto'
     if force_xml:
         fix_entities = True
@@ -41,7 +41,8 @@ def clean(thing, force_xml=False):
 def test_clean():
 
     assert clean(None) == None
-    assert clean('') == ''
+    assert clean('') == None
+    assert clean('1') == None
     assert clean('123') == '123'
     assert clean('a&amp;b') == 'a&b'
     assert clean('<b>a&amp;b</b>') == '<b>a&amp;b</b>'

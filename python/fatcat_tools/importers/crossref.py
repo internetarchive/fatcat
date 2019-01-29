@@ -173,8 +173,6 @@ class CrossrefImporter(EntityImporter):
                     extra = None
                 assert ctype in ("author", "editor", "translator")
                 raw_name = clean(raw_name)
-                if not raw_name or len(raw_name) <= 1:
-                    raw_name = None
                 contribs.append(fatcat_client.ReleaseContrib(
                     creator_id=creator_id,
                     index=index,
@@ -193,13 +191,13 @@ class CrossrefImporter(EntityImporter):
         container_id = None
         if issnl:
             container_id = self.lookup_issnl(issnl)
-        publisher = obj.get('publisher')
+        publisher = clean(obj.get('publisher'))
 
         if (container_id is None and self.create_containers and (issnl is not None)
             and obj.get('container-title') and len(obj['container-title']) > 0):
             ce = fatcat_client.ContainerEntity(
                 issnl=issnl,
-                publisher=clean(publisher),
+                publisher=publisher,
                 container_type=self.map_container_type(release_type),
                 name=clean(obj['container-title'][0], force_xml=True))
             ce_edit = self.create_container(ce)
@@ -247,7 +245,7 @@ class CrossrefImporter(EntityImporter):
                     'accessed_date', 'issued', 'page', 'medium',
                     'collection_title', 'chapter_number'):
                 if clean(rm.get(k)):
-                    extra[k] = clean(rm[k])
+                    ref_extra[k] = clean(rm[k])
             if not ref_extra:
                 ref_extra = None
             refs.append(fatcat_client.ReleaseRef(
@@ -296,7 +294,10 @@ class CrossrefImporter(EntityImporter):
             extra_crossref['license'] = license_extra
 
         if len(obj['title']) > 1:
-            extra['aliases'] = [clean(t) for t in obj['title'][1:]]
+            aliases = [clean(t) for t in obj['title'][1:]]
+            aliases = [t for t in aliases if t]
+            if aliases:
+                extra['aliases'] = aliases
 
         # ISBN
         isbn13 = None
@@ -343,13 +344,11 @@ class CrossrefImporter(EntityImporter):
         original_title = None
         if obj.get('original-title'):
             original_title = clean(obj.get('original-title')[0], force_xml=True)
-            if not original_title or len(original_title) < 2:
-                original_title = None
 
         title = None
         if obj.get('title'):
             title = clean(obj.get('title')[0], force_xml=True)
-            if not title or len(title) < 2:
+            if not title or len(title) <= 1:
                 # title can't be just a single character
                 return None
 
@@ -367,7 +366,7 @@ class CrossrefImporter(EntityImporter):
             release_status=release_status,
             release_date=release_date,
             release_year=release_year,
-            publisher=clean(publisher),
+            publisher=publisher,
             doi=obj['DOI'].lower(),
             pmid=extids['pmid'],
             pmcid=extids['pmcid'],
