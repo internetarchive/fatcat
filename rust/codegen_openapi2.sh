@@ -11,6 +11,9 @@ sed -i 's/extern crate uuid;/extern crate serde_json;\nextern crate uuid;/g' fat
 # Hack to fix "release_date" as Date, not DateTime
 sed -i 's/release_date: Option<chrono::DateTime<chrono::Utc>>/release_date: Option<chrono::NaiveDate>/g' fatcat-api-spec/src/models.rs
 
+# Hack to optionally log unknown request fields (not actually needed)
+#sed -i 's/\(response.headers.set(Warning(format!("Ignoring unknown fields in body: {:?}", unused_elements)));\)/\1 warn!("unknown fields in request body: {:?}", unused_elements);/g' fatcat-api-spec/src/server.rs
+
 # Hack to require that optional params parse correctly (boolean, integer, datetime)
 # If we reformat, this this should basically go from, eg:
 #    .and_then(|x| x.parse::<i64>()
