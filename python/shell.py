@@ -38,13 +38,13 @@ if __name__ == '__main__':
     local_api = fatcat_client.DefaultApi(fatcat_client.ApiClient(local_conf))
 
     #prod_conf = fatcat_client.Configuration()
-    #local_conf.api_key["Authorization"] = "AgEPZGV2LmZhdGNhdC53aWtpAg4yMDE4LTEyLTMxLWRldgACJmVkaXRvcl9pZCA9IGFhYWFhYWFhYWFhYWJrdmthYWFhYWFhYWFlAAIeY3JlYXRlZCA9IDIwMTgtMTItMzFUMjE6MTU6NDdaAAAGIMWFZeZ54pH4OzNl5+U5X3p1H1rMioSuIldihuiM5XAw"
-    #local_conf.api_key_prefix["Authorization"] = "Bearer"
+    #prod_conf.api_key["Authorization"] = "AgEPZGV2LmZhdGNhdC53aWtpAg4yMDE4LTEyLTMxLWRldgACJmVkaXRvcl9pZCA9IGFhYWFhYWFhYWFhYWJrdmthYWFhYWFhYWFlAAIeY3JlYXRlZCA9IDIwMTgtMTItMzFUMjE6MTU6NDdaAAAGIMWFZeZ54pH4OzNl5+U5X3p1H1rMioSuIldihuiM5XAw"
+    #prod_conf.api_key_prefix["Authorization"] = "Bearer"
     #prod_conf.host = 'https://api.fatcat.wiki/v0'
     #prod_api = fatcat_client.DefaultApi(fatcat_client.ApiClient(prod_conf))
 
     qa_conf = fatcat_client.Configuration()
-    local_conf.api_key["Authorization"] = "AgEPZGV2LmZhdGNhdC53aWtpAg4yMDE4LTEyLTMxLWRldgACJmVkaXRvcl9pZCA9IGFhYWFhYWFhYWFhYWJrdmthYWFhYWFhYWFlAAIeY3JlYXRlZCA9IDIwMTgtMTItMzFUMjE6MTU6NDdaAAAGIMWFZeZ54pH4OzNl5+U5X3p1H1rMioSuIldihuiM5XAw"
-    local_conf.api_key_prefix["Authorization"] = "Bearer"
+    qa_conf.api_key["Authorization"] = "AgEPZGV2LmZhdGNhdC53aWtpAg4yMDE4LTEyLTMxLWRldgACJmVkaXRvcl9pZCA9IGFhYWFhYWFhYWFhYWJrdmthYWFhYWFhYWFlAAIeY3JlYXRlZCA9IDIwMTgtMTItMzFUMjE6MTU6NDdaAAAGIMWFZeZ54pH4OzNl5+U5X3p1H1rMioSuIldihuiM5XAw"
+    qa_conf.api_key_prefix["Authorization"] = "Bearer"
     qa_conf.host = 'https://api.qa.fatcat.wiki/v0'
     qa_api = fatcat_client.DefaultApi(fatcat_client.ApiClient(qa_conf))
