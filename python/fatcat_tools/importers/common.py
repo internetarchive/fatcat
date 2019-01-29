@@ -179,6 +179,10 @@ class EntityImporter:
             self.push_entity(entity)
         return
 
+    def parse_record(self, raw_record):
+        # implementations should fill this in
+        raise NotImplementedError
+
     def finish(self):
         if self._edit_count > 0:
             self.api.accept_editgroup(self._editgroup_id)
