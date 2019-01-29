@@ -1,50 +1,60 @@
 
 ## In Progress
 
-- check that any needed/new indices are in place
-    => seems to at least superficially work
-- benchmark citation efficiency (in QA)
+- QA data checks
+    x  dump: SQL and fatcat-export
+    => elastic transform and esbulk load
+    => 'container' metadata
+    => release in_* flags (updated kibana dashboard?)
+    => run crossref auto-import pipeline components
+    => wayback duplication and short datetimes
+    => re-run crossref non-bezerk; ensure no new entities
+- log Warning headers returned to user, as a QA check?
+    => guess this would be rust middleware
 
-- all query params need to be strings, and parse in rust :(
-    since=(datetime.datetime.utcnow() + datetime.timedelta(seconds=1)).isoformat()+"Z"
-- doc: python client API needs to have booleans set as, eg, 'true'/'false' (str) (!?!?)
-    "note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response"
+from running tests:
+Jan 28 18:57:27.431 INFO POST http://localhost:9411/v0/creator/batch?autoaccept=True&description=test+description&extra=%7B%27q%27%3A+%27thing%27%2C+%27a%27%3A+75%7D 500 Internal Server Error (1 ms)
+Jan 28 18:57:27.438 INFO POST http://localhost:9411/v0/creator/batch?autoaccept=True&description=test+description&extra=%7B 500 Internal Server Error (3 ms)
+
 
 ## Next Up
 
-- "don't clobber" mode/flag for crossref import (and others?)
-- elastic inserter should handle deletions and redirects; if state isn't
-  active, delete the document
-    => don't delete, just store state. but need to "blank" redirects and WIP so
-       they don't show up in results
-    => refactor inserter to be a class (eg, for command line use)
-    => end-to-end test of this behavior?
-- webcapture timestamp schema cleanup (both CDX and base)
-    => dt.to_rfc3339_opts(SecondsFormat::Secs, true)
-    => but this is mostly buried in serialization code?
-- fake DOI (use in examples): 10.5555/12345678
+- container count "enrich"
+- changelog elastic stuff (is there even a fatcat-export for this?)
+- QA sentry has very little host info; also not URL of request
+- start prod crossref harvesting (from ~start of 2019)
+- 158 "NULL" publishers in journal metadata
+
+## Production import blockers
+
 - URL location duplication (especially IA/wayback)
     => eg, https://fatcat.wiki/file/2g4sz57j3bgcfpwkgz5bome3re
     => UNIQ index on {release_rev, url}?
-- shadow library manifest importer
-- import from arabesque output (eg, specific crawls)
-- elastic iteration
-    => any_abstract broken?
-    => blank author names? maybe in crossref import; fatcat-api and schema
-       should both prevent
-- handle very large author/reference lists (instead of dropping)
-    => https://api.crossref.org/v1/works/http://dx.doi.org/10.1007/978-3-319-46095-6_7
-    => 7000+ authors (!)
-- guide updates for auth
-- refactor webface views to use shared entity_view.html template
+
+## Production public launch blockers
+
 - handle 'wip' status entities in web UI
+- guide updates for auth
+- webface 4xx and 5xx pages
+- privacy policy, and link from: create account, create edit
+- refactors and correctness in rust/TODO
+- update /about page
 
-## Bugs (or at least need tests)
+## Production Tech Sanity
 
-- autoaccept seems to have silently not actually merged editgroup
+- postgresql replication
+- pg_dump/load test
+- haproxy somewhere/how
+- logging iteration: larger journald buffers? point somewhere?
 
 ## Ideas
 
+- 'hide' flag for exporter (eg, to skip abstracts and refs in some release dumps)
+- https://tech.labs.oliverwyman.com/blog/2019/01/14/serialising-rust-tests/
+- use https://github.com/codelucas/newspaper to extract fulltext+metadata from
+  HTML crawls
+- changelog elastic index (for stats)
+- import from arabesque output (eg, specific crawls)
 - more logins: orcid, wikimedia
 - `fatcat-auth` tool should support more caveats, both when generating new or
   mutating existing tokens
@@ -64,21 +74,6 @@
     => /{entity}/{ident}/history
 - investigate data quality by looking at, eg, most popular author strings, most
   popular titles, duplicated containers, etc
-
-## Production blockers
-
-- privacy policy, and link from: create account, create edit
-- update /about page
-- refactors and correctness in rust/TODO
-- importers: don't insert wayback links with short timestamps
-
-## Production Sanity
-
-- fatcat-web is not Type=simple (systemd)
-- postgresql replication
-- pg_dump/load test
-- haproxy somewhere/how
-- logging iteration: larger journald buffers? point somewhere?
 
 ## Metadata Import
 
@@ -118,11 +113,6 @@ new importers:
 - CORE (filtered)
 - semantic scholar (up to 39 million; includes author de-dupe)
 
-## Entity/Edit Lifecycle
-
-- commenting and accepting editgroups
-- editgroup state machine?
-
 ## Guide / Book / Style
 
 - release_type, release_status, url.rel schemas (enforced in API)
@@ -147,17 +137,23 @@ new importers:
 ## Schema / Entity Fields
 
 - elastic transform should only include authors, not editors (?)
-- arxiv_id field (keep flip-flopping)
-- original_title field (internationalization, "original language")
 - `doi` field for containers (at least for "journal" type; maybe for "series"
   as well?)
 - `retracted`, `translation`, and perhaps `corrected` as flags on releases,
   instead of release_status?
+    => use extra flags and release_status for now
 - 'part-of' relation for releases (release to release) and possibly containers
 - `container_type` field for containers (journal, conference, book series, etc)
 
 ## Other / Backburner
 
+- refactor webface views to use shared entity_view.html template
+- shadow library manifest importer
+- book identifiers: OCLC, openlibrary
+- ref from guide: https://creativecommons.org/2012/08/14/library-catalog-metadata-open-licensing-or-public-domain/
+- test redirect/delete elasticsearch change
+- fake DOI (use in examples): 10.5555/12345678
+- refactor elasticsearch inserter to be a class (eg, for command line use)
 - document: elastic query date syntax is like: date:[2018-10-01 TO 2018-12-31]
 - fileset/webcapture webface anything
 - display abstracts better. no hashes or metadata; prefer plain or HTML,
