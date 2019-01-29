@@ -28,12 +28,14 @@ def run_journal_metadata(args):
 
 def run_matched(args):
     fmi = MatchedImporter(args.api,
-        bezerk_mode=args.bezerk_mode,
         edit_batch_size=args.batch_size)
     JsonLinePusher(fmi, args.json_file).run()
 
 def run_grobid_metadata(args):
-    fmi = GrobidMetadataImporter(args.api, edit_batch_size=args.batch_size, longtail_oa=args.longtail_oa)
+    fmi = GrobidMetadataImporter(args.api,
+        edit_batch_size=args.batch_size,
+        longtail_oa=args.longtail_oa,
+        bezerk_mode=args.bezerk_mode)
     LinePusher(fmi, args.tsv_file).run()
 
 def main():
@@ -126,9 +128,12 @@ def main():
     sub_grobid_metadata.add_argument('--group-size',
         help="editgroup group size to use",
         default=75, type=int)
-    sub_matched.add_argument('--longtail-oa',
+    sub_grobid_metadata.add_argument('--longtail-oa',
         action='store_true',
         help="if this is an import of longtail OA content (sets an 'extra' flag)")
+    sub_grobid_metadata.add_argument('--bezerk-mode',
+        action='store_true',
+        help="don't lookup existing DOIs, just insert (clobbers; only for fast bootstrap)")
 
     args = parser.parse_args()
     if not args.__dict__.get("func"):
