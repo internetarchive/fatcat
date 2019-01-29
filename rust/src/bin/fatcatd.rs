@@ -49,6 +49,8 @@ fn main() -> Result<()> {
     let drain = slog_term::CompactFormat::new(decorator).build().fuse();
     let drain = slog_async::Async::new(drain).build().fuse();
     let logger = Logger::root(drain, o!());
+    let _scope_guard = slog_scope::set_global_logger(logger.clone());
+    let _log_guard = slog_stdlog::init().unwrap();
     let formatter = DefaultLogFormatter;
 
     // sentry exception handling
