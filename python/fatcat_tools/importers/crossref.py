@@ -260,10 +260,11 @@ class CrossrefImporter(EntityImporter):
 
         # abstracts
         abstracts = []
-        if obj.get('abstract') != None:
+        abstract = clean(obj.get('abstract'))
+        if abstract and len(abstract) > 10:
             abstracts.append(fatcat_client.ReleaseEntityAbstracts(
                 mimetype="application/xml+jats",
-                content=clean(obj.get('abstract'))))
+                content=abstract))
 
         # extra fields
         extra = dict()
