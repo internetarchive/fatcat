@@ -171,10 +171,13 @@ class CrossrefImporter(EntityImporter):
                 if not extra:
                     extra = None
                 assert ctype in ("author", "editor", "translator")
+                raw_name = clean(raw_name)
+                if not raw_name or len(raw_name) <= 1:
+                    raw_name = None
                 contribs.append(fatcat_client.ReleaseContrib(
                     creator_id=creator_id,
                     index=index,
-                    raw_name=clean(raw_name),
+                    raw_name=raw_name,
                     raw_affiliation=clean(raw_affiliation),
                     role=ctype,
                     extra=extra))
