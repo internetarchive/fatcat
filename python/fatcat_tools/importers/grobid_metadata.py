@@ -81,9 +81,8 @@ class GrobidMetadataImporter(EntityImporter):
 
         abstract = obj.get('abstract')
         if abstract and len(abstract) < MAX_ABSTRACT_BYTES and len(abstract) > 10:
-            abobj = dict(
+            abobj = fatcat_client.ReleaseEntityAbstracts(
                 mimetype="text/plain",
-                language=None,
                 content=clean(obj.get('abstract')))
             abstracts = [abobj]
         else:
@@ -97,31 +96,28 @@ class GrobidMetadataImporter(EntityImporter):
                 role="author",
                 extra=None))
 
-        # XXX: why is this a dict()? not covered by tests?
         refs = []
         for raw in obj.get('citations', []):
             cite_extra = dict()
-            ref = dict()
-            ref['key'] = clean(raw.get('id'))
-            if raw.get('title'):
-                ref['title'] = clean(raw['title'])
+            year = None
             if raw.get('date'):
                 try:
                     year = int(raw['date'].strip()[:4])
-                    ref['year'] = year
                 except:
                     pass
             for key in ('volume', 'url', 'issue', 'publisher'):
                 if raw.get(key):
                     cite_extra[key] = clean(raw[key])
             if raw.get('authors'):
-                cite_extra['authors'] = [clean(a['name']) for a in raw['authors']]
-            if cite_extra:
-                cite_extra = dict(grobid=cite_extra)
-            else:
+                cite_extra['author'] = [clean(a['name']) for a in raw['authors']]
+
+            if not cite_extra:
                 cite_extra = None
-            ref['extra'] = cite_extra
-            refs.append(ref)
+            refs.append(fatcat_client.ReleaseRef(
+                key=clean(raw.get('id')),
+                year=year,
+                title=clean(raw['title']),
+                extra=cite_extra))
 
         release_date = None
         release_year = None
