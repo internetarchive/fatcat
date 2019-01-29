@@ -30,6 +30,7 @@ def entity_from_json(json_str, entity_type, api_client=None):
     return api_client.deserialize(thing, entity_type)
 
 def check_kbart(year, archive):
+    print(archive)
     if not archive or not archive.get('year_spans'):
         return None
     for span in archive['year_spans']:
@@ -93,13 +94,14 @@ def release_to_elasticsearch(entity):
     in_ia_sim = False
     in_shadow = False
 
+    release_year = release.release_year
     if release.release_date:
         # .isoformat() results in, eg, '2010-10-22' (YYYY-MM-DD)
         t['release_date'] = release.release_date.isoformat()
-        if release.release_year is None:
-            t['release_year'] = release.release_date.year
-    if release.release_year is not None:
-        t['release_year'] = release.release_year
+        if not release_year:
+            release_year = release.release_date.year
+    if release_year:
+        t['release_year'] = release_year
 
     t['any_abstract'] = len(release.abstracts) > 0
     t['ref_count'] = len(release.refs or [])
@@ -118,15 +120,15 @@ def release_to_elasticsearch(entity):
         t['container_type'] = container.container_type
         if container.extra:
             c_extra = container.extra
-            if c_extra.get('kbart') and release.year:
-                in_jstor = check_kbart(release.year, c_extra['kbart'].get('jstor'))
+            if c_extra.get('kbart') and release_year:
+                in_jstor = check_kbart(release_year, c_extra['kbart'].get('jstor'))
                 in_kbart = in_jstor
                 for archive in ('portico', 'lockss', 'clockss'):
-                    in_kbart = in_kbart or check_kbart(release.year, c_extra['kbart'].get(archive))
+                    in_kbart = in_kbart or check_kbart(release_year, c_extra['kbart'].get(archive))
 
             if c_extra.get('ia'):
-                if c_extra['ia'].get('sim') and release.year:
-                    in_ia_sim = check_kbart(release, c_extra['ia']['sim'].get('year_spans'))
+                if c_extra['ia'].get('sim') and release_year:
+                    in_ia_sim = check_kbart(release_year, c_extra['ia']['sim'])
                 if c_extra['ia'].get('longtail_oa'):
                     is_longtail_oa = True
             if c_extra.get('sherpa_romeo'):
