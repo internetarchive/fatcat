@@ -80,7 +80,7 @@ CREATE INDEX changelog_editgroup_idx ON changelog(editgroup_id);
 CREATE TABLE abstracts (
     -- fixed size hash (in hex). TODO: switch to bytes
     sha1                TEXT PRIMARY KEY CHECK (octet_length(sha1) = 40),
-    content             TEXT NOT NULL CHECK (octet_length(content) >= 8)
+    content             TEXT NOT NULL CHECK (octet_length(content) >= 1)
 );
 
 CREATE TABLE refs_blob (
@@ -183,7 +183,7 @@ CREATE TABLE file_rev (
     sha1                TEXT CHECK (octet_length(sha1) = 40),
     sha256              TEXT CHECK (octet_length(sha256) = 64),
     md5                 TEXT CHECK (octet_length(md5) = 32),
-    mimetype            TEXT CHECK (octet_length(mimetype) >= 3)
+    mimetype            TEXT CHECK (octet_length(mimetype) >= 1)
 );
 
 CREATE INDEX file_rev_sha1_idx ON file_rev(sha1);
