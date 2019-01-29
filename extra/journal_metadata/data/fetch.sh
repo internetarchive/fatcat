@@ -8,7 +8,7 @@ wget -c https://archive.org/download/road-issn-2018/road-2018-01-24.tsv
 
 wget -c https://archive.org/download/doaj_bulk_metadata_2019/doaj_20190124.csv
 
-wget -c https://archive.org/download/issn_issnl_mappings/20181203.ISSN-to-ISSN-L.txt
+wget -c https://archive.org/download/issn_issnl_mappings/20190129.ISSN-to-ISSN-L.txt
 
 wget -c https://archive.org/download/crossref_doi_titles/doi_titles_file_2019-01-24.csv
 
