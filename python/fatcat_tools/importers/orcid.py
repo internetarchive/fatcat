@@ -41,7 +41,8 @@ class OrcidImporter(EntityImporter):
         returns a CreatorEntity
         """
         name = obj['person']['name']
-        assert name
+        if not name:
+            return None
         extra = None
         given = value_or_none(name.get('given-names'))
         sur = value_or_none(name.get('family-name'))
