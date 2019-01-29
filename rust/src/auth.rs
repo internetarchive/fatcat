@@ -312,7 +312,19 @@ impl AuthConfectionary {
             "time > {}",
             created.to_rfc3339_opts(SecondsFormat::Secs, true)
         ));
-        let editor: EditorRow = Editor::db_get(conn, editor_id)?;
+        // not finding the editor_id is an auth issue, not a 404
+        let editor: EditorRow =
+            match Editor::db_get(conn, editor_id).map_err(|e| FatcatError::from(e)) {
+                Ok(ed) => ed,
+                Err(FatcatError::NotFound(_, _)) => {
+                    return Err(FatcatError::InvalidCredentials(format!(
+                        "editor_id not found: {}",
+                        editor_id
+                    ))
+                    .into());
+                }
+                other_db_err => other_db_err?,
+            };
         let auth_epoch = DateTime::<Utc>::from_utc(editor.auth_epoch, Utc);
         // allow a second of wiggle room for precision and, eg, tests
         if created < (auth_epoch - chrono::Duration::seconds(1)) {
