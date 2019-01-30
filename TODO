@@ -1,35 +1,28 @@
 
 ## In Progress
 
-- QA data checks
-    x  dump: SQL and fatcat-export
-    => elastic transform and esbulk load
-    => 'container' metadata
-    => release in_* flags (updated kibana dashboard?)
-    => run crossref auto-import pipeline components
-    => wayback duplication and short datetimes
-    => re-run crossref non-bezerk; ensure no new entities
-- log Warning headers returned to user, as a QA check?
-    => guess this would be rust middleware
+- attempt prod import (in QA)!
 
-from running tests:
-Jan 28 18:57:27.431 INFO POST http://localhost:9411/v0/creator/batch?autoaccept=True&description=test+description&extra=%7B%27q%27%3A+%27thing%27%2C+%27a%27%3A+75%7D 500 Internal Server Error (1 ms)
-Jan 28 18:57:27.438 INFO POST http://localhost:9411/v0/creator/batch?autoaccept=True&description=test+description&extra=%7B 500 Internal Server Error (3 ms)
+## Prod Metadata Checks
 
+- longtail_oa flag getting set on GROBID imports
+- crossref citation not saving 'article-title' or 'unstructured', and 'author'
+  should be 'authors' (list)
+- crossref not saving 'language' (looks like iso code already)
+- grobid reference should be under extra (not nested): issue, volume, authors
 
 ## Next Up
 
+- serveral tweaks/fixes to webface (eg, container metadata schema changed)
 - container count "enrich"
 - changelog elastic stuff (is there even a fatcat-export for this?)
 - QA sentry has very little host info; also not URL of request
 - start prod crossref harvesting (from ~start of 2019)
 - 158 "NULL" publishers in journal metadata
-
-## Production import blockers
-
-- URL location duplication (especially IA/wayback)
-    => eg, https://fatcat.wiki/file/2g4sz57j3bgcfpwkgz5bome3re
-    => UNIQ index on {release_rev, url}?
+- should elastic release_year be of date type, instead of int?
+- QA/prod needs updated credentials
+- ansible: ISSN-L download/symlink
+- searching 'N/A' is a bug
 
 ## Production public launch blockers
 
@@ -80,10 +73,14 @@ Jan 28 18:57:27.438 INFO POST http://localhost:9411/v0/creator/batch?autoaccept=
 - web.archive.org response not SHA1 match? => need /<dt>id_/ thing
 - XML etc in metadata
     => (python) tests for these!
-    https://qa.fatcat.wiki/release/b3a2jvhvbvc6rlbdkpw4ukuzyi
     https://qa.fatcat.wiki/release/search?q=xmlns
-    https://qa.fatcat.wiki/release/search?q=%26amp%3B
-    https://qa.fatcat.wiki/release/search?q=%26gt%3B
+    https://qa.fatcat.wiki/release/search?q=%24gt
+- bad/weird titles
+    "[Blank page]", "blank page"
+    "Temporary Empty DOI 0"
+    "ADVERTISEMENT"
+    "Full title page with Editorial board (with Elsevier tree)"
+    "Advisory Board Editorial Board"
 - better/complete reltypes probably good (eg, list of IRs, academic domain)
 - 'expand' in lookups (derp! for single hit lookups)
 - include crossref-capitalized DOI in extra
@@ -91,18 +88,10 @@ Jan 28 18:57:27.438 INFO POST http://localhost:9411/v0/creator/batch?autoaccept=
     => also title https://fatcat.wiki/release/uyjzaq3xjnd6tcrqy3vcucczsi
 - crossref import: don't store citation unstructured if len() == 0:
     {"crossref": {"unstructured": ""}}
-- cleaning/matching: https://ftfy.readthedocs.io/en/latest/
-    => and try out beautifulsoup (https://stackoverflow.com/a/34532382/4682349)
+- try out beautifulsoup? (https://stackoverflow.com/a/34532382/4682349)
 - manifest: multiple URLs per SHA1
 - crossref: relations ("is-preprint-of")
 - crossref: two phase: no citations, then matched citations (via DOI table)
-- container import (extra?): lang, region, subject
-- crossref: filter works
-    => content-type whitelist
-    => title length and title/slug blacklist
-    => at least one author (?)
-    => make this a method on Release object
-    => or just set release_type as "stub"?
 - special "alias" DOIs... in crossref metadata?
 
 new importers:
