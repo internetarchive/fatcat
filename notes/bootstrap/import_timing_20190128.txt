@@ -1,0 +1,101 @@
+
+    # shutdown all the import/export/etc
+
+    sudo service fatcat-web stop
+    sudo service fatcat-api stop
+
+    # ansible playbook push
+
+    # as postgres user:
+    DATABASE_URL=postgres://postgres@/fatcat_prod /opt/cargo/bin/diesel database reset
+    sudo service postgresql restart
+
+    http delete :9200/fatcat_release
+    http delete :9200/fatcat_container
+    http delete :9200/fatcat_changelog
+    http put :9200/fatcat_release < release_schema.json
+    http put :9200/fatcat_container < container_schema.json
+    http put :9200/fatcat_changelog < changelog_schema.json
+    sudo service elasticsearch stop
+    sudo service kibana stop
+
+    sudo service postgresql start
+    sudo service fatcat-api start
+
+    # ensure rust/.env -> /srv/fatcat/config/fatcat_api.env
+    wget https://archive.org/download/ia_journal_metadata/journal_metadata.2019-01-25.json
+
+    # after running below imports
+    sudo service fatcat-web start
+    sudo service elasticsearch start
+    sudo service kibana start
+
+## QA Dry Run
+
+Git commit: 4137d2e8303999dedca404c2a369e7a8b6daf6ca
+      then: e23d62ed0fd65c5cde1d367569bee4f995b38571
+      then: d7d42a21b0b652496d26a10457a23fe6b615da90
+      then: 0a427dae89357bef0c45830b22b5f18e894747ba
+
+    # as webcrawl
+    ../extra/bootstrap_bots.sh
+
+    export FATCAT_AUTH_WORKER_JOURNAL_METADATA="..."
+    time ./fatcat_import.py journal-metadata /srv/fatcat/datasets/journal_metadata.2019-01-25.json
+
+        Counter({'total': 107869, 'insert': 107832, 'skip': 35, 'exists': 2, 'update': 0})
+        real    4m53.194s
+        user    2m0.168s
+        sys     0m4.760s
+
+    export FATCAT_AUTH_WORKER_ORCID="..."
+    time parallel --bar --pipepart -j8 -a /srv/fatcat/datasets/public_profiles_1_2_json.all.json ./fatcat_import.py orcid -
+
+        Counter({'total': 48097, 'insert': 47912, 'skip': 185, 'update': 0, 'exists': 0}) (times ~8x)
+        real    28m9.579s
+        user    88m58.112s
+        sys     5m0.352s
+
+    # XXX: THIS IS ONLY 1 MILLION
+    export FATCAT_AUTH_WORKER_CROSSREF="..."
+    time zcat /srv/fatcat/datasets/crossref-works.2018-09-05.1mil.json.gz | time parallel -j20 --round-robin --pipe ./fatcat_import.py crossref --bezerk-mode - /srv/fatcat/datasets/20181203.ISSN-to-ISSN-L.txt --extid-map-file /srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3
+
+
+
+    export FATCAT_AUTH_SANDCRAWLER="..."
+    export FATCAT_API_AUTH_TOKEN=$FATCAT_AUTH_SANDCRAWLER
+    time zcat /srv/fatcat/datasets/ia_papers_manifest_2018-01-25.matched.json.gz | pv -l | time parallel -j12 --round-robin --pipe ./fatcat_import.py matched --bezerk-mode -
+    # ran for a bit
+
+    time zcat /srv/fatcat/datasets/2018-08-27-2352.17-matchcrossref.insertable.json.gz | pv -l | time parallel -j12 --round-robin --pipe ./fatcat_import.py matched -
+    # ran for a bit
+
+    time zcat /srv/fatcat/datasets/2018-09-23-0405.30-dumpgrobidmetainsertable.longtail_join.filtered.tsv.gz | pv -l | time parallel -j12 --round-robin --pipe ./fatcat_import.py grobid-metadata --bezerk-mode -
+    # ran for a bit
+
+    # XXX: FULL SIZE
+    export FATCAT_AUTH_WORKER_CROSSREF="..."
+	time xzcat /srv/fatcat/datasets/crossref-works.2018-09-05.json.xz | time parallel -j20 --round-robin --pipe ./fatcat_import.py crossref - /srv/fatcat/datasets/20181203.ISSN-to-ISSN-L.txt --extid-map-file /srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3
+
+TODO:
+x bezerk mode is broken (at least for crossref, on command line; kwargs?)
+x either delete example entities, or delete/update them after import
+x unexpected database error: new row for relation \"abstracts\" violates check constraint \"abstracts_content_check\"
+x {"success":false,"error":"NotFound","message":"no such unknown found: N/A"}
+    => this seems to mean auth failed (but bad message)
+x ansible: /srv/fatcat/snapshots should be world-writable
+x HTTP response body: {"success":false,"error":"BadRequest","message":"broke a constraint or made an otherwise invalid request: display_name is required for all Creator entities"}
+x TypeError: __init__() missing 1 required positional argument: 'json_file'
+x HTTP response body: {"success":false,"error":"ConstraintViolation","message":"unexpected database error: new row for relation \"release_rev\" violates check constraint \"release_rev_title_check\""}
+x backwards rel/url for some (but not all) file URLs:
+    {"url":"web","rel":"http://www.spe.ut.ee/ojs-2.2.2/index.php/spe/article/download/spe.2012.5.2.07/74/"}
+x 2019/01/29 04:55:14 failed to json decode doc: invalid character '\'' looking for beginning of object key string
+    => this was due to random output coming out of python into esbulk (and getting mangled)
+x HTTP response body: {"success":false,"error":"ConstraintViolation","message":"unexpected database error: new row for relation \"release_rev\" violates check constraint \"release_rev_original_title_check\""}
+    => fixed in 'clean()' for most/all such fields
+x HTTP response body: {"success":false,"error":"ConstraintViolation","message":"unexpected database error: new row for relation \"release_contrib\" violates check constraint \"release_contrib_raw_affiliation_check\""}
+x   File "/srv/fatcat/src/python/fatcat_tools/importers/crossref.py", line 236, in parse_record
+    extra['journal-title'] = rm['journal-title']
+    UnboundLocalError: local variable 'extra' referenced before assignment
+x release_rev_publisher_check
+x release_contrib_raw_affiliation_check
