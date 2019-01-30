@@ -89,10 +89,14 @@ class JournalMetadataImporter(EntityImporter):
         if extra_ia:
             extra['ia'] = extra_ia
 
+        name = clean(row.get('name'))
+        if not name:
+            return None
+
         ce = fatcat_client.ContainerEntity(
             issnl=row['issnl'],
             container_type=None, # TODO
-            name=clean(row.get('name')),
+            name=name,
             publisher=clean(row.get('publisher')),
             wikidata_qid=None, # TODO
             extra=extra)
