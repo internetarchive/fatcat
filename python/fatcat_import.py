@@ -54,7 +54,7 @@ def main():
         help="Kafka topic namespace to use (eg, prod, qa)")
     parser.add_argument('--batch-size',
         help="size of batch to send",
-        default=100, type=int)
+        default=50, type=int)
     subparsers = parser.add_subparsers()
 
     sub_crossref = subparsers.add_parser('crossref')
