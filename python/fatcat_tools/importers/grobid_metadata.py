@@ -110,7 +110,7 @@ class GrobidMetadataImporter(EntityImporter):
                 if raw.get(key):
                     cite_extra[key] = clean(raw[key])
             if raw.get('authors'):
-                cite_extra['author'] = [clean(a['name']) for a in raw['authors']]
+                cite_extra['authors'] = [clean(a['name']) for a in raw['authors']]
 
             if not cite_extra:
                 cite_extra = None
@@ -127,9 +127,8 @@ class GrobidMetadataImporter(EntityImporter):
             release_year = int(obj['date'][:4])
 
         extra = dict()
-
         if obj.get('doi'):
-            extra_grobid['doi'] = obj['doi']
+            extra['doi'] = obj['doi']
         if obj['journal'] and obj['journal'].get('name'):
             extra['container_name'] = clean(obj['journal']['name'])
 
