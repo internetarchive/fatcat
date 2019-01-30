@@ -56,18 +56,19 @@ class OrcidImporter(EntityImporter):
                 display = sur
             elif given:
                 display = given
-        if not display:
-            # must have *some* name
-            return None
         orcid = obj['orcid-identifier']['path']
         if not self.is_orcid(orcid):
             sys.stderr.write("Bad ORCID: {}\n".format(orcid))
+            return None
+        display = clean(display)
+        if not display:
+            # must have *some* name
             return None
         ce = fatcat_client.CreatorEntity(
             orcid=orcid,
             given_name=clean(given),
             surname=clean(sur),
-            display_name=clean(display),
+            display_name=display,
             extra=extra)
         return ce
 
