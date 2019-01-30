@@ -82,6 +82,7 @@ def test_crossref_dict_parse(crossref_importer):
         assert r.license_slug == "CC-BY-NC-ND"
         assert r.original_title == "Renormalized perturbation theory auf deutsch"
         assert r.isbn13 == "978-3-16-148410-0"
+        assert r.language == "fr"
         assert 'subtitle' not in r.extra
         assert 'subtitle' not in r.extra['crossref']
         assert 'funder' not in r.extra
@@ -107,7 +108,7 @@ def test_crossref_dict_parse(crossref_importer):
         assert r.refs[0].year == 1972
         assert r.refs[0].locator == "1734"
         assert r.refs[0].container_name == "J. Chem. Phys."
-        assert r.refs[0].extra == {"volume": "57", "author": "Swenson", "doi": "10.1063/1.1678462", "medium": "DVD"}
+        assert r.refs[0].extra == {"volume": "57", "authors": ["Swenson"], "doi": "10.1063/1.1678462", "medium": "DVD"}
         assert r.refs[2].key == 'BIB3'
         assert r.refs[2].extra.get('author') is None
         assert r.refs[2].container_name == "Hypervirial Theorem's, Lecture Notes in Chemistry <3"

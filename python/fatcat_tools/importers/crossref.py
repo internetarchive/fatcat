@@ -239,11 +239,13 @@ class CrossrefImporter(EntityImporter):
                 ref_extra['journal-title'] = rm['journal-title']
             if rm.get('DOI'):
                 ref_extra['doi'] = rm.get('DOI').lower()
-            # TODO: what fields here? CSL citation stuff
-            for k in ('author', 'editor', 'edition', 'authority', 'version',
-                    'genre', 'url', 'event', 'issue', 'volume', 'date',
-                    'accessed_date', 'issued', 'page', 'medium',
-                    'collection_title', 'chapter_number'):
+            author = clean(rm.get('author'))
+            if author:
+                ref_extra['authors'] = [author]
+            for k in ('editor', 'edition', 'authority', 'version', 'genre',
+                    'url', 'event', 'issue', 'volume', 'date', 'accessed_date',
+                    'issued', 'page', 'medium', 'collection_title', 'chapter_number',
+                    'unstructured', 'series-title', 'volume-title'):
                 if clean(rm.get(k)):
                     ref_extra[k] = clean(rm[k])
             if not ref_extra:
@@ -255,7 +257,7 @@ class CrossrefImporter(EntityImporter):
                 key=key,
                 year=year,
                 container_name=clean(container_name),
-                title=clean(rm.get('title')),
+                title=clean(rm.get('article-title')),
                 locator=clean(rm.get('first-page')),
                 # TODO: just dump JSON somewhere here?
                 extra=ref_extra))
@@ -378,7 +380,7 @@ class CrossrefImporter(EntityImporter):
             volume=clean(obj.get('volume')),
             issue=clean(obj.get('issue')),
             pages=clean(obj.get('page')),
-            language=None,  # crossref doesn't supply language info
+            language=clean(obj.get('language')),
             license_slug=license_slug,
             extra=extra,
             abstracts=abstracts,
