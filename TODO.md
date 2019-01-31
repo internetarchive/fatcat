@@ -1,18 +1,24 @@
 
 ## In Progress
 
-- attempt prod import (in QA)!
-
 ## Prod Metadata Checks
 
+- edit and editgroup metadata
 - longtail_oa flag getting set on GROBID imports
 - crossref citation not saving 'article-title' or 'unstructured', and 'author'
   should be 'authors' (list)
 - crossref not saving 'language' (looks like iso code already)
 - grobid reference should be under extra (not nested): issue, volume, authors
+- uniqueness of:
+    sha1 - via SQL dump
+    doi - via SQL dump
+    issnl - via JSON dump
+    orcid - via JSON dump
 
 ## Next Up
 
+- bootstrap_bots script should set -ex and output admin and webface tokens
+- regression test imports for missing orcid display and journal metadata name
 - serveral tweaks/fixes to webface (eg, container metadata schema changed)
 - container count "enrich"
 - changelog elastic stuff (is there even a fatcat-export for this?)
@@ -23,6 +29,8 @@
 - QA/prod needs updated credentials
 - ansible: ISSN-L download/symlink
 - searching 'N/A' is a bug
+- formalize release_status:
+    => https://wiki.surfnet.nl/display/DRIVERguidelines/DRIVER-VERSION+Mappings
 
 ## Production public launch blockers
 
@@ -42,6 +50,14 @@
 
 ## Ideas
 
+- write up notes on biblio metadata in general
+    => "extensibility" and extra keys
+    => proliferation of arrays vs. concrete values
+    => various ways to record history/progeny
+    => "subtitle", "short-title", "full-title" complexity
+    => human names
+    => translated metadata: titles/names/abstracts
+    => "typing" for metadata (eg, math in titles)
 - 'hide' flag for exporter (eg, to skip abstracts and refs in some release dumps)
 - https://tech.labs.oliverwyman.com/blog/2019/01/14/serialising-rust-tests/
 - use https://github.com/codelucas/newspaper to extract fulltext+metadata from
