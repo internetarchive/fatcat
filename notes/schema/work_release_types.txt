@@ -103,3 +103,46 @@ crossref non-work types (don't need mappings; don't import? as containers?
 - report-series
 - standard-series
 
+release statuses should align with DRIVER guidelines, which are:
+
+- draft: Early version circulated as work in progress
+- submittedVersion: The version that has been submitted to a journal for peer review
+- acceptedVersion: The author-created version that incorporates referee comments and is the accepted for publication version
+- publishedVersion: The publisher created published version
+- updatedVersion: A version updated since publication
+
+http://web.archive.org/web/20091109125137/http://www2.lse.ac.uk/library/versions/VERSIONS_Toolkit_v1_final.pdf
+
+Proposed fatcat vocabulary:
+
+- draft
+- submitted: aka, pre-print, "under review"
+- accepted: aka, post-print, author's manuscript, "publisher's proof", "post-print"
+- published: the version that the publisher distributes. may include minor
+  (gramatical, typographical, broken link, aesthetic) corrections. AKA,
+  "version of record", "final publication version".
+- updated: post-publication significant updates (considered a separate release
+  in fatcat). AKA, "correction" (in the context of "correction notice", or the
+  full new version)
+
+The term "working paper" can be ambiguous; in some contexts it is a draft, in
+some submitted (pre-print).
+
+TODO: retractions (of published works, by author or publisher/editor) and
+withdrawls (of un-published but released/submitted works). are these a separate
+release, separate flag ("is_retracted"), or status type? if status, is it
+"-retracted", eg, "published-retracted", or just "retracted"? should fatcat
+point to the specific retraction release/object? that would include, eg, the
+date, and other metadata.
+
+I think a "withdrawn_date" schema field, in combination with "retraction"
+release type and status, is probably best. If pre-publication, only set
+withdrawn date. If post-publication, set the withdrawn_date and also create a
+retraction release under the same work (with appropriate status and/or type).
+But maybe "is_withdrawn" in case date isn't known?
+
+Links:
+- https://arxiv.org/help/withdraw
+- https://peerj.com/about/preprints/policies-and-procedures/#retraction-policy
+- https://www.elsevier.com/about/policies/article-withdrawal
+- https://support.crossref.org/hc/en-us/articles/115000501246-Crossmark-registering-updates
