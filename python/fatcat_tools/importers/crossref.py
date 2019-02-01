@@ -38,7 +38,8 @@ CONTAINER_TYPE_MAP = {
     'book': 'book-series',
 }
 
-# TODO:
+# TODO: more licenses; handle https and trailing slash better. Maybe
+# "PUBLISHER-SPECIFIC", or "OTHER"?
 LICENSE_SLUG_MAP = {
     "http://creativecommons.org/licenses/by/3.0/": "CC-BY",
     "http://creativecommons.org/licenses/by/4.0/": "CC-BY",
@@ -50,9 +51,11 @@ LICENSE_SLUG_MAP = {
     "http://creativecommons.org/licenses/by-nc/4.0/": "CC-BY-NC",
     "http://creativecommons.org/licenses/by-nc-sa/3.0/": "CC-BY-NC-SA",
     "http://creativecommons.org/licenses/by-nc-sa/4.0/": "CC-BY-NC-SA",
+    "https://creativecommons.org/licenses/by-nc-sa/4.0": "CC-BY-NC-SA",
     "http://creativecommons.org/licenses/by-nc-nd/3.0/": "CC-BY-NC-ND",
     "http://creativecommons.org/licenses/by-nc-nd/4.0/": "CC-BY-NC-ND",
     "http://www.elsevier.com/open-access/userlicense/1.0/": "ELSEVIER-USER-1.0",
+    "https://www.karger.com/Services/SiteLicenses": "KARGER",
     # http://onlinelibrary.wiley.com/termsAndConditions doesn't seem like a license
     # http://www.springer.com/tdm doesn't seem like a license
 }
