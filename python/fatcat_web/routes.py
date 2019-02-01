@@ -429,6 +429,25 @@ def auth_account():
 def page_not_found(e):
     return render_template('404.html'), 404
 
+@app.errorhandler(401)
+@app.errorhandler(403)
+def page_not_authorized(e):
+    return render_template('403.html'), 403
+
+@app.errorhandler(409)
+def page_edit_conflict(e):
+    return render_template('409.html'), 409
+
+@app.errorhandler(500)
+def page_server_error(e):
+    return render_template('500.html'), 500
+
+@app.errorhandler(502)
+@app.errorhandler(503)
+@app.errorhandler(504)
+def page_server_down(e):
+    return render_template('503.html'), 503
+
 @app.route('/', methods=['GET'])
 def homepage():
     return render_template('home.html')
