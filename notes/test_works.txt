@@ -56,6 +56,11 @@ Very large authorship/reference lists:
 - 10.1038/nature14474
 - 10.1534/g3.114.015966
 
+DOIs same except for an extra slash:
+
+    10.1037/0003-066x.39.1.40
+    10.1037//0003-066x.39.1.40
+
 ## Missing
 
 "ACE: A Novel Software Platform to Ensure the Integrity [...]"
