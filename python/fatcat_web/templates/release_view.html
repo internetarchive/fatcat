@@ -154,20 +154,20 @@ This release citing other releases.
       {% if ref.container_name %}{{ ref.container_name }}.{% endif %}
       {% if ref.year %}{{ ref.year }}{% endif %}
       {% if ref.locator %}{{ ref.locator }}{% endif %}
-    {% elif ref.extra %}
+    {% elif ref.extra != None %}
       {% if ref.extra.get('author') %}{{ ref.extra['author'] }}.{% endif %}
       {% if ref.extra.get('article-title') %}{{ ref.extra['article-title'] }}.{% endif %}
       {% if ref.container_name %}{{ ref.container_name }}.{% endif %}
       {% if ref.year %}{{ ref.year }}.{% endif %}
-    {% elif ref.extra and ref.extra.unstructured %}
-      {{ ref.extra.unstructured }}
+      {% if ref.extra.unstructured %}{{ ref.extra.unstructured }}{% endif %}
     {% else %}
       <i>unknown</i>
     {% endif %}
     {% if ref.target_release_id != None %}
-      (<a href="/release/{{ ref.target_release_id }}">fatcat release</a>)
-{#    {% elif ref.extra != None and ref.extra.doi != None %}
-      (DOI: <a href="/release/lookup?doi={{ ref.exta.get('doi') }}">{{ ref.extra.get('doi') }}</a>) #}
+      (<a href="/release/{{ ref.target_release_id }}">fatcat entry</a>)
+    {% endif %}
+    {% if ref.extra != None and ref.extra.doi %}
+      (DOI: <a href="/release/lookup?doi={{ ref.extra.doi }}">{{ ref.extra.doi }}</a>)
     {% endif %}
   {% endfor %}
 </ol>
@@ -186,13 +186,13 @@ This release citing other releases.
 
 {% if release.release_type != None %}
 <div class="ui segment attached">
-<b>Release Type</b> <code>{{ release.release_type }}</code>
+<b>Release Type</b> &nbsp;<code>{{ release.release_type }}</code>
 </div>
 {% endif %}
 
 {% if release.doi %}
 <div class="ui segment attached">
-<b>DOI </b> <a href="https://doi.org/{{ release.doi }}">{{ release.doi }}</a>
+<b>DOI </b> &nbsp;<a href="https://doi.org/{{ release.doi }}">{{ release.doi }}</a>
 </div>
 {% endif %}
 {% if release.isbn13 != None %}
@@ -210,37 +210,37 @@ This release citing other releases.
 </div>
 {% endif %}
 
-{% if container != None %}
+{% if container != None and container.es != None %}
 <div class="ui segment attached">
 <b>Container Metadata</b><br>
-{% if container.extra.is_oa == True %}
+{% if container.es.is_oa == True %}
 <i class="icon unlock orange"></i>Open Access Publication<br>
-{% elif container.extra.is_oa == False  %}
+{% elif container.es.is_oa == False  %}
 <i class="icon lock black"></i>Not Open Access<br>
 {% else %}
 <i class="icon question grey"></i>Unknown OA Status<br>
 {% endif %}
-{% if (container.extra != None) %}
-  {% if container.extra.in_doaj == True %}
+{% if (container.es != None) %}
+  {% if container.es.in_doaj == True %}
     <i class="icon check green"></i> In <a href="https://doaj.org/toc/{{ container.issnl }}">DOAJ</a><br>
-  {% elif container.extra.in_doaj == False %}
+  {% elif container.es.in_doaj == False %}
     <i class="icon times grey"></i> Not in <a href="https://doaj.org">DOAJ</a><br>
   {% endif %}
-  {% if container.extra.in_road == True %}
+  {% if container.es.in_road == True %}
     <i class="icon check green"></i> In <a href="http://road.issn.org/issn/{{ container.issnl }}">ISSN ROAD</a><br>
-  {% elif container.extra.in_road == False %}
+  {% elif container.es.in_road == False %}
     <i class="icon times grey"></i> Not in <a href="https://road.issn.org">ISSN ROAD</a><br>
   {% endif %}
-  {% if container.extra.is_kept == True %}
+  {% if container.es.in_kbart == True %}
     <i class="icon check green"></i> In <a href="https://thekeepers.org/purl/issn/{{ container.issnl }}">Keepers Registery</a><br>
-  {% elif container.extra.is_kept == False %}
+  {% elif container.es.in_kbart == False %}
     <i class="icon times grey"></i> Not in <a href="https://thekeepers.org/journals?query={{ container.issnl }}">Keepers Registry</a><br>
   {% endif %}
 {% endif %}
 {% if container.issnl != None %}
-  <i class="icon hashtag"></i>ISSN-L: &nbsp;<code>{{ container.issnl }}</code><br>
+  <i class="icon linkify"></i>ISSN-L: &nbsp;<code>{{ container.issnl }}</code><br>
 {% endif %}
-  <i class="icon linkify"></i>Fatcat: &nbsp;<small><code><a href="/container/{{ container.ident }}">{{ container.ident }}</a></code></small><br>
+  <a href="/container/{{ container.ident }}" title="container {{ container.ident }}"><i class="icon share"></i>Fatcat Entry</a>
 </div>
 {% endif %}
 
@@ -273,7 +273,7 @@ This release citing other releases.
 <b>Fatcat Bits</b>
 <p>State is "{{ release.state }}". Revision:
 <br><small><code>{{ release.revision }}</code></small>
-<br><a href="https://api.{{ config.FATCAT_DOMAIN }}/v0/release/{{ release.ident }}?expand=container,files">As JSON object via API</a>
+<br><a href="https://api.{{ config.FATCAT_DOMAIN }}/v0/release/{{ release.ident }}?expand=container,files,filesets,webcaptures">As JSON object via API</a>
 
 </div>
 <div class="two ui buttons bottom attached">

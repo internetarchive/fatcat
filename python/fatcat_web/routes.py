@@ -8,6 +8,7 @@ from fatcat_web import app, api, auth_api, priv_api
 from fatcat_web.auth import handle_token_login, handle_logout, load_user, handle_ia_xauth
 from fatcat_client.rest import ApiException
 from fatcat_web.search import do_search
+from fatcat_tools.transforms import *
 
 
 ### Views ###################################################################
@@ -86,6 +87,7 @@ def container_view(ident):
         return redirect('/container/{}'.format(entity.redirect))
     if entity.state == "deleted":
         return render_template('deleted_entity.html', entity=entity)
+    entity.es = container_to_elasticsearch(entity, force_bool=False)
     return render_template('container_view.html', container=entity)
 
 @app.route('/creator/<ident>/history', methods=['GET'])
@@ -236,17 +238,18 @@ def release_edit_view(ident):
 @app.route('/release/<ident>', methods=['GET'])
 def release_view(ident):
     try:
-        entity = api.get_release(ident)
-        files = api.get_release_files(ident)
-        container = None
-        if entity.container_id is not None:
-            container = api.get_container(entity.container_id)
+        entity = api.get_release(ident, expand="container,files,filesets,webcaptures")
+        files = entity.files
+        container = entity.container
     except ApiException as ae:
         abort(ae.status)
     if entity.state == "redirect":
         return redirect('/release/{}'.format(entity.redirect))
     if entity.state == "deleted":
         return render_template('deleted_entity.html', entity=entity)
+    if entity.container:
+        entity.container.es = container_to_elasticsearch(entity.container, force_bool=False)
+    entity.es = release_to_elasticsearch(entity, force_bool=False)
     authors = [c for c in entity.contribs if c.role in ('author', None)]
     authors = sorted(authors, key=lambda c: c.index)
     for fe in files:

@@ -15,14 +15,11 @@
 
 <p><b>Publisher:</b>
 {% if container.publisher != None %}{{ container.publisher }}{% else %}<i>Unknown</i>{% endif %}
-{% if (container.extra != None) and (container.extra['url'] != None) and (container.extra['url']|length > 0) %}
-<br><b>Homepage:</b> <a href="{{ container.extra['url'] }}">&nbsp;<code>{{ container.extra['url'] }}</code></a>
-{% endif %}
-{% if container.wikidata_qid != None %}
-<br><b>Wikidata Entity:</b> <a href="https://www.wikidata.org/wiki/{{ container.wikidata_qid }}">&nbsp;<code>{{ container.wikidata_qid }}</code></a>
+{% if (container.extra != None) and (container.extra['urls'] != None) and (container.extra['urls']|length > 0) %}
+<br><b>Homepage:</b> <a href="{{ container.extra['urls'][0] }}">&nbsp;<code>{{ container.extra['urls'][0] }}</code></a>
 {% endif %}
 
-{% if container.extra != None %}
+{% if container.extra %}
 <h3>Extra Metadata (raw JSON)</h3>
 {% for (key, value) in container.extra.items() %}
 <code><b>{{ key }}:</b> {{ value }}</code><br>
@@ -38,15 +35,16 @@ Raw Object:
 <div class="five wide column">
 <div class="ui segment top attached">
 
-{% if container.extra.is_oa == True %}
+{% if container.es and container.es.is_oa == True %}
 <i class="icon unlock huge orange"></i><b>Open Access Publisher</b>
-{% elif container.extra.is_oa == False  %}
+{% elif container.es and container.es.is_oa == False  %}
 <i class="icon lock huge black"></i><b>Not Open Access</b>
 {% else %}
 <i class="icon question huge grey"></i><b>Unknown OA Status</b>
 {% endif %}
 </div><div class="ui segment attached">
 
+{% if container.issnl != None or container.wikidata_qid != None %}
 {% if container.issnl != None %}
   <b>ISSN-L<sup><a href="https://en.wikipedia.org/wiki/International_Standard_Serial_Number#Linking_ISSN">?</a></sup></b> 
   &nbsp;<code>{{ container.issnl }}</code>
@@ -56,33 +54,45 @@ Raw Object:
   {% if container.extra != None and container.extra.ISSNe != None and (container.extra.ISSNe|length > 0) %}
     <br><i class="icon plug"></i>Electronic: &nbsp;<code>{{ container.extra.ISSNe }}</code>
   {% endif %}
+{% endif %}
+{% if container.wikidata_qid != None %}
+  <br><b>Wikidata:</b> &nbsp;<a href="https://wikidata.org/wiki/{{ container.wikidata_qid }}"><code>{{ container.wikidata_qid }}</code></a>
+{% endif %}
   </div><div class="ui segment attached">
 {% endif %}
 
 
+{% if (container.es and container.es != None) %}
 <b>Directory Listings</b><br>
-{% if (container.extra != None) %}
-  {% if container.extra.in_doaj == True %}
+  {% if container.es.in_doaj == True %}
     <i class="icon check green"></i> In <a href="https://doaj.org/toc/{{ container.issnl }}">DOAJ</a><br>
-  {% elif container.extra.in_doaj == False %}
+  {% elif container.es.in_doaj == False %}
     <i class="icon times grey"></i> Not in <a href="https://doaj.org">DOAJ</a><br>
   {% endif %}
-  {% if container.extra.in_road == True %}
+
+  {% if container.es.in_road == True %}
     <i class="icon check green"></i> In <a href="http://road.issn.org/issn/{{ container.issnl }}">ISSN ROAD</a><br>
-  {% elif container.extra.in_road == False %}
+  {% elif container.es.in_road == False %}
     <i class="icon times grey"></i> Not in <a href="https://road.issn.org">ISSN ROAD</a><br>
   {% endif %}
-  {% if container.extra.is_kept == True %}
+
+  {% if container.es.in_kbart == True %}
     <i class="icon check green"></i> In <a href="https://thekeepers.org/purl/issn/{{ container.issnl }}">Keepers Registery</a><br>
-  {% elif container.extra.is_kept == False %}
+  {% elif container.es.in_kbart == False %}
     <i class="icon times grey"></i> Not in <a href="https://thekeepers.org/journals?query={{ container.issnl }}">Keepers Registry</a><br>
   {% endif %}
-{% endif %}
+
+  {% if container.extra and container.extra.sherpa_romeo and container.extra.sherpa_romeo.color %}
+    SHERPA/RoMEO color: <code>{{ container.extra.sherpa_romeo.color }}</code>
+  {% endif %}
 </div><div class="ui segment attached">
+{% endif %}
 
 <b>Lookup Links</b>
 <br><a href="http://www.sherpa.ac.uk/romeo/issn/{{ container.issnl }}/">SHERPA/RoMEO</a> (access policies)
-<br><a href="https://www.wikidata.org/w/index.php?search={{ container.name }}">wikidata.org</a>
+{% if not container.wikidata_qid %}
+  <br><a href="https://www.wikidata.org/w/index.php?search={{ container.name }}">wikidata.org</a>
+{% endif %}
 </div><div class="ui segment attached">
 
 <b>Fatcat Bits</b>
