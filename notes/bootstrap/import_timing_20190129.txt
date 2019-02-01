@@ -1,0 +1,125 @@
+
+This is the first attempt at a clean final production import. Running in QA; if
+all goes well would dump and import in prod.
+
+Made a number of changes since yesterday's import, so won't be surprised if run
+in to problems. Plan is to make any fixes and push through to the end to turn
+up any additional issues/bugs, then iterate yet again if needed.
+
+## Service up/down
+
+    sudo service fatcat-web stop
+    sudo service fatcat-api stop
+
+    # shutdown all the import/export/etc
+    # delete any snapshots and /tmp/fatcat*
+    sudo rm /srv/fatcat/snapshots/*
+    sudo rm /tmp/fatcat_*
+
+    # git pull
+    # ansible playbook push
+    # re-build fatcat-api to ensure that worked
+
+    sudo service fatcat-web stop
+    sudo service fatcat-api stop
+
+    # as postgres user:
+    DATABASE_URL=postgres://postgres@/fatcat_prod /opt/cargo/bin/diesel database reset
+    sudo service postgresql restart
+
+    http delete :9200/fatcat_release
+    http delete :9200/fatcat_container
+    http delete :9200/fatcat_changelog
+    http put :9200/fatcat_release < release_schema.json
+    http put :9200/fatcat_container < container_schema.json
+    http put :9200/fatcat_changelog < changelog_schema.json
+    sudo service elasticsearch stop
+    sudo service kibana stop
+
+    sudo service fatcat-api start
+
+    # ensure rust/.env -> /srv/fatcat/config/fatcat_api.env
+    wget https://archive.org/download/ia_journal_metadata/journal_metadata.2019-01-25.json
+
+    # create new auth keys via bootstrap (edit debug -> release first)
+    # update config/env/ansible/etc with new tokens
+    # delete existing entities
+
+    # run the imports!
+
+    # after running below imports
+    sudo service fatcat-web start
+    sudo service elasticsearch start
+    sudo service kibana start
+
+## Import commands
+
+    rust version (as webcrawl): 1.32.0
+    git commit: 586458cacabd1d2f4feb0d0f1a9558f229f48f5e
+
+    export LC_ALL=C.UTF-8
+    export FATCAT_AUTH_WORKER_JOURNAL_METADATA="..."
+    time ./fatcat_import.py journal-metadata /srv/fatcat/datasets/journal_metadata.2019-01-25.json
+
+        hit a bug (see below) but safe to continue
+
+        Counter({'total': 107869, 'insert': 102623, 'exists': 5200, 'skip': 46, 'update': 0})
+        real    4m43.635s
+        user    1m55.904s
+        sys     0m5.376s
+
+    export FATCAT_AUTH_WORKER_ORCID="..."
+    time parallel --bar --pipepart -j8 -a /srv/fatcat/datasets/public_profiles_1_2_json.all.json ./fatcat_import.py orcid -
+
+        hit another bug (see below), again safe to continue
+        
+        Counter({'total': 48888, 'insert': 48727, 'skip': 161, 'exists': 0, 'update': 0}) (etc)
+        real    29m56.773s
+        user    89m2.532s
+        sys     5m11.104s
+
+    export FATCAT_AUTH_WORKER_CROSSREF="..."
+    time xzcat /srv/fatcat/datasets/crossref-works.2018-09-05.json.xz --verbose | time parallel -j20 --round-robin --pipe ./fatcat_import.py crossref - /srv/fatcat/datasets/20181203.ISSN-to-ISSN-L.txt --extid-map-file /srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3 --bezerk-mode
+
+        running very slow; maybe batch size of 100 was too large? pushing 80+
+        MB/sec, but very little CPU utilization. some ISSN lookups taking up to
+        a second each (!). no vacuum in progress. at xzcat, only '2.1 MiB/s'
+
+        at current rate will take more than 48 hours. hrm.
+
+        after 3.5 hours or so, cancelled and restarted in non-bezerk mode, with batch size of 50.
+
+    xzcat /srv/fatcat/datasets/crossref-works.2018-09-05.json.xz --verbose | time parallel -j20 --round-robin --pipe ./fatcat_import.py --batch-size 50 crossref - /srv/fatcat/datasets/20181203.ISSN-to-ISSN-L.txt --extid-map-file /srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3
+
+        at xzcat, about 5 Mib/s. just after citation efficiency, full import was around 20 hours.
+
+        if slows down again, may be due to some threads failing and not
+        dumping. if that's the case, should try with 'head -n200000' or so to
+        catch output errors.
+
+        ps aux | rg fatcat_import.py | rg -v perl | wc -l   => 22
+
+        at 7.2% (beyond earlier progress), and now inserting (not just
+        lookups), pushing 5.6 MiB/sec, 17 hours (estimated) to go, seems to be
+        running fine.
+
+        at 12 hours in, at 20% and down to 1.9 MiB/sec again. Lots of disk I/O
+        (80 MB/sec write), seems to be bottleneck, not sure why.
+
+        would take... about an hour to restart, might save 20+ hours, might waste 14?
+
+    export FATCAT_AUTH_SANDCRAWLER="..."
+    export FATCAT_API_AUTH_TOKEN=$FATCAT_AUTH_SANDCRAWLER
+    time zcat /srv/fatcat/datasets/ia_papers_manifest_2018-01-25.matched.json.gz | pv -l | time parallel -j12 --round-robin --pipe ./fatcat_import.py --batch-size 50 matched --bezerk-mode -
+
+    time zcat /srv/fatcat/datasets/2018-12-18-2237.09-matchcrossref.insertable.json.gz | pv -l | time parallel -j12 --round-robin --pipe ./fatcat_import.py --batch-size 50 matched -
+
+    time zcat /srv/fatcat/datasets/2018-09-23-0405.30-dumpgrobidmetainsertable.longtail_join.filtered.tsv.gz | pv -l | time parallel -j12 --round-robin --pipe ./fatcat_import.py --batch-size 50 grobid-metadata - --longtail-oa
+
+## Bugs encountered
+
+x broke a constraint or made an otherwise invalid request: name is required for all Container entities
+    => wasn't bezerk mode, so should be fine to continue
+x {"success":false,"error":"BadRequest","message":"broke a constraint or made an otherwise invalid request: display_name is required for all Creator entities"}
+    => wasn't bezerk mode, so should be fine to continue
+

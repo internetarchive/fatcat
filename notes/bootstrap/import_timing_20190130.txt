@@ -1,0 +1,150 @@
+
+The QA import is running really slow; this is a parallel attempt in case things
+are faster on the fatcat-prod2-vm machine, with 50 batch size and bezerk mode.
+
+## Service up/down
+
+    sudo service fatcat-web stop
+    sudo service fatcat-api stop
+
+    # shutdown all the import/export/etc
+    # delete any snapshots and /tmp/fatcat*
+    sudo rm /srv/fatcat/snapshots/*
+    sudo rm /tmp/fatcat_*
+
+    # git pull
+    # ansible playbook push
+    # re-build fatcat-api to ensure that worked
+
+    sudo service fatcat-web stop
+    sudo service fatcat-api stop
+
+    # as postgres user:
+    DATABASE_URL=postgres://postgres@/fatcat_prod /opt/cargo/bin/diesel database reset
+    sudo service postgresql restart
+
+    http delete :9200/fatcat_release
+    http delete :9200/fatcat_container
+    http delete :9200/fatcat_changelog
+    http put :9200/fatcat_release < release_schema.json
+    http put :9200/fatcat_container < container_schema.json
+    http put :9200/fatcat_changelog < changelog_schema.json
+    sudo service elasticsearch stop
+    sudo service kibana stop
+
+    sudo service fatcat-api start
+
+    # ensure rust/.env -> /srv/fatcat/config/fatcat_api.env
+    wget https://archive.org/download/ia_journal_metadata/journal_metadata.2019-01-25.json
+
+    # if necessary:
+    #  ALTER USER fatcat WITH SUPERUSER;
+    #  ALTER USER fatcat WITH PASSWORD '...';
+    # create new auth keys via bootstrap (edit debug -> release first)
+    # update config/env/ansible/etc with new tokens
+    # delete existing entities
+
+    # run the imports!
+
+    # after running below imports
+    sudo service fatcat-web start
+    sudo service elasticsearch start
+    sudo service kibana start
+
+## Import commands
+
+    rust version (as webcrawl): 1fe371288daf417cdf44b94e372b485426b47134
+    git commit: 1.32.0
+
+    export LC_ALL=C.UTF-8
+    export FATCAT_AUTH_WORKER_JOURNAL_METADATA="..."
+    time ./fatcat_import.py journal-metadata /srv/fatcat/datasets/journal_metadata.2019-01-25.json
+
+        Counter({'total': 107869, 'insert': 107823, 'skip': 46, 'update': 0, 'exists': 0})
+        real    6m2.287s
+        user    2m4.612s
+        sys     0m5.664s
+
+    export FATCAT_AUTH_WORKER_ORCID="..."
+    time parallel --bar --pipepart -j8 -a /srv/fatcat/datasets/public_profiles_1_2_json.all.json ./fatcat_import.py orcid -
+
+        98% 79:1=22s
+        Counter({'total': 48097, 'insert': 47908, 'skip': 189, 'exists': 0, 'update': 0})
+        100% 80:0=0s                                                                                                 
+
+        real    33m9.211s
+        user    93m33.040s
+        sys     5m32.176s
+
+    export FATCAT_AUTH_WORKER_CROSSREF="..."
+    time xzcat /srv/fatcat/datasets/crossref-works.2018-09-05.json.xz --verbose | time parallel -j20 --round-robin --pipe ./fatcat_import.py crossref - /srv/fatcat/datasets/20181203.ISSN-to-ISSN-L.txt --extid-map-file /srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3 --bezerk-mode
+
+        seems to be maintaining 9.1 MiB/sec and estimates 15 hours. 200 M/sec disk write. we'll see!
+
+        100 %        33.2 GiB / 331.9 GiB = 0.100   3.6 MiB/s   26:16:57
+
+        Counter({'total': 5001477, 'insert': 4784708, 'skip': 216769, 'update': 0, 'exists': 0})
+        395971.48user 8101.15system 26:17:07elapsed 427%CPU (0avgtext+0avgdata 431560maxresident)k
+        232972688inputs+477055792outputs (334645major+39067735minor)pagefaults 0swaps
+
+        real    1577m7.908s
+        user    6681m58.948s
+        sys     141m25.560s
+
+    export FATCAT_AUTH_SANDCRAWLER="..."
+    export FATCAT_API_AUTH_TOKEN=$FATCAT_AUTH_SANDCRAWLER
+    time zcat /srv/fatcat/datasets/ia_papers_manifest_2018-01-25.matched.json.gz | pv -l | time parallel -j12 --round-robin --pipe ./fatcat_import.py --batch-size 50 matched - --bezerk-mode
+
+        (accidentally lost, but took about 3 hours)
+
+    time zcat /srv/fatcat/datasets/2018-12-18-2237.09-matchcrossref.insertable.json.gz | pv -l | time parallel -j12 --round-robin --pipe ./fatcat_import.py --batch-size 50 matched -
+
+        Counter({'total': 827944, 'insert': 555359, 'exists': 261441, 'update': 11129, 'skip': 15})
+        32115.82user 1370.12system 4:30:25elapsed 206%CPU (0avgtext+0avgdata 37312maxresident)k
+        28200inputs+3767112outputs (108major+471069minor)pagefaults 0swaps
+
+        real    270m25.288s
+        user    535m52.908s
+        sys     22m56.328s
+
+    time zcat /srv/fatcat/datasets/2018-09-23-0405.30-dumpgrobidmetainsertable.longtail_join.filtered.tsv.gz | pv -l | time parallel -j12 --round-robin --pipe ./fatcat_import.py --batch-size 50 grobid-metadata - --longtail-oa
+
+## Bugs encountered
+
+- empty AUTH_ALT_KEYS should just be ignored (not try to parse)
+
+Missing DOIs (out of scope?):
+
+    DOI not found: 10.1023/a:1009888907797
+    DOI not found: 10.1186/1471-2148-4-49
+    DOI not found: 10.1023/a:1026471016927
+    DOI not found: 10.1090/s0002-9939-04-07569-0
+    DOI not found: 10.1186/1742-4682-1-11
+    DOI not found: 10.1186/1477-3163-2-5
+    DOI not found: 10.1186/gb-2003-4-4-210
+    DOI not found: 10.1186/gb-2004-5-9-r63
+    DOI not found: 10.13188/2330-2178.1000008
+    DOI not found: 10.4135/9781473960749
+    DOI not found: 10.1252/kakoronbunshu1953.36.479
+    DOI not found: 10.2320/materia.42.461
+    DOI not found: 10.1186/1742-4933-3-3
+    DOI not found: 10.14257/ijsh
+    DOI not found: 10.1023/a:1016008714781
+    DOI not found: 10.1023/a:1016648722322
+    DOI not found: 10.1787/5k990rjhvtlv-en
+    DOI not found: 10.4064/fm
+    DOI not found: 10.1090/s0002-9947-98-01992-8
+    DOI not found: 10.1186/1475-925x-2-16
+    DOI not found: 10.1186/1479-5868-3-9
+    DOI not found: 10.1090/s0002-9939-03-07205-8
+    DOI not found: 10.1023/a:1008111923880
+    DOI not found: 10.1090/s0002-9939-98-04322-6
+    DOI not found: 10.1186/gb-2005-6-11-r93
+    DOI not found: 10.5632/jila1925.2.236
+    DOI not found: 10.1023/a:1011359428672
+    DOI not found: 10.1090/s0002-9947-97-01844-8
+    DOI not found: 10.1155/4817
+    DOI not found: 10.1186/1472-6807-1-5
+    DOI not found: 10.1002/(issn)1542-0981
+    DOI not found: 10.1186/rr115
+
