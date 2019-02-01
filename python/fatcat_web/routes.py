@@ -87,7 +87,8 @@ def container_view(ident):
         return redirect('/container/{}'.format(entity.redirect))
     if entity.state == "deleted":
         return render_template('deleted_entity.html', entity=entity)
-    entity.es = container_to_elasticsearch(entity, force_bool=False)
+    if entity.state == "active":
+        entity.es = container_to_elasticsearch(entity, force_bool=False)
     return render_template('container_view.html', container=entity)
 
 @app.route('/creator/<ident>/history', methods=['GET'])
@@ -247,9 +248,10 @@ def release_view(ident):
         return redirect('/release/{}'.format(entity.redirect))
     if entity.state == "deleted":
         return render_template('deleted_entity.html', entity=entity)
-    if entity.container:
+    if entity.container and entity.container.state == "active":
         entity.container.es = container_to_elasticsearch(entity.container, force_bool=False)
-    entity.es = release_to_elasticsearch(entity, force_bool=False)
+    if entity.state == "active":
+        entity.es = release_to_elasticsearch(entity, force_bool=False)
     authors = [c for c in entity.contribs if c.role in ('author', None)]
     authors = sorted(authors, key=lambda c: c.index)
     for fe in files:
