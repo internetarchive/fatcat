@@ -3,17 +3,41 @@
 
 ## Prod Metadata Checks
 
-- edit and editgroup metadata
-- longtail_oa flag getting set on GROBID imports
-- crossref citation not saving 'article-title' or 'unstructured', and 'author'
+x edit and editgroup metadata
+x crossref citation not saving 'article-title' or 'unstructured', and 'author'
   should be 'authors' (list)
-- crossref not saving 'language' (looks like iso code already)
+x crossref not saving 'language' (looks like iso code already)
+- longtail_oa flag getting set on GROBID imports
 - grobid reference should be under extra (not nested): issue, volume, authors
 - uniqueness of:
     sha1 - via SQL dump
     doi - via SQL dump
     issnl - via JSON dump
     orcid - via JSON dump
+
+notes:
+- crossref references look great!
+- extra/crossref/alternative-id often includes exact full DOI
+        10.1158/1538-7445.AM10-3529
+        10.1158/1538-7445.am10-3529
+    => but not always? publisher-specific
+- contribs[]/extra/seq often has "first" from crossref
+    => is this helpful?
+- abstracts content is fine, but should probably check for "jats:" when setting
+  mimetype
+x BUG: `license_slug` when https://creativecommons.org/licenses/by-nc-sa/4.0
+    => https://api.qa.fatcat.wiki/v0/release/55y37c3dtfcw3nw5owugwwhave
+       10.26891/jik.v10i2.2016.92-97
+- original title works, yay!
+    https://api.qa.fatcat.wiki/v0/release/nlmnplhrgbdalcy472hfb2z3im
+    10.2504/kds.26.358
+- new license: https://www.karger.com/Services/SiteLicenses
+- not copying ISBNs: 10.1016/b978-0-08-037302-7.50022-7
+    "9780080373027"
+    could at least put in alternative-id?
+- BUG: subtitle coming through as an array, not string
+- `license_slug` does get set
+    eg for PLOS ONE http://creativecommons.org/licenses/by/4.0/
 
 ## Next Up
 
@@ -31,12 +55,12 @@
 - searching 'N/A' is a bug
 - formalize release_status:
     => https://wiki.surfnet.nl/display/DRIVERguidelines/DRIVER-VERSION+Mappings
+- entity edit JSON objects could include `entity_type`
 
 ## Production public launch blockers
 
 - handle 'wip' status entities in web UI
 - guide updates for auth
-- webface 4xx and 5xx pages
 - privacy policy, and link from: create account, create edit
 - refactors and correctness in rust/TODO
 - update /about page
@@ -50,6 +74,9 @@
 
 ## Ideas
 
+- ORCID apparently has 37 mil "work activities" (patents, etc), and only 14 mil
+  unique DOIs; could import those other "work activities"? do they have
+  identifiers?
 - write up notes on biblio metadata in general
     => "extensibility" and extra keys
     => proliferation of arrays vs. concrete values
@@ -146,9 +173,16 @@ new importers:
   as well?)
 - `retracted`, `translation`, and perhaps `corrected` as flags on releases,
   instead of release_status?
-    => use extra flags and release_status for now
-- 'part-of' relation for releases (release to release) and possibly containers
-- `container_type` field for containers (journal, conference, book series, etc)
+    => see notes file on retractions, etc
+- 'part-of' relation for releases (release to release, eg for book chapters)
+  and possibly containers
+- `container_type` for containers (journal, conference, book series, etc)
+    => in schema, needs vocabulary and implementation
+
+## Web Interface
+
+- include that ISO library to do lang/country name decodes
+- container-name when no `container_id`. eg: 10.1016/b978-0-08-037302-7.50022-7
 
 ## Other / Backburner
 
