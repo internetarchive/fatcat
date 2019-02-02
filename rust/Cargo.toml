@@ -10,7 +10,7 @@ license = "AGPL 3.0"
 members = ["fatcat-api-spec"]
 
 [dependencies]
-fatcat-api-spec = {version = "*", path = "fatcat-api-spec"}
+fatcat-api-spec = {version = "*", path = "fatcat-api-spec", features = ["server"] }
 diesel = { version = "1.3", features = ["postgres", "uuid", "serde_json", "chrono", "r2d2"] }
 diesel_migrations = "1.3"
 dotenv = "0.9.0"
