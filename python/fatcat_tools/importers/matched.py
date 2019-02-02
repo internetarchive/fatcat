@@ -60,11 +60,13 @@ class MatchedImporter(EntityImporter):
                     raise err
                 re = None
             if re is None:
-                print("DOI not found: {}".format(doi))
+                #print("DOI not found: {}".format(doi))
+                pass
             else:
                 re_list.add(re.ident)
         release_ids = list(re_list)
         if len(release_ids) == 0:
+            self.counts['skip-no-doi'] += 1
             return None
 
         # parse URLs and CDX
