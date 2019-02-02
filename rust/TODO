@@ -1,23 +1,25 @@
 
 correctness
-- extra or typo-d fields in requests don't seem to be errors (silently accepted)
-- reread/review editgroup accept code
 - changelog sequence without gaps
-- batch insert editgroup behavior; always a new editgroup?
+
+huge compile times:
+- iron not small, but mostly reasonable deps
+- does macaroon need both rustc-serialize and serde?
+- sentry big but almost all "modern" hyper (0.12)
+- slog has a lot of duplication (crossbeam)
+- duplicated libs: 3 syn, 4 uuid, 3 crossbeam (etc), 2 hyper, 2 iron (wait,
+  what?), 3x serde, 4x rand, 2x error-chain
+    => rg '^name =' Cargo.lock  | uniq -cd | sort -n
+- try: removing deps from fatcat-api-spec
+- uuid: could now switch to v0.7, needs code changes
 
 refactor:
 - consistent `conn` and `context` orders in _handler() functions
 
 edit lifecycle
-- editgroup: state to track review status?
 - per-edit extra JSON
 
-account helper tool
-- set admin bit
-x create editors
-x create keypairs
-x generate tokens
-x test/validate tokens
+- account helper tool: set admin bit
 
 later:
 - "prev_rev" required in updates
@@ -28,8 +30,7 @@ later:
 - could some of the EntityCrud trait macro stuff be re-implemented as an enum type?
 - pure-rust "benchmark" scripts that hit, eg, lookups and batch endpoints
     => criterion.rs benchmarking
-- try new actix/openapi3 codegen branch
-- refactor logging; use slog
+- try new hyper/openapi3 codegen branch
+- refactor logging; simple env-logger-pretty
 - test using hash indexes for some UUID column indexes, or at least sha1 and
   other hashes (abstracts, file lookups)
-
