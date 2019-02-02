@@ -11,7 +11,8 @@ huge compile times:
   what?), 3x serde, 4x rand, 2x error-chain
     => rg '^name =' Cargo.lock  | uniq -cd | sort -n
 - try: removing deps from fatcat-api-spec
-- uuid: could now switch to v0.7, needs code changes
+- uuid: could now switch to v0.7; needs code changes
+- tweak crossbeam-channel version (used in fatcat-export)
 
 refactor:
 - consistent `conn` and `context` orders in _handler() functions
