@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e -u -o pipefail
+
 # Run this script from the ../rust/ directory, only once.
 
 CMD_PATH="./target/debug"
@@ -23,3 +25,8 @@ echo -n "FATCAT_AUTH_WORKER_JOURNAL_METADATA="
 $CMD_PATH/fatcat-auth create-token `$CMD_PATH/fatcat-auth list-editors | grep journal-metadata-bot | cut -f1`
 echo -n "FATCAT_AUTH_SANDCRAWLER="
 $CMD_PATH/fatcat-auth create-token `$CMD_PATH/fatcat-auth list-editors | grep sandcrawler-bot | cut -f1`
+
+echo -n "FATCAT_AUTH_WEBFACE="
+$CMD_PATH/fatcat-auth create-token `$CMD_PATH/fatcat-auth list-editors | grep webface-bot | cut -f1`
+echo -n "FATCAT_API_AUTH_TOKEN="
+$CMD_PATH/fatcat-auth create-token `$CMD_PATH/fatcat-auth list-editors | grep 'admin' | grep -v 'editor_id' | cut -f1`
