@@ -69,3 +69,20 @@ replace the `fatcat_prod` database name.
     sudo -u postgres pg_dump --verbose --format=tar --exclude-table-data=auth_oidc fatcat_prod | pigz > /srv/fatcat/snapshots/fatcat_public_dbdump_${DATESLUG}.tar.gz
 
 Can also run using the remote/SSH options above.
+
+## Uploading to Internet Archive
+
+The `./ia_item_exports_readme.md` and `sqldump` files should be included as a
+`README.md` when appropriate:
+
+    ia upload fatcat_bulk_exports_YYYY-MM-DD ia_item_exports_readme.md --remote-name=README.md
+    ia upload fatcat_sqldump_full_YYYY-MM-DD ia_item_sqldump_readme.md --remote-name=README.md
+
+Metadata should be set as:
+
+- item name: `fatcat_bulk_exports_YYYY-MM-DD` or `fatcat_sqldump_public_YYYY-MM-DD` (or sometimes `sqldump_full`)
+- collection: `ia_biblio_metadata`
+- creator: `Internet Archive Web Group`
+- date: that the dump started (UTC)
+- title: "Fatcat Bulk Metadata Exports (YYYY-MM-DD)" or "Fatcat Public Database Snapshot (YYYY-MM-DD)"
+
