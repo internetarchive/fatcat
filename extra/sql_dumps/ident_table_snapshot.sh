@@ -22,7 +22,8 @@ CHANGELOG_REV="`head -n1 /tmp/fatcat_ident_latest_changelog.tsv`"
 OUTFILE="${OUTPUT_DIR}/fatcat_idents.$DATESLUG.r$CHANGELOG_REV.tar.gz"
 
 echo "Compressing..."
-tar -C /tmp -c --gzip --verbose \
+tar -C /tmp -c --verbose \
+    --use-compress-program=pigz \
     -f $OUTFILE \
     fatcat_ident_latest_changelog.tsv \
     fatcat_ident_containers.tsv \
