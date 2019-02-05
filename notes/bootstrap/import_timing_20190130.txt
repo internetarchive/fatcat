@@ -2,6 +2,8 @@
 The QA import is running really slow; this is a parallel attempt in case things
 are faster on the fatcat-prod2-vm machine, with 50 batch size and bezerk mode.
 
+NOTE: this ended up being the successful/"final" bootstrap import.
+
 ## Service up/down
 
     sudo service fatcat-web stop
@@ -109,9 +111,233 @@ are faster on the fatcat-prod2-vm machine, with 50 batch size and bezerk mode.
 
     time zcat /srv/fatcat/datasets/2018-09-23-0405.30-dumpgrobidmetainsertable.longtail_join.filtered.tsv.gz | pv -l | time parallel -j12 --round-robin --pipe ./fatcat_import.py --batch-size 50 grobid-metadata - --longtail-oa
 
-## Bugs encountered
+    1.6M 2:02:05 [ 218 /s]
+    Counter({'total': 133095, 'insert': 120176, 'inserted.release': 120176, 'exists': 12919, 'skip': 0, 'update': 0})
+    20854.82user 422.09system 2:02:12elapsed 290%CPU (0avgtext+0avgdata 63816maxresident)k
+    29688inputs+21057912outputs (118major+809972minor)pagefaults 0swaps
 
+    real    122m12.533s
+    user    350m14.824s
+    sys     7m29.820s
+
+## After Import Stats
+
+    bnewbold@wbgrp-svc503$ df -h .
+    Filesystem      Size  Used Avail Use% Mounted on
+    /dev/vda1       1.8T  591G  1.1T  36% /
+
+    Size:  294.82G
+
+    select count(*) from changelog => 2,306,900
+
+
+                          table_name                          | table_size | indexes_size | total_size 
+--------------------------------------------------------------+------------+--------------+------------
+ "public"."refs_blob"                                         | 70 GB      | 1896 MB      | 72 GB
+ "public"."release_rev"                                       | 36 GB      | 32 GB        | 68 GB
+ "public"."release_contrib"                                   | 25 GB      | 23 GB        | 48 GB
+ "public"."release_edit"                                      | 9342 MB    | 10 GB        | 19 GB
+ "public"."work_edit"                                         | 9342 MB    | 10 GB        | 19 GB
+ "public"."release_ident"                                     | 6334 MB    | 10235 MB     | 16 GB
+ "public"."work_ident"                                        | 6333 MB    | 10235 MB     | 16 GB
+ "public"."file_rev_url"                                      | 6085 MB    | 2251 MB      | 8337 MB
+ "public"."work_rev"                                          | 4092 MB    | 3795 MB      | 7887 MB
+ "public"."file_rev"                                          | 1706 MB    | 2883 MB      | 4589 MB
+ "public"."abstracts"                                         | 4089 MB    | 300 MB       | 4390 MB
+ "public"."file_edit"                                         | 1403 MB    | 1560 MB      | 2963 MB
+ "public"."file_ident"                                        | 944 MB     | 1529 MB      | 2473 MB
+ "public"."file_rev_release"                                  | 889 MB     | 1558 MB      | 2447 MB
+ "public"."release_rev_abstract"                              | 404 MB     | 536 MB       | 941 MB
+ "public"."creator_rev"                                       | 371 MB     | 457 MB       | 827 MB
+ "public"."creator_edit"                                      | 377 MB     | 420 MB       | 797 MB
+ "public"."editgroup"                                         | 480 MB     | 285 MB       | 766 MB
+ "public"."creator_ident"                                     | 255 MB     | 412 MB       | 667 MB
+ "public"."changelog"                                         | 135 MB     | 139 MB       | 274 MB
+ "public"."container_rev"                                     | 31 MB      | 11 MB        | 42 MB
+ "public"."container_edit"                                    | 10 MB      | 12 MB        | 22 MB
+ "public"."container_ident"                                   | 7216 kB    | 12 MB        | 19 MB
+
+       relname        | too_much_seq | case |  rel_size   | seq_scan | idx_scan  
+----------------------+--------------+------+-------------+----------+-----------
+ creator_edit         |       -94655 | OK   |   395558912 |        2 |     94657
+ container_edit       |       -94655 | OK   |    10911744 |        2 |     94657
+ file_edit            |       -94655 | OK   |  1470627840 |        2 |     94657
+ work_edit            |       -94655 | OK   |  9793445888 |        2 |     94657
+ release_edit         |       -94655 | OK   |  9793241088 |        2 |     94657
+ container_rev        |     -1168077 | OK   |    32546816 |        3 |   1168080
+ file_rev_release     |     -3405015 | OK   |   931627008 |        2 |   3405017
+ file_rev_url         |     -3405015 | OK   |  6379298816 |        2 |   3405017
+ changelog            |     -3883131 | OK   |   141934592 |      382 |   3883513
+ abstracts            |     -8367919 | OK   |  4011868160 |        1 |   8367920
+ creator_ident        |     -9066121 | OK   |   267124736 |        5 |   9066126
+ creator_rev          |    -14129509 | OK   |   388431872 |        3 |  14129512
+ release_contrib      |    -17121962 | OK   | 26559053824 |        3 |  17121965
+ release_rev_abstract |    -17123930 | OK   |   423878656 |        3 |  17123933
+ file_ident           |    -18428366 | OK   |   989888512 |        5 |  18428371
+ refs_blob            |    -50251199 | OK   | 15969484800 |        1 |  50251200
+ container_ident      |    -74332007 | OK   |     7364608 |        5 |  74332012
+ file_rev             |    -99555196 | OK   |  1788166144 |        4 |  99555200
+ release_ident        |   -132347345 | OK   |  6639624192 |        5 | 132347350
+ work_rev             |   -193625747 | OK   |  4289314816 |        1 | 193625748
+ work_ident           |   -196604815 | OK   |  6639476736 |        5 | 196604820
+ editgroup            |   -214491911 | OK   |   503414784 |        3 | 214491914
+ release_rev          |   -482813156 | OK   | 38609838080 |       11 | 482813167
+(23 rows)
+
+## Dump Stats / Process
+
+    DATABASE_URL=fatcat_prod ./ident_table_snapshot.sh /tmp
+
+        postgres@wbgrp-svc503:/srv/fatcat/src/extra/sql_dumps$ DATABASE_URL=fatcat_prod ./ident_table_snapshot.sh /tmp
+        Will move output to '/tmp'
+        Running SQL (from 'fatcat_prod')...
+        BEGIN
+        COPY 1
+        COPY 3906704 -> creators
+        COPY 107826 -> containers
+        COPY 14378465 -> files
+        COPY 3 -> filesets
+        COPY 3 -> webcaptures
+        COPY 96812903 -> releases
+        COPY 96812903 -> works
+        COPY 2306900 -> changelog
+        ROLLBACK
+
+        Done: /tmp/fatcat_idents.2019-02-01.214959.r2306900.tar.gz
+
+    fatcat-export:
+        x files
+        x containers
+        - releases_extended (TODO: estimate time to dump based on file timestamps)
+
+        cat /tmp/fatcat_ident_releases.tsv | ./target/release/fatcat-export release --expand files,filesets,webcaptures,container -j8 | pv -l | gzip > /srv/fatcat/snapshots/release_export_expanded.json.gz
+
+        96.8M 7:37:51 [3.52k/s]
+
+        -rw-rw-r-- 1 webcrawl webcrawl  64G Feb  2 05:45 release_export_expanded.json.gz
+
+    sql dumps:
+
+        time sudo -u postgres pg_dump --verbose --format=tar fatcat_prod | pigz > /srv/fatcat/snapshots/fatcat_private_dbdump_${DATESLUG}.tar.gz
+
+        real    112m34.310s
+        user    296m46.112s
+        sys     22m35.004s
+
+        -rw-rw-r-- 1 bnewbold bnewbold  81G Feb  2 04:15 fatcat_private_dbdump_2019-02-02.022209.tar.gz
+
+Looking for repeated SHA-1 and DOI:
+
+    zcat file_hashes.tsv.gz | cut -f 3 | sort -S 8G | uniq -cd | sort -n > repeated_sha1.tsv
+    => none
+
+    zcat release_extid.tsv.gz | cut -f 3 | sort -S 8G | uniq -cd | sort -n > repeated_doi.tsv
+    => a few million repeated *blank* lines... could filter out?
+
+## Load Stats / Progress
+
+    export LC_ALL=C.UTF-8
+    time zcat /srv/fatcat/snapshots/release_export_expanded.json.gz | pv -l | ./fatcat_export.py transform-releases - - | esbulk -verbose -size 20000 -id ident -w 8 -index fatcat_release -type release
+    time zcat /srv/fatcat/snapshots/container_export.json.gz | pv -l | ./fatcat_export.py transform-containers - - | esbulk -verbose -size 20000 -id ident -w 8 -index fatcat_container -type container
+
+
+    time zcat /srv/fatcat/snapshots/2019-01-30/container_export.json.gz | pv -l | ./fatcat_export.py transform-containers - - | esbulk -verbose -size 20000 -id ident -w 8 -index fatcat_container -type container
+
+        real    0m58.528s
+        user    1m0.396s
+        sys     0m2.412s
+
+    # very python-CPU-limited, so crank that -j20
+    # hadn't used '--linebuffer' with parallel before, but otherwise it holds
+    # on to all the output lines before passing on to the next pipe program
+    time zcat /srv/fatcat/snapshots/2019-01-30/release_export_expanded.json.gz | pv -l | parallel -j20 --linebuffer --round-robin --pipe ./fatcat_export.py transform-releases - - | esbulk -verbose -size 20000 -id ident -w 8 -index fatcat_release -type release
+
+        165k 0:00:10 [18.4k/s]
+
+        2019/02/02 09:30:49 96812900 docs in 2h27m32.835681602s at 10935.807 docs/s with 8 workers
+        2019/02/02 09:30:49 applied setting: {"index": {"refresh_interval": "1s"}} with status 200 OK
+        2019/02/02 09:30:49 applied setting: {"index": {"number_of_replicas": "1"}} with status 200 OK
+        2019/02/02 09:31:03 index flushed: 200 OK
+
+        real    147m46.387s
+        user    2621m40.420s
+        sys     56m11.456s
+
+    sudo su postgres
+    dropdb fatcat_prod
+    #zcat fatcat_private_dbdump_2019-02-02.022209.tar.gz | pg_restore --clean --if-exists --create --exit-on-error -d fatcat_prod
+    createdb fatcat_prod
+    time zcat fatcat_private_dbdump_2019-02-02.022209.tar.gz  | pg_restore --exit-on-error --clean --if-exists --dbname fatcat_prod
+
+        seems to go pretty fast, so multiple jobs probably not needed
+
+        real    284m40.448s
+        user    58m45.240s
+        sys     7m33.600s
+
+DONE: delete old elastic index
+
+## Bugs/Issues encountered
+
+x in_ia_sim is broken; not passing through
+x elastic port (9200) was not open to cluster
+    => but should close; should be over HTTP
+x elasticsearch host wrong (should be search.fatcat.wiki)
+    => search.fatcat.wiki
+x postgres config wasn't actually getting installed in the right place by
+  ansible (!!!), which probably had crazy effects on performance, etc
+x postgres version confusion was because both versions (server and client) can
+  be installed in parallel, and older version "wins". wiping VM would solve this.
+x should try pigz for things like ident_table_snapshot and exports? these seem to be gzip-limited
+- fatcat-export and pg_dump seem to mutually lock (transaction-wise), which is
+  unexpected. fatcat-export should have very loose (low-priority) transaction
+  scope, because it already has the full release_rev id, and pg_dump should
+  also be in background/non-linear mode (except for "public" dumps?)
+    => this was somewhat subtle; didn't completely lock
+- this machine is postgres 10, not postgres 11. same with fatcat-prod1-vm.
+
+Added to TODO:
+- want a better "write lock" flag (on database) other than clearing auth key
+- KBART CLOCKSS reports (and maybe LOCKSS?) have repeated lines, need to be merged
 - empty AUTH_ALT_KEYS should just be ignored (not try to parse)
+
+## Metadata Quality Notes
+
+- crossref references look great!
+- extra/crossref/alternative-id often includes exact full DOI
+        10.1158/1538-7445.AM10-3529
+        10.1158/1538-7445.am10-3529
+    => but not always? publisher-specific
+- contribs[]/extra/seq often has "first" from crossref
+    => is this helpful?
+- abstracts content is fine, but should probably check for "jats:" when setting
+  mimetype
+x BUG: `license_slug` when https://creativecommons.org/licenses/by-nc-sa/4.0
+    => https://api.qa.fatcat.wiki/v0/release/55y37c3dtfcw3nw5owugwwhave
+       10.26891/jik.v10i2.2016.92-97
+- original title works, yay!
+    https://api.qa.fatcat.wiki/v0/release/nlmnplhrgbdalcy472hfb2z3im
+    10.2504/kds.26.358
+- new license: https://www.karger.com/Services/SiteLicenses
+- not copying ISBNs: 10.1016/b978-0-08-037302-7.50022-7
+    "9780080373027"
+    could at least put in alternative-id?
+- BUG: subtitle coming through as an array, not string
+- `license_slug` does get set
+    eg for PLOS ONE http://creativecommons.org/licenses/by/4.0/
+- page-one.live.cf.public.springer.com seems to serve up bogus one-pagers; should exclude
+- BUG (?): file missing size:
+    https://fatcat.wiki/file/wpvkiqx2w5celc3ajyfsh3cfsa
+- webface BUG: file-to-release links missing
+- webface meh: still need to collapse links by domain better, and also vs. www.x/x
+
+I think this is good (enough)!
+
+Possible other KBART sources: Hathitrust, PKP preservation net (open, OJS), scholars portal (?), british library
+
+Nature mag kbart clocks in empty (?)
+    ISSN-L: 0028-0836
+    https://fatcat.wiki/container/drfdii35rzaibj3aml5uhvr5xm
 
 Missing DOIs (out of scope?):
 

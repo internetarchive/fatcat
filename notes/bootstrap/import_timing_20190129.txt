@@ -6,6 +6,8 @@ Made a number of changes since yesterday's import, so won't be surprised if run
 in to problems. Plan is to make any fixes and push through to the end to turn
 up any additional issues/bugs, then iterate yet again if needed.
 
+NOTE: this import ended up being abandoned (too slow) in lieu of 2019-01-30.
+
 ## Service up/down
 
     sudo service fatcat-web stop
@@ -107,6 +109,14 @@ up any additional issues/bugs, then iterate yet again if needed.
         (80 MB/sec write), seems to be bottleneck, not sure why.
 
         would take... about an hour to restart, might save 20+ hours, might waste 14?
+
+        Counter({'total': 5005785, 'insert': 4319312, 'exists': 457819, 'skip': 228654, 'update': 0})
+        531544.60user 13597.32system 60:38:43elapsed 249%CPU (0avgtext+0avgdata 448748maxresident)k
+        124037840inputs+395235552outputs (140major+41973732minor)pagefaults 0swaps
+
+        real    3638m43.712s => 60 hours (!!!)
+        user    8944m37.944s
+        sys     232m25.200s
 
     export FATCAT_AUTH_SANDCRAWLER="..."
     export FATCAT_API_AUTH_TOKEN=$FATCAT_AUTH_SANDCRAWLER
