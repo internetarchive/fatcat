@@ -1,102 +1,48 @@
 
 ## In Progress
 
-## Prod Metadata Checks
-
-x edit and editgroup metadata
-x crossref citation not saving 'article-title' or 'unstructured', and 'author'
-  should be 'authors' (list)
-x crossref not saving 'language' (looks like iso code already)
-- longtail_oa flag getting set on GROBID imports
-- grobid reference should be under extra (not nested): issue, volume, authors
-- uniqueness of:
-    sha1 - via SQL dump
-    doi - via SQL dump
-    issnl - via JSON dump
-    orcid - via JSON dump
-
-notes:
-- crossref references look great!
-- extra/crossref/alternative-id often includes exact full DOI
-        10.1158/1538-7445.AM10-3529
-        10.1158/1538-7445.am10-3529
-    => but not always? publisher-specific
-- contribs[]/extra/seq often has "first" from crossref
-    => is this helpful?
-- abstracts content is fine, but should probably check for "jats:" when setting
-  mimetype
-x BUG: `license_slug` when https://creativecommons.org/licenses/by-nc-sa/4.0
-    => https://api.qa.fatcat.wiki/v0/release/55y37c3dtfcw3nw5owugwwhave
-       10.26891/jik.v10i2.2016.92-97
-- original title works, yay!
-    https://api.qa.fatcat.wiki/v0/release/nlmnplhrgbdalcy472hfb2z3im
-    10.2504/kds.26.358
-- new license: https://www.karger.com/Services/SiteLicenses
-- not copying ISBNs: 10.1016/b978-0-08-037302-7.50022-7
-    "9780080373027"
-    could at least put in alternative-id?
-- BUG: subtitle coming through as an array, not string
-- `license_slug` does get set
-    eg for PLOS ONE http://creativecommons.org/licenses/by/4.0/
-
 ## Next Up
 
-- bootstrap_bots script should set -ex and output admin and webface tokens
-- regression test imports for missing orcid display and journal metadata name
-- serveral tweaks/fixes to webface (eg, container metadata schema changed)
-- container count "enrich"
-- changelog elastic stuff (is there even a fatcat-export for this?)
-- QA sentry has very little host info; also not URL of request
-- start prod crossref harvesting (from ~start of 2019)
-- 158 "NULL" publishers in journal metadata
-- should elastic release_year be of date type, instead of int?
-- QA/prod needs updated credentials
-- ansible: ISSN-L download/symlink
-- searching 'N/A' is a bug
 - formalize release_status:
     => https://wiki.surfnet.nl/display/DRIVERguidelines/DRIVER-VERSION+Mappings
-- entity edit JSON objects could include `entity_type`
+- page-one.live.cf.public.springer.com seems to serve up bogus one-pagers; should exclude
+- QA sentry has very little host info; also not URL of request
+- should elastic release_year be of date type, instead of int?
+- subtitle as array vs. string
 
-## Production public launch blockers
+## Production Public Launch Blockers
 
+- update /about page
 - handle 'wip' status entities in web UI
 - guide updates for auth
 - privacy policy, and link from: create account, create edit
-- refactors and correctness in rust/TODO
-- update /about page
 
 ## Production Tech Sanity
 
 - postgresql replication
-- pg_dump/load test
 - haproxy somewhere/how
 - logging iteration: larger journald buffers? point somewhere?
 
 ## Ideas
 
+- ansible: ISSN-L download/symlink
+- webface: still need to collapse links by domain better, and also vs. www.x/x
+- entity edit JSON objects could include `entity_type`
+- refactor 'fatcatd' to 'fatcat-api'
+- changelog elastic stuff (is there even a fatcat-export for this?)
+- container count "enrich"
 - ORCID apparently has 37 mil "work activities" (patents, etc), and only 14 mil
   unique DOIs; could import those other "work activities"? do they have
   identifiers?
-- write up notes on biblio metadata in general
-    => "extensibility" and extra keys
-    => proliferation of arrays vs. concrete values
-    => various ways to record history/progeny
-    => "subtitle", "short-title", "full-title" complexity
-    => human names
-    => translated metadata: titles/names/abstracts
-    => "typing" for metadata (eg, math in titles)
 - 'hide' flag for exporter (eg, to skip abstracts and refs in some release dumps)
 - https://tech.labs.oliverwyman.com/blog/2019/01/14/serialising-rust-tests/
-- use https://github.com/codelucas/newspaper to extract fulltext+metadata from
-  HTML crawls
+- use https://github.com/codelucas/newspaper to extract fulltext+metadata from HTML crawls
 - changelog elastic index (for stats)
 - import from arabesque output (eg, specific crawls)
 - more logins: orcid, wikimedia
-- `fatcat-auth` tool should support more caveats, both when generating new or
-  mutating existing tokens
+- `fatcat-auth` tool should support more caveats, both when generating new or mutating existing tokens
 - fast path to skip recursive redirect checks for bulk inserts
-- when getting "wip" entities, require a parameter ("allow_wip"), else get a
-  404
+- when getting "wip" entities, require a parameter ("allow_wip"), else get a 404
 - consider dropping CORE identifier
 - maybe better 'success' return message? eg, "success: true" flag
 - idea: allow users to generate their own editgroup UUIDs, to reduce a round
@@ -108,11 +54,14 @@ x BUG: `license_slug` when https://creativecommons.org/licenses/by-nc-sa/4.0
     => /{entity}/edit/{edit_id}
     => /{entity}/{ident}/redirects
     => /{entity}/{ident}/history
-- investigate data quality by looking at, eg, most popular author strings, most
-  popular titles, duplicated containers, etc
+- investigate data quality by looking at, eg, most popular author strings, most popular titles, duplicated containers, etc
 
 ## Metadata Import
 
+- 158 "NULL" publishers in journal metadata
+- crossref: many ISBNs not getting copied; use python library to convert?
+- remove 'first' from contrib crossref 'seq' (not helpful?)
+- should probably check for 'jats:' in abstract before setting mimetype, even from crossref
 - web.archive.org response not SHA1 match? => need /<dt>id_/ thing
 - XML etc in metadata
     => (python) tests for these!
@@ -127,11 +76,6 @@ x BUG: `license_slug` when https://creativecommons.org/licenses/by-nc-sa/4.0
 - better/complete reltypes probably good (eg, list of IRs, academic domain)
 - 'expand' in lookups (derp! for single hit lookups)
 - include crossref-capitalized DOI in extra
-- some "Elsevier " stuff as publisher
-    => also title https://fatcat.wiki/release/uyjzaq3xjnd6tcrqy3vcucczsi
-- crossref import: don't store citation unstructured if len() == 0:
-    {"crossref": {"unstructured": ""}}
-- try out beautifulsoup? (https://stackoverflow.com/a/34532382/4682349)
 - manifest: multiple URLs per SHA1
 - crossref: relations ("is-preprint-of")
 - crossref: two phase: no citations, then matched citations (via DOI table)
@@ -169,23 +113,32 @@ new importers:
 ## Schema / Entity Fields
 
 - elastic transform should only include authors, not editors (?)
-- `doi` field for containers (at least for "journal" type; maybe for "series"
-  as well?)
-- `retracted`, `translation`, and perhaps `corrected` as flags on releases,
-  instead of release_status?
+- `retracted`, `translation`, and perhaps `corrected` as flags on releases, instead of release_status?
     => see notes file on retractions, etc
-- 'part-of' relation for releases (release to release, eg for book chapters)
-  and possibly containers
+- 'part-of' relation for releases (release to release, eg for book chapters) and possibly containers
 - `container_type` for containers (journal, conference, book series, etc)
     => in schema, needs vocabulary and implementation
+
+## API Schema / Design
+
+- refactor entity mutation (CUD) endpoints to be like `/editgroup/{editgroup_id}/release/{ident}`
+    => changes editgroup_id from query param to URL param
+- refactor bulk POST to include editgroup plus array of entity objects (instead of just a couple fields as query params)
 
 ## Web Interface
 
 - include that ISO library to do lang/country name decodes
 - container-name when no `container_id`. eg: 10.1016/b978-0-08-037302-7.50022-7
+- fileset/webcapture webface anything
 
 ## Other / Backburner
 
+- file entity full update with all hashes, file size, corrected/expanded wayback links
+    => some number of files *did* get inserted to fatcat with short (year) datetimes, from old manifest. also no file size.
+- searching 'N/A' is a bug, because not quoted; auto-quote it?
+- regression test imports for missing orcid display and journal metadata name
+- try out beautifulsoup? (https://stackoverflow.com/a/34532382/4682349)
+- `doi` field for containers (at least for "journal" type; maybe for "series" as well?)
 - refactor webface views to use shared entity_view.html template
 - shadow library manifest importer
 - book identifiers: OCLC, openlibrary
@@ -194,7 +147,6 @@ new importers:
 - fake DOI (use in examples): 10.5555/12345678
 - refactor elasticsearch inserter to be a class (eg, for command line use)
 - document: elastic query date syntax is like: date:[2018-10-01 TO 2018-12-31]
-- fileset/webcapture webface anything
 - display abstracts better. no hashes or metadata; prefer plain or HTML,
   convert JATS if necessary
 - switch from slog to simple pretty_env_log
