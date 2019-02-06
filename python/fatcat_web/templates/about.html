@@ -3,16 +3,24 @@
 
 <h1>About Fatcat</h1>
 
-<p>This is versioned, public-editable catalog of research publications: journal
+<p>Fatcat is versioned, public-editable catalog of research publications: journal
 articles, conference proceedings, pre-prints, blog posts, and so forth. The
 goal is to improve the state of preservation and access to these works by
-providing a manifest of file content versions and locations. This service does
-not directly contain full-text content itself, but provides basic access for human
-and machine readers through links to copies in web archives, institutional and
-other repositories, and the public web.
+providing a manifest of full-text content versions and locations.
 
-<p>A few features set fatcat apart from similar indexing and discovery services
-in the scholarly communications space:
+<p>This service does not directly contain full-text content itself, but
+provides basic access for human and machine readers through links to copies in
+web archives, institutional and other repositories, and the public web.
+
+<p>Significantly more context and background information can be found in <a
+href="https://guide.{{ config.FATCAT_DOMAIN }}/">The Guide</a>.
+
+<p>Feedback and queries can be directed to the <b><a
+href="mailto:info@archive.org">info@archive.org</a></b> email address.
+
+<h3>Goals and Features</h3>
+
+<p>A few things set fatcat apart from similar indexing and discovery services:
 
 <ul>
   <li>inclusion of archival file-level metadata (content digests) in addition
@@ -99,5 +107,8 @@ licensed.  The name "fat cat" can be interpreted as short for "large catalog",
 as the service aspires to be a <i>universal</i> (complete) catalog of the
 digital scholarly record.
 <!-- TODO: attribution anyways -->
+
+<p>A list of technical contributors, including volunteers, is maintained in the
+source code repository (<code>CONTRIBUTORS.md</code>). Thanks everybody!
 
 {% endblock %}
