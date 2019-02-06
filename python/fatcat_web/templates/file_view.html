@@ -21,10 +21,10 @@
 {% endif %}
 
 <h3>Releases</h3>
-{% if file.releases != None %}
+{% if file.release_ids != None %}
 <p>Releases associated with this file:
 <ul>
-{% for release_id in file.releases %}
+{% for release_id in file.release_ids %}
   <li><a href="/release/{{ release_id }}"><code>{{ release_id }}</code></a>
 {% endfor %}
 </ul>
