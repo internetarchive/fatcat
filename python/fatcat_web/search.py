@@ -16,7 +16,7 @@ def do_search(q, limit=50, fulltext_only=True):
         limit = 100
 
     if fulltext_only:
-        q += " file_in_ia:true"
+        q += " in_web:true"
 
     search_request = {
         "query": {
