@@ -16,4 +16,6 @@ See also:
 
 ## [Unreleased]
 
-Intent is to tag a [0.2.0] release really soon now, as a first public version.
+## [0.2.0] - 2019-02-05
+
+First tagged release, and start of notable change tracking.
