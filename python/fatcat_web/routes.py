@@ -455,15 +455,19 @@ def page_server_down(e):
     return render_template('503.html'), 503
 
 @app.route('/', methods=['GET'])
-def homepage():
+def page_home():
     return render_template('home.html')
 
 @app.route('/about', methods=['GET'])
-def aboutpage():
+def page_about():
     return render_template('about.html')
 
+@app.route('/rfc', methods=['GET'])
+def page_rfc():
+    return render_template('rfc.html')
+
 @app.route('/search', methods=['GET'])
-def search_redirect():
+def page_search_redirect():
     return redirect("/release/search")
 
 @app.route('/robots.txt', methods=['GET'])
