@@ -1,6 +1,6 @@
 
 import requests
-from flask import abort
+from flask import abort, flash
 from fatcat_web import app
 
 """
@@ -36,7 +36,11 @@ def do_search(q, limit=50, fulltext_only=True):
             (app.config['ELASTICSEARCH_BACKEND'], app.config['ELASTICSEARCH_RELEASE_INDEX']),
         json=search_request)
 
-    if resp.status_code != 200:
+    if resp.status_code == 400:
+        print("elasticsearch 400: " + str(resp.content))
+        flash("Search query failed to parse; you might need to use quotes.<p><code>{}</code>".format(resp.content))
+        abort(resp.status_code)
+    elif resp.status_code != 200:
         print("elasticsearch non-200 status code: " + str(resp.status_code))
         print(resp.content)
         abort(resp.status_code)
