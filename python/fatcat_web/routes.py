@@ -436,6 +436,10 @@ def page_not_found(e):
 def page_not_authorized(e):
     return render_template('403.html'), 403
 
+@app.errorhandler(400)
+def page_bad_request(e):
+    return render_template('400.html'), 400
+
 @app.errorhandler(409)
 def page_edit_conflict(e):
     return render_template('409.html'), 409
