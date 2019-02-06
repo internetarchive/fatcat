@@ -2,12 +2,10 @@ use fatcat::auth::MacaroonAuthMiddleware;
 use fatcat::editing_crud::EditgroupCrud;
 use fatcat::identifiers::FatcatId;
 use fatcat::server;
-use fatcat_api_spec::client::Client;
 use fatcat_api_spec::models::Editgroup;
-use fatcat_api_spec::Context;
 use iron::headers::{Authorization, Bearer, ContentType};
 use iron::mime::Mime;
-use iron::{status, Chain, Headers, Iron, Listening};
+use iron::{status, Chain, Headers};
 use iron_test::response;
 use std::str::FromStr;
 
