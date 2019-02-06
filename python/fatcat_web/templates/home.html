@@ -2,18 +2,17 @@
 {% block body %}
 <div class="ui container text">
 
-<h1 class="ui header centered">Welcome to fatcat!</h1>
+<h1 class="ui header centered" style="font-size: 2.5rem;">Welcome to Fatcat!</h1>
+<br>
 
 <img class="ui fluid bordered image" src="/static/fatcat.jpg" title="CC0 photo of an oversized feline" alt="">
 
 <div class="ui message">
-  <div class="header">Current Status: Prototype</div>
+  <div class="header">Current Status: Beta</div>
   <ul class="list">
-    <li>No authentication or accounts
-    <li>Any edits will be lost
-    <li>Most creation/edit forms don't work
-    <li>Any data was bulk-imported, and may not be up to date
-    <li>Search results are from Crossref, not local API/database
+    <li>Entity editing only possibly by API; web interface is not implemented
+    <li>Edits are manually reviewed (not automatically accepted)
+    <li>API schemas and client libraries not guaranteed to be backwards-compatible
   </ul>
 </div>
 
@@ -37,8 +36,13 @@ indexing (aka, linking together of pre-prints and final copies).
         <br>journal article, pre-print, book
         <br>published version of a Work
     <td><a href="/release/create">Create</a>
+        <br><a href="/release/search">Search</a>
+{% if config.FATCAT_DOMAIN == 'fatcat.wiki' %}
+    <td>
+{% else %}
     <td><a href="/release/aaaaaaaaaaaaarceaaaaaaaaai">Dummy</a>
         <br><a href="/release/aaaaaaaaaaaaarceaaaaaaaaam">Realistic</a>
+{% endif %}
     <td><form class="" role="lookup" action="/release/lookup" method="get">
           <div class="ui icon input">
             <i class="search icon"></i>
@@ -48,8 +52,13 @@ indexing (aka, linking together of pre-prints and final copies).
 <tr><td><b>Container</b>
         <br>journal or serial
     <td><a href="/container/create">Create</a>
+        <br><a href="/container/search">Search</a>
+{% if config.FATCAT_DOMAIN == 'fatcat.wiki' %}
+    <td>
+{% else %}
     <td><a href="/container/aaaaaaaaaaaaaeiraaaaaaaaai">Dummy</a>
         <br><a href="/container/aaaaaaaaaaaaaeiraaaaaaaaam">Realistic</a>
+{% endif %}
     <td><form class="" role="lookup" action="/container/lookup" method="get">
           <div class="ui icon input">
             <i class="search icon"></i>
@@ -60,8 +69,12 @@ indexing (aka, linking together of pre-prints and final copies).
 <tr><td><b>Creator</b>
         <br>authors, editors, translators
     <td><!-- <a href="/creator/create">Create</a> -->
+{% if config.FATCAT_DOMAIN == 'fatcat.wiki' %}
+    <td>
+{% else %}
     <td><a href="/creator/aaaaaaaaaaaaaircaaaaaaaaai">Dummy</a>
         <br><a href="/creator/aaaaaaaaaaaaaircaaaaaaaaam">Realistic</a>
+{% endif %}
     <td><form class="" role="lookup" action="/creator/lookup" method="get">
           <div class="ui icon input">
             <i class="search icon"></i>
@@ -71,14 +84,32 @@ indexing (aka, linking together of pre-prints and final copies).
 <tr><td><b>File</b>
         <br>specific digital blobs (immutable)
     <td>
+{% if config.FATCAT_DOMAIN == 'fatcat.wiki' %}
+    <td>
+{% else %}
     <td><a href="/file/aaaaaaaaaaaaamztaaaaaaaaai">Dummy</a>
         <br><a href="/file/aaaaaaaaaaaaamztaaaaaaaaam">Realistic</a>
+{% endif %}
     <td><form class="" role="lookup" action="/file/lookup" method="get">
           <div class="ui icon input">
             <i class="search icon"></i>
             <input type="text" placeholder="SHA-1" name="sha1" aria-label="search by SHA1">
           </div>
         </form>
+{% if config.FATCAT_DOMAIN != 'fatcat.wiki' %}
+<tr><td><b>Fileset</b>
+        <br>datasets, suplementary materials
+    <td>
+    <td><a href="/fileset/aaaaaaaaaaaaaztgaaaaaaaaai">Dummy</a>
+        <br><a href="/fileset/aaaaaaaaaaaaaztgaaaaaaaaam">Realistic</a>
+    <td>
+<tr><td><b>Web Capture</b>
+        <br>HTML and interactive articles, blog posts
+    <td>
+    <td><a href="/webcapture/aaaaaaaaaaaaa53xaaaaaaaaai">Dummy</a>
+        <br><a href="/webcapture/aaaaaaaaaaaaa53xaaaaaaaaam">Realistic</a>
+    <td>
+{% endif %}
 <tr><td><b>Work</b>
         <br>for grouping Releases
     <td>
