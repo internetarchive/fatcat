@@ -18,9 +18,9 @@ The SQL database schema (and migrations) are under `./migrations/`.
 You need the following dependencies installed locally to build, run tests, and
 do development work:
 
-- rust stable, 1.29+ (eg, via "rustup", includes cargo tool)
+- rust stable, 2018 edition, 1.32+ (eg, via "rustup", includes cargo tool)
 - diesel (`cargo install diesel_cli`)
-- postgres (9.6+; targetting 11.1 for production)
+- postgres (compatible with 9.6+; run 11.x in production)
 - postgres libs (debian: `sudo apt install libsqlite3-dev libpq-dev`)
 - libsodium library and development headers (debian: `libsodium-dev`)
 
