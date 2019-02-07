@@ -35,11 +35,12 @@ indexing (aka, linking together of pre-prints and final copies).
 <tr><td><b>Release</b>
         <br>journal article, pre-print, book
         <br>published version of a Work
+{% if config.FATCAT_DOMAIN == 'fatcat.wiki' %}
+    <td><a href="/release/search">Search</a>
+    <td><a href="/release/tb24ghkawzgaho5bkim3cbmbnu">Paper</a>
+{% else %}
     <td><a href="/release/create">Create</a>
         <br><a href="/release/search">Search</a>
-{% if config.FATCAT_DOMAIN == 'fatcat.wiki' %}
-    <td>
-{% else %}
     <td><a href="/release/aaaaaaaaaaaaarceaaaaaaaaai">Dummy</a>
         <br><a href="/release/aaaaaaaaaaaaarceaaaaaaaaam">Realistic</a>
 {% endif %}
@@ -51,11 +52,12 @@ indexing (aka, linking together of pre-prints and final copies).
         </form>
 <tr><td><b>Container</b>
         <br>journal or serial
-    <td><a href="/container/create">Create</a>
-        <br><a href="/container/search">Search</a>
 {% if config.FATCAT_DOMAIN == 'fatcat.wiki' %}
     <td>
+    <td><a href="/container/iznnn644szdwva7khyxqzc73bi">Journal</a>
 {% else %}
+    <td><a href="/container/create">Create</a>
+        <br><a href="/container/search">Search</a>
     <td><a href="/container/aaaaaaaaaaaaaeiraaaaaaaaai">Dummy</a>
         <br><a href="/container/aaaaaaaaaaaaaeiraaaaaaaaam">Realistic</a>
 {% endif %}
@@ -68,10 +70,11 @@ indexing (aka, linking together of pre-prints and final copies).
 
 <tr><td><b>Creator</b>
         <br>authors, editors, translators
-    <td><!-- <a href="/creator/create">Create</a> -->
 {% if config.FATCAT_DOMAIN == 'fatcat.wiki' %}
     <td>
+    <td><a href="/creator/iimvc523xbhqlav6j3sbthuehu">Author</a>
 {% else %}
+    <td><!-- <a href="/creator/create">Create</a> -->
     <td><a href="/creator/aaaaaaaaaaaaaircaaaaaaaaai">Dummy</a>
         <br><a href="/creator/aaaaaaaaaaaaaircaaaaaaaaam">Realistic</a>
 {% endif %}
@@ -83,10 +86,11 @@ indexing (aka, linking together of pre-prints and final copies).
         </form>
 <tr><td><b>File</b>
         <br>specific digital blobs (immutable)
-    <td>
 {% if config.FATCAT_DOMAIN == 'fatcat.wiki' %}
     <td>
+    <td><a href="/file/wklqsb5apzfhbbxxc7rgu2yw6m">PDF</a>
 {% else %}
+    <td>
     <td><a href="/file/aaaaaaaaaaaaamztaaaaaaaaai">Dummy</a>
         <br><a href="/file/aaaaaaaaaaaaamztaaaaaaaaam">Realistic</a>
 {% endif %}
@@ -112,9 +116,14 @@ indexing (aka, linking together of pre-prints and final copies).
 {% endif %}
 <tr><td><b>Work</b>
         <br>for grouping Releases
+{% if config.FATCAT_DOMAIN == 'fatcat.wiki' %}
+    <td>
+    <td><a href="/work/ftl6xv267vb6xfech3khri3nwa">Paper</a>
+{% else %}
     <td>
     <td><a href="/work/aaaaaaaaaaaaavkvaaaaaaaaai">Dummy</a>
         <br><a href="/work/aaaaaaaaaaaaavkvaaaaaaaaam">Realistic</a>
+{% endif %}
     <td>
 </table>
 
