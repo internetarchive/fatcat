@@ -48,10 +48,12 @@ def container_edit_view(ident):
 #    #return render_template('container_edit.html')
 
 @app.route('/container/create', methods=['GET'])
+@login_required
 def container_create_view():
     return render_template('container_create.html')
 
 @app.route('/container/create', methods=['POST'])
+@login_required
 def container_create():
     raise NotImplementedError
     params = dict()
@@ -201,10 +203,12 @@ def release_lookup():
     return redirect('/release/{}'.format(resp.ident))
 
 @app.route('/release/create', methods=['GET'])
+@login_required
 def release_create_view():
     return render_template('release_create.html')
 
 @app.route('/release/create', methods=['POST'])
+@login_required
 def release_create():
     raise NotImplementedError
     params = dict()
