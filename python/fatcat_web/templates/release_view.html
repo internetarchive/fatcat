@@ -179,7 +179,7 @@ This release citing other releases.
 <div class="five wide column">
 
 {% if files != [] and files[0].urls != [] %}
-<a href="https://web.archive.org/web/1/{{ files[0].urls[0].url }}" class="ui top attached fluid huge green button"><i class="file pdf outline icon"></i>Download Full Text</a>
+<a href="{{ files[0].urls[0].url }}" class="ui top attached fluid huge green button"><i class="file pdf outline icon"></i>Download Full Text</a>
 {% else %}
 <span class="ui top attached fluid huge grey button"><i class="file cross icon"></i>No Full Text Available</span>
 {% endif %}
