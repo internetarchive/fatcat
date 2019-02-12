@@ -191,8 +191,8 @@ This release citing other releases.
 {% endif %}
 
 {% if release.doi %}
-<div class="ui segment attached">
-<b>DOI </b> &nbsp;<a href="https://doi.org/{{ release.doi }}">{{ release.doi }}</a>
+<div class="ui segment attached" style="word-wrap: break-word;">
+<b>DOI </b> &nbsp;<a href="https://doi.org/{{ release.doi }}" title="{{ release.doi }}">{{ release.doi }}</a>
 </div>
 {% endif %}
 {% if release.isbn13 != None %}
