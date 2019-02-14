@@ -5,8 +5,9 @@
 1. Fetch (GET) the existing entity
 2. Create (POST) a new editgroup
 3. Update (PUT) the entity, with the current revision number in the `prev` edit
-   field, and the editgroup id set
-4. Submit (POST? TBD) the editgroup for review
+   field, and the `editgroup_id` set
+4. Submit (PUT) the editgroup for review
+5. Somebody (human or bot) with admin privileges will Accept (POST) the editgroup.
 
 ### Merging Duplicate Entities
 
@@ -18,12 +19,15 @@
 5. Update (PUT) the "other" entity with the redirect flag set to the primary's
    identifier, with the current revision id (of the "other" entity) in the
    `prev` field, and the editgroup id set
-4. Submit (POST? TBD) the editgroup for review
+6. Submit (PUT) the editgroup for review
+7. Somebody (human or bot) with admin privileges will Accept (POST) the editgroup.
 
 ### Lookup Fulltext URLs by DOI
 
-1. Use release lookup endpoint (GET) with the DOI a query parameter, with
-   `expand=files`
+1. Use release lookup endpoint (GET) with the `doi` query parameter in
+   URL-escaped format, with `expand=files`. You may want to `hide`
+   `abstracts,references` for faster responses if you aren't interested in
+   those fields.
 2. If a release hit is found, iterate over the linked `file` entities, and
    create a ranked list of URLs based on mimetype, URL "rel" type, file size,
    or host domain.
@@ -33,5 +37,7 @@
 When bootstrapping a blank catalog, we need to insert 10s or 100s of millions
 of entities as fast as possible.
 
-1. Create (POST) a new editgroup, with provenance information included
-2. Batch create (POST) entities
+1. Batch create (POST) a set of entities, with editgroup metadata included as
+   query parameters
+2. If not an adminstrator, or the `autoaccept` flag was not set, the editgroup
+   will need to be submitted and accepted as usual
