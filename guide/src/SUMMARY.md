@@ -10,8 +10,6 @@
     - [Implementation and Infrastructure](./implementation.md)
     - [Roadmap](./roadmap.md)
 - [Cataloging Style Guide](./style_guide.md)
-    - [Entity Types](./entity_types.md)
-    - [Schema "Alignments"](./alignments.md)
     - [Entity Field Reference](./entity_fields.md)
 - [Public API](./http_api.md)
     - [Bulk Exports](./bulk_exports.md)
