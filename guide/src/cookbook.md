@@ -33,5 +33,5 @@
 When bootstrapping a blank catalog, we need to insert 10s or 100s of millions
 of entities as fast as possible.
 
-1. Create (POST) a new editgroup, with progeny information included
+1. Create (POST) a new editgroup, with provenance information included
 2. Batch create (POST) entities

@@ -24,7 +24,7 @@ Bots need to be tuned to have appropriate edit group sizes (eg, daily batches,
 instead of millions of works in a single edit) to make human QA review and
 reverts manageable.
 
-Data progeny and source references are captured in the edit metadata, instead
+Data provenance and source references are captured in the edit metadata, instead
 of being encoded in the entity data model itself. In the case of importing
 external databases, the expectation is that special-purpose bot accounts
 are be used, and tag timestamps and external identifiers in the edit metadata.

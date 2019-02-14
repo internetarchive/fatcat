@@ -132,12 +132,12 @@ SQL tables look something like this (with separate tables for entity type a la
         new_revision (entity_revision foreign key)
         new_redirect (optional; points to entity_ident table)
         previous_revision (optional; points to entity_revision)
-        extra: json blob for progeny metadata
+        extra: json blob for provenance metadata
 
     editgroup
         editor_id (editor table foreign key)
         description
-        extra: json blob for progeny metadata
+        extra: json blob for provenance metadata
 
 An individual entity can be in the following "states", from which the given
 actions (transition) can be made:

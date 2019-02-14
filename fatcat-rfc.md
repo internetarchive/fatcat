@@ -74,7 +74,7 @@ content.
 The goal is to have a very permissively licensed database: CC-0 (no rights
 reserved) if possible. Under US law, it should be possible to scrape and pull
 in factual data from other corpuses without adopting their licenses. The goal
-here isn't to avoid attribution (progeny information will be included, and a
+here isn't to avoid attribution (provenance information will be included, and a
 large sources and acknowledgments statement should be maintained and shipped
 with bulk exports), but trying to manage the intersection of all upstream
 source licenses seems untenable, and creates burdens for downstream users and
@@ -111,7 +111,7 @@ Bots need to be tuned to have appropriate edit group sizes (eg, daily batches,
 instead of millions of works in a single edit) to make human QA review and
 reverts managable.
 
-Data progeny and source references are captured in the edit metadata, instead
+Data provenance and source references are captured in the edit metadata, instead
 of being encoded in the entity data model itself. In the case of importing
 external databases, the expectation is that special-purpose bot accounts
 are be used, and tag timestamps and external identifiers in the edit metadata.
@@ -198,12 +198,12 @@ type, with tables like `work_revision` not `entity_revision`):
         ident (entity_ident foreign key)
         new_revision (entity_revision foreign key)
         previous_revision (optional; points to entity_revision)
-        extra: json blob for progeny metadata
+        extra: json blob for provenance metadata
 
     editgroup
         editor_id
         description
-        extra: json blob for progeny metadata
+        extra: json blob for provenance metadata
 
 Additional entity-specific columns would hold actual metadata. Additional
 tables (which would reference both `entity_revision` and `entity_id` foreign

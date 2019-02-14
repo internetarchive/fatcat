@@ -16,13 +16,13 @@ The Fatcat catalog content license is the Creative Commons Zero ("CC-0")
 license, which is effectively a public domain grant. This applies to the
 catalog metadata itself (titles, entity relationships, citation metadata, URLs,
 hashes, identifiers), as well as "meta-meta-data" provided by editors (edit
-descriptions, progeny metadata, etc).
+descriptions, provenance metadata, etc).
 
 The core catalog is designed to contain only factual information: "this work,
 known by this title and with these third-party identifiers, is believed to be
 represented by these files and published under such-and-such venue". As a norm,
-sourcing metadata (for attribution and progeny) is retained for each edit made
-to the catalog.
+sourcing metadata (for attribution and provenance) is retained for each edit
+made to the catalog.
 
 A notable exception to this policy are abstracts, for which no copyright claims
 or license is made. Abstract content is kept separate from core catalog
