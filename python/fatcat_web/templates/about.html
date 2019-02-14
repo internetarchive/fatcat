@@ -3,72 +3,72 @@
 
 <h1>About Fatcat</h1>
 
-<p>Fatcat is versioned, public-editable catalog of research publications: journal
-articles, conference proceedings, pre-prints, blog posts, and so forth. The
-goal is to improve the state of preservation and access to these works by
+<p>Fatcat is versioned, publicly-editable catalog of research publications:
+journal articles, conference proceedings, pre-prints, blog posts, and so forth.
+The goal is to improve the state of preservation and access to these works by
 providing a manifest of full-text content versions and locations.
 
 <p>This service does not directly contain full-text content itself, but
 provides basic access for human and machine readers through links to copies in
-web archives, institutional and other repositories, and the public web.
+web archives, repositories, and the public web.
 
 <p>Significantly more context and background information can be found in <a
 href="https://guide.{{ config.FATCAT_DOMAIN }}/">The Guide</a>.
 
-<p>Feedback and queries can be directed to the <b><a
-href="mailto:info@archive.org">info@archive.org</a></b> email address.
+<p>Feedback and queries can be directed to
+<b><a href="mailto:info@archive.org">info@archive.org</a></b>.
 
 <h3>Goals and Features</h3>
 
-<p>A few things set fatcat apart from similar indexing and discovery services:
+<p>A few things set Fatcat apart from similar indexing and discovery services:
 
 <ul>
-  <li>inclusion of archival file-level metadata (content digests) in addition
+  <li>inclusion of archival, <b>file-level metadata (hashes)</b> in addition
   to URLs, which allows automated verification ("do I have the right copy"),
   reveals content-drift over time, and enables efficient distribution of
   content through the ecosystem
-  <li>native support for "post-PDF" digital media, including archival web
-  captures and datasets, as well as content stored on the distributed web
-  <li>data model that captures the work/edition (aka, "release") distinction,
+  <li>native support for "post-PDF" digital media, including <b>archival web
+  captures and datasets</b>, as well as content stored on the distributed web
+  <li>data model that captures the <b>work/edition distinction</b>,
   grouping pre-print, post-review, published, re-published, and updated
   versions of a work together
-  <li>public editing interface, allowing metadata corrections and improvements
+  <li><b>public editing</b> interface, allowing metadata corrections and improvements
   from individuals and bots in addition to automated imports from authoritative
   sources
   <li>focus on providing a stable API and corpus (making integration with
   diverse user-facing applications simple), while enabling full replication and
-  mirroring of the corpus to reduce the risks of centralized control
+  mirroring of the corpus to <b>reduce the risks of centralized control</b>
 </ul>
 
 <p>This service aspires to be a piece of sustainable, long-term, non-profit,
 free-software, collaborative, open digital infrastructure. It is primarily
-designed to support the <i>archival</i> and <i>dissemination</i> (in terms of
-access) roles of scholarly communication. It may also support the
-<i>registration</i> role (establishing precedence and authorship), but
-explicitly does not aid with <i>certification</i> of content (particularly
-curation; this service is "universal" and happily includes retracted and
-"predatory" content), and is not intended to be used for <i>evaluation</i> of
-individuals, institutions, or venues.
+designed to support the <i>archival</i> and <i>dissemination</i> roles of
+scholarly communication. It may also support the <i>registration</i> role
+(establishing precedence and authorship), but explicitly does not aid with
+<i>certification</i> of content, and is not intended to be used for
+<i>evaluation</i> of individuals, institutions, or venues. This service is
+"universal", not currated, and happily includes retracted and "predatory"
+content).
 
 <h3>Sources of Metadata</h3>
 
 The source of all bibliographic information is recorded in edit history
-metadata, which allows the progeny of all fields to be reconstructed. A few
+metadata, which allows the provenance of all records to be reconstructed. A few
 major sources are worth highlighting here:
 
 <ul>
- <li>Release metadata from <b>Crossref</b> (a major non-profit DOI registrar), via their public
+ <li>Release metadata from <b>Crossref</b>, via their public
  <a href="https://github.com/CrossRef/rest-api-doc">REST API</a>
- <li>Release metadata and linked fulltext content from NIH <b>Pubmed</b> (a US national repository) and <b><a href="https://arxiv.org">arXiv.org</a></b> (a large pre-print repository hosted at Cornell University)
- <li>Release metadata and linked public domain fulltext content the <b>JSTOR</b> Early Journal Content collection
- <li>Creator (author) names and de-duplication from <b>ORCID</b> (an author identifier service), via their annual public data releases
+ <li>Release metadata and linked full-text content from NIH <b>Pubmed</b> and <b><a href="https://arxiv.org">arXiv.org</a></b>
+ <li>Release metadata and linked public domain full-text content the <b>JSTOR</b> Early Journal Content collection
+ <li>Creator names and de-duplication from <b>ORCID</b>, via their annual public data releases
  <li>Journal title metadata from <b>DOAJ</b>, <b>ISSN ROAD</b>, and <b>SHERPA/RoMEO</b>
  <li>Full-text URL lists from <b><a href="https://core.ac.uk">CORE</a></b>,
  <b><a href="http://unpaywall.org">Unpaywall</a></b>,
  <b><a href="https://www.semanticscholar.org">Semantic Scholar</a></b>,
  <b><a href="https://citeseerx.ist.psu.edu">CiteseerX</a></b>,
  and <b><a href="https://www.microsoft.com/en-us/research/project/academic">Microsoft Academic Graph</a></b>.
- <li>The <a href="https://guide.{{ config.FATCAT_DOMAIN }}/sources.html">guide</a> lists more major sources
+ <li><a href="https://guide.{{ config.FATCAT_DOMAIN }}/sources.html">The Guide</a> lists more major sources
 </ul>
 
 Many thanks for the hard work of all these projects, institutions, and
@@ -78,24 +78,24 @@ individuals!
 <h3>Support and Acknowledgments</h3>
 
 <p>Fatcat is a project of the <b><a href="https://archive.org">Internet Archive</a></b>,
-a US-based non-profit digital library, well known for it's
+a US-based non-profit digital library, well known for its
 <a href="https://web.archive.org">Wayback Machine</a> web archive and
 <a href="https://openlibrary.org">Open Library</a> book digitization and
-lending service. All fatcat databases and services run on Internet Archive
-servers in California, and a copy of most fulltext content is stored on the
+lending service. All Fatcat databases and services run on Internet Archive
+servers in California, and a copy of most full-text content is stored in the
 Archive's collections and/or web archives.
 
-<p>Development of fatcat and related web harvesting, indexing, and preservation
+<p>Development of Fatcat and related web harvesting, indexing, and preservation
 efforts at the Archive have been partially funded (for the 2018-2019 period) by
 a generous grant from the <b>Mellon Foundation</b>
 (<a href="https://blog.archive.org/2018/03/05/andrew-w-mellon-foundation-awards-grant-to-the-internet-archive-for-long-tail-journal-preservation/">"Long-tail Open Access Journal Preservation"</a>).
-Fatcat supports this work both by tracking which open access works are not
-getting preserved in any known archive, and providing minimum-viable indexing
-and access mechanisms for long-tail works which otherwise would lack them.
+Fatcat supports this work by both tracking which open access works in known
+archives and providing minimum-viable indexing and access mechanisms for
+long-tail works which otherwise would lack them.
 
-<p>The service would not technically be possible without hundreds of free
-software components and the efforts of their individual and organizational
-maintainers, more than can be listed here (but see the source code for full
+<p>The service would not technically be possible without hundreds of Free
+Software components and the efforts of their individual and organizational
+maintainers, more than can be listed here (please see the source code for full
 lists). A few major components include the PostgreSQL database, Elasticsearch
 search engine, Flask python web framework, Rust programming language, Diesel
 database library, Swagger/OpenAPI code generators, Kafka distributed log,
@@ -104,9 +104,9 @@ distribution.
 
 <p>The front-page photo of a large feline with a cup of coffee is by
 <a href="http://www.kampschroer.com/photography.html">Quinn Kampschroer</a>,
-under a CC-0 licensed.  The name "fat cat" can be interpreted as short for
-"large catalog", as the service aspires to be a <i>universal</i> (complete)
-catalog of the digital scholarly record.
+under a CC-0 license. The name "Fatcat" can be interpreted as short for "large
+catalog", as the service aspires to be a <i>complete</i> catalog of the digital
+scholarly record.
 
 <p>A list of technical contributors, including volunteers, is maintained in the
 source code repository (<code>CONTRIBUTORS.md</code>). Thanks everybody!
