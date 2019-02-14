@@ -316,6 +316,10 @@ pub fn check_release_type(raw: &str) -> Result<()> {
         "peer_review",
         "software",
         "standard",
+        "abstract",
+        "editorial",
+        "letter",
+        "stub",
     ];
     for good in valid_types {
         if raw == good {

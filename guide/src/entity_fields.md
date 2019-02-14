@@ -362,7 +362,6 @@ with a small number of (proposed) extensions:
   difficult this may not always be implemented). Other things that can be
   categorized as stubs (which seem to often end up mis-categorized as full
   articles in bibliographic databases):
-    - an abstract, which is only an abstract of a larger work
     - commercial advertisements
     - "trap" or "honey pot" works, which are fakes included in databases to
       detect re-publishing without attribution
