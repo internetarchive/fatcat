@@ -84,6 +84,11 @@ Additional fields used in analytics and "curration" tracking:
   - `sim` (object): same format as `kbart` preservation above; coverage in microfilm collection
   - `longtail` (bool): is this considered a "long-tail" open access venue
 
+For KBART and other "coverage" fields, we "over-count" on the assumption that
+works with "in-progress" status will soon actually be preserved. Elements of
+these arrays are either an integer (means that single year is preserved), or an
+array of length two (meaning everything between the two numbers (inclusive) is
+preserved).
 
 [CODEN]: https://en.wikipedia.org/wiki/CODEN
 
@@ -258,7 +263,7 @@ Warning: This schema is not yet stable.
       always have an implicit order. Zero-indexed. Note that this is distinct
       from the `key` field.
     - `target_release_id` (fatcat identifier): if known, and the release
-      exists, a cross-reference to the fatcat entity
+      exists, a cross-reference to the Fatcat entity
     - `extra` (JSON, optional): additional citation format metadata can be
       stored here, particularly if the citation schema does not align. Common
       fields might be "volume", "authors", "issue", "publisher", "url", and
@@ -316,7 +321,6 @@ This vocabulary is based on the
 with a small number of (proposed) extensions:
 
 - `article-magazine`
-- `article-newspaper`
 - `article-journal`, including pre-prints and working papers
 - `book`
 - `chapter` is allowed as they are frequently referenced and read independent
@@ -337,42 +341,45 @@ with a small number of (proposed) extensions:
 - `patent`
 - `post-weblog` for blog entries
 - `report`
-- `review`, for things like book reviews, not the "literature review" form of `article-journal`
+- `review`, for things like book reviews, not the "literature review" form of
+  `article-journal`, nor peer reviews (see `peer_review`)
 - `speech` can be used for eg, slides and recorded conference presentations
   themselves, as distinct from `paper-conference`
 - `thesis`
 - `webpage`
 - `peer_review` (fatcat extension)
 - `software` (fatcat extension)
-- `standard` (fatcat extension)
-- `abstract` (fatcat extension)
+- `standard` (fatcat extension), for technical standards like RFCs
+- `abstract` (fatcat extension), for releases that are only an abstract of a
+  larger work. In particular, translations. Many are granted DOIs.
 - `editorial` (custom extension) for columns, "in this issue", and other
-  content published along peer-reviewed content in journals.
+  content published along peer-reviewed content in journals. Many are granted DOIs.
 - `letter` for "letters to the editor", "authors respond", and
-  sub-article-length published content
-- `example` (custom extension) for dummy or example releases that have valid
-  (registered) identifiers. Other metadata does not need to match "canonical"
-  examples.
+  sub-article-length published content. Many are granted DOIs.
 - `stub` (fatcat extension) for releases which have notable external
   identifiers, and thus are included "for completeness", but don't seem to
-  represent a "full work". An example might be a paper that gets an extra DOI
-  by accident; the primary DOI should be a full release, and the accidental DOI
-  can be a `stub` release under the same work. `stub` releases shouldn't be
-  considered full releases when counting or aggregating (though if technically
-  difficult this may not always be implemented). Other things that can be
-  categorized as stubs (which seem to often end up mis-categorized as full
-  articles in bibliographic databases):
-    - commercial advertisements
-    - "trap" or "honey pot" works, which are fakes included in databases to
-      detect re-publishing without attribution
-    - "This page is intentionally blank"
-    - "About the author", "About the editors", "About the cover"
-    - "Acknowledgments"
-    - "Notices"
+  represent a "full work".
+  
+An example of a `stub` might be a paper that gets an extra DOI by accident; the
+primary DOI should be a full release, and the accidental DOI can be a `stub`
+release under the same work. `stub` releases shouldn't be considered full
+releases when counting or aggregating (though if technically difficult this may
+not always be implemented). Other things that can be categorized as stubs
+(which seem to often end up mis-categorized as full articles in bibliographic
+databases):
+
+- commercial advertisements
+- "trap" or "honey pot" works, which are fakes included in databases to
+  detect re-publishing without attribution
+- "This page is intentionally blank"
+- "About the author", "About the editors", "About the cover"
+- "Acknowledgments"
+- "Notices"
 
 All other CSL types are also allowed, though they are mostly out of scope:
 
 - `article` (generic; should usually be some other type)
+- `article-newspaper`
 - `bill`
 - `broadcast`
 - `entry-dictionary`
@@ -437,6 +444,20 @@ Can often be interpreted as `published`, but be careful!
 - `translator`
 - `illustrator`
 - `editor`
+
+All other CSL role types are also allowed, though are mostly out of scope for
+Fatcat:
+
+- `collection-editor`
+- `composer`
+- `container-author`
+- `director`
+- `editorial-director`
+- `editortranslator`
+- `interviewer`
+- `original-author`
+- `recipient`
+- `reviewed-author`
 
 If blank, indicates that type of contribution is not known; this can often be
 interpreted as authorship.

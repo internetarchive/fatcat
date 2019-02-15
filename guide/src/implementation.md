@@ -15,14 +15,14 @@ A cronjob will create periodic database dumps, both in "full" form (all tables
 and all edit history, removing only authentication credentials) and "flattened"
 form (with only the most recent version of each entity).
 
-A goal is to be linked-data/RDF/JSON-LD/semantic-web "compatible", but not
-necessarily "first". It should be possible to export the database in a
+One design goal is to be linked-data/RDF/JSON-LD/semantic-web "compatible", but
+not necessarily "first". It should be possible to export the database in a
 relatively clean RDF form, and to fetch data in a variety of formats, but
-internally fatcat will not be backed by a triple-store, and will not be bound
-to a rigid third-party ontology or schema.
+internally Fatcat is not backed by a triple-store, and is not tied to any
+specific third-party ontology or schema.
 
 Microservice daemons should be able to proxy between the primary API and
-standard protocols like ResourceSync and OAI-PMH, and third party bots could
+standard protocols like ResourceSync and OAI-PMH, and third party bots can
 ingest or synchronize the database in those formats.
 
 ### Fatcat Identifiers

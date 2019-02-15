@@ -69,11 +69,11 @@ and CC-0 (public grant) licensing for declarative interface specifications
 ## Privacy Policy
 
 *It is important to note that this section is currently aspirational: the
-servers hosting early deployments of fatcat are largely in a default
+servers hosting early deployments of Fatcat are largely in a defaults
 configuration and have not been audited to ensure that these guidelines are
 being followed.*
 
-It is a goal for fatcat to conduct as little surveillance of reader and editor
+It is a goal for Fatcat to conduct as little surveillance of reader and editor
 behavior and activities as possible. In practical terms, this means minimizing
 the overall amount of logging and collection of identifying information. This
 is in contrast to *submitted edit content*, which is captured, preserved, and

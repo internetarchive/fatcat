@@ -1,6 +1,6 @@
 # REST API
 
-The fatcat HTTP API is mostly a classic REST CRUD (Create, Read, Update,
+The Fatcat HTTP API is mostly a classic REST "CRUD" (Create, Read, Update,
 Delete) API, with a few twists.
 
 A declarative specification of all API endpoints, JSON data models, and
@@ -9,9 +9,8 @@ used to generate both server-side type-safe endpoint routes and client-side
 libraries. Auto-generated reference documentation is, for now, available at
 <https://api.qa.fatcat.wiki>.
 
-All API traffic is over HTTPS; there is no insecure HTTP endpoint, even for
-read-only operations. To start, all endpoints accept and return only JSON
-serialized content.
+All API traffic is over HTTPS; there is no HTTP endpoint, even for read-only
+operations. All endpoints accept and return only JSON serialized content.
 
 ## Entity Endpoints/Actions
 
@@ -21,16 +20,13 @@ Actions could, in theory, be directed at any of:
     revision
     edit
 
-A design decision to be made is how much to abstract away the distinction
-between these three types (particularly the identifier/revision distinction).
-
 Top-level entity actions (resulting in edits):
 
     create (new rev)
-    redirect
-    split
     update (new rev)
     delete
+    redirect
+    split (remove redirect)
 
 On existing entity edits (within a group):
 
@@ -45,17 +41,23 @@ An edit group as a whole can be:
 
 Other per-entity endpoints:
 
-    match (by field/context)
     lookup (by external persistent identifier)
+    match (by field/context; unimplemented)
 
 ## Editgroups
 
-All mutating entity operations (create, update, delete) accept an
-`editgroup_id` query parameter. If the parameter isn't set, the editor's
-"currently active" editgroup will be used, or a new editgroup will be created
-from scratch. It's generally preferable to manually create an editgroup and use
-the `id` in edit requests; the allows appropriate metadata to be set. The
-"currently active" editgroup behavior may be removed in the future.
+All mutating entity operations (create, update, delete) accept a required
+`editgroup_id` query parameter. Editgroups (with contextual metadata) should be
+created before starting edits.
+
+Related edits (to multiple entities) should be collected under a single
+editgroup, up to a reasonable size. More than 50 edits per entity type, or more
+than 100 edits total in an editgroup become unwieldy.
+
+After creating and modifying the editgroup, it may be "submitted", which flags
+it for review by bot and human editors. The editgroup may be "accepted"
+(merged), or if changes are necessary the edits can be updated and
+re-submitted.
 
 ## Sub-Entity Expansion
 
@@ -77,9 +79,8 @@ editor may have additional privileges which allow them to, eg, directly accept
 editgroups (as opposed to submitting edits for review).
 
 All mutating API calls (POST, PUT, DELETE HTTP verbs) require token-based
-authentication using an HTTP Bearer token. If you can't generate such a token
-from the web interface (because that feature hasn't been implemented), look for
-a public demo token for experimentation, or ask an administrator for a token.
+authentication using an HTTP Bearer token. New tokens can be generated in the
+web interface.
 
 ## Autoaccept Flag
 

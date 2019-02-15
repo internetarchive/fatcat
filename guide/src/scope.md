@@ -53,11 +53,11 @@ pre-prints to final publication is in scope.
 I'm much less interested in altmetrics, funding, and grant relationships than
 most existing databases in this space.
 
-fatcat would not include any fulltext content itself, even for cleanly licensed
+Fatcat would not include any fulltext content itself, even for cleanly licensed
 (open access) works, but would have "strong" (verified) links to fulltext
 content, and would include file-level metadata (like hashes and fingerprints)
 to help discovery and identify content from any source. File-level URLs with
-context ("repository", "author-homepage", "web-archive") should make fatcat
+context ("repository", "author-homepage", "web-archive") should make Fatcat
 more useful for both humans and machines to quickly access fulltext content of
 a given mimetype than existing redirect or landing page systems. So another
 factor in deciding scope is whether a work has "digital fixity" and can be

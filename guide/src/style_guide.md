@@ -19,12 +19,12 @@ treated as an entirely separate `release`.
 documentation (such as DOI `10.5555/12345678`) are allowed (and the entity
 should be tagged as a fake or example). Non-registered "identifier-like
 strings", which are semantically valid but not registered, should not exist in
-fatcat metadata in an identifier column. Invalid identifier strings can be
+Fatcat metadata in an identifier column. Invalid identifier strings can be
 stored in "extra" metadata. Crossref has [blogged]() about this distinction.
 
 [blogged]: https://www.crossref.org/blog/doi-like-strings-and-fake-dois/
 
-#### DOI
+#### DOIs
 
 All DOIs stored in an entity column should be registered (aka, should be
 resolvable from `doi.org`). Invalid identifiers may be cleaned up or removed by
@@ -38,9 +38,9 @@ formatted strings.
 
 [number of examples]: https://www.crossref.org/blog/dois-unambiguously-and-persistently-identify-published-trustworthy-citable-online-scholarly-literature-right/
 
-In the fatcat ontology, DOIs and release entities are one-to-one.
+In the Fatcat ontology, DOIs and release entities are one-to-one.
 
-It is the intention to automatically (via bot) create a fatcat release for
+It is the intention to automatically (via bot) create a Fatcat release for
 every Crossref-registered DOI from a whitelist of media types
 ("journal-article" etc, but not all), and it would be desirable to auto-create
 entities for in-scope publications from all registrars. It is not the intention

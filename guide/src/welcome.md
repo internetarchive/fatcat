@@ -2,7 +2,7 @@
 
 This guide you are reading contains:
 
-- a **[high-level introduction](./overview.md)** to the fatcat catalog and
+- a **[high-level introduction](./overview.md)** to the Fatcat catalog and
   software
 - a bibliographic **[style guide](./style_guide.md)** for editors, also useful
   for understanding metadata found in the catalog
@@ -20,7 +20,7 @@ articles, pre-prints, and conference proceedings. Records are collaboratively
 editable, versioned, available in bulk form, and include URL-agnostic
 file-level metadata.
 
-Both the fatcat software and the metadata stored in the service are free (in
+Both the Fatcat software and the metadata stored in the service are free (in
 both the libre and gratis sense) for others to share, reuse, fork, or extend.
 See [Policies](./policies.md) for licensing details, and
 [Sources](./sources.md) for attribution of the foundational metadata corpuses
