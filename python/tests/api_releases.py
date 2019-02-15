@@ -18,7 +18,7 @@ def test_release(api):
         title="some title",
         original_title="оригинальное название",
         release_type="post-weblog",
-        release_status="pre-print",
+        release_status="submitted",
         release_date=datetime.datetime.utcnow().date(),
         release_year=2015,
         doi="10.5555/12345678",
@@ -114,3 +114,20 @@ def test_empty_fields(api):
     with pytest.raises(fatcat_client.rest.ApiException):
         r2 = ReleaseEntity(title="something", contribs=[ReleaseContrib(raw_name="")])
         api.create_release(r2, editgroup_id=eg.editgroup_id)
+
+def test_controlled_vocab(api):
+
+    eg = quick_eg(api)
+
+    r1 = ReleaseEntity(title="something", release_type="journal-thingie")
+    with pytest.raises(fatcat_client.rest.ApiException):
+        api.create_release(r1, editgroup_id=eg.editgroup_id)
+    r1.release_type = "article"
+    api.create_release(r1, editgroup_id=eg.editgroup_id)
+
+    r2 = ReleaseEntity(title="something elase", release_status="pre-print")
+    with pytest.raises(fatcat_client.rest.ApiException):
+        api.create_release(r2, editgroup_id=eg.editgroup_id)
+    r2.release_status = "published"
+    api.create_release(r2, editgroup_id=eg.editgroup_id)
+

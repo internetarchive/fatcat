@@ -1964,6 +1964,9 @@ impl EntityCrud for ReleaseEntity {
             if let Some(ref release_type) = entity.release_type {
                 check_release_type(release_type)?;
             }
+            if let Some(ref release_status) = entity.release_status {
+                check_release_status(release_status)?;
+            }
             if let Some(ref abstracts) = entity.abstracts {
                 if abstracts.len() > 200 {
                     return Err(FatcatError::BadRequest(

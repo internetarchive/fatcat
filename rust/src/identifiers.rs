@@ -342,6 +342,38 @@ fn test_check_release_type() {
     assert!(check_release_type("book ").is_err());
 }
 
+pub fn check_release_status(raw: &str) -> Result<()> {
+    let valid_types = vec![
+        // DRIVER types (minus "version" suffix)
+        "draft",
+        "submitted",
+        "accepted",
+        "published",
+        "updated",
+        // fatcat-specific extensions
+        "retraction",
+    ];
+    for good in valid_types {
+        if raw == good {
+            return Ok(());
+        }
+    }
+    Err(FatcatError::NotInControlledVocabulary(
+        "release_status".to_string(),
+        raw.to_string(),
+    ))?
+}
+
+#[test]
+fn test_check_release_status() {
+    assert!(check_release_status("draft").is_ok());
+    assert!(check_release_status("retraction").is_ok());
+    assert!(check_release_status("published").is_ok());
+    assert!(check_release_status("pre-print").is_err());
+    assert!(check_release_status("DRAFT").is_err());
+    assert!(check_release_status("draft ").is_err());
+}
+
 pub fn check_contrib_role(raw: &str) -> Result<()> {
     let valid_types = vec![
         // Citation Style Language official role types
