@@ -283,6 +283,8 @@ class CrossrefImporter(EntityImporter):
         for key in ('group-title', 'subtitle'):
             val = obj.get(key)
             if val:
+                if type(val) == list:
+                    val = val[0]
                 if type(val) == str:
                     extra[key] = clean(val)
                 else:
