@@ -33,6 +33,10 @@
   {% endif %}
 </div>
 {% endfor %}
+{% if found.results|length > 8 %}
+  <br>
+  <i>Showing top {{ found.count_returned }} out of {{ found.count_found }} results for: <code>{{ found.query.q }}</code></i>
+{% endif %}
 {% else %}
 <div class="featurette-inner text-center" style="padding-top: 15%;">
   <h3>No results found!</h3>
