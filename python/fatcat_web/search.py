@@ -6,9 +6,11 @@ from fatcat_web import app
 """
 Helpers for doing elasticsearch queries (used in the web interface; not part of
 the formal API)
+
+TODO: ELASTICSEARCH_*_INDEX should probably be factored out and just hard-coded
 """
 
-def do_search(q, limit=50, fulltext_only=True):
+def do_release_search(q, limit=50, fulltext_only=True):
 
     #print("Search hit: " + q)
     if limit > 100:
@@ -59,6 +61,57 @@ def do_search(q, limit=50, fulltext_only=True):
             if type(h[key]) is str:
                 h[key] = h[key].encode('utf8', 'ignore').decode('utf8')
         h['contrib_names'] = [name.encode('utf8', 'ignore').decode('utf8') for name in h['contrib_names']]
+
+    found = content['hits']['total']
+    return {"query": { "q": q },
+            "count_returned": len(results),
+            "count_found": found,
+            "results": results }
+
+def do_container_search(q, limit=50):
+
+    #print("Search hit: " + q)
+    if limit > 100:
+        # Sanity check
+        limit = 100
+
+    search_request = {
+        "query": {
+            "query_string": {
+            "query": q,
+            "default_operator": "AND",
+            "analyze_wildcard": True,
+            "lenient": True,
+            "fields": ["name^5", "publisher"]
+            },
+        },
+        "size": int(limit),
+    }
+
+    #print(search_request)
+    resp = requests.get("%s/%s/_search" %
+            (app.config['ELASTICSEARCH_BACKEND'], app.config['ELASTICSEARCH_CONTAINER_INDEX']),
+        json=search_request)
+
+    if resp.status_code == 400:
+        print("elasticsearch 400: " + str(resp.content))
+        flash("Search query failed to parse; you might need to use quotes.<p><code>{}</code>".format(resp.content))
+        abort(resp.status_code)
+    elif resp.status_code != 200:
+        print("elasticsearch non-200 status code: " + str(resp.status_code))
+        print(resp.content)
+        abort(resp.status_code)
+
+    content = resp.json()
+    #print(content)
+    results = [h['_source'] for h in content['hits']['hits']]
+    for h in results:
+        # Handle surrogate strings that elasticsearch returns sometimes,
+        # probably due to mangled data processing in some pipeline.
+        # "Crimes against Unicode"; production workaround
+        for key in h:
+            if type(h[key]) is str:
+                h[key] = h[key].encode('utf8', 'ignore').decode('utf8')
 
     found = content['hits']['total']
     return {"query": { "q": q },

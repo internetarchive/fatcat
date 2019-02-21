@@ -7,7 +7,7 @@ from flask_login import login_required
 from fatcat_web import app, api, auth_api, priv_api
 from fatcat_web.auth import handle_token_login, handle_logout, load_user, handle_ia_xauth
 from fatcat_client.rest import ApiException
-from fatcat_web.search import do_search
+from fatcat_web.search import do_release_search, do_container_search
 from fatcat_tools.transforms import *
 
 
@@ -351,7 +351,7 @@ def changelog_entry_view(index):
 ### Search ##################################################################
 
 @app.route('/release/search', methods=['GET', 'POST'])
-def search():
+def release_search():
 
     limit = 20
     query = request.args.get('q')
@@ -359,17 +359,33 @@ def search():
 
     # Convert raw DOIs to DOI queries
     if query is not None:
-        oldquery = query.split()
-        for word in oldquery:
-            if word.startswith("10.") and word.count("/") >= 1:
-                query = query.replace(word, 'doi:"{}"'.format(word))
+        if len(query.split()) == 1 and query.startswith("10.") and query.count("/") >= 1:
+            query = 'doi:"{}"'.format(query)
 
     if 'q' in request.args.keys():
         # always do files for HTML
-        found = do_search(query, limit=limit, fulltext_only=fulltext_only)
+        found = do_release_search(query, limit=limit, fulltext_only=fulltext_only)
         return render_template('release_search.html', found=found, query=query, fulltext_only=fulltext_only)
     else:
         return render_template('release_search.html', query=query, fulltext_only=fulltext_only)
+
+@app.route('/container/search', methods=['GET', 'POST'])
+def container_search():
+
+    limit = 20
+    query = request.args.get('q')
+
+    # Convert raw ISSN-L to ISSN-L query
+    if query is not None:
+        if len(query.split()) == 1 and len(query) == 9 and isdigit(query[0:4]) and query[4] == '-':
+            query = 'issnl:"{}"'.format(query)
+
+    if 'q' in request.args.keys():
+        # always do files for HTML
+        found = do_container_search(query, limit=limit)
+        return render_template('container_search.html', found=found, query=query)
+    else:
+        return render_template('container_search.html', query=query)
 
 
 ### Auth ####################################################################
