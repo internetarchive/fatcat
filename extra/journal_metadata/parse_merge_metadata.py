@@ -5,7 +5,7 @@ import ftfy
 import pycountry
 from collections import Counter
 
-ISSNL_FILE = 'data/20190129.ISSN-to-ISSN-L.txt'
+ISSNL_FILE = 'data/20190220.ISSN-to-ISSN-L.txt'
 
 ENTREZ_FILE = 'data/entrez-journals.csv'
 ROAD_FILE = 'data/road-2018-01-24.tsv'
