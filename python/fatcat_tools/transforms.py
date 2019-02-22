@@ -115,6 +115,7 @@ def release_to_elasticsearch(entity, force_bool=True):
     if container:
         t['publisher'] = container.publisher
         t['container_name'] = container.name
+        t['container_id'] = container.ident
         t['container_issnl'] = container.issnl
         t['container_type'] = container.container_type
         if container.extra:

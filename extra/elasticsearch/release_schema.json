@@ -48,6 +48,7 @@
             "license":        { "type": "keyword" },
             "publisher":                { "type": "text", "index": true, "analyzer": "textIcu", "search_analyzer":"textIcuSearch" },
             "container_name":           { "type": "text", "index": true, "analyzer": "textIcu", "search_analyzer":"textIcuSearch" },
+            "container_id":             { "type": "keyword" },
             "container_issnl":          { "type": "keyword" },
             "container_type":           { "type": "keyword" },
             "contrib_count":        { "type": "integer" },
