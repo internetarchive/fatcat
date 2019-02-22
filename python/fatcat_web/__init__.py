@@ -42,7 +42,7 @@ else:
     print("No privileged token found")
     priv_api = None
 
-from fatcat_web import routes, auth
+from fatcat_web import routes, auth, cors
 
 gitlab_bp = create_flask_blueprint(Gitlab, oauth, auth.handle_oauth)
 app.register_blueprint(gitlab_bp, url_prefix='/auth/gitlab')
