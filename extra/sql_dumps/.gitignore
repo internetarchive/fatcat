@@ -1,3 +1,4 @@
 *.json.xz
 *.json.gz
 *.json
+*.tar.gz
