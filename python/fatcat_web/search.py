@@ -87,7 +87,7 @@ def do_release_search(q, limit=30, fulltext_only=True):
 def do_container_search(q, limit=30):
 
     # Convert raw ISSN-L to ISSN-L query
-    if len(q.split()) == 1 and len(q) == 9 and isdigit(q[0:4]) and q[4] == '-':
+    if len(q.split()) == 1 and len(q) == 9 and q[0:4].isdigit() and q[4] == '-':
         q = 'issnl:"{}"'.format(q)
 
     search_request = {
@@ -106,3 +106,135 @@ def do_container_search(q, limit=30):
     resp["query"] = { "q": q }
     return resp
 
+def get_elastic_entity_stats():
+    """
+    TODO: files, filesets, webcaptures (no schema yet)
+
+    Returns dict:
+        changelog: {latest: {index, datetime}}
+        release: {total, refs_total}
+        papers: {total, in_web, in_oa, in_kbart, in_web_not_kbart}
+    """
+
+    stats = {}
+
+    # 2. releases
+    #  x=> total count
+    #  x=> total citation records
+    #  x=> total (paper, chapter, proceeding)
+    #  x=> with fulltext on web
+    #  x=> open access
+    #  x=> not in KBART, in IA
+    # 
+    # Can probably do the above with two queries:
+    #  - all releases, aggregate count and sum(ref_count)
+    #  - in-scope works, aggregate count by (fulltext, OA, kbart/ia)
+
+    # 2a. release totals
+    query = {
+        "size": 0,
+        "aggs": {
+            "release_ref_count": { "sum": { "field": "ref_count" } }
+        }
+    }
+    resp = requests.get(
+        "{}/fatcat_release/_search".format(app.config['ELASTICSEARCH_BACKEND']),
+        json=query,
+        params=dict(request_cache="true"))
+    # TODO: abort()
+    resp.raise_for_status()
+    resp = resp.json()
+    stats['release'] = {
+        "total": resp['hits']['total'],
+        "refs_total": int(resp['aggregations']['release_ref_count']['value']),
+    }
+
+    # 2b. paper counts
+    query = {
+        "size": 0,
+        "query": {
+            "terms": { "release_type": [
+                # "chapter", "thesis",
+                "article-journal", "paper-conference",
+            ] } },
+        "aggs": { "paper_like": { "filters": { "filters": {
+                "in_web": { "term": { "in_web": "true" } },
+                "is_oa": { "term": { "is_oa": "true" } },
+                "in_kbart": { "term": { "in_kbart": "true" } },
+                "in_web_not_kbart": { "bool": { "filter": [
+                        { "term": { "in_web": "true" } },
+                        { "term": { "in_kbart": "false" } }
+                ]}}
+        }}}}
+    }
+    resp = requests.get(
+        "{}/fatcat_release/_search".format(app.config['ELASTICSEARCH_BACKEND']),
+        json=query,
+        params=dict(request_cache="true"))
+    # TODO: abort()
+    resp.raise_for_status()
+    resp = resp.json()
+    buckets = resp['aggregations']['paper_like']['buckets']
+    stats['papers'] = {
+        'total': resp['hits']['total'],
+        'in_web': buckets['in_web']['doc_count'],
+        'is_oa': buckets['is_oa']['doc_count'],
+        'in_kbart': buckets['in_kbart']['doc_count'],
+        'in_web_not_kbart': buckets['in_web_not_kbart']['doc_count'],
+    }
+
+    # 3. containers
+    #   => total count
+    query = {
+        "size": 0,
+    }
+    resp = requests.get(
+        "{}/fatcat_container/_search".format(app.config['ELASTICSEARCH_BACKEND']),
+        json=query,
+        params=dict(request_cache="true"))
+    # TODO: abort()
+    resp.raise_for_status()
+    resp = resp.json()
+    stats['container'] = {
+        "total": resp['hits']['total'],
+    }
+
+    return stats
+
+def get_elastic_container_stats(issnl):
+    """
+    TODO: container_id, not issnl
+
+    Returns dict:
+        total
+        in_web
+        preserved
+    """
+
+    query = {
+        "size": 0,
+        "query": {
+            "term": { "container_issnl": issnl }
+        },
+        "aggs": { "container_stats": { "filters": { "filters": {
+                "in_web": { "term": { "in_web": "true" } },
+                "is_preserved": { "term": { "is_preserved": "true" } },
+        }}}}
+    }
+    resp = requests.get(
+        "{}/fatcat_release/_search".format(app.config['ELASTICSEARCH_BACKEND']),
+        json=query,
+        params=dict(request_cache="true"))
+    # TODO: abort()
+    print(resp.json())
+    resp.raise_for_status()
+    resp = resp.json()
+    buckets = resp['aggregations']['container_stats']['buckets']
+    stats = {
+        'issnl': issnl,
+        'total': resp['hits']['total'],
+        'in_web': buckets['in_web']['doc_count'],
+        'is_preserved': buckets['is_preserved']['doc_count'],
+    }
+
+    return stats

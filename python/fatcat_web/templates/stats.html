@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block body %}
+
+<h1>Stats</h1>
+
+You can also fetch these numbers <a href="./stats.json">as JSON</a>.
+
+<h3>Changelog</h3>
+
+<p>Latest changelog index is {{ stats.changelog.latest.index }} ({{ stats.changelog.latest.timestamp}}).
+
+<h3>Entities</h3>
+
+<table class="ui structured table">
+  <tbody>
+    <tr><td rowspan="5" class="active top aligned"><b>"Papers"</b></td>
+        <td>Total</td>
+        <td class="right aligned">{{ stats.papers.total }}</td>
+    <tr>
+        <td>Fulltext on web</td>
+        <td class="right aligned">{{ stats.papers.in_web }}</td>
+    <tr>
+        <td>"Gold" Open Access</td>
+        <td class="right aligned">{{ stats.papers.is_oa }}</td>
+    <tr>
+        <td>In a Keepers/KBART archive</td>
+        <td class="right aligned">{{ stats.papers.in_kbart }}</td>
+    <tr>
+        <td>On web, not in Keepers</td>
+        <td class="right aligned">{{ stats.papers.in_web_not_kbart }}</td>
+
+    <tr><td rowspan="2" class="active top aligned"><b>Releases</b></td>
+        <td>Total</td>
+        <td class="right aligned">{{ stats.release.total }}</td>
+    <tr>
+        <td>References (raw, unlinked)</td>
+        <td class="right aligned">{{ stats.release.refs_total }}</td>
+
+    <tr><td rowspan="1" class="active top aligned"><b>Containers</b></td>
+        <td>Total</td>
+        <td class="right aligned">{{ stats.container.total }}</td>
+  </tbody>
+</table>
+
+<br>
+<i>"Papers" are journal articles and conference proceedings, a subset of Releases</i>
+
+{% endblock %}

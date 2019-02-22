@@ -7,7 +7,8 @@ from flask_login import login_required
 from fatcat_web import app, api, auth_api, priv_api
 from fatcat_web.auth import handle_token_login, handle_logout, load_user, handle_ia_xauth
 from fatcat_client.rest import ApiException
-from fatcat_web.search import do_release_search, do_container_search
+from fatcat_web.search import *
+from fatcat_web.cors import crossdomain
 from fatcat_tools.transforms import *
 
 
@@ -105,6 +106,16 @@ def creator_history(ident):
         entity_type="creator",
         entity=entity,
         history=history)
+
+@app.route('/container/issnl/<issnl>/stats.json', methods=['GET', 'OPTIONS'])
+@crossdomain(origin='*',headers=['access-control-allow-origin','Content-Type'])
+def container_issnl_stats(issnl):
+    try:
+        stats = get_elastic_container_stats(issnl)
+    except Exception as ae:
+        print(ae)
+        abort(503)
+    return jsonify(stats)
 
 @app.route('/creator/<ident>/edit', methods=['GET'])
 def creator_edit_view(ident):
@@ -356,6 +367,10 @@ def release_search():
     query = request.args.get('q')
     fulltext_only = bool(request.args.get('fulltext_only'))
 
+    issnl = request.args.get('container_issnl')
+    if issnl and query:
+        query += ' container_issnl:"{}"'.format(issnl)
+
     if 'q' in request.args.keys():
         # always do files for HTML
         found = do_release_search(query, fulltext_only=fulltext_only)
@@ -374,6 +389,36 @@ def container_search():
         return render_template('container_search.html', found=found, query=query)
     else:
         return render_template('container_search.html', query=query)
+
+def get_changelog_stats():
+    stats = {}
+    latest_changelog = api.get_changelog(limit=1)[0]
+    stats['changelog'] = {"latest": {
+        "index": latest_changelog.index,
+        "timestamp": latest_changelog.timestamp.isoformat(),
+    }}
+    return stats
+
+@app.route('/stats.json', methods=['GET', 'OPTIONS'])
+@crossdomain(origin='*',headers=['access-control-allow-origin','Content-Type'])
+def stats_json():
+    try:
+        stats = get_elastic_entity_stats()
+        stats.update(get_changelog_stats())
+    except Exception as ae:
+        print(ae)
+        abort(503)
+    return jsonify(stats)
+
+@app.route('/stats', methods=['GET'])
+def stats_page():
+    try:
+        stats = get_elastic_entity_stats()
+        stats.update(get_changelog_stats())
+    except Exception as ae:
+        print(ae)
+        abort(503)
+    return render_template('stats.html', stats=stats)
 
 
 ### Auth ####################################################################
@@ -490,6 +535,7 @@ def fatcat_photo():
                                'fatcat.jpg',
                                mimetype='image/jpeg')
 
-@app.route('/health', methods=['GET'])
+@app.route('/health', methods=['GET', 'OPTIONS'])
+@crossdomain(origin='*',headers=['access-control-allow-origin','Content-Type'])
 def health():
     return jsonify({'ok': True})
