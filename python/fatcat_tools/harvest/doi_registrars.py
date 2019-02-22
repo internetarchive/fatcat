@@ -4,9 +4,9 @@ import sys
 import csv
 import json
 import time
-import requests
 import itertools
 import datetime
+import requests
 from pykafka import KafkaClient
 
 from fatcat_tools.workers import most_recent_message
@@ -182,4 +182,3 @@ class HarvestDataciteWorker(HarvestCrossrefWorker):
     def update_params(self, params, resp):
         params['page[number]'] = resp['meta']['page'] + 1
         return params
-

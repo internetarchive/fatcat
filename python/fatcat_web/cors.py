@@ -1,11 +1,12 @@
-from datetime import timedelta
-from flask import make_response, request, current_app
-from functools import update_wrapper
 
 """
 This snippet from: http://flask.pocoo.org/snippets/56/
 "Posted by Armin Ronacher on 2011-07-14"
 """
+
+from datetime import timedelta
+from functools import update_wrapper
+from flask import make_response, request, current_app
 
 
 def crossdomain(origin=None, methods=None, headers=None,

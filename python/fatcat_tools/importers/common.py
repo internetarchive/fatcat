@@ -111,7 +111,7 @@ def test_make_rel_url():
 class EntityImporter:
     """
     Base class for fatcat entity importers.
-    
+
     The API exposed to record iterator is:
 
         push_record(raw_record)
@@ -143,7 +143,7 @@ class EntityImporter:
         eg_extra['git_rev'] = eg_extra.get('git_rev',
             subprocess.check_output(["git", "describe", "--always"]).strip()).decode('utf-8')
         eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.EntityImporter')
-        
+
         self.api = api
         self.bezerk_mode = kwargs.get('bezerk_mode', False)
         self.edit_batch_size = kwargs.get('edit_batch_size', 100)

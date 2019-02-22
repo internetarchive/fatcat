@@ -4,8 +4,8 @@ import requests
 import pymacaroons
 from flask import Flask, render_template, send_from_directory, request, \
     url_for, abort, g, redirect, jsonify, session, flash
-from fatcat_web import login_manager, api, priv_api, Config
 from flask_login import logout_user, login_user, UserMixin
+from fatcat_web import login_manager, api, priv_api, Config
 import fatcat_client
 
 def handle_logout():
@@ -141,4 +141,3 @@ def load_user(editor_id):
     user.username = editor['username']
     user.token = token
     return user
-

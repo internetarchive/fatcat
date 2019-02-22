@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 import sys
-import raven
 import argparse
 import datetime
+import raven
 from fatcat_tools.harvest import HarvestCrossrefWorker, HarvestDataciteWorker,\
     HarvestArxivWorker, HarvestPubmedWorker, HarvestDoajArticleWorker,\
     HarvestDoajJournalWorker

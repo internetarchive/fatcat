@@ -118,7 +118,7 @@ class JournalMetadataImporter(EntityImporter):
         if existing:
             self.counts['exists'] += 1
             return False
-        
+
         return True
 
     def insert_batch(self, batch):
@@ -126,4 +126,3 @@ class JournalMetadataImporter(EntityImporter):
             autoaccept=True,
             description=self.editgroup_description,
             extra=json.dumps(self.editgroup_extra))
-

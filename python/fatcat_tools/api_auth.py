@@ -37,4 +37,3 @@ def authenticated_api(host_uri, token=None):
     api.auth_check()
 
     return api
-

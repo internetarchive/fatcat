@@ -194,4 +194,3 @@ class GrobidMetadataImporter(EntityImporter):
             autoaccept=True,
             description=self.editgroup_description,
             extra=json.dumps(self.editgroup_extra))
-

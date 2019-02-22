@@ -10,7 +10,7 @@ def matched_importer(api):
     yield MatchedImporter(api)
 
 # TODO: use API to check that entities actually created...
-def test_matched_importer(matched_importer):
+def test_matched_importer_basic(matched_importer):
     with open('tests/files/example_matched.json', 'r') as f:
         JsonLinePusher(matched_importer, f).run()
 

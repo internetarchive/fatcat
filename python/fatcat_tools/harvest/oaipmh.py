@@ -4,9 +4,9 @@ import sys
 import csv
 import json
 import time
-import requests
 import itertools
 import datetime
+import requests
 from pykafka import KafkaClient
 import sickle
 
@@ -102,7 +102,7 @@ class HarvestArxivWorker(HarvestOaiPmhWorker):
     """
 
     def __init__(self, **kwargs):
-        super().__init__(**kwargs) 
+        super().__init__(**kwargs)
         self.endpoint_url = "https://export.arxiv.org/oai2"
         self.metadata_prefix = "arXiv"
         self.name = "arxiv"
@@ -117,7 +117,7 @@ class HarvestPubmedWorker(HarvestOaiPmhWorker):
     """
 
     def __init__(self, **kwargs):
-        super().__init__(**kwargs) 
+        super().__init__(**kwargs)
         self.endpoint_url = "https://www.ncbi.nlm.nih.gov/pmc/oai/oai.cgi"
         self.metadata_prefix = "pmc_fm"
         self.name = "pubmed"
@@ -132,7 +132,7 @@ class HarvestDoajJournalWorker(HarvestOaiPmhWorker):
     """
 
     def __init__(self, **kwargs):
-        super().__init__(**kwargs) 
+        super().__init__(**kwargs)
         self.endpoint_url = "https://www.doaj.org/oai"
         self.metadata_prefix = "oai_dc"
         self.name = "doaj-journal"
@@ -144,8 +144,7 @@ class HarvestDoajArticleWorker(HarvestOaiPmhWorker):
     """
 
     def __init__(self, **kwargs):
-        super().__init__(**kwargs) 
+        super().__init__(**kwargs)
         self.endpoint_url = "https://www.doaj.org/oai.article"
         self.metadata_prefix = "oai_doaj"
         self.name = "doaj-article"
-

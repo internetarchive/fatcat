@@ -34,7 +34,7 @@ class ChangelogWorker(FatcatWorker):
                 self.offset = 1
 
         with topic.get_producer() as producer:
-            while True: 
+            while True:
                 latest = int(self.api.get_changelog(limit=1)[0].index)
                 if latest > self.offset:
                     print("Fetching changelogs from {} through {}".format(
@@ -101,4 +101,3 @@ class EntityUpdatesWorker(FatcatWorker):
                         timestamp=None,
                     )
                 #consumer.commit_offsets()
-

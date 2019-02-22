@@ -121,4 +121,3 @@ class HarvestState:
             self.update(msg.value.decode('utf-8'))
             c += 1
         print("... got {} state update messages, done".format(c))
-

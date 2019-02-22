@@ -1,14 +1,14 @@
 
-import requests
-from flask import abort, flash
-from fatcat_web import app
-
 """
 Helpers for doing elasticsearch queries (used in the web interface; not part of
 the formal API)
 
 TODO: ELASTICSEARCH_*_INDEX should probably be factored out and just hard-coded
 """
+
+import requests
+from flask import abort, flash
+from fatcat_web import app
 
 
 def do_search(index, request, limit=30):
@@ -119,14 +119,14 @@ def get_elastic_entity_stats():
     stats = {}
 
     # 2. releases
-    #  x=> total count
-    #  x=> total citation records
-    #  x=> total (paper, chapter, proceeding)
-    #  x=> with fulltext on web
-    #  x=> open access
-    #  x=> not in KBART, in IA
-    # 
-    # Can probably do the above with two queries:
+    #  - total count
+    #  - total citation records
+    #  - total (paper, chapter, proceeding)
+    #  - " with fulltext on web
+    #  - " open access
+    #  - " not in KBART, in IA
+    #
+    # Can do the above with two queries:
     #  - all releases, aggregate count and sum(ref_count)
     #  - in-scope works, aggregate count by (fulltext, OA, kbart/ia)
 

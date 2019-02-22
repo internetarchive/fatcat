@@ -4,12 +4,13 @@ import json
 from flask import Flask, render_template, send_from_directory, request, \
     url_for, abort, g, redirect, jsonify, session, flash
 from flask_login import login_required
+
+from fatcat_client.rest import ApiException
+from fatcat_tools.transforms import *
 from fatcat_web import app, api, auth_api, priv_api
 from fatcat_web.auth import handle_token_login, handle_logout, load_user, handle_ia_xauth
-from fatcat_client.rest import ApiException
-from fatcat_web.search import *
 from fatcat_web.cors import crossdomain
-from fatcat_tools.transforms import *
+from fatcat_web.search import *
 
 
 ### Views ###################################################################

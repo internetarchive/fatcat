@@ -4,10 +4,11 @@ import sys
 import csv
 import json
 import itertools
-import fatcat_client
 from itertools import islice
 from pykafka import KafkaClient
 from pykafka.common import OffsetType
+
+import fatcat_client
 from fatcat_client.rest import ApiException
 
 
@@ -51,4 +52,3 @@ class FatcatWorker:
         self.kafka = KafkaClient(hosts=kafka_hosts, broker_version="1.0.0")
         self.produce_topic = produce_topic
         self.consume_topic = consume_topic
-

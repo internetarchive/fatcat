@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
 import sys
-import raven
 import argparse
 import datetime
+import raven
+
 from fatcat_tools import public_api
 from fatcat_tools.workers import ChangelogWorker, EntityUpdatesWorker, ElasticsearchReleaseWorker
 
