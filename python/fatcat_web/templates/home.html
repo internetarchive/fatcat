@@ -2,12 +2,21 @@
 {% block body %}
 <div class="ui container text">
 
-<h1 class="ui header centered" style="font-size: 2.5rem;">Welcome to Fatcat!</h1>
-<br>
+<!-- <h1 class="ui header centered" style="font-size: 2.5rem;">Welcome to Fatcat!</h1><br> -->
 
 <img class="ui fluid bordered image" src="/static/fatcat.jpg" title="CC0 photo of an oversized feline" alt="">
 
-<div class="ui message">
+<br>
+<form class="" role="search" action="/release/search" method="get">
+  <div class="ui form">
+    <div class="ui action input huge fluid">
+      <input type="text" placeholder="Search Articles..." name="q" aria-label="search release metadata">
+      <button class="ui button">Search</button>
+    </div>
+  </div>
+</form>
+
+<div class="ui warning message">
   <div class="header">Current Status: Beta</div>
   <ul class="list">
     <li>Entity editing only possibly by API; web interface is not implemented
@@ -16,18 +25,18 @@
   </ul>
 </div>
 
-<p>This is versioned, user-editable catalog of research publications: journal
+<p>Fatcat is a versioned, user-editable catalog of research publications: journal
 articles, conference proceedings, pre-prints, etc. Features include archival
 file-level metadata (verified digests and long-term copies, in addition to
 URLs), a <a href="https://api.{{ config.FATCAT_DOMAIN }}">documented API</a>, and work/release
 indexing (aka, linking together of pre-prints and final copies).
-<a href="/about">Read more...</a>
+&nbsp;<a href="/about">Read more...</a>
 
 <br><br>
 
-<table class="ui single line table">
+<table class="ui single line unstackable table">
 <thead>
-<tr><th>Entity
+<tr><th>Entity Type
     <th>Actions
     <th>Examples
     <th>Lookup
@@ -39,9 +48,10 @@ indexing (aka, linking together of pre-prints and final copies).
     <td><a href="/release/search">Search</a>
     <td><a href="/release/tb24ghkawzgaho5bkim3cbmbnu">Paper</a>
 {% else %}
-    <td><a href="/release/create">Create</a>
-        <br><a href="/release/search">Search</a>
-    <td><a href="/release/aaaaaaaaaaaaarceaaaaaaaaai">Dummy</a>
+    <td><a href="/release/search">Search</a>
+        <br><a href="/release/create">Create</a>
+    <td><a href="/release/tb24ghkawzgaho5bkim3cbmbnu">Paper</a> (prod)
+        <br><a href="/release/aaaaaaaaaaaaarceaaaaaaaaai">Dummy</a>
         <br><a href="/release/aaaaaaaaaaaaarceaaaaaaaaam">Realistic</a>
 {% endif %}
     <td><form class="" role="lookup" action="/release/lookup" method="get">
@@ -56,9 +66,10 @@ indexing (aka, linking together of pre-prints and final copies).
     <td><a href="/container/search">Search</a>
     <td><a href="/container/iznnn644szdwva7khyxqzc73bi">Journal</a>
 {% else %}
-    <td><a href="/container/create">Create</a>
-        <br><a href="/container/search">Search</a>
-    <td><a href="/container/aaaaaaaaaaaaaeiraaaaaaaaai">Dummy</a>
+    <td><a href="/container/search">Search</a>
+        <br><a href="/container/create">Create</a>
+    <td><a href="/container/iznnn644szdwva7khyxqzc73bi">Journal</a> (prod)
+        <br><a href="/container/aaaaaaaaaaaaaeiraaaaaaaaai">Dummy</a>
         <br><a href="/container/aaaaaaaaaaaaaeiraaaaaaaaam">Realistic</a>
 {% endif %}
     <td><form class="" role="lookup" action="/container/lookup" method="get">
@@ -75,7 +86,8 @@ indexing (aka, linking together of pre-prints and final copies).
     <td><a href="/creator/iimvc523xbhqlav6j3sbthuehu">Author</a>
 {% else %}
     <td><!-- <a href="/creator/create">Create</a> -->
-    <td><a href="/creator/aaaaaaaaaaaaaircaaaaaaaaai">Dummy</a>
+    <td><a href="/creator/iimvc523xbhqlav6j3sbthuehu">Author</a> (prod)
+        <br><a href="/creator/aaaaaaaaaaaaaircaaaaaaaaai">Dummy</a>
         <br><a href="/creator/aaaaaaaaaaaaaircaaaaaaaaam">Realistic</a>
 {% endif %}
     <td><form class="" role="lookup" action="/creator/lookup" method="get">
@@ -91,7 +103,8 @@ indexing (aka, linking together of pre-prints and final copies).
     <td><a href="/file/wklqsb5apzfhbbxxc7rgu2yw6m">PDF</a>
 {% else %}
     <td>
-    <td><a href="/file/aaaaaaaaaaaaamztaaaaaaaaai">Dummy</a>
+    <td><a href="/file/wklqsb5apzfhbbxxc7rgu2yw6m">PDF</a> (prod)
+        <br><a href="/file/aaaaaaaaaaaaamztaaaaaaaaai">Dummy</a>
         <br><a href="/file/aaaaaaaaaaaaamztaaaaaaaaam">Realistic</a>
 {% endif %}
     <td><form class="" role="lookup" action="/file/lookup" method="get">
@@ -101,7 +114,7 @@ indexing (aka, linking together of pre-prints and final copies).
           </div>
         </form>
 {% if config.FATCAT_DOMAIN != 'fatcat.wiki' %}
-<tr><td><b>Fileset</b>
+<tr><td><b>File Set</b>
         <br>datasets, suplementary materials
     <td>
     <td><a href="/fileset/aaaaaaaaaaaaaztgaaaaaaaaai">Dummy</a>
