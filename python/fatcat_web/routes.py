@@ -87,13 +87,24 @@ def container_view(ident):
         entity = api.get_container(ident)
     except ApiException as ae:
         abort(ae.status)
+
+    if entity.issnl:
+        try:
+            stats = get_elastic_container_stats(entity.issnl)
+        except Exception as e:
+            stats = None
+            print(e)
+    else:
+        stats = None
+
     if entity.state == "redirect":
         return redirect('/container/{}'.format(entity.redirect))
     if entity.state == "deleted":
         return render_template('deleted_entity.html', entity=entity)
     if entity.state == "active":
         entity.es = container_to_elasticsearch(entity, force_bool=False)
-    return render_template('container_view.html', container=entity)
+    return render_template('container_view.html',
+        container=entity, container_stats=stats)
 
 @app.route('/creator/<ident>/history', methods=['GET'])
 def creator_history(ident):

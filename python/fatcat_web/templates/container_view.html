@@ -13,17 +13,37 @@
 <div class="one wide column"></div>
 <div class="ten wide column" style="font-size: 16px;">
 
-<p><b>Publisher:</b>
-{% if container.publisher != None %}{{ container.publisher }}{% else %}<i>Unknown</i>{% endif %}
+<p>
 {% if (container.extra != None) and (container.extra['urls'] != None) and (container.extra['urls']|length > 0) %}
-<br><b>Homepage:</b> <a href="{{ container.extra['urls'][0] }}">&nbsp;<code>{{ container.extra['urls'][0] }}</code></a>
+  <a href="{{ container.extra['urls'][0] }}"><code>{{ container.extra['urls'][0] }}</code></a><br>
+{% endif %}
+{% if container.publisher != None %}
+  Published by {{ container.publisher }}
+{% endif %}
+
+{% if container.issnl %}
+<h3>Search Releases from this Container</h3>
+<form class="" role="search" action="/release/search" method="get">
+  <div class="ui form">
+    <div class="ui action input large fluid">
+      <input type="text" placeholder="Search Articles..." name="q" aria-label="search release metadata">
+      <input type="hidden" name="container_issnl" value="{{ container.issnl }}">
+      <button class="ui button">Search</button>
+    </div>
+  </div>
+</form>
 {% endif %}
 
 {% if container.extra %}
 <h3>Extra Metadata (raw JSON)</h3>
+<table class="ui definition single line fixed compact small unstackable table">
+<tbody>
 {% for (key, value) in container.extra.items() %}
-<code><b>{{ key }}:</b> {{ value }}</code><br>
+  <tr><td class="three wide"><code>{{ key }}</code></td>
+      <td class="seven wide"><code>{{ value }}</code>
 {% endfor %}
+</tbody>
+</table>
 {% endif %}
 
 <!--
@@ -61,6 +81,17 @@ Raw Object:
   </div><div class="ui segment attached">
 {% endif %}
 
+{% if container_stats %}
+<b>Release Counts</b><br>
+{{ container_stats.total }} total
+<br>{{ container_stats.is_preserved }}
+(<b>{{ "%.1f"|format(container_stats.is_preserved/container_stats.total*100) }}%</b>) 
+preserved or archived
+<br>{{ container_stats.in_web }}
+(<b>{{ "%.1f"|format(container_stats.in_web/container_stats.total*100) }}%</b>) 
+fulltext available to read
+  </div><div class="ui segment attached">
+{% endif %}
 
 {% if (container.es and container.es != None) %}
 <b>Directory Listings</b><br>
