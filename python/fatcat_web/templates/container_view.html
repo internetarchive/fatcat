@@ -39,7 +39,7 @@
 <table class="ui definition single line fixed compact small unstackable table">
 <tbody>
 {% for (key, value) in container.extra.items() %}
-  <tr><td class="three wide"><code>{{ key }}</code></td>
+  <tr><td class="three wide right aligned"><code>{{ key }}</code></td>
       <td class="seven wide"><code>{{ value }}</code>
 {% endfor %}
 </tbody>
@@ -83,14 +83,16 @@ Raw Object:
 
 {% if container_stats %}
 <b>Release Counts</b><br>
-{{ container_stats.total }} total
-<br>{{ container_stats.is_preserved }}
-(<b>{{ "%.1f"|format(container_stats.is_preserved/container_stats.total*100) }}%</b>) 
-preserved or archived
-<br>{{ container_stats.in_web }}
-(<b>{{ "%.1f"|format(container_stats.in_web/container_stats.total*100) }}%</b>) 
-fulltext available to read
-  </div><div class="ui segment attached">
+  {{ "{:,}".format(container_stats.total) }} total
+  {% if container_stats.total >= 1 %}
+    <br>{{ "{:,}".format(container_stats.is_preserved) }}
+    (<b>{{ "{:.1f}".format(container_stats.is_preserved/container_stats.total*100) }}%</b>) 
+    preserved or archived
+    <br>{{ "{:,}".format(container_stats.in_web) }}
+    (<b>{{ "{:.1f}".format(container_stats.in_web/container_stats.total*100) }}%</b>) 
+    fulltext available to read
+  {% endif %}
+</div><div class="ui segment attached">
 {% endif %}
 
 {% if (container.es and container.es != None) %}

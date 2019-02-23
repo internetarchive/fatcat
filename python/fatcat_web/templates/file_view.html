@@ -13,53 +13,75 @@
 <div class="one wide column"></div>
 <div class="ten wide column" style="font-size: 16px;">
 
-{% if file.extra != None %}
+{% if file.extra %}
 <h3>Extra Metadata (raw JSON)</h3>
+<table class="ui definition single line fixed compact small unstackable table">
+<tbody>
 {% for (key, value) in file.extra.items() %}
-<code><b>{{ key }}:</b> {{ value }}</code><br>
+  <tr><td class="three wide right aligned"><code>{{ key }}</code></td>
+      <td class="seven wide"><code>{{ value }}</code>
 {% endfor %}
+</tbody>
+</table>
 {% endif %}
 
 <h3>Releases</h3>
-{% if file.release_ids != None %}
-<p>Releases associated with this file:
-<ul>
-{% for release_id in file.release_ids %}
-  <li><a href="/release/{{ release_id }}"><code>{{ release_id }}</code></a>
+{% if file.releases != [] %}
+<table class="ui very basic celled table">
+<tbody>
+{% for release in file.releases %}
+  <tr><td class="two wide center aligned">
+        {% if release.release_date %}{{ release.release_date }}{% elif release.release_year %}{{ release.release_year }}{% endif %}
+      <td class="five wide single line">
+        <b><a href="/release/{{ release.ident }}">{{ release.title }}</a></b>
+        <br>{{ release.release_type or "unknown" }} - {{ release.release_status or "unknown" }}
+              {% if release.license_slug %} - {{ release.license_slug }}{% endif %}
+        {% if release.doi %}
+          <br><a href="https://doi.org/{{ release.doi }}" style="color:green;">doi:{{ release.doi }}</a>
+        {% endif %}
 {% endfor %}
-</ul>
+</tbody>
+</table>
 {% else %}
+<p>
 This file is not associated with any fatcat release.
 {% endif %}
 
+
 <h3>URLs</h3>
-{% if file.url != None %}
-<p>Known locations of this file:
-<ul>
-{% for url in file.urls %}
-  <li><a href="{{ url.url }}">{{ url.url.split('/')[2] }}</a> ({{ url.rel }})<br>
-{% endfor %}
-</ul>
+{% if file.urls != None %}
+<table class="ui very basic compact single line fixed table">
+<tbody>
+  {% for url in file.urls %}
+    <tr><td class="two wide right aligned">{{ url.rel }}
+    <!-- <a href="{{ url.url }}">{{ url.url.split('/')[2] }}</a> - {{ url.rel }}<br> -->
+        <td class="eight wide"><small><code><a href="{{ url.url }}">
+        {% if url.url.count('/') > 3 %}
+          {{ '/'.join(url.url.split('/')[0:2]) }}/<b>{{ ''.join(url.url.split('/')[2]) }}</b>/{{ '/'.join(url.url.split('/')[3:]) }}
+        {% else %}
+          {{ url.url }}
+        {% endif %}
+        </a></code></small>
+  {% endfor %}
+</tbody>
+</table>
 {% else %}
 No known public URL, mirror, or archive for this file.
 {% endif %}
 
 <h3>Checksums</h3>
-<table class="ui compact table">
-  <thead>
-    <tr><th>Algorithm
-        <th>Value
+<table class="ui definition single line fixed compact small unstackable table">
   <tbody>
     {% if file.sha1 != None %}
-    <tr><td>SHA-1
-        <td><small><code>{{ file.sha1 }}</code></small>
+    <tr><td class="one wide right aligned">SHA-1
+        <td class="four wide"><small><code>{{ file.sha1 }}</code></small>
     {% endif %}
     {% if file.sha256 != None %}
-    <tr><td>SHA-256
+    <tr><td class="one wide right aligned">SHA-256
         <td><small><code>{{ file.sha256 }}</code></small>
     {% endif %}
     {% if file.md5!= None %}
-    <tr><td>MD5
+    <tr><td class="one wide right aligned">MD5
         <td><small><code>{{ file.md5 }}</code></small>
     {% endif %}
 </table>
@@ -81,7 +103,7 @@ Raw Object:
 <div class="ui segment attached">
 
 {% if file.size != None %}
-<p><b>Size</b> &nbsp;{{ file.size }} (bytes)
+<p><b>Size</b> &nbsp;{{ file.size|filesizeformat }} (bytes)
 </div><div class="ui segment attached">
 {% endif %}
 

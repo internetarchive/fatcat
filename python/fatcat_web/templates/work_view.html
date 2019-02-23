@@ -25,37 +25,48 @@ Raw Object:
 {{ work|safe }}
 -->
 
-<p>A "work" is just a linking identifier between a set of releases. For
-example, a pre-print and a published article may contain small differences, but
-still reference the same underlying "work".
-
-<br>
-
+<h3>Releases</h3>
 {% if releases != [] %}
-<ul>
-  {% for release in releases %}
-  <li>"{{ release.title }}", a {{ release.release_type }} published
-    {% if release.release_year != None %}in {{ release.release_year }}{% endif %}
-    as <code>{{ release.release_status or "(unknown)" }}</code>.
-    <br><a href="/release/{{ release.ident }}"><code>{{ release.ident }}</code></a>
-  {% endfor %}
-</ul>
+<table class="ui very basic celled table">
+<tbody>
+{% for release in releases %}
+  <tr><td class="two wide center aligned">
+        {% if release.release_date %}{{ release.release_date }}{% elif release.release_year %}{{ release.release_year }}{% endif %}
+      <td class="five wide single line">
+        <b><a href="/release/{{ release.ident }}">{{ release.title }}</a></b>
+        <br>{{ release.release_type or "unknown" }} - {{ release.release_status or "unknown" }}
+              {% if release.license_slug %} - {{ release.license_slug }}{% endif %}
+        {% if release.doi %}
+          <br><a href="https://doi.org/{{ release.doi }}" style="color:green;">doi:{{ release.doi }}</a>
+        {% endif %}
+{% endfor %}
+</tbody>
+</table>
 {% else %}
 <p>There are no known releases associated with this work.
 {% endif %}
 
+{% if work.extra %}
+<h3>Extra Metadata (raw JSON)</h3>
+<table class="ui definition single line fixed compact small unstackable table">
+<tbody>
+{% for (key, value) in work.extra.items() %}
+  <tr><td class="three wide right aligned"><code>{{ key }}</code></td>
+      <td class="seven wide"><code>{{ value }}</code>
+{% endfor %}
+</tbody>
+</table>
+{% endif %}
+
+<h3>What is a "Work"?</h3>
+<p>A Fatcat "<code>work</code>" groups a set of releases that are all editings
+or editing stages of the same intellectual contribution. For example, a
+pre-print and a published article may contain small differences, but still
+reference the same underlying "work".
 
 </div>
 <div class="five wide column">
 <div class="ui segment top attached">
-
-<b>Work Type:</b>
-{% if work.work_type != None %}
-&nbsp;<code>{{ work.work_type }}</code>
-{% else %}
-<i>unkonwn</i>
-{% endif %}
-</div><div class="ui segment attached">
 
 <b>Fatcat Bits</b>
 <p>State is "{{ work.state }}". Revision:

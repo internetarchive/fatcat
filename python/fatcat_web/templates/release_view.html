@@ -22,117 +22,136 @@
 <div class="one wide column"></div>
 <div class="ten wide column" style="font-size: 16px;">
 
-{% if release.release_date != None %}
-  <p><b>Date (published):</b> {{ release.release_date }}
-{% elif release.release_year != None %}
-  <p><b>Date (published):</b> {{ release.release_year }}
-{% endif %}
-{% if release.pmid != None %}
-<br><b>PubMed:</b> <a href="https://www.ncbi.nlm.nih.gov/pubmed/{{ release.pmid }}">&nbsp;<code>{{ release.pmid }}</code></a>
-{% endif %}
-{% if release.pmcid != None %}
-<br><b>PubMed Central:</b> <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/{{ release.pmcid }}">&nbsp;<code>{{ release.pmcid }}</code></a>
-{% endif %}
-{% if release.wikidata_qid != None %}
-<br><b>Wikidata Entity:</b> <a href="https://www.wikidata.org/wiki/{{ release.wikidata_qid }}">&nbsp;<code>{{ release.wikidata_qid }}</code></a>
-{% endif %}
-{% if release.language != None %}
-<br><b>Primary Language:</b> &nbsp;<code>{{ release.language }}</code> (<a href="https://www.loc.gov/standards/iso639-2/php/langcodes_name.php?iso_639_1={{ release.language }}">lookup ISO-639 code</a>)
-{% endif %}
-<br>This <i>{{ release.release_type or "unknown-type" }}</i> is a release
-(version) of the work <a href="/work/{{ release.work_id }}">&nbsp;<code>{{
-release.work_id }}</code></a>. There may be other releases (eg, pre-prints,
-formal publications, etc) linked to the same work.
-
-{% if container != None %}
-<div class="ui styled accordion">
+<div class="ui accordion">
 <div class="title">
   <i class="dropdown icon"></i>
   {% if release.release_status == 'published' %}
     Published in <a href="/container/{{ container.ident }}">{{ container.name }}</a>
   {% else %}
-    Released in <i>{{ release.release_type }}</i> in <a href="/container/{{ container.ident }}">{{ container.name }}</a>
+    Released as a <i>{{ release.release_type }}</i>
+    {% if container %} in <a href="/container/{{ container.ident }}">{{ container.name }}</a> {% endif %}
   {% endif %}
   {% if release.publisher %}
     by {{ release.publisher }}
   {% endif %}
 </div><div class="content">
-  {% if container != None and container.issnl != None %}<b>ISSN-L:</b> {{ container.issnl }}<br>{% endif %}
-  {% if release.volume != None %}<b>Volume:</b> {{ release.volume }}<br>{% endif %}
-  {% if release.issue != None %}<b>Issue:</b> {{ release.issue }}<br>{% endif %}
-  {% if release.pages != None %}<b>Page(s):</b> {{ release.pages }}<br>{% endif %}
-  {% if release.publisher != None %}<b>Publisher:</b> {{ release.publisher }}<br>{% endif %}
-  {% if release.release_status != None %}<b>Release Status:</b> {{ release.release_status }}<br>{% endif %}
-  {% if release.release_type != None %}<b>Release Type:</b> {{ release.release_type}}<br>{% endif %}
-</div>
-</div>
-{% endif %}
 
-{% if release.extra != None %}
-<h3>Extra Metadata (raw JSON)</h3>
-{% for (key, value) in release.extra.items() %}
-<code><b>{{ key }}:</b> {% if key == "crossref" %} &lt;truncated, see full JSON&gt;{% else %} {{ value }} {% endif %}</code><br>
-{% endfor %}
-{% endif %}
-
-<!--
-Raw Object:
-{{ release|safe }}
--->
-
-<br>
-<h3>Abstracts</h3>
-{% if release.abstracts != [] %}
-  {% for abstract in release.abstracts %}
-  <b>Abstract (<code>{{ abstract.sha1 }}</code>, {{ abstract.mimetype }}):</b> {{ abstract.content }}
-  {% endfor %}
-{% else %}
-<p>No known abstracts.
-{% endif %}
-
-<br>
-<h3>All Contributors</h3>
-{% if release.contribs.size != 0 %}
-<table class="ui compact table">
-  <thead>
-    <tr><th>Attribution Order
-        <th>Name
-        <th>Role
-  </thead>
+  <table class="ui definition single line fixed compact small collapsing unstackable table">
   <tbody>
-  {% for contrib in release.contribs %}
-  <tr><td>{% if contrib.index or contrib.index == 0 %} {{ contrib.index + 1 }}{% endif %}
-      {% if contrib.creator_id %}
-        <td><a href="/creator/{{contrib.creator_id}}">{{ contrib.raw_name }}</a> 
-      {% else %}
-        <td>{{ contrib.raw_name }}
-      {% endif %}
-      <td>{{ contrib.role or '' }}
-  {% endfor %}
+    {% if container != None and container.issnl != None %}
+      <tr><td class="right aligned">ISSN-L</td>
+          <td class="">{{ container.issnl }}
+    {% endif %}
+    {% if release.volume != None %}
+      <tr><td class="right aligned">Volume</td>
+          <td class="">{{ release.volume }}
+    {% endif %}
+    {% if release.issue != None %}
+      <tr><td class="right aligned">Issue</td>
+          <td class="">{{ release.issue }}
+    {% endif %}
+    {% if release.pages != None %}
+      <tr><td class="right aligned">Page(s)</td>
+          <td class="">{{ release.pages }}
+    {% endif %}
+    {% if release.release_date != None %}
+      <tr><td class="right aligned">Release Date</td>
+          <td class="">{{ release.release_date }}
+    {% elif release.release_year != None %}
+      <tr><td class="right aligned">Release Year</td>
+          <td class="">{{ release.release_year }}
+    {% endif %}
+    {% if container != None and container.container_type != None %}
+      <tr><td class="right aligned">Container Type</td>
+          <td class="">{{ container.container_type }}
+    {% endif %}
+    {% if release.publisher != None %}
+      <tr><td class="right aligned">Publisher</td>
+          <td class="">{{ release.publisher }}
+    {% endif %}
+    {% if release.language != None %}
+      <tr><td class="right aligned">Primary Language</td>
+          <td class=""><code>{{ release.language }}</code>
+          (<a href="https://www.loc.gov/standards/iso639-2/php/langcodes_name.php?iso_639_1={{ release.language }}">lookup</a>)
+    {% endif %}
+
   </tbody>
+  </table>
+</div>
+</div>
+
+{% if release.contribs|length > 0 %}
+<div class="ui accordion">
+<div class="title">
+  <i class="dropdown icon"></i>All Contributors
+</div><div class="content">
+<table class="ui basic compact fixed table">
+<tbody>
+{% for contrib in release.contribs %}
+  <tr><td class="one wide">{% if contrib.index or contrib.index == 0 %} {{ contrib.index + 1 }}{% endif %}
+      <td>
+      {% if contrib.creator_id %}
+        <a href="/creator/{{contrib.creator_id}}">{{ contrib.raw_name or 'unknown' }}</a> 
+      {% else %}
+        {{ contrib.raw_name or '' }}
+      {% endif %}
+      <br><i>{{ contrib.role or 'unknown' }}</i>
+{% endfor %}
+</tbody>
 </table>
+</div>
+</div>
 {% else %}
-<p>Contributors (authors, translators, etc) not known.
+<p>No known contributors (authors, translators, etc).
 {% endif %}
 
-<br>
+{% if release.abstracts != [] %}
+<h3>Abstract</h3>
+<p>{{ release.abstracts[0].content }}
+<br><small><i>In <code>{{ release.abstracts[0].mimetype }}</code> format</i></small>
+{% endif %}
+
+{% if release.extra %}
+<h3>Extra Metadata (raw JSON)</h3>
+<table class="ui definition single line fixed compact small unstackable table">
+<tbody>
+{% for (key, value) in release.extra.items() %}
+  <tr><td class="three wide right aligned"><code>{{ key }}</code></td>
+      <td class="seven wide"><code>{{ value }}</code>
+{% endfor %}
+</tbody>
+</table>
+{% endif %}
+
+
 <h3>Known Files and URLs</h3>
 {% if files != [] %}
-<table class="ui compact table">
+<table class="ui compact fixed table">
+<!--
   <thead>
     <tr><th>SHA-1
         <th>Size (bytes)
         <th>File Type
         <th>Links
   </thead>
+-->
   <tbody>
   {% for file in files %}
-  <tr><td><small><code><a href="/file/{{ file.ident }}">{% if file.sha1 != None %}{{ file.sha1[:16] + "..." }}{% else %}N/A{% endif %}</a></code></small>
-      <td>{% if file.size != None %}{{ file.size }}{% endif %}
-      <td>{% if file.mimetype != None %}{{ file.mimetype }}{% endif %}
-      <td>{% for url in file.urls %}
-        <a href="{{ url.url }}">{{ url.url.split('/')[2] }}</a> ({{ url.rel }})<br>
-      {% endfor %}
+  <tr><td>{% if file.mimetype != None %}{{ file.mimetype }}&nbsp;&nbsp;{% endif %}
+          {% if file.size != None %}{{ file.size|filesizeformat }}{% endif %}
+      <br><small><code><a href="/file/{{ file.ident }}">
+            {% if file.sha1 != None %}sha1:{{ file.sha1[:20] + "..." }}
+            {% elif file.sha256!= None %}sha256:{{ file.md5[:20] + "..." }}
+            {% elif file.md5 != None %}md5:{{ file.md5[:20] + "..." }}
+            {% endif %}
+        </a></code></small>
+      <td class="single line">
+        {% for url in file.urls[:5] %}
+          <a href="{{ url.url }}">{{ url.url.split('/')[2] }}</a> ({{ url.rel }})<br>
+        {% endfor %}
+        {% if file.urls|length > 5 %}
+          <a href="/file/{{ file.ident }}">+ {{ file.urls|length - 5 }} more URLs</a>
+        {% endif %}
   {% endfor %}
   </tbody>
 </table>
@@ -142,7 +161,6 @@ Raw Object:
 <a href="/work/{{ release.work_id }}">other releases for this work?</a>).
 {% endif %}
 
-<br>
 {% if release.refs != None and release.refs.size != 0 %}
 <h3>References</h3>
 This release citing other releases.
@@ -185,21 +203,37 @@ This release citing other releases.
 {% endif %}
 
 {% if release.release_type != None %}
-<div class="ui segment attached">
-<b>Release Type</b> &nbsp;<code>{{ release.release_type }}</code>
+  <div class="ui segment attached">
+  <b>Type</b> &nbsp;<code>{{ release.release_type }}</code>
+  <br><b>Status</b> &nbsp; <code>{{ release.release_status or 'unknown' }}</code>
+  {% if release.release_date != None %}
+    <br><b>Date</b> &nbsp; {{ release.release_date }}
+  {% elif release.release_year != None %}
+    <br><b>Year</b> &nbsp; {{ release.release_year }}
+  {% endif %}
+  </div>
+{% endif %}
+
+{% if release.doi or release.pmid or release.pmcid or release.wikidata_qid %}
+<div class="ui segment attached" style="word-wrap: break-word;">
+{% if release.doi %}
+  <b>DOI </b> &nbsp;<a href="https://doi.org/{{ release.doi }}" title="{{ release.doi }}">{{ release.doi }}</a><br>
+{% endif %}
+{% if release.pmid != None %}
+  <b>PubMed</b> <a href="https://www.ncbi.nlm.nih.gov/pubmed/{{ release.pmid }}">&nbsp;<code>{{ release.pmid }}</code></a><br>
+{% endif %}
+{% if release.pmcid != None %}
+  <b>PMC</b> <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/{{ release.pmcid }}">&nbsp;<code>{{ release.pmcid }}</code></a><br>
+{% endif %}
+{% if release.wikidata_qid != None %}
+  <b>Wikidata</b> <a href="https://www.wikidata.org/wiki/{{ release.wikidata_qid }}">&nbsp;<code>{{ release.wikidata_qid }}</code></a><br>
+{% endif %}
+{% if release.isbn13 != None %}
+  <b>ISBN-13 </b> &nbsp;<code>{{ release.isbn13 }}</code>
+{% endif %}
 </div>
 {% endif %}
 
-{% if release.doi %}
-<div class="ui segment attached" style="word-wrap: break-word;">
-<b>DOI </b> &nbsp;<a href="https://doi.org/{{ release.doi }}" title="{{ release.doi }}">{{ release.doi }}</a>
-</div>
-{% endif %}
-{% if release.isbn13 != None %}
-<div class="ui segment attached">
-<p><b>ISBN-13 </b> &nbsp;<code>{{ release.isbn13 }}</code>
-</div>
-{% endif %}
 
 {% if release.extra.is_oa == True %}
 <div class="ui segment attached">
@@ -243,6 +277,11 @@ This release citing other releases.
   <a href="/container/{{ container.ident }}" title="container {{ container.ident }}"><i class="icon share"></i>Fatcat Entry</a>
 </div>
 {% endif %}
+
+<div class="ui segment attached accordion">
+  <b><a href="/work/{{ release.work_id }}" title="work {{ release.work_id }}">Work Entity</a></b>
+  <br>grouping other versions (eg, pre-print) and variants of this release
+</div>
 
 <div class="ui segment attached accordion">
   <div class="title" style="padding: 0px;"><i class="dropdown icon"></i><b>Lookup Links</b></div>

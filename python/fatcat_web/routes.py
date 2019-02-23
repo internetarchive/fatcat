@@ -207,8 +207,15 @@ def file_view(ident):
         abort(ae.status)
     if entity.state == "redirect":
         return redirect('/file/{}'.format(entity.redirect))
-    if entity.state == "deleted":
+    elif entity.state == "deleted":
         return render_template('deleted_entity.html', entity=entity)
+    else:
+        try:
+            entity.releases = []
+            for r in entity.release_ids:
+                entity.releases.append(api.get_release(r))
+        except ApiException as ae:
+            abort(ae.status)
     return render_template('file_view.html', file=entity)
 
 @app.route('/release/lookup', methods=['GET'])
