@@ -54,9 +54,8 @@ This file is not associated with any fatcat release.
 <tbody>
   {% for url in file.urls %}
     <tr><td class="two wide right aligned">{{ url.rel }}
-    <!-- <a href="{{ url.url }}">{{ url.url.split('/')[2] }}</a> - {{ url.rel }}<br> -->
         <td class="eight wide"><small><code><a href="{{ url.url }}">
-        {% if url.url.count('/') > 3 %}
+        {% if url.url.count('/') >= 3 %}
           {{ '/'.join(url.url.split('/')[0:2]) }}/<b>{{ ''.join(url.url.split('/')[2]) }}</b>/{{ '/'.join(url.url.split('/')[3:]) }}
         {% else %}
           {{ url.url }}
