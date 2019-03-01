@@ -1,6 +1,38 @@
 {% extends "base.html" %}
 {% block body %}
 
+{% macro edit_list(edits, entity_type, entity_name) -%}
+<div class="{% if edits %}active{% endif %} title">
+  <h3><i class="dropdown icon"></i>{{ entity_name }} Edits ({{ edits|count }})</h3>
+</div><div class="{% if edits %}active{% endif %} content" style="padding-bottom: 0.5em;">
+  <div class="ui divided list">
+    {% for edit in edits %}
+    <div class="item">
+      <div class="content">
+        <div class="header">
+          <a href="/{{ entity_type }}/{{ edit.ident }}">{{ entity_type }}/{{ edit.ident }}</a>
+          {% if edit.redirect_ident %}
+            =&gt; redirect to <a href="/{{ entity_type }}/{{ edit.redirect_ident }}">{{ entity_type }}/{{ edit.redirect_ident }}</a>
+          {% elif not edit.revision %}
+            deleted
+          {% elif not edit.prev_revision %}
+            created
+          {% else %}
+            updated
+          {% endif %}
+        </div>
+        {% if edit.revision %}
+          Revision: <small><code>{{ edit.revision }}</code></small>
+        {% endif %}
+        {% if edit.extra %}
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{%- endmacro %}
+
 {# extended by changelog_entry #}
 {% block editgroupheader %}
 <h1 class="ui header">Edit Group
@@ -11,57 +43,27 @@
 <br><b>Description:</b> {{ editgroup.description }}
 <br><br>
 
-<div class="ui accordion">
-<div class="title">
-  <i class="dropdown icon"></i>Work Edits ({{ editgroup.edits.works|count }})
-</div><div class="content">
-    Some content
+<div class="ui styled fluid accordion">
+  {{ edit_list(editgroup.edits.works, "work", "Work") }}
+  {{ edit_list(editgroup.edits.releases, "release", "Release") }}
+  {{ edit_list(editgroup.edits.containers, "container", "Container") }}
+  {{ edit_list(editgroup.edits.creators, "creator", "Creator") }}
+  {{ edit_list(editgroup.edits.files, "file", "File") }}
+  {{ edit_list(editgroup.edits.filesets, "fileset", "File Set") }}
+  {{ edit_list(editgroup.edits.webcaptures, "webcapture", "Web Capture") }}
 </div>
-</div>
 
-<h3>Work Edits ({{ editgroup.edits.works|count }})</h3>
-<ul>
-{% for edit in editgroup.edits.works %}
-  <li>Work edit #<a href="/work/edit/{{ edit.edit_id }}">{{ edit.edit_id }}</a>:
-      <a href="/work/{{ edit.ident }}">{{ edit.ident }}</a> to rev {{ edit.revision }}
-{% endfor %}
-</ul>
-
-<h3>Release Edits ({{ editgroup.edits.releases|count }})</h3>
-<ul>
-{% for edit in editgroup.edits.releases %}
-  <li>Release edit #<a href="/release/edit/{{ edit.edit_id }}">{{ edit.edit_id }}</a>:
-      <a href="/release/{{ edit.ident }}">{{ edit.ident }}</a> to rev {{ edit.revision }}
-{% endfor %}
-</ul>
-
-<h3>Container Edits ({{ editgroup.edits.containers|count }})</h3>
-<ul>
-{% for edit in editgroup.edits.containers %}
-  <li>Container edit #<a href="/container/edit/{{ edit.edit_id }}">{{ edit.edit_id }}</a>:
-      <a href="/container/{{ edit.ident }}">{{ edit.ident }}</a> to rev {{ edit.revision }}
-{% endfor %}
-</ul>
-
-<h3>Creator Edits ({{ editgroup.edits.creators|count }})</h3>
-<ul>
-{% for edit in editgroup.edits.creators %}
-  <li>Creator edit #<a href="/creator/edit/{{ edit.edit_id }}">{{ edit.edit_id }}</a>:
-      <a href="/creator/{{ edit.ident }}">{{ edit.ident }}</a> to rev {{ edit.revision }}
-{% endfor %}
-</ul>
-
-<h3>File Edits ({{ editgroup.edits.files|count }})</h3>
-<ul>
-{% for edit in editgroup.edits.files %}
-  <li>File edit #<a href="/file/edit/{{ edit.edit_id }}">{{ edit.edit_id }}</a>:
-      <a href="/file/{{ edit.ident }}">{{ edit.ident }}</a> to rev {{ edit.revision }}
-{% endfor %}
-</ul>
 
 <br>
 <p><b>What is an editgroup?</b>
 An editgroup is a set of entity edits, bundled together into a coherent,
 reviewable bundle.
 
+{% endblock %}
+
+{% block postscript %}
+<script>
+$('.ui.accordion')
+  .accordion({ exclusive: false });
+</script>
 {% endblock %}
