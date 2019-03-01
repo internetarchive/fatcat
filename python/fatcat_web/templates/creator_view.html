@@ -13,33 +13,52 @@
 <div class="one wide column"></div>
 <div class="ten wide column" style="font-size: 16px;">
 
-<p><b>Given ("first") name:</b>
-    {% if creator.given_name != None %}{{ creator.given_name}}{% else %}<i>None or unknown</i>{% endif %}
-<p><b>Sur ("family"/"last") name:</b>
-    {% if creator.surname != None %}{{ creator.surname }}{% else %}<i>None or unknown</i>{% endif %}
-
-{% if creator.wikidata_qid != None %}
-<br><b>Wikidata Entity:</b> <a href="https://www.wikidata.org/wiki/{{ creator.wikidata_qid }}">&nbsp;<code>{{ creator.wikidata_qid }}</code></a>
+{% if creator.given_name or creator.surname %}
+  <table class="ui definition single line fixed compact small unstackable table">
+  <tbody>
+    <tr><td class="two wide right aligned">Given name</td>
+        <td class="seven wide">
+          {% if creator.given_name != None %}{{ creator.given_name}}{% else %}<i>None or unknown</i>{% endif %}
+        </td>
+    <tr><td class="two wide right aligned">Surname</td>
+        <td class="seven wide">
+          {% if creator.surname != None %}{{ creator.surname }}{% else %}<i>None or unknown</i>{% endif %}
+        </td>
+  </tbody>
+  </table>
 {% endif %}
+
 {% if creator.extra != None %}
 <h3>Extra Metadata (raw JSON)</h3>
-{% for (key, value) in creator.extra.items() %}
-<code><b>{{ key }}:</b> {{ value }}</code><br>
-{% endfor %}
+  <table class="ui definition single line fixed compact small unstackable table">
+  <tbody>
+  {% for (key, value) in release.extra.items() %}
+    <tr><td class="three wide right aligned"><code>{{ key }}</code></td>
+        <td class="seven wide"><code>{{ value }}</code>
+  {% endfor %}
+  </tbody>
+  </table>
 {% endif %}
 
 <br>
 <h3>Releases</h3>
 {% if releases != [] %}
-<p>This creator has contributed to:
-<ul>
+  <p>This creator has contributed to:
+  <table class="ui very basic celled table">
+  <tbody>
   {% for release in releases %}
-  <li>"{{ release.title }}", a {{ release.release_type }}
-      {% if release.release_year != None %}published in {{ release.release_year }}{% endif %}
-      {% if release.release_status != None %}(status: <code>{{ release.release_status or "(unknown)" }})</code>{% endif %}.
-    <br>Fatcat ID: <a href="/release/{{ release.ident }}"><code>{{ release.ident }}</code></a>
+    <tr><td class="two wide center aligned">
+          {% if release.release_date %}{{ release.release_date }}{% elif release.release_year %}{{ release.release_year }}{% endif %}
+        <td class="five wide single line">
+          <b><a href="/release/{{ release.ident }}">{{ release.title }}</a></b>
+          <br>{{ release.release_type or "unknown" }} - {{ release.release_status or "unknown" }}
+                {% if release.license_slug %} - {{ release.license_slug }}{% endif %}
+          {% if release.doi %}
+            <br><a href="https://doi.org/{{ release.doi }}" style="color:green;">doi:{{ release.doi }}</a>
+          {% endif %}
   {% endfor %}
-</ul>
+  </tbody>
+  </table>
 {% else %}
 This creator has not contributed to any releases.
 {% endif %}
@@ -53,10 +72,16 @@ Raw Object:
 <div class="five wide column">
 <div class="ui segment top attached">
 
-{% if creator.orcid != None %}
-  <b>ORCID<sup><a href="https://en.wikipedia.org/wiki/Orcid">?</a></sup></b>:
-    &nbsp;<a href="https://orcid.org/{{creator.orcid}}"><code>{{ creator.orcid }}</code></a>
-  </div><div class="ui segment attached">
+{% if creator.orcid or creator.wikidata_qid %}
+  {% if creator.orcid %}
+    <b>ORCID<sup><a href="https://en.wikipedia.org/wiki/Orcid">?</a></sup></b>
+      &nbsp;<a href="https://orcid.org/{{creator.orcid}}"><code>{{ creator.orcid }}</code></a><br>
+  {% endif %}
+  {% if creator.wikidata_qid %}
+    <b>Wikidata</b> <a href="https://www.wikidata.org/wiki/{{ creator.wikidata_qid }}">
+      &nbsp;<code>{{ creator.wikidata_qid }}</code></a><br>
+  {% endif %}
+</div><div class="ui segment attached">
 {% endif %}
 
 <b>Lookup Links</b>
