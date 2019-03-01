@@ -7,9 +7,17 @@
 <div class="sub header"><code>editgroup {{ editgroup.editgroup_id }}</code></div></h1>
 {% endblock %}
 
-{# TODO: <p>Editor: <a href="/editor/{{ editgroup.editor.username }}">{{ editgroup.editor.username }}</a> #}
-<br><b>Editor:</b> <a href="/editor/{{editgroup.editor_id}}">{{ editgroup.editor_id }}</a>
+<b>Editor:</b> <a href="/editor/{{editgroup.editor_id}}">{{ editgroup.editor.username }}</a>
 <br><b>Description:</b> {{ editgroup.description }}
+<br><br>
+
+<div class="ui accordion">
+<div class="title">
+  <i class="dropdown icon"></i>Work Edits ({{ editgroup.edits.works|count }})
+</div><div class="content">
+    Some content
+</div>
+</div>
 
 <h3>Work Edits ({{ editgroup.edits.works|count }})</h3>
 <ul>
@@ -50,5 +58,10 @@
       <a href="/file/{{ edit.ident }}">{{ edit.ident }}</a> to rev {{ edit.revision }}
 {% endfor %}
 </ul>
+
+<br>
+<p><b>What is an editgroup?</b>
+An editgroup is a set of entity edits, bundled together into a coherent,
+reviewable bundle.
 
 {% endblock %}

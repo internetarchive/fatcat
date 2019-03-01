@@ -340,6 +340,7 @@ def work_view(ident):
 def editgroup_view(ident):
     try:
         entity = api.get_editgroup(str(ident))
+        entity.editor = api.get_editor(entity.editor_id)
     except ApiException as ae:
         abort(ae.status)
     return render_template('editgroup_view.html', editgroup=entity)
@@ -374,6 +375,7 @@ def changelog_view():
 def changelog_entry_view(index):
     try:
         entry = api.get_changelog_entry(int(index))
+        entry.editgroup.editor = api.get_editor(entry.editgroup.editor_id)
     except ApiException as ae:
         abort(ae.status)
     return render_template('changelog_view.html', entry=entry, editgroup=entry.editgroup)

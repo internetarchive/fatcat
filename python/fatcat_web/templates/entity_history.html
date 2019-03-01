@@ -9,20 +9,20 @@
 </div>
 </h1>
 
-<h3 class="ui header">Fatcat Metadata Edit History</h3>
+<h3 class="ui header">Edit History</h3>
+
+This table only shows <i>merged</i> edits, not work-in-progress.
 
 <table class="ui table">
-  <thead><tr><th>Changelog<br>Index
-             <th>Timestamp (UTC)
+  <thead><tr><th>Changelog
              <th>Editgroup
-             <th>Editor
              <th>Description
   <tbody>
   {% for entry in history %}
   <tr><td><a href="/changelog/{{ entry.changelog_entry.index }}">{{ entry.changelog_entry.index }}</a>
-      <td>{{ entry.changelog_entry.timestamp }}
-      <td><a href="/editgroup/{{ entry.editgroup.editgroup_id }}">{{ entry.editgroup.editgroup_id }}</a>
-      <td><a href="/editor/{{ entry.editgroup.editor_id }}">{{ entry.editgroup.editor_id }}</a>
+          <br>{{ entry.changelog_entry.timestamp.strftime("%Y-%m-%d %H:%M") }}
+      <td><a href="/editgroup/{{ entry.editgroup.editgroup_id }}">{{ entry.editgroup.editgroup_id[:8] }}...</a> by
+          <a href="/editor/{{ entry.editgroup.editor_id }}">editor_id</a>
       <td>{% if entry.editgroup.description != None %}{{ entry.editgroup.description }}{% endif %}
   {% endfor %}
 </table>
