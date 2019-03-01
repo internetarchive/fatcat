@@ -1,4 +1,7 @@
+{% set entity = creator %}
+{% import "entity_macros.html" as entity_macros %}
 {% extends "base.html" %}
+
 {% block fullbody %}
 
 <div class="ui stackable mobile reversed grid centered">
@@ -89,18 +92,9 @@ Raw Object:
 <br><a href="https://viaf.org/viaf/search?query=local.personalNames%20all%20%22{{ creator.display_name }}">VIAF</a>
 <br><a href="http://dblp.uni-trier.de/search?q={{ creator.display_name }}">dblp</a> (CS)
 <br><a href="https://scholar.google.com/scholar?q={{ creator.display_name }}">Google Scholar</a>
-</div><div class="ui segment attached">
-
-<b>Fatcat Bits</b>
-<p>State is "{{ creator.state }}". Revision:
-<br><small><code>{{ creator.revision }}</code></small>
-<br><a href="https://api.{{ config.FATCAT_DOMAIN }}/v0/creator/{{ creator.ident }}">As JSON object via API</a>
-
 </div>
-<div class="two ui buttons bottom attached">
-  <a href="/creator/{{ creator.ident }}/edit" class="ui blue button">Edit Metadata</a>
-  <a href="/creator/{{ creator.ident }}/history" class="ui button">View History</a>
-</div>
+
+{{ entity_macros.fatcat_bits(entity, "creator", "") }}
 
 </div>
 </div>

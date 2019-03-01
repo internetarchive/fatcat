@@ -1,4 +1,7 @@
+{% set entity = container %}
+{% import "entity_macros.html" as entity_macros %}
 {% extends "base.html" %}
+
 {% block fullbody %}
 
 <div class="ui stackable mobile reversed grid centered">
@@ -126,18 +129,9 @@ Raw Object:
 {% if not container.wikidata_qid %}
   <br><a href="https://www.wikidata.org/w/index.php?search={{ container.name }}">wikidata.org</a>
 {% endif %}
-</div><div class="ui segment attached">
-
-<b>Fatcat Bits</b>
-<p>State is "{{ container.state }}". Revision:
-<br><small><code>{{ container.revision }}</code></small>
-<br><a href="https://api.{{ config.FATCAT_DOMAIN }}/v0/container/{{ container.ident }}">As JSON object via API</a>
-
 </div>
-<div class="two ui buttons bottom attached">
-  <a href="/container/{{ container.ident }}/edit" class="ui blue button">Edit Metadata</a>
-  <a href="/container/{{ container.ident }}/history" class="ui button">View History</a>
-</div>
+
+{{ entity_macros.fatcat_bits(entity, "container", "") }}
 
 </div>
 </div>

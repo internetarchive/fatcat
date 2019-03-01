@@ -1,4 +1,7 @@
+{% set entity = file %}
+{% import "entity_macros.html" as entity_macros %}
 {% extends "base.html" %}
+
 {% block fullbody %}
 
 <div class="ui stackable mobile reversed grid centered">
@@ -99,28 +102,19 @@ Raw Object:
 <span class="ui top attached fluid huge grey button"><i class="file cross icon"></i>No Download Available</span>
 {% endif %}
 
-<div class="ui segment attached">
-
 {% if file.size != None %}
-<p><b>Size</b> &nbsp;{{ file.size|filesizeformat }} (bytes)
-</div><div class="ui segment attached">
+<div class="ui segment attached">
+  <p><b>Size</b> &nbsp;{{ file.size|filesizeformat }} (bytes)
+</div>
 {% endif %}
 
 {% if file.mimetype != None %}
-<p><b>File Type</b> &nbsp;<code>{{ file.mimetype }}</code>
-</div><div class="ui segment attached">
+<div class="ui segment attached">
+  <p><b>File Type</b> &nbsp;<code>{{ file.mimetype }}</code>
+</div>
 {% endif %}
 
-<b>Fatcat Bits</b>
-<p>State is "{{ file.state }}". Revision:
-<br><small><code>{{ file.revision }}</code></small>
-<br><a href="https://api.{{ config.FATCAT_DOMAIN }}/v0/file/{{ file.ident }}">As JSON object via API</a>
-
-</div>
-<div class="two ui buttons bottom attached">
-  <a href="/file/{{ file.ident }}/edit" class="ui blue button">Edit Metadata</a>
-  <a href="/file/{{ file.ident }}/history" class="ui button">View History</a>
-</div>
+{{ entity_macros.fatcat_bits(entity, "file", "") }}
 
 </div>
 </div>
