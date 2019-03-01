@@ -2,20 +2,22 @@
 {% block body %}
 <div class="ui container text">
 
-<!-- <h1 class="ui header centered" style="font-size: 2.5rem;">Welcome to Fatcat!</h1><br> -->
+<!-- <h1 class="ui header centered" style="font-size: 2.5rem;">Fatcat: The Universal Research Catalog</h1><br> -->
 
 <img class="ui fluid bordered image" src="/static/fatcat.jpg" title="CC0 photo of an oversized feline" alt="">
 
 <br>
+<h2 class="ui header centered">Search millions of research publications and datasets</h2>
 <form class="" role="search" action="/release/search" method="get">
   <div class="ui form">
     <div class="ui action input huge fluid">
-      <input type="text" placeholder="Search Articles..." name="q" aria-label="search release metadata">
+      <input type="text" placeholder="Query..." name="q" aria-label="search release metadata">
       <button class="ui button">Search</button>
     </div>
   </div>
 </form>
 
+<br>
 <div class="ui warning message">
   <div class="header">Current Status: Beta</div>
   <ul class="list">
