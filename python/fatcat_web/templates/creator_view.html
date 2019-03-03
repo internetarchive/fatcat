@@ -31,37 +31,15 @@
   </table>
 {% endif %}
 
-{% if creator.extra != None %}
-<h3>Extra Metadata (raw JSON)</h3>
-  <table class="ui definition single line fixed compact small unstackable table">
-  <tbody>
-  {% for (key, value) in release.extra.items() %}
-    <tr><td class="three wide right aligned"><code>{{ key }}</code></td>
-        <td class="seven wide"><code>{{ value }}</code>
-  {% endfor %}
-  </tbody>
-  </table>
+{% if entity.extra != None %}
+  {{ entity_macros.extra_metadata(entity.extra) }}
 {% endif %}
 
 <br>
 <h3>Releases</h3>
 {% if releases != [] %}
   <p>This creator has contributed to:
-  <table class="ui very basic celled table">
-  <tbody>
-  {% for release in releases %}
-    <tr><td class="two wide center aligned">
-          {% if release.release_date %}{{ release.release_date }}{% elif release.release_year %}{{ release.release_year }}{% endif %}
-        <td class="five wide single line">
-          <b><a href="/release/{{ release.ident }}">{{ release.title }}</a></b>
-          <br>{{ release.release_type or "unknown" }} - {{ release.release_status or "unknown" }}
-                {% if release.license_slug %} - {{ release.license_slug }}{% endif %}
-          {% if release.doi %}
-            <br><a href="https://doi.org/{{ release.doi }}" style="color:green;">doi:{{ release.doi }}</a>
-          {% endif %}
-  {% endfor %}
-  </tbody>
-  </table>
+  {{ entity_macros.release_list(releases) }}
 {% else %}
 This creator has not contributed to any releases.
 {% endif %}

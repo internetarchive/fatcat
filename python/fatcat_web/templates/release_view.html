@@ -269,8 +269,7 @@ This release citing other releases.
   {% endif %}
   {% if container.es.in_kbart == True %}
     <i class="icon check green"></i> In <a href="https://thekeepers.org/purl/issn/{{ container.issnl }}">Keepers Registery</a><br>
-  {% elif container.es.in_kbart == False %}
-    <i class="icon times grey"></i> Not in <a href="https://thekeepers.org/journals?query={{ container.issnl }}">Keepers Registry</a><br>
+  {% elif container.es.in_kbart == False %} <i class="icon times grey"></i> Not in <a href="https://thekeepers.org/journals?query={{ container.issnl }}">Keepers Registry</a><br>
   {% endif %}
 {% endif %}
 {% if container.issnl != None %}

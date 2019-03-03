@@ -12,3 +12,54 @@
   <a href="/{{ entity_type }}/{{ entity.ident }}/history" class="ui button">View History</a>
 </div>
 {%- endmacro %}
+
+
+{% macro extra_metadata(extra) -%}
+<h3>Extra Metadata (raw JSON)</h3>
+<table class="ui definition single line fixed compact small unstackable table">
+<tbody>
+{% for (key, value) in extra.items() %}
+  <tr><td class="three wide right aligned"><code>{{ key }}</code></td>
+      <td class="seven wide"><code>{{ value }}</code>
+{% endfor %}
+</tbody>
+</table>
+{%- endmacro %}
+
+
+{% macro release_list(releases) -%}
+<table class="ui very basic celled table">
+<tbody>
+{% for release in releases %}
+  <tr><td class="collapsing center aligned">
+        {% if release.release_date %}{{ release.release_date }}{% elif release.release_year %}{{ release.release_year }}{% endif %}
+      <td class="">
+        <b><a href="/release/{{ release.ident }}">{{ release.title }}</a></b>
+        <br>{{ release.release_status or "unknown status" }}
+            | {{ release.release_type or "unknown type" }}
+            {% if release.license_slug %} | {{ release.license_slug }}{% endif %}
+        {% if release.doi %}
+          <br><a href="https://doi.org/{{ release.doi }}" style="color:green;">doi:{{ release.doi }}</a>
+        {% endif %}
+{% endfor %}
+</tbody>
+</table>
+{%- endmacro %}
+
+
+{% macro url_list(urls) -%}
+<table class="ui very basic compact single line fixed table">
+<tbody>
+  {% for url in urls %}
+    <tr><td class="two wide right aligned">{{ url.rel }}
+        <td class="eight wide"><small><code><a href="{{ url.url }}">
+        {% if url.url.count('/') >= 3 %}
+          {{ '/'.join(url.url.split('/')[0:2]) }}/<b>{{ ''.join(url.url.split('/')[2]) }}</b>/{{ '/'.join(url.url.split('/')[3:]) }}
+        {% else %}
+          {{ url.url }}
+        {% endif %}
+        </a></code></small>
+  {% endfor %}
+</tbody>
+</table>
+{%- endmacro %}
