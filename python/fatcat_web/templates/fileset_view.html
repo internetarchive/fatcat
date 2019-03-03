@@ -1,0 +1,78 @@
+{% set entity = fileset %}
+{% import "entity_macros.html" as entity_macros %}
+{% extends "base.html" %}
+
+{% block fullbody %}
+
+<div class="ui stackable mobile reversed grid centered">
+<div class="one wide column"></div>
+<div class="fifteen wide column">
+  <h1 class="ui header">
+  <div class="sub header"><code>fileset {{ entity.ident }}</code></div></h1>
+</div>
+</div>
+
+<div class="ui stackable mobile reversed grid centered">
+<div class="one wide column"></div>
+<div class="ten wide column" style="font-size: 16px;">
+
+{% if entity.extra %}
+  {{ entity_macros.extra_metadata(entity.extra) }}
+{% endif %}
+
+<h3>Releases</h3>
+{% if entity.releases != [] %}
+  {{ entity_macros.release_list(entity.releases) }}
+{% else %}
+  <p>
+  This File Set is not associated with any fatcat release.
+{% endif %}
+ 
+
+<h3>File Manifest ({{ fileset.manifest|count }})</h3>
+{% if fileset.manifest %}
+  <div class="ui celled list">
+    {% for file in fileset.manifest %}
+    <div class="item">
+      <div class="content"><code>
+        <div class="header">
+          <i class="file outline icon"></i> {{ file.path }} ({{ file.size|filesizeformat }}{% if file.extra.mimetype %}, {{ file.extra.mimetype }}{% endif %})
+        </div>
+        <div style="color: #666; margin-left: 1em;"><small>
+          {% if file.md5 %}   md5:{{ file.md5 }}<br>{% endif %}
+          {% if file.sha1 %}  sha1:{{ file.sha1 }}<br>{% endif %}
+          {% if file.sha256 %}sha256:{{ file.sha256 }}<br>{% endif %}
+        </small></div>
+      </code></div>
+    </div>
+    {% endfor %}
+  </div>
+{% else %}
+This File Set is empty (contains no files).
+{% endif %}
+
+
+<br>
+<h3>Base URLs</h3>
+{% if entity.urls %}
+  {{ entity_macros.url_list(entity.urls) }}
+{% else %}
+No known public URL, mirror, or archive for this File Set.
+{% endif %}
+
+</div>
+<div class="five wide column">
+
+{% if fileset.total_size != None %}
+<div class="ui segment attached">
+  <p><b>Total Size</b> &nbsp;{{ fileset.total_size|filesizeformat }}
+</div>
+{% endif %}
+
+{{ entity_macros.fatcat_bits(entity, "fileset", "") }}
+
+</div>
+</div>
+
+
+{% endblock %}

@@ -218,6 +218,95 @@ def file_view(ident):
             abort(ae.status)
     return render_template('file_view.html', file=entity)
 
+@app.route('/fileset/<ident>/history', methods=['GET'])
+def fileset_history(ident):
+    try:
+        entity = api.get_fileset(ident)
+        history = api.get_fileset_history(ident)
+    except ApiException as ae:
+        abort(ae.status)
+    return render_template('entity_history.html',
+        page_title=None,
+        entity_type="fileset",
+        entity=entity,
+        history=history)
+
+@app.route('/fileset/<ident>/edit', methods=['GET'])
+def fileset_edit_view(ident):
+    try:
+        entity = api.get_fileset(ident)
+    except ApiException as ae:
+        abort(ae.status)
+    return render_template('entity_edit.html')
+
+@app.route('/fileset/lookup', methods=['GET'])
+def fileset_lookup():
+    raise NotImplementedError
+
+@app.route('/fileset/<ident>', methods=['GET'])
+def fileset_view(ident):
+    try:
+        entity = api.get_fileset(ident)
+    except ApiException as ae:
+        abort(ae.status)
+    if entity.state == "redirect":
+        return redirect('/fileset/{}'.format(entity.redirect))
+    elif entity.state == "deleted":
+        return render_template('deleted_entity.html', entity=entity)
+    else:
+        try:
+            entity.releases = []
+            for r in entity.release_ids:
+                entity.releases.append(api.get_release(r))
+        except ApiException as ae:
+            abort(ae.status)
+        entity.total_size = sum([f.size for f in entity.manifest])
+    return render_template('fileset_view.html', fileset=entity)
+
+@app.route('/webcapture/<ident>/history', methods=['GET'])
+def webcapture_history(ident):
+    try:
+        entity = api.get_webcapture(ident)
+        history = api.get_webcapture_history(ident)
+    except ApiException as ae:
+        abort(ae.status)
+    return render_template('entity_history.html',
+        page_title=None,
+        entity_type="webcapture",
+        entity=entity,
+        history=history)
+
+@app.route('/webcapture/<ident>/edit', methods=['GET'])
+def webcapture_edit_view(ident):
+    try:
+        entity = api.get_webcapture(ident)
+    except ApiException as ae:
+        abort(ae.status)
+    return render_template('entity_edit.html')
+
+@app.route('/webcapture/lookup', methods=['GET'])
+def webcapture_lookup():
+    raise NotImplementedError
+
+@app.route('/webcapture/<ident>', methods=['GET'])
+def webcapture_view(ident):
+    try:
+        entity = api.get_webcapture(ident)
+    except ApiException as ae:
+        abort(ae.status)
+    if entity.state == "redirect":
+        return redirect('/webcapture/{}'.format(entity.redirect))
+    elif entity.state == "deleted":
+        return render_template('deleted_entity.html', entity=entity)
+    else:
+        try:
+            entity.releases = []
+            for r in entity.release_ids:
+                entity.releases.append(api.get_release(r))
+        except ApiException as ae:
+            abort(ae.status)
+    return render_template('webcapture_view.html', webcapture=entity)
+
 @app.route('/release/lookup', methods=['GET'])
 def release_lookup():
     for key in ('doi', 'wikidata_qid', 'pmid', 'pmcid', 'isbn13', 'core_id'):

@@ -1,0 +1,85 @@
+{% set entity = webcapture %}
+{% import "entity_macros.html" as entity_macros %}
+{% extends "base.html" %}
+
+{% block fullbody %}
+
+<div class="ui stackable mobile reversed grid centered">
+<div class="one wide column"></div>
+<div class="fifteen wide column">
+  <h1 class="ui header">
+  {% if webcapture.original_url %}
+    <a href="{{ webcapture.original_url }}" style="color: black;"><code>{{ webcapture.original_url }}</code></a>
+  {% endif %}
+  <div class="sub header"><code>webcapture {{ webcapture.ident }}</code></div></h1>
+</div>
+</div>
+
+<div class="ui stackable mobile reversed grid centered">
+<div class="one wide column"></div>
+<div class="ten wide column" style="font-size: 16px;">
+
+
+{% if entity.extra %}
+  {{ entity_macros.extra_metadata(entity.extra) }}
+{% endif %}
+
+<h3>Releases</h3>
+{% if entity.releases != [] %}
+  {{ entity_macros.release_list(entity.releases) }}
+{% else %}
+  <p>
+  This Web Capture is not associated with any fatcat release.
+{% endif %}
+
+
+<h3>CDX Rows ({{ webcapture.cdx|count }})</h3>
+{% if webcapture.cdx %}
+  <div class="ui celled list">
+    {% for row in webcapture.cdx %}
+    <div class="item">
+      <div class="content">
+        <div class="header">
+          <code><a href="{{ row.url }}">{{ row.url}}</a></code>
+        </div>
+        <div style="margin-left: 1em;">
+          {{ row.timestamp }}
+          {% if row.mimetype %}| {{ row.mimetype }}{% endif %}
+          <br>
+          <code><small style="color: #666;">
+            {% if row.sha1 %}sha1:{{ row.sha1 }}<br>{% endif %}
+            {% if row.sha256 %}sha256:{{ row.sha256 }}<br>{% endif %}
+          </small></code>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+{% else %}
+This File Set is empty (contains no files).
+{% endif %}
+
+<br>
+<h3>Archive URLs</h3>
+{% if webcapture.archive_urls != None %}
+  {{ entity_macros.url_list(webcapture.archive_urls) }}
+{% else %}
+No known public archive for this webcapture.
+{% endif %}
+
+</div>
+<div class="five wide column">
+
+{% if webcapture.timestamp != None %}
+<div class="ui segment attached">
+  <p><b>Capture Time</b> &nbsp;{{ webcapture.timestamp }}
+</div>
+{% endif %}
+
+{{ entity_macros.fatcat_bits(entity, "webcapture", "") }}
+
+</div>
+</div>
+
+
+{% endblock %}
