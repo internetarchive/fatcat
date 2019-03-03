@@ -210,9 +210,10 @@
 {% if release.refs != None and release.refs.size != 0 %}
 <h3>References</h3>
 <i>This release citing other releases</i>
-<ol class="ui list">
+{# see https://github.com/Semantic-Org/Semantic-UI/issues/2639 #}
+<ol>
   {% for ref in release.refs %}
-    <li {% if ref.key %}value="{{ ref.key }}"{% endif %}>
+    <li>
     {% if ref.title %}
       {{ ref.title }}
       {% if ref.container_name %}{{ ref.container_name }}.{% endif %}
