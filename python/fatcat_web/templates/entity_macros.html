@@ -2,8 +2,11 @@
 {% macro fatcat_bits(entity, entity_type, expand="") -%}
 <div class="ui segment attached">
   <b>Fatcat Bits</b>
-  <p>State is "{{ entity.state }}". Revision:
-  <br><small><code>{{ entity.revision }}</code></small>
+  <p>State is "{{ entity.state }}".
+  {% if entity.state != "deleted" %}
+    Revision:
+    <br><small><code>{{ entity.revision }}</code></small>
+  {% endif %}
   <br><a href="https://api.{{ config.FATCAT_DOMAIN }}/v0/release/{{ entity.ident }}{% if expand %}?expand={{ expand}}{% endif %}">As JSON object via API</a>
 </div>
 

@@ -23,19 +23,10 @@
 <div class="five wide column">
 <div class="ui segment top attached">
 
-<b>Entity Type:</b> {{ entity_type }}
-</div><div class="ui segment attached">
-
-<b>Fatcat Bits</b>
-<p>State is "{{ entity.state }}". Revision:
-<br><small><code>{{ entity.revision }}</code></small>
-<br><a href="https://api.{{ config.FATCAT_DOMAIN }}/v0/{{ entity_type }}/{{ entity.ident }}">As JSON object via API</a>
-
+<b>Entity Type:</b> <code>{{ entity_type }}</code>
 </div>
-<div class="two ui buttons bottom attached">
-  <a href="/entity/{{ entity.ident }}/edit" class="ui blue button">Edit Metadata</a>
-  <a href="/entity/{{ entity.ident }}/history" class="ui button">View History</a>
-</div>
+
+{{ entity_macros.fatcat_bits(entity, entity_type, "") }}
 
 </div>
 </div>

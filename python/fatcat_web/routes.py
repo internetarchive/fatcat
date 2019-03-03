@@ -100,7 +100,7 @@ def container_view(ident):
     if entity.state == "redirect":
         return redirect('/container/{}'.format(entity.redirect))
     if entity.state == "deleted":
-        return render_template('deleted_entity.html', entity=entity)
+        return render_template('deleted_entity.html', entity=entity, entity_type="container")
     if entity.state == "active":
         entity.es = container_to_elasticsearch(entity, force_bool=False)
     return render_template('container_view.html',
@@ -161,7 +161,7 @@ def creator_view(ident):
     if entity.state == "redirect":
         return redirect('/creator/{}'.format(entity.redirect))
     if entity.state == "deleted":
-        return render_template('deleted_entity.html', entity=entity)
+        return render_template('deleted_entity.html', entity=entity, entity_type="creator")
     return render_template('creator_view.html', creator=entity, releases=releases)
 
 @app.route('/file/<ident>/history', methods=['GET'])
@@ -208,7 +208,7 @@ def file_view(ident):
     if entity.state == "redirect":
         return redirect('/file/{}'.format(entity.redirect))
     elif entity.state == "deleted":
-        return render_template('deleted_entity.html', entity=entity)
+        return render_template('deleted_entity.html', entity=entity, entity_type="file")
     else:
         try:
             entity.releases = []
@@ -252,7 +252,7 @@ def fileset_view(ident):
     if entity.state == "redirect":
         return redirect('/fileset/{}'.format(entity.redirect))
     elif entity.state == "deleted":
-        return render_template('deleted_entity.html', entity=entity)
+        return render_template('deleted_entity.html', entity=entity, entity_type="fileset")
     else:
         try:
             entity.releases = []
@@ -297,7 +297,7 @@ def webcapture_view(ident):
     if entity.state == "redirect":
         return redirect('/webcapture/{}'.format(entity.redirect))
     elif entity.state == "deleted":
-        return render_template('deleted_entity.html', entity=entity)
+        return render_template('deleted_entity.html', entity=entity, entity_type="webcapture")
     else:
         try:
             entity.releases = []
@@ -370,7 +370,7 @@ def release_view(ident):
     if entity.state == "redirect":
         return redirect('/release/{}'.format(entity.redirect))
     if entity.state == "deleted":
-        return render_template('deleted_entity.html', entity=entity)
+        return render_template('deleted_entity.html', entity=entity, entity_type="release")
     if entity.container and entity.container.state == "active":
         entity.container.es = container_to_elasticsearch(entity.container, force_bool=False)
     if entity.state == "active":
@@ -418,7 +418,7 @@ def work_view(ident):
     if entity.state == "redirect":
         return redirect('/work/{}'.format(entity.redirect))
     if entity.state == "deleted":
-        return render_template('deleted_entity.html', entity=entity)
+        return render_template('deleted_entity.html', entity=entity, entity_type="work")
     return render_template('work_view.html', work=entity, releases=releases)
 
 @app.route('/editgroup/<ident>', methods=['GET'])
