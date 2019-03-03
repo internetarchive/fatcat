@@ -96,7 +96,7 @@ def test_release_examples(api):
     api.lookup_release(isbn13='978-3-16-148410-0')
 
     r1 = api.get_release('aaaaaaaaaaaaarceaaaaaaaaai')
-    assert r1.title == "bigger example"
+    assert r1.title.startswith("A bigger example")
     assert len(r1.refs) == 5
     assert r1.contribs[0].role == "editor"
     assert r1.abstracts[0].mimetype == "application/xml+jats"
