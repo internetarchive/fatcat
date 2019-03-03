@@ -127,7 +127,7 @@
 
 
 <h3>Known Files and URLs</h3>
-{% if files != [] %}
+{% if entity.files != [] %}
 <table class="ui compact fixed table">
 <!--
   <thead>
@@ -138,7 +138,7 @@
   </thead>
 -->
   <tbody>
-  {% for file in files %}
+  {% for file in entity.files %}
   <tr><td>{% if file.mimetype != None %}{{ file.mimetype }}&nbsp;&nbsp;{% endif %}
           {% if file.size != None %}{{ file.size|filesizeformat }}{% endif %}
       <br><small><code><a href="/file/{{ file.ident }}">
@@ -163,10 +163,54 @@
 <a href="/work/{{ release.work_id }}">other releases for this work?</a>).
 {% endif %}
 
+
+{% if entity.filesets != [] %}
+<h3>File Sets</h3>
+<table class="ui compact fixed table">
+  <tbody>
+  {% for fileset in entity.filesets %}
+  <tr><td>{{ fileset.manifest|count }} files &nbsp;{{ fileset.total_size|filesizeformat }}
+      <br><small><code><a href="/fileset/{{ fileset.ident }}">fileset:{{ fileset.ident }}</a></code></small>
+      <td class="single line">
+        {% for url in fileset.urls[:5] %}
+          <a href="{{ url.url }}">{{ url.url.split('/')[2] }}</a> ({{ url.rel }})<br>
+        {% endfor %}
+        {% if fileset.urls|length > 5 %}
+          + {{ file.urls|length - 5 }} more URLs
+        {% endif %}
+  {% endfor %}
+  </tbody>
+</table>
+</ul>
+{% endif %}
+
+
+{% if entity.webcaptures != [] %}
+<h3>Web Captures</h3>
+<table class="ui single line compact fixed table">
+  <tbody>
+  {% for webcapture in entity.webcaptures %}
+  <tr><td><b><a href="{{ webcapture.original_url }}">{{ webcapture.original_url }}</a></b>
+      <br>{{ webcapture.timestamp }} | {{ webcapture.cdx|count }} resources
+      <br><small><code><a href="/webcapture/{{ webcapture.ident }}">webcapture:{{ webcapture.ident }}</a></code></small>
+      <td class="single line">
+        {% for url in webcapture.archive_urls[:5] %}
+          <a href="{{ url.url }}">{{ url.url.split('/')[2] }}</a> ({{ url.rel }})<br>
+        {% endfor %}
+        {% if webcapture.urls|length > 5 %}
+          + {{ file.urls|length - 5 }} more URLs
+        {% endif %}
+  {% endfor %}
+  </tbody>
+</table>
+</ul>
+{% endif %}
+
+
 {% if release.refs != None and release.refs.size != 0 %}
 <h3>References</h3>
-This release citing other releases.
-<ol>
+<i>This release citing other releases</i>
+<ol class="ui list">
   {% for ref in release.refs %}
     <li>
     {% if ref.title %}
@@ -198,8 +242,8 @@ This release citing other releases.
 </div>
 <div class="five wide column">
 
-{% if files != [] and files[0].urls != [] %}
-<a href="{{ files[0].urls[0].url }}" class="ui top attached fluid huge green button"><i class="file pdf outline icon"></i>Download Full Text</a>
+{% if entity.files != [] and entity.files[0].urls != [] %}
+<a href="{{ entity.files[0].urls[0].url }}" class="ui top attached fluid huge green button"><i class="file pdf outline icon"></i>Download Full Text</a>
 {% else %}
 <span class="ui top attached fluid huge grey button"><i class="file cross icon"></i>No Full Text Available</span>
 {% endif %}

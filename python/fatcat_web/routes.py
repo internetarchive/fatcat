@@ -363,8 +363,8 @@ def release_edit_view(ident):
 def release_view(ident):
     try:
         entity = api.get_release(ident, expand="container,files,filesets,webcaptures")
-        files = entity.files
         container = entity.container
+        filesets = entity.filesets
     except ApiException as ae:
         abort(ae.status)
     if entity.state == "redirect":
@@ -375,17 +375,13 @@ def release_view(ident):
         entity.container.es = container_to_elasticsearch(entity.container, force_bool=False)
     if entity.state == "active":
         entity.es = release_to_elasticsearch(entity, force_bool=False)
+    for fs in filesets:
+        fs.total_size = sum([f.size for f in fs.manifest])
+    entity.filesets = filesets
     authors = [c for c in entity.contribs if c.role in ('author', None)]
     authors = sorted(authors, key=lambda c: c.index)
-    for fe in files:
-        # crudely filter out exact duplicates
-        kept = []
-        for u in fe.urls:
-            if not u in kept:
-                kept.append(u)
-        fe.urls = [u for u in kept if not '/web/None/' in u.url]
     return render_template('release_view.html', release=entity,
-        authors=authors, files=files, container=container)
+        authors=authors, container=container)
 
 @app.route('/work/create', methods=['GET'])
 def work_create_view():
