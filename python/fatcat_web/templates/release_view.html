@@ -113,16 +113,9 @@
 <br><small><i>In <code>{{ release.abstracts[0].mimetype }}</code> format</i></small>
 {% endif %}
 
-{% if release.extra %}
-<h3>Extra Metadata (raw JSON)</h3>
-<table class="ui definition single line fixed compact small unstackable table">
-<tbody>
-{% for (key, value) in release.extra.items() %}
-  <tr><td class="three wide right aligned"><code>{{ key }}</code></td>
-      <td class="seven wide"><code>{{ value }}</code>
-{% endfor %}
-</tbody>
-</table>
+
+{% if entity.extra %}
+  {{ entity_macros.extra_metadata(entity.extra) }}
 {% endif %}
 
 
