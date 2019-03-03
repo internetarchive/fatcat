@@ -90,7 +90,7 @@
 <table class="ui basic compact fixed table">
 <tbody>
 {% for contrib in release.contribs %}
-  <tr><td class="one wide">{% if contrib.index or contrib.index == 0 %} {{ contrib.index + 1 }}{% endif %}
+  <tr><td class="collapsing">{% if contrib.index or contrib.index == 0 %} {{ contrib.index + 1 }}{% endif %}
       <td>
       {% if contrib.creator_id %}
         <a href="/creator/{{contrib.creator_id}}">{{ contrib.raw_name or 'unknown' }}</a> 
