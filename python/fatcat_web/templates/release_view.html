@@ -212,7 +212,7 @@
 <i>This release citing other releases</i>
 <ol class="ui list">
   {% for ref in release.refs %}
-    <li>
+    <li {% if ref.key %}value="{{ ref.key }}"{% endif %}>
     {% if ref.title %}
       {{ ref.title }}
       {% if ref.container_name %}{{ ref.container_name }}.{% endif %}
@@ -233,6 +233,7 @@
     {% if ref.extra != None and ref.extra.doi %}
       (DOI: <a href="/release/lookup?doi={{ ref.extra.doi }}">{{ ref.extra.doi }}</a>)
     {% endif %}
+    </li>
   {% endfor %}
 </ol>
 {% else %}
