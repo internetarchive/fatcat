@@ -619,8 +619,8 @@ INSERT INTO webcapture_rev_cdx (webcapture_rev, surt, timestamp, url, mimetype, 
     ('00000000-0000-0000-7777-FFF000000003', 'org,asheesh)/robots.txt', '2003-02-17T04:47:19Z', 'http://asheesh.org:80/robots.txt', 'text/html', 404, 'a637f1d27d9bcb237310ed29f19c07e1c8cf0aa5', 'ffc1005680cb620eec4c913437dfabbf311b535cfe16cbaeb2faec1f92afc362');
 
 INSERT INTO webcapture_rev_url (webcapture_rev, rel, url) VALUES
-    ('00000000-0000-0000-7777-FFF000000002', 'wayback', 'http://web.archive.org/201801010001/http://example.org'),
-    ('00000000-0000-0000-7777-FFF000000003', 'wayback', 'http://web.archive.org/201801010001/https://asheesh.org'),
+    ('00000000-0000-0000-7777-FFF000000002', 'wayback', 'http://web.archive.org/web/201801010001/http://example.org'),
+    ('00000000-0000-0000-7777-FFF000000003', 'wayback', 'http://web.archive.org/web/201801010001/https://asheesh.org'),
     ('00000000-0000-0000-7777-FFF000000003', 'warc', 'https://example.org/something.warc.gz');
 
 INSERT INTO webcapture_ident (id, is_live, rev_id, redirect_id) VALUES
@@ -666,7 +666,7 @@ INSERT INTO release_rev (id, work_ident_id, container_ident_id, title, release_t
         null, null, null, null, null, null, null, null, null, null, null, null,  null, null, null, null, null),
     ('00000000-0000-0000-4444-FFF000000002', '00000000-0000-0000-5555-000000000002',
         '00000000-0000-0000-1111-000000000001',
-        'bigger example',
+        'A bigger example with a very long title that probably needs to wrap around to another line: Useful for testing the web interface and other bibliographic display projects',
         'article-journal',
         'published',
         '2018-01-01',
