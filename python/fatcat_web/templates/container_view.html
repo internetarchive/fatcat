@@ -16,10 +16,12 @@
 <div class="one wide column"></div>
 <div class="ten wide column" style="font-size: 16px;">
 
-<p>
 {% if (container.extra != None) and (container.extra['urls'] != None) and (container.extra['urls']|length > 0) %}
-  <a href="{{ container.extra['urls'][0] }}"><code>{{ container.extra['urls'][0] }}</code></a><br>
+  <div style="text-overflow: ellipsis; overflow: hidden; width: 100%;">
+    <a href="{{ container.extra['urls'][0] }}"><code>{{ container.extra['urls'][0] }}</code></a>
+  </div>
 {% endif %}
+<p>
 {% if container.publisher != None %}
   Published by {{ container.publisher }}
 {% endif %}
