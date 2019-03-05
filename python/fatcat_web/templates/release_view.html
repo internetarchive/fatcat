@@ -11,13 +11,15 @@
   <div class="sub header"><code>release {{ release.ident }}</code></div></h1>
   <p style="font-size: larger;">
   {% if authors != [] %} by {% endif %}
-  {% for contrib in authors %}
+  {% for contrib in authors[:12] %}
     {% if contrib.creator_id %}
       <b><a href="/creator/{{contrib.creator_id}}">{{ contrib.raw_name }}</a></b>{% if not loop.last %}, {% endif %}
     {% else %}
       {% if contrib.raw_name != None %}{{ contrib.raw_name }}{% else %}<i>Unknown</i>{% endif %}{% if not loop.last %}, {% endif %}
     {% endif %}
   {% endfor %}
+  {% if authors|count > 12 %} <b>(+{{ authors|length - 12 }} others)</b>
+  {% endif %}
 </div>
 </div>
 
@@ -85,7 +87,7 @@
 {% if release.contribs|length > 0 %}
 <div class="ui accordion">
 <div class="title">
-  <i class="dropdown icon"></i>All Contributors
+  <i class="dropdown icon"></i>All Contributors ({{ release.contribs|length }})
 </div><div class="content">
 <table class="ui basic compact table">
 <tbody>
