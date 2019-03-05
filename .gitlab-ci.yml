@@ -33,7 +33,7 @@ unified_test:
     - pipenv run pytest --cov
     - pipenv run ./tests/cli.sh
     # Just errors
-    - pipenv run pylint -E fatcat*.py fatcat_tools fatcat_web tests
+    - pipenv run pylint -E fatcat*.py fatcat_tools fatcat_web tests/*.py
 
 rust_build_release:
   only:
