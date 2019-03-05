@@ -534,7 +534,7 @@ INSERT INTO abstracts (sha1, content) VALUES
 
 INSERT INTO container_rev (id, name, publisher, issnl, wikidata_qid, extra_json) VALUES
     ('00000000-0000-0000-1111-FFF000000001', 'MySpace Blog', null, null, null, null),
-    ('00000000-0000-0000-1111-FFF000000002', 'Journal of Trivial Results', 'bogus publishing group', '1234-5678', 'Q1234', '{"country": "nz", "languages": ["en", "es"], "original_name": "Journal of Significant Results", "doaj": {"as_of": "2019-01-01", "works": false}, "road": {"as_of": "2019-01-01"}, "first_year": 1990}'),
+    ('00000000-0000-0000-1111-FFF000000002', 'Journal of Trivial Results', 'bogus publishing group', '1234-5678', 'Q1234', '{"country": "nz", "languages": ["en", "es"], "original_name": "Journal of Significant Results", "doaj": {"as_of": "2019-01-01", "works": false}, "road": {"as_of": "2019-01-01"}, "first_year": 1990, "urls": ["http://www.ajnonline.com/pt/re/ajn/home.htm;jsessionid=D8IrvYWQbd7q4A7Au1Lu3cFSJuXcVZqm2YnPJ5hBG52cgZw2htKx!958525354!-949856144!9001!-1"]}'),
     ('00000000-0000-0000-1111-FFF000000003', 'PLOS Medicine', 'Public Library of Science', '1549-1277', 'Q1686921', '{"doaj": {"as_of": "2019-01-30"}, "sherpa_romeo": {"color": "green"}}');
 
 INSERT INTO container_ident (id, is_live, rev_id, redirect_id) VALUES
@@ -713,7 +713,21 @@ INSERT INTO release_rev_abstract (release_rev, abstract_sha1, mimetype, lang) VA
 
 INSERT INTO release_contrib (release_rev, creator_ident_id, raw_name, role, index_val, extra_json) VALUES
     ('00000000-0000-0000-4444-FFF000000002', null, null, null, null, null),
-    ('00000000-0000-0000-4444-FFF000000002', '00000000-0000-0000-2222-000000000002', 'some contrib', 'editor', 4, '{"affiliation": "Coolllleeeeeddddggee!"}'),
+    ('00000000-0000-0000-4444-FFF000000002', null, 'robin hood', 'author', 1, null),
+    ('00000000-0000-0000-4444-FFF000000002', null, 'robin hood', 'author', 2, null),
+    ('00000000-0000-0000-4444-FFF000000002', '00000000-0000-0000-2222-000000000002', 'robin hood', 'author', 3, null),
+    ('00000000-0000-0000-4444-FFF000000002', null, 'robin hood', 'author', 4, null),
+    ('00000000-0000-0000-4444-FFF000000002', null, 'robin hood', 'author', 5, null),
+    ('00000000-0000-0000-4444-FFF000000002', null, 'robin hood', 'author', 6, null),
+    ('00000000-0000-0000-4444-FFF000000002', null, 'robin hood', 'author', 7, null),
+    ('00000000-0000-0000-4444-FFF000000002', null, 'robin hood', 'author', 8, null),
+    ('00000000-0000-0000-4444-FFF000000002', null, 'robin hood', 'author', 9, null),
+    ('00000000-0000-0000-4444-FFF000000002', null, 'robin hood', 'author', 10, null),
+    ('00000000-0000-0000-4444-FFF000000002', null, 'robin hood', 'author', null, null),
+    ('00000000-0000-0000-4444-FFF000000002', null, 'robin hood', 'author', null, null),
+    ('00000000-0000-0000-4444-FFF000000002', null, 'robin hood', 'author', null, null),
+    ('00000000-0000-0000-4444-FFF000000002', null, 'robin hood', 'author', null, null),
+    ('00000000-0000-0000-4444-FFF000000002', '00000000-0000-0000-2222-000000000002', 'some contrib', 'editor', 12, '{"affiliation": "Coolllleeeeeddddggee!"}'),
     ('00000000-0000-0000-4444-FFF000000003', '00000000-0000-0000-2222-000000000003', 'John P. A. Ioannidis', 'author', 0, null);
 
 INSERT INTO release_ref (release_rev, index_val, target_release_ident_id) VALUES
