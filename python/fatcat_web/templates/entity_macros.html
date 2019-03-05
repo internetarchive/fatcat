@@ -42,12 +42,13 @@
 <tbody>
 {% for release in releases %}
   <tr><td class="collapsing center aligned">
-        {% if release.release_date %}{{ release.release_date }}{% elif release.release_year %}{{ release.release_year }}{% endif %}
+        {% if release.release_date %}{{ release.release_date }}{% elif release.release_year %}{{ release.release_year }}{% else %}<i>unknown</i>{% endif %}
       <td class="">
         <b><a href="/release/{{ release.ident }}">{{ release.title }}</a></b>
-        <br>{{ release.release_status or "unknown status" }}
+        <br><small>{{ release.release_status or "unknown status" }}
             | {{ release.release_type or "unknown type" }}
             {% if release.license_slug %} | {{ release.license_slug }}{% endif %}
+        </small>
         {% if release.doi %}
           <br><a href="https://doi.org/{{ release.doi }}" style="color:green;">doi:{{ release.doi }}</a>
         {% endif %}
