@@ -379,7 +379,7 @@ def release_view(ident):
         fs.total_size = sum([f.size for f in fs.manifest])
     entity.filesets = filesets
     authors = [c for c in entity.contribs if c.role in ('author', None)]
-    authors = sorted(authors, key=lambda c: c.index)
+    authors = sorted(authors, key=lambda c: c.index or 99999999)
     return render_template('release_view.html', release=entity,
         authors=authors, container=container)
 
