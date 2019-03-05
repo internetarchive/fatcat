@@ -27,7 +27,7 @@ def run_entity_updates(args):
 
 def run_elasticsearch_release(args):
     consume_topic = "fatcat-{}.release-updates".format(args.env)
-    worker = ElasticsearchReleaseWorker(args.api, args.kafka_hosts, consume_topic,
+    worker = ElasticsearchReleaseWorker(args.kafka_hosts, consume_topic,
         elasticsearch_backend=args.elasticsearch_backend,
         elasticsearch_index=args.elasticsearch_index)
     worker.run()
