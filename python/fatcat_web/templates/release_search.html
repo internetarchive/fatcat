@@ -27,8 +27,8 @@
   &nbsp;&nbsp;<a href="{{ paper.best_pdf_url }}" class="ui label small"><i class="file icon"></i>fulltext</a>
   {% endif %}
   </h4>
-  <h5 style="margin-top: 4px; margin-bottom: 4px; font-size: 1em;">{{ ", ".join(paper.contrib_names[:12] }}
-    {% if paper.contrib_names|length > 12 %}(+{{ paper.contrib_names|length - 12 }} others){% endif %}
+  <h5 style="margin-top: 4px; margin-bottom: 4px; font-size: 1em;">{{ ", ".join(paper.contrib_names[:12]) }}
+    {% if paper.contrib_names|length > 12 %}<i>(+{{ paper.contrib_names|length - 12 }} others)</i>{% endif %}
   </h5>
   {% if paper.doi %}
   DOI: <a href="https://doi.org/{{paper.doi }}" style="color: green;">{{ paper.doi }}</a>
