@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+<responseDate>2019-03-05T23:10:23Z</responseDate>
+<request verb="GetRecord" identifier="oai:arXiv.org:1810.09584" metadataPrefix="arXivRaw">http://export.arxiv.org/oai2</request>
+<GetRecord>
+<record>
+<header>
+ <identifier>oai:arXiv.org:1810.09584</identifier>
+ <datestamp>2019-01-15</datestamp>
+ <setSpec>physics:cond-mat</setSpec>
+ <setSpec>physics:physics</setSpec>
+</header>
+<metadata>
+ <arXivRaw xmlns="http://arxiv.org/OAI/arXivRaw/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://arxiv.org/OAI/arXivRaw/ http://arxiv.org/OAI/arXivRaw.xsd">
+ <id>1810.09584</id><submitter>\'Edgar Rold\'an</submitter><version version="v1"><date>Mon, 22 Oct 2018 22:41:50 GMT</date><size>401kb</size><source_type>D</source_type></version><version version="v2"><date>Sun, 13 Jan 2019 11:17:09 GMT</date><size>669kb</size><source_type>D</source_type></version><title>Martingale theory for housekeeping heat</title><authors>Raphael Chetrite, Shamik Gupta, Izaak Neri and \'Edgar Rold\'an</authors><categories>cond-mat.stat-mech physics.bio-ph physics.data-an</categories><comments>7 pages, 2 figures</comments><journal-ref>EPL 124,60006 (2018)</journal-ref><doi>10.1209/0295-5075/124/60006</doi><license>http://arxiv.org/licenses/nonexclusive-distrib/1.0/</license><abstract>  The housekeeping heat is the energy exchanged between a system and its
+environment in a nonequilibrium process that results from the violation of
+detailed balance. We describe fluctuations of the housekeeping heat in
+mesoscopic systems using the theory of martingales, a mathematical framework
+widely used in probability theory and finance. We show that the exponentiated
+housekeeping heat (in units of $k_{\rm B}T$, with $k_{\rm B}$ the Boltzmann
+constant and $T$ the temperature) of a Markovian nonequilibrium process under
+arbitrary time-dependent driving is a martingale process. From this result, we
+derive universal equalities and inequalities for the statistics of
+stopping-times and suprema of the housekeeping heat. We test our results with
+numerical simulations of a system driven out of equilibrium and described by
+Langevin dynamics.
+</abstract></arXivRaw>
+</metadata>
+</record>
+</GetRecord>
+</OAI-PMH>
