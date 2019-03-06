@@ -10,7 +10,7 @@ import requests
 from pykafka import KafkaClient
 
 from fatcat_tools.workers import most_recent_message
-from .harvest_common import HarvestState
+from .harvest_common import HarvestState, requests_retry_session
 
 
 class HarvestCrossrefWorker:
@@ -93,7 +93,7 @@ class HarvestCrossrefWorker:
         count = 0
         with produce_topic.get_producer() as producer:
             while True:
-                http_resp = requests.get(self.api_host_url, params, headers=headers)
+                http_resp = requests_retry_session().get(self.api_host_url, params, headers=headers)
                 if http_resp.status_code == 503:
                     # crude backoff
                     print("got HTTP {}, pausing for 30 seconds".format(http_resp.status_code))
