@@ -161,20 +161,22 @@ class PubMedParser():
         if pages:
             pages = pages.string
 
-        title = medline.Article.ArticleTitle.string, # always present
-        if type(title) is tuple:
-            title = ': '.join(title)
-        if title.endswith('.'):
-            title = title[:-1]
-        # this hides some "special" titles, but the vast majority are
-        # translations; translations don't always include the original_title
-        if title.startswith('[') and title.endswith(']'):
-            title = title[1:-1]
+        title = medline.Article.ArticleTitle.string # always present
+        if title:
+            if title.endswith('.'):
+                title = title[:-1]
+            # this hides some "special" titles, but the vast majority are
+            # translations; translations don't always include the original_title
+            if title.startswith('[') and title.endswith(']'):
+                title = title[1:-1]
+        else:
+            # TODO: will filter out later
+            title = None
 
         original_title = medline.Article.find("VernacularTitle", recurse=False)
         if original_title:
-            original_title = original_title.string
-            if original_title.endswith('.'):
+            original_title = original_title.string or None
+            if original_title and original_title.endswith('.'):
                 original_title = original_title[:-1]
 
         # TODO: happening in alpha order, not handling multi-language well.
