@@ -1,18 +1,34 @@
 
 ## In Progress
 
+- update TODO, roadmap
+
 ## Next Up
 
-- formalize release_status:
-    => https://wiki.surfnet.nl/display/DRIVERguidelines/DRIVER-VERSION+Mappings
-- page-one.live.cf.public.springer.com seems to serve up bogus one-pagers; should exclude
-- QA sentry has very little host info; also not URL of request
-- should elastic release_year be of date type, instead of int?
-- subtitle as array vs. string
+- import from arabesque output (eg, specific crawls)
+- more logins: orcid, wikimedia
+- missing SQL indices: `ENTITY_edit.editgroup_id, ENTITY_edit.ident_id`
+- environment (QA/dev) in webface `<title>`, header, footer
+    => in dev, make JSON API link to localhost:9810
+- test logins, and add loginpass support for: orcid, wikimedia
+
+## Bugs
+
+- did, somehow, end up with web.archive.org/web/None/ URLs (should remove)
+- searching 'N/A' is a bug, because not quoted; auto-quote it?
+- author (contrib) names not getting included in search (unless explicit)
+- fatcat flask lookup ValueError should return 4xx (and message?)
+    => if blank: UnboundLocalError: local variable 'extid' referenced before assignment
+- subtitles: glom on to full title? search index? cleanup existing imported instances
 
 ## Production Public Launch Blockers
 
+- `withdrawn_date`
+    => either SQL schema addition, or pull from extra
+    => but what if date isn't known?
 - update /about page
+- login/signup iteration (orcid, etc)
+- audit fatcat metadata for CC-0
 - handle 'wip' status entities in web UI
 - guide updates for auth
 - privacy policy, and link from: create account, create edit
@@ -23,38 +39,55 @@
 - haproxy somewhere/how
 - logging iteration: larger journald buffers? point somewhere?
 
-## Ideas
+## Unsorted
 
+- API: ability to expand containers (and files, etc?) in releases-for-work
+- API: /releases endpoint (and/or expansion) for releases-for-file (etc)
+- cleanup ./notes/ directory
+- links say "Download ..." but open in same page, not download
+- workers (like entity updater) should use env vars more
 - ansible: ISSN-L download/symlink
+- page-one.live.cf.public.springer.com seems to serve up bogus one-pagers; should exclude
+- QA sentry has very little host info; also not URL of request
+- elastic schemas:
+    release: drop revision?; container_id; creator_id
+    files: domain list; mimetype; release count; url count; web/publisher/etc;
+        size; has_md5/sha256/sha1; in_ia, in_shadow
+- should elastic `release_year` be of date type, instead of int?
 - webface: still need to collapse links by domain better, and also vs. www.x/x
 - entity edit JSON objects could include `entity_type`
 - refactor 'fatcatd' to 'fatcat-api'
 - changelog elastic stuff (is there even a fatcat-export for this?)
 - container count "enrich"
+- 'hide' flag for exporter (eg, to skip abstracts and refs in some release dumps)
+- https://tech.labs.oliverwyman.com/blog/2019/01/14/serialising-rust-tests/
+- changelog elastic index (for stats)
+- API: allow deletion of empty, un-accepted editgroups
+
+## Ideas
+
+- `poster` as a `release_type`
+- "revert editgroup" mechanism (creates new editgroup)
+- can guess some `release_status` of files by looking at wayback date vs.
+  published date
 - ORCID apparently has 37 mil "work activities" (patents, etc), and only 14 mil
   unique DOIs; could import those other "work activities"? do they have
   identifiers?
-- 'hide' flag for exporter (eg, to skip abstracts and refs in some release dumps)
-- https://tech.labs.oliverwyman.com/blog/2019/01/14/serialising-rust-tests/
 - use https://github.com/codelucas/newspaper to extract fulltext+metadata from HTML crawls
-- changelog elastic index (for stats)
-- import from arabesque output (eg, specific crawls)
-- more logins: orcid, wikimedia
 - `fatcat-auth` tool should support more caveats, both when generating new or mutating existing tokens
 - fast path to skip recursive redirect checks for bulk inserts
 - when getting "wip" entities, require a parameter ("allow_wip"), else get a 404
-- consider dropping CORE identifier
 - maybe better 'success' return message? eg, "success: true" flag
 - idea: allow users to generate their own editgroup UUIDs, to reduce a round
   trips and "hanging" editgroups (created but never edited)
-- API: allow deletion of empty, un-accepted editgroups
 - refactor API schema for some entity-generic methos (eg, history, edit
   operations) to take entity type as a URL path param. greatly reduce macro
   foolery and method count/complexity, and ease creation of new entities
     => /{entity}/edit/{edit_id}
     => /{entity}/{ident}/redirects
     => /{entity}/{ident}/history
-- investigate data quality by looking at, eg, most popular author strings, most popular titles, duplicated containers, etc
+- investigate data quality by looking at, eg, most popular author strings, most
+  popular titles, duplicated containers, etc
 
 ## Metadata Import
 
@@ -135,7 +168,6 @@ new importers:
 
 - file entity full update with all hashes, file size, corrected/expanded wayback links
     => some number of files *did* get inserted to fatcat with short (year) datetimes, from old manifest. also no file size.
-- searching 'N/A' is a bug, because not quoted; auto-quote it?
 - regression test imports for missing orcid display and journal metadata name
 - try out beautifulsoup? (https://stackoverflow.com/a/34532382/4682349)
 - `doi` field for containers (at least for "journal" type; maybe for "series" as well?)
