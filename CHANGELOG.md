@@ -16,6 +16,10 @@ See also:
 
 ## [Unreleased]
 
+- expanded example entities in SQL schema
+- updated rust (cargo) dependencies; depend on rust 1.32+
+- many tweaks to webface and guide
+
 ## [0.2.0] - 2019-02-05
 
 First tagged release, and start of notable change tracking.
