@@ -87,15 +87,18 @@ class HarvestCrossrefWorker:
 
         date_str = date.isoformat()
         params = self.params(date_str)
-        headers = {
-            'User-Agent': 'fatcat_tools/0.1.0 (https://fatcat.wiki; mailto:{}) python-requests'.format(self.contact_email),
-        }
+        http_session = requests_retry_session()
+        http_session.headers.update({
+            'User-Agent': 'fatcat_tools/0.1.0 (https://fatcat.wiki; mailto:{}) python-requests'.format(
+                self.contact_email),
+        })
         count = 0
         with produce_topic.get_producer() as producer:
             while True:
-                http_resp = requests_retry_session().get(self.api_host_url, params, headers=headers)
+                http_resp = http_session.get(self.api_host_url, params=params)
                 if http_resp.status_code == 503:
-                    # crude backoff
+                    # crude backoff; now redundant with session exponential
+                    # backoff, but allows for longer backoff/downtime on remote end
                     print("got HTTP {}, pausing for 30 seconds".format(http_resp.status_code))
                     time.sleep(30.0)
                     continue
