@@ -52,3 +52,6 @@ class FatcatWorker:
         self.kafka = KafkaClient(hosts=kafka_hosts, broker_version="1.0.0")
         self.produce_topic = produce_topic
         self.consume_topic = consume_topic
+
+        # Kafka producer batch size tuning; also limit on size of single document
+        self.produce_max_request_size = 10000000  # 10 MByte-ish
