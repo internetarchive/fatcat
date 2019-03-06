@@ -305,10 +305,9 @@ Warning: This schema is not yet stable.
 - `container_name` (string) if not matched to a container entity
 - `subtitle` (string)
 - `group-title` (string) for releases within an collection/group
-  `release_status` getting updated)
 - `translation_of` (release identifier) if this release is a translation of
   another (usually under the same work)
-- `withdrawn_data` (string, ISO date format): if this release has been
+- `withdrawn_date` (string, ISO date format): if this release has been
   retracted (post-publication) or withdrawn (pre- or post-publication), this is
   the datetime of that event. Retractions also result in a `retraction` release
   under the same `work` entity. This is intended to migrate from "extra" to a
