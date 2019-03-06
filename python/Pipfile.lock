@@ -1,7 +1,11 @@
 {
     "_meta": {
         "hash": {
+<<<<<<< HEAD
             "sha256": "e6ac8d0bd63b3819a170bde676a9f6a00933af9ac7cd45c75b809f14776e2652"
+=======
+            "sha256": "ba245948984e613170e6c126a57bdfc56cb61f4b2f4fc77d5de7f65e58a47d82"
+>>>>>>> pipenv: beautiful soup and pylatexenc
         },
         "pipfile-spec": 6,
         "requires": {
@@ -16,6 +20,14 @@
         ]
     },
     "default": {
+        "beautifulsoup4": {
+            "hashes": [
+                "sha256:034740f6cb549b4e932ae1ab975581e6103ac8f942200a0e9759065984391858",
+                "sha256:945065979fb8529dd2f37dbb58f00b661bdbcbebf954f93b32fdf5263ef35348",
+                "sha256:ba6d5c59906a85ac23dadfe5c88deaf3e179ef565f4898671253e50a78680718"
+            ],
+            "version": "==4.7.1"
+        },
         "beautifulsoup4": {
             "hashes": [
                 "sha256:034740f6cb549b4e932ae1ab975581e6103ac8f942200a0e9759065984391858",
@@ -107,6 +119,33 @@
             ],
             "version": "==7.0"
         },
+<<<<<<< HEAD
+=======
+        "cryptography": {
+            "hashes": [
+                "sha256:066f815f1fe46020877c5983a7e747ae140f517f1b09030ec098503575265ce1",
+                "sha256:210210d9df0afba9e000636e97810117dc55b7157c903a55716bb73e3ae07705",
+                "sha256:26c821cbeb683facb966045e2064303029d572a87ee69ca5a1bf54bf55f93ca6",
+                "sha256:2afb83308dc5c5255149ff7d3fb9964f7c9ee3d59b603ec18ccf5b0a8852e2b1",
+                "sha256:2db34e5c45988f36f7a08a7ab2b69638994a8923853dec2d4af121f689c66dc8",
+                "sha256:409c4653e0f719fa78febcb71ac417076ae5e20160aec7270c91d009837b9151",
+                "sha256:45a4f4cf4f4e6a55c8128f8b76b4c057027b27d4c67e3fe157fa02f27e37830d",
+                "sha256:48eab46ef38faf1031e58dfcc9c3e71756a1108f4c9c966150b605d4a1a7f659",
+                "sha256:6b9e0ae298ab20d371fc26e2129fd683cfc0cfde4d157c6341722de645146537",
+                "sha256:6c4778afe50f413707f604828c1ad1ff81fadf6c110cb669579dea7e2e98a75e",
+                "sha256:8c33fb99025d353c9520141f8bc989c2134a1f76bac6369cea060812f5b5c2bb",
+                "sha256:9873a1760a274b620a135054b756f9f218fa61ca030e42df31b409f0fb738b6c",
+                "sha256:9b069768c627f3f5623b1cbd3248c5e7e92aec62f4c98827059eed7053138cc9",
+                "sha256:9e4ce27a507e4886efbd3c32d120db5089b906979a4debf1d5939ec01b9dd6c5",
+                "sha256:acb424eaca214cb08735f1a744eceb97d014de6530c1ea23beb86d9c6f13c2ad",
+                "sha256:c8181c7d77388fe26ab8418bb088b1a1ef5fde058c6926790c8a0a3d94075a4a",
+                "sha256:d4afbb0840f489b60f5a580a41a1b9c3622e08ecb5eec8614d4fb4cd914c4460",
+                "sha256:d9ed28030797c00f4bc43c86bf819266c76a5ea61d006cd4078a93ebf7da6bfd",
+                "sha256:e603aa7bb52e4e8ed4119a58a03b60323918467ef209e6ff9db3ac382e5cf2c6"
+            ],
+            "version": "==2.6.1"
+        },
+>>>>>>> pipenv: beautiful soup and pylatexenc
         "fatcat-client": {
             "editable": true,
             "path": "./../python_client"
@@ -212,6 +251,7 @@
         },
         "lxml": {
             "hashes": [
+<<<<<<< HEAD
                 "sha256:03984196d00670b2ab14ae0ea83d5cc0cfa4f5a42558afa9ab5fa745995328f5",
                 "sha256:0815b0c9f897468de6a386dc15917a0becf48cc92425613aa8bbfc7f0f82951f",
                 "sha256:175f3825f075cf02d15099eb52658457cf0ff103dcf11512b5d2583e1d40f58b",
@@ -240,6 +280,36 @@
                 "sha256:ff424b01d090ffe1947ec7432b07f536912e0300458f9a7f48ea217dd8362b86"
             ],
             "version": "==4.3.3"
+=======
+                "sha256:0358b9e9642bc7d39aac5cffe9884a99a5ca68e5e2c1b89e570ed60da9139908",
+                "sha256:091a359c4dafebbecd3959d9013f1b896b5371859165e4e50b01607a98d9e3e2",
+                "sha256:1998e4e60603c64bcc35af61b4331ab3af087457900d3980e18d190e17c3a697",
+                "sha256:2000b4088dee9a41f459fddaf6609bba48a435ce6374bb254c5ccdaa8928c5ba",
+                "sha256:2afb0064780d8aaf165875be5898c1866766e56175714fa5f9d055433e92d41d",
+                "sha256:2d8f1d9334a4e3ff176d096c14ded3100547d73440683567d85b8842a53180bb",
+                "sha256:2e38db22f6a3199fd63675e1b4bd795d676d906869047398f29f38ca55cb453a",
+                "sha256:3181f84649c1a1ca62b19ddf28436b1b2cb05ae6c7d2628f33872e713994c364",
+                "sha256:37462170dfd88af8431d04de6b236e6e9c06cda71e2ca26d88ef2332fd2a5237",
+                "sha256:3a9d8521c89bf6f2a929c3d12ad3ad7392c774c327ea809fd08a13be6b3bc05f",
+                "sha256:3d0bbd2e1a28b4429f24fd63a122a450ce9edb7a8063d070790092d7343a1aa4",
+                "sha256:483d60585ce3ee71929cea70949059f83850fa5e12deb9c094ed1c8c2ec73cbd",
+                "sha256:4888be27d5cba55ce94209baef5bcd7bbd7314a3d17021a5fc10000b3a5f737d",
+                "sha256:64b0d62e4209170a2a0c404c446ab83b941a0003e96604d2e4f4cb735f8a2254",
+                "sha256:68010900898fdf139ac08549c4dba8206c584070a960ffc530aebf0c6f2794ef",
+                "sha256:872ecb066de602a0099db98bd9e57f4cfc1d62f6093d94460c787737aa08f39e",
+                "sha256:88a32b03f2e4cd0e63f154cac76724709f40b3fc2f30139eb5d6f900521b44ed",
+                "sha256:b1dc7683da4e67ab2bebf266afa68098d681ae02ce570f0d1117312273d2b2ac",
+                "sha256:b29e27ce9371810250cb1528a771d047a9c7b0f79630dc7dc5815ff828f4273b",
+                "sha256:ce197559596370d985f1ce6b7051b52126849d8159040293bf8b98cb2b3e1f78",
+                "sha256:d45cf6daaf22584eff2175f48f82c4aa24d8e72a44913c5aff801819bb73d11f",
+                "sha256:e2ff9496322b2ce947ba4a7a5eb048158de9d6f3fe9efce29f1e8dd6878561e6",
+                "sha256:f7b979518ec1f294a41a707c007d54d0f3b3e1fd15d5b26b7e99b62b10d9a72e",
+                "sha256:f9c7268e9d16e34e50f8246c4f24cf7353764affd2bc971f0379514c246e3f6b",
+                "sha256:f9c839806089d79de588ee1dde2dae05dc1156d3355dfeb2b51fde84d9c960ad",
+                "sha256:ff962953e2389226adc4d355e34a98b0b800984399153c6678f2367b11b4d4b8"
+            ],
+            "version": "==4.3.2"
+>>>>>>> pipenv: beautiful soup and pylatexenc
         },
         "markupsafe": {
             "hashes": [
@@ -273,6 +343,7 @@
                 "sha256:e249096428b3ae81b08327a63a485ad0878de3fb939049038579ac0ef61e17e7"
             ],
             "version": "==1.1.1"
+<<<<<<< HEAD
         },
         "misaka": {
             "hashes": [
@@ -293,6 +364,8 @@
                 "sha256:3e1e14f6cde7e5475128d30e97edc3bfb4dc857cb884d8714ec161fdbb3b358e"
             ],
             "version": "==3.0.1"
+=======
+>>>>>>> pipenv: beautiful soup and pylatexenc
         },
         "pycparser": {
             "hashes": [
@@ -313,6 +386,13 @@
             ],
             "index": "pypi",
             "version": "==2.8.0"
+        },
+        "pylatexenc": {
+            "hashes": [
+                "sha256:7e7a86285bc1a2197b2734fe075b0dded9dabfc553c2dcb56b14d28ee33918f9"
+            ],
+            "index": "pypi",
+            "version": "==1.4"
         },
         "pymacaroons": {
             "hashes": [
@@ -421,10 +501,17 @@
         },
         "soupsieve": {
             "hashes": [
+<<<<<<< HEAD
                 "sha256:3aef141566afd07201b525c17bfaadd07580a8066f82b57f7c9417f26adbd0a3",
                 "sha256:e41a65e99bd125972d84221022beb1e4b5cfc68fa12c170c39834ce32d1b294c"
             ],
             "version": "==1.9"
+=======
+                "sha256:afa56bf14907bb09403e5d15fbed6275caa4174d36b975226e3b67a3bb6e2c4b",
+                "sha256:eaed742b48b1f3e2d45ba6f79401b2ed5dc33b2123dfe216adb90d4bfa0ade26"
+            ],
+            "version": "==1.8"
+>>>>>>> pipenv: beautiful soup and pylatexenc
         },
         "tabulate": {
             "hashes": [
@@ -465,10 +552,17 @@
     "develop": {
         "astroid": {
             "hashes": [
+<<<<<<< HEAD
                 "sha256:6560e1e1749f68c64a4b5dee4e091fce798d2f0d84ebe638cf0e0585a343acf4",
                 "sha256:b65db1bbaac9f9f4d190199bb8680af6f6f84fd3769a5ea883df8a91fe68b4c4"
             ],
             "version": "==2.2.5"
+=======
+                "sha256:39183aecc01d6f74eb54edc6739992e842f3bf3068bdfaaba30b5a1742f44091",
+                "sha256:62bd1d8d2ace3e812b3a22eb3c4b7856536d8cc0cdb37466f6a53cf881dbad1f"
+            ],
+            "version": "==2.2.4"
+>>>>>>> pipenv: beautiful soup and pylatexenc
         },
         "atomicwrites": {
             "hashes": [
@@ -543,10 +637,17 @@
         },
         "decorator": {
             "hashes": [
+<<<<<<< HEAD
                 "sha256:86156361c50488b84a3f148056ea716ca587df2f0de1d34750d35c21312725de",
                 "sha256:f069f3a01830ca754ba5258fde2278454a0b5b79e0d7f5c13b3b97e57d4acff6"
             ],
             "version": "==4.4.0"
+=======
+                "sha256:33cd704aea07b4c28b3eb2c97d288a06918275dac0ecebdaf1bc8a48d98adb9e",
+                "sha256:cabb249f4710888a2fc0e13e9a16c343d932033718ff62e1e9bc93a9d3a9122b"
+            ],
+            "version": "==4.3.2"
+>>>>>>> pipenv: beautiful soup and pylatexenc
         },
         "idna": {
             "hashes": [
@@ -557,11 +658,19 @@
         },
         "ipython": {
             "hashes": [
+<<<<<<< HEAD
                 "sha256:b038baa489c38f6d853a3cfc4c635b0cda66f2864d136fe8f40c1a6e334e2a6b",
                 "sha256:f5102c1cd67e399ec8ea66bcebe6e3968ea25a8977e53f012963e5affeb1fe38"
             ],
             "index": "pypi",
             "version": "==7.4.0"
+=======
+                "sha256:06de667a9e406924f97781bda22d5d76bfb39762b678762d86a466e63f65dc39",
+                "sha256:5d3e020a6b5f29df037555e5c45ab1088d6a7cf3bd84f47e0ba501eeb0c3ec82"
+            ],
+            "index": "pypi",
+            "version": "==7.3.0"
+>>>>>>> pipenv: beautiful soup and pylatexenc
         },
         "ipython-genutils": {
             "hashes": [
@@ -572,10 +681,17 @@
         },
         "isort": {
             "hashes": [
+<<<<<<< HEAD
                 "sha256:01cb7e1ca5e6c5b3f235f0385057f70558b70d2f00320208825fa62887292f43",
                 "sha256:268067462aed7eb2a1e237fcb287852f22077de3fb07964e87e00f829eea2d1a"
             ],
             "version": "==4.3.17"
+=======
+                "sha256:144c4295314c0ed34fb034f838b2b7e242c52dd3eafdd6f5d49078692f582c0c",
+                "sha256:92a7ddacb0e7e10ed2976e6b5d58496dcda27a3f525c187a3a1a0ae5fa79ff1b"
+            ],
+            "version": "==4.3.10"
+>>>>>>> pipenv: beautiful soup and pylatexenc
         },
         "jedi": {
             "hashes": [
@@ -627,6 +743,7 @@
         },
         "more-itertools": {
             "hashes": [
+<<<<<<< HEAD
                 "sha256:2112d2ca570bb7c3e53ea1a35cd5df42bb0fd10c45f0fb97178679c3c03d64c7",
                 "sha256:c3e4748ba1aad8dba30a4886b0b1a2004f9a863837b8654e7059eebf727afa5a"
             ],
@@ -639,6 +756,20 @@
                 "sha256:2e9574cb12e7112a87253e14e2c380ce312060269d04bd018478a3c92ea9a376"
             ],
             "version": "==0.4.0"
+=======
+                "sha256:0125e8f60e9e031347105eb1682cef932f5e97d7b9a1a28d9bf00c22a5daef40",
+                "sha256:590044e3942351a1bdb1de960b739ff4ce277960f2425ad4509446dbace8d9d1"
+            ],
+            "markers": "python_version > '2.7'",
+            "version": "==6.0.0"
+        },
+        "parso": {
+            "hashes": [
+                "sha256:4580328ae3f548b358f4901e38c0578229186835f0fa0846e47369796dd5bcc9",
+                "sha256:68406ebd7eafe17f8e40e15a84b56848eccbf27d7c1feb89e93d8fca395706db"
+            ],
+            "version": "==0.3.4"
+>>>>>>> pipenv: beautiful soup and pylatexenc
         },
         "pathlib2": {
             "hashes": [
@@ -732,11 +863,19 @@
         },
         "pytest": {
             "hashes": [
+<<<<<<< HEAD
                 "sha256:13c5e9fb5ec5179995e9357111ab089af350d788cbc944c628f3cde72285809b",
                 "sha256:f21d2f1fb8200830dcbb5d8ec466a9c9120e20d8b53c7585d180125cce1d297a"
             ],
             "index": "pypi",
             "version": "==4.4.0"
+=======
+                "sha256:067a1d4bf827ffdd56ad21bd46674703fce77c5957f6c1eef731f6146bfcef1c",
+                "sha256:9687049d53695ad45cf5fdc7bbd51f0c49f1ea3ecfc4b7f3fde7501b541f17f4"
+            ],
+            "index": "pypi",
+            "version": "==4.3.0"
+>>>>>>> pipenv: beautiful soup and pylatexenc
         },
         "pytest-cov": {
             "hashes": [

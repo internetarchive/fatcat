@@ -37,11 +37,12 @@ python-dateutil = "*"
 sickle = "*"
 python-snappy = "*"
 pymacaroons = "*"
-ftfy= "*"
+ftfy = "*"
 citeproc-py = "*"
 citeproc-py-styles = "*"
 bs4 = "*"
 python-magic = "*"
+pylatexenc = "*"
 
 [requires]
 # Python 3.5 is the bundled (system) version of python for Ubuntu 16.04
