@@ -4,7 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width">
 
-  <title>{% block title %}fatcat!{% endblock %}</title>
+  {# sorry this line is so long; don't want any whitespace #}
+  <title>{% block title %}{% if config.FATCAT_DOMAIN.startswith('qa.') %}[QA] {% elif config.FATCAT_DOMAIN.startswith('dev.') %}[DEV] {% endif %}fatcat!{% endblock %}</title>
   <meta name="referrer" content="origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.3.2/dist/semantic.min.css">
@@ -18,6 +19,19 @@
 
 <header class="ui fixed inverted menu">
   <div class="ui container">
+    {% if config.FATCAT_DOMAIN.startswith('qa.') %}
+      <span class="ui left corner orange small label">
+        <div data-tooltip="[QA] environment (data not preserved)" data-position="bottom left"></i>
+          <i class="ui cogs icon"></i>
+        </div>
+      </span>
+    {% elif config.FATCAT_DOMAIN.startswith('dev.') %}
+      <span class="ui left corner pink small label">
+        <div data-tooltip="[DEV] environment (data not preserved)" data-position="bottom left"></i>
+          <i class="ui cogs icon"></i>
+        </div>
+      </span>
+    {% endif %}
     <a href="/" class="header item">
       <!-- <img class="logo" src="assets/images/logo.png"> -->
       fatcat!
@@ -84,7 +98,13 @@
       <a class="item" href="https://guide.{{ config.FATCAT_DOMAIN }}/sources.html">Sources</a>
       <a class="item" href="{% if config.FATCAT_DOMAIN == "fatcat.wiki" %}https://stats.uptimerobot.com/GM9YNSrB0{% elif config.FATCAT_DOMAIN =="qa.fatcat.wiki" %}https://stats.uptimerobot.com/WQ8wAUREA{% else %}#{% endif %}">Status</a>
       <a class="item" href="https://guide.{{ config.FATCAT_DOMAIN }}/bulk_exports.html">Bulk Exports</a>
-      <a class="item" href="https://github.com/internetarchive/fatcat/">Source Code (<code>{{ config.GIT_REVISION }}</code>)</a>
+      <a class="item" href="https://github.com/internetarchive/fatcat/">Code</a>
+      <a class="item" href="https://github.com/internetarchive/fatcat/tree/{{ config.GIT_REVISION }}"><code>{{ config.GIT_REVISION }}</code></a>
+      {% if config.FATCAT_DOMAIN.startswith('qa.') %}
+        <a class="item"><b style="color: orange;">[QA]</b></a>
+      {% elif config.FATCAT_DOMAIN.startswith('dev.') %}
+        <a class="item"><b style="color: magenta;">[DEV]</b></a>
+      {% endif %}
     </div>
   </div>
 </footer>
