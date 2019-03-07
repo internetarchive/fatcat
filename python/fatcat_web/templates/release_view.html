@@ -71,10 +71,10 @@
 
 {% block fullbody %}
 
-<div class="ui stackable mobile reversed grid centered">
+<div class="ui stackable mobile reversed grid centered" itemscope itemtype="http://schema.org/ScholarlyArticle">
 <div class="one wide column"></div>
 <div class="fifteen wide column">
-  <h1 class="ui header">{{ release.title }}
+  <h1 class="ui header"><span itemprop="headline"><span itemprop="name">{{ release.title }}</span></span>
   <div class="sub header"><code>release {{ release.ident }}</code></div></h1>
   <p style="font-size: larger;">
   {% if authors != [] %} by {% endif %}
@@ -95,35 +95,37 @@
 <div class="ten wide column" style="font-size: 16px;">
 
 <div class="ui accordion">
-<div class="title">
+<div class="title" itemprop="isPartOf" itemscope itemtype="http://schema.org/Periodical" itemid="#periodical">
   {% if release.release_status == 'published' %}
-    <i class="dropdown icon"></i>Published in <a href="/container/{{ container.ident }}">{{ container.name }}</a>
+    <i class="dropdown icon"></i>Published in <a href="/container/{{ container.ident }}"><span itemprop="name">{{ container.name }}</span></a>
   {% else %}
     <i class="dropdown icon"></i>Released as a <i>{{ release.release_type }}</i>
-    {% if container %} in <a href="/container/{{ container.ident }}">{{ container.name }}</a> {% endif %}
+    {% if container %} in <a href="/container/{{ container.ident }}" itemprop="name">{{ container.name }}</a> {% endif %}
   {% endif %}
   {% if release.publisher %}
-    by {{ release.publisher }}
+    by <span itemprop="publisher">{{ release.publisher }}</span>
   {% endif %}
-</div><div class="content">
-
+</div><div class="content" itemscope itemtype="http://schema.org/Periodical" itemid="#periodical">
   <table class="ui definition single line fixed compact small collapsing unstackable table">
   <tbody>
     {% if container != None and container.issnl != None %}
       <tr><td class="right aligned">ISSN-L</td>
-          <td class="">{{ container.issnl }}
+          <td class="" itemprop="issn">{{ container.issnl }}
     {% endif %}
     {% if release.volume != None %}
-      <tr><td class="right aligned">Volume</td>
-          <td class="">{{ release.volume }}
+      <tr itemprop="isPartOf" itemscope itemtype="http://schema.org/PublicationVolume">
+          <td class="right aligned">Volume</td>
+          <td class="" itemprop="volumeNumber">{{ release.volume }}
     {% endif %}
     {% if release.issue != None %}
-      <tr><td class="right aligned">Issue</td>
-          <td class="">{{ release.issue }}
+      <tr itemprop="isPartOf" itemscope itemtype="http://schema.org/PublicationIssue">
+          <td class="right aligned">Issue</td>
+          <td class="" itemprop="issueNumber">{{ release.issue }}
     {% endif %}
     {% if release.pages != None %}
-      <tr><td class="right aligned">Page(s)</td>
-          <td class="">{{ release.pages }}
+      <tr itemprop="isPartOf" itemscope itemtype="http://schema.org/PublicationIssue">
+          <td class="right aligned">Page(s)</td>
+          <td class="" itemprop="pagination">{{ release.pages }}
     {% endif %}
     {% if release.release_date != None %}
       <tr><td class="right aligned">Release Date</td>
@@ -160,13 +162,13 @@
 <tbody>
 {% for contrib in release.contribs %}
   <tr><td class="collapsing">{% if contrib.index or contrib.index == 0 %} {{ contrib.index + 1 }}{% endif %}
-      <td>
+      <td><span itemprop="author">
       {% if contrib.creator_id %}
         <a href="/creator/{{contrib.creator_id}}">{{ contrib.raw_name or 'unknown' }}</a> 
       {% else %}
         {{ contrib.raw_name or '' }}
       {% endif %}
-      <br><i>{{ contrib.role or 'unknown' }}</i>
+      </span><br><i>{{ contrib.role or 'unknown' }}</i>
 {% endfor %}
 </tbody>
 </table>
@@ -178,7 +180,7 @@
 
 {% if release.abstracts != [] %}
 <h3>Abstract</h3>
-<p>{{ release.abstracts[0].content }}
+<p><span itemprop="description">{{ release.abstracts[0].content }}</span>
 <br><small><i>In <code>{{ release.abstracts[0].mimetype }}</code> format</i></small>
 {% endif %}
 
@@ -312,14 +314,20 @@
 <span class="ui top attached fluid huge grey button"><i class="file cross icon"></i>No Full Text Available</span>
 {% endif %}
 
-{% if release.release_type != None %}
+{% if release.release_type or release.release_status or release.release_year %}
   <div class="ui segment attached">
-  <b>Type</b> &nbsp;<code>{{ release.release_type }}</code>
-  <br><b>Status</b> &nbsp; <code>{{ release.release_status or 'unknown' }}</code>
-  {% if release.release_date != None %}
-    <br><b>Date</b> &nbsp; {{ release.release_date }}
-  {% elif release.release_year != None %}
-    <br><b>Year</b> &nbsp; {{ release.release_year }}
+  {% if release.release_date %}
+    <b>Type</b> &nbsp;<code>{{ release.release_type }}</code><br>
+  {% endif %}
+  {% if release.release_status %}
+    <b>Status</b> &nbsp; <code>{{ release.release_status or 'unknown' }}</code><br>
+  {% endif %}
+  {% if release.release_date %}
+    <meta itemprop="datePublished" content="{{ release.release_date }}">
+    <b>Date</b> &nbsp; {{ release.release_date }}<br>
+  {% elif release.release_year %}
+    <meta itemprop="datePublished" content="{{ release.release_year }}">
+    <b>Year</b> &nbsp; {{ release.release_year }}<br>
   {% endif %}
   </div>
 {% endif %}
@@ -327,7 +335,7 @@
 {% if release.doi or release.pmid or release.pmcid or release.wikidata_qid %}
 <div class="ui segment attached" style="word-wrap: break-word;">
 {% if release.doi %}
-  <b>DOI </b> &nbsp;<a href="https://doi.org/{{ release.doi }}" title="{{ release.doi }}">{{ release.doi }}</a><br>
+  <b>DOI </b> &nbsp;<a href="https://doi.org/{{ release.doi }}" title="{{ release.doi }}" itemprop="sameAs">{{ release.doi }}</a><br>
 {% endif %}
 {% if release.pmid != None %}
   <b>PubMed</b> <a href="https://www.ncbi.nlm.nih.gov/pubmed/{{ release.pmid }}">&nbsp;<code>{{ release.pmid }}</code></a><br>
