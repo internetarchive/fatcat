@@ -1,6 +1,12 @@
 {% extends "base.html" %}
+
+{% block extra_head %}
+  <link rel="canonical" href="https://{{ config.FATCAT_DOMAIN }}/">
+{% endblock %}
+
 {% block body %}
-<div class="ui container text">
+<div class="ui container text" itemscope itemtype="https://schema.org/WebSite">
+<meta itemprop="url" content="https://{{ config.FATCAT_DOMAIN }}/"/>
 
 <!-- <h1 class="ui header centered" style="font-size: 2.5rem;">Fatcat: The Universal Research Catalog</h1><br> -->
 
@@ -8,10 +14,11 @@
 
 <br>
 <h2 class="ui header centered">Cataloging of millions of research publications</h2>
-<form class="" role="search" action="/release/search" method="get">
+<form class="" role="search" action="/release/search" method="get" itemprop="potentialAction" itemscope itemtype="https://schema.org/SearchAction">
+  <meta itemprop="target" content="https://{{ config.FATCAT_DOMAIN }}/release/search?q={q}"/>
   <div class="ui form">
     <div class="ui action input huge fluid">
-      <input type="text" placeholder="Query..." name="q" aria-label="search release metadata">
+      <input type="text" placeholder="Query..." name="q" aria-label="search release metadata" required itemprop="query-input">
       <button class="ui button">Search</button>
     </div>
   </div>
