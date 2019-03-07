@@ -28,6 +28,10 @@ conf = fatcat_client.Configuration()
 conf.host = Config.FATCAT_API_HOST
 api = fatcat_client.DefaultApi(fatcat_client.ApiClient(conf))
 
+# remove most jinja2 template whitespace
+app.jinja_env.trim_blocks = True
+app.jinja_env.lstrip_blocks = True
+
 def auth_api(token):
     conf = fatcat_client.Configuration()
     conf.api_key["Authorization"] = token

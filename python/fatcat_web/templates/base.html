@@ -4,13 +4,21 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width">
 
-  {# sorry this line is so long; don't want any whitespace #}
-  <title>{% block title %}{% if config.FATCAT_DOMAIN.startswith('qa.') %}[QA] {% elif config.FATCAT_DOMAIN.startswith('dev.') %}[DEV] {% endif %}fatcat!{% endblock %}</title>
+  <title>{%- block title -%}
+    {%- if config.FATCAT_DOMAIN.startswith('qa.') -%}
+      {{- "[QA] " -}}
+    {%- elif config.FATCAT_DOMAIN.startswith('dev.') -%}
+      {{- "[DEV] " -}}
+    {%- endif -%}
+    fatcat!
+  {%- endblock -%}</title>
   <meta name="referrer" content="origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.3.2/dist/semantic.min.css">
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/semantic-ui@2.3.2/dist/semantic.min.css"
+    crossorigin="anonymous">
   <style>
-    /* bnewbold: fix light grey bars in header */
+    {# bnewbold: fix light grey bars in header #}
     .ui.inverted.menu .item:before { background: none; }
   </style>
   {% block extra_head %}{% endblock %}
@@ -112,8 +120,12 @@
 <script
   src="https://code.jquery.com/jquery-3.1.1.min.js"
   integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
-  crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.3.2/dist/semantic.min.js"></script>
+  crossorigin="anonymous">
+</script>
+<script
+  src="https://cdn.jsdelivr.net/npm/semantic-ui@2.3.2/dist/semantic.min.js"
+  crossorigin="anonymous">
+</script>
 {% block postscript %}{% endblock %}
 
 </body>

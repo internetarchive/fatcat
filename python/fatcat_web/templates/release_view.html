@@ -36,7 +36,9 @@
       <meta name="citation_journal_title" content="{{ release.container.name }}">
       <meta name="DC.publisher" content="{{ release.container.publisher }}">
       <meta name="citation_publisher" content="{{ release.container.publisher  }}">
-      {% if release.container.issnl %}<meta name="citation_issn" content="{{ release.container.issnl }}">{% endif %}
+      {% if release.container.issnl %}
+        <meta name="citation_issn" content="{{ release.container.issnl }}">
+      {% endif %}
     {% elif release.publisher %}
       <meta name="DC.publisher" content="{{ release.publisher }}">
       <meta name="citation_publisher" content="{{ release.publisher  }}">
