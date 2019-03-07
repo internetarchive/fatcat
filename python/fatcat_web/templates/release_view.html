@@ -2,6 +2,73 @@
 {% import "entity_macros.html" as entity_macros %}
 {% extends "base.html" %}
 
+{# HTML metadata embeddings #}
+{% if release and release.status == "active" %}
+  {% block extra_head %}
+    <link rel="canonical" href="https://{{ config.FATCAT_DOMAIN }}/release/{{ entity.ident }}">
+    <meta name="twitter:card" content="summary">
+
+    <meta name="description" content="{{ release.title }}">
+    <meta name="DC.title" content="{{ release.title }}">
+    <meta name="citation_title" content="{{ release.title }}">
+    <meta name="twitter:title" content="{{ release.title }}">
+    <meta name="DC.type" content="{{ release.release_type }}">
+    {% if abstracts %}
+      <meta name="abstract" content="{{ abstracts[0].content }}">
+      <meta name="DC.description" content="{{ abstracts[0].content }}">
+      <meta name="twitter:description" content="{{ abstracts[0].content }}">
+    {% endif %}
+    {% for author in authors %}
+      <meta name="DC.creator" content="{{ author.raw_name }}">
+      <meta name="citation_author" content="{{ author.raw_name }}">
+    {% endfor %}
+    {% if release.release_date or release.release_year %}
+      <meta name="DC.issued" content="{{ release.release_date or release.release_year }}">
+      <meta name="citation_publication_date" content="{{ release.release_date or release.release_year }}">
+    {% endif %}
+    {% if release.language %}
+      <meta name="DC.language" content="isbn:{{ release.language }}">
+      <meta name="citation_language" content="{{ release.language }}">
+    {% endif %}
+    {% if release.container and release.container.issnl %}{# only want actual journals/conferences #}
+      <meta name="DC.relation.ispartof" content="{{ release.container.name }}">
+      <meta name="citation_journal_title" content="{{ release.container.name }}">
+      <meta name="DC.publisher" content="{{ release.container.publisher }}">
+      <meta name="citation_publisher" content="{{ release.container.publisher  }}">
+      {% if release.container.issnl %}<meta name="citation_issn" content="{{ release.container.issnl }}">{% endif %}
+    {% elif release.publisher %}
+      <meta name="DC.publisher" content="{{ release.publisher }}">
+      <meta name="citation_publisher" content="{{ release.publisher  }}">
+    {% endif %}
+    {% if release.volume %}
+      <meta name="DC.citation.volume" content="{{ release.volume }}">
+      <meta name="citation_volume" content="{{ release.volume }}">
+    {% endif %}
+    {% if release.issue %}
+      <meta name="DC.citation.issue" content="{{ release.issue }}">
+      <meta name="citation_issue" content="{{ release.issue }}">
+    {% endif %}
+    {% if release.pages %}
+      <meta name="DC.citation.spage" content="{{ release.pages }}">
+      <meta name="citation_first_page" content="{{ release.pages }}">
+    {% endif %}
+    {% if release.doi %}
+      <meta name="DC.identifier" content="doi:{{ release.doi }}">
+      <meta name="citation_doi" content="{{ release.doi }}">
+    {% endif %}
+    {% if release.isbn13 %}
+      <meta name="DC.identifier" content="isbn:{{ release.isbn13}}">
+      <meta name="citation_isbn" content="{{ release.isbn13}}">
+    {% endif %}
+    {% for file in (entity.files or [])[:10] %}{% for url in (file.urls or [])[:10] %}
+      {% if '//web.archive.org/web/' in url.url %}
+        <meta name="DC.identifier" content="{{ url.url }}">
+        <meta name="citation_pdf_url" content="{{ url.url }}">
+      {% endif %}
+    {% endfor %}{% endfor %}
+  {% endblock %}
+{% endif %}
+
 {% block fullbody %}
 
 <div class="ui stackable mobile reversed grid centered">
