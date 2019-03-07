@@ -69,9 +69,11 @@
   {% endblock %}
 {% endif %}
 
+{% block main_extra_attr %}itemscope itemtype="http://schema.org/ScholarlyArticle" itemid="#release"{% endblock %}
+
 {% block fullbody %}
 
-<div class="ui stackable mobile reversed grid centered" itemscope itemtype="http://schema.org/ScholarlyArticle" itemid="#release">
+<div class="ui stackable mobile reversed grid centered">
 <div class="one wide column"></div>
 <div class="fifteen wide column">
   <h1 class="ui header"><span itemprop="headline"><span itemprop="name">{{ release.title }}</span></span>
@@ -100,10 +102,10 @@
     <i class="dropdown icon"></i>Published in <a href="/container/{{ container.ident }}"><span itemprop="name">{{ container.name }}</span></a>
   {% else %}
     <i class="dropdown icon"></i>Released as a <i>{{ release.release_type }}</i>
-    {% if container %} in <a href="/container/{{ container.ident }}"><span itemprop="name" itemref="#container">{{ container.name }}</span></a> {% endif %}
+    {% if container %} in <a href="/container/{{ container.ident }}"><span itemprop="name">{{ container.name }}</span></a> {% endif %}
   {% endif %}
   {% if release.publisher %}
-    by <span itemprop="publisher" itemref="#container">{{ release.publisher }}</span>
+    by <span itemprop="publisher">{{ release.publisher }}</span>
   {% endif %}
 </div><div class="content" itemscope itemtype="http://schema.org/Periodical" itemid="#container">
   <table class="ui definition single line fixed compact small collapsing unstackable table">
@@ -162,7 +164,7 @@
 <tbody>
 {% for contrib in release.contribs %}
   <tr><td class="collapsing">{% if contrib.index or contrib.index == 0 %} {{ contrib.index + 1 }}{% endif %}
-      <td><span itemprop="author" itemref="#release">
+      <td><span itemprop="author">
       {% if contrib.creator_id %}
         <a href="/creator/{{contrib.creator_id}}">{{ contrib.raw_name or 'unknown' }}</a> 
       {% else %}
@@ -221,7 +223,6 @@
   {% endfor %}
   </tbody>
 </table>
-</ul>
 {% else %}
 <p>There are no known files associated with this release (you could try
 <a href="/work/{{ release.work_id }}">other releases for this work?</a>).
@@ -245,7 +246,6 @@
   {% endfor %}
   </tbody>
 </table>
-</ul>
 {% endif %}
 
 
@@ -267,7 +267,6 @@
   {% endfor %}
   </tbody>
 </table>
-</ul>
 {% endif %}
 
 
@@ -323,10 +322,10 @@
     <b>Status</b> &nbsp; <code>{{ release.release_status or 'unknown' }}</code><br>
   {% endif %}
   {% if release.release_date %}
-    <meta itemprop="datePublished" itemref="#release" content="{{ release.release_date }}">
+    <meta itemprop="datePublished" content="{{ release.release_date }}">
     <b>Date</b> &nbsp; {{ release.release_date }}<br>
   {% elif release.release_year %}
-    <meta itemprop="datePublished" itemref="#release" content="{{ release.release_year }}">
+    <meta itemprop="datePublished" content="{{ release.release_year }}">
     <b>Year</b> &nbsp; {{ release.release_year }}<br>
   {% endif %}
   </div>
@@ -335,7 +334,7 @@
 {% if release.doi or release.pmid or release.pmcid or release.wikidata_qid %}
 <div class="ui segment attached" style="word-wrap: break-word;">
 {% if release.doi %}
-  <b>DOI </b> &nbsp;<a href="https://doi.org/{{ release.doi }}" title="{{ release.doi }}" itemprop="sameAs" itemref="#release" >{{ release.doi }}</a><br>
+  <b>DOI </b> &nbsp;<a href="https://doi.org/{{ release.doi }}" title="{{ release.doi }}" itemprop="sameAs">{{ release.doi }}</a><br>
 {% endif %}
 {% if release.pmid != None %}
   <b>PubMed</b> <a href="https://www.ncbi.nlm.nih.gov/pubmed/{{ release.pmid }}">&nbsp;<code>{{ release.pmid }}</code></a><br>

@@ -68,7 +68,7 @@
 </header>
 
 <!-- 4em top margin is "enough" -->
-<main class="ui main container" style="margin-top: 6em; margin-bottom: 2em;">
+<main class="ui main container" style="margin-top: 6em; margin-bottom: 2em;" {% block main_extra_attr %}{% endblock %}>
 {% with messages = get_flashed_messages() %}
   {% if messages %}
     <div class="ui message">
