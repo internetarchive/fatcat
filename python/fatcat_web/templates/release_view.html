@@ -8,15 +8,16 @@
     <link rel="canonical" href="https://{{ config.FATCAT_DOMAIN }}/release/{{ entity.ident }}">
     <meta name="twitter:card" content="summary">
 
-    <meta name="description" content="{{ release.title }}">
+    <meta name="description" content="Editable catalog of bibliographic and fulltext file metadata">
+    <meta name="title" content="{{ release.title }}">
     <meta name="DC.title" content="{{ release.title }}">
     <meta name="citation_title" content="{{ release.title }}">
     <meta name="twitter:title" content="{{ release.title }}">
     <meta name="DC.type" content="{{ release.release_type }}">
-    {% if abstracts %}
-      <meta name="abstract" content="{{ abstracts[0].content }}">
-      <meta name="DC.description" content="{{ abstracts[0].content }}">
-      <meta name="twitter:description" content="{{ abstracts[0].content }}">
+    {% if release.abstracts %}
+      <meta name="abstract" content="{{ release.abstracts[0].content }}">
+      <meta name="DC.description" content="{{ release.abstracts[0].content }}">
+      <meta name="twitter:description" content="{{ release.abstracts[0].content }}">
     {% endif %}
     {% for author in authors %}
       <meta name="DC.creator" content="{{ author.raw_name }}">
