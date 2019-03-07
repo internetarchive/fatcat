@@ -118,6 +118,7 @@ class ArxivRawXmlParser():
             license_slug = metadata.license.string.strip()
         abstracts = None
         if metadata.abstract:
+            # TODO: test for this multi-abstract code path
             abstracts = []
             abst = metadata.abstract.string.strip()
             orig = None
@@ -144,14 +145,14 @@ class ArxivRawXmlParser():
         for version in metadata.find_all('version'):
             arxiv_id = base_id + version['version']
             release_date = version.date.string.strip()
-            release_date = datetime.datetime.strptime(release_date, "%a, %d %b %Y %H:%M:%S %Z")
+            release_date = datetime.datetime.strptime(release_date, "%a, %d %b %Y %H:%M:%S %Z").date()
             versions.append(dict(
                 work_id=None,
                 title=title,
                 #original_title
                 release_type="article-journal",
                 release_status='submitted', # XXX: source_type?
-                release_date=release_date.isoformat() + "Z",
+                release_date=release_date.isoformat(),
                 release_year=release_date.year,
                 arxiv_id=arxiv_id,
                 #doi (see below)
