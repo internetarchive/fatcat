@@ -8,7 +8,7 @@
 <div class="one wide column"></div>
 <div class="fifteen wide column">
   <h1 class="ui header">{{ container.name }}
-  <div class="sub header"><code>container {{ container.ident }}</code></div></h1>
+  <span class="sub header"><code>container {{ container.ident }}</code></span></h1>
 </div>
 </div>
 
@@ -118,7 +118,7 @@
 <b>Lookup Links</b>
 <br><a href="http://www.sherpa.ac.uk/romeo/issn/{{ container.issnl }}/">SHERPA/RoMEO</a> (access policies)
 {% if not container.wikidata_qid %}
-  <br><a href="https://www.wikidata.org/w/index.php?search={{ container.name }}">wikidata.org</a>
+  <br><a href="https://www.wikidata.org/w/index.php?search={{ container.name|urlencode }}">wikidata.org</a>
 {% endif %}
 </div>
 

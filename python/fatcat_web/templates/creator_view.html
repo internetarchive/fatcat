@@ -8,7 +8,7 @@
 <div class="one wide column"></div>
 <div class="fifteen wide column">
   <h1 class="ui header">{{ creator.display_name }}
-  <div class="sub header"><code>creator {{ creator.ident }}</code></div></h1>
+  <span class="sub header"><code>creator {{ creator.ident }}</code></span></h1>
 </div>
 </div>
 
@@ -61,10 +61,10 @@ This creator has not contributed to any releases.
 {% endif %}
 
 <b>Lookup Links</b>
-<br><a href="https://www.wikidata.org/w/index.php?search=&search={{ creator.display_name }}">wikidata.org</a>
-<br><a href="https://viaf.org/viaf/search?query=local.personalNames%20all%20%22{{ creator.display_name }}">VIAF</a>
-<br><a href="http://dblp.uni-trier.de/search?q={{ creator.display_name }}">dblp</a> (CS)
-<br><a href="https://scholar.google.com/scholar?q={{ creator.display_name }}">Google Scholar</a>
+<br><a href="https://www.wikidata.org/w/index.php?search=&search={{ creator.display_name|urlencode }}">wikidata.org</a>
+<br><a href="https://viaf.org/viaf/search?query=local.personalNames%20all%20%22{{ creator.display_name|urlencode }}">VIAF</a>
+<br><a href="http://dblp.uni-trier.de/search?q={{ creator.display_name|urlencode }}">dblp</a> (CS)
+<br><a href="https://scholar.google.com/scholar?q={{ creator.display_name|urlencode }}">Google Scholar</a>
 </div>
 
 {{ entity_macros.fatcat_bits(entity, "creator", "") }}

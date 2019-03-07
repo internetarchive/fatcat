@@ -20,17 +20,17 @@
 <header class="ui fixed inverted menu">
   <div class="ui container">
     {% if config.FATCAT_DOMAIN.startswith('qa.') %}
-      <span class="ui left corner orange small label">
-        <div data-tooltip="[QA] environment (data not preserved)" data-position="bottom left"></i>
+      <div class="ui left corner orange small label">
+        <div data-tooltip="[QA] environment (data not preserved)" data-position="bottom left">
           <i class="ui cogs icon"></i>
         </div>
-      </span>
+      </div>
     {% elif config.FATCAT_DOMAIN.startswith('dev.') %}
-      <span class="ui left corner pink small label">
-        <div data-tooltip="[DEV] environment (data not preserved)" data-position="bottom left"></i>
+      <div class="ui left corner pink small label">
+        <div data-tooltip="[DEV] environment (data not preserved)" data-position="bottom left">
           <i class="ui cogs icon"></i>
         </div>
-      </span>
+      </div>
     {% endif %}
     <a href="/" class="header item">
       <!-- <img class="logo" src="assets/images/logo.png"> -->
@@ -40,10 +40,10 @@
     <a href="https://guide.{{ config.FATCAT_DOMAIN }}/" class="item">Guide</a>
     <div class="right menu">
       <div class="item" style="padding: 0;">
-        <form class="" role="search" action="/release/search" method="get">
+        <form class="" action="/release/search" method="get" role="search" aria-label="Papers">
           <div class="ui transparent inverted icon input">
             <i class="search icon" style="padding-right: 2em;"></i>
-            <input type="text" placeholder="Search Papers..." name="q" aria-label="generic entity search" style="border: 1px solid #777 !important; padding: 5px !important; width: 15em;">
+            <input type="text" placeholder="Search Papers..." name="q" style="border: 1px solid #777 !important; padding: 5px !important; width: 15em;">
           </div>
         </form>
       </div>

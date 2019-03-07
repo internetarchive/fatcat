@@ -14,7 +14,7 @@
 
 <br>
 <h2 class="ui header centered">Cataloging of millions of research publications</h2>
-<form class="" role="search" action="/release/search" method="get" itemprop="potentialAction" itemscope itemtype="https://schema.org/SearchAction">
+<form class="" action="/release/search" method="get" role="search" aria-label="papers" itemprop="potentialAction" itemscope itemtype="https://schema.org/SearchAction">
   <meta itemprop="target" content="https://{{ config.FATCAT_DOMAIN }}/release/search?q={q}"/>
   <div class="ui form">
     <div class="ui action input huge fluid">
@@ -63,10 +63,10 @@ indexing (aka, linking together of pre-prints and final copies).
         <br><a href="/release/aaaaaaaaaaaaarceaaaaaaaaai">Dummy</a>
         <br><a href="/release/aaaaaaaaaaaaarceaaaaaaaaam">Realistic</a>
 {% endif %}
-    <td><form class="" role="lookup" action="/release/lookup" method="get">
+    <td><form class="" action="/release/lookup" method="get" role="search">
           <div class="ui icon input">
             <i class="search icon"></i>
-            <input type="text" placeholder="DOI" name="doi" aria-label="search by DOI">
+            <input type="text" placeholder="DOI" name="doi" aria-label="lookup paper by DOI">
           </div>
         </form>
 <tr><td><b>Container</b>
@@ -81,10 +81,10 @@ indexing (aka, linking together of pre-prints and final copies).
         <br><a href="/container/aaaaaaaaaaaaaeiraaaaaaaaai">Dummy</a>
         <br><a href="/container/aaaaaaaaaaaaaeiraaaaaaaaam">Realistic</a>
 {% endif %}
-    <td><form class="" role="lookup" action="/container/lookup" method="get">
+    <td><form class="" action="/container/lookup" method="get" role="search">
           <div class="ui icon input">
             <i class="search icon"></i>
-            <input type="text" placeholder="ISSN-L" name="issnl" aria-label="search by ISSN-L">
+            <input type="text" placeholder="ISSN-L" name="issnl" aria-label="lookup journal by ISSN-L">
           </div>
         </form>
 
@@ -99,10 +99,10 @@ indexing (aka, linking together of pre-prints and final copies).
         <br><a href="/creator/aaaaaaaaaaaaaircaaaaaaaaai">Dummy</a>
         <br><a href="/creator/aaaaaaaaaaaaaircaaaaaaaaam">Realistic</a>
 {% endif %}
-    <td><form class="" role="lookup" action="/creator/lookup" method="get">
+    <td><form class="" action="/creator/lookup" method="get" role="search">
           <div class="ui icon input">
             <i class="search icon"></i>
-            <input type="text" placeholder="ORCID" name="orcid" aria-label="search by ORCID">
+            <input type="text" placeholder="ORCID" name="orcid" aria-label="lookup author by ORCID">
           </div>
         </form>
 <tr><td><b>File</b>
@@ -116,10 +116,10 @@ indexing (aka, linking together of pre-prints and final copies).
         <br><a href="/file/aaaaaaaaaaaaamztaaaaaaaaai">Dummy</a>
         <br><a href="/file/aaaaaaaaaaaaamztaaaaaaaaam">Realistic</a>
 {% endif %}
-    <td><form class="" role="lookup" action="/file/lookup" method="get">
+    <td><form class="" action="/file/lookup" method="get" role="search">
           <div class="ui icon input">
             <i class="search icon"></i>
-            <input type="text" placeholder="SHA-1" name="sha1" aria-label="search by SHA1">
+            <input type="text" placeholder="SHA-1" name="sha1" aria-label="lookup file by SHA1">
           </div>
         </form>
 {% if config.FATCAT_DOMAIN != 'fatcat.wiki' %}
