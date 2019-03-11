@@ -1,0 +1,176 @@
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/"
+xmlns:foaf="http://xmlns.com/foaf/0.1/"
+xmlns:prism="http://prismstandard.org/namespaces/basic/2.0/">
+<rdf:Description rdf:about="http://doi.org/10.2497/jjspm.36.898">
+<prism:doi>10.2497/jjspm.36.898</prism:doi>
+<dcterms:title>New carbides in the Ni-Ti-Mo-C system.</dcterms:title>
+<dcterms:title>Ｎｉ－Ｔｉ－Ｍｏ－Ｃ系に出現する新炭化物相について</dcterms:title>
+<dcterms:creator>
+<foaf:Person>
+<foaf:name>Hashimoto Yasuhiko</foaf:name>
+<foaf:familyName>Hashimoto</foaf:familyName>
+<foaf:givenName>Yasuhiko</foaf:givenName>
+</foaf:Person>
+</dcterms:creator>
+<dcterms:creator>
+<foaf:Person>
+<foaf:name>橋本 雍彦</foaf:name>
+<foaf:familyName>橋本</foaf:familyName>
+<foaf:givenName>雍彦</foaf:givenName>
+</foaf:Person>
+</dcterms:creator>
+<dcterms:creator>
+<foaf:Person>
+<foaf:name>Koyama Koichiro</foaf:name>
+<foaf:familyName>Koyama</foaf:familyName>
+<foaf:givenName>Koichiro</foaf:givenName>
+</foaf:Person>
+</dcterms:creator>
+<dcterms:creator>
+<foaf:Person>
+<foaf:name>香山 滉一郎</foaf:name>
+<foaf:familyName>香山</foaf:familyName>
+<foaf:givenName>滉一郎</foaf:givenName>
+</foaf:Person>
+</dcterms:creator>
+<dcterms:creator>
+<foaf:Person>
+<foaf:name>Suzuki Kenji</foaf:name>
+<foaf:familyName>Suzuki</foaf:familyName>
+<foaf:givenName>Kenji</foaf:givenName>
+</foaf:Person>
+</dcterms:creator>
+<dcterms:creator>
+<foaf:Person>
+<foaf:name>鈴木 建次</foaf:name>
+<foaf:familyName>鈴木</foaf:familyName>
+<foaf:givenName>建次</foaf:givenName>
+</foaf:Person>
+</dcterms:creator>
+<dcterms:creator>
+<foaf:Person>
+<foaf:name>Takahashi Teruo</foaf:name>
+<foaf:familyName>Takahashi</foaf:familyName>
+<foaf:givenName>Teruo</foaf:givenName>
+</foaf:Person>
+</dcterms:creator>
+<dcterms:creator>
+<foaf:Person>
+<foaf:name>高橋 輝男</foaf:name>
+<foaf:familyName>高橋</foaf:familyName>
+<foaf:givenName>輝男</foaf:givenName>
+</foaf:Person>
+</dcterms:creator>
+<dc:creator>Hashimoto Yasuhiko</dc:creator>
+<dc:creator>橋本 雍彦</dc:creator>
+<dc:creator>Koyama Koichiro</dc:creator>
+<dc:creator>香山 滉一郎</dc:creator>
+<dc:creator>Suzuki Kenji</dc:creator>
+<dc:creator>鈴木 建次</dc:creator>
+<dc:creator>Takahashi Teruo</dc:creator>
+<dc:creator>高橋 輝男</dc:creator>
+<dcterms:publisher>Japan Society of Powder and Powder Metallurgy</dcterms:publisher>
+<dcterms:publisher>一般社団法人 粉体粉末冶金協会</dcterms:publisher>
+<dcterms:date rdf:resource="http://www.w3.org/2001/XMLSchema#date">1989</dcterms:date>
+<prism:volume>36</prism:volume>
+<prism:number>8</prism:number>
+<prism:startingPage>898</prism:startingPage>
+<prism:endingPage>902</prism:endingPage>
+<prism:issn>0532-8799</prism:issn>
+<prism:issn>0532-8799</prism:issn>
+<prism:issn>1880-9014</prism:issn>
+<prism:issn>1880-9014</prism:issn>
+<dcterms:publicationName>
+Journal of the Japan Society of Powder and Powder Metallurgy
+</dcterms:publicationName>
+<dcterms:publicationName>粉体および粉末冶金</dcterms:publicationName>
+</rdf:Description>
+<rdf:Description rdf:about="http://doi.org/10.2497/jjspm.36.903">
+<prism:doi>10.2497/jjspm.36.903</prism:doi>
+<dcterms:title>
+Effects of grain size on cutting performance of Al2O3-TiC ceramics tool.
+</dcterms:title>
+<dcterms:title>Ａｌ２Ｏ３－ＴｉＣセラミックス工具の切削性能におよぼすセラミックス粒度の影響
+</dcterms:title>
+<dcterms:creator>
+<foaf:Person>
+<foaf:name>Katsumura Yuji</foaf:name>
+<foaf:familyName>Katsumura</foaf:familyName>
+<foaf:givenName>Yuji</foaf:givenName>
+</foaf:Person>
+</dcterms:creator>
+<dcterms:creator>
+<foaf:Person>
+<foaf:name>勝村 祐次</foaf:name>
+<foaf:familyName>勝村</foaf:familyName>
+<foaf:givenName>祐次</foaf:givenName>
+</foaf:Person>
+</dcterms:creator>
+<dcterms:creator>
+<foaf:Person>
+<foaf:name>Sobata Kaoru</foaf:name>
+<foaf:familyName>Sobata</foaf:familyName>
+<foaf:givenName>Kaoru</foaf:givenName>
+</foaf:Person>
+</dcterms:creator>
+<dcterms:creator>
+<foaf:Person>
+<foaf:name>蕎麦田 薫</foaf:name>
+<foaf:familyName>蕎麦田</foaf:familyName>
+<foaf:givenName>薫</foaf:givenName>
+</foaf:Person>
+</dcterms:creator>
+<dcterms:creator>
+<foaf:Person>
+<foaf:name>Uehara Yoshito</foaf:name>
+<foaf:familyName>Uehara</foaf:familyName>
+<foaf:givenName>Yoshito</foaf:givenName>
+</foaf:Person>
+</dcterms:creator>
+<dcterms:creator>
+<foaf:Person>
+<foaf:name>上原 好人</foaf:name>
+<foaf:familyName>上原</foaf:familyName>
+<foaf:givenName>好人</foaf:givenName>
+</foaf:Person>
+</dcterms:creator>
+<dcterms:creator>
+<foaf:Person>
+<foaf:name>Suzuki Hisashi</foaf:name>
+<foaf:familyName>Suzuki</foaf:familyName>
+<foaf:givenName>Hisashi</foaf:givenName>
+</foaf:Person>
+</dcterms:creator>
+<dcterms:creator>
+<foaf:Person>
+<foaf:name>鈴木 寿</foaf:name>
+<foaf:familyName>鈴木</foaf:familyName>
+<foaf:givenName>寿</foaf:givenName>
+</foaf:Person>
+</dcterms:creator>
+<dc:creator>Katsumura Yuji</dc:creator>
+<dc:creator>勝村祐次</dc:creator>
+<dc:creator>Sobata Kaoru</dc:creator>
+<dc:creator>蕎麦田 薫</dc:creator>
+<dc:creator>Uehara Yoshito</dc:creator>
+<dc:creator>上原好人</dc:creator>
+<dc:creator>Suzuki Hisashi</dc:creator>
+<dc:creator>鈴木寿</dc:creator>
+<dcterms:publisher>Japan Society of Powder and Powder Metallurgy</dcterms:publisher>
+<dcterms:publisher>一般社団法人 粉体粉末冶金協会</dcterms:publisher>
+<dcterms:date rdf:resource="http://www.w3.org/2001/XMLSchema#date">1989</dcterms:date>
+<prism:volume>36</prism:volume>
+<prism:number>8</prism:number>
+<prism:startingPage>903</prism:startingPage>
+<prism:endingPage>907</prism:endingPage>
+<prism:issn>0532-8799</prism:issn>
+<prism:issn>0532-8799</prism:issn>
+<prism:issn>1880-9014</prism:issn>
+<prism:issn>1880-9014</prism:issn>
+<dcterms:publicationName>
+Journal of the Japan Society of Powder and Powder Metallurgy
+</dcterms:publicationName>
+<dcterms:publicationName>粉体および粉末冶金</dcterms:publicationName>
+</rdf:Description>
+</rdf:RDF>
