@@ -226,7 +226,7 @@ def get_elastic_container_stats(issnl):
         json=query,
         params=dict(request_cache="true"))
     # TODO: abort()
-    print(resp.json())
+    #print(resp.json())
     resp.raise_for_status()
     resp = resp.json()
     buckets = resp['aggregations']['container_stats']['buckets']
