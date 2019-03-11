@@ -2,4 +2,4 @@
 
 mdbook clean
 mdbook build
-rsync -arv book/ fatcat-prod1-vm:/srv/fatcat/guide
+rsync -rlv book/ fatcat-prod1-vm:/srv/fatcat/guide
