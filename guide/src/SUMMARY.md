@@ -17,4 +17,6 @@
 - [Software Contributions](./sw_contribute.md)
 - [Policies](./policies.md)
 
+[Bibliography](./bibliography.md)
+
 [About This Guide](./guide.md)
