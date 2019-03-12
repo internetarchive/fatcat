@@ -21,7 +21,7 @@ from fatcat_tools import uuid2fcid, entity_from_json, entity_to_dict, \
     changelog_to_elasticsearch, public_api, release_to_csl
 
 
-def run_transform_releases(args):
+def run_elasticsearch_releases(args):
     for line in args.json_input:
         line = line.strip()
         if not line:
@@ -30,7 +30,7 @@ def run_transform_releases(args):
         args.json_output.write(
             json.dumps(release_to_elasticsearch(entity)) + '\n')
 
-def run_transform_containers(args):
+def run_elasticsearch_containers(args):
     for line in args.json_input:
         line = line.strip()
         if not line:
@@ -39,7 +39,7 @@ def run_transform_containers(args):
         args.json_output.write(
             json.dumps(container_to_elasticsearch(entity)) + '\n')
 
-def run_transform_changelogs(args):
+def run_elasticsearch_changelogs(args):
     for line in args.json_input:
         line = line.strip()
         if not line:
@@ -95,30 +95,30 @@ def main():
         help="connect to this host/port")
     subparsers = parser.add_subparsers()
 
-    sub_transform_releases = subparsers.add_parser('transform-releases')
-    sub_transform_releases.set_defaults(func=run_transform_releases)
-    sub_transform_releases.add_argument('json_input',
+    sub_elasticsearch_releases = subparsers.add_parser('elasticsearch-releases')
+    sub_elasticsearch_releases.set_defaults(func=run_elasticsearch_releases)
+    sub_elasticsearch_releases.add_argument('json_input',
         help="JSON-per-line of release entities",
         default=sys.stdin, type=argparse.FileType('r'))
-    sub_transform_releases.add_argument('json_output',
+    sub_elasticsearch_releases.add_argument('json_output',
         help="where to send output",
         default=sys.stdout, type=argparse.FileType('w'))
 
-    sub_transform_containers = subparsers.add_parser('transform-containers')
-    sub_transform_containers.set_defaults(func=run_transform_containers)
-    sub_transform_containers.add_argument('json_input',
+    sub_elasticsearch_containers = subparsers.add_parser('elasticsearch-containers')
+    sub_elasticsearch_containers.set_defaults(func=run_elasticsearch_containers)
+    sub_elasticsearch_containers.add_argument('json_input',
         help="JSON-per-line of container entities",
         default=sys.stdin, type=argparse.FileType('r'))
-    sub_transform_containers.add_argument('json_output',
+    sub_elasticsearch_containers.add_argument('json_output',
         help="where to send output",
         default=sys.stdout, type=argparse.FileType('w'))
 
-    sub_transform_changelogs = subparsers.add_parser('transform-changelogs')
-    sub_transform_changelogs.set_defaults(func=run_transform_changelogs)
-    sub_transform_changelogs.add_argument('json_input',
+    sub_elasticsearch_changelogs = subparsers.add_parser('elasticsearch-changelogs')
+    sub_elasticsearch_changelogs.set_defaults(func=run_elasticsearch_changelogs)
+    sub_elasticsearch_changelogs.add_argument('json_input',
         help="JSON-per-line of changelog entries",
         default=sys.stdin, type=argparse.FileType('r'))
-    sub_transform_changelogs.add_argument('json_output',
+    sub_elasticsearch_changelogs.add_argument('json_output',
         help="where to send output",
         default=sys.stdout, type=argparse.FileType('w'))
 

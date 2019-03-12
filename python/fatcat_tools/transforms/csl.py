@@ -115,8 +115,8 @@ def release_to_csl(entity):
         #original-publisher
         #original-publisher-place
         #original-title
-        # XXX: page=entity.pages,
-        page_first=entity.pages.split('-')[0],
+        # TODO: page=entity.pages,
+        page_first=entity.pages and entity.pages.split('-')[0],
         PMCID=entity.pmcid,
         PMID=entity.pmid,
         publisher=(entity.container and entity.container.publisher) or entity.publisher,

@@ -22,5 +22,10 @@ set -x
 ./fatcat_webface.py -h
 ./fatcat_worker.py -h
 
+./fatcat_util.py fcid2uuid aaaaaaaaaaaaamztaaaaaaaaae
+./fatcat_util.py uuid2fcid 00000000-0000-0000-3333-000000000001
+
+cat tests/files/example_releases_pubmed19n0972.json | ./fatcat_transform.py citeproc-releases - /dev/null
+
 set +x
 echo "Done running CLI examples (SUCCESS)"
