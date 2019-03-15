@@ -1,15 +1,21 @@
 
 ## In Progress
 
-- update TODO, roadmap
+- in dev, make JSON API link to localhost:9810
+- "as bibtext" webface URL
+- example entities
+    => work with multiple releases
+    => dataset/fileset
+    => webcapture
+    => dweb URLs
+- basic web editing/creation of containers and papers
+- commenting and accepting editgroups via web interface
+- example editgroup review bot (can be trivial)
 
 ## Next Up
 
 - import from arabesque output (eg, specific crawls)
-- more logins: orcid, wikimedia
 - missing SQL indices: `ENTITY_edit.editgroup_id, ENTITY_edit.ident_id`
-- environment (QA/dev) in webface `<title>`, header, footer
-    => in dev, make JSON API link to localhost:9810
 - test logins, and add loginpass support for: orcid, wikimedia
 
 ## Bugs
@@ -19,7 +25,28 @@
 - author (contrib) names not getting included in search (unless explicit)
 - fatcat flask lookup ValueError should return 4xx (and message?)
     => if blank: UnboundLocalError: local variable 'extid' referenced before assignment
-- subtitles: glom on to full title? search index? cleanup existing imported instances
+
+## Next Schema Iteration
+
+Changes to SQL (and swagger):
+
+- structured names in contribs (given/sur)
+- `release_status` => `release_stage`
+- `withdrawn_date` and retraction as a release stage
+- subtitle as a string field? what about translation (`original_subtitle`)?
+
+Changes to swagger only:
+
+- edit URLs: editgroup_id in URL, not a query param
+
+## Next Full Release "Touch"
+
+Will update all release entities (or at least all Crossref-derived entities).
+Want to minimize edit counts, so will bundle a bunch of changes
+
+- structured contrib names (given, sur)
+- reference linking (release-to-release), via crossref DOI refs
+- subtitle as string, not array
 
 ## Production Public Launch Blockers
 
@@ -51,6 +78,7 @@
 - QA sentry has very little host info; also not URL of request
 - elastic schemas:
     release: drop revision?; container_id; creator_id
+        should `release_year` be of date type, instead of int?
     files: domain list; mimetype; release count; url count; web/publisher/etc;
         size; has_md5/sha256/sha1; in_ia, in_shadow
 - should elastic `release_year` be of date type, instead of int?
