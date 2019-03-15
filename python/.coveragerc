@@ -1,3 +1,5 @@
 [run]
-omit = tests/*
-source = .
+source =
+    fatcat_tools
+    fatcat_web
+    ../python_client/fatcat_client
