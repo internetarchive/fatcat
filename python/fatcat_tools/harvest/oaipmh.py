@@ -98,18 +98,22 @@ class HarvestArxivWorker(HarvestOaiPmhWorker):
     - http://export.arxiv.org/oai2?verb=GetRecord&identifier=oai:arXiv.org:0804.2273&metadataPrefix=arXivRaw
 
     All records are work-level. Some metadata formats have internal info about
-    specific versions. The 'arXiv' format does, so i'm using that.
+    specific versions. The 'arXivRaw' format does, so i'm using that.
     """
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.endpoint_url = "https://export.arxiv.org/oai2"
-        self.metadata_prefix = "arXiv"
+        self.metadata_prefix = "arXivRaw"
         self.name = "arxiv"
 
 
 class HarvestPubmedWorker(HarvestOaiPmhWorker):
     """
+    Will likely be doing MEDLINE daily batch imports for primary metadata, but
+    might also want to run a PMC importer to update fulltext and assign OA
+    licenses (when appropriate).
+
     Pubmed refs:
     - https://www.ncbi.nlm.nih.gov/pmc/tools/oai/
     - https://www.ncbi.nlm.nih.gov/pmc/oai/oai.cgi?verb=GetRecord&identifier=oai:pubmedcentral.nih.gov:152494&metadataPrefix=pmc_fm
