@@ -38,7 +38,10 @@ unified_test:
 rust_build_release:
   only:
     - tags  # doesn't build for most commits; only tagged
-  image: "rust:1.26-stretch"
+  image: "rust:1.32-stretch"
+  variables:
+    LC_ALL: "C.UTF-8"
+    LANG: "C.UTF-8"
   script:
     - rustc --version && cargo --version
     - cd rust
