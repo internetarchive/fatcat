@@ -11,7 +11,7 @@ import fatcat_client
 
 @pytest.fixture
 def full_app():
-    load_dotenv(dotenv_path="./env.example")
+    load_dotenv(dotenv_path="./example.env")
     fatcat_web.app.testing = True
     fatcat_web.app.debug = False
     return fatcat_web.app
@@ -22,7 +22,7 @@ def app(full_app):
 
 @pytest.fixture
 def api():
-    load_dotenv(dotenv_path="./env.example")
+    load_dotenv(dotenv_path="./example.env")
     conf = fatcat_client.Configuration()
     conf.host = "http://localhost:9411/v0"
     conf.api_key["Authorization"] = os.getenv("FATCAT_API_AUTH_TOKEN")

@@ -21,26 +21,36 @@ do development work:
 - rust stable, 2018 edition, 1.32+ (eg, via "rustup", includes cargo tool)
 - diesel (`cargo install diesel_cli`)
 - postgres (compatible with 9.6+; run 11.x in production)
-- postgres libs (debian: `sudo apt install libsqlite3-dev libpq-dev`)
-- libsodium library and development headers (debian: `libsodium-dev`)
+- postgres libs (debian/ubuntu: `libsqlite3-dev libpq-dev`)
+- libsodium library and development headers (debian/ubuntu: `libsodium-dev`)
 
-Copying commands out of `../.gitlab-ci.yml` file may be the fastest way to get
-started.
+We need to create a new `fatcat` postgres user and database to run tests and
+develop with. On debian/ubuntu, a UNIX account named `postgres` is
+automatically created with control over the database, so we'll run setup
+commands from that user. To create the database account:
 
-Create a new postgres superuser. A regular postgres user and an existing
-database should also work (with up/down migrations), but it's easier to just
-blow the entire database away.
+    sudo su - postgres
 
-Copy `env.example` to `.env`, update if needed, then re-create database from
-scratch:
+    # this command creates a PostgreSQL user, not a UNIX/system user
+    createuser -s fatcat -P
+
+    # switch back to your regular system user
+    exit
+
+Copy `./example.env` to `./.env` and update the `DATABASE_URL` and
+`TEST_DATABASE_URL` lines with the password you set above.
+
+As your regular user, use `diesel` to create and initialize the `fatcat`
+database (`diesel` and the fatcat tools will automatically use postgresql
+credentials from the `.env` file):
 
     diesel database reset
 
-Build and run:
+Build and run the API server:
 
     cargo run --bin fatcatd
 
-Tests:
+Run tests:
 
     cargo test -- --test-threads 1
 

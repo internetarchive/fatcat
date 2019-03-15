@@ -34,7 +34,7 @@ server on the same machine by default), use:
     # will listen on http://localhost:9810 by default
     pipenv run fatcat_webface.py
 
-Almost all configuration is done via environment variables; see `env.example`
+Almost all configuration is done via environment variables; see `example.env`
 for a list of settings. If you copy this file to `.env` it will be sourced by
 `pipenv` automatically; you can also load it in your shell like `source .env`.
 
