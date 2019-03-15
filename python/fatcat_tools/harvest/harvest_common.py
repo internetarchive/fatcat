@@ -5,7 +5,9 @@ import time
 import datetime
 import requests
 from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.util.retry import Retry
+# unclear why pylint chokes on this import. Recent 'requests' and 'urllib3' are
+# in Pipenv.lock, and there are no errors in QA
+from requests.packages.urllib3.util.retry import Retry # pylint: disable=import-error
 
 
 # Used for parsing ISO date format (YYYY-MM-DD)
