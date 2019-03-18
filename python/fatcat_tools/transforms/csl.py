@@ -208,7 +208,7 @@ def citeproc_csl(csl_json, style, html=False):
     bib.register(Citation([CitationItem(csl_json['id'])]))
     lines = bib.bibliography()[0]
     if style == "bibtex":
-        out = "\n"
+        out = ""
         for l in lines:
             if l.startswith(" @"):
                 out += "@"

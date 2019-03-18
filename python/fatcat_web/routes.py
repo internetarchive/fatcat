@@ -2,7 +2,7 @@
 import os
 import json
 from flask import Flask, render_template, send_from_directory, request, \
-    url_for, abort, g, redirect, jsonify, session, flash
+    url_for, abort, g, redirect, jsonify, session, flash, Response
 from flask_login import login_required
 
 from fatcat_client.rest import ApiException
@@ -507,7 +507,7 @@ def stats_page():
 
 ### Pseudo-APIs #############################################################
 
-@app.route('/unstable/stats.json', methods=['GET', 'OPTIONS'])
+@app.route('/stats.json', methods=['GET', 'OPTIONS'])
 @crossdomain(origin='*',headers=['access-control-allow-origin','Content-Type'])
 def stats_json():
     try:
@@ -518,7 +518,6 @@ def stats_json():
         abort(503)
     return jsonify(stats)
 
-@app.route('/unstable/container/issnl/<issnl>/stats.json', methods=['GET', 'OPTIONS'])
 @app.route('/container/issnl/<issnl>/stats.json', methods=['GET', 'OPTIONS'])
 @crossdomain(origin='*',headers=['access-control-allow-origin','Content-Type'])
 def container_issnl_stats(issnl):
@@ -528,6 +527,36 @@ def container_issnl_stats(issnl):
         print(ae)
         abort(503)
     return jsonify(stats)
+
+@app.route('/release/<ident>.bib', methods=['GET'])
+def release_bibtex(ident):
+    try:
+        entity = api.get_release(ident)
+    except ApiException as ae:
+        abort(ae.status)
+    csl = release_to_csl(entity)
+    bibtex = citeproc_csl(csl, 'bibtex')
+    return Response(bibtex, mimetype="text/plain")
+
+@app.route('/release/<ident>/citeproc', methods=['GET'])
+def release_citeproc(ident):
+    style = request.args.get('style', 'harvard1')
+    is_html = request.args.get('html', False)
+    if is_html and is_html.lower() in ('yes', '1', 'true', 'y', 't'):
+        is_html = True
+    else:
+        is_html = False
+
+    try:
+        entity = api.get_release(ident)
+    except ApiException as ae:
+        abort(ae.status)
+    csl = release_to_csl(entity)
+    cite = citeproc_csl(csl, style, is_html)
+    if is_html:
+        return Response(cite)
+    else:
+        return Response(cite, mimetype="text/plain")
 
 
 ### Auth ####################################################################
