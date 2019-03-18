@@ -18,7 +18,7 @@ from fatcat_client.rest import ApiException
 from fatcat_client import ReleaseEntity, ContainerEntity, ChangelogEntry
 from fatcat_tools import uuid2fcid, entity_from_json, entity_to_dict, \
     release_to_elasticsearch, container_to_elasticsearch, \
-    changelog_to_elasticsearch, public_api, release_to_csl
+    changelog_to_elasticsearch, public_api, release_to_csl, citeproc_csl
 
 
 def run_elasticsearch_releases(args):
@@ -55,35 +55,9 @@ def run_citeproc_releases(args):
             continue
         entity = entity_from_json(line, ReleaseEntity, api_client=args.api.api_client)
         csl_json = release_to_csl(entity)
-        # XXX:
         csl_json['id'] = "release:" + (entity.ident or "unknown")
-        if args.style == "csl-json":
-            args.json_output.write(json.dumps(csl_json) + "\n")
-            continue
-        bib_src = CiteProcJSON([csl_json])
-        form = formatter.plain
-        if args.html:
-            form = formatter.html
-        style_path = get_style_filepath(args.style)
-        bib_style = CitationStylesStyle(style_path, validate=False)
-        bib = CitationStylesBibliography(bib_style, bib_src, form)
-        bib.register(Citation([CitationItem(csl_json['id'])]))
-        # XXX:
-        #args.json_output.write(
-        #    json.dumps(release_to_csl(entity)) + '\n')
-        lines = bib.bibliography()[0]
-        if args.style == "bibtex":
-            for l in lines:
-                if l.startswith(" @"):
-                    args.json_output.write("\n@")
-                elif l.startswith(" "):
-                    #print("line: START|{}|END".format(l))
-                    args.json_output.write("\n  " + l)
-                else:
-                    args.json_output.write(l)
-        else:
-            args.json_output.write(''.join(lines) + "\n")
-        print()
+        out = citeproc_csl(csl_json, args.style, args.html)
+        args.json_output.write(out + "\n")
 
 def main():
     parser = argparse.ArgumentParser()

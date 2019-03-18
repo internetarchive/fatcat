@@ -1,6 +1,13 @@
 
-
+import json
 import collections
+
+from citeproc import CitationStylesStyle, CitationStylesBibliography
+from citeproc import Citation, CitationItem
+from citeproc import formatter
+from citeproc.source.json import CiteProcJSON
+from citeproc_styles import get_style_filepath
+
 from fatcat_client import ApiClient
 
 
@@ -8,7 +15,7 @@ def contribs_by_role(contribs, role):
     ret = [c.copy() for c in contribs if c['role'] == role]
     [c.pop('role') for c in ret]
     # XXX:
-    [c.pop('literal') for c in ret]
+    [c.pop('literal') for c in ret if 'literal' in c]
     if not ret:
         return None
     else:
@@ -29,6 +36,11 @@ def release_to_csl(entity):
         if contrib.creator:
             # TODO: should we actually be pulling creator metadata? or just
             # using release-local raw metadata?
+            family = contrib.creator.surname
+            if not family:
+                if not contrib.raw_name:
+                    raise ValueError("CSL requires some surname (family name)")
+                family = contrib.raw_name.split()[-1]
             c = dict(
                 family=contrib.creator.surname,
                 given=contrib.creator.given_name,
@@ -42,6 +54,8 @@ def release_to_csl(entity):
                 role=contrib.role,
             )
         else:
+            if not contrib.raw_name:
+                raise ValueError("CSL requires some surname (family name)")
             c = dict(
                 # XXX: possible inclusion of full name metadata in release_contrib
                 family=contrib.raw_name.split()[-1],
@@ -167,4 +181,42 @@ def refs_to_csl(entity):
         csl['id'] = ref.key or ref.index, # zero- or one-indexed?
         ret.append(csl)
     return ret
+
+def citeproc_csl(csl_json, style, html=False):
+    """
+    Renders a release entity to a styled citation.
+
+    Notable styles include:
+    - 'csl-json': special case to JSON encode the structured CSL object (via
+      release_to_csl())
+    - bibtext: multi-line bibtext format (used with LaTeX)
+
+    Returns a string; if the html flag is set, and the style isn't 'csl-json'
+    or 'bibtex', it will be HTML. Otherwise plain text.
+    """
+    if not csl_json.get('id'):
+        csl_json['id'] = "unknown"
+    if style == "csl-json":
+        return json.dumps(csl_json)
+    bib_src = CiteProcJSON([csl_json])
+    form = formatter.plain
+    if html:
+        form = formatter.html
+    style_path = get_style_filepath(style)
+    bib_style = CitationStylesStyle(style_path, validate=False)
+    bib = CitationStylesBibliography(bib_style, bib_src, form)
+    bib.register(Citation([CitationItem(csl_json['id'])]))
+    lines = bib.bibliography()[0]
+    if style == "bibtex":
+        out = "\n"
+        for l in lines:
+            if l.startswith(" @"):
+                out += "@"
+            elif l.startswith(" "):
+                out += "\n " + l
+            else:
+                out += l
+        return ''.join(out)
+    else:
+        return ''.join(lines)
 
