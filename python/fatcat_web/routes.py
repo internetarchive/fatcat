@@ -119,16 +119,6 @@ def creator_history(ident):
         entity=entity,
         history=history)
 
-@app.route('/container/issnl/<issnl>/stats.json', methods=['GET', 'OPTIONS'])
-@crossdomain(origin='*',headers=['access-control-allow-origin','Content-Type'])
-def container_issnl_stats(issnl):
-    try:
-        stats = get_elastic_container_stats(issnl)
-    except Exception as ae:
-        print(ae)
-        abort(503)
-    return jsonify(stats)
-
 @app.route('/creator/<ident>/edit', methods=['GET'])
 def creator_edit_view(ident):
     try:
@@ -505,7 +495,19 @@ def get_changelog_stats():
     }}
     return stats
 
-@app.route('/stats.json', methods=['GET', 'OPTIONS'])
+@app.route('/stats', methods=['GET'])
+def stats_page():
+    try:
+        stats = get_elastic_entity_stats()
+        stats.update(get_changelog_stats())
+    except Exception as ae:
+        print(ae)
+        abort(503)
+    return render_template('stats.html', stats=stats)
+
+### Pseudo-APIs #############################################################
+
+@app.route('/unstable/stats.json', methods=['GET', 'OPTIONS'])
 @crossdomain(origin='*',headers=['access-control-allow-origin','Content-Type'])
 def stats_json():
     try:
@@ -516,15 +518,16 @@ def stats_json():
         abort(503)
     return jsonify(stats)
 
-@app.route('/stats', methods=['GET'])
-def stats_page():
+@app.route('/unstable/container/issnl/<issnl>/stats.json', methods=['GET', 'OPTIONS'])
+@app.route('/container/issnl/<issnl>/stats.json', methods=['GET', 'OPTIONS'])
+@crossdomain(origin='*',headers=['access-control-allow-origin','Content-Type'])
+def container_issnl_stats(issnl):
     try:
-        stats = get_elastic_entity_stats()
-        stats.update(get_changelog_stats())
+        stats = get_elastic_container_stats(issnl)
     except Exception as ae:
         print(ae)
         abort(503)
-    return render_template('stats.html', stats=stats)
+    return jsonify(stats)
 
 
 ### Auth ####################################################################
