@@ -13,6 +13,7 @@ import hashlib
 import requests
 import datetime
 import argparse
+import subprocess
 from bs4 import BeautifulSoup
 
 from fatcat_client import *
@@ -105,7 +106,7 @@ def lookup_cdx(embed_url, verify_hashes=True, cdx_output=None):
         cdx = [x if (x and x != '-') else None for x in cdx]
         webcapture_cdx = WebcaptureEntityCdx(
             surt=cdx[0],
-            timestamp=parse_wbm_timestamp(cdx[1]),
+            timestamp=parse_wbm_timestamp(cdx[1]).isoformat() + "Z",
             url=cdx[2],
             mimetype=cdx[3],
             status_code=(cdx[4] and int(cdx[4])) or None,
@@ -164,17 +165,49 @@ def static_wayback_webcapture(wayback_url, cdx_output=None):
     for url in embeds:
         cdx_obj = lookup_cdx(url, cdx_output=cdx_output)
         cdx_list.append(cdx_obj)
-    archive_urls = WebcaptureEntityArchiveUrls(
+    archive_urls = [WebcaptureEntityArchiveUrls(
         rel="wayback",
         url="https://web.archive.org/web/",
-    )
+    )]
     wc = WebcaptureEntity(
         cdx=cdx_list,
-        timestamp=timestamp,
+        timestamp=timestamp.isoformat() + "Z",
         original_url=original_url,
         archive_urls=archive_urls,
         release_ids=None)
     return wc
+
+def auto_wayback_static(api, release_id, wayback_url, editgroup_id=None):
+    """
+    Returns a tuple: (editgroup_id, edit). If failed, both are None
+    """
+
+    raw_timestamp, timestamp, original_url = parse_wbm_url(wayback_url)
+    git_rev = subprocess.check_output(
+        ["git", "describe", "--always"]).strip().decode('utf-8')
+
+    release = api.get_release(release_id, expand="webcaptures")
+
+    # check for existing webcapture with same parameters
+    for wc in release.webcaptures:
+        if wc.original_url == original_url and wc.timestamp.date() == timestamp.date():
+            # skipping: already existed
+            print("release {} already had webcapture {} {}".format(
+                release_id, raw_timestamp, original_url))
+            return (None, None)
+
+    wc = static_wayback_webcapture(wayback_url)
+    assert len(wc.cdx) >= 1
+    wc.release_ids = [release_id]
+    if not editgroup_id:
+        eg = api.create_editgroup(Editgroup(
+            description="One-off import of static web content from wayback machine",
+            extra=dict(
+                git_rev=git_rev,
+                agent="fatcat_tools.auto_wayback_static")))
+        editgroup_id = eg.editgroup_id
+    edit = api.create_webcapture(wc, editgroup_id=editgroup_id)
+    return (editgroup_id, edit)
 
 def main():
     parser = argparse.ArgumentParser()

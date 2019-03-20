@@ -38,6 +38,36 @@ def run_grobid_metadata(args):
         bezerk_mode=args.bezerk_mode)
     LinePusher(fmi, args.tsv_file).run()
 
+def run_wayback_static(args):
+    api = args.api
+
+    # find the release
+    if args.release_id:
+        release_id = args.release_id
+    elif args.extid:
+        idtype = args.extid.split(':')[0]
+        extid = ':'.join(args.extid.split(':')[1:])
+        if idtype == "doi":
+            release_id = api.lookup_release(doi=extid).ident
+        elif idtype == "pmid":
+            release_id = api.lookup_release(pmid=extid).ident
+        elif idtype == "wikidata":
+            release_id = api.lookup_release(wikidata_qid=extid).ident
+        else:
+            raise NotImplementedError("extid type: {}".format(idtype))
+    else:
+        raise Exception("need either release_id or extid argument")
+
+    # create it
+    (editgroup_id, wc) = auto_wayback_static(api, release_id, args.wayback_url,
+        editgroup_id=args.editgroup_id)
+    if not wc:
+        return
+    print("release_id: {}".format(release_id))
+    print("editgroup_id: {}".format(editgroup_id))
+    print("edit id: {}".format(wc.ident))
+    print("link: https://fatcat.wiki/webcapture/{}".format(wc.ident))
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--debug',
@@ -125,6 +155,24 @@ def main():
     sub_grobid_metadata.add_argument('--bezerk-mode',
         action='store_true',
         help="don't lookup existing files, just insert (clobbers; only for fast bootstrap)")
+
+    sub_wayback_static = subparsers.add_parser('wayback-static')
+    sub_wayback_static.set_defaults(
+        func=run_wayback_static,
+        auth_var="FATCAT_API_AUTH_TOKEN",
+    )
+    sub_wayback_static.add_argument('wayback_url',
+        type=str,
+        help="URL of wayback capture to extract from")
+    sub_wayback_static.add_argument('--extid',
+        type=str,
+        help="external identifier for release lookup")
+    sub_wayback_static.add_argument('--release-id',
+        type=str,
+        help="release entity identifier")
+    sub_wayback_static.add_argument('--editgroup-id',
+        type=str,
+        help="use existing editgroup (instead of creating a new one)")
 
     args = parser.parse_args()
     if not args.__dict__.get("func"):

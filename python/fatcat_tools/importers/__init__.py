@@ -18,5 +18,6 @@ from .grobid_metadata import GrobidMetadataImporter
 from .journal_metadata import JournalMetadataImporter
 from .matched import MatchedImporter
 from .orcid import OrcidImporter
+from .wayback_static import auto_wayback_static
 #from .kafka_source import KafkaSource
 #from .file_source import FileSource
