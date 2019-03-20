@@ -12,11 +12,8 @@ import subprocess
 import fatcat_client
 from fatcat_client import *
 from .common import clean
+from .crossref import lookup_license_slug
 
-# TODO:
-LICENSE_MAP = {
-    "https://creativecommons.org/licenses/by/4.0/": "CC-BY",
-}
 
 def single_file(prefix, path):
 
@@ -75,9 +72,7 @@ def cdl_dash_release(meta, extra=None):
     assert ark_id
     extra['ark_id'] = ark_id
 
-    license_slug = LICENSE_MAP.get(meta['rights']['uri'])
-    if meta['rights']['uri'] == 'https://creativecommons.org/licenses/by/4.0/':
-        license_slug = 'CC-BY'
+    license_slug = lookup_license_slug(meta['rights']['uri'])
 
     abstracts = []
     for desc in meta['descriptions']:
@@ -106,6 +101,7 @@ def cdl_dash_release(meta, extra=None):
         publisher=clean(meta['publisher']),
         release_year=int(meta['publicationYear']),
         release_type="dataset",
+        license_slug=license_slug,
         contribs=contribs,
         abstracts=abstracts,
         extra=extra,
