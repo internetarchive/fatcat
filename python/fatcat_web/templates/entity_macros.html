@@ -72,7 +72,7 @@
   {% for url in urls %}
     <tr><td class="two wide right aligned">{{ url.rel }}
         <td class="eight wide"><small><code><a href="{{ url.url }}">
-        {% if url.url.count('/') >= 3 %}
+        {% if url.url.count('/') >= 3 and url.rel != "dweb" %}
           {{ '/'.join(url.url.split('/')[0:2]) }}/<b>{{ ''.join(url.url.split('/')[2]) }}</b>/{{ '/'.join(url.url.split('/')[3:]) }}
         {% else %}
           {{ url.url }}

@@ -241,7 +241,11 @@
       <br><small><code><a href="/fileset/{{ fileset.ident }}">fileset:{{ fileset.ident }}</a></code></small>
       <td class="single line">
         {% for url in fileset.urls[:5] %}
-          <a href="{{ url.url }}">{{ url.url.split('/')[2] }}</a> ({{ url.rel }})<br>
+          {% if url.rel == "dweb" %}
+            <a href="{{ url.url }}">{{ url.url }}</a> ({{ url.rel }})<br>
+          {% else %}
+            <a href="{{ url.url }}">{{ url.url.split('/')[2] }}</a> ({{ url.rel }})<br>
+          {% endif %}
         {% endfor %}
         {% if fileset.urls|length > 5 %}
           + {{ file.urls|length - 5 }} more URLs
