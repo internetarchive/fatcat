@@ -262,7 +262,7 @@
       <br><small><code><a href="/webcapture/{{ webcapture.ident }}">webcapture:{{ webcapture.ident }}</a></code></small>
       <td class="single line">
         {% for url in webcapture.archive_urls[:5] %}
-          <a href="{{ url.url }}">{{ url.url.split('/')[2] }}</a> ({{ url.rel }})<br>
+          <a href="{{ url.url }}{% if url.rel == "wayback" %}*/{{ webcapture.original_url }}{% endif %}">{{ url.url.split('/')[2] }}</a> ({{ url.rel }})<br>
         {% endfor %}
         {% if webcapture.urls|length > 5 %}
           + {{ file.urls|length - 5 }} more URLs
