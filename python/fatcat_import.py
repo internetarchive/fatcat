@@ -65,8 +65,21 @@ def run_wayback_static(args):
         return
     print("release_id: {}".format(release_id))
     print("editgroup_id: {}".format(editgroup_id))
-    print("edit id: {}".format(wc.ident))
+    print("webcapture id: {}".format(wc.ident))
     print("link: https://fatcat.wiki/webcapture/{}".format(wc.ident))
+
+def run_cdl_dash_dat(args):
+    api = args.api
+
+    # create it
+    (editgroup_id, release, fs) = auto_cdl_dash_dat(api, args.dat_path,
+        release_id=args.release_id, editgroup_id=args.editgroup_id)
+    if not fs:
+        return
+    print("release_id: {}".format(release.ident))
+    print("editgroup_id: {}".format(editgroup_id))
+    print("fileset id: {}".format(fs.ident))
+    print("link: https://fatcat.wiki/fileset/{}".format(fs.ident))
 
 def main():
     parser = argparse.ArgumentParser()
@@ -171,6 +184,21 @@ def main():
         type=str,
         help="release entity identifier")
     sub_wayback_static.add_argument('--editgroup-id',
+        type=str,
+        help="use existing editgroup (instead of creating a new one)")
+
+    sub_cdl_dash_dat = subparsers.add_parser('cdl-dash-dat')
+    sub_cdl_dash_dat.set_defaults(
+        func=run_cdl_dash_dat,
+        auth_var="FATCAT_API_AUTH_TOKEN",
+    )
+    sub_cdl_dash_dat.add_argument('dat_path',
+        type=str,
+        help="local path dat to import (must be the dat discovery key)")
+    sub_cdl_dash_dat.add_argument('--release-id',
+        type=str,
+        help="release entity identifier")
+    sub_cdl_dash_dat.add_argument('--editgroup-id',
         type=str,
         help="use existing editgroup (instead of creating a new one)")
 

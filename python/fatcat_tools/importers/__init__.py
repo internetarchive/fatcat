@@ -19,5 +19,6 @@ from .journal_metadata import JournalMetadataImporter
 from .matched import MatchedImporter
 from .orcid import OrcidImporter
 from .wayback_static import auto_wayback_static
+from .cdl_dash_dat import auto_cdl_dash_dat
 #from .kafka_source import KafkaSource
 #from .file_source import FileSource
