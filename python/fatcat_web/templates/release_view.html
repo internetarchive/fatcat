@@ -318,7 +318,7 @@
 
 {% if release.release_type or release.release_status or release.release_year %}
   <div class="ui segment attached">
-  {% if release.release_date %}
+  {% if release.release_type %}
     <b>Type</b> &nbsp;<code>{{ release.release_type }}</code><br>
   {% endif %}
   {% if release.release_status %}
