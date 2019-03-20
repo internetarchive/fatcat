@@ -25,9 +25,6 @@ def run_fcid2uuid(args):
     print(fcid2uuid(args.fcid))
 
 def run_editgroup_accept(args):
-    print(fcid2uuid(args.fcid))
-
-def run_editgroup_accept(args):
     args.api.accept_editgroup(args.editgroup_id)
 
 def run_editgroup_submit(args):
