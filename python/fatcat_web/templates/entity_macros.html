@@ -1,5 +1,13 @@
 
 {% macro fatcat_bits(entity, entity_type, expand="") -%}
+
+{% if entity.state == "wip" %}
+<div class="ui segment pink inverted attached">
+  <b>Work In Progress</b>
+  <p>This entity has not been "accepted" into the official database yet.
+</div>
+{% endif %}
+
 <div class="ui segment attached">
   <b>Fatcat Bits</b>
   <p>State is "{{ entity.state }}".
