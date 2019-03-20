@@ -36,6 +36,7 @@ ftfy= "*"
 citeproc-py = "*"
 citeproc-py-styles = "*"
 bs4 = "*"
+python-magic = "*"
 
 [requires]
 # Python 3.5 is the bundled (system) version of python for Ubuntu 16.04
