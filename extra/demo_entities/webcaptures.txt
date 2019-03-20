@@ -1,0 +1,45 @@
+
+## 2019-03-19
+
+Importing web captures of some works that already have DOIs.
+
+editgroup_id: kpuel5gcgjfrzkowokq54k633q
+
+doi:10.1629/14239 # OOPS, really doi:10.1045/june2001-reich
+http://web.archive.org/web/20010712114837/http://www.dlib.org/dlib/june01/reich/06reich.html
+https://fatcat.wiki/webcapture/pic2w7vlpnct3hmwvoh3anjpkq
+
+doi:10.31859/20180528.1521
+http://web.archive.org/web/20180921041617/https://joi.ito.com/weblog/2018/05/28/citing-blogs.html
+https://fatcat.wiki/webcapture/u33en3554bacfanygvb3bhoday
+
+doi:10.31859/20180822.2140
+http://web.archive.org/web/20181203180836/https://joi.ito.com/weblog/2018/08/22/blog-doi-enabled.html
+https://fatcat.wiki/webcapture/res6q5m3avgstd4dtk4y4jouey
+
+doi:10.1045/november2012-beaudoin1
+http://web.archive.org/web/20180726175116/http://www.dlib.org/dlib/november12/beaudoin/11beaudoin1.html
+https://fatcat.wiki/webcapture/jskwwf4zvjcm3pkpwafcbgpijq
+
+doi:10.1045/march2008-marshall-pt1
+http://web.archive.org/web/20190106185812/http://www.dlib.org/dlib/march08/marshall/03marshall-pt1.html
+https://fatcat.wiki/webcapture/z7uaeatyvfgwdpuxtrdu4okqii
+
+
+First command:
+
+    ./fatcat_import.py --host-url https://api.fatcat.wiki/v0 wayback-static \
+        --extid doi:10.1045/june2001-reich \
+        'http://web.archive.org/web/20010712114837/http://www.dlib.org/dlib/june01/reich/06reich.html'
+
+Later commands like:
+
+    ./fatcat_import.py --host-url https://api.fatcat.wiki/v0 wayback-static \
+        --editgroup-id kpuel5gcgjfrzkowokq54k633q \
+        --extid doi:10.31859/20180528.1521 \
+        'http://web.archive.org/web/20180921041617/https://joi.ito.com/weblog/2018/05/28/citing-blogs.html'
+
+And then:
+
+    ./fatcat_util.py --host-url https://api.fatcat.wiki/v0 editgroup-accept kpuel5gcgjfrzkowokq54k633q
+
