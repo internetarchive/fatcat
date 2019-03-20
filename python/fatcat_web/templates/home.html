@@ -122,20 +122,28 @@ indexing (aka, linking together of pre-prints and final copies).
             <input type="text" placeholder="SHA-1" name="sha1" aria-label="lookup file by SHA1">
           </div>
         </form>
-{% if config.FATCAT_DOMAIN != 'fatcat.wiki' %}
 <tr><td><b>File Set</b>
         <br>datasets, suplementary materials
+{% if config.FATCAT_DOMAIN == 'fatcat.wiki' %}
+{% else %}
     <td>
     <td><a href="/fileset/aaaaaaaaaaaaaztgaaaaaaaaai">Dummy</a>
         <br><a href="/fileset/aaaaaaaaaaaaaztgaaaaaaaaam">Realistic</a>
+{% endif %}
     <td>
 <tr><td><b>Web Capture</b>
         <br>HTML and interactive articles, blog posts
+{% if config.FATCAT_DOMAIN == 'fatcat.wiki' %}
     <td>
-    <td><a href="/webcapture/aaaaaaaaaaaaa53xaaaaaaaaai">Dummy</a>
+    <td><a href="/webcapture/z7uaeatyvfgwdpuxtrdu4okqii">D-Lib</a>
+        <br><a href="/webcapture/u33en3554bacfanygvb3bhoday">Blog Post</a>
+{% else %}
+    <td>
+    <td><a href="/webcapture/z7uaeatyvfgwdpuxtrdu4okqii">D-Lib</a> (prod)
+        <br><a href="/webcapture/aaaaaaaaaaaaa53xaaaaaaaaai">Dummy</a>
         <br><a href="/webcapture/aaaaaaaaaaaaa53xaaaaaaaaam">Realistic</a>
-    <td>
 {% endif %}
+    <td>
 <tr><td><b>Work</b>
         <br>for grouping Releases
 {% if config.FATCAT_DOMAIN == 'fatcat.wiki' %}
@@ -143,7 +151,8 @@ indexing (aka, linking together of pre-prints and final copies).
     <td><a href="/work/ftl6xv267vb6xfech3khri3nwa">Paper</a>
 {% else %}
     <td>
-    <td><a href="/work/aaaaaaaaaaaaavkvaaaaaaaaai">Dummy</a>
+    <td><a href="/work/ftl6xv267vb6xfech3khri3nwa">Paper</a> (prod)
+        <br><a href="/work/aaaaaaaaaaaaavkvaaaaaaaaai">Dummy</a>
         <br><a href="/work/aaaaaaaaaaaaavkvaaaaaaaaam">Realistic</a>
 {% endif %}
     <td>
