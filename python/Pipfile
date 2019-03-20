@@ -24,6 +24,8 @@ Flask = ">=1"
 flask-uuid = "*"
 flask-debugtoolbar = "*"
 flask-login = "*"
+flask-wtf = "*"
+WTForms = "*"
 loginpass = "*"
 requests = ">=2"
 raven = { extras = ['flask'], version = "*" }
