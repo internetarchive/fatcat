@@ -1,212 +1,214 @@
 {% extends "base.html" %}
+
+{% macro form_field_errors(field) -%}
+  {% if field.errors %}
+    <ul class="errors">
+    {% for err in field.errors %}
+        <li>{{ err }}
+    {% endfor %}
+    </ul>
+  {% endif %}
+{%- endmacro %}
+
+{% macro form_field_basic(field, div_classes="") -%}
+<div class="field {{ div_classes }} {% if field.errors %}error{% endif %}">
+  {{ field.label }}
+  {{ field() }}
+  {{ form_field_errors(field) }}
+</div>
+{%- endmacro %}
+
+{% macro form_field_inline(field, div_classes="") -%}
+<div class="ui grid">
+  <div class="three wide column middle aligned right aligned" {# style="padding-right: 0.5rem;" #}>
+    <div class="field inline {% if field.errors %}error{% endif %}">
+      {{ field.label }}
+    </div>
+  </div>
+  <div class="twelve wide column" {# style="padding-left: 0.5rem;" #}>
+    <div class="field {% if field.errors %}error{% endif %}">
+      {{ field() }}
+      {{ form_field_errors(field) }}
+    </div>
+  </div>
+  <div class="one wide column">
+  </div>
+</div>
+{%- endmacro %}
+
 {% block body %}
 <div class="ui segment">
-<h1 class="ui header">Adding a New Thing</h1>
+<h1 class="ui header">Create New Release Entity</h1>
 
-<form class="ui form" id="add_work_form">
+
+<form class="ui form" id="add_work_form" method="POST" action="/release/create">
+  {{ form.hidden_tag() }}
+
+  <h3 class="ui dividing header">Edit Meta</h3>
+  {{ form_field_inline(form.editgroup_id) }}
+  {{ form_field_inline(form.editgroup_description) }}
+  {{ form_field_inline(form.edit_description) }}
 
   <h3 class="ui dividing header">The Basics</h3>
-
-  <div class="ui huge field required">
-    <label>Title</label>
-    <input name="work_title" type="text" placeholder="Title of Work (in English)">
-  </div>
-
-  <div class="ui field required">
-    <label>Type of Work</label>
-    <select class="ui dropdown" id="work_type">
-      <option value="">Primary Type</option>
-      <option value="journal-article">Journal Article</option>
-      <option value="book">Book</option>
-      <option value="book-chapter">Book Chapter</option>
-      <option value="dataset">Dataset</option>
-      <option value="dissertation">Thesis or Dissertation</option>
-      <option value="monograph">Monograph</option>
-      <option value="proceedings-article">Conference Proceeding</option>
-      <option value="report">Report</option>
-      <option value="other">Other</option>
-    </select>
-  </div>
-
-  <!-- Primary Creators/Authors -->
-  <div class="ui field search" id="work_creators">
-    <label>Primary Creator(s)</label>
-    <div class="ui icon input">
-      <input class="prompt" type="text" placeholder="Search...">
-      <i class="search icon"></i>
+  <div class="ui grid">
+    <div class="three wide column" style="padding-bottom: 0px;"></div>
+    <div class="twelve wide column" style="padding-bottom: 0px;">
+      <div class="ui equal width fields">
+        {{ form_field_basic(form.release_type) }}
+        {{ form_field_basic(form.release_status) }}
+      </div>
     </div>
-    <div class="results"></div>
+    <div class="one wide column" style="padding-bottom: 0px;"></div>
   </div>
 
-  <!-- Description (not an abstract) -->
-  <div class="ui field">
-    <label>Description</label>
-    <div class="field">
-      <label>Not an abstract...</label>
-      <textarea rows="2"></textarea>
+  {{ form_field_inline(form.title, "required") }}
+  {{ form_field_inline(form.original_title) }}
+  {{ form_field_inline(form.work_id) }}
+  {{ form_field_inline(form.release_date) }}
+  <div class="ui grid">
+    <div class="three wide column" style="padding-bottom: 0px;"></div>
+    <div class="twelve wide column" style="padding-bottom: 0px;">
+      <div class="ui equal width fields">
+        {{ form_field_basic(form.language) }}
+        {{ form_field_basic(form.license_slug) }}
+      </div>
     </div>
+    <div class="one wide column" style="padding-bottom: 0px;"></div>
   </div>
 
-  <!-- Primary/Original Language -->
-  <div class="field">
-    <label>Primary Language</label>
-    <select class="ui search select dropdown" id="language-select">
-      <option value="">Select if Appropriate</option>
-      <option value="en">English</option>
-      <option value="es">Spanish</option>
-    </select>
-  </div>
-
-  <!-- Subject / Categorization / Tags -->
-  <div class="field">
-    <label>Subject</label>
-    <select multiple="" class="ui dropdown" id="subjects">
-      <option value="">Select Subject/Tags</option>
-      <option value="AF">Afghanistan</option>
-      <option value="AX">Åland Islands</option>
-      <option value="AL">Albania</option>
-      <option value="DZ">Algeria</option>
-      <option value="AS">American Samoa</option>
-      <option value="AD">Andorra</option>
-      <option value="AO">Angola</option>
-    </select>
-  </div>
-
-
-  <h3 class="ui dividing header">Primary Release / Edition</h3>
-
-  <!-- Contributors (and how) -->
-  <div class="ui field search" id="release_creators">
-    <label>Primary Creator(s)</label>
-    <div class="ui icon input">
-      <input class="prompt" type="text" placeholder="Search...">
-      <i class="search icon"></i>
+  <h3 class="ui dividing header">Contributors</h3>
+  <div class="list-group" id="contrib_list" name="contrib_list">
+  {% for cform in form.contribs %}
+    <div class="list-group-item ui grid" style="padding-right: 1em;">
+      <div class="one wide column middle aligned center aligned sortable-handle" style="padding-bottom: 0px; padding-right: 0px; padding-left: 0px;">
+        <i class="arrows alternate vertical icon"></i>
+      </div>
+      <div class="three wide column" style="padding-bottom: 0px; padding-left: 0px;">
+        {{ cform.role }}
+      </div>
+      <div class="eleven wide column" style="padding-bottom: 0px;">
+        {{ cform.raw_name}}
+      </div>
+      <div class="one wide column right aligned" style="padding-bottom: 0px; padding-left: 0rem;">
+        <button type="button" class="ui icon red button delete-contrib-button"><i class="trash icon"></i></button>
+      </div>
     </div>
-    <div class="results"></div>
+  {% endfor %}
+  </div>
+  <br>
+  <button type="button" id="add-contrib-button" class="ui right floated icon green button" style="margin-right: 0.3rem;">
+    <i class="plus icon"></i>
+  </button>
+  <br>
+
+  <h3 class="ui dividing header">Identifers</h3>
+  <br>
+  {{ form_field_inline(form.doi) }}
+  {{ form_field_inline(form.wikidata_qid) }}
+  {{ form_field_inline(form.isbn13) }}
+  <div class="ui equal width fields">
+    {{ form_field_basic(form.pmid) }}
+    {{ form_field_basic(form.pmcid) }}
   </div>
 
-  <!-- Date -->
-  <!-- Container / Part-Of -->
-  <!-- Publisher -->
-  <!-- Identifier -->
-  <!-- Language -->
-  <!-- Type / Media -->
-  <!-- Issue / Volume / Pages / Chapter -->
+  <h3 class="ui dividing header">Container</h3>
+  <br>
+  {{ form_field_inline(form.container_id) }}
+  {{ form_field_inline(form.publisher) }}
+  <br>
+  <div class="ui equal width fields">
+    {{ form_field_basic(form.pages) }}
+    {{ form_field_basic(form.volume) }}
+    {{ form_field_basic(form.issue) }}
+  </div>
 
-  <!-- Anything Else? -->
-  <h3 class="ui dividing header">Anything Else?</h3>
+  <input class="ui primary submit button" type="submit" value="Create Release!">
 
-  <!-- File / Copy / URL -->
-  <!-- Citations -->
-
-<div class="ui submit button">Create Work</div>
 </form>
 
 </div>
 {% endblock %}
 
 {% block postscript %}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 <script>
-<!-- Form validation code -->
+<!-- Form code -->
 $(document).ready(function() {
 
-  $('#add_work_form')
-    .form({
-        fields: {
-        name: {
-            identifier: 'name',
-            rules: [
-            {
-                type   : 'empty',
-                prompt : 'Please enter your name'
-            }
-            ]
-        },
-        skills: {
-            identifier: 'skills',
-            rules: [
-            {
-                type   : 'minCount[2]',
-                prompt : 'Please select at least two skills'
-            }
-            ]
-        },
-        gender: {
-            identifier: 'gender',
-            rules: [
-            {
-                type   : 'empty',
-                prompt : 'Please select a gender'
-            }
-            ]
-        },
-        username: {
-            identifier: 'username',
-            rules: [
-            {
-                type   : 'empty',
-                prompt : 'Please enter a username'
-            }
-            ]
-        },
-        password: {
-            identifier: 'password',
-            rules: [
-            {
-                type   : 'empty',
-                prompt : 'Please enter a password'
-            },
-            {
-                type   : 'minLength[6]',
-                prompt : 'Your password must be at least {ruleValue} characters'
-            }
-            ]
-        },
-        terms: {
-            identifier: 'terms',
-            rules: [
-            {
-                type   : 'checked',
-                prompt : 'You must agree to the terms and conditions'
-            }
-            ]
-        }
-        }
-    })
-    ;
+  $('#release_type').dropdown();
+  $('#release_status').dropdown();
 
-  var example_authors = [
-    { title: 'Andorra' },
-    { title: 'United Arab Emirates' },
-    { title: 'Afghanistan' },
-    { title: 'Antigua' },
-    { title: 'Anguilla' },
-    { title: 'Albania' },
-    { title: 'Armenia' },
-    { title: 'Netherlands Antilles' },
-    { title: 'Angola' },
-    { title: 'Argentina' },
-    { title: 'American Samoa' },
-    { title: 'Austria' },
-    { title: 'Australia' },
-    { title: 'Aruba' },
-  ];
+  var fixup_contrib_numbering = function(group_item) {
+    items = Array.from(group_item.querySelectorAll(".list-group-item"))
+    for (var i = 0; i < items.length; i++) {
+      var item_el = items[i];
+      input_el = item_el.querySelectorAll("input")[0];
+      select_el = item_el.querySelectorAll("select")[0];
+      //console.log(input_el.id);
+      //console.log(select_el.id);
+      input_el.id = "contribs-" + i + "-raw_name";
+      input_el.name = input_el.id;
+      select_el.id = "contribs-" + i + "-role";
+      select_el.name = select_el.id;
+      //console.log(input_el.id);
+      //console.log(select_el.id);
+    };
+    console.log("re-named contrib rows up to i=" + i);
+  };
 
-  $('#work_creators')
-    .search({
-        source: example_authors
-    })
-  ;
+  var contrib_list = document.getElementById('contrib_list');
+  var contrib_sortable = Sortable.create(contrib_list, {
+    handle: '.sortable-handle',
+    animation: 150,
+    onSort: function(evt) {
+      fixup_contrib_numbering(contrib_list);
+    },
+  });
+  fixup_contrib_numbering(contrib_list);
 
-  $('#release_creators')
-    .search({
-        source: example_authors
-    })
-  ;
+  var contrib_delete_handler = function(ev) {
+    row = ev.target.parentNode.parentNode;
+    // I don't understand why this hack is needed; maybe because of the sortable stuff?
+    if(!row.classList.contains("list-group-item")) {
+        row = row.parentNode;
+    }
+    // console.log(row);
+    console.assert(row.classList.contains("list-group-item"));
+    row.parentNode.removeChild(row);
+    fixup_contrib_numbering(contrib_list);
+  };
 
-  $('#work_type').dropdown();
-  $('#subjects').dropdown();
-  $('#language-select').dropdown();
+  var attach_contrib_delete_handler = function(topthing) {
+    Array.from(topthing.querySelectorAll(".delete-contrib-button")).forEach((el) => {
+      el.addEventListener("click", contrib_delete_handler);
+    });
+  };
+  attach_contrib_delete_handler(document);
+
+  // XXX: really need some way to not duplicate this code from above...
+  var contrib_template = `
+  <div class="list-group-item ui grid" style="padding-right: 1em;">
+      <div class="one wide column middle aligned center aligned sortable-handle" style="padding-bottom: 0px; padding-right: 0px; padding-left: 0px;">
+        <i class="arrows alternate vertical icon"></i>
+      </div>
+      <div class="three wide column" style="padding-bottom: 0px; padding-left: 0px;">
+        <select id="contribs-X-role" name="contribs-X-role"><option value="author">Author</option><option value="editor">Editor</option><option value="translator">Translator</option></select>
+      </div>
+      <div class="eleven wide column" style="padding-bottom: 0px;">
+        <input id="contribs-X-raw_name" name="contribs-X-raw_name" type="text" value="">
+      </div>
+      <div class="one wide column right aligned" style="padding-bottom: 0px; padding-left: 0rem;">
+        <button type="button" class="ui icon red button delete-contrib-button"><i class="trash icon"></i></button>
+      </div>
+    </div>
+  `;
+
+  var add_contrib_button = document.getElementById("add-contrib-button");
+  add_contrib_button.addEventListener("click", function(){
+    contrib_list.insertAdjacentHTML('beforeend', contrib_template);
+    attach_contrib_delete_handler(contrib_list.lastElementChild);
+    fixup_contrib_numbering(contrib_list);
+  });
 
   console.log("Page loaded");
 

@@ -11,6 +11,7 @@ from fatcat_web import app, api, auth_api, priv_api
 from fatcat_web.auth import handle_token_login, handle_logout, load_user, handle_ia_xauth
 from fatcat_web.cors import crossdomain
 from fatcat_web.search import *
+from fatcat_web.forms import *
 
 
 ### Views ###################################################################
@@ -311,22 +312,23 @@ def release_lookup():
         abort(ae.status)
     return redirect('/release/{}'.format(resp.ident))
 
-@app.route('/release/create', methods=['GET'])
-@login_required
-def release_create_view():
-    return render_template('release_create.html')
-
-@app.route('/release/create', methods=['POST'])
+@app.route('/release/create', methods=['GET', 'POST'])
 @login_required
 def release_create():
-    raise NotImplementedError
-    params = dict()
-    for k in request.form:
-        if k.startswith('release_'):
-            params[k[10:]] = request.form[k]
-    release = None
-    #edit = api.create_release(release, params=params)
-    #return redirect("/release/{}".format(edit.ident))
+    form = ReleaseEntityForm()
+    if form.is_submitted():
+        print("got form!")
+        print(form.errors)
+    if form.validate_on_submit():
+        return redirect('/')
+    else:
+        print("didn't validate...")
+    if len(form.contribs) == 0:
+        form.contribs.append_entry()
+        form.contribs.append_entry()
+        form.contribs.append_entry()
+        form.contribs.append_entry()
+    return render_template('release_create.html', form=form)
 
 @app.route('/release/<ident>/history', methods=['GET'])
 def release_history(ident):
