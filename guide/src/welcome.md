@@ -31,7 +31,7 @@ folks are welcome to contribute to it's design and development, and we hope to
 ultimately crowd-source corrections and additional to bibliographic metadata,
 and receive direct automated feeds of new content.
 
-You can contact the Archive by email at <info@archive.org>, or the author
+You can contact the Archive by email at <webservices@archive.org>, or the author
 directly at <bnewbold@archive.org>.
 
 [Internet Archive]: https://archive.org
