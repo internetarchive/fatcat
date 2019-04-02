@@ -4,9 +4,9 @@
 {% block body %}
 {% block edit_form_prefix %}
 <div class="ui segment">
-<h1 class="ui header">Edit Release Entity</h1>
+<h1 class="ui header">Edit File Entity</h1>
 
-<form class="ui form" id="edit_release_form" method="POST" action="/release/{{ entity.ident }}/edit">
+<form class="ui form" id="edit_file_form" method="POST" action="/file/{{ entity.ident }}/edit">
 {% endblock %}
   {{ form.hidden_tag() }}
 
@@ -126,14 +126,11 @@
   <br><br>
   <h3 class="ui dividing header">Submit</h3>
   {{ edit_macros.form_field_basic(form.edit_description) }}
-  This description will be attached to the individual edit, not to the
+  This description will be attached to this specific action, not to the
   editgroup as a whole.
 {% block edit_form_suffix %}
   <br><br>
   <input class="ui primary submit button" type="submit" value="Update Release!">
-  <p>
-  <i>Edit will be part of the current editgroup, which needs to be submited and
-  approved before the change is included in the catalog.</i>
 </form>
 </div>
 {% endblock %}
