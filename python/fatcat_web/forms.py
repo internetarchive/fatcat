@@ -161,3 +161,129 @@ class ReleaseEntityForm(EntityEditForm):
         if self.edit_description.data:
             re.edit_extra = dict(description=self.edit_description.data)
 
+container_type_options = (
+    ('journal', 'Journal'),
+    ('proceedings', 'Conference Proceedings'),
+    ('blog', 'Blog'),
+)
+
+CONTAINER_SIMPLE_ATTRS = ['name', 'container_type', 'publisher', 'issnl',
+    'wikidata_qid']
+
+class ContainerEntityForm(EntityEditForm):
+    name = StringField('Name/Title',
+        [validators.InputRequired()])
+    container_type = SelectField('Container Type',
+        [validators.Optional(True)],
+        choices=container_type_options,
+        default='')
+    publisher = StringField("Publisher")
+    issnl = StringField("ISSN-L")
+    wikidata_qid = StringField('Wikidata QID')
+
+    def from_entity(re):
+        """
+        Initializes form with values from an existing container entity.
+        """
+        ref = ContainerEntityForm()
+        for simple_attr in CONTAINER_SIMPLE_ATTRS:
+            a = getattr(ref, simple_attr)
+            a.data = getattr(re, simple_attr)
+        return ref
+
+    def to_entity(self):
+        assert(self.name.data)
+        entity = ContainerEntity(name=self.name.data)
+        self.update_entity(entity)
+        return entity
+
+    def update_entity(self, ce):
+        """
+        Mutates a container entity in place, updating fields with values from
+        this form.
+
+        Form must be validated *before* calling this function.
+        """
+        for simple_attr in CONTAINER_SIMPLE_ATTRS:
+            a = getattr(self, simple_attr).data
+            # special case blank strings
+            if a == '':
+                a = None
+            setattr(ce, simple_attr, a)
+        if self.edit_description.data:
+            ce.edit_extra = dict(description=self.edit_description.data)
+
+url_rel_options = [
+    ('web', 'Public Web'),
+    ('webarchive', 'Web Archive'),
+    ('repository', 'Repository'),
+    ('social', 'Academic Social Network'),
+    ('publisher', 'Publisher'),
+    ('dweb', 'Decentralized Web'),
+]
+
+FILE_SIMPLE_ATTRS = ['size', 'md5', 'sha1', 'sha256', 'mimetype']
+
+class FileUrlForm(FlaskForm):
+    class Meta:
+        # this is a sub-form, so disable CSRF
+        csrf = False
+
+    url = StringField('Display Name',
+        [validators.DataRequired()])
+    rel = SelectField(
+        [validators.DataRequired()],
+        choices=url_rel_options,
+        default='web')
+
+class FileEntityForm(EntityEditForm):
+    size = IntegerField('Size (bytes)',
+        [validators.DataRequired()])
+        # TODO: positive definite
+    md5 = StringField("MD5")
+    sha1 = StringField("SHA-1")
+    sha256 = StringField("SHA-256")
+    urls = FieldList(FormField(FileUrlForm))
+    mimetype = StringField("Mimetype")
+    release_ids = FieldList(StringField("Release FCID"))
+
+    def from_entity(re):
+        """
+        Initializes form with values from an existing file entity.
+        """
+        ref = FileEntityForm()
+        for simple_attr in FILE_SIMPLE_ATTRS:
+            a = getattr(ref, simple_attr)
+            a.data = getattr(re, simple_attr)
+        return ref
+
+    def to_entity(self):
+        assert(self.name.data)
+        entity = FileEntity()
+        self.update_entity(entity)
+        return entity
+
+    def update_entity(self, fe):
+        """
+        Mutates in place, updating fields with values from this form.
+
+        Form must be validated *before* calling this function.
+        """
+        for simple_attr in FILE_SIMPLE_ATTRS:
+            a = getattr(self, simple_attr).data
+            # special case blank strings
+            if a == '':
+                a = None
+            setattr(fe, simple_attr, a)
+        re.urls = []
+        for u in self.urls:
+            re.contribs.append(FileUrl(
+                rel=u.role.data or None,
+                url=u.url.data or None,
+            ))
+        re.release_ids = []
+        for ri in self.release_ids:
+            re.release_ids.append(ri.data)
+        if self.edit_description.data:
+            fe.edit_extra = dict(description=self.edit_description.data)
+
