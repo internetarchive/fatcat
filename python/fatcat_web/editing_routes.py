@@ -17,12 +17,10 @@ from fatcat_web.forms import *
 
 ### Views ###################################################################
 
-# XXX: figure out CSRF stuff for local dev
 @app.route('/container/create', methods=['GET', 'POST'])
 @login_required
-@app.csrf.exempt
 def container_create():
-    form = ContainerEntityForm(csrf_enabled=False) # XXX:
+    form = ContainerEntityForm()
     if form.is_submitted():
         if form.validate_on_submit():
             # API on behalf of user
@@ -53,9 +51,7 @@ def container_create():
     return render_template('container_create.html',
         form=form, editgroup_id=editgroup_id)
 
-# XXX: figure out CSRF stuff for local dev
 @login_required
-@app.csrf.exempt
 @app.route('/container/<ident>/edit', methods=['GET', 'POST'])
 def container_edit(ident):
     # TODO: prev_rev interlock
@@ -64,7 +60,7 @@ def container_edit(ident):
         entity = api.get_container(ident)
     except ApiException as ae:
         abort(ae.status)
-    form = ContainerEntityForm(csrf_enabled=False) # XXX:
+    form = ContainerEntityForm()
     if form.is_submitted():
         if form.validate_on_submit():
             # API on behalf of user
@@ -130,12 +126,10 @@ def webcapture_edit(ident):
         abort(ae.status)
     return render_template('entity_edit.html')
 
-# XXX: figure out CSRF stuff for local dev
 @app.route('/release/create', methods=['GET', 'POST'])
 @login_required
-@app.csrf.exempt
 def release_create():
-    form = ReleaseEntityForm(csrf_enabled=False) # XXX:
+    form = ReleaseEntityForm()
     if form.is_submitted():
         if form.validate_on_submit():
             # API on behalf of user
@@ -149,7 +143,6 @@ def release_create():
                     Editgroup(description=form.editgroup_description.data or None))
                 # set this session editgroup_id
                 session['active_editgroup_id'] = eg.editgroup_id
-                print(eg.editgroup_id) # XXX: debug
                 flash('Started new editgroup <a href="/editgroup/{}">{}</a>' \
                     .format(eg.editgroup_id, eg.editgroup_id))
             # no merge or anything hard to do; just create the entity
@@ -168,9 +161,7 @@ def release_create():
     return render_template('release_create.html',
         form=form, editgroup_id=editgroup_id)
 
-# XXX: figure out CSRF stuff for local dev
 @login_required
-@app.csrf.exempt
 @app.route('/release/<ident>/edit', methods=['GET', 'POST'])
 def release_edit(ident):
     # TODO: prev_rev interlock
@@ -179,7 +170,7 @@ def release_edit(ident):
         entity = api.get_release(ident)
     except ApiException as ae:
         abort(ae.status)
-    form = ReleaseEntityForm(csrf_enabled=False) # XXX:
+    form = ReleaseEntityForm()
     if form.is_submitted():
         if form.validate_on_submit():
             # API on behalf of user

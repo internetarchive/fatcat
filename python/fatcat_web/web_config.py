@@ -39,6 +39,11 @@ class Config(object):
     IA_XAUTH_CLIENT_ID = os.environ.get("IA_XAUTH_CLIENT_ID", default=None)
     IA_XAUTH_CLIENT_SECRET = os.environ.get("IA_XAUTH_CLIENT_SECRET", default=None)
 
+    # CSRF on by default, but only for WTF forms (not, eg, search, lookups, GET
+    # forms)
+    WTF_CSRF_CHECK_DEFAULT = True
+    WTF_CSRF_TIME_LIMIT = None
+
     # protect cookies (which include API tokens)
     if FATCAT_DOMAIN != "dev.fatcat.wiki":
         SESSION_COOKIE_HTTPONLY = True
