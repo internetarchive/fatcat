@@ -84,7 +84,7 @@
     <div class="header">Now Hear This...</div>
     <ul class="list">
     {% for message in messages %}
-      <li>{{ message }}
+      <li>{{ message|safe }}
     {% endfor %}
     </ul>
     </div>
