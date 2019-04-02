@@ -12,7 +12,6 @@ from fatcat_web import app, api, auth_api, priv_api
 from fatcat_web.auth import handle_token_login, handle_logout, load_user, handle_ia_xauth
 from fatcat_web.cors import crossdomain
 from fatcat_web.search import *
-from fatcat_web.forms import *
 
 
 ### Views ###################################################################
@@ -30,43 +29,6 @@ def container_history(ident):
         entity_type="container",
         entity=entity,
         history=history)
-
-@app.route('/container/<ident>/edit', methods=['GET'])
-def container_edit_view(ident):
-    try:
-        entity = api.get_container(ident)
-    except ApiException as ae:
-        abort(ae.status)
-    return render_template('entity_edit.html')
-
-#@app.route('/container/<ident>/edit', methods=['POST'])
-#def container_edit(ident):
-#    raise NotImplemented()
-#    params = dict()
-#    for k in request.form:
-#        if k.startswith('container_'):
-#            params[k[10:]] = request.form[k]
-#    edit = api.update_container(params=params)
-#    return redirect("/container/{}".format(edit.ident))
-#    # else:
-#    #return render_template('container_edit.html')
-
-@app.route('/container/create', methods=['GET'])
-@login_required
-def container_create_view():
-    return render_template('container_create.html')
-
-@app.route('/container/create', methods=['POST'])
-@login_required
-def container_create():
-    raise NotImplementedError
-    params = dict()
-    for k in request.form:
-        if k.startswith('container_'):
-            params[k[10:]] = request.form[k]
-    container = None
-    #edit = api.create_container(container, params=params)
-    #return redirect("/container/{}".format(edit.ident))
 
 @app.route('/container/lookup', methods=['GET'])
 def container_lookup():
@@ -121,14 +83,6 @@ def creator_history(ident):
         entity=entity,
         history=history)
 
-@app.route('/creator/<ident>/edit', methods=['GET'])
-def creator_edit_view(ident):
-    try:
-        entity = api.get_creator(ident)
-    except ApiException as ae:
-        abort(ae.status)
-    return render_template('entity_edit.html')
-
 @app.route('/creator/lookup', methods=['GET'])
 def creator_lookup():
     for key in ('orcid', 'wikidata_qid'):
@@ -168,14 +122,6 @@ def file_history(ident):
         entity_type="file",
         entity=entity,
         history=history)
-
-@app.route('/file/<ident>/edit', methods=['GET'])
-def file_edit_view(ident):
-    try:
-        entity = api.get_file(ident)
-    except ApiException as ae:
-        abort(ae.status)
-    return render_template('entity_edit.html')
 
 @app.route('/file/lookup', methods=['GET'])
 def file_lookup():
@@ -223,14 +169,6 @@ def fileset_history(ident):
         entity=entity,
         history=history)
 
-@app.route('/fileset/<ident>/edit', methods=['GET'])
-def fileset_edit_view(ident):
-    try:
-        entity = api.get_fileset(ident)
-    except ApiException as ae:
-        abort(ae.status)
-    return render_template('entity_edit.html')
-
 @app.route('/fileset/lookup', methods=['GET'])
 def fileset_lookup():
     raise NotImplementedError
@@ -267,14 +205,6 @@ def webcapture_history(ident):
         entity_type="webcapture",
         entity=entity,
         history=history)
-
-@app.route('/webcapture/<ident>/edit', methods=['GET'])
-def webcapture_edit_view(ident):
-    try:
-        entity = api.get_webcapture(ident)
-    except ApiException as ae:
-        abort(ae.status)
-    return render_template('entity_edit.html')
 
 @app.route('/webcapture/lookup', methods=['GET'])
 def webcapture_lookup():
@@ -313,44 +243,6 @@ def release_lookup():
         abort(ae.status)
     return redirect('/release/{}'.format(resp.ident))
 
-# XXX: figure out CSRF stuff for local dev
-@app.route('/release/create', methods=['GET', 'POST'])
-@login_required
-@app.csrf.exempt
-def release_create():
-    form = ReleaseEntityForm(csrf_enabled=False) # XXX:
-    if form.is_submitted():
-        if form.validate_on_submit():
-            # API on behalf of user
-            user_api = auth_api(session['api_token'])
-            if form.editgroup_id.data:
-                # TODO: error handling
-                eg = user_api.get_editgroup(form.editgroup_id.data)
-            else:
-                # if no editgroup, create one from description
-                eg = user_api.create_editgroup(
-                    Editgroup(description=form.editgroup_description.data or None))
-                # set this session editgroup_id
-                session['active_editgroup_id'] = eg.editgroup_id
-                print(eg.editgroup_id) # XXX: debug
-                flash('Started new editgroup <a href="/editgroup/{}">{}</a>' \
-                    .format(eg.editgroup_id, eg.editgroup_id))
-            # no merge or anything hard to do; just create the entity
-            entity = form.to_entity()
-            edit = user_api.create_release(entity, editgroup_id=eg.editgroup_id)
-            # redirect to new release
-            return redirect('/release/{}'.format(edit.ident))
-        elif form.errors:
-            print("user form errors: {}".format(form.errors))
-            print("didn't validate...")
-    elif len(form.contribs) == 0:
-        form.contribs.append_entry()
-    if not form.is_submitted():
-        editgroup_id = session.get('active_editgroup_id', None)
-        form.editgroup_id.data = editgroup_id
-    return render_template('release_create.html',
-        form=form, editgroup_id=editgroup_id)
-
 @app.route('/release/<ident>/history', methods=['GET'])
 def release_history(ident):
     try:
@@ -363,51 +255,6 @@ def release_history(ident):
         entity_type="release",
         entity=entity,
         history=history)
-
-# XXX: figure out CSRF stuff for local dev
-@login_required
-@app.csrf.exempt
-@app.route('/release/<ident>/edit', methods=['GET', 'POST'])
-def release_edit(ident):
-    # TODO: prev_rev interlock
-    # TODO: factor out editgroup active/creation stuff
-    try:
-        entity = api.get_release(ident)
-    except ApiException as ae:
-        abort(ae.status)
-    form = ReleaseEntityForm(csrf_enabled=False) # XXX:
-    if form.is_submitted():
-        if form.validate_on_submit():
-            # API on behalf of user
-            user_api = auth_api(session['api_token'])
-            if form.editgroup_id.data:
-                # TODO: error handling
-                eg = user_api.get_editgroup(form.editgroup_id.data)
-            else:
-                # if no editgroup, create one from description
-                eg = user_api.create_editgroup(
-                    Editgroup(description=form.editgroup_description.data or None))
-                # set this session editgroup_id
-                session['active_editgroup_id'] = eg.editgroup_id
-                print(eg.editgroup_id) # XXX: debug
-                flash('Started new editgroup <a href="/editgroup/{}">{}</a>' \
-                    .format(eg.editgroup_id, eg.editgroup_id))
-            # all the tricky logic is in the update method
-            form.update_entity(entity)
-            edit = user_api.update_release(entity.ident, entity,
-                editgroup_id=eg.editgroup_id)
-            # redirect to release revision
-            # TODO: release_rev_view
-            return redirect('/release/{}'.format(edit.ident))
-        elif form.errors:
-            print("user form errors (didn't validate): {}".format(form.errors))
-    else:
-        form = ReleaseEntityForm.from_entity(entity)
-    if not form.is_submitted():
-        editgroup_id = session.get('active_editgroup_id', None)
-        form.editgroup_id.data = editgroup_id
-    return render_template('release_edit.html',
-        form=form, editgroup_id=editgroup_id, entity=entity)
 
 @app.route('/release/<ident>', methods=['GET'])
 def release_view(ident):
@@ -433,10 +280,6 @@ def release_view(ident):
     return render_template('release_view.html', release=entity,
         authors=authors, container=container)
 
-@app.route('/work/create', methods=['GET'])
-def work_create_view():
-    return abort(404)
-
 @app.route('/work/<ident>/history', methods=['GET'])
 def work_history(ident):
     try:
@@ -449,14 +292,6 @@ def work_history(ident):
         entity_type="work",
         entity=entity,
         history=history)
-
-@app.route('/work/<ident>/edit', methods=['GET'])
-def work_edit_view(ident):
-    try:
-        entity = api.get_work(ident)
-    except ApiException as ae:
-        abort(ae.status)
-    return render_template('entity_edit.html')
 
 @app.route('/work/<ident>', methods=['GET'])
 def work_view(ident):
