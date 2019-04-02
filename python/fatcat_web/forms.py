@@ -6,7 +6,7 @@ but can't find one that is actually maintained.
 
 from flask_wtf import FlaskForm
 from wtforms import SelectField, DateField, StringField, IntegerField, \
-    FormField, FieldList, validators
+    HiddenField, FormField, FieldList, validators
 
 from fatcat_client import ContainerEntity, CreatorEntity, FileEntity, \
     ReleaseEntity, ReleaseContrib
@@ -51,6 +51,7 @@ class ReleaseContribForm(FlaskForm):
     #given_name
     #creator_id (?)
     #orcid (for match?)
+    prev_index = HiddenField('prev_revision index', default=None)
     raw_name = StringField('Display Name',
         [validators.DataRequired()])
     role = SelectField(
@@ -108,7 +109,14 @@ class ReleaseEntityForm(EntityEditForm):
         """
         ref = ReleaseEntityForm()
         for simple_attr in RELEASE_SIMPLE_ATTRS:
-            setattr(ref, simple_attr, getattr(re, simple_attr))
+            a = getattr(ref, simple_attr)
+            a.data = getattr(re, simple_attr)
+        for i, c in enumerate(re.contribs):
+            rcf = ReleaseContribForm()
+            rcf.prev_index = i
+            rcf.role = c.role
+            rcf.raw_name = c.raw_name
+            ref.contribs.append_entry(rcf)
         return ref
 
     def to_entity(self):
@@ -130,13 +138,26 @@ class ReleaseEntityForm(EntityEditForm):
             if a == '':
                 a = None
             setattr(re, simple_attr, a)
-        # TODO: don't update authors unless necessary!
-        re.contribs = []
+        # bunch of complexity here to preserve old contrib metadata (eg,
+        # affiliation and extra) not included in current forms
+        # TODO: this may be broken; either way needs tests
+        if re.contribs:
+            old_contribs = re.contribs.copy()
+            re.contribs = []
+        else:
+            old_contribs = []
+            re.contribs = []
         for c in self.contribs:
-            re.contribs.append(ReleaseContrib(
-                role=c.role.data or None,
-                raw_name=c.raw_name.data or None,
-            ))
+            if c.prev_index.data not in ('', None):
+                rc = old_contribs[int(c.prev_index.data)]
+                rc.role = c.role.data or None
+                rc.raw_name = c.raw_name.data or None
+            else:
+                rc = ReleaseContrib(
+                    role=c.role.data or None,
+                    raw_name=c.raw_name.data or None,
+                )
+            re.contribs.append(rc)
         if self.edit_description.data:
             re.edit_extra = dict(description=self.edit_description.data)
 

@@ -325,7 +325,7 @@ def release_create():
             user_api = auth_api(session['api_token'])
             if form.editgroup_id.data:
                 # TODO: error handling
-                eg = api.get_editgroup(form.editgroup_id.data)
+                eg = user_api.get_editgroup(form.editgroup_id.data)
             else:
                 # if no editgroup, create one from description
                 eg = user_api.create_editgroup(
@@ -345,8 +345,9 @@ def release_create():
             print("didn't validate...")
     elif len(form.contribs) == 0:
         form.contribs.append_entry()
-    # TODO: check for editgroup in session
-    editgroup_id = session.get('active_editgroup_id', None)
+    if not form.is_submitted():
+        editgroup_id = session.get('active_editgroup_id', None)
+        form.editgroup_id.data = editgroup_id
     return render_template('release_create.html',
         form=form, editgroup_id=editgroup_id)
 
@@ -363,13 +364,50 @@ def release_history(ident):
         entity=entity,
         history=history)
 
-@app.route('/release/<ident>/edit', methods=['GET'])
-def release_edit_view(ident):
+# XXX: figure out CSRF stuff for local dev
+@login_required
+@app.csrf.exempt
+@app.route('/release/<ident>/edit', methods=['GET', 'POST'])
+def release_edit(ident):
+    # TODO: prev_rev interlock
+    # TODO: factor out editgroup active/creation stuff
     try:
         entity = api.get_release(ident)
     except ApiException as ae:
         abort(ae.status)
-    return render_template('entity_edit.html')
+    form = ReleaseEntityForm(csrf_enabled=False) # XXX:
+    if form.is_submitted():
+        if form.validate_on_submit():
+            # API on behalf of user
+            user_api = auth_api(session['api_token'])
+            if form.editgroup_id.data:
+                # TODO: error handling
+                eg = user_api.get_editgroup(form.editgroup_id.data)
+            else:
+                # if no editgroup, create one from description
+                eg = user_api.create_editgroup(
+                    Editgroup(description=form.editgroup_description.data or None))
+                # set this session editgroup_id
+                session['active_editgroup_id'] = eg.editgroup_id
+                print(eg.editgroup_id) # XXX: debug
+                flash('Started new editgroup <a href="/editgroup/{}">{}</a>' \
+                    .format(eg.editgroup_id, eg.editgroup_id))
+            # all the tricky logic is in the update method
+            form.update_entity(entity)
+            edit = user_api.update_release(entity.ident, entity,
+                editgroup_id=eg.editgroup_id)
+            # redirect to release revision
+            # TODO: release_rev_view
+            return redirect('/release/{}'.format(edit.ident))
+        elif form.errors:
+            print("user form errors (didn't validate): {}".format(form.errors))
+    else:
+        form = ReleaseEntityForm.from_entity(entity)
+    if not form.is_submitted():
+        editgroup_id = session.get('active_editgroup_id', None)
+        form.editgroup_id.data = editgroup_id
+    return render_template('release_edit.html',
+        form=form, editgroup_id=editgroup_id, entity=entity)
 
 @app.route('/release/<ident>', methods=['GET'])
 def release_view(ident):

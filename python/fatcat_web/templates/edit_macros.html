@@ -1,0 +1,36 @@
+
+{% macro form_field_errors(field) -%}
+  {% if field.errors %}
+    <div class="ui pointing red label">
+    {% for err in field.errors %}
+        {{ err }}
+    {% endfor %}
+    </div>
+  {% endif %}
+{%- endmacro %}
+
+{% macro form_field_basic(field, div_classes="") -%}
+<div class="field {{ div_classes }} {% if field.errors %}error{% endif %}">
+  {{ field.label }}
+  {{ field() }}
+  {{ form_field_errors(field) }}
+</div>
+{%- endmacro %}
+
+{% macro form_field_inline(field, div_classes="") -%}
+<div class="ui grid">
+  <div class="three wide column middle aligned right aligned" {# style="padding-right: 0.5rem;" #}>
+    <div class="field inline {{ div_classes }} {% if field.errors %}error{% endif %}">
+      {{ field.label }}
+    </div>
+  </div>
+  <div class="twelve wide column" {# style="padding-left: 0.5rem;" #}>
+    <div class="field {{ div_classes }} {% if field.errors %}error{% endif %}">
+      {{ field() }}
+      {{ form_field_errors(field) }}
+    </div>
+  </div>
+  <div class="one wide column">
+  </div>
+</div>
+{%- endmacro %}
