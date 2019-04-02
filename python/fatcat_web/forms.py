@@ -5,9 +5,14 @@ but can't find one that is actually maintained.
 """
 
 from flask_wtf import FlaskForm
-from wtforms import SelectField, DateField, StringField, FormField, FieldList, validators
+from wtforms import SelectField, DateField, StringField, IntegerField, \
+    FormField, FieldList, validators
+
+from fatcat_client import ContainerEntity, CreatorEntity, FileEntity, \
+    ReleaseEntity, ReleaseContrib
 
 release_type_options = [
+    ('', 'Unknown'),
     ('article-journal', 'Journal Article'),
     ('paper-conference', 'Conference Proceeding'),
     ('article', 'Article (non-journal)'),
@@ -17,6 +22,7 @@ release_type_options = [
     ('stub', 'Invalid/Stub'),
 ]
 release_status_options = [
+    ('', 'Unknown'),
     ('draft', 'Draft'),
     ('submitted', 'Submitted'),
     ('accepted', 'Accepted'),
@@ -31,19 +37,31 @@ role_type_options = [
 
 class EntityEditForm(FlaskForm):
     editgroup_id = StringField('Editgroup ID',
-        [validators.DataRequired()])
+        [validators.Optional(True)])
     editgroup_description = StringField('Editgroup Description',
         [validators.Optional(True)])
     edit_description = StringField('Description of Changes',
         [validators.Optional(True)])
 
 class ReleaseContribForm(FlaskForm):
+    class Meta:
+        # this is a sub-form, so disable CSRF
+        csrf = False
     #surname
     #given_name
     #creator_id (?)
     #orcid (for match?)
-    raw_name = StringField('Display Name')
-    role = SelectField(choices=role_type_options)
+    raw_name = StringField('Display Name',
+        [validators.DataRequired()])
+    role = SelectField(
+        [validators.DataRequired()],
+        choices=role_type_options,
+        default='author')
+
+RELEASE_SIMPLE_ATTRS = ['title', 'original_title', 'work_id', 'container_id',
+    'release_type', 'release_status', 'release_date', 'doi', 'wikidata_qid',
+    'isbn13', 'pmid', 'pmcid', 'volume', 'issue', 'pages', 'publisher',
+    'language', 'license_slug']
 
 class ReleaseEntityForm(EntityEditForm):
     """
@@ -51,17 +69,22 @@ class ReleaseEntityForm(EntityEditForm):
     - field types: fatcat id
     - date
     """
-    title = StringField('Title', [validators.InputRequired()])
+    title = StringField('Title',
+        [validators.InputRequired()])
     original_title = StringField('Original Title')
     work_id = StringField('Work FCID')
     container_id = StringField('Container FCID')
-    release_type = SelectField(choices=release_type_options)
+    release_type = SelectField('Release Type',
+        [validators.DataRequired()],
+        choices=release_type_options,
+        default='')
     release_status = SelectField(choices=release_status_options)
     release_date = DateField('Release Date',
         [validators.Optional(True)])
     #release_year
     doi = StringField('DOI',
-        [validators.Regexp('^10\..*\/.*', message="DOI must be valid")])
+        [validators.Regexp('^10\..*\/.*', message="DOI must be valid"),
+         validators.Optional(True)])
     wikidata_qid = StringField('Wikidata QID')
     isbn13 = StringField('ISBN-13')
     pmid = StringField('PubMed Id')
@@ -78,4 +101,42 @@ class ReleaseEntityForm(EntityEditForm):
     contribs = FieldList(FormField(ReleaseContribForm))
     #refs
     #abstracts
+
+    def from_entity(re):
+        """
+        Initializes form with values from an existing release entity.
+        """
+        ref = ReleaseEntityForm()
+        for simple_attr in RELEASE_SIMPLE_ATTRS:
+            setattr(ref, simple_attr, getattr(re, simple_attr))
+        return ref
+
+    def to_entity(self):
+        assert(self.title.data)
+        entity = ReleaseEntity(title=self.title.data)
+        self.update_entity(entity)
+        return entity
+
+    def update_entity(self, re):
+        """
+        Mutates a release entity in place, updating fields with values from
+        this form.
+
+        Form must be validated *before* calling this function.
+        """
+        for simple_attr in RELEASE_SIMPLE_ATTRS:
+            a = getattr(self, simple_attr).data
+            # special case blank strings
+            if a == '':
+                a = None
+            setattr(re, simple_attr, a)
+        # TODO: don't update authors unless necessary!
+        re.contribs = []
+        for c in self.contribs:
+            re.contribs.append(ReleaseContrib(
+                role=c.role.data or None,
+                raw_name=c.raw_name.data or None,
+            ))
+        if self.edit_description.data:
+            re.edit_extra = dict(description=self.edit_description.data)
 

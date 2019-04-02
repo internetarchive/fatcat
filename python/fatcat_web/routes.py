@@ -5,6 +5,7 @@ from flask import Flask, render_template, send_from_directory, request, \
     url_for, abort, g, redirect, jsonify, session, flash, Response
 from flask_login import login_required
 
+from fatcat_client import Editgroup
 from fatcat_client.rest import ApiException
 from fatcat_tools.transforms import *
 from fatcat_web import app, api, auth_api, priv_api
@@ -312,23 +313,42 @@ def release_lookup():
         abort(ae.status)
     return redirect('/release/{}'.format(resp.ident))
 
+# XXX: figure out CSRF stuff for local dev
 @app.route('/release/create', methods=['GET', 'POST'])
 @login_required
+@app.csrf.exempt
 def release_create():
-    form = ReleaseEntityForm()
+    form = ReleaseEntityForm(csrf_enabled=False) # XXX:
     if form.is_submitted():
-        print("got form!")
-        print(form.errors)
-    if form.validate_on_submit():
-        return redirect('/')
-    else:
-        print("didn't validate...")
-    if len(form.contribs) == 0:
+        if form.validate_on_submit():
+            # API on behalf of user
+            user_api = auth_api(session['api_token'])
+            if form.editgroup_id.data:
+                # TODO: error handling
+                eg = api.get_editgroup(form.editgroup_id.data)
+            else:
+                # if no editgroup, create one from description
+                eg = user_api.create_editgroup(
+                    Editgroup(description=form.editgroup_description.data or None))
+                # set this session editgroup_id
+                session['active_editgroup_id'] = eg.editgroup_id
+                print(eg.editgroup_id) # XXX: debug
+                flash('Started new editgroup <a href="/editgroup/{}">{}</a>' \
+                    .format(eg.editgroup_id, eg.editgroup_id))
+            # no merge or anything hard to do; just create the entity
+            entity = form.to_entity()
+            edit = user_api.create_release(entity, editgroup_id=eg.editgroup_id)
+            # redirect to new release
+            return redirect('/release/{}'.format(edit.ident))
+        elif form.errors:
+            print("user form errors: {}".format(form.errors))
+            print("didn't validate...")
+    elif len(form.contribs) == 0:
         form.contribs.append_entry()
-        form.contribs.append_entry()
-        form.contribs.append_entry()
-        form.contribs.append_entry()
-    return render_template('release_create.html', form=form)
+    # TODO: check for editgroup in session
+    editgroup_id = session.get('active_editgroup_id', None)
+    return render_template('release_create.html',
+        form=form, editgroup_id=editgroup_id)
 
 @app.route('/release/<ident>/history', methods=['GET'])
 def release_history(ident):

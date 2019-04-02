@@ -2,11 +2,11 @@
 
 {% macro form_field_errors(field) -%}
   {% if field.errors %}
-    <ul class="errors">
+    <div class="ui pointing red label">
     {% for err in field.errors %}
-        <li>{{ err }}
+        {{ err }}
     {% endfor %}
-    </ul>
+    </div>
   {% endif %}
 {%- endmacro %}
 
@@ -21,12 +21,12 @@
 {% macro form_field_inline(field, div_classes="") -%}
 <div class="ui grid">
   <div class="three wide column middle aligned right aligned" {# style="padding-right: 0.5rem;" #}>
-    <div class="field inline {% if field.errors %}error{% endif %}">
+    <div class="field inline {{ div_classes }} {% if field.errors %}error{% endif %}">
       {{ field.label }}
     </div>
   </div>
   <div class="twelve wide column" {# style="padding-left: 0.5rem;" #}>
-    <div class="field {% if field.errors %}error{% endif %}">
+    <div class="field {{ div_classes }} {% if field.errors %}error{% endif %}">
       {{ field() }}
       {{ form_field_errors(field) }}
     </div>
@@ -44,17 +44,32 @@
 <form class="ui form" id="add_work_form" method="POST" action="/release/create">
   {{ form.hidden_tag() }}
 
-  <h3 class="ui dividing header">Edit Meta</h3>
-  {{ form_field_inline(form.editgroup_id) }}
-  {{ form_field_inline(form.editgroup_description) }}
-  {{ form_field_inline(form.edit_description) }}
+  <br>
+  <div class="ui accordion">
+    <div class="{% if not editgroup_id %}active{% endif %} title">
+      <h3><i class="dropdown icon"></i>Editgroup Meta</h3>
+    </div>
+    <div class="{% if not editgroup_id %}active{% endif %} content">
+      {% if editgroup_id %}
+        <p>You have an editgroup in progress, and this edit will be included by
+        default. You can override this below.
+      {% else %}
+        <p>No existing editgroup is in progress (or at least, not is selected).
+        An existing ID can be pasted in, or if you leave that blank but give a
+        description, a new editgroup will be created for this edit.
+      {% endif %}
+      {{ form_field_inline(form.editgroup_id) }}
+      {{ form_field_inline(form.editgroup_description) }}
+    </div>
+  </div>
 
+  <br>
   <h3 class="ui dividing header">The Basics</h3>
   <div class="ui grid">
     <div class="three wide column" style="padding-bottom: 0px;"></div>
     <div class="twelve wide column" style="padding-bottom: 0px;">
       <div class="ui equal width fields">
-        {{ form_field_basic(form.release_type) }}
+        {{ form_field_basic(form.release_type, "required") }}
         {{ form_field_basic(form.release_status) }}
       </div>
     </div>
@@ -76,6 +91,7 @@
     <div class="one wide column" style="padding-bottom: 0px;"></div>
   </div>
 
+  <br>
   <h3 class="ui dividing header">Contributors</h3>
   <div class="list-group" id="contrib_list" name="contrib_list">
   {% for cform in form.contribs %}
@@ -84,10 +100,14 @@
         <i class="arrows alternate vertical icon"></i>
       </div>
       <div class="three wide column" style="padding-bottom: 0px; padding-left: 0px;">
-        {{ cform.role }}
+        <div class="field {% if cform.role.errors %}error{% endif %}">
+          {{ cform.role }}
+        </div>
       </div>
       <div class="eleven wide column" style="padding-bottom: 0px;">
-        {{ cform.raw_name}}
+        <div class="field {% if cform.raw_name.errors %}error{% endif %}">
+          {{ cform.raw_name}}
+        </div>
       </div>
       <div class="one wide column right aligned" style="padding-bottom: 0px; padding-left: 0rem;">
         <button type="button" class="ui icon red button delete-contrib-button"><i class="trash icon"></i></button>
@@ -101,27 +121,47 @@
   </button>
   <br>
 
+  <br>
   <h3 class="ui dividing header">Identifers</h3>
   <br>
   {{ form_field_inline(form.doi) }}
   {{ form_field_inline(form.wikidata_qid) }}
   {{ form_field_inline(form.isbn13) }}
-  <div class="ui equal width fields">
-    {{ form_field_basic(form.pmid) }}
-    {{ form_field_basic(form.pmcid) }}
+  <div class="ui grid">
+    <div class="three wide column" style="padding-bottom: 0px;"></div>
+    <div class="twelve wide column" style="padding-bottom: 0px;">
+      <div class="ui equal width fields">
+        {{ form_field_basic(form.pmid) }}
+        {{ form_field_basic(form.pmcid) }}
+      </div>
+    </div>
+    <div class="one wide column" style="padding-bottom: 0px;"></div>
   </div>
 
+  <br>
   <h3 class="ui dividing header">Container</h3>
   <br>
   {{ form_field_inline(form.container_id) }}
   {{ form_field_inline(form.publisher) }}
   <br>
-  <div class="ui equal width fields">
-    {{ form_field_basic(form.pages) }}
-    {{ form_field_basic(form.volume) }}
-    {{ form_field_basic(form.issue) }}
+  <div class="ui grid">
+    <div class="three wide column" style="padding-bottom: 0px;"></div>
+    <div class="twelve wide column" style="padding-bottom: 0px;">
+      <div class="ui equal width fields">
+        {{ form_field_basic(form.pages) }}
+        {{ form_field_basic(form.volume) }}
+        {{ form_field_basic(form.issue) }}
+      </div>
+    </div>
+    <div class="one wide column" style="padding-bottom: 0px;"></div>
   </div>
 
+  <br><br>
+  <h3 class="ui dividing header">Submit</h3>
+  {{ form_field_basic(form.edit_description) }}
+  This description will be attached to this specific action, not to the
+  editgroup as a whole.
+  <br><br>
   <input class="ui primary submit button" type="submit" value="Create Release!">
 
 </form>
@@ -135,8 +175,11 @@
 <!-- Form code -->
 $(document).ready(function() {
 
-  $('#release_type').dropdown();
-  $('#release_status').dropdown();
+  // these javascript dropdowns hide the original <input>, which breaks browser
+  // form focusing (eg, for required fields) :(
+  //$('#release_type').dropdown();
+  //$('#release_status').dropdown();
+  $('.ui.accordion').accordion();
 
   var fixup_contrib_numbering = function(group_item) {
     items = Array.from(group_item.querySelectorAll(".list-group-item"))
