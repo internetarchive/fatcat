@@ -3,6 +3,7 @@ from flask import Flask
 from flask_uuid import FlaskUUID
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_login import LoginManager
+from flask_wtf.csrf import CSRFProtect
 from authlib.flask.client import OAuth
 from loginpass import create_flask_blueprint, Gitlab
 from raven.contrib.flask import Sentry
@@ -10,11 +11,13 @@ import fatcat_client
 
 from fatcat_web.web_config import Config
 
+
 toolbar = DebugToolbarExtension()
 app = Flask(__name__)
 app.config.from_object(Config)
 toolbar = DebugToolbarExtension(app)
 FlaskUUID(app)
+app.csrf = CSRFProtect(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
