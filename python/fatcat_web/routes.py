@@ -501,7 +501,8 @@ def editor_editgroups(ident):
 @app.route('/changelog', methods=['GET'])
 def changelog_view():
     try:
-        entries = api.get_changelog(limit=request.args.get('limit'))
+        #limit = int(request.args.get('limit', 10))
+        entries = api.get_changelog()
     except ApiException as ae:
         abort(ae.status)
     return render_template('changelog.html', entries=entries)
@@ -618,6 +619,11 @@ def release_citeproc(ident):
     else:
         return Response(cite, mimetype="text/plain")
 
+@app.route('/health.json', methods=['GET', 'OPTIONS'])
+@crossdomain(origin='*',headers=['access-control-allow-origin','Content-Type'])
+def health_json():
+    return jsonify({'ok': True})
+
 
 ### Auth ####################################################################
 
@@ -732,8 +738,3 @@ def fatcat_photo():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'fatcat.jpg',
                                mimetype='image/jpeg')
-
-@app.route('/health', methods=['GET', 'OPTIONS'])
-@crossdomain(origin='*',headers=['access-control-allow-origin','Content-Type'])
-def health():
-    return jsonify({'ok': True})
