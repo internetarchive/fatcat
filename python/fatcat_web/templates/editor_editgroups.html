@@ -1,25 +1,31 @@
 {% extends "base.html" %}
 {% block body %}
 
-<h1 class="ui header">Editor Changelog: {{ editor.username }}
+<h1 class="ui header">Edit History
 <div class="sub header">
-  <a href="/editor/{{editor.editor_id}}">
-    <code>editor {{ editor.editor_id }}</code>
+    <code>editor
+      <a href="/editor/{{editor.editor_id}}">{{ editor.username }}</a>
+    </code>
   </a>
 </div>
 </h1>
 
-<p>Changes accepted (aka, merged editgroups):
 <table class="ui table">
-  <thead><tr><th>Created (UTC)
+  <thead><tr>{# <th>Created (UTC) #}
+             <th>Status
              <th>Editgroup
-             <th>Editor
              <th>Description
   <tbody>
   {% for editgroup in editgroups %}
-  <tr><td>{{ editgroup.created }}
+  <tr>{# <td>{{ editgroup.created }} #}
+      <td>{% if editgroup.changelog_index %}
+            Merged<br>(<a href="/changelog/{{ editgroup.changelog_index }}">#{{ editgroup.changelog_index }}</a>)
+          {% elif editgroup.submitted %}
+            Submitted<br>({{ editgroup.submitted }})
+          {% else %}
+            Work in Progress
+          {% endif %}
       <td><code><a href="/editgroup/{{ editgroup.editgroup_id }}">{{ editgroup.editgroup_id }}</a></code>
-      <td><code><a href="/editor/{{ editgroup.editor_id }}">{{ editgroup.editor_id }}</a></code>
       <td>{% if editgroup.description != None %}{{ editgroup.description }}{% endif %}
   {% endfor %}
 </table>

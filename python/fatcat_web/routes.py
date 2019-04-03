@@ -416,6 +416,15 @@ def changelog_entry_view(index):
         abort(ae.status)
     return render_template('changelog_view.html', entry=entry, editgroup=entry.editgroup)
 
+@app.route('/reviewable', methods=['GET'])
+def reviewable_view():
+    try:
+        #limit = int(request.args.get('limit', 10))
+        entries = api.get_editgroups_reviewable()
+    except ApiException as ae:
+        abort(ae.status)
+    return render_template('editgroup_reviewable.html', entries=entries)
+
 ### Search ##################################################################
 
 @app.route('/release/search', methods=['GET', 'POST'])

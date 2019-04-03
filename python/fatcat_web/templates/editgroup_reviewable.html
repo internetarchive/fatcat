@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block body %}
+
+<h1 class="ui header">Reviewable Editgroups
+</h1>
+
+Limited to the most recent entries.
+
+<table class="ui table">
+  <thead><tr><th>Submitted (UTC)
+             <th>Editgroup
+             <th>Editor
+             <th>Description
+  <tbody>
+  {% for editgroup in entries %}
+  <tr><td>{{ editgroup.submitted }}
+      <td><a href="/editgroup/{{ editgroup.editgroup_id }}">{{ editgroup.editgroup_id }}</a>
+      <td><a href="/editor/{{ editgroup.editor_id }}">{{ editgroup.editor_id }}</a>
+      <td>{% if editgroup.description != None %}{{ editgroup.description }}{% endif %}
+  {% endfor %}
+</table>
+
+{% endblock %}
