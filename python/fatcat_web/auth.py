@@ -20,6 +20,7 @@ def handle_token_login(token):
         m = pymacaroons.Macaroon.deserialize(token)
     except pymacaroons.exceptions.MacaroonDeserializationException:
         # TODO: what kind of Exceptions?
+        app.logger.warn("auth fail: MacaroonDeserializationException")
         return abort(400)
     # extract editor_id
     editor_id = None
@@ -28,6 +29,7 @@ def handle_token_login(token):
         if caveat.startswith(b"editor_id = "):
             editor_id = caveat[12:].decode('utf-8')
     if not editor_id:
+        app.logger.warn("auth fail: editor_id missing in macaroon")
         abort(400)
     # fetch editor info
     editor = api.get_editor(editor_id)
@@ -93,12 +95,11 @@ def handle_ia_xauth(email, password):
         try:
             flash("Internet Archive email/password didn't match: {}".format(resp.json()['values']['reason']))
         except:
-            print("IA XAuth fail: {}".format(resp.content))
+            app.logger.warn("IA XAuth fail: {}".format(resp.content))
         return render_template('auth_ia_login.html', email=email), resp.status_code
     elif resp.status_code != 200:
         flash("Internet Archive login failed (internal error?)")
-        # TODO: log.warn
-        print("IA XAuth fail: {}".format(resp.content))
+        app.logger.warn("IA XAuth fail: {}".format(resp.content))
         return render_template('auth_ia_login.html', email=email), resp.status_code
 
     # Successful login; now fetch info...
@@ -112,8 +113,7 @@ def handle_ia_xauth(email, password):
         })
     if resp.status_code != 200:
         flash("Internet Archive login failed (internal error?)")
-        # TODO: log.warn
-        print("IA XAuth fail: {}".format(resp.content))
+        app.logger.warn("IA XAuth fail: {}".format(resp.content))
         return render_template('auth_ia_login.html', email=email), resp.status_code
     ia_info = resp.json()['values']
 

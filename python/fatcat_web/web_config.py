@@ -41,7 +41,7 @@ class Config(object):
 
     # CSRF on by default, but only for WTF forms (not, eg, search, lookups, GET
     # forms)
-    WTF_CSRF_CHECK_DEFAULT = True
+    WTF_CSRF_CHECK_DEFAULT = False
     WTF_CSRF_TIME_LIMIT = None
 
     if FATCAT_DOMAIN == "dev.fatcat.wiki":
