@@ -22,6 +22,7 @@ def container_history(ident):
         entity = api.get_container(ident)
         history = api.get_container_history(ident)
     except ApiException as ae:
+        app.logger.info(ae)
         abort(ae.status)
     #print(history)
     return render_template('entity_history.html',
@@ -57,7 +58,7 @@ def container_view(ident):
             stats = get_elastic_container_stats(entity.issnl)
         except Exception as e:
             stats = None
-            print(e)
+            app.logger.error(e)
     else:
         stats = None
 
@@ -397,7 +398,7 @@ def stats_page():
         stats = get_elastic_entity_stats()
         stats.update(get_changelog_stats())
     except Exception as ae:
-        print(ae)
+        app.logger.error(e)
         abort(503)
     return render_template('stats.html', stats=stats)
 
@@ -410,7 +411,7 @@ def stats_json():
         stats = get_elastic_entity_stats()
         stats.update(get_changelog_stats())
     except Exception as ae:
-        print(ae)
+        app.logger.error(e)
         abort(503)
     return jsonify(stats)
 
@@ -420,7 +421,7 @@ def container_issnl_stats(issnl):
     try:
         stats = get_elastic_container_stats(issnl)
     except Exception as ae:
-        print(ae)
+        app.logger.error(e)
         abort(503)
     return jsonify(stats)
 

@@ -25,15 +25,19 @@ def form_editgroup_get_or_create(api, edit_form):
         try:
             eg = api.get_editgroup(edit_form.editgroup_id.data)
         except ApiException as ae:
-            app.logging.warn(ae)
+            if ae.status == 404:
+                edit_form.editgroup_id.errors.append("Editgroup does not exist")
+                return None
+            app.logger.warn(ae)
             abort(ae.status)
+        # TODO: check here that editgroup hasn't been merged already
     else:
         # if no editgroup, create one from description
         try:
             eg = api.create_editgroup(
                 Editgroup(description=edit_form.editgroup_description.data or None))
         except ApiException as ae:
-            app.logging.warn(ae)
+            app.logger.warn(ae)
             abort(ae.status)
         # set this session editgroup_id
         session['active_editgroup_id'] = eg.editgroup_id
@@ -52,22 +56,22 @@ def container_create():
             # API on behalf of user
             user_api = auth_api(session['api_token'])
             eg = form_editgroup_get_or_create(user_api, form)
-            # no merge or anything hard to do; just create the entity
-            entity = form.to_entity()
-            try:
-                edit = user_api.create_container(entity, editgroup_id=eg.editgroup_id)
-            except ApiException as ae:
-                app.logging.warn(ae)
-                abort(ae.status)
-            # redirect to new entity
-            return redirect('/container/{}'.format(edit.ident))
+            if eg:
+                # no merge or anything hard to do; just create the entity
+                entity = form.to_entity()
+                try:
+                    edit = user_api.create_container(entity, editgroup_id=eg.editgroup_id)
+                except ApiException as ae:
+                    app.logger.warn(ae)
+                    abort(ae.status)
+                # redirect to new entity
+                return redirect('/container/{}'.format(edit.ident))
         elif form.errors:
             app.logger.info("form errors (did not validate): {}".format(form.errors))
     else:
         editgroup_id = session.get('active_editgroup_id', None)
         form.editgroup_id.data = editgroup_id
-    return render_template('container_create.html',
-        form=form, editgroup_id=editgroup_id)
+    return render_template('container_create.html', form=form)
 
 @login_required
 @app.route('/container/<ident>/edit', methods=['GET', 'POST'])
@@ -83,17 +87,18 @@ def container_edit(ident):
             # API on behalf of user
             user_api = auth_api(session['api_token'])
             eg = form_editgroup_get_or_create(user_api, form)
-            # all the tricky logic is in the update method
-            form.update_entity(entity)
-            try:
-                edit = user_api.update_container(entity.ident, entity,
-                    editgroup_id=eg.editgroup_id)
-            except ApiException as ae:
-                app.logging.warn(ae)
-                abort(ae.status)
-            # redirect to entity revision
-            # TODO: container_rev_view
-            return redirect('/container/{}'.format(edit.ident))
+            if eg:
+                # all the tricky logic is in the update method
+                form.update_entity(entity)
+                try:
+                    edit = user_api.update_container(entity.ident, entity,
+                        editgroup_id=eg.editgroup_id)
+                except ApiException as ae:
+                    app.logger.warn(ae)
+                    abort(ae.status)
+                # redirect to entity revision
+                # TODO: container_rev_view
+                return redirect('/container/{}'.format(edit.ident))
         elif form.errors:
             app.logger.info("form errors (did not validate): {}".format(form.errors))
     else:
@@ -101,8 +106,7 @@ def container_edit(ident):
     if not form.is_submitted():
         editgroup_id = session.get('active_editgroup_id', None)
         form.editgroup_id.data = editgroup_id
-    return render_template('container_edit.html',
-        form=form, editgroup_id=editgroup_id, entity=entity)
+    return render_template('container_edit.html', form=form, entity=entity)
 
 @app.route('/creator/<ident>/edit', methods=['GET'])
 def creator_edit(ident):
@@ -112,13 +116,68 @@ def creator_edit(ident):
         abort(ae.status)
     return render_template('entity_edit.html')
 
-@app.route('/file/<ident>/edit', methods=['GET'])
+@app.route('/file/create', methods=['GET', 'POST'])
+@login_required
+def file_create():
+    form = FileEntityForm()
+    if form.is_submitted():
+        if form.validate_on_submit():
+            # API on behalf of user
+            user_api = auth_api(session['api_token'])
+            eg = form_editgroup_get_or_create(user_api, form)
+            if eg:
+                # no merge or anything hard to do; just create the entity
+                entity = form.to_entity()
+                try:
+                    edit = user_api.create_file(entity, editgroup_id=eg.editgroup_id)
+                except ApiException as ae:
+                    app.logger.warn(ae)
+                    abort(ae.status)
+                # redirect to new entity
+                return redirect('/file/{}'.format(edit.ident))
+        elif form.errors:
+            app.logger.info("form errors (did not validate): {}".format(form.errors))
+    else:
+        editgroup_id = session.get('active_editgroup_id', None)
+        form.editgroup_id.data = editgroup_id
+        form.urls.append_entry()
+        form.release_ids.append_entry()
+    return render_template('file_create.html',
+        form=form)
+
+@login_required
+@app.route('/file/<ident>/edit', methods=['GET', 'POST'])
 def file_edit(ident):
+    # TODO: prev_rev interlock
     try:
         entity = api.get_file(ident)
     except ApiException as ae:
         abort(ae.status)
-    return render_template('entity_edit.html')
+    form = FileEntityForm()
+    if form.is_submitted():
+        if form.validate_on_submit():
+            # API on behalf of user
+            user_api = auth_api(session['api_token'])
+            eg = form_editgroup_get_or_create(user_api, form)
+            if eg:
+                # all the tricky logic is in the update method
+                form.update_entity(entity)
+                try:
+                    edit = user_api.update_file(entity.ident, entity,
+                        editgroup_id=eg.editgroup_id)
+                except ApiException as ae:
+                    app.logger.warn(ae)
+                    abort(ae.status)
+                # redirect to entity revision
+                # TODO: file_rev_view
+                return redirect('/file/{}'.format(edit.ident))
+        elif form.errors:
+            app.logger.info("form errors (did not validate): {}".format(form.errors))
+    else: # not submitted
+        form = FileEntityForm.from_entity(entity)
+        editgroup_id = session.get('active_editgroup_id', None)
+        form.editgroup_id.data = editgroup_id
+    return render_template('file_edit.html', form=form, entity=entity)
 
 @app.route('/fileset/<ident>/edit', methods=['GET'])
 def fileset_edit(ident):
@@ -145,24 +204,23 @@ def release_create():
             # API on behalf of user
             user_api = auth_api(session['api_token'])
             eg = form_editgroup_get_or_create(user_api, form)
-            # no merge or anything hard to do; just create the entity
-            entity = form.to_entity()
-            try:
-                edit = user_api.create_release(entity, editgroup_id=eg.editgroup_id)
-            except ApiException as ae:
-                app.logging.warn(ae)
-                abort(ae.status)
-            # redirect to new release
-            return redirect('/release/{}'.format(edit.ident))
+            if eg:
+                # no merge or anything hard to do; just create the entity
+                entity = form.to_entity()
+                try:
+                    edit = user_api.create_release(entity, editgroup_id=eg.editgroup_id)
+                except ApiException as ae:
+                    app.logger.warn(ae)
+                    abort(ae.status)
+                # redirect to new release
+                return redirect('/release/{}'.format(edit.ident))
         elif form.errors:
             app.logger.info("form errors (did not validate): {}".format(form.errors))
-    elif len(form.contribs) == 0:
+    else: # not submitted
         form.contribs.append_entry()
-    if not form.is_submitted():
         editgroup_id = session.get('active_editgroup_id', None)
         form.editgroup_id.data = editgroup_id
-    return render_template('release_create.html',
-        form=form, editgroup_id=editgroup_id)
+    return render_template('release_create.html', form=form)
 
 @login_required
 @app.route('/release/<ident>/edit', methods=['GET', 'POST'])
@@ -178,25 +236,25 @@ def release_edit(ident):
             # API on behalf of user
             user_api = auth_api(session['api_token'])
             eg = form_editgroup_get_or_create(user_api, form)
-            # all the tricky logic is in the update method
-            form.update_entity(entity)
-            try:
-                edit = user_api.update_release(entity.ident, entity,
-                    editgroup_id=eg.editgroup_id)
-            except ApiException as ae:
-                app.logging.warn(ae)
-                abort(ae.status)
-            # redirect to entity revision
-            # TODO: release_rev_view
-            return redirect('/release/{}'.format(edit.ident))
+            if eg:
+                # all the tricky logic is in the update method
+                form.update_entity(entity)
+                try:
+                    edit = user_api.update_release(entity.ident, entity,
+                        editgroup_id=eg.editgroup_id)
+                except ApiException as ae:
+                    app.logger.warn(ae)
+                    abort(ae.status)
+                # redirect to entity revision
+                # TODO: release_rev_view
+                return redirect('/release/{}'.format(edit.ident))
         elif form.errors:
             app.logger.info("form errors (did not validate): {}".format(form.errors))
     else: # not submitted
         form = ReleaseEntityForm.from_entity(entity)
         editgroup_id = session.get('active_editgroup_id', None)
         form.editgroup_id.data = editgroup_id
-    return render_template('release_edit.html',
-        form=form, editgroup_id=editgroup_id, entity=entity)
+    return render_template('release_edit.html', form=form, entity=entity)
 
 @app.route('/work/create', methods=['GET'])
 def work_create_view():

@@ -9,7 +9,7 @@ from wtforms import SelectField, DateField, StringField, IntegerField, \
     HiddenField, FormField, FieldList, validators
 
 from fatcat_client import ContainerEntity, CreatorEntity, FileEntity, \
-    ReleaseEntity, ReleaseContrib
+    ReleaseEntity, ReleaseContrib, FileEntityUrls
 
 release_type_options = [
     ('', 'Unknown'),
@@ -37,7 +37,8 @@ role_type_options = [
 
 class EntityEditForm(FlaskForm):
     editgroup_id = StringField('Editgroup ID',
-        [validators.Optional(True)])
+        [validators.Optional(True),
+         validators.Length(min=26, max=26)])
     editgroup_description = StringField('Editgroup Description',
         [validators.Optional(True)])
     edit_description = StringField('Description of Changes',
@@ -47,6 +48,7 @@ class ReleaseContribForm(FlaskForm):
     class Meta:
         # this is a sub-form, so disable CSRF
         csrf = False
+
     #surname
     #given_name
     #creator_id (?)
@@ -71,10 +73,14 @@ class ReleaseEntityForm(EntityEditForm):
     - date
     """
     title = StringField('Title',
-        [validators.InputRequired()])
+        [validators.DataRequired()])
     original_title = StringField('Original Title')
-    work_id = StringField('Work FCID')
-    container_id = StringField('Container FCID')
+    work_id = StringField('Work FCID',
+        [validators.Optional(True),
+         validators.Length(min=26, max=26)])
+    container_id = StringField('Container FCID',
+        [validators.Optional(True),
+         validators.Length(min=26, max=26)])
     release_type = SelectField('Release Type',
         [validators.DataRequired()],
         choices=release_type_options,
@@ -172,7 +178,7 @@ CONTAINER_SIMPLE_ATTRS = ['name', 'container_type', 'publisher', 'issnl',
 
 class ContainerEntityForm(EntityEditForm):
     name = StringField('Name/Title',
-        [validators.InputRequired()])
+        [validators.DataRequired()])
     container_type = SelectField('Container Type',
         [validators.Optional(True)],
         choices=container_type_options,
@@ -230,7 +236,8 @@ class FileUrlForm(FlaskForm):
         csrf = False
 
     url = StringField('Display Name',
-        [validators.DataRequired()])
+        [validators.DataRequired(),
+         validators.URL(require_tld=False)])
     rel = SelectField(
         [validators.DataRequired()],
         choices=url_rel_options,
@@ -240,25 +247,41 @@ class FileEntityForm(EntityEditForm):
     size = IntegerField('Size (bytes)',
         [validators.DataRequired()])
         # TODO: positive definite
-    md5 = StringField("MD5")
-    sha1 = StringField("SHA-1")
-    sha256 = StringField("SHA-256")
+    md5 = StringField("MD5",
+        [validators.Optional(True),
+         validators.Length(min=32, max=32)])
+    sha1 = StringField("SHA-1",
+        [validators.DataRequired(),
+         validators.Length(min=40, max=40)])
+    sha256 = StringField("SHA-256",
+        [validators.Optional(True),
+         validators.Length(min=64, max=64)])
     urls = FieldList(FormField(FileUrlForm))
     mimetype = StringField("Mimetype")
-    release_ids = FieldList(StringField("Release FCID"))
+    release_ids = FieldList(
+        StringField("Release FCID",
+            [validators.DataRequired(),
+            validators.Length(min=26, max=26)]))
 
-    def from_entity(re):
+    def from_entity(fe):
         """
         Initializes form with values from an existing file entity.
         """
         ref = FileEntityForm()
         for simple_attr in FILE_SIMPLE_ATTRS:
             a = getattr(ref, simple_attr)
-            a.data = getattr(re, simple_attr)
+            a.data = getattr(fe, simple_attr)
+        for i, c in enumerate(fe.urls):
+            ruf = FileUrlForm()
+            ruf.rel = c.rel
+            ruf.url = c.url
+            ref.urls.append_entry(ruf)
+        for r in fe.release_ids:
+            ref.release_ids.append_entry(r)
         return ref
 
     def to_entity(self):
-        assert(self.name.data)
+        assert(self.sha1.data)
         entity = FileEntity()
         self.update_entity(entity)
         return entity
@@ -275,15 +298,15 @@ class FileEntityForm(EntityEditForm):
             if a == '':
                 a = None
             setattr(fe, simple_attr, a)
-        re.urls = []
+        fe.urls = []
         for u in self.urls:
-            re.contribs.append(FileUrl(
-                rel=u.role.data or None,
+            fe.urls.append(FileEntityUrls(
+                rel=u.rel.data or None,
                 url=u.url.data or None,
             ))
-        re.release_ids = []
+        fe.release_ids = []
         for ri in self.release_ids:
-            re.release_ids.append(ri.data)
+            fe.release_ids.append(ri.data)
         if self.edit_description.data:
             fe.edit_extra = dict(description=self.edit_description.data)
 
