@@ -1,0 +1,20 @@
+{% extends "file_edit.html" %}
+
+{% block edit_form_prefix %}
+<div class="ui segment">
+<h1 class="ui header">Create New File Entity</h1>
+
+<form class="ui form" id="create_file_form" method="POST" action="/file/create">
+{% endblock %}
+
+{% block edit_form_suffix %}
+  <br><br>
+  <input class="ui primary submit button" type="submit" value="Create File!">
+  <p>
+  <i>New entity will be part of the current editgroup, which needs to be
+  submited and approved before the entity will formally be included in the
+  catalog.</i>
+</form>
+</div>
+{% endblock %}
+

@@ -11,175 +11,121 @@
   {{ form.hidden_tag() }}
 
   <br>
-  <div class="ui accordion">
-    <div class="{% if not editgroup_id %}active{% endif %} title">
-      <h3><i class="dropdown icon"></i>Editgroup Meta</h3>
-    </div>
-    <div class="{% if not editgroup_id %}active{% endif %} content">
-      {% if editgroup_id %}
-        <p>You have an editgroup in progress, and this edit will be included by
-        default. You can override this below.
-      {% else %}
-        <p>No existing editgroup is in progress (or at least, not is selected).
-        An existing ID can be pasted in, or if you leave that blank but give a
-        description, a new editgroup will be created for this edit.
-      {% endif %}
-      {{ edit_macros.form_field_inline(form.editgroup_id) }}
-      {{ edit_macros.form_field_inline(form.editgroup_description) }}
-    </div>
-  </div>
+  {{ edit_macros.editgroup_dropdown(form) }}
 
   <br>
-  <h3 class="ui dividing header">The Basics</h3>
-  <div class="ui grid">
-    <div class="three wide column" style="padding-bottom: 0px;"></div>
-    <div class="twelve wide column" style="padding-bottom: 0px;">
-      <div class="ui equal width fields">
-        {{ edit_macros.form_field_basic(form.release_type, "required") }}
-        {{ edit_macros.form_field_basic(form.release_status) }}
-      </div>
-    </div>
-    <div class="one wide column" style="padding-bottom: 0px;"></div>
-  </div>
+  <h3 class="ui dividing header">File Metadata</h3>
 
-  {{ edit_macros.form_field_inline(form.title, "required") }}
-  {{ edit_macros.form_field_inline(form.original_title) }}
-  {{ edit_macros.form_field_inline(form.work_id) }}
-  {{ edit_macros.form_field_inline(form.release_date) }}
-  <div class="ui grid">
-    <div class="three wide column" style="padding-bottom: 0px;"></div>
-    <div class="twelve wide column" style="padding-bottom: 0px;">
-      <div class="ui equal width fields">
-        {{ edit_macros.form_field_basic(form.language) }}
-        {{ edit_macros.form_field_basic(form.license_slug) }}
-      </div>
-    </div>
-    <div class="one wide column" style="padding-bottom: 0px;"></div>
-  </div>
+  {{ edit_macros.form_field_inline(form.size, "required") }}
+  {{ edit_macros.form_field_inline(form.mimetype) }}
+  {{ edit_macros.form_field_inline(form.md5) }}
+  {{ edit_macros.form_field_inline(form.sha1, "required") }}
+  {{ edit_macros.form_field_inline(form.sha256) }}
 
   <br>
-  <h3 class="ui dividing header">Contributors</h3>
-  <div class="list-group" id="contrib_list" name="contrib_list">
-  {% for cform in form.contribs %}
+  <h3 class="ui dividing header">Locations (URLs)</h3>
+  <i>Public web (no login/paywall) locations of this exact file (should match
+  by hashes).</i>
+  <br><br>
+  <div class="list-group" id="url_list" name="url_list">
+  {% for cform in form.urls %}
     <div class="list-group-item ui grid" style="padding-right: 1em;">
       {{ cform.hidden_tag() }}
-      <div class="one wide column middle aligned center aligned sortable-handle" style="padding-bottom: 0px; padding-right: 0px; padding-left: 0px;">
+      <div class="one wide column middle aligned center aligned" style="padding-bottom: 0px; padding-right: 0px; padding-left: 0px;">
         <i class="arrows alternate vertical icon"></i>
       </div>
       <div class="three wide column" style="padding-bottom: 0px; padding-left: 0px;">
-        <div class="field {% if cform.role.errors %}error{% endif %}">
-          {{ cform.role() }}
+        <div class="field {% if cform.rel.errors %}error{% endif %}">
+          {{ cform.rel() }}
         </div>
       </div>
       <div class="eleven wide column" style="padding-bottom: 0px;">
-        <div class="field {% if cform.raw_name.errors %}error{% endif %}">
-          {{ cform.raw_name() }}
+        <div class="field {% if cform.url.errors %}error{% endif %}">
+          {{ cform.url() }}
         </div>
       </div>
       <div class="one wide column right aligned" style="padding-bottom: 0px; padding-left: 0rem;">
-        <button type="button" class="ui icon red button delete-contrib-button"><i class="trash icon"></i></button>
+        <button type="button" class="ui icon red button delete-url-button"><i class="trash icon"></i></button>
       </div>
     </div>
   {% endfor %}
   </div>
   <br>
-  <button type="button" id="add-contrib-button" class="ui right floated icon green button" style="margin-right: 0.3rem;">
+  <button type="button" id="add-url-button" class="ui right floated icon green button" style="margin-right: 0.3rem;">
     <i class="plus icon"></i>
   </button>
-  <br>
 
   <br>
-  <h3 class="ui dividing header">Identifers</h3>
-  <br>
-  {{ edit_macros.form_field_inline(form.doi) }}
-  {{ edit_macros.form_field_inline(form.wikidata_qid) }}
-  {{ edit_macros.form_field_inline(form.isbn13) }}
-  <div class="ui grid">
-    <div class="three wide column" style="padding-bottom: 0px;"></div>
-    <div class="twelve wide column" style="padding-bottom: 0px;">
-      <div class="ui equal width fields">
-        {{ edit_macros.form_field_basic(form.pmid) }}
-        {{ edit_macros.form_field_basic(form.pmcid) }}
-      </div>
-    </div>
-    <div class="one wide column" style="padding-bottom: 0px;"></div>
-  </div>
-
-  <br>
-  <h3 class="ui dividing header">Container</h3>
-  <br>
-  {{ edit_macros.form_field_inline(form.container_id) }}
-  {{ edit_macros.form_field_inline(form.publisher) }}
-  <br>
-  <div class="ui grid">
-    <div class="three wide column" style="padding-bottom: 0px;"></div>
-    <div class="twelve wide column" style="padding-bottom: 0px;">
-      <div class="ui equal width fields">
-        {{ edit_macros.form_field_basic(form.pages) }}
-        {{ edit_macros.form_field_basic(form.volume) }}
-        {{ edit_macros.form_field_basic(form.issue) }}
-      </div>
-    </div>
-    <div class="one wide column" style="padding-bottom: 0px;"></div>
-  </div>
-
+  <h3 class="ui dividing header">Releases</h3>
+  <i>Usually one, but sometimes multiple Release entities (by FCID) that this
+  file is a fulltext copy of.</i>
   <br><br>
+  <div class="list-group" id="release_id_list" name="release_id_list">
+  {% for rfield in form.release_ids %}
+    <div class="list-group-item ui grid" style="padding-right: 1em;">
+      <div class="one wide column middle aligned center aligned" style="padding-bottom: 0px; padding-right: 0px; padding-left: 0px;">
+      </div>
+      <div class="fourteen wide column" style="padding-bottom: 0px;">
+        <div class="field {% if rfield.errors %}error{% endif %}">
+          {{ rfield() }}
+        </div>
+      </div>
+      <div class="one wide column right aligned" style="padding-bottom: 0px; padding-left: 0rem;">
+        <button type="button" class="ui icon red button delete-release_id-button"><i class="trash icon"></i></button>
+      </div>
+    </div>
+  {% endfor %}
+  </div>
+  <br>
+  <button type="button" id="add-release_id-button" class="ui right floated icon green button" style="margin-right: 0.3rem;">
+    <i class="plus icon"></i>
+  </button>
+
+  <br>
   <h3 class="ui dividing header">Submit</h3>
   {{ edit_macros.form_field_basic(form.edit_description) }}
-  This description will be attached to this specific action, not to the
+  This description will be attached to the individual edit, not to the
   editgroup as a whole.
 {% block edit_form_suffix %}
   <br><br>
-  <input class="ui primary submit button" type="submit" value="Update Release!">
+  <input class="ui primary submit button" type="submit" value="Update File!">
+  <p>
+  <i>Edit will be part of the current editgroup, which needs to be submited and
+  approved before the change is included in the catalog.</i>
 </form>
 </div>
 {% endblock %}
 {% endblock %}
 
 {% block postscript %}
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 <script>
 <!-- Form code -->
 $(document).ready(function() {
 
-  // these javascript dropdowns hide the original <input>, which breaks browser
-  // form focusing (eg, for required fields) :(
-  //$('#release_type').dropdown();
-  //$('#release_status').dropdown();
   $('.ui.accordion').accordion();
 
-  var fixup_contrib_numbering = function(group_item) {
+  var fixup_url_numbering = function(group_item) {
     items = Array.from(group_item.querySelectorAll(".list-group-item"))
     for (var i = 0; i < items.length; i++) {
       var item_el = items[i];
-      prev_el = item_el.querySelectorAll("input")[0];
-      input_el = item_el.querySelectorAll("input")[1];
+      input_el = item_el.querySelectorAll("input")[0];
       select_el = item_el.querySelectorAll("select")[0];
       //console.log(input_el.id);
       //console.log(select_el.id);
-      input_el.id = "contribs-" + i + "-raw_name";
+      input_el.id = "urls-" + i + "-url";
       input_el.name = input_el.id;
-      prev_el.id = "contribs-" + i + "-prev_index";
-      prev_el.name = prev_el.id;
-      select_el.id = "contribs-" + i + "-role";
+      select_el.id = "urls-" + i + "-rel";
       select_el.name = select_el.id;
       //console.log(input_el.id);
       //console.log(select_el.id);
     };
-    console.log("re-named contrib rows up to i=" + i);
+    console.log("re-named url rows up to i=" + i);
   };
 
-  var contrib_list = document.getElementById('contrib_list');
-  var contrib_sortable = Sortable.create(contrib_list, {
-    handle: '.sortable-handle',
-    animation: 150,
-    onSort: function(evt) {
-      fixup_contrib_numbering(contrib_list);
-    },
-  });
-  fixup_contrib_numbering(contrib_list);
+  var url_list = document.getElementById('url_list');
+  fixup_url_numbering(url_list);
 
-  var contrib_delete_handler = function(ev) {
+  var url_delete_handler = function(ev) {
     row = ev.target.parentNode.parentNode;
     // I don't understand why this hack is needed; maybe because of the sortable stuff?
     if(!row.classList.contains("list-group-item")) {
@@ -188,40 +134,96 @@ $(document).ready(function() {
     // console.log(row);
     console.assert(row.classList.contains("list-group-item"));
     row.parentNode.removeChild(row);
-    fixup_contrib_numbering(contrib_list);
+    fixup_url_numbering(url_list);
   };
 
-  var attach_contrib_delete_handler = function(topthing) {
-    Array.from(topthing.querySelectorAll(".delete-contrib-button")).forEach((el) => {
-      el.addEventListener("click", contrib_delete_handler);
+  var attach_url_delete_handler = function(topthing) {
+    Array.from(topthing.querySelectorAll(".delete-url-button")).forEach((el) => {
+      el.addEventListener("click", url_delete_handler);
     });
   };
-  attach_contrib_delete_handler(document);
+  attach_url_delete_handler(document);
 
   // XXX: really need some way to not duplicate this code from above...
-  var contrib_template = `
+  var url_template = `
   <div class="list-group-item ui grid" style="padding-right: 1em;">
-      <input id="contribs-X-prev_index" name="contribs-X-prev_index" type="hidden" value="">
-      <div class="one wide column middle aligned center aligned sortable-handle" style="padding-bottom: 0px; padding-right: 0px; padding-left: 0px;">
-        <i class="arrows alternate vertical icon"></i>
+      <div class="one wide column middle aligned center aligned" style="padding-bottom: 0px; padding-right: 0px; padding-left: 0px;">
       </div>
       <div class="three wide column" style="padding-bottom: 0px; padding-left: 0px;">
-        <select id="contribs-X-role" name="contribs-X-role"><option value="author">Author</option><option value="editor">Editor</option><option value="translator">Translator</option></select>
+        <select id="urls-X-rel" name="urls-X-rel"><option selected value="web">Public Web</option><option value="webarchive">Web Archive</option><option value="repository">Repository</option><option value="social">Academic Social Network</option><option value="publisher">Publisher</option><option value="dweb">Decentralized Web</option></select>
       </div>
       <div class="eleven wide column" style="padding-bottom: 0px;">
-        <input id="contribs-X-raw_name" name="contribs-X-raw_name" type="text" value="">
+        <input id="urls-X-url" name="urls-X-url" type="text" value="">
       </div>
       <div class="one wide column right aligned" style="padding-bottom: 0px; padding-left: 0rem;">
-        <button type="button" class="ui icon red button delete-contrib-button"><i class="trash icon"></i></button>
+        <button type="button" class="ui icon red button delete-url-button"><i class="trash icon"></i></button>
       </div>
     </div>
   `;
 
-  var add_contrib_button = document.getElementById("add-contrib-button");
-  add_contrib_button.addEventListener("click", function(){
-    contrib_list.insertAdjacentHTML('beforeend', contrib_template);
-    attach_contrib_delete_handler(contrib_list.lastElementChild);
-    fixup_contrib_numbering(contrib_list);
+  var add_url_button = document.getElementById("add-url-button");
+  add_url_button.addEventListener("click", function(){
+    url_list.insertAdjacentHTML('beforeend', url_template);
+    attach_url_delete_handler(url_list.lastElementChild);
+    fixup_url_numbering(url_list);
+  });
+
+  var fixup_release_id_numbering = function(group_item) {
+    items = Array.from(group_item.querySelectorAll(".list-group-item"))
+    for (var i = 0; i < items.length; i++) {
+      var item_el = items[i];
+      input_el = item_el.querySelectorAll("input")[0];
+      //console.log(input_el.id);
+      input_el.id = "release_ids-" + i;
+      input_el.name = input_el.id;
+      //console.log(input_el.id);
+    };
+    console.log("re-named release_id rows up to i=" + i);
+  };
+
+  var release_id_list = document.getElementById('release_id_list');
+  fixup_release_id_numbering(release_id_list);
+
+  var release_id_delete_handler = function(ev) {
+    row = ev.target.parentNode.parentNode;
+    // I don't understand why this hack is needed; maybe because of the sortable stuff?
+    if(!row.classList.contains("list-group-item")) {
+        row = row.parentNode;
+    }
+    // console.log(row);
+    console.assert(row.classList.contains("list-group-item"));
+    row.parentNode.removeChild(row);
+    fixup_release_id_numbering(release_id_list);
+  };
+
+  var attach_release_id_delete_handler = function(topthing) {
+    Array.from(topthing.querySelectorAll(".delete-release_id-button")).forEach((el) => {
+      el.addEventListener("click", release_id_delete_handler);
+    });
+  };
+  attach_release_id_delete_handler(document);
+
+  // XXX: really need some way to not duplicate this code from above...
+  var release_id_template = `
+  <div class="list-group-item ui grid" style="padding-right: 1em;">
+      <div class="one wide column middle aligned center aligned" style="padding-bottom: 0px; padding-right: 0px; padding-left: 0px;">
+      </div>
+      <div class="fourteen wide column" style="padding-bottom: 0px;">
+        <div class="field ">
+          <input id="release_ids-X" name="release_ids-X" type="text" value="" required>
+        </div>
+      </div>
+      <div class="one wide column right aligned" style="padding-bottom: 0px; padding-left: 0rem;">
+        <button type="button" class="ui icon red button delete-release_id-button"><i class="trash icon"></i></button>
+      </div>
+    </div>
+  `;
+
+  var add_release_id_button = document.getElementById("add-release_id-button");
+  add_release_id_button.addEventListener("click", function(){
+    release_id_list.insertAdjacentHTML('beforeend', release_id_template);
+    attach_release_id_delete_handler(release_id_list.lastElementChild);
+    fixup_release_id_numbering(release_id_list);
   });
 
   console.log("Page loaded");
