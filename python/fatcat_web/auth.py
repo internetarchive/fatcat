@@ -139,5 +139,6 @@ def load_user(editor_id):
     user.id = editor_id
     user.editor_id = editor_id
     user.username = editor['username']
+    user.is_admin = editor['is_admin']
     user.token = token
     return user

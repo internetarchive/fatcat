@@ -35,13 +35,55 @@
 
 {# extended by changelog_entry #}
 {% block editgroupheader %}
-<h1 class="ui header">Edit Group
+{% if not editgroup.changelog_index %}
+  <div class="ui right floated center aligned segment">
+    {% if auth_to_accept %}
+      <form id="submit_editgroup_form" method="POST" action="/editgroup/{{ editgroup.editgroup_id }}/accept">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <button class="ui orange button">Accept Edits</button>
+      </form><br>
+    {% endif %}
+    {% if auth_to_submit %}
+      {% if editgroup.submitted %}
+        <form id="submit_editgroup_form" method="POST" action="/editgroup/{{ editgroup.editgroup_id }}/unsubmit">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <button class="ui button">Un-Submit</button>
+        </form><br>
+        <form id="submit_editgroup_form" method="POST" action="/editgroup/{{ editgroup.editgroup_id }}/submit">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <button class="ui button">Re-Submit</button>
+        </form>
+      {% else %}
+        <form id="submit_editgroup_form" method="POST" action="/editgroup/{{ editgroup.editgroup_id }}/submit">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <button class="ui primary button">Submit</button>
+        </form>
+      {% endif %}
+    {% endif %}
+  </div>
+{% endif %}
+
+<h1 class="ui header">Editgroup
 <div class="sub header"><code>editgroup {{ editgroup.editgroup_id }}</code></div></h1>
 {% endblock %}
 
-<b>Editor:</b> <a href="/editor/{{editgroup.editor_id}}">{{ editgroup.editor.username }}</a>
-<br><b>Description:</b> {{ editgroup.description }}
-<br><br>
+<br><b>Status:</b>
+{% if editgroup.changelog_index %}
+  Merged (<a href="/changelog/{{ editgroup.changelog_index }}">Changelog #{{ editgroup.changelog_index }}</a>)
+{% elif editgroup.submitted %}
+  Submitted ({{ editgroup.submitted }})
+{% else %}
+  Not Submitted
+{% endif %}
+
+<br><b>Editor:</b> <a href="/editor/{{editgroup.editor_id}}">{{ editgroup.editor.username }}</a>
+<br><b>Description:</b>
+{% if editgroup.description %}
+  {{ editgroup.description }}
+{% else %}
+  <i>none</i>
+{% endif %}
+<br><br clear="all">
 
 <div class="ui styled fluid accordion">
   {{ edit_list(editgroup.edits.works, "work", "Work") }}

@@ -311,11 +311,74 @@ def work_view(ident):
 @app.route('/editgroup/<ident>', methods=['GET'])
 def editgroup_view(ident):
     try:
-        entity = api.get_editgroup(str(ident))
-        entity.editor = api.get_editor(entity.editor_id)
+        eg = api.get_editgroup(str(ident))
+        eg.editor = api.get_editor(eg.editor_id)
     except ApiException as ae:
         abort(ae.status)
-    return render_template('editgroup_view.html', editgroup=entity)
+    # TODO: idomatic check for login?
+    auth_to_submit = False
+    auth_to_accept = False
+    if session.get('editor'):
+        user = load_user(session['editor']['editor_id'])
+        if user.is_admin or user.editor_id == eg.editor_id:
+            auth_to_submit = True
+        if user.is_admin:
+            auth_to_accept = True
+    return render_template('editgroup_view.html', editgroup=eg,
+        auth_to_submit=auth_to_submit, auth_to_accept=auth_to_accept)
+
+@app.route('/editgroup/<ident>/accept', methods=['POST'])
+@login_required
+def editgroup_accept(ident):
+    app.csrf.protect()
+    # on behalf of user...
+    user_api = auth_api(session['api_token'])
+    try:
+        eg = user_api.get_editgroup(str(ident))
+        if eg.changelog_index:
+            flash("Editgroup already accepted")
+            abort(400)
+        user_api.accept_editgroup(str(ident))
+    except ApiException as ae:
+        app.logger.info(ae)
+        abort(ae.status)
+    return redirect('/editgroup/{}'.format(ident))
+
+@app.route('/editgroup/<ident>/unsubmit', methods=['POST'])
+@login_required
+def editgroup_unsubmit(ident):
+    app.csrf.protect()
+    # on behalf of user...
+    user_api = auth_api(session['api_token'])
+    try:
+        eg = user_api.get_editgroup(str(ident))
+        if eg.changelog_index:
+            flash("Editgroup already accepted")
+            abort(400)
+        user_api.update_editgroup(eg.editgroup_id, eg, submit=False)
+    except ApiException as ae:
+        app.logger.info(ae)
+        abort(ae.status)
+    return redirect('/editgroup/{}'.format(ident))
+
+@app.route('/editgroup/<ident>/submit', methods=['POST'])
+@login_required
+def editgroup_submit(ident):
+    app.csrf.protect()
+    # on behalf of user...
+    print("submitting...")
+    user_api = auth_api(session['api_token'])
+    try:
+        eg = user_api.get_editgroup(str(ident))
+        if eg.changelog_index:
+            flash("Editgroup already accepted")
+            abort(400)
+        user_api.update_editgroup(eg.editgroup_id, eg, submit=True)
+    except ApiException as ae:
+        print(ae)
+        app.logger.info(ae)
+        abort(ae.status)
+    return redirect('/editgroup/{}'.format(ident))
 
 @app.route('/editor/<ident>', methods=['GET'])
 def editor_view(ident):
