@@ -4,6 +4,7 @@ import json
 from flask import Flask, render_template, send_from_directory, request, \
     url_for, abort, g, redirect, jsonify, session, flash, Response
 from flask_login import login_required
+from flask_wtf.csrf import CSRFError
 
 from fatcat_client import Editgroup
 from fatcat_client.rest import ApiException
@@ -490,6 +491,7 @@ def token_login():
 @app.route('/auth/change_username', methods=['POST'])
 @login_required
 def change_username():
+    app.csrf.protect()
     # show the user a list of login options
     if not 'username' in request.form:
         abort(400)
@@ -529,6 +531,10 @@ def page_not_found(e):
 def page_not_authorized(e):
     return render_template('403.html'), 403
 
+@app.errorhandler(405)
+def page_method_not_allowed(e):
+    return render_template('405.html'), 405
+
 @app.errorhandler(400)
 def page_bad_request(e):
     return render_template('400.html'), 400
@@ -546,6 +552,10 @@ def page_server_error(e):
 @app.errorhandler(504)
 def page_server_down(e):
     return render_template('503.html'), 503
+
+@app.errorhandler(CSRFError)
+def page_csrf_error(e):
+    return render_template('csrf_error.html', reason=e.description), 400
 
 @app.route('/', methods=['GET'])
 def page_home():
