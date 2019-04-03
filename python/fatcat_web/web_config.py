@@ -44,8 +44,12 @@ class Config(object):
     WTF_CSRF_CHECK_DEFAULT = True
     WTF_CSRF_TIME_LIMIT = None
 
-    # protect cookies (which include API tokens)
-    if FATCAT_DOMAIN != "dev.fatcat.wiki":
+    if FATCAT_DOMAIN == "dev.fatcat.wiki":
+        # "Even more verbose" debug options
+        #SQLALCHEMY_ECHO = True
+        #DEBUG = True
+    else:
+        # protect cookies (which include API tokens)
         SESSION_COOKIE_HTTPONLY = True
         SESSION_COOKIE_SECURE = True
         SESSION_COOKIE_SAMESITE = 'Lax'
@@ -66,6 +70,3 @@ class Config(object):
         },
     }
 
-    # "Even more verbose" debug options
-    #SQLALCHEMY_ECHO = True
-    #DEBUG = True
