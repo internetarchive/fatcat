@@ -48,6 +48,7 @@ class Config(object):
         # "Even more verbose" debug options
         #SQLALCHEMY_ECHO = True
         #DEBUG = True
+        pass
     else:
         # protect cookies (which include API tokens)
         SESSION_COOKIE_HTTPONLY = True
