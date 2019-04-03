@@ -11,23 +11,7 @@
   {{ form.hidden_tag() }}
 
   <br>
-  <div class="ui accordion">
-    <div class="{% if not editgroup_id %}active{% endif %} title">
-      <h3><i class="dropdown icon"></i>Editgroup Meta</h3>
-    </div>
-    <div class="{% if not editgroup_id %}active{% endif %} content">
-      {% if editgroup_id %}
-        <p>You have an editgroup in progress, and this edit will be included by
-        default. You can override this below.
-      {% else %}
-        <p>No existing editgroup is in progress (or at least, not is selected).
-        An existing ID can be pasted in, or if you leave that blank but give a
-        description, a new editgroup will be created for this edit.
-      {% endif %}
-      {{ edit_macros.form_field_inline(form.editgroup_id) }}
-      {{ edit_macros.form_field_inline(form.editgroup_description) }}
-    </div>
-  </div>
+  {{ edit_macros.editgroup_dropdown(form) }}
 
   <br>
   <h3 class="ui dividing header">The Basics</h3>
