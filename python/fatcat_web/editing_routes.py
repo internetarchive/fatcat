@@ -185,7 +185,7 @@ def fileset_edit(ident):
         entity = api.get_fileset(ident)
     except ApiException as ae:
         abort(ae.status)
-    return render_template('entity_edit.html')
+    return render_template('entity_edit.html'), 404
 
 @app.route('/webcapture/<ident>/edit', methods=['GET'])
 def webcapture_edit(ident):
@@ -193,7 +193,7 @@ def webcapture_edit(ident):
         entity = api.get_webcapture(ident)
     except ApiException as ae:
         abort(ae.status)
-    return render_template('entity_edit.html')
+    return render_template('entity_edit.html'), 404
 
 @app.route('/release/create', methods=['GET', 'POST'])
 @login_required
@@ -266,4 +266,4 @@ def work_edit_view(ident):
         entity = api.get_work(ident)
     except ApiException as ae:
         abort(ae.status)
-    return render_template('entity_edit.html')
+    return render_template('entity_edit.html'), 404
