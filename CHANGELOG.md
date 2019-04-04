@@ -21,6 +21,7 @@ See also:
 - many tweaks to webface and guide
 - basic release, container, file webface editing
 - basic editgroup annotation and control (submit/accept) in webface
+- CSL/BibTeX citation endpoints
 
 ## [0.2.0] - 2019-02-05
 

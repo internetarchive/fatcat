@@ -360,7 +360,6 @@
 </div>
 {% endif %}
 
-
 {% if release.extra.is_oa == True %}
 <div class="ui segment attached">
 <b><i class="ui icon unlock alternate green"></i> Open Access</b>
@@ -407,6 +406,18 @@
   <b><a href="/work/{{ release.work_id }}" title="work {{ release.work_id }}">Work Entity</a></b>
   <br>grouping other versions (eg, pre-print) and variants of this release
 </div>
+
+{# this restriction, for CSL-JSON generation, rules out almost everything #}
+{% if release.contribs and release.contribs[0].creator_id %}
+<div class="ui segment attached accordion">
+  <div class="title" style="padding: 0px;">
+    <i class="dropdown icon"></i><b>Cite This Release</b>
+  </div>
+  <div class="content">
+    <a href="/release/{{ release.ident }}.bib">BibTeX</a>
+  </div>
+</div>
+{% endif %}
 
 <div class="ui segment attached accordion">
   <div class="title" style="padding: 0px;"><i class="dropdown icon"></i><b>Lookup Links</b></div>
