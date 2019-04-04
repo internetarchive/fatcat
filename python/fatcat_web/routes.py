@@ -23,7 +23,7 @@ def container_history(ident):
         entity = api.get_container(ident)
         history = api.get_container_history(ident)
     except ApiException as ae:
-        app.logger.info(ae)
+        app.log.info(ae)
         abort(ae.status)
     #print(history)
     return render_template('entity_history.html',
@@ -59,7 +59,7 @@ def container_view(ident):
             stats = get_elastic_container_stats(entity.issnl)
         except Exception as e:
             stats = None
-            app.logger.error(e)
+            app.log.error(e)
     else:
         stats = None
 
@@ -338,7 +338,7 @@ def editgroup_create_annotation(ident):
     app.csrf.protect()
     comment_markdown = request.form.get('comment_markdown')
     if not comment_markdown:
-        app.logger.info("empty comment field")
+        app.log.info("empty comment field")
         abort(400)
     # on behalf of user...
     user_api = auth_api(session['api_token'])
@@ -353,7 +353,7 @@ def editgroup_create_annotation(ident):
         )
         user_api.create_editgroup_annotation(eg.editgroup_id, ega)
     except ApiException as ae:
-        app.logger.info(ae)
+        app.log.info(ae)
         abort(ae.status)
     return redirect('/editgroup/{}'.format(ident))
 
@@ -370,7 +370,7 @@ def editgroup_accept(ident):
             abort(400)
         user_api.accept_editgroup(str(ident))
     except ApiException as ae:
-        app.logger.info(ae)
+        app.log.info(ae)
         abort(ae.status)
     return redirect('/editgroup/{}'.format(ident))
 
@@ -387,7 +387,7 @@ def editgroup_unsubmit(ident):
             abort(400)
         user_api.update_editgroup(eg.editgroup_id, eg, submit=False)
     except ApiException as ae:
-        app.logger.info(ae)
+        app.log.info(ae)
         abort(ae.status)
     return redirect('/editgroup/{}'.format(ident))
 
@@ -406,7 +406,7 @@ def editgroup_submit(ident):
         user_api.update_editgroup(eg.editgroup_id, eg, submit=True)
     except ApiException as ae:
         print(ae)
-        app.logger.info(ae)
+        app.log.info(ae)
         abort(ae.status)
     return redirect('/editgroup/{}'.format(ident))
 
@@ -516,7 +516,7 @@ def stats_page():
         stats = get_elastic_entity_stats()
         stats.update(get_changelog_stats())
     except Exception as ae:
-        app.logger.error(e)
+        app.log.error(e)
         abort(503)
     return render_template('stats.html', stats=stats)
 
@@ -529,7 +529,7 @@ def stats_json():
         stats = get_elastic_entity_stats()
         stats.update(get_changelog_stats())
     except Exception as ae:
-        app.logger.error(e)
+        app.log.error(e)
         abort(503)
     return jsonify(stats)
 
@@ -539,7 +539,7 @@ def container_issnl_stats(issnl):
     try:
         stats = get_elastic_container_stats(issnl)
     except Exception as ae:
-        app.logger.error(e)
+        app.log.error(e)
         abort(503)
     return jsonify(stats)
 

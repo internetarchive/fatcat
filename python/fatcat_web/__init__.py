@@ -1,5 +1,6 @@
 
 from flask import Flask
+from flask.logging import create_logger
 from flask_uuid import FlaskUUID
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_login import LoginManager
@@ -19,6 +20,7 @@ app.config.from_object(Config)
 toolbar = DebugToolbarExtension(app)
 FlaskUUID(app)
 app.csrf = CSRFProtect(app)
+app.log = create_logger(app)
 
 # This is the Markdown processor; setting default here
 Misaka(app,
