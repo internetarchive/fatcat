@@ -109,6 +109,7 @@ class ReleaseEntityForm(EntityEditForm):
     #refs
     #abstracts
 
+    @staticmethod
     def from_entity(re):
         """
         Initializes form with values from an existing release entity.
@@ -187,6 +188,7 @@ class ContainerEntityForm(EntityEditForm):
     issnl = StringField("ISSN-L")
     wikidata_qid = StringField('Wikidata QID')
 
+    @staticmethod
     def from_entity(re):
         """
         Initializes form with values from an existing container entity.
@@ -263,6 +265,7 @@ class FileEntityForm(EntityEditForm):
             [validators.DataRequired(),
             validators.Length(min=26, max=26)]))
 
+    @staticmethod
     def from_entity(fe):
         """
         Initializes form with values from an existing file entity.
