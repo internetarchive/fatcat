@@ -19,13 +19,17 @@
   {% for editgroup in editgroups %}
   <tr>{# <td>{{ editgroup.created.strftime("%Y-%m-%d %H:%M:%S") }} #}
       <td>{% if editgroup.changelog_index %}
-            Merged<br>(<a href="/changelog/{{ editgroup.changelog_index }}">#{{ editgroup.changelog_index }}</a>)
+            Merged
+            <br><a href="/changelog/{{ editgroup.changelog_index }}">#{{ editgroup.changelog_index }}</a>
           {% elif editgroup.submitted %}
-            Submitted<br>({{ editgroup.submitted.strftime("%Y-%m-%d %H:%M:%S") }})
+            Submitted
+            <br>{{ editgroup.submitted.strftime("%Y-%m-%d %H:%M:%S") }}
           {% else %}
             Work in Progress
           {% endif %}
-      <td><code><a href="/editgroup/{{ editgroup.editgroup_id }}">{{ editgroup.editgroup_id }}</a></code>
+      <td><small><code><a href="/editgroup/{{ editgroup.editgroup_id }}">
+            {{ editgroup.editgroup_id }}
+          </a></code></small>
       <td>{% if editgroup.description != None %}{{ editgroup.description }}{% endif %}
   {% endfor %}
 </table>

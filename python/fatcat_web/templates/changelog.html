@@ -8,16 +8,27 @@ Limited to the most recent entries.
 
 <table class="ui table">
   <thead><tr><th>Changelog<br>Index
-             <th>Timestamp (UTC)
              <th>Editgroup
-             <th>Editor
              <th>Description
   <tbody>
   {% for entry in entries %}
-  <tr><td><a href="/changelog/{{ entry.index }}">{{ entry.index }}</a>
-      <td>{{ entry.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}
-      <td><a href="/editgroup/{{ entry.editgroup_id }}">{{ entry.editgroup_id }}</a>
-      <td><a href="/editor/{{ entry.editgroup.editor_id }}">{{ entry.editgroup.editor_id }}</a>
+  <tr><td><a href="/changelog/{{ entry.index }}">#{{ entry.index }}</a>
+          <br>{{ entry.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}
+      <td>
+        {#
+        {% if entry.editgroup.editor.is_bot %}
+          <i class="icon bug"></i>
+        {% else %}
+          <i class="icon user"></i>
+        {% endif %}
+        #}
+        Editor: <code><a href="/editor/{{ entry.editgroup.editor_id }}">
+          {{ entry.editgroup.editor_id[:8] }}...</a>
+        </a></code>
+        <br>
+        <small><code><a href="/editgroup/{{ entry.editgroup.editgroup_id }}">
+          {{ entry.editgroup.editgroup_id }}
+        </a></code></small>
       <td>{% if entry.editgroup.description != None %}{{ entry.editgroup.description }}{% endif %}
   {% endfor %}
 </table>

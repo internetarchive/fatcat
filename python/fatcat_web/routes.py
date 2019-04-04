@@ -425,6 +425,9 @@ def editor_editgroups(ident):
     try:
         editor = api.get_editor(ident)
         editgroups = api.get_editor_editgroups(ident, limit=50)
+        # cheaper than API-side expand?
+        for eg in editgroups:
+            eg.editor = editor
     except ApiException as ae:
         abort(ae.status)
     return render_template('editor_editgroups.html', editor=editor,
@@ -434,7 +437,7 @@ def editor_editgroups(ident):
 def changelog_view():
     try:
         #limit = int(request.args.get('limit', 10))
-        entries = api.get_changelog()
+        entries = api.get_changelog() # TODO: expand="editors"
     except ApiException as ae:
         abort(ae.status)
     return render_template('changelog.html', entries=entries)
@@ -444,6 +447,8 @@ def changelog_entry_view(index):
     try:
         entry = api.get_changelog_entry(int(index))
         entry.editgroup.editor = api.get_editor(entry.editgroup.editor_id)
+        entry.editgroup.annotations = \
+            api.get_editgroup_annotations(entry.editgroup_id, expand="editors")
     except ApiException as ae:
         abort(ae.status)
     return render_template('changelog_view.html', entry=entry, editgroup=entry.editgroup)
@@ -452,7 +457,7 @@ def changelog_entry_view(index):
 def reviewable_view():
     try:
         #limit = int(request.args.get('limit', 10))
-        entries = api.get_editgroups_reviewable()
+        entries = api.get_editgroups_reviewable(expand="editors")
     except ApiException as ae:
         abort(ae.status)
     return render_template('editgroup_reviewable.html', entries=entries)

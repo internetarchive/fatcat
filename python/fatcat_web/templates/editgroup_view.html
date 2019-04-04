@@ -131,7 +131,7 @@ reviewable bundle.
   <i>None!</i>
 {% endfor %}
 
-{% if auth_to.annotate and not editgroup.changelog_index %}
+{% if not editgroup.changelog_index and auth_to.annotate %}
   <div class="ui segment">
     <h3 class="ui header">Add Comment</h3>
     <form class="ui form" id="submit_editgroup_annotation_form" method="POST" action="/editgroup/{{ editgroup.editgroup_id }}/annotation">
