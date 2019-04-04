@@ -87,6 +87,7 @@ def creator_history(ident):
 
 @app.route('/creator/lookup', methods=['GET'])
 def creator_lookup():
+    extid = None
     for key in ('orcid', 'wikidata_qid'):
         if request.args.get(key):
             extid = key
@@ -127,6 +128,7 @@ def file_history(ident):
 
 @app.route('/file/lookup', methods=['GET'])
 def file_lookup():
+    extid = None
     for key in ('md5', 'sha1', 'sha256'):
         if request.args.get(key):
             extid = key
@@ -233,6 +235,7 @@ def webcapture_view(ident):
 
 @app.route('/release/lookup', methods=['GET'])
 def release_lookup():
+    extid = None
     for key in ('doi', 'wikidata_qid', 'pmid', 'pmcid', 'isbn13', 'core_id'):
         if request.args.get(key):
             extid = key
