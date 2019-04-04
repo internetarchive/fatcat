@@ -11,6 +11,7 @@ name = "pypi"
 [dev-packages]
 pytest = ">=4"
 pytest-pythonpath = "*"
+pytest-pylint = "*"
 ipython = "*"
 responses = ">=0.10"
 pytest-cov = "*"
