@@ -7,7 +7,7 @@ You can also fetch these numbers <a href="./stats.json">as JSON</a>.
 
 <h3>Changelog</h3>
 
-<p>Latest changelog index is {{ stats.changelog.latest.index }} ({{ stats.changelog.latest.timestamp[:10] }}).
+<p>Latest changelog index is {{ stats.changelog.latest.index }} ({{ stats.changelog.latest.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}).
 
 <h3>Entities</h3>
 

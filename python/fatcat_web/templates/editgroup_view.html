@@ -71,7 +71,7 @@
 {% if editgroup.changelog_index %}
   Merged (<a href="/changelog/{{ editgroup.changelog_index }}">Changelog #{{ editgroup.changelog_index }}</a>)
 {% elif editgroup.submitted %}
-  Submitted ({{ editgroup.submitted }})
+  Submitted ({{ editgroup.submitted.strftime("%Y-%m-%d %H:%M:%S") }})
 {% else %}
   Not Submitted
 {% endif %}

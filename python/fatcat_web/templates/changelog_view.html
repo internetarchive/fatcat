@@ -7,7 +7,7 @@
 </div>
 </h1>
 
-<br><b>Timestamp:</b> {{ entry.timestamp }}
+<br><b>Timestamp:</b> {{ entry.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}
 <br><b><a href="/editgroup/{{editgroup.editgroup_id}}">Editgroup</a></b>
 <br>
 {% endblock %}
