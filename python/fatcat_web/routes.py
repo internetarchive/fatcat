@@ -175,7 +175,7 @@ def fileset_history(ident):
 
 @app.route('/fileset/lookup', methods=['GET'])
 def fileset_lookup():
-    raise NotImplementedError
+    abort(404)
 
 @app.route('/fileset/<ident>', methods=['GET'])
 def fileset_view(ident):
@@ -212,7 +212,7 @@ def webcapture_history(ident):
 
 @app.route('/webcapture/lookup', methods=['GET'])
 def webcapture_lookup():
-    raise NotImplementedError
+    abort(404)
 
 @app.route('/webcapture/<ident>', methods=['GET'])
 def webcapture_view(ident):
@@ -245,6 +245,7 @@ def release_lookup():
     try:
         resp = api.lookup_release(**{extid: request.args.get(extid)})
     except ApiException as ae:
+        app.log.info(ae)
         abort(ae.status)
     return redirect('/release/{}'.format(resp.ident))
 
@@ -310,6 +311,10 @@ def work_view(ident):
     if entity.state == "deleted":
         return render_template('deleted_entity.html', entity=entity, entity_type="work")
     return render_template('work_view.html', work=entity, releases=releases)
+
+@app.route('/work/lookup', methods=['GET'])
+def work_lookup():
+    abort(404)
 
 @app.route('/editgroup/<ident>', methods=['GET'])
 def editgroup_view(ident):
