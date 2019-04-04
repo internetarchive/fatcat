@@ -516,7 +516,7 @@ def stats_page():
         stats = get_elastic_entity_stats()
         stats.update(get_changelog_stats())
     except Exception as ae:
-        app.log.error(e)
+        app.log.error(ae)
         abort(503)
     return render_template('stats.html', stats=stats)
 
@@ -529,7 +529,7 @@ def stats_json():
         stats = get_elastic_entity_stats()
         stats.update(get_changelog_stats())
     except Exception as ae:
-        app.log.error(e)
+        app.log.error(ae)
         abort(503)
     return jsonify(stats)
 
@@ -539,7 +539,7 @@ def container_issnl_stats(issnl):
     try:
         stats = get_elastic_container_stats(issnl)
     except Exception as ae:
-        app.log.error(e)
+        app.log.error(ae)
         abort(503)
     return jsonify(stats)
 
