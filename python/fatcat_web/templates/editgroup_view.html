@@ -124,7 +124,7 @@ reviewable bundle.
     </div>
     {% endif %}
     <div class="ui bottom attached segment">
-      {{ annotation.comment_markdown }}
+      {{ annotation.comment_markdown|markdown(escape=True) }}
     </div>
   </div>
 {% else %}
@@ -139,6 +139,7 @@ reviewable bundle.
       <div class="field">
         <textarea rows="2" name="comment_markdown" required type="text" value=""></textarea>
       </div>
+      <i>Markdown is allowed</i>
       <button class="ui right floated primary button">
         <i class="icon edit"></i> Submit
       </button>

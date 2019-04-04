@@ -4,6 +4,7 @@ from flask_uuid import FlaskUUID
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
+from flask_misaka import Misaka
 from authlib.flask.client import OAuth
 from loginpass import create_flask_blueprint, Gitlab
 from raven.contrib.flask import Sentry
@@ -18,6 +19,14 @@ app.config.from_object(Config)
 toolbar = DebugToolbarExtension(app)
 FlaskUUID(app)
 app.csrf = CSRFProtect(app)
+
+# This is the Markdown processor; setting default here
+Misaka(app,
+    autolink=True,
+    no_intra_emphasis=True,
+    strikethrough=True,
+    escape=True,
+)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
