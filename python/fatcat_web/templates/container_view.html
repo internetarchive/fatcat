@@ -68,9 +68,10 @@
   {% if container.extra != None and container.extra.ISSNe != None and (container.extra.ISSNe|length > 0) %}
     <br><i class="icon plug"></i>Electronic: &nbsp;<code>{{ container.extra.ISSNe }}</code>
   {% endif %}
+  <br>
 {% endif %}
 {% if container.wikidata_qid != None %}
-  <br><b>Wikidata:</b> &nbsp;<a href="https://wikidata.org/wiki/{{ container.wikidata_qid }}"><code>{{ container.wikidata_qid }}</code></a>
+  <b>Wikidata</b> &nbsp;<a href="https://wikidata.org/wiki/{{ container.wikidata_qid }}"><code>{{ container.wikidata_qid }}</code></a>
 {% endif %}
   </div><div class="ui segment attached">
 {% endif %}

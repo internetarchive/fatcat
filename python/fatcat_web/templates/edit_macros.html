@@ -1,0 +1,56 @@
+
+{% macro form_field_errors(field) -%}
+  {% if field.errors %}
+    <div class="ui pointing red label">
+    {% for err in field.errors %}
+        {{ err }}
+    {% endfor %}
+    </div>
+  {% endif %}
+{%- endmacro %}
+
+{% macro form_field_basic(field, div_classes="") -%}
+<div class="field {{ div_classes }} {% if field.errors %}error{% endif %}">
+  {{ field.label }}
+  {{ field() }}
+  {{ form_field_errors(field) }}
+</div>
+{%- endmacro %}
+
+{% macro form_field_inline(field, div_classes="") -%}
+<div class="ui grid">
+  <div class="three wide column middle aligned right aligned" {# style="padding-right: 0.5rem;" #}>
+    <div class="field inline {{ div_classes }} {% if field.errors %}error{% endif %}">
+      {{ field.label }}
+    </div>
+  </div>
+  <div class="twelve wide column" {# style="padding-left: 0.5rem;" #}>
+    <div class="field {{ div_classes }} {% if field.errors %}error{% endif %}">
+      {{ field() }}
+      {{ form_field_errors(field) }}
+    </div>
+  </div>
+  <div class="one wide column">
+  </div>
+</div>
+{%- endmacro %}
+
+{% macro editgroup_dropdown(form) -%}
+  <div class="ui accordion">
+    <div class="{% if not editgroup_id %}active{% endif %} title">
+      <h3><i class="dropdown icon"></i>Editgroup Meta</h3>
+    </div>
+    <div class="{% if not editgroup_id %}active{% endif %} content">
+      {% if editgroup_id %}
+        <p>You have an editgroup in progress, and this edit will be included by
+        default. You can override this below.
+      {% else %}
+        <p>No existing editgroup is in progress (or at least, not is selected).
+        An existing ID can be pasted in, or if you leave that blank but give a
+        description, a new editgroup will be created for this edit.
+      {% endif %}
+      {{ form_field_inline(form.editgroup_id) }}
+      {{ form_field_inline(form.editgroup_description) }}
+    </div>
+  </div>
+{%- endmacro %}

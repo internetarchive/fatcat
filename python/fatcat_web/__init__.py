@@ -1,8 +1,11 @@
 
 from flask import Flask
+from flask.logging import create_logger
 from flask_uuid import FlaskUUID
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_login import LoginManager
+from flask_wtf.csrf import CSRFProtect
+from flask_misaka import Misaka
 from authlib.flask.client import OAuth
 from loginpass import create_flask_blueprint, Gitlab
 from raven.contrib.flask import Sentry
@@ -10,11 +13,22 @@ import fatcat_client
 
 from fatcat_web.web_config import Config
 
+
 toolbar = DebugToolbarExtension()
 app = Flask(__name__)
 app.config.from_object(Config)
 toolbar = DebugToolbarExtension(app)
 FlaskUUID(app)
+app.csrf = CSRFProtect(app)
+app.log = create_logger(app)
+
+# This is the Markdown processor; setting default here
+Misaka(app,
+    autolink=True,
+    no_intra_emphasis=True,
+    strikethrough=True,
+    escape=True,
+)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -46,7 +60,7 @@ else:
     print("No privileged token found")
     priv_api = None
 
-from fatcat_web import routes, auth, cors
+from fatcat_web import routes, editing_routes, auth, cors, forms
 
 gitlab_bp = create_flask_blueprint(Gitlab, oauth, auth.handle_oauth)
 app.register_blueprint(gitlab_bp, url_prefix='/auth/gitlab')

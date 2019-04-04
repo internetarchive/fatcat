@@ -1,0 +1,218 @@
+{% import "edit_macros.html" as edit_macros %}
+{% extends "base.html" %}
+
+{% block body %}
+{% block edit_form_prefix %}
+<div class="ui segment">
+<h1 class="ui header">Edit Release Entity</h1>
+
+<form class="ui form" id="edit_release_form" method="POST" action="/release/{{ entity.ident }}/edit">
+{% endblock %}
+  {{ form.hidden_tag() }}
+
+  <br>
+  {{ edit_macros.editgroup_dropdown(form) }}
+
+  <br>
+  <h3 class="ui dividing header">The Basics</h3>
+  <div class="ui grid">
+    <div class="three wide column" style="padding-bottom: 0px;"></div>
+    <div class="twelve wide column" style="padding-bottom: 0px;">
+      <div class="ui equal width fields">
+        {{ edit_macros.form_field_basic(form.release_type, "required") }}
+        {{ edit_macros.form_field_basic(form.release_status) }}
+      </div>
+    </div>
+    <div class="one wide column" style="padding-bottom: 0px;"></div>
+  </div>
+
+  {{ edit_macros.form_field_inline(form.title, "required") }}
+  {{ edit_macros.form_field_inline(form.original_title) }}
+  {{ edit_macros.form_field_inline(form.work_id) }}
+  {{ edit_macros.form_field_inline(form.release_date) }}
+  <div class="ui grid">
+    <div class="three wide column" style="padding-bottom: 0px;"></div>
+    <div class="twelve wide column" style="padding-bottom: 0px;">
+      <div class="ui equal width fields">
+        {{ edit_macros.form_field_basic(form.language) }}
+        {{ edit_macros.form_field_basic(form.license_slug) }}
+      </div>
+    </div>
+    <div class="one wide column" style="padding-bottom: 0px;"></div>
+  </div>
+
+  <br>
+  <h3 class="ui dividing header">Contributors</h3>
+  <div class="list-group" id="contrib_list" name="contrib_list">
+  {% for cform in form.contribs %}
+    <div class="list-group-item ui grid" style="padding-right: 1em;">
+      {{ cform.hidden_tag() }}
+      <div class="one wide column middle aligned center aligned sortable-handle" style="padding-bottom: 0px; padding-right: 0px; padding-left: 0px;">
+        <i class="arrows alternate vertical icon"></i>
+      </div>
+      <div class="three wide column" style="padding-bottom: 0px; padding-left: 0px;">
+        <div class="field {% if cform.role.errors %}error{% endif %}">
+          {{ cform.role() }}
+        </div>
+      </div>
+      <div class="eleven wide column" style="padding-bottom: 0px;">
+        <div class="field {% if cform.raw_name.errors %}error{% endif %}">
+          {{ cform.raw_name() }}
+        </div>
+      </div>
+      <div class="one wide column right aligned" style="padding-bottom: 0px; padding-left: 0rem;">
+        <button type="button" class="ui icon red button delete-contrib-button"><i class="trash icon"></i></button>
+      </div>
+    </div>
+  {% endfor %}
+  </div>
+  <br>
+  <button type="button" id="add-contrib-button" class="ui right floated icon green button" style="margin-right: 0.3rem;">
+    <i class="plus icon"></i>
+  </button>
+  <br>
+
+  <br>
+  <h3 class="ui dividing header">Identifers</h3>
+  <br>
+  {{ edit_macros.form_field_inline(form.doi) }}
+  {{ edit_macros.form_field_inline(form.wikidata_qid) }}
+  {{ edit_macros.form_field_inline(form.isbn13) }}
+  <div class="ui grid">
+    <div class="three wide column" style="padding-bottom: 0px;"></div>
+    <div class="twelve wide column" style="padding-bottom: 0px;">
+      <div class="ui equal width fields">
+        {{ edit_macros.form_field_basic(form.pmid) }}
+        {{ edit_macros.form_field_basic(form.pmcid) }}
+      </div>
+    </div>
+    <div class="one wide column" style="padding-bottom: 0px;"></div>
+  </div>
+
+  <br>
+  <h3 class="ui dividing header">Container</h3>
+  <br>
+  {{ edit_macros.form_field_inline(form.container_id) }}
+  {{ edit_macros.form_field_inline(form.publisher) }}
+  <br>
+  <div class="ui grid">
+    <div class="three wide column" style="padding-bottom: 0px;"></div>
+    <div class="twelve wide column" style="padding-bottom: 0px;">
+      <div class="ui equal width fields">
+        {{ edit_macros.form_field_basic(form.pages) }}
+        {{ edit_macros.form_field_basic(form.volume) }}
+        {{ edit_macros.form_field_basic(form.issue) }}
+      </div>
+    </div>
+    <div class="one wide column" style="padding-bottom: 0px;"></div>
+  </div>
+
+  <br><br>
+  <h3 class="ui dividing header">Submit</h3>
+  {{ edit_macros.form_field_basic(form.edit_description) }}
+  This description will be attached to the individual edit, not to the
+  editgroup as a whole.
+{% block edit_form_suffix %}
+  <br><br>
+  <input class="ui primary submit button" type="submit" value="Update Release!">
+  <p>
+  <i>Edit will be part of the current editgroup, which needs to be submited and
+  approved before the change is included in the catalog.</i>
+</form>
+</div>
+{% endblock %}
+{% endblock %}
+
+{% block postscript %}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<script>
+<!-- Form code -->
+$(document).ready(function() {
+
+  // these javascript dropdowns hide the original <input>, which breaks browser
+  // form focusing (eg, for required fields) :(
+  //$('#release_type').dropdown();
+  //$('#release_status').dropdown();
+  $('.ui.accordion').accordion();
+
+  var fixup_contrib_numbering = function(group_item) {
+    items = Array.from(group_item.querySelectorAll(".list-group-item"))
+    for (var i = 0; i < items.length; i++) {
+      var item_el = items[i];
+      prev_el = item_el.querySelectorAll("input")[0];
+      input_el = item_el.querySelectorAll("input")[1];
+      select_el = item_el.querySelectorAll("select")[0];
+      //console.log(input_el.id);
+      //console.log(select_el.id);
+      input_el.id = "contribs-" + i + "-raw_name";
+      input_el.name = input_el.id;
+      prev_el.id = "contribs-" + i + "-prev_index";
+      prev_el.name = prev_el.id;
+      select_el.id = "contribs-" + i + "-role";
+      select_el.name = select_el.id;
+      //console.log(input_el.id);
+      //console.log(select_el.id);
+    };
+    console.log("re-named contrib rows up to i=" + i);
+  };
+
+  var contrib_list = document.getElementById('contrib_list');
+  var contrib_sortable = Sortable.create(contrib_list, {
+    handle: '.sortable-handle',
+    animation: 150,
+    onSort: function(evt) {
+      fixup_contrib_numbering(contrib_list);
+    },
+  });
+  fixup_contrib_numbering(contrib_list);
+
+  var contrib_delete_handler = function(ev) {
+    row = ev.target.parentNode.parentNode;
+    // I don't understand why this hack is needed; maybe because of the sortable stuff?
+    if(!row.classList.contains("list-group-item")) {
+        row = row.parentNode;
+    }
+    // console.log(row);
+    console.assert(row.classList.contains("list-group-item"));
+    row.parentNode.removeChild(row);
+    fixup_contrib_numbering(contrib_list);
+  };
+
+  var attach_contrib_delete_handler = function(topthing) {
+    Array.from(topthing.querySelectorAll(".delete-contrib-button")).forEach((el) => {
+      el.addEventListener("click", contrib_delete_handler);
+    });
+  };
+  attach_contrib_delete_handler(document);
+
+  // XXX: really need some way to not duplicate this code from above...
+  var contrib_template = `
+  <div class="list-group-item ui grid" style="padding-right: 1em;">
+      <input id="contribs-X-prev_index" name="contribs-X-prev_index" type="hidden" value="">
+      <div class="one wide column middle aligned center aligned sortable-handle" style="padding-bottom: 0px; padding-right: 0px; padding-left: 0px;">
+        <i class="arrows alternate vertical icon"></i>
+      </div>
+      <div class="three wide column" style="padding-bottom: 0px; padding-left: 0px;">
+        <select id="contribs-X-role" name="contribs-X-role"><option value="author">Author</option><option value="editor">Editor</option><option value="translator">Translator</option></select>
+      </div>
+      <div class="eleven wide column" style="padding-bottom: 0px;">
+        <input id="contribs-X-raw_name" name="contribs-X-raw_name" type="text" value="">
+      </div>
+      <div class="one wide column right aligned" style="padding-bottom: 0px; padding-left: 0rem;">
+        <button type="button" class="ui icon red button delete-contrib-button"><i class="trash icon"></i></button>
+      </div>
+    </div>
+  `;
+
+  var add_contrib_button = document.getElementById("add-contrib-button");
+  add_contrib_button.addEventListener("click", function(){
+    contrib_list.insertAdjacentHTML('beforeend', contrib_template);
+    attach_contrib_delete_handler(contrib_list.lastElementChild);
+    fixup_contrib_numbering(contrib_list);
+  });
+
+  console.log("Page loaded");
+
+});
+</script>
+{% endblock %}

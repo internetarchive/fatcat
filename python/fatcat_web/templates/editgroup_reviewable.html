@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block body %}
+
+<h1 class="ui header">Reviewable Editgroups
+</h1>
+
+Limited to the most recent entries.
+
+<table class="ui table">
+  <thead><tr><th>Editgroup
+             <th>Description
+  <tbody>
+  {% for editgroup in entries %}
+  <tr><td>
+        {% if editgroup.editor.is_bot %}
+          <i class="icon bug"></i>
+        {% else %}
+          <i class="icon user"></i>
+        {% endif %}
+        <a href="/editor/{{ editgroup.editor_id }}">{{ editgroup.editor.username }}</a>
+        <br>
+        Submitted: {{ editgroup.submitted.strftime("%Y-%m-%d %H:%M:%S") }}
+        <br>
+        <small><code><a href="/editgroup/{{ editgroup.editgroup_id }}">
+          {{ editgroup.editgroup_id }}
+        </a></code></small>
+      <td>{% if editgroup.description != None %}{{ editgroup.description }}{% endif %}
+  {% endfor %}
+</table>
+
+{% endblock %}

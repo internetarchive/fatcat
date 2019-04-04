@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% import "entity_macros.html" as entity_macros %}
+
 {% block body %}
 
 {% macro edit_list(edits, entity_type, entity_name) -%}
@@ -35,13 +37,60 @@
 
 {# extended by changelog_entry #}
 {% block editgroupheader %}
-<h1 class="ui header">Edit Group
+{% if not editgroup.changelog_index %}
+  <div class="ui right floated center aligned segment">
+    {% if auth_to.accept %}
+      <form id="submit_editgroup_form" method="POST" action="/editgroup/{{ editgroup.editgroup_id }}/accept">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <button class="ui orange button">Accept Edits</button>
+      </form><br>
+    {% endif %}
+    {% if auth_to.submit %}
+      {% if editgroup.submitted %}
+        <form id="submit_editgroup_form" method="POST" action="/editgroup/{{ editgroup.editgroup_id }}/unsubmit">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <button class="ui button">Un-Submit</button>
+        </form><br>
+        <form id="submit_editgroup_form" method="POST" action="/editgroup/{{ editgroup.editgroup_id }}/submit">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <button class="ui button">Re-Submit</button>
+        </form>
+      {% else %}
+        <form id="submit_editgroup_form" method="POST" action="/editgroup/{{ editgroup.editgroup_id }}/submit">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <button class="ui primary button">Submit</button>
+        </form>
+      {% endif %}
+    {% endif %}
+  </div>
+{% endif %}
+
+<h1 class="ui header">Editgroup
 <div class="sub header"><code>editgroup {{ editgroup.editgroup_id }}</code></div></h1>
 {% endblock %}
 
-<b>Editor:</b> <a href="/editor/{{editgroup.editor_id}}">{{ editgroup.editor.username }}</a>
-<br><b>Description:</b> {{ editgroup.description }}
-<br><br>
+<p><b>What is an editgroup?</b>
+An editgroup is a set of entity edits, bundled together into a coherent,
+reviewable bundle.
+<br>
+
+<br><b>Status:</b>
+{% if editgroup.changelog_index %}
+  Merged (<a href="/changelog/{{ editgroup.changelog_index }}">Changelog #{{ editgroup.changelog_index }}</a>)
+{% elif editgroup.submitted %}
+  Submitted ({{ editgroup.submitted.strftime("%Y-%m-%d %H:%M:%S") }})
+{% else %}
+  Not Submitted
+{% endif %}
+
+<br><b>Editor:</b> <a href="/editor/{{editgroup.editor_id}}">{{ editgroup.editor.username }}</a>
+<br><b>Description:</b>
+{% if editgroup.description %}
+  {{ editgroup.description }}
+{% else %}
+  <i>none</i>
+{% endif %}
+<br><br clear="all">
 
 <div class="ui styled fluid accordion">
   {{ edit_list(editgroup.edits.works, "work", "Work") }}
@@ -53,11 +102,51 @@
   {{ edit_list(editgroup.edits.webcaptures, "webcapture", "Web Capture") }}
 </div>
 
-
 <br>
-<p><b>What is an editgroup?</b>
-An editgroup is a set of entity edits, bundled together into a coherent,
-reviewable bundle.
+<h2 class="ui header">Comments and Annotations</h2>
+{% for annotation in editgroup.annotations|reverse %}
+  <div class="ui segments">
+    <div class="ui top attached secondary segment">
+      {% if annotation.editor.is_bot %}
+        <i class="icon bug"></i>
+      {% else %}
+        <i class="icon user"></i>
+      {% endif %}
+      <b><a href="/editor/{{ annotation.editor_id }}">{{ annotation.editor.username}}</a></b>
+      {% if annotation.editor.is_admin %}
+        <span class="ui tiny olive label">Admin</span>
+      {% endif %}
+      at {{ annotation.created.strftime("%Y-%m-%d %H:%M:%S") }}
+    </div>
+    {% if annotation.extra %}
+    <div class="ui attached segment">
+      {{ entity_macros.extra_metadata(annotation.extra) }}
+    </div>
+    {% endif %}
+    <div class="ui bottom attached segment">
+      {{ annotation.comment_markdown|markdown(escape=True) }}
+    </div>
+  </div>
+{% else %}
+  <i>None!</i>
+{% endfor %}
+
+{% if not editgroup.changelog_index and auth_to.annotate %}
+  <div class="ui segment">
+    <h3 class="ui header">Add Comment</h3>
+    <form class="ui form" id="submit_editgroup_annotation_form" method="POST" action="/editgroup/{{ editgroup.editgroup_id }}/annotation">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+      <div class="field">
+        <textarea rows="2" name="comment_markdown" required type="text" value=""></textarea>
+      </div>
+      <i>Markdown is allowed</i>
+      <button class="ui right floated primary button">
+        <i class="icon edit"></i> Submit
+      </button>
+      <br>
+    </form><br>
+  </div>
+{% endif %}
 
 {% endblock %}
 

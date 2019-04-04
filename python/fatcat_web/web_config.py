@@ -39,8 +39,18 @@ class Config(object):
     IA_XAUTH_CLIENT_ID = os.environ.get("IA_XAUTH_CLIENT_ID", default=None)
     IA_XAUTH_CLIENT_SECRET = os.environ.get("IA_XAUTH_CLIENT_SECRET", default=None)
 
-    # protect cookies (which include API tokens)
-    if FATCAT_DOMAIN != "dev.fatcat.wiki":
+    # CSRF on by default, but only for WTF forms (not, eg, search, lookups, GET
+    # forms)
+    WTF_CSRF_CHECK_DEFAULT = False
+    WTF_CSRF_TIME_LIMIT = None
+
+    if FATCAT_DOMAIN == "dev.fatcat.wiki":
+        # "Even more verbose" debug options
+        #SQLALCHEMY_ECHO = True
+        #DEBUG = True
+        pass
+    else:
+        # protect cookies (which include API tokens)
         SESSION_COOKIE_HTTPONLY = True
         SESSION_COOKIE_SECURE = True
         SESSION_COOKIE_SAMESITE = 'Lax'
@@ -61,6 +71,3 @@ class Config(object):
         },
     }
 
-    # "Even more verbose" debug options
-    #SQLALCHEMY_ECHO = True
-    #DEBUG = True

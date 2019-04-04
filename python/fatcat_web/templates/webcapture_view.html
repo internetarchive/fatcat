@@ -43,7 +43,7 @@
           <code><a href="{{ row.url }}">{{ row.url}}</a></code>
         </div>
         <div style="margin-left: 1em;">
-          {{ row.timestamp }}
+          {{ row.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}
           {% if row.mimetype %}| {{ row.mimetype }}{% endif %}
           <br>
           <code><small style="color: #666;">
@@ -72,7 +72,7 @@ No known public archive for this webcapture.
 
 {% if webcapture.timestamp != None %}
 <div class="ui segment attached">
-  <p><b>Capture Time</b> &nbsp;{{ webcapture.timestamp }}
+  <p><b>Capture Time</b> &nbsp;{{ webcapture.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}
 </div>
 {% endif %}
 

@@ -59,10 +59,10 @@
       <div class="ui simple dropdown item">
       {{ current_user.username }} <i class="dropdown icon"></i>
         <div class="menu">
-          <a class="item" href="#"><i class="edit icon"></i>Edits in Progress</a>
-          <a class="item" href="/editor/{{ current_user.editor_id }}/changelog"><i class="history icon"></i>History</a>
+          <a class="item" href="/editor/{{ current_user.editor_id }}/editgroups"><i class="history icon"></i>Edit History</a>
+          <a class="item" href="/editor/{{ current_user.editor_id }}/annotations"><i class="edit icon"></i>Comment History</a>
           <div class="divider"></div>
-          <a class="item" href="/auth/account"><i class="user icon"></i>Account</a>
+          <a class="item" href="/auth/account"><i class="settings icon"></i>Account</a>
           <a class="item" href="/auth/logout"><i class="sign out icon"></i>Logout</a>
         </div>
       </div>
@@ -84,7 +84,7 @@
     <div class="header">Now Hear This...</div>
     <ul class="list">
     {% for message in messages %}
-      <li>{{ message }}
+      <li>{{ message|safe }}
     {% endfor %}
     </ul>
     </div>

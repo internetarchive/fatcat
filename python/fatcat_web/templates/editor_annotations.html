@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block body %}
+
+<h1 class="ui header">Comments and Annotations
+<div class="sub header">
+    <code>editor
+      <a href="/editor/{{editor.editor_id}}">{{ editor.username }}</a>
+    </code>
+  </a>
+</div>
+</h1>
+
+<br>
+{% for annotation in annotations %}
+  <div class="ui segments">
+    <div class="ui top attached secondary segment">
+      On <b><small><code><a href="/editgroup/{{ annotation.editgroup_id }}">
+        {{ annotation.editgroup_id }}
+      </a></code></small></b>
+      at {{ annotation.created.strftime("%Y-%m-%d %H:%M:%S") }}
+    </div>
+    {% if annotation.extra %}
+    <div class="ui attached segment">
+      {{ entity_macros.extra_metadata(annotation.extra) }}
+    </div>
+    {% endif %}
+    <div class="ui bottom attached segment">
+      {{ annotation.comment_markdown|markdown(escape=True) }}
+    </div>
+  </div>
+{% else %}
+  <i>None!</i>
+{% endfor %}
+
+{% endblock %}

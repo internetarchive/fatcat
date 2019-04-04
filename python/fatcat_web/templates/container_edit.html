@@ -1,0 +1,50 @@
+{% import "edit_macros.html" as edit_macros %}
+{% extends "base.html" %}
+
+{% block body %}
+{% block edit_form_prefix %}
+<div class="ui segment">
+<h1 class="ui header">Edit Container Entity</h1>
+
+<form class="ui form" id="edit_container_form" method="POST" action="/container/{{ entity.ident }}/edit">
+{% endblock %}
+  {{ form.hidden_tag() }}
+
+  <br>
+  {{ edit_macros.editgroup_dropdown(form) }}
+
+  <h3 class="ui dividing header">The Basics</h3>
+  <br>
+  {{ edit_macros.form_field_inline(form.container_type, "required") }}
+  {{ edit_macros.form_field_inline(form.name, "required") }}
+  {{ edit_macros.form_field_inline(form.publisher) }}
+  {{ edit_macros.form_field_inline(form.issnl) }}
+  {{ edit_macros.form_field_inline(form.wikidata_qid) }}
+
+  <br>
+  <h3 class="ui dividing header">Submit</h3>
+  {{ edit_macros.form_field_basic(form.edit_description) }}
+  This description will be attached to the individual edit, not to the
+  editgroup as a whole.
+{% block edit_form_suffix %}
+  <br><br>
+  <input class="ui primary submit button" type="submit" value="Update Container!">
+  <p>
+  <i>Edit will be part of the current editgroup, which needs to be submited and
+  approved before the change is included in the catalog.</i>
+</form>
+</div>
+{% endblock %}
+{% endblock %}
+
+{% block postscript %}
+<script>
+<!-- Form code -->
+$(document).ready(function() {
+
+  $('.ui.accordion').accordion();
+
+});
+</script>
+{% endblock %}
+

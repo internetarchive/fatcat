@@ -1,27 +1,33 @@
 {% extends "base.html" %}
 {% block body %}
 
-<h1>Your Account</h1>
+<h1 class="ui header">
+  <i class="settings icon"></i>
+  Account Settings
+</h1>
 
 <p><b>Username:</b> <code>{{ current_user.username }}</code>
 <p><b>Editor Id:</b> <code><a href="/editor/{{ current_user.editor_id }}">{{ current_user.editor_id }}</a></code>
 
-<div>
-<p>Change username:
+<br>
+<div class="ui segment">
+<h3 class="ui header">Change Username</h3>
 <form class="" role="change_username" action="/auth/change_username" method="post">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
   <div class="ui form">
-      <div class="ui action input medium fluid">
+    <div class="ui action input medium">
       <input type="text" name="username" value="{{ current_user.username }}" aria-label="account username">
-      <button class="ui button">Update</button>
+      <button class="ui red button">Update</button>
     </div>
   </div>
 </form>
 </div>
 
-<p>In the future, you might be able to...
+<br>
+<p>In the future, you will be able to...
 <ul>
-  <li>Create a bot user
-  <li>Generate an API token
+  <li>Create and manage bot accounts
+  <li>Generate API tokens
 </ul>
 
 {% endblock %}

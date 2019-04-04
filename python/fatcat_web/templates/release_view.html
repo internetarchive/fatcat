@@ -262,7 +262,7 @@
   <tbody>
   {% for webcapture in entity.webcaptures %}
   <tr><td><b><a href="{{ webcapture.original_url }}">{{ webcapture.original_url }}</a></b>
-      <br>{{ webcapture.timestamp }} | {{ webcapture.cdx|count }} resources
+      <br>{{ webcapture.timestamp.strftime("%Y-%m-%d %H:%M:%S") }} | {{ webcapture.cdx|count }} resources
       <br><small><code><a href="/webcapture/{{ webcapture.ident }}">webcapture:{{ webcapture.ident }}</a></code></small>
       <td class="single line">
         {% for url in webcapture.archive_urls[:5] %}

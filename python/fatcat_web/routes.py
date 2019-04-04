@@ -4,7 +4,9 @@ import json
 from flask import Flask, render_template, send_from_directory, request, \
     url_for, abort, g, redirect, jsonify, session, flash, Response
 from flask_login import login_required
+from flask_wtf.csrf import CSRFError
 
+from fatcat_client import Editgroup, EditgroupAnnotation
 from fatcat_client.rest import ApiException
 from fatcat_tools.transforms import *
 from fatcat_web import app, api, auth_api, priv_api
@@ -21,6 +23,7 @@ def container_history(ident):
         entity = api.get_container(ident)
         history = api.get_container_history(ident)
     except ApiException as ae:
+        app.log.info(ae)
         abort(ae.status)
     #print(history)
     return render_template('entity_history.html',
@@ -28,43 +31,6 @@ def container_history(ident):
         entity_type="container",
         entity=entity,
         history=history)
-
-@app.route('/container/<ident>/edit', methods=['GET'])
-def container_edit_view(ident):
-    try:
-        entity = api.get_container(ident)
-    except ApiException as ae:
-        abort(ae.status)
-    return render_template('entity_edit.html')
-
-#@app.route('/container/<ident>/edit', methods=['POST'])
-#def container_edit(ident):
-#    raise NotImplemented()
-#    params = dict()
-#    for k in request.form:
-#        if k.startswith('container_'):
-#            params[k[10:]] = request.form[k]
-#    edit = api.update_container(params=params)
-#    return redirect("/container/{}".format(edit.ident))
-#    # else:
-#    #return render_template('container_edit.html')
-
-@app.route('/container/create', methods=['GET'])
-@login_required
-def container_create_view():
-    return render_template('container_create.html')
-
-@app.route('/container/create', methods=['POST'])
-@login_required
-def container_create():
-    raise NotImplementedError
-    params = dict()
-    for k in request.form:
-        if k.startswith('container_'):
-            params[k[10:]] = request.form[k]
-    container = None
-    #edit = api.create_container(container, params=params)
-    #return redirect("/container/{}".format(edit.ident))
 
 @app.route('/container/lookup', methods=['GET'])
 def container_lookup():
@@ -93,7 +59,7 @@ def container_view(ident):
             stats = get_elastic_container_stats(entity.issnl)
         except Exception as e:
             stats = None
-            print(e)
+            app.log.error(e)
     else:
         stats = None
 
@@ -118,14 +84,6 @@ def creator_history(ident):
         entity_type="creator",
         entity=entity,
         history=history)
-
-@app.route('/creator/<ident>/edit', methods=['GET'])
-def creator_edit_view(ident):
-    try:
-        entity = api.get_creator(ident)
-    except ApiException as ae:
-        abort(ae.status)
-    return render_template('entity_edit.html')
 
 @app.route('/creator/lookup', methods=['GET'])
 def creator_lookup():
@@ -166,14 +124,6 @@ def file_history(ident):
         entity_type="file",
         entity=entity,
         history=history)
-
-@app.route('/file/<ident>/edit', methods=['GET'])
-def file_edit_view(ident):
-    try:
-        entity = api.get_file(ident)
-    except ApiException as ae:
-        abort(ae.status)
-    return render_template('entity_edit.html')
 
 @app.route('/file/lookup', methods=['GET'])
 def file_lookup():
@@ -221,14 +171,6 @@ def fileset_history(ident):
         entity=entity,
         history=history)
 
-@app.route('/fileset/<ident>/edit', methods=['GET'])
-def fileset_edit_view(ident):
-    try:
-        entity = api.get_fileset(ident)
-    except ApiException as ae:
-        abort(ae.status)
-    return render_template('entity_edit.html')
-
 @app.route('/fileset/lookup', methods=['GET'])
 def fileset_lookup():
     raise NotImplementedError
@@ -265,14 +207,6 @@ def webcapture_history(ident):
         entity_type="webcapture",
         entity=entity,
         history=history)
-
-@app.route('/webcapture/<ident>/edit', methods=['GET'])
-def webcapture_edit_view(ident):
-    try:
-        entity = api.get_webcapture(ident)
-    except ApiException as ae:
-        abort(ae.status)
-    return render_template('entity_edit.html')
 
 @app.route('/webcapture/lookup', methods=['GET'])
 def webcapture_lookup():
@@ -311,23 +245,6 @@ def release_lookup():
         abort(ae.status)
     return redirect('/release/{}'.format(resp.ident))
 
-@app.route('/release/create', methods=['GET'])
-@login_required
-def release_create_view():
-    return render_template('release_create.html')
-
-@app.route('/release/create', methods=['POST'])
-@login_required
-def release_create():
-    raise NotImplementedError
-    params = dict()
-    for k in request.form:
-        if k.startswith('release_'):
-            params[k[10:]] = request.form[k]
-    release = None
-    #edit = api.create_release(release, params=params)
-    #return redirect("/release/{}".format(edit.ident))
-
 @app.route('/release/<ident>/history', methods=['GET'])
 def release_history(ident):
     try:
@@ -340,14 +257,6 @@ def release_history(ident):
         entity_type="release",
         entity=entity,
         history=history)
-
-@app.route('/release/<ident>/edit', methods=['GET'])
-def release_edit_view(ident):
-    try:
-        entity = api.get_release(ident)
-    except ApiException as ae:
-        abort(ae.status)
-    return render_template('entity_edit.html')
 
 @app.route('/release/<ident>', methods=['GET'])
 def release_view(ident):
@@ -373,10 +282,6 @@ def release_view(ident):
     return render_template('release_view.html', release=entity,
         authors=authors, container=container)
 
-@app.route('/work/create', methods=['GET'])
-def work_create_view():
-    return abort(404)
-
 @app.route('/work/<ident>/history', methods=['GET'])
 def work_history(ident):
     try:
@@ -389,14 +294,6 @@ def work_history(ident):
         entity_type="work",
         entity=entity,
         history=history)
-
-@app.route('/work/<ident>/edit', methods=['GET'])
-def work_edit_view(ident):
-    try:
-        entity = api.get_work(ident)
-    except ApiException as ae:
-        abort(ae.status)
-    return render_template('entity_edit.html')
 
 @app.route('/work/<ident>', methods=['GET'])
 def work_view(ident):
@@ -414,11 +311,104 @@ def work_view(ident):
 @app.route('/editgroup/<ident>', methods=['GET'])
 def editgroup_view(ident):
     try:
-        entity = api.get_editgroup(str(ident))
-        entity.editor = api.get_editor(entity.editor_id)
+        eg = api.get_editgroup(str(ident))
+        eg.editor = api.get_editor(eg.editor_id)
+        eg.annotations = api.get_editgroup_annotations(eg.editgroup_id, expand="editors")
     except ApiException as ae:
         abort(ae.status)
-    return render_template('editgroup_view.html', editgroup=entity)
+    # TODO: idomatic check for login?
+    auth_to = dict(
+        submit=False,
+        accept=False,
+        annotate=False,
+    )
+    if session.get('editor'):
+        user = load_user(session['editor']['editor_id'])
+        auth_to['annotate'] = True
+        if user.is_admin or user.editor_id == eg.editor_id:
+            auth_to['submit'] = True
+        if user.is_admin:
+            auth_to['accept'] = True
+    return render_template('editgroup_view.html', editgroup=eg,
+        auth_to=auth_to)
+
+@app.route('/editgroup/<ident>/annotation', methods=['POST'])
+@login_required
+def editgroup_create_annotation(ident):
+    app.csrf.protect()
+    comment_markdown = request.form.get('comment_markdown')
+    if not comment_markdown:
+        app.log.info("empty comment field")
+        abort(400)
+    # on behalf of user...
+    user_api = auth_api(session['api_token'])
+    try:
+        eg = user_api.get_editgroup(str(ident))
+        if eg.changelog_index:
+            flash("Editgroup already accepted")
+            abort(400)
+        ega = EditgroupAnnotation(
+            comment_markdown=comment_markdown,
+            extra=None,
+        )
+        user_api.create_editgroup_annotation(eg.editgroup_id, ega)
+    except ApiException as ae:
+        app.log.info(ae)
+        abort(ae.status)
+    return redirect('/editgroup/{}'.format(ident))
+
+@app.route('/editgroup/<ident>/accept', methods=['POST'])
+@login_required
+def editgroup_accept(ident):
+    app.csrf.protect()
+    # on behalf of user...
+    user_api = auth_api(session['api_token'])
+    try:
+        eg = user_api.get_editgroup(str(ident))
+        if eg.changelog_index:
+            flash("Editgroup already accepted")
+            abort(400)
+        user_api.accept_editgroup(str(ident))
+    except ApiException as ae:
+        app.log.info(ae)
+        abort(ae.status)
+    return redirect('/editgroup/{}'.format(ident))
+
+@app.route('/editgroup/<ident>/unsubmit', methods=['POST'])
+@login_required
+def editgroup_unsubmit(ident):
+    app.csrf.protect()
+    # on behalf of user...
+    user_api = auth_api(session['api_token'])
+    try:
+        eg = user_api.get_editgroup(str(ident))
+        if eg.changelog_index:
+            flash("Editgroup already accepted")
+            abort(400)
+        user_api.update_editgroup(eg.editgroup_id, eg, submit=False)
+    except ApiException as ae:
+        app.log.info(ae)
+        abort(ae.status)
+    return redirect('/editgroup/{}'.format(ident))
+
+@app.route('/editgroup/<ident>/submit', methods=['POST'])
+@login_required
+def editgroup_submit(ident):
+    app.csrf.protect()
+    # on behalf of user...
+    print("submitting...")
+    user_api = auth_api(session['api_token'])
+    try:
+        eg = user_api.get_editgroup(str(ident))
+        if eg.changelog_index:
+            flash("Editgroup already accepted")
+            abort(400)
+        user_api.update_editgroup(eg.editgroup_id, eg, submit=True)
+    except ApiException as ae:
+        print(ae)
+        app.log.info(ae)
+        abort(ae.status)
+    return redirect('/editgroup/{}'.format(ident))
 
 @app.route('/editor/<ident>', methods=['GET'])
 def editor_view(ident):
@@ -433,15 +423,29 @@ def editor_editgroups(ident):
     try:
         editor = api.get_editor(ident)
         editgroups = api.get_editor_editgroups(ident, limit=50)
+        # cheaper than API-side expand?
+        for eg in editgroups:
+            eg.editor = editor
     except ApiException as ae:
         abort(ae.status)
     return render_template('editor_editgroups.html', editor=editor,
         editgroups=editgroups)
 
+@app.route('/editor/<ident>/annotations', methods=['GET'])
+def editor_annotations(ident):
+    try:
+        editor = api.get_editor(ident)
+        annotations = api.get_editor_annotations(ident, limit=50)
+    except ApiException as ae:
+        abort(ae.status)
+    return render_template('editor_annotations.html', editor=editor,
+        annotations=annotations)
+
 @app.route('/changelog', methods=['GET'])
 def changelog_view():
     try:
-        entries = api.get_changelog(limit=request.args.get('limit'))
+        #limit = int(request.args.get('limit', 10))
+        entries = api.get_changelog() # TODO: expand="editors"
     except ApiException as ae:
         abort(ae.status)
     return render_template('changelog.html', entries=entries)
@@ -451,9 +455,20 @@ def changelog_entry_view(index):
     try:
         entry = api.get_changelog_entry(int(index))
         entry.editgroup.editor = api.get_editor(entry.editgroup.editor_id)
+        entry.editgroup.annotations = \
+            api.get_editgroup_annotations(entry.editgroup_id, expand="editors")
     except ApiException as ae:
         abort(ae.status)
     return render_template('changelog_view.html', entry=entry, editgroup=entry.editgroup)
+
+@app.route('/reviewable', methods=['GET'])
+def reviewable_view():
+    try:
+        #limit = int(request.args.get('limit', 10))
+        entries = api.get_editgroups_reviewable(expand="editors")
+    except ApiException as ae:
+        abort(ae.status)
+    return render_template('editgroup_reviewable.html', entries=entries)
 
 ### Search ##################################################################
 
@@ -501,7 +516,7 @@ def stats_page():
         stats = get_elastic_entity_stats()
         stats.update(get_changelog_stats())
     except Exception as ae:
-        print(ae)
+        app.log.error(ae)
         abort(503)
     return render_template('stats.html', stats=stats)
 
@@ -514,7 +529,7 @@ def stats_json():
         stats = get_elastic_entity_stats()
         stats.update(get_changelog_stats())
     except Exception as ae:
-        print(ae)
+        app.log.error(ae)
         abort(503)
     return jsonify(stats)
 
@@ -524,7 +539,7 @@ def container_issnl_stats(issnl):
     try:
         stats = get_elastic_container_stats(issnl)
     except Exception as ae:
-        print(ae)
+        app.log.error(ae)
         abort(503)
     return jsonify(stats)
 
@@ -558,6 +573,11 @@ def release_citeproc(ident):
     else:
         return Response(cite, mimetype="text/plain")
 
+@app.route('/health.json', methods=['GET', 'OPTIONS'])
+@crossdomain(origin='*',headers=['access-control-allow-origin','Content-Type'])
+def health_json():
+    return jsonify({'ok': True})
+
 
 ### Auth ####################################################################
 
@@ -588,6 +608,7 @@ def token_login():
 @app.route('/auth/change_username', methods=['POST'])
 @login_required
 def change_username():
+    app.csrf.protect()
     # show the user a list of login options
     if not 'username' in request.form:
         abort(400)
@@ -627,6 +648,10 @@ def page_not_found(e):
 def page_not_authorized(e):
     return render_template('403.html'), 403
 
+@app.errorhandler(405)
+def page_method_not_allowed(e):
+    return render_template('405.html'), 405
+
 @app.errorhandler(400)
 def page_bad_request(e):
     return render_template('400.html'), 400
@@ -644,6 +669,10 @@ def page_server_error(e):
 @app.errorhandler(504)
 def page_server_down(e):
     return render_template('503.html'), 503
+
+@app.errorhandler(CSRFError)
+def page_csrf_error(e):
+    return render_template('csrf_error.html', reason=e.description), 400
 
 @app.route('/', methods=['GET'])
 def page_home():
@@ -672,8 +701,3 @@ def fatcat_photo():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'fatcat.jpg',
                                mimetype='image/jpeg')
-
-@app.route('/health', methods=['GET', 'OPTIONS'])
-@crossdomain(origin='*',headers=['access-control-allow-origin','Content-Type'])
-def health():
-    return jsonify({'ok': True})
