@@ -6,7 +6,7 @@ from flask import Flask, render_template, send_from_directory, request, \
 from flask_login import login_required
 from flask_wtf.csrf import CSRFError
 
-from fatcat_client import Editgroup
+from fatcat_client import Editgroup, EditgroupAnnotation
 from fatcat_client.rest import ApiException
 from fatcat_tools.transforms import *
 from fatcat_web import app, api, auth_api, priv_api
@@ -313,19 +313,51 @@ def editgroup_view(ident):
     try:
         eg = api.get_editgroup(str(ident))
         eg.editor = api.get_editor(eg.editor_id)
+        eg.annotations = api.get_editgroup_annotations(eg.editgroup_id, expand="editors")
     except ApiException as ae:
         abort(ae.status)
     # TODO: idomatic check for login?
-    auth_to_submit = False
-    auth_to_accept = False
+    auth_to = dict(
+        submit=False,
+        accept=False,
+        annotate=False,
+    )
     if session.get('editor'):
         user = load_user(session['editor']['editor_id'])
+        auth_to['annotate'] = True
         if user.is_admin or user.editor_id == eg.editor_id:
-            auth_to_submit = True
+            auth_to['submit'] = True
         if user.is_admin:
-            auth_to_accept = True
+            auth_to['accept'] = True
     return render_template('editgroup_view.html', editgroup=eg,
-        auth_to_submit=auth_to_submit, auth_to_accept=auth_to_accept)
+        auth_to=auth_to)
+
+@app.route('/editgroup/<ident>/annotation', methods=['POST'])
+@login_required
+def editgroup_create_annotation(ident):
+    app.csrf.protect()
+    comment_markdown = request.form.get('comment_markdown')
+    if not comment_markdown:
+        app.logger.info("empty comment field")
+        abort(400)
+    # on behalf of user...
+    user_api = auth_api(session['api_token'])
+    try:
+        eg = user_api.get_editgroup(str(ident))
+        if eg.changelog_index:
+            flash("Editgroup already accepted")
+            abort(400)
+        ega = EditgroupAnnotation(
+            comment_markdown=comment_markdown,
+            extra=None,
+        )
+        user_api.create_editgroup_annotation(eg.editgroup_id, ega)
+    except ApiException as ae:
+        app.logger.info(ae)
+        abort(ae.status)
+    return redirect('/editgroup/{}'.format(ident))
+
+# XXX: editor's annotations
 
 @app.route('/editgroup/<ident>/accept', methods=['POST'])
 @login_required
