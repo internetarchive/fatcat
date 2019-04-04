@@ -21,6 +21,15 @@ def app(full_app):
     return full_app.test_client()
 
 @pytest.fixture
+def app_admin(app):
+    ADMIN_DEV_TOKEN = "AgEPZGV2LmZhdGNhdC53aWtpAhYyMDE5MDEwMS1kZXYtZHVtbXkta2V5AAImZWRpdG9yX2lkID0gYWFhYWFhYWFhYWFhYmt2a2FhYWFhYWFhYWkAAht0aW1lID4gMjAxOS0wNC0wNFQyMzozMjo0NloAAAYgrN3jjy0mgEqIydTFfsOLYSS55dz6Fh2d1CGMNQFLwcQ="
+    rv = app.post('/auth/token_login',
+        data=dict(token=ADMIN_DEV_TOKEN),
+        follow_redirects=True)
+    assert rv.status_code == 200
+    return app
+
+@pytest.fixture
 def api():
     load_dotenv(dotenv_path="./example.env")
     conf = fatcat_client.Configuration()

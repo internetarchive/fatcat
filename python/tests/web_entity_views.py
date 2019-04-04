@@ -1,6 +1,5 @@
 
 import json
-import tempfile
 import pytest
 from fatcat_client.rest import ApiException
 from fixtures import *
@@ -45,8 +44,11 @@ def test_entity_basics(app):
         rv = app.get('/{}/ccccccccccccccccccccccccca'.format(entity_type))
         assert rv.status_code == 404
 
+        # TODO: redirects and deleted entities
 
-def test_container(app):
+
+def test_container(app_admin):
+    app = app_admin
 
     rv = app.get('/container/aaaaaaaaaaaaaeiraaaaaaaaai')
     assert rv.status_code == 200
@@ -55,7 +57,7 @@ def test_container(app):
     assert rv.status_code == 200
 
     rv = app.get('/container/create')
-    # XXX: login assert rv.status_code == 200
+    assert rv.status_code == 200
 
 
 def test_lookups(app):
@@ -103,35 +105,42 @@ def test_lookups(app):
 
 
 def test_web_creator(app):
+    # not logged in
 
     rv = app.get('/creator/aaaaaaaaaaaaaircaaaaaaaaai')
     assert rv.status_code == 200
-
     rv = app.get('/creator/aaaaaaaaaaaaaircaaaaaaaaai/edit')
-    assert rv.status_code == 200
+    assert rv.status_code == 302
 
 
 def test_web_file(app):
+    # not logged in
 
     rv = app.get('/file/aaaaaaaaaaaaamztaaaaaaaaai')
     assert rv.status_code == 200
-
     rv = app.get('/file/aaaaaaaaaaaaamztaaaaaaaaai/edit')
-    assert rv.status_code == 200
-
+    assert rv.status_code == 302
     rv = app.get('/file/aaaaaaaaaaaaamztaaaaaaaaai/history')
     assert rv.status_code == 200
 
 def test_web_release(app):
+    # not logged in
 
     rv = app.get('/release/aaaaaaaaaaaaarceaaaaaaaaai')
     assert rv.status_code == 200
 
     rv = app.get('/release/aaaaaaaaaaaaarceaaaaaaaaai/edit')
-    assert rv.status_code == 200
-
+    assert rv.status_code == 302
     rv = app.get('/release/create')
-    # XXX: login assert rv.status_code == 200
+    assert rv.status_code == 302
+
+
+def test_web_release_login(app_admin):
+
+    rv = app_admin.get('/release/aaaaaaaaaaaaarceaaaaaaaaai/edit')
+    assert rv.status_code == 200
+    rv = app_admin.get('/release/create')
+    assert rv.status_code == 200
 
 
 def test_web_search(app):
