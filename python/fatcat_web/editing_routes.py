@@ -28,7 +28,7 @@ def form_editgroup_get_or_create(api, edit_form):
             if ae.status == 404:
                 edit_form.editgroup_id.errors.append("Editgroup does not exist")
                 return None
-            app.log.warn(ae)
+            app.log.warning(ae)
             abort(ae.status)
         # TODO: check here that editgroup hasn't been merged already
     else:
@@ -37,7 +37,7 @@ def form_editgroup_get_or_create(api, edit_form):
             eg = api.create_editgroup(
                 Editgroup(description=edit_form.editgroup_description.data or None))
         except ApiException as ae:
-            app.log.warn(ae)
+            app.log.warning(ae)
             abort(ae.status)
         # set this session editgroup_id
         session['active_editgroup_id'] = eg.editgroup_id
@@ -62,7 +62,7 @@ def container_create():
                 try:
                     edit = user_api.create_container(entity, editgroup_id=eg.editgroup_id)
                 except ApiException as ae:
-                    app.log.warn(ae)
+                    app.log.warning(ae)
                     abort(ae.status)
                 # redirect to new entity
                 return redirect('/container/{}'.format(edit.ident))
@@ -94,7 +94,7 @@ def container_edit(ident):
                     edit = user_api.update_container(entity.ident, entity,
                         editgroup_id=eg.editgroup_id)
                 except ApiException as ae:
-                    app.log.warn(ae)
+                    app.log.warning(ae)
                     abort(ae.status)
                 # redirect to entity revision
                 # TODO: container_rev_view
@@ -131,7 +131,7 @@ def file_create():
                 try:
                     edit = user_api.create_file(entity, editgroup_id=eg.editgroup_id)
                 except ApiException as ae:
-                    app.log.warn(ae)
+                    app.log.warning(ae)
                     abort(ae.status)
                 # redirect to new entity
                 return redirect('/file/{}'.format(edit.ident))
@@ -166,7 +166,7 @@ def file_edit(ident):
                     edit = user_api.update_file(entity.ident, entity,
                         editgroup_id=eg.editgroup_id)
                 except ApiException as ae:
-                    app.log.warn(ae)
+                    app.log.warning(ae)
                     abort(ae.status)
                 # redirect to entity revision
                 # TODO: file_rev_view
@@ -210,7 +210,7 @@ def release_create():
                 try:
                     edit = user_api.create_release(entity, editgroup_id=eg.editgroup_id)
                 except ApiException as ae:
-                    app.log.warn(ae)
+                    app.log.warning(ae)
                     abort(ae.status)
                 # redirect to new release
                 return redirect('/release/{}'.format(edit.ident))
@@ -243,7 +243,7 @@ def release_edit(ident):
                     edit = user_api.update_release(entity.ident, entity,
                         editgroup_id=eg.editgroup_id)
                 except ApiException as ae:
-                    app.log.warn(ae)
+                    app.log.warning(ae)
                     abort(ae.status)
                 # redirect to entity revision
                 # TODO: release_rev_view
