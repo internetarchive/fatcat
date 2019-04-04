@@ -73,8 +73,8 @@ def container_create():
         form.editgroup_id.data = editgroup_id
     return render_template('container_create.html', form=form)
 
-@login_required
 @app.route('/container/<ident>/edit', methods=['GET', 'POST'])
+@login_required
 def container_edit(ident):
     # TODO: prev_rev interlock
     try:
@@ -109,6 +109,7 @@ def container_edit(ident):
     return render_template('container_edit.html', form=form, entity=entity)
 
 @app.route('/creator/<ident>/edit', methods=['GET'])
+@login_required
 def creator_edit(ident):
     try:
         entity = api.get_creator(ident)
@@ -145,8 +146,8 @@ def file_create():
     return render_template('file_create.html',
         form=form)
 
-@login_required
 @app.route('/file/<ident>/edit', methods=['GET', 'POST'])
+@login_required
 def file_edit(ident):
     # TODO: prev_rev interlock
     try:
@@ -222,8 +223,8 @@ def release_create():
         form.editgroup_id.data = editgroup_id
     return render_template('release_create.html', form=form)
 
-@login_required
 @app.route('/release/<ident>/edit', methods=['GET', 'POST'])
+@login_required
 def release_edit(ident):
     # TODO: prev_rev interlock
     try:
