@@ -19,6 +19,8 @@ See also:
 - expanded example entities in SQL schema
 - updated rust (cargo) dependencies; depend on rust 1.32+
 - many tweaks to webface and guide
+- basic release, container, file webface editing
+- basic editgroup annotation and control (submit/accept) in webface
 
 ## [0.2.0] - 2019-02-05
 
