@@ -1,9 +1,11 @@
 .env
+*.env
 codegen-out/
 build/
 dist/
 *.egg-info
 *.json.gz
+!example.env
 !.coveragerc
 !.pylintrc
 !.gitignore
