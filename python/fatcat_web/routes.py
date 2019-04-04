@@ -357,8 +357,6 @@ def editgroup_create_annotation(ident):
         abort(ae.status)
     return redirect('/editgroup/{}'.format(ident))
 
-# XXX: editor's annotations
-
 @app.route('/editgroup/<ident>/accept', methods=['POST'])
 @login_required
 def editgroup_accept(ident):
@@ -432,6 +430,16 @@ def editor_editgroups(ident):
         abort(ae.status)
     return render_template('editor_editgroups.html', editor=editor,
         editgroups=editgroups)
+
+@app.route('/editor/<ident>/annotations', methods=['GET'])
+def editor_annotations(ident):
+    try:
+        editor = api.get_editor(ident)
+        annotations = api.get_editor_annotations(ident, limit=50)
+    except ApiException as ae:
+        abort(ae.status)
+    return render_template('editor_annotations.html', editor=editor,
+        annotations=annotations)
 
 @app.route('/changelog', methods=['GET'])
 def changelog_view():
