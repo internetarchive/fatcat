@@ -570,6 +570,8 @@ def release_citeproc(ident):
     cite = citeproc_csl(csl, style, is_html)
     if is_html:
         return Response(cite)
+    elif style == "csl-json":
+        return jsonify(json.loads(cite))
     else:
         return Response(cite, mimetype="text/plain")
 
