@@ -629,9 +629,13 @@ def change_username():
         abort(400)
     # on behalf of user...
     user_api = auth_api(session['api_token'])
-    editor = user_api.get_editor(session['editor']['editor_id'])
-    editor.username = request.form['username']
-    editor = user_api.update_editor(editor.editor_id, editor)
+    try:
+        editor = user_api.get_editor(session['editor']['editor_id'])
+        editor.username = request.form['username']
+        editor = user_api.update_editor(editor.editor_id, editor)
+    except ApiException as ae:
+        app.log.info(ae)
+        abort(ae.status)
     # update our session
     session['editor'] = editor.to_dict()
     load_user(editor.editor_id)
