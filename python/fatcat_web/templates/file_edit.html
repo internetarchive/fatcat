@@ -32,7 +32,6 @@
     <div class="list-group-item ui grid" style="padding-right: 1em;">
       {{ cform.hidden_tag() }}
       <div class="one wide column middle aligned center aligned" style="padding-bottom: 0px; padding-right: 0px; padding-left: 0px;">
-        <i class="arrows alternate vertical icon"></i>
       </div>
       <div class="three wide column" style="padding-bottom: 0px; padding-left: 0px;">
         <div class="field {% if cform.rel.errors %}error{% endif %}">
@@ -42,6 +41,7 @@
       <div class="eleven wide column" style="padding-bottom: 0px;">
         <div class="field {% if cform.url.errors %}error{% endif %}">
           {{ cform.url() }}
+          {{ edit_macros.form_field_errors(cform.url) }}
         </div>
       </div>
       <div class="one wide column right aligned" style="padding-bottom: 0px; padding-left: 0rem;">
@@ -68,6 +68,7 @@
       <div class="fourteen wide column" style="padding-bottom: 0px;">
         <div class="field {% if rfield.errors %}error{% endif %}">
           {{ rfield() }}
+          {{ edit_macros.form_field_errors(rfield) }}
         </div>
       </div>
       <div class="one wide column right aligned" style="padding-bottom: 0px; padding-left: 0rem;">

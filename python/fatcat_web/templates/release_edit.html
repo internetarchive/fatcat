@@ -58,6 +58,7 @@
       <div class="eleven wide column" style="padding-bottom: 0px;">
         <div class="field {% if cform.raw_name.errors %}error{% endif %}">
           {{ cform.raw_name() }}
+          {{ edit_macros.form_field_errors(cform.raw_name) }}
         </div>
       </div>
       <div class="one wide column right aligned" style="padding-bottom: 0px; padding-left: 0rem;">
