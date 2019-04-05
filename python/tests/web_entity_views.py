@@ -240,7 +240,7 @@ def test_web_release_login(full_app, app_admin):
 
     # creation (via form)
     with full_app.test_request_context():
-        form= ReleaseEntityForm()
+        form = ReleaseEntityForm()
         form.title.data = "My Research: Missing Some Stuff"
         rv = app_admin.post('/release/create', data=form.data, follow_redirects=True)
         assert rv.status_code == 400
@@ -255,9 +255,21 @@ def test_web_release_login(full_app, app_admin):
         rv = app_admin.post('/release/create', data=form.data, follow_redirects=True)
         assert rv.status_code == 200
 
+    with full_app.test_request_context():
+        form = ReleaseEntityForm()
+        # these fields are required
+        form.title.data = "Creating Releases: A Review"
+        form.release_type.data = "article-journal"
+        form.release_status.data = "draft"
+        # already merged editgroup
+        form.editgroup_id.data = "aaaaaaaaaaaabo53aaaaaaaaae"
+        rv = app_admin.post('/release/create', data=form.data, follow_redirects=True)
+        assert rv.status_code == 400
+        assert b"already merged" in rv.data
+
     # editing
     with full_app.test_request_context():
-        form= ReleaseEntityForm()
+        form = ReleaseEntityForm()
         form.title.data = "My Research: Missing Some Stuff"
         form.release_type.data = "bogus-release-type"
         rv = app_admin.post('/release/create', data=form.data, follow_redirects=True)
