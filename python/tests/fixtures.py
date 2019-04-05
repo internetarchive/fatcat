@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 import fatcat_web
 import fatcat_client
 
+from fatcat_tools import authenticated_api
 
 @pytest.fixture
 def full_app():
@@ -33,11 +34,7 @@ def app_admin(app):
 @pytest.fixture
 def api():
     load_dotenv(dotenv_path="./example.env")
-    conf = fatcat_client.Configuration()
-    conf.host = "http://localhost:9411/v0"
-    conf.api_key["Authorization"] = os.getenv("FATCAT_API_AUTH_TOKEN")
-    conf.api_key_prefix["Authorization"] = "Bearer"
-    api_client = fatcat_client.DefaultApi(fatcat_client.ApiClient(conf))
+    api_client = authenticated_api("http://localhost:9411/v0")
     api_client.editor_id = "aaaaaaaaaaaabkvkaaaaaaaaae"
     return api_client
 
