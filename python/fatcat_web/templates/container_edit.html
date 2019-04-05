@@ -22,6 +22,33 @@
   {{ edit_macros.form_field_inline(form.wikidata_qid) }}
 
   <br>
+  <h3 class="ui dividing header">Homepage URLs</h3>
+  <i>Landing page or mirror locations of container as a whole.</i>
+  <br><br>
+  <div class="list-group" id="url_list" name="url_list">
+  {% for cfield in form.urls %}
+    <div class="list-group-item ui grid" style="padding-right: 1em;">
+      <div class="one wide column middle aligned center aligned sortable-handle" style="padding-bottom: 0px; padding-right: 0px; padding-left: 0px;">
+        <i class="arrows alternate vertical icon"></i>
+      </div>
+      <div class="thirteen wide column" style="padding-bottom: 0px;">
+        <div class="field {% if cfield.errors %}error{% endif %}">
+          {{ cfield() }}
+          {{ edit_macros.form_field_errors(cfield) }}
+        </div>
+      </div>
+      <div class="one wide column right aligned" style="padding-bottom: 0px; padding-left: 0rem;">
+        <button type="button" class="ui icon red button delete-url-button"><i class="trash icon"></i></button>
+      </div>
+    </div>
+  {% endfor %}
+  </div>
+  <br>
+  <button type="button" id="add-url-button" class="ui right floated icon green button" style="margin-right: 0.3rem;">
+    <i class="plus icon"></i>
+  </button>
+
+  <br>
   <h3 class="ui dividing header">Submit</h3>
   {{ edit_macros.form_field_basic(form.edit_description) }}
   This description will be attached to the individual edit, not to the
@@ -38,11 +65,76 @@
 {% endblock %}
 
 {% block postscript %}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 <script>
 <!-- Form code -->
 $(document).ready(function() {
 
   $('.ui.accordion').accordion();
+
+  var fixup_url_numbering = function(group_item) {
+    items = Array.from(group_item.querySelectorAll(".list-group-item"))
+    for (var i = 0; i < items.length; i++) {
+      var item_el = items[i];
+      input_el = item_el.querySelectorAll("input")[0];
+      //console.log(input_el.id);
+      input_el.id = "urls-" + i;
+      input_el.name = input_el.id;
+      //console.log(input_el.id);
+    };
+    console.log("re-named url rows up to i=" + i);
+  };
+
+  var url_list = document.getElementById('url_list');
+  var url_sortable = Sortable.create(url_list, {
+    handle: '.sortable-handle',
+    animation: 150,
+    onSort: function(evt) {
+      fixup_url_numbering(url_list);
+    },
+  });
+  fixup_url_numbering(url_list);
+
+  var url_delete_handler = function(ev) {
+    row = ev.target.parentNode.parentNode;
+    // I don't understand why this hack is needed; maybe because of the sortable stuff?
+    if(!row.classList.contains("list-group-item")) {
+        row = row.parentNode;
+    }
+    // console.log(row);
+    console.assert(row.classList.contains("list-group-item"));
+    row.parentNode.removeChild(row);
+    fixup_url_numbering(url_list);
+  };
+
+  var attach_url_delete_handler = function(topthing) {
+    Array.from(topthing.querySelectorAll(".delete-url-button")).forEach((el) => {
+      el.addEventListener("click", url_delete_handler);
+    });
+  };
+  attach_url_delete_handler(document);
+
+  // XXX: really need some way to not duplicate this code from above...
+  var url_template = `
+  <div class="list-group-item ui grid" style="padding-right: 1em;">
+      <div class="one wide column middle aligned center aligned sortable-handle" style="padding-bottom: 0px; padding-right: 0px; padding-left: 0px;">
+        <i class="arrows alternate vertical icon"></i>
+      </div>
+      <div class="fourteen wide column" style="padding-bottom: 0px;">
+        <input id="urls-X" name="urls-X" type="text" value="">
+      </div>
+      <div class="one wide column right aligned" style="padding-bottom: 0px; padding-left: 0rem;">
+        <button type="button" class="ui icon red button delete-url-button"><i class="trash icon"></i></button>
+      </div>
+    </div>
+  `;
+
+  var add_url_button = document.getElementById("add-url-button");
+  add_url_button.addEventListener("click", function(){
+    url_list.insertAdjacentHTML('beforeend', url_template);
+    attach_url_delete_handler(url_list.lastElementChild);
+    fixup_url_numbering(url_list);
+  });
 
 });
 </script>

@@ -187,17 +187,24 @@ class ContainerEntityForm(EntityEditForm):
     publisher = StringField("Publisher")
     issnl = StringField("ISSN-L")
     wikidata_qid = StringField('Wikidata QID')
+    urls = FieldList(
+        StringField("Container URLs",
+            [validators.DataRequired(),
+             validators.URL(require_tld=False)]))
 
     @staticmethod
-    def from_entity(re):
+    def from_entity(ce):
         """
         Initializes form with values from an existing container entity.
         """
-        ref = ContainerEntityForm()
+        cef = ContainerEntityForm()
         for simple_attr in CONTAINER_SIMPLE_ATTRS:
-            a = getattr(ref, simple_attr)
-            a.data = getattr(re, simple_attr)
-        return ref
+            a = getattr(cef, simple_attr)
+            a.data = getattr(ce, simple_attr)
+        if ce.extra and ce.extra.get('urls'):
+            for url in ce.extra['urls']:
+                cef.urls.append_entry(url)
+        return cef
 
     def to_entity(self):
         assert(self.name.data)
@@ -218,6 +225,13 @@ class ContainerEntityForm(EntityEditForm):
             if a == '':
                 a = None
             setattr(ce, simple_attr, a)
+        extra_urls = []
+        for url in self.urls:
+            extra_urls.append(url.data)
+        if extra_urls:
+            if not ce.extra:
+                ce.extra = dict()
+            ce.extra['urls'] = extra_urls
         if self.edit_description.data:
             ce.edit_extra = dict(description=self.edit_description.data)
 

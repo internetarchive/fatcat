@@ -35,6 +35,14 @@
       <tr><td class="three wide right aligned"><code>{{ key }}.{{ inner_key }}</code></td>
           <td class="seven wide"><code>{{ inner_value }}</code>
     {% endfor %}
+  {% elif key in ("urls") and value and value is iterable and value is not string %}
+    <tr><td class="three wide right aligned"><code>{{ key }}</code></td>
+        <td class="seven wide">
+          <code>
+          {% for u in value %}
+            <a href="{{ u }}">{{ u }}</a><br>
+          {% endfor %}
+          </code>
   {% else %}
     <tr><td class="three wide right aligned"><code>{{ key }}</code></td>
         <td class="seven wide"><code>{{ value }}</code>
