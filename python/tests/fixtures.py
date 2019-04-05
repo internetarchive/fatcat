@@ -14,6 +14,7 @@ def full_app():
     load_dotenv(dotenv_path="./example.env")
     fatcat_web.app.testing = True
     fatcat_web.app.debug = False
+    fatcat_web.app.config['WTF_CSRF_ENABLED'] = False
     return fatcat_web.app
 
 @pytest.fixture
