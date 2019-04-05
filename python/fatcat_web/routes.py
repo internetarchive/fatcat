@@ -343,7 +343,8 @@ def editgroup_view(ident):
 @app.route('/editgroup/<ident>/annotation', methods=['POST'])
 @login_required
 def editgroup_create_annotation(ident):
-    app.csrf.protect()
+    if not app.testing:
+        app.csrf.protect()
     comment_markdown = request.form.get('comment_markdown')
     if not comment_markdown:
         app.log.info("empty comment field")
@@ -368,7 +369,8 @@ def editgroup_create_annotation(ident):
 @app.route('/editgroup/<ident>/accept', methods=['POST'])
 @login_required
 def editgroup_accept(ident):
-    app.csrf.protect()
+    if not app.testing:
+        app.csrf.protect()
     # on behalf of user...
     user_api = auth_api(session['api_token'])
     try:
@@ -385,7 +387,8 @@ def editgroup_accept(ident):
 @app.route('/editgroup/<ident>/unsubmit', methods=['POST'])
 @login_required
 def editgroup_unsubmit(ident):
-    app.csrf.protect()
+    if not app.testing:
+        app.csrf.protect()
     # on behalf of user...
     user_api = auth_api(session['api_token'])
     try:
@@ -402,7 +405,8 @@ def editgroup_unsubmit(ident):
 @app.route('/editgroup/<ident>/submit', methods=['POST'])
 @login_required
 def editgroup_submit(ident):
-    app.csrf.protect()
+    if not app.testing:
+        app.csrf.protect()
     # on behalf of user...
     print("submitting...")
     user_api = auth_api(session['api_token'])
@@ -618,7 +622,8 @@ def token_login():
 @app.route('/auth/change_username', methods=['POST'])
 @login_required
 def change_username():
-    app.csrf.protect()
+    if not app.testing:
+        app.csrf.protect()
     # show the user a list of login options
     if not 'username' in request.form:
         abort(400)

@@ -15,6 +15,8 @@ def test_release_bibtex(app):
     rv = app.get('/release/aaaaaaaaaaaaarceaaaaaaaaam.bib')
     assert rv.status_code == 200
     assert b'@article{' in rv.data
+    rv = app.get('/release/ccccccccccccccccccccccccca.bib')
+    assert rv.status_code == 404
     rv = app.get('/release/aaaaaaaaaaaaarceaaaaaaaaam/citeproc?style=csl-json')
     assert rv.status_code == 200
     # could also rv.get_json() here

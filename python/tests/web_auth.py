@@ -26,6 +26,10 @@ def test_ia_xauth(full_app):
 
     # successful login
     with full_app.test_client() as app:
+
+        rv = app.get('/auth/token_login')
+        assert rv.status_code == 200
+
         responses.add(responses.POST, full_app.config['IA_XAUTH_URI'] + "?op=authenticate",
             status=200, json={'success': True})
         responses.add(responses.POST, full_app.config['IA_XAUTH_URI'] + "?op=info",

@@ -11,5 +11,6 @@ def test_static_routes(app):
         rv = app.get(route)
         assert rv.status_code == 200
 
+    assert app.get("/search").status_code == 302
     assert app.get("/static/bogus/route").status_code == 404
 
