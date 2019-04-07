@@ -44,8 +44,8 @@ def main():
         default="localhost:9092",
         help="list of Kafka brokers (host/port) to use")
     parser.add_argument('--env',
-        default="qa",
-        help="Kafka topic namespace to use (eg, prod, qa)")
+        default="dev",
+        help="Kafka topic namespace to use (eg, prod, qa, dev)")
     subparsers = parser.add_subparsers()
 
     sub_changelog = subparsers.add_parser('changelog')
