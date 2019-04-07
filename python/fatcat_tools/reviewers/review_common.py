@@ -89,7 +89,7 @@ class ReviewBot:
         eg = self.api.get_editgroup(editgroup_id)
         annotation = self.review_editgroup(eg)
         if annotate:
-            api.create_editgroup_annotation(eg.editgroup_id, annotation)
+            self.api.create_editgroup_annotation(eg.editgroup_id, annotation)
         return annotation
 
     def run(self, since=None):
@@ -198,9 +198,9 @@ class ReviewBot:
                 for check in self.checks:
                     if entity_type in check.scope:
                         # hack-y python munging
-                        get_method = getattr(api, "get_{}_rev".format(entity_type))
+                        get_method = getattr(self.api, "get_{}_rev".format(entity_type))
                         check_method = getattr(check, "check_{}".format(entity_type))
-                        entity = get_method(api, edit.rev)
+                        entity = get_method(self.api, edit.rev)
                         result = check_method(check, edit, entity)
                         result.rev = edit.rev
                         result.ident = edit.ident
