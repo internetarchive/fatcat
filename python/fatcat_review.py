@@ -6,7 +6,7 @@ import datetime
 import raven
 
 from fatcat_tools import authenticated_api
-from fatcat_tools.reviewers import DummyReviewBot, ExtIdReviewBot, ReviewBot
+from fatcat_tools.reviewers import DummyReviewBot, ReviewBot
 
 # Yep, a global. Gets DSN from `SENTRY_DSN` environment variable
 sentry_client = raven.Client()
