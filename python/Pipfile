@@ -32,6 +32,7 @@ loginpass = "*"
 requests = ">=2"
 raven = { extras = ['flask'], version = "*" }
 pykafka = ">=2"
+confluent-kafka = "*"
 python-dateutil = "*"
 sickle = "*"
 python-snappy = "*"
