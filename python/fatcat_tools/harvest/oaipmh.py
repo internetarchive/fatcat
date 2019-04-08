@@ -40,6 +40,7 @@ class HarvestOaiPmhWorker:
         self.kafka_config = {
             'bootstrap.servers': kafka_hosts,
             'delivery.report.only.error': True,
+            'message.max.bytes': 20000000, # ~20 MBytes; broker is ~50 MBytes
             'default.topic.config':
                 {'request.required.acks': 'all'},
         }
