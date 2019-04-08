@@ -12,7 +12,8 @@ def run_crossref(args):
         edit_batch_size=args.batch_size,
         bezerk_mode=args.bezerk_mode)
     if args.kafka_mode:
-        KafkaJsonPusher(fci, args.kafka_hosts, args.kafka_env, "api-crossref", "fatcat-import").run()
+        KafkaJsonPusher(fci, args.kafka_hosts, args.kafka_env, "api-crossref",
+            "fatcat-import", edit_batch_size=args.batch_size).run()
     else:
         JsonLinePusher(fci, args.json_file).run()
 
@@ -93,7 +94,7 @@ def main():
         default="localhost:9092",
         help="list of Kafka brokers (host/port) to use")
     parser.add_argument('--kafka-env',
-        default="qa",
+        default="dev",
         help="Kafka topic namespace to use (eg, prod, qa)")
     parser.add_argument('--batch-size',
         help="size of batch to send",
