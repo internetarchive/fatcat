@@ -57,8 +57,9 @@ class HarvestCrossrefWorker:
         self.kafka_config = {
             'bootstrap.servers': kafka_hosts,
             'delivery.report.only.error': True,
-            'default.topic.config':
-                {'request.required.acks': 'all'},
+            'default.topic.config': {
+                'request.required.acks': 'all',
+            },
         }
 
         self.state = HarvestState(start_date, end_date)
@@ -86,14 +87,14 @@ class HarvestCrossrefWorker:
     def extract_key(self, obj):
         return obj['DOI'].encode('utf-8')
 
-    def kafka_produce_delivery_callback(err, msg):
-        if err is not None:
-            print("Kafka producer delivery error: {}".format(err))
-            print("Bailing out...")
-            # TODO: should it be sys.exit(-1)?
-            raise KafkaException(err)
-
     def fetch_date(self, date):
+
+        def fail_fast(err, msg):
+            if err is not None:
+                print("Kafka producer delivery error: {}".format(err))
+                print("Bailing out...")
+                # TODO: should it be sys.exit(-1)?
+                raise KafkaException(err)
 
         producer = Producer(self.kafka_config)
 
@@ -125,7 +126,7 @@ class HarvestCrossrefWorker:
                     self.produce_topic,
                     json.dumps(work).encode('utf-8'),
                     key=self.extract_key(work),
-                    on_delivery=self.kafka_produce_delivery_callback)
+                    on_delivery=fail_fast)
             producer.poll(0)
             if len(items) < self.api_batch_size:
                 break

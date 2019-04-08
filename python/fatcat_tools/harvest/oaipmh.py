@@ -52,14 +52,14 @@ class HarvestOaiPmhWorker:
         self.state = HarvestState(start_date, end_date)
         self.state.initialize_from_kafka(self.state_topic, self.kafka_config)
 
-    def kafka_produce_delivery_callback(err, msg):
-        if err is not None:
-            print("Kafka producer delivery error: {}".format(err))
-            print("Bailing out...")
-            # TODO: should it be sys.exit(-1)?
-            raise KafkaException(err)
-
     def fetch_date(self, date):
+
+        def fail_fast(err, msg):
+            if err is not None:
+                print("Kafka producer delivery error: {}".format(err))
+                print("Bailing out...")
+                # TODO: should it be sys.exit(-1)?
+                raise KafkaException(err)
 
         producer = Producer(self.kafka_config)
 
@@ -86,7 +86,7 @@ class HarvestOaiPmhWorker:
                 self.produce_topic,
                 item.raw.encode('utf-8'),
                 key=item.header.identifier.encode('utf-8'),
-                on_delivery=self.kafka_produce_delivery_callback)
+                on_delivery=fail_fast)
             producer.poll(0)
         producer.flush()
 

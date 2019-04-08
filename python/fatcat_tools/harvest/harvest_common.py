@@ -150,7 +150,7 @@ class HarvestState:
             'group.id': kafka_topic + "-init",
         })
         consumer = Consumer(conf)
-        consumer.assign([TopicPartition(kafka_topic, 0, OFFSET_BEGINNING)])
+        consumer.assign([TopicPartition(kafka_topic, 0, 0)])
         c = 0
         while True:
             msg = consumer.poll(timeout=1.0)
@@ -158,7 +158,7 @@ class HarvestState:
                 break
             if msg.error():
                 raise KafkaException(msg.error())
-            sys.stdout.write('.') # XXX:
+            #sys.stdout.write('.')
             self.update(msg.value().decode('utf-8'))
             c += 1
         consumer.close()
