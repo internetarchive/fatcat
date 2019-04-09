@@ -266,7 +266,7 @@
       <br><small><code><a href="/webcapture/{{ webcapture.ident }}">webcapture:{{ webcapture.ident }}</a></code></small>
       <td class="single line">
         {% for url in webcapture.archive_urls[:5] %}
-          <a href="{{ url.url }}{% if url.rel == "wayback" %}*/{{ webcapture.original_url }}{% endif %}">{{ url.url.split('/')[2] }}</a> ({{ url.rel }})<br>
+          <a href="{{ url.url }}{% if url.rel == "wayback" %}{{ webcapture.wayback_suffix }}{% endif %}">{{ url.url.split('/')[2] }}</a> ({{ url.rel }})<br>
         {% endfor %}
         {% if webcapture.urls|length > 5 %}
           + {{ file.urls|length - 5 }} more URLs
@@ -317,7 +317,7 @@
 {% if entity.files != [] and entity.files[0].urls != [] %}
 <a href="{{ entity.files[0].urls[0].url }}" class="ui top attached fluid huge green button"><i class="file pdf outline icon"></i>Download Full Text</a>
 {% elif entity.webcaptures != [] and entity.webcaptures[0].archive_urls != [] and entity.webcaptures[0].archive_urls[0].rel == "wayback" %}
-<a href="{{ entity.webcaptures[0].archive_urls[0].url }}*/{{ entity.webcaptures[0].original_url }}" class="ui top attached fluid huge green button"><i class="file archive outline icon"></i>View Web Archive</a>
+<a href="{{ entity.webcaptures[0].archive_urls[0].url }}{{ entity.webcaptures[0].wayback_suffix }}" class="ui top attached fluid huge green button"><i class="file archive outline icon"></i>View Web Archive</a>
 {% else %}
 <span class="ui top attached fluid huge grey button"><i class="file cross icon"></i>No Full Text Available</span>
 {% endif %}

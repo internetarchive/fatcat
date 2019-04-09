@@ -74,16 +74,22 @@
 {%- endmacro %}
 
 
-{% macro url_list(urls) -%}
+{% macro url_list(urls, wayback_suffix="") -%}
 <table class="ui very basic compact single line fixed table">
 <tbody>
   {% for url in urls %}
+    {% if url.rel == "wayback" %}
+      {% set suffix = wayback_suffix %}
+    {% else %}
+      {% set suffix = "" %}
+    {% endif %}
+    {% set entity = release %}
     <tr><td class="two wide right aligned">{{ url.rel }}
-        <td class="eight wide"><small><code><a href="{{ url.url }}">
+        <td class="eight wide"><small><code><a href="{{ url.url }}{{ suffix }}">
         {% if url.url.count('/') >= 3 and url.rel != "dweb" %}
-          {{ '/'.join(url.url.split('/')[0:2]) }}/<b>{{ ''.join(url.url.split('/')[2]) }}</b>/{{ '/'.join(url.url.split('/')[3:]) }}
+          {{ '/'.join(url.url.split('/')[0:2]) }}/<b>{{ ''.join(url.url.split('/')[2]) }}</b>/{{ '/'.join(url.url.split('/')[3:]) }}{{ suffix }}
         {% else %}
-          {{ url.url }}
+          {{ url.url }}{{ suffix }}
         {% endif %}
         </a></code></small>
   {% endfor %}

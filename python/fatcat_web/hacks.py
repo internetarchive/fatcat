@@ -13,3 +13,15 @@ def test_strip_extlink_xml():
     assert strip_extlink_xml("""LOCKSS (2014) Available: <ext-link xmlns:xlink="http://www.w3.org/1999/xlink" ext-link-type="uri" xlink:href="http://lockss.org/" xlink:type="simple">http://lockss.org/</ext-link>. Accessed: 2014 November 1.""") == \
     """LOCKSS (2014) Available: http://lockss.org/. Accessed: 2014 November 1."""
 
+def wayback_suffix(entity):
+    """
+    Takes a webcapture entity and returns a suffix to be appended to wayback URLs
+    """
+    ret = ""
+    if entity.original_url:
+        if entity.timestamp:
+            ret = entity.timestamp.strftime("%Y%m%d%H%M%S/")
+        else:
+            ret = "*/"
+        ret += entity.original_url
+    return ret

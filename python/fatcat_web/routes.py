@@ -13,7 +13,7 @@ from fatcat_web import app, api, auth_api, priv_api
 from fatcat_web.auth import handle_token_login, handle_logout, load_user, handle_ia_xauth
 from fatcat_web.cors import crossdomain
 from fatcat_web.search import *
-from fatcat_web.hacks import strip_extlink_xml
+from fatcat_web.hacks import strip_extlink_xml, wayback_suffix
 
 
 ### Views ###################################################################
@@ -232,6 +232,8 @@ def webcapture_view(ident):
                 entity.releases.append(api.get_release(r))
         except ApiException as ae:
             abort(ae.status)
+    entity.wayback_suffix = wayback_suffix(entity)
+    print("SUFFIX: {}".format(entity.wayback_suffix))
     return render_template('webcapture_view.html', webcapture=entity)
 
 @app.route('/release/lookup', methods=['GET'])
@@ -267,8 +269,6 @@ def release_history(ident):
 def release_view(ident):
     try:
         entity = api.get_release(ident, expand="container,files,filesets,webcaptures")
-        container = entity.container
-        filesets = entity.filesets
     except ApiException as ae:
         abort(ae.status)
     if entity.state == "redirect":
@@ -279,8 +279,10 @@ def release_view(ident):
         entity.container.es = container_to_elasticsearch(entity.container, force_bool=False)
     if entity.state == "active":
         entity.es = release_to_elasticsearch(entity, force_bool=False)
-    for fs in filesets:
+    for fs in entity.filesets:
         fs.total_size = sum([f.size for f in fs.manifest])
+    for wc in entity.webcaptures:
+        wc.wayback_suffix = wayback_suffix(wc)
     for ref in entity.refs:
         # this is a UI hack to get rid of XML crud in unstructured refs like:
         # LOCKSS (2014) Available: <ext-link
@@ -290,11 +292,10 @@ def release_view(ident):
         # November 1.
         if ref.extra and ref.extra.get('unstructured'):
             ref.extra['unstructured'] = strip_extlink_xml(ref.extra['unstructured'])
-    entity.filesets = filesets
     authors = [c for c in entity.contribs if c.role in ('author', None)]
     authors = sorted(authors, key=lambda c: c.index or 99999999)
     return render_template('release_view.html', release=entity,
-        authors=authors, container=container)
+        authors=authors, container=entity.container)
 
 @app.route('/work/<ident>/history', methods=['GET'])
 def work_history(ident):

@@ -32,6 +32,14 @@
   This Web Capture is not associated with any fatcat release.
 {% endif %}
 
+<br>
+<h3>Archive URLs</h3>
+{% if webcapture.archive_urls != None %}
+  {{ entity_macros.url_list(webcapture.archive_urls, webcapture.wayback_suffix) }}
+{% else %}
+No known public archive for this webcapture.
+{% endif %}
+
 
 <h3>CDX Rows ({{ webcapture.cdx|count }})</h3>
 {% if webcapture.cdx %}
@@ -56,15 +64,7 @@
     {% endfor %}
   </div>
 {% else %}
-This File Set is empty (contains no files).
-{% endif %}
-
-<br>
-<h3>Archive URLs</h3>
-{% if webcapture.archive_urls != None %}
-  {{ entity_macros.url_list(webcapture.archive_urls) }}
-{% else %}
-No known public archive for this webcapture.
+This web capture is empty (contains no resources).
 {% endif %}
 
 </div>
