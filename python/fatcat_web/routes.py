@@ -650,7 +650,11 @@ def logout():
 @app.route('/auth/account')
 @login_required
 def auth_account():
-    editor = api.get_editor(session['editor']['editor_id'])
+    # auth check on account page
+    user_api = auth_api(session['api_token'])
+    resp = user_api.auth_check()
+    assert(resp.success)
+    editor = user_api.get_editor(session['editor']['editor_id'])
     session['editor'] = editor.to_dict()
     load_user(editor.editor_id)
     return render_template('auth_account.html')
