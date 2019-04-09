@@ -27,6 +27,8 @@
           Revision: <small><code>{{ edit.revision }}</code></small>
         {% endif %}
         {% if edit.extra %}
+          <b>Extra Metadata (raw JSON)</b>
+          {{ entity_macros.extra_metadata(edit.extra) }}
         {% endif %}
       </div>
     </div>
@@ -90,6 +92,10 @@ reviewable bundle.
 {% else %}
   <i>none</i>
 {% endif %}
+{% if editgroup.extra %}
+  <h4>Extra Metadata (raw JSON)</h4>
+  {{ entity_macros.extra_metadata(editgroup.extra) }}
+{% endif %}
 <br><br clear="all">
 
 <div class="ui styled fluid accordion">
@@ -117,11 +123,23 @@ reviewable bundle.
         <span class="ui tiny olive label">Admin</span>
       {% endif %}
       at {{ annotation.created.strftime("%Y-%m-%d %H:%M:%S") }}
+      {# TODO: get individual editgroup annotation not supported yet
+      (<a href="{% if config.FATCAT_DOMAIN == 'dev.fatcat.wiki' %}http://localhost:9411{% else %}https://api.{{ config.FATCAT_DOMAIN }}{% endif %}/v0/editgroup/{{ annotation.editgroup_id }}/annotation/{{ annotation.annotation_id }}">as JSON</a>)
+      #}
+      {% if annotation.extra and annotation.extra.disposition %}
+        {% set disp = annotation.extra.disposition %}
+        <span class="ui small {% if disp == "accept" %}green{% elif disp == "reject" %}red{% else %}orange{%endif %} label" style="float: right;">{{ annotation.extra.disposition|capitalize }}</span>
+      {% endif %}
     </div>
     {% if annotation.extra %}
-    <div class="ui attached segment">
-      {{ entity_macros.extra_metadata(annotation.extra) }}
-    </div>
+      <div class="ui attached tertiary segment accordion" style="padding-top: 0.2em; padding-bottom: 0.2em;">
+        <div class="title">
+          <i class="dropdown icon"></i>Review Metadata (raw JSON)
+        </div>
+        <div class="content" style="padding-bottom: 0.5em;">
+          {{ entity_macros.extra_metadata(annotation.extra) }}
+        </div>
+      </div>
     {% endif %}
     <div class="ui bottom attached segment">
       {{ annotation.comment_markdown|markdown(escape=True) }}
