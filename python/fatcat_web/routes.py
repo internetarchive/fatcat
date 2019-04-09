@@ -13,6 +13,7 @@ from fatcat_web import app, api, auth_api, priv_api
 from fatcat_web.auth import handle_token_login, handle_logout, load_user, handle_ia_xauth
 from fatcat_web.cors import crossdomain
 from fatcat_web.search import *
+from fatcat_web.hacks import strip_extlink_xml
 
 
 ### Views ###################################################################
@@ -280,6 +281,15 @@ def release_view(ident):
         entity.es = release_to_elasticsearch(entity, force_bool=False)
     for fs in filesets:
         fs.total_size = sum([f.size for f in fs.manifest])
+    for ref in entity.refs:
+        # this is a UI hack to get rid of XML crud in unstructured refs like:
+        # LOCKSS (2014) Available: <ext-link
+        # xmlns:xlink="http://www.w3.org/1999/xlink" ext-link-type="uri"
+        # xlink:href="http://lockss.org/"
+        # xlink:type="simple">http://lockss.org/</ext-link>. Accessed: 2014
+        # November 1.
+        if ref.extra and ref.extra.get('unstructured'):
+            ref.extra['unstructured'] = strip_extlink_xml(ref.extra['unstructured'])
     entity.filesets = filesets
     authors = [c for c in entity.contribs if c.role in ('author', None)]
     authors = sorted(authors, key=lambda c: c.index or 99999999)
