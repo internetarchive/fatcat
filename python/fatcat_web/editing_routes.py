@@ -69,6 +69,8 @@ def container_create():
                     abort(ae.status)
                 # redirect to new entity
                 return redirect('/container/{}'.format(edit.ident))
+            else:
+                status = 400
         elif form.errors:
             status = 400
             app.log.info("form errors (did not validate): {}".format(form.errors))
@@ -104,6 +106,8 @@ def container_edit(ident):
                 # redirect to entity revision
                 # TODO: container_rev_view
                 return redirect('/container/{}'.format(edit.ident))
+            else:
+                status = 400
         elif form.errors:
             status = 400
             app.log.info("form errors (did not validate): {}".format(form.errors))
@@ -146,6 +150,8 @@ def file_create():
                     abort(ae.status)
                 # redirect to new entity
                 return redirect('/file/{}'.format(edit.ident))
+            else:
+                status = 400
         elif form.errors:
             status = 400
             app.log.info("form errors (did not validate): {}".format(form.errors))
@@ -183,6 +189,8 @@ def file_edit(ident):
                 # redirect to entity revision
                 # TODO: file_rev_view
                 return redirect('/file/{}'.format(edit.ident))
+            else:
+                status = 400
         elif form.errors:
             status = 400
             app.log.info("form errors (did not validate): {}".format(form.errors))
@@ -236,6 +244,8 @@ def release_create():
                     abort(ae.status)
                 # redirect to new release
                 return redirect('/release/{}'.format(edit.ident))
+            else:
+                status = 400
         elif form.errors:
             status = 400
             app.log.info("form errors (did not validate): {}".format(form.errors))
@@ -272,6 +282,8 @@ def release_edit(ident):
                 # redirect to entity revision
                 # TODO: release_rev_view
                 return redirect('/release/{}'.format(edit.ident))
+            else:
+                status = 400
         elif form.errors:
             status = 400
             app.log.info("form errors (did not validate): {}".format(form.errors))
