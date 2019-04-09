@@ -502,6 +502,9 @@ def make_kafka_consumer(hosts, env, topic_suffix, group):
     }
 
     def on_rebalance(consumer, partitions):
+        for p in partitions:
+            if p.error:
+                raise KafkaException(p.error)
         print("Kafka partitions rebalanced: {} / {}".format(
             consumer, partitions))
 
