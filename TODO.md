@@ -1,22 +1,30 @@
 
 ## In Progress
 
-- in dev, make JSON API link to localhost:9810
-- "as bibtext" webface URL
-- example entities
-    => work with multiple releases
-    => dataset/fileset
-    => webcapture
-    => dweb URLs
-- basic web editing/creation of containers and papers
-- commenting and accepting editgroups via web interface
-- example editgroup review bot (can be trivial)
 
 ## Next Up
 
+- review bots:
+    - tests
+    - not actually processing work entities
+    - filter out already reviewed
+    - handle deletions, merges
+    - examples of warnings, etc
 - import from arabesque output (eg, specific crawls)
-- missing SQL indices: `ENTITY_edit.editgroup_id, ENTITY_edit.ident_id`
 - test logins, and add loginpass support for: orcid, wikimedia
+- missing test coverage (python):
+    batch create work, fileset, webcapture
+    delete entity (for each entity type)
+    delete entity edits (for each entity type)
+    get entity edit (for each entity type)
+    get entity redirects (for each entity type)
+    get entity revision (for each entity type)
+    get release webcaptures
+    update editor (?)
+    update fileset, webcapture
+    release elastic transform (rich extra)
+    successful web entity edits (create fresh entities first)
+    editgroup web submit, accept, annotate
 
 ## Bugs
 
@@ -24,20 +32,26 @@
 - searching 'N/A' is a bug, because not quoted; auto-quote it?
 - author (contrib) names not getting included in search (unless explicit)
 - fatcat flask lookup ValueError should return 4xx (and message?)
-    => if blank: UnboundLocalError: local variable 'extid' referenced before assignment
 
-## Next Schema Iteration
+## Next Schema Iteration (0.3.0)
 
 Changes to SQL (and swagger):
 
 - structured names in contribs (given/sur)
 - `release_status` => `release_stage`
 - `withdrawn_date` and retraction as a release stage
-- subtitle as a string field? what about translation (`original_subtitle`)?
+- subtitle as a string field
+    => but what about translation? `original_subtitle`? just combine them?
+    => combine in elasticsearch 'title' field
+- size on webcapture CDX lines (we fetch for sha256 anyways, so easy to calculate)
+- ark extid?
+- missing SQL indices: `ENTITY_edit.editgroup_id, ENTITY_edit.ident_id`
 
 Changes to swagger only:
 
-- edit URLs: editgroup_id in URL, not a query param
+- edit URLs: `editgroup_id` in URL, not a query param
+- changelog API endpoint should needs expand=editors option
+- include 'created' in editgroup object (already in SQL)
 
 ## Next Full Release "Touch"
 
@@ -47,6 +61,7 @@ Want to minimize edit counts, so will bundle a bunch of changes
 - structured contrib names (given, sur)
 - reference linking (release-to-release), via crossref DOI refs
 - subtitle as string, not array
+- remove crossref alt ids that are just the DOI (?)
 
 ## Production Public Launch Blockers
 
