@@ -113,6 +113,8 @@ class HarvestCrossrefWorker:
                 # crude backoff; now redundant with session exponential
                 # backoff, but allows for longer backoff/downtime on remote end
                 print("got HTTP {}, pausing for 30 seconds".format(http_resp.status_code))
+                # keep kafka producer connection alive
+                producer.poll(0)
                 time.sleep(30.0)
                 continue
             http_resp.raise_for_status()
