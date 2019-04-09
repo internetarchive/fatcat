@@ -2,7 +2,7 @@
 import json
 import time
 import requests
-from pykafka.common import OffsetType
+from confluent_kafka import Consumer, Producer, KafkaException
 
 from fatcat_client import ReleaseEntity, ApiClient
 from fatcat_tools import *
@@ -17,36 +17,77 @@ class ElasticsearchReleaseWorker(FatcatWorker):
     Uses a consumer group to manage offset.
     """
 
-    def __init__(self, kafka_hosts, consume_topic, poll_interval=10.0, offset=None,
-            elasticsearch_backend="http://localhost:9200", elasticsearch_index="fatcat"):
+    def __init__(self, kafka_hosts, consume_topic, poll_interval=5.0, offset=None,
+            elasticsearch_backend="http://localhost:9200", elasticsearch_index="fatcat",
+            batch_size=200):
         super().__init__(kafka_hosts=kafka_hosts,
                          consume_topic=consume_topic)
         self.consumer_group = "elasticsearch-updates"
+        self.batch_size = batch_size
+        self.poll_interval = poll_interval
         self.elasticsearch_backend = elasticsearch_backend
         self.elasticsearch_index = elasticsearch_index
 
     def run(self):
-        consume_topic = self.kafka.topics[self.consume_topic]
         ac = ApiClient()
 
-        consumer = consume_topic.get_balanced_consumer(
-            consumer_group=self.consumer_group,
-            managed=True,
-            fetch_message_max_bytes=4000000, # up to ~4MBytes
-            auto_commit_enable=True,
-            auto_commit_interval_ms=30000, # 30 seconds
-            compacted_topic=True,
+        def on_rebalance(consumer, partitions):
+            for p in partitions:
+                if p.error:
+                    raise KafkaException(p.error)
+            print("Kafka partitions rebalanced: {} / {}".format(
+                consumer, partitions))
+
+        consumer_conf = self.kafka_config.copy()
+        consumer_conf.update({
+            'group.id': self.consumer_group,
+            'enable.auto.offset.store': False,
+            'default.topic.config': {
+                'auto.offset.reset': 'latest',
+            },
+        })
+        consumer = Consumer(consumer_conf)
+        consumer.subscribe([self.consume_topic],
+            on_assign=on_rebalance,
+            on_revoke=on_rebalance,
         )
 
-        for msg in consumer:
-            json_str = msg.value.decode('utf-8')
-            release = entity_from_json(json_str, ReleaseEntity, api_client=ac)
-            #print(release)
-            elasticsearch_endpoint = "{}/{}/release/{}".format(
+        while True:
+            batch = consumer.consume(
+                num_messages=self.batch_size,
+                timeout=self.poll_interval)
+            if not batch:
+                if not consumer.assignment():
+                    print("... no Kafka consumer partitions assigned yet")
+                print("... nothing new from kafka, try again (interval: {}".format(self.poll_interval))
+                continue
+            print("... got {} kafka messages".format(len(batch)))
+            # first check errors on entire batch...
+            for msg in batch:
+                if msg.error():
+                    raise KafkaException(msg.error())
+            # ... then process
+            bulk_actions = []
+            for msg in batch:
+                json_str = msg.value().decode('utf-8')
+                entity = entity_from_json(json_str, ReleaseEntity, api_client=ac)
+                print("Upserting: release/{}".format(entity.ident))
+                bulk_actions.append(json.dumps({
+                    "index": { "_id": entity.ident, },
+                }))
+                bulk_actions.append(json.dumps(
+                    release_to_elasticsearch(entity)))
+            elasticsearch_endpoint = "{}/{}/release/_bulk".format(
                 self.elasticsearch_backend,
-                self.elasticsearch_index,
-                release.ident)
-            print("Updating document: {}".format(elasticsearch_endpoint))
-            resp = requests.post(elasticsearch_endpoint, json=release_to_elasticsearch(release))
+                self.elasticsearch_index)
+            resp = requests.post(elasticsearch_endpoint,
+                headers={"Content-Type": "application/x-ndjson"},
+                data="\n".join(bulk_actions) + "\n")
             resp.raise_for_status()
-            #consumer.commit_offsets()
+            if resp.json()['errors']:
+                desc = "Elasticsearch errors from post to {}:".format(elasticsearch_endpoint)
+                print(desc)
+                print(resp.content)
+                raise Exception(desc)
+            consumer.store_offsets(batch[-1])
+
