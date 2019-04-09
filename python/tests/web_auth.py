@@ -21,6 +21,9 @@ def test_ia_xauth_fail(full_app):
             data=dict(email="abcd@example.com", password="god"))
         assert rv.status_code == 401
 
+        rv = app.get('/auth/account', follow_redirects=False)
+        assert rv.status_code == 302
+
 @responses.activate
 def test_ia_xauth(full_app):
 
@@ -39,6 +42,9 @@ def test_ia_xauth(full_app):
                            'itemname': "user_item123"}})
         rv = app.post('/auth/ia/login', follow_redirects=True,
             data=dict(email="abcd@example.com", password="god"))
+        assert rv.status_code == 200
+
+        rv = app.get('/auth/account', follow_redirects=False)
         assert rv.status_code == 200
 
 def test_basic_auth_views(app):
