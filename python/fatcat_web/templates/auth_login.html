@@ -1,18 +1,93 @@
 {% extends "base.html" %}
-{% block body %}
-<h1>Login</h1>
 
-<p>via OAuth / OpenID Connect:
-<ul>
-  <li><a href="/auth/gitlab/login">gitlab.com</a>
-  <li><strike><a href="/auth/google/login">google.com</a></strike>
-  <li><strike><a href="/auth/orcid/login">orcid.org</a></strike>
-</ul>
+{% block fullbody %}
+<div class="ui centered grid container">
+<div class="eight wide column" style="font-size: 1.14285714rem;">
 
-<p>Other options...
-<ul>
-  <li><a href="/auth/token_login">Using auth token</a> (admin/operator)
-  <li><a href="/auth/ia/login">With Internet Archive account</a> (experimental)
-</ul>
+<h1>Login / Signup</h1>
 
+<p>Select a provider below to create a Fatcat editor account or log back in.
+Note that currently editor accounts are locked 1-to-1 with external identities.
+
+<p>Before creating an account, please review our
+<a href="https://guide.fatcat.wiki/policies.html">Norms and Policies</a>.
+
+<br>
+<a href="/auth/ia/login">
+<div class="ui segment attached">
+  <h2 class="ui header">
+    <img src="/static/ia_logo.png" style="width: 1.5em;">
+    <div class="content">
+      Internet Archive
+      <div class="sub header">via email/password</div>
+    </div>
+  </h2>
+</div>
+</a>
+
+<a href="/auth/orcid/login">
+<div class="ui segment attached">
+  <h2 class="ui header">
+    <img src="/static/orcid_icon.png" style="width: 1.5em;">
+    <div class="content">
+      ORCiD
+      <div class="sub header">via OpenID Connect</div>
+    </div>
+  </h2>
+</div>
+</a>
+
+<a href="/auth/wikipedia/login">
+<div class="ui segment attached">
+  <h2 class="ui header">
+      <i class="wikipedia w icon"></i>
+    <div class="content">
+      Wikipedia
+      <div class="sub header">via OpenID Connect</div>
+    </div>
+  </h2>
+</div>
+</a>
+
+<a href="/auth/gitlab/login">
+<div class="ui segment attached">
+  <h2 class="ui header">
+    <i class="orange gitlab icon"></i>
+    <div class="content">
+      Gitlab
+      <div class="sub header">via OpenID Connect</div>
+    </div>
+  </h2>
+</div>
+</a>
+
+<a href="/auth/google/login">
+<div class="ui segment attached">
+  <h2 class="ui header">
+    <i class="red google icon"></i>
+    <div class="content">
+      Google
+      <div class="sub header">via OpenID Connect</div>
+    </div>
+  </h2>
+</div>
+</a>
+
+{# alternative style
+<br>
+<button class="massive ui button fluid">
+  <i class="gitlab icon orange"></i>
+  Gitlab
+  <small>via OpenID Connect</small>
+</button>
+#}
+
+<br>
+<p>Operators can also <a href="/auth/token_login">authenticate directly using
+an auth token</a>.
+<p>If you have problems getting logged in, please
+<a href="mailto:webservices@archive.org">contact us</a>.
+
+</div>
+</div>
 {% endblock %}

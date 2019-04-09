@@ -1,12 +1,10 @@
 {% extends "base.html" %}
-{% block body %}
-<h1>Login with Internet Archive account</h1>
 
-<p>Warning: still experimental!
+{% block fullbody %}
+<div class="ui centered grid container">
+<div class="eight wide column" style="font-size: 1.14285714rem;">
 
-<br>
-<br>
-<br>
+<h1>Login via Internet Archive</h1>
 
 {% if current_user.is_authenticated %}
   <div class="ui negative message">
@@ -14,18 +12,28 @@
     <p>You should logout first. Re-authenticating would be undefined behavior.
   </div>
 {% else %}
+
+  <p>Use your <a href="https://archive.org">archive.org</a> username (or email)
+  and password to log in to Fatcat.
+
   <form class="" role="login" action="/auth/ia/login" method="post">
     <div class="ui form">
-        <div class="ui input huge fluid">
-          <input type="email" placeholder="user@domain.tdl..." name="email" {% if email %}value="{{ email }}"{% endif %} aria-label="email for login">
-        </div>
-        <div class="ui action input huge fluid">
-          <input type="password" placeholder="password" name="password" aria-label="internet archive password">
-          <button class="ui button">Login</button>
-        </div>
+      <div class="ui left icon input large fluid">
+        <i class="user icon"></i>
+        <input type="email" placeholder="user@domain.tdl..." name="email" {% if email %}value="{{ email }}"{% endif %} aria-label="email for login">
       </div>
+      <br>
+      <div class="ui left icon input large fluid">
+        <i class="lock icon"></i>
+        <input type="password" placeholder="Password" name="password" aria-label="internet archive password">
+      </div>
+      <br>
+      <button class="ui primary large button fluid">Login</button>
     </div>
   </form>
 {% endif %}
+
+</div>
+</div>
 
 {% endblock %}

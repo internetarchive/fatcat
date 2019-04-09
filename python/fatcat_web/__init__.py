@@ -15,7 +15,7 @@ from fatcat_web.web_config import Config
 
 
 toolbar = DebugToolbarExtension()
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 app.config.from_object(Config)
 toolbar = DebugToolbarExtension(app)
 FlaskUUID(app)
