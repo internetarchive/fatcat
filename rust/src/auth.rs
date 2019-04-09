@@ -229,7 +229,7 @@ impl AuthConfectionary {
         if let Some(duration) = duration {
             let expires = now_utc + duration;
             mac.add_first_party_caveat(&format!(
-                "time < {:?}",
+                "time < {}",
                 &expires.to_rfc3339_opts(SecondsFormat::Secs, true)
             ));
         };
@@ -291,12 +291,15 @@ impl AuthConfectionary {
         let mut created: Option<DateTime<Utc>> = None;
         for caveat in mac.first_party_caveats() {
             if caveat.predicate().starts_with("time > ") {
-                created = Some(
+                let ts: chrono::ParseResult<DateTime<Utc>> =
                     DateTime::parse_from_rfc3339(caveat.predicate().get(7..).unwrap())
-                        .unwrap()
-                        .with_timezone(&Utc),
-                );
-                break;
+                        .map(|x| x.with_timezone(&Utc));
+                if let Ok(ts) = ts {
+                    created = Some(ts);
+                    break;
+                } else {
+                    info!("couldn't parse macaroon time constraint: {}", caveat.predicate());
+                }
             }
         }
         let created = match created {
@@ -337,10 +340,16 @@ impl AuthConfectionary {
         verifier.satisfy_general(|p: &str| -> bool {
             // not expired (based on time)
             if p.starts_with("time < ") {
-                let expires: DateTime<Utc> = DateTime::parse_from_rfc3339(p.get(7..).unwrap())
-                    .unwrap()
-                    .with_timezone(&Utc);
-                expires < Utc::now()
+                let expires: chrono::ParseResult<DateTime<Utc>> =
+                    DateTime::parse_from_rfc3339(p.get(7..).unwrap())
+                        .map(|x| x.with_timezone(&Utc));
+                if let Ok(when) = expires {
+                    //info!("checking time constraint: {} < {}", Utc::now(), when);
+                    Utc::now() < when
+                } else {
+                    info!("couldn't parse macaroon time constraint: {}", p);
+                    false
+                }
             } else {
                 false
             }

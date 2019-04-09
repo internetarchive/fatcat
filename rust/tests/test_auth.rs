@@ -34,6 +34,13 @@ fn test_auth_db() {
     let editor_row = c.parse_macaroon_token(&conn, &token, None).unwrap();
     assert_eq!(editor_row.id, editor_id.to_uuid());
 
+    // create token w/ expiration
+    let token = c.create_token(editor_id, Some(chrono::Duration::days(1))).unwrap();
+
+    // verify token w/ expiration
+    let editor_row = c.parse_macaroon_token(&conn, &token, None).unwrap();
+    assert_eq!(editor_row.id, editor_id.to_uuid());
+
     // revoke token
     auth::revoke_tokens(&conn, editor_id).unwrap();
 
