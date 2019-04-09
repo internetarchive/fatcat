@@ -30,7 +30,9 @@ def form_editgroup_get_or_create(api, edit_form):
                 return None
             app.log.warning(ae)
             abort(ae.status)
-        # TODO: check here that editgroup hasn't been merged already
+        if eg.changelog_index:
+            edit_form.editgroup_id.errors.append("Editgroup has already been accepted")
+            return None
     else:
         # if no editgroup, create one from description
         try:
