@@ -9,8 +9,8 @@ from flask_wtf.csrf import CSRFError
 from fatcat_client import Editgroup, EditgroupAnnotation
 from fatcat_client.rest import ApiException
 from fatcat_tools.transforms import *
-from fatcat_web import app, api, auth_api, priv_api
-from fatcat_web.auth import handle_token_login, handle_logout, load_user, handle_ia_xauth
+from fatcat_web import app, api, auth_api, priv_api, mwoauth
+from fatcat_web.auth import handle_token_login, handle_logout, load_user, handle_ia_xauth, handle_wmoauth
 from fatcat_web.cors import crossdomain
 from fatcat_web.search import *
 from fatcat_web.hacks import strip_extlink_xml, wayback_suffix
@@ -672,6 +672,19 @@ def auth_account():
     session['editor'] = editor.to_dict()
     load_user(editor.editor_id)
     return render_template('auth_account.html')
+
+@app.route('/auth/wikipedia/auth')
+def wp_oauth_rewrite():
+    """
+    This is a dirty hack to rewrite '/auth/wikipedia/auth' to '/auth/wikipedia/oauth-callback'
+    """
+    return redirect(b"/auth/wikipedia/oauth-callback?" + request.query_string, 307)
+
+@app.route('/auth/wikipedia/finish-login')
+def wp_oauth_finish_login():
+    wp_username = mwoauth.get_current_user(cached=True)
+    assert(wp_username)
+    return handle_wmoauth(wp_username)
 
 
 ### Static Routes ###########################################################

@@ -13,6 +13,7 @@ Note that currently editor accounts are locked 1-to-1 with external identities.
 <a href="https://guide.fatcat.wiki/policies.html">Norms and Policies</a>.
 
 <br>
+{% if config.IA_XAUTH_CLIENT_ID %}
 <a href="/auth/ia/login">
 <div class="ui segment attached">
   <h2 class="ui header">
@@ -24,7 +25,19 @@ Note that currently editor accounts are locked 1-to-1 with external identities.
   </h2>
 </div>
 </a>
+{% else %}
+<div class="ui segment attached">
+  <h2 class="ui header">
+    <i class="grey times circle icon"></i>
+    <div class="content">
+      Internet Archive
+      <div class="sub header">not configured</div>
+    </div>
+  </h2>
+</div>
+{% endif %}
 
+{% if config.ORCID_CLIENT_ID %}
 <a href="/auth/orcid/login">
 <div class="ui segment attached">
   <h2 class="ui header">
@@ -36,42 +49,49 @@ Note that currently editor accounts are locked 1-to-1 with external identities.
   </h2>
 </div>
 </a>
+{% endif %}
 
+{% if config.WIKIPEDIA_CLIENT_ID %}
 <a href="/auth/wikipedia/login">
 <div class="ui segment attached">
   <h2 class="ui header">
-      <i class="wikipedia w icon"></i>
+    <i class="wikipedia w icon"></i>
     <div class="content">
       Wikipedia
-      <div class="sub header">via OpenID Connect</div>
+      <div class="sub header">via OAuth</div>
     </div>
   </h2>
 </div>
 </a>
+{% endif %}
 
+{% if config.GITLAB_CLIENT_ID %}
 <a href="/auth/gitlab/login">
 <div class="ui segment attached">
   <h2 class="ui header">
     <i class="orange gitlab icon"></i>
     <div class="content">
       Gitlab
-      <div class="sub header">via OpenID Connect</div>
+      <div class="sub header">via OAuth</div>
     </div>
   </h2>
 </div>
 </a>
+{% endif %}
 
-<a href="/auth/google/login">
+{% if config.GITHUB_CLIENT_ID %}
+<a href="/auth/github/login">
 <div class="ui segment attached">
   <h2 class="ui header">
     <i class="red google icon"></i>
     <div class="content">
-      Google
+      Github
       <div class="sub header">via OpenID Connect</div>
     </div>
   </h2>
 </div>
 </a>
+{% endif %}
 
 {# alternative style
 <br>

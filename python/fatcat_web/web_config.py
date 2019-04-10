@@ -32,8 +32,17 @@ class Config(object):
     FLASK_SECRET_KEY = os.environ.get("FLASK_SECRET_KEY", default=None)
     SECRET_KEY = FLASK_SECRET_KEY
 
+    ORCID_CLIENT_ID = os.environ.get("ORCID_CLIENT_ID", default=None)
+    ORCID_CLIENT_SECRET = os.environ.get("ORCID_CLIENT_SECRET", default=None)
+
+    WIKIPEDIA_CLIENT_ID = os.environ.get("WIKIPEDIA_CLIENT_ID", default=None)
+    WIKIPEDIA_CLIENT_SECRET = os.environ.get("WIKIPEDIA_CLIENT_SECRET", default=None)
+
     GITLAB_CLIENT_ID = os.environ.get("GITLAB_CLIENT_ID", default=None)
     GITLAB_CLIENT_SECRET = os.environ.get("GITLAB_CLIENT_SECRET", default=None)
+
+    GITHUB_CLIENT_ID = os.environ.get("GITHUB_CLIENT_ID", default=None)
+    GITHUB_CLIENT_SECRET = os.environ.get("GITHUB_CLIENT_SECRET", default=None)
 
     IA_XAUTH_URI = "https://archive.org/services/xauthn/"
     IA_XAUTH_CLIENT_ID = os.environ.get("IA_XAUTH_CLIENT_ID", default=None)

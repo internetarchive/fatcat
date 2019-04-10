@@ -6,8 +6,9 @@ from flask_debugtoolbar import DebugToolbarExtension
 from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
 from flask_misaka import Misaka
+from flask_mwoauth import MWOAuth
 from authlib.flask.client import OAuth
-from loginpass import create_flask_blueprint, Gitlab
+from loginpass import create_flask_blueprint, Gitlab, GitHub
 from raven.contrib.flask import Sentry
 import fatcat_client
 
@@ -60,7 +61,25 @@ else:
     print("No privileged token found")
     priv_api = None
 
+mwoauth = MWOAuth(
+    consumer_key=Config.WIKIPEDIA_CLIENT_ID,
+    consumer_secret=Config.WIKIPEDIA_CLIENT_SECRET,
+    default_return_to='wp_oauth_finish_login')
+mwoauth.handshaker.user_agent = "fatcat.wiki;python_web_interface"
+app.register_blueprint(mwoauth.bp, url_prefix='/auth/wikipedia')
+
 from fatcat_web import routes, editing_routes, auth, cors, forms
 
-gitlab_bp = create_flask_blueprint(Gitlab, oauth, auth.handle_oauth)
-app.register_blueprint(gitlab_bp, url_prefix='/auth/gitlab')
+if Config.ORCID_CLIENT_ID:
+    # XXX:
+    pass
+    #orcid_bp = create_flask_blueprint(ORCID, oauth, auth.handle_oauth)
+    #app.register_blueprint(orcid_bp, url_prefix='/auth/orcid')
+
+if Config.GITLAB_CLIENT_ID:
+    gitlab_bp = create_flask_blueprint(Gitlab, oauth, auth.handle_oauth)
+    app.register_blueprint(gitlab_bp, url_prefix='/auth/gitlab')
+
+if Config.GITHUB_CLIENT_ID:
+    github_bp = create_flask_blueprint(GitHub, oauth, auth.handle_oauth)
+    app.register_blueprint(github_bp, url_prefix='/auth/google')

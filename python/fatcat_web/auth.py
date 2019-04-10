@@ -127,6 +127,17 @@ def handle_ia_xauth(email, password):
     }
     return handle_oauth(remote, None, oauth_info)
 
+def handle_wmoauth(username):
+    # pass off "as if" we did OAuth successfully
+    FakeOAuthRemote = namedtuple('FakeOAuthRemote', ['name', 'OAUTH_CONFIG'])
+    remote = FakeOAuthRemote(name='wikipedia', OAUTH_CONFIG={'api_base_url': "https://www.mediawiki.org/w"})
+    oauth_info = {
+        'preferred_username': username,
+        'iss': "https://www.mediawiki.org/w",
+        'sub': username,
+    }
+    return handle_oauth(remote, None, oauth_info)
+
 @login_manager.user_loader
 def load_user(editor_id):
     # looks for extra info in session, and updates the user object with that.
