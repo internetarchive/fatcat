@@ -28,6 +28,9 @@ notes in Pipfile). You can can install `pipenv` with `pip`. You may want to set
 the `PIPENV_VENV_IN_PROJECT` environment variable on your development machine
 (see pipenv docs for details).
 
+NOTE: ensure you are using at least pipenv version `2018.11.26`. Earlier
+versions had a bug which caused problems with our local path dependency.
+
 To just run the web interface (which will try to connect to a back-end API
 server on the same machine by default), use:
 
