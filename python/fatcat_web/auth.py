@@ -54,10 +54,15 @@ def handle_oauth(remote, token, user_info):
         # not sure all loginpass backends will set it
         if user_info.get('preferred_username'):
             preferred_username = user_info['preferred_username']
+        elif 'orcid.org' in iss:
+            # as a special case, prefix ORCiD identifier so it can be used as a
+            # username. If we instead used the human name, we could have
+            # collisions. Not a great user experience either way.
+            preferred_username = 'i' + user_info['sub'].replace('-', '')
         else:
             preferred_username = user_info['sub']
 
-        params = fatcat_client.AuthOidc(remote.name, user_info['sub'], iss, user_info['preferred_username'])
+        params = fatcat_client.AuthOidc(remote.name, user_info['sub'], iss, preferred_username)
         # this call requires admin privs
         (resp, http_status, http_headers) = priv_api.auth_oidc_with_http_info(params)
         editor = resp.editor
