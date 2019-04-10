@@ -32,6 +32,7 @@ regenerated (eg, log-out, log-in).
 - basic editgroup annotation and control (submit/accept) in webface
 - CSL/BibTeX citation endpoints
 - "review bot" framework (for CI-style edit checks)
+- wikipedia OAuth login provider
 
 ### Changed
 
