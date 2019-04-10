@@ -37,18 +37,21 @@ Note that currently editor accounts are locked 1-to-1 with external identities.
 </div>
 {% endif %}
 
+{# not implemented in login pass yet #}
 {% if config.ORCID_CLIENT_ID %}
-<a href="/auth/orcid/login">
+{# <a href="/auth/orcid/login"> #}
 <div class="ui segment attached">
   <h2 class="ui header">
-    <img src="/static/orcid_icon.png" style="width: 1.5em;">
+    {# <img src="/static/orcid_icon.png" style="width: 1.5em;"> #}
+    <i class="grey times circle icon"></i>
     <div class="content">
       ORCiD
-      <div class="sub header">via OpenID Connect</div>
+      {# <div class="sub header">via OpenID Connect</div> #}
+      <div class="sub header">not implemented yet</div>
     </div>
   </h2>
 </div>
-</a>
+{# </a> #}
 {% endif %}
 
 {% if config.WIKIPEDIA_CLIENT_ID %}
@@ -83,7 +86,7 @@ Note that currently editor accounts are locked 1-to-1 with external identities.
 <a href="/auth/github/login">
 <div class="ui segment attached">
   <h2 class="ui header">
-    <i class="red google icon"></i>
+    <i class="github icon"></i>
     <div class="content">
       Github
       <div class="sub header">via OpenID Connect</div>
