@@ -298,7 +298,10 @@ impl AuthConfectionary {
                     created = Some(ts);
                     break;
                 } else {
-                    info!("couldn't parse macaroon time constraint: {}", caveat.predicate());
+                    info!(
+                        "couldn't parse macaroon time constraint: {}",
+                        caveat.predicate()
+                    );
                 }
             }
         }
