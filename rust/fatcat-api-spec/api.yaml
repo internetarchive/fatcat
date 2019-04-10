@@ -2854,8 +2854,6 @@ paths:
       operationId: "get_editgroup_annotations"
       tags: # TAGLINE
         - edit-lifecycle # TAGLINE
-      security:
-        - Bearer: []
       parameters:
         - name: expand
           in: query

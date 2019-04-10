@@ -6929,8 +6929,6 @@ paths:
           uppercase_operation_id: "GET_EDITGROUP_ANNOTATIONS"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
-      security:
-      - Bearer: []
       operation_id: "get_editgroup_annotations"
       uppercase_operation_id: "GET_EDITGROUP_ANNOTATIONS"
       path: "/editgroup/:editgroup_id/annotations"
