@@ -29,7 +29,7 @@ flask-wtf = "*"
 Flask-Misaka = "*"
 flask-mwoauth = "*"
 WTForms = "*"
-loginpass = "*"
+loginpass = { git = 'https://github.com/bnewbold/loginpass.git', ref = 'bnewbold-orcid' }
 requests = ">=2"
 raven = { extras = ['flask'], version = "*" }
 pykafka = ">=2"
