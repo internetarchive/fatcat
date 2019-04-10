@@ -208,7 +208,7 @@
         },
         "loginpass": {
             "git": "https://github.com/bnewbold/loginpass.git",
-            "ref": "69d68a9112f676ea71c2bc90f21c32065bf07ef4"
+            "ref": "212c26b93e8bb4e66f4edb6a43927b72905e1e63"
         },
         "lxml": {
             "hashes": [
