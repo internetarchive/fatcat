@@ -84,4 +84,4 @@ if Config.GITLAB_CLIENT_ID:
 
 if Config.GITHUB_CLIENT_ID:
     github_bp = create_flask_blueprint(GitHub, oauth, auth.handle_oauth)
-    app.register_blueprint(github_bp, url_prefix='/auth/google')
+    app.register_blueprint(github_bp, url_prefix='/auth/github')
