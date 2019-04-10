@@ -61,20 +61,22 @@ else:
     print("No privileged token found")
     priv_api = None
 
+# TODO: refactor integration so this doesn't always need to be definied. If
+# key/secret are empty, library will not init; if init is skipped, get
+# undefined errors elsewhere.
 mwoauth = MWOAuth(
-    consumer_key=Config.WIKIPEDIA_CLIENT_ID,
-    consumer_secret=Config.WIKIPEDIA_CLIENT_SECRET,
+    consumer_key=Config.WIKIPEDIA_CLIENT_ID or "dummy",
+    consumer_secret=Config.WIKIPEDIA_CLIENT_SECRET or "dummy",
     default_return_to='wp_oauth_finish_login')
 mwoauth.handshaker.user_agent = "fatcat.wiki;python_web_interface"
 app.register_blueprint(mwoauth.bp, url_prefix='/auth/wikipedia')
 
 from fatcat_web import routes, editing_routes, auth, cors, forms
 
-if Config.ORCID_CLIENT_ID:
-    # XXX:
-    pass
-    #orcid_bp = create_flask_blueprint(ORCID, oauth, auth.handle_oauth)
-    #app.register_blueprint(orcid_bp, url_prefix='/auth/orcid')
+# TODO: blocking on ORCID support in loginpass
+#if Config.ORCID_CLIENT_ID:
+#    orcid_bp = create_flask_blueprint(ORCID, oauth, auth.handle_oauth)
+#    app.register_blueprint(orcid_bp, url_prefix='/auth/orcid')
 
 if Config.GITLAB_CLIENT_ID:
     gitlab_bp = create_flask_blueprint(Gitlab, oauth, auth.handle_oauth)
