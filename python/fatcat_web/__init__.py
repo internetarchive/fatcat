@@ -8,7 +8,7 @@ from flask_wtf.csrf import CSRFProtect
 from flask_misaka import Misaka
 from flask_mwoauth import MWOAuth
 from authlib.flask.client import OAuth
-from loginpass import create_flask_blueprint, Gitlab, GitHub
+from loginpass import create_flask_blueprint, Gitlab, GitHub, ORCiD
 from raven.contrib.flask import Sentry
 import fatcat_client
 
@@ -74,9 +74,9 @@ app.register_blueprint(mwoauth.bp, url_prefix='/auth/wikipedia')
 from fatcat_web import routes, editing_routes, auth, cors, forms
 
 # TODO: blocking on ORCID support in loginpass
-#if Config.ORCID_CLIENT_ID:
-#    orcid_bp = create_flask_blueprint(ORCID, oauth, auth.handle_oauth)
-#    app.register_blueprint(orcid_bp, url_prefix='/auth/orcid')
+if Config.ORCID_CLIENT_ID:
+    orcid_bp = create_flask_blueprint(ORCiD, oauth, auth.handle_oauth)
+    app.register_blueprint(orcid_bp, url_prefix='/auth/orcid')
 
 if Config.GITLAB_CLIENT_ID:
     gitlab_bp = create_flask_blueprint(Gitlab, oauth, auth.handle_oauth)
