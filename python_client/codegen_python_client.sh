@@ -48,6 +48,7 @@ END_PATCH
 # I don't know what they were thinking with this TypeWithDefault stuff, but it
 # caused really gnarly config cross-contamination issues when running mulitple
 # clients in parallel.
+# See also: https://github.com/swagger-api/swagger-codegen/issues/9117
 patch -p0 << END_PATCH
 --- fatcat_client/configuration.py
 +++ fatcat_client/configuration.py

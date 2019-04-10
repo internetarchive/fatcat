@@ -16,6 +16,15 @@ See also:
 
 ## [Unreleased]
 
+### Fixed
+
+- fixed major authn/authz bug with fatcat python client which leaked API tokens
+  between API client handles. Almost all tests/webfact/etc were potentially
+  running with the privileged (superuser) webface-bot privileges. Yikes!
+- API `get_editgroup_annotations` endpoint was requiring auth; this was a typo.
+  Going to call this a very minor/backwards-compatible API change and not do a
+  minor version bump for it.
+
 ## [0.2.1] - 2019-04-09
 
 No API or SQL schema changes in this release. Macaroon generation and
