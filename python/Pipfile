@@ -29,7 +29,7 @@ flask-wtf = "*"
 Flask-Misaka = "*"
 flask-mwoauth = "*"
 WTForms = "*"
-loginpass = "*"
+loginpass = { git = 'https://github.com/authlib/loginpass.git', ref = 'ed9e527502bd19be6793f88ed71ca0e1764e9034' }
 requests = ">=2"
 raven = { extras = ['flask'], version = "*" }
 pykafka = ">=2"
