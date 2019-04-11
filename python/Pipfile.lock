@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "5e17a99fdd0d8a30570c3a59463d8d1983c3692fe9faedee5e9cca6163220b59"
+            "sha256": "e6ac8d0bd63b3819a170bde676a9f6a00933af9ac7cd45c75b809f14776e2652"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -207,8 +207,8 @@
             "version": "==2.5.0"
         },
         "loginpass": {
-            "git": "https://github.com/bnewbold/loginpass.git",
-            "ref": "212c26b93e8bb4e66f4edb6a43927b72905e1e63"
+            "git": "https://github.com/authlib/loginpass.git",
+            "ref": "ed9e527502bd19be6793f88ed71ca0e1764e9034"
         },
         "lxml": {
             "hashes": [
