@@ -28,7 +28,6 @@
 <div class="ui warning message">
   <div class="header">Project Status: Beta</div>
   <ul class="list">
-    <li>Entity editing only possibly by API; web interface is not implemented
     <li>Edits are manually reviewed (not automatically accepted)
     <li>API schemas and client libraries not guaranteed to be backwards-compatible
   </ul>
@@ -53,14 +52,12 @@ indexing (aka, linking together of pre-prints and final copies).
 <tr><td><b>Release</b>
         <br>journal article, pre-print, book
         <br>published version of a Work
-{% if config.FATCAT_DOMAIN == 'fatcat.wiki' %}
-    <td><a href="/release/search">Search</a>
-        <a href="/release/create">Create</a>
-    <td><a href="/release/tb24ghkawzgaho5bkim3cbmbnu">Paper</a>
-{% else %}
     <td><a href="/release/search">Search</a>
         <br><a href="/release/create">Create</a>
-    <td><a href="/release/tb24ghkawzgaho5bkim3cbmbnu">Paper</a> (prod)
+{% if config.FATCAT_DOMAIN == 'fatcat.wiki' %}
+    <td><a href="/release/hsmo6p4smrganpb3fndaj2lon4">Paper</a>
+{% else %}
+    <td><a href="/release/hsmo6p4smrganpb3fndaj2lon4">Paper</a> (prod)
         <br><a href="/release/aaaaaaaaaaaaarceaaaaaaaaai">Dummy</a>
         <br><a href="/release/aaaaaaaaaaaaarceaaaaaaaaam">Realistic</a>
 {% endif %}
@@ -72,12 +69,11 @@ indexing (aka, linking together of pre-prints and final copies).
         </form>
 <tr><td><b>Container</b>
         <br>journal or serial
-{% if config.FATCAT_DOMAIN == 'fatcat.wiki' %}
-    <td><a href="/container/search">Search</a>
-    <td><a href="/container/iznnn644szdwva7khyxqzc73bi">Journal</a>
-{% else %}
     <td><a href="/container/search">Search</a>
         <br><a href="/container/create">Create</a>
+{% if config.FATCAT_DOMAIN == 'fatcat.wiki' %}
+    <td><a href="/container/iznnn644szdwva7khyxqzc73bi">Journal</a>
+{% else %}
     <td><a href="/container/iznnn644szdwva7khyxqzc73bi">Journal</a> (prod)
         <br><a href="/container/aaaaaaaaaaaaaeiraaaaaaaaai">Dummy</a>
         <br><a href="/container/aaaaaaaaaaaaaeiraaaaaaaaam">Realistic</a>
@@ -108,11 +104,10 @@ indexing (aka, linking together of pre-prints and final copies).
         </form>
 <tr><td><b>File</b>
         <br>specific digital blobs (immutable)
+    <td><a href="/file/create">Create</a>
 {% if config.FATCAT_DOMAIN == 'fatcat.wiki' %}
-    <td>
     <td><a href="/file/wklqsb5apzfhbbxxc7rgu2yw6m">PDF</a>
 {% else %}
-    <td><a href="/file/create">Create</a>
     <td><a href="/file/wklqsb5apzfhbbxxc7rgu2yw6m">PDF</a> (prod)
         <br><a href="/file/aaaaaaaaaaaaamztaaaaaaaaai">Dummy</a>
         <br><a href="/file/aaaaaaaaaaaaamztaaaaaaaaam">Realistic</a>
