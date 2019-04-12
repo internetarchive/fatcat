@@ -30,7 +30,7 @@
             "ident":          { "type": "keyword" },
             "state":          { "type": "keyword" },
             "revision":       { "type": "keyword" },
-            "tatle":          { "type": "text", "index": true, "analyzer": "textIcu", "search_analyzer":"textIcuSearch" },
+            "title":          { "type": "text", "index": true, "analyzer": "textIcu", "search_analyzer":"textIcuSearch" },
             "original_title": { "type": "text", "index": true, "analyzer": "textIcu", "search_analyzer":"textIcuSearch" },
             "release_date":   { "type": "date" },
             "release_year":   { "type": "integer" },
