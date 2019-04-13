@@ -4,6 +4,7 @@ import sys
 import csv
 import json
 import ftfy
+import sqlite3
 import itertools
 import subprocess
 from collections import Counter
@@ -414,6 +415,25 @@ class LinePusher(RecordPusher):
             if not line:
                 continue
             self.importer.push_record(line)
+        counts = self.importer.finish()
+        print(counts)
+        return counts
+
+
+class SqlitePusher(RecordPusher):
+
+    def __init__(self, importer, db_file, table_name, where_clause="", **kwargs):
+        self.importer = importer
+        self.db = sqlite3.connect(db_file, isolation_level='EXCLUSIVE')
+        self.db.row_factory = sqlite3.Row
+        self.table_name = table_name
+        self.where_clause = where_clause
+
+    def run(self):
+        cur = self.db.execute("SELECT * FROM {} {};".format(
+            self.table_name, self.where_clause))
+        for row in cur:
+            self.importer.push_record(row)
         counts = self.importer.finish()
         print(counts)
         return counts
