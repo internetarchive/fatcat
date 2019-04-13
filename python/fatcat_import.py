@@ -31,6 +31,16 @@ def run_matched(args):
         edit_batch_size=args.batch_size)
     JsonLinePusher(fmi, args.json_file).run()
 
+def run_arabesque_matched(args):
+    ami = ArabesqueMatchImporter(args.api,
+        do_updates=args.do_updates,
+        extid_type=args.extid_type,
+        crawl_id=args.crawl_id,
+        default_link_rel=args.default_link_rel,
+        edit_batch_size=args.batch_size)
+    SqlitePusher(ami, args.db_file, "crawl_result",
+        ARABESQUE_MATCH_WHERE_CLAUSE).run()
+
 def run_grobid_metadata(args):
     fmi = GrobidMetadataImporter(args.api,
         edit_batch_size=args.batch_size,
@@ -150,6 +160,24 @@ def main():
     sub_matched.add_argument('--bezerk-mode',
         action='store_true',
         help="don't lookup existing files, just insert (clobbers; only for fast bootstrap)")
+
+    sub_arabesque_matched = subparsers.add_parser('arabesque_matched')
+    sub_arabesque_matched.set_defaults(
+        func=run_arabesque_matched,
+        auth_var="FATCAT_API_AUTH_TOKEN",
+    )
+    sub_arabesque_matched.add_argument('db_file',
+        help="sqlite database file to import from")
+    sub_arabesque_matched.add_argument('--do-updates',
+        action='store_true',
+        help="update pre-existing file entities if new match (instead of skipping)")
+    sub_arabesque_matched.add_argument('--extid-type',
+        default="doi",
+        help="identifer type in the database (eg, 'doi', 'pmcid'")
+    sub_arabesque_matched.add_argument('--crawl-id',
+        help="crawl ID (optionally included in editgroup metadata)")
+    sub_arabesque_matched.add_argument('--default-link-rel',
+        help="default URL rel for matches (eg, 'publisher', 'web')")
 
     sub_grobid_metadata = subparsers.add_parser('grobid-metadata')
     sub_grobid_metadata.set_defaults(
