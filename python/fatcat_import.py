@@ -31,7 +31,10 @@ def run_matched(args):
         edit_batch_size=args.batch_size)
     JsonLinePusher(fmi, args.json_file).run()
 
-def run_arabesque_matched(args):
+def run_arabesque_match(args):
+    if (args.sqlite_file and args.json_file) or not (args.sqlite_file or
+            args.json_file):
+        print("Supply one of --sqlite-file or --json-file")
     ami = ArabesqueMatchImporter(args.api,
         do_updates=args.do_updates,
         require_grobid=(not args.no_require_grobid),
@@ -39,8 +42,11 @@ def run_arabesque_matched(args):
         crawl_id=args.crawl_id,
         default_link_rel=args.default_link_rel,
         edit_batch_size=args.batch_size)
-    SqlitePusher(ami, args.db_file, "crawl_result",
-        ARABESQUE_MATCH_WHERE_CLAUSE).run()
+    if args.sqlite_file:
+        SqlitePusher(ami, args.sqlite_file, "crawl_result",
+            ARABESQUE_MATCH_WHERE_CLAUSE).run()
+    elif args.json_file:
+        JsonLinePusher(ami, args.json_file).run()
 
 def run_grobid_metadata(args):
     fmi = GrobidMetadataImporter(args.api,
@@ -162,25 +168,29 @@ def main():
         action='store_true',
         help="don't lookup existing files, just insert (clobbers; only for fast bootstrap)")
 
-    sub_arabesque_matched = subparsers.add_parser('arabesque_matched')
-    sub_arabesque_matched.set_defaults(
-        func=run_arabesque_matched,
+    sub_arabesque_match = subparsers.add_parser('arabesque')
+    sub_arabesque_match.set_defaults(
+        func=run_arabesque_match,
         auth_var="FATCAT_AUTH_WORKER_CRAWL",
     )
-    sub_arabesque_matched.add_argument('db_file',
+    sub_arabesque_match.add_argument('--sqlite-file',
         help="sqlite database file to import from")
-    sub_arabesque_matched.add_argument('--do-updates',
+    sub_arabesque_match.add_argument('--json-file',
+        help="JSON file to import from (or stdin)",
+        type=argparse.FileType('r'))
+    sub_arabesque_match.add_argument('--do-updates',
         action='store_true',
         help="update pre-existing file entities if new match (instead of skipping)")
-    sub_arabesque_matched.add_argument('--no-require-grobid',
+    sub_arabesque_match.add_argument('--no-require-grobid',
         action='store_true',
         help="whether postproc_status column must be '200'")
-    sub_arabesque_matched.add_argument('--extid-type',
+    sub_arabesque_match.add_argument('--extid-type',
         default="doi",
         help="identifer type in the database (eg, 'doi', 'pmcid'")
-    sub_arabesque_matched.add_argument('--crawl-id',
+    sub_arabesque_match.add_argument('--crawl-id',
         help="crawl ID (optionally included in editgroup metadata)")
-    sub_arabesque_matched.add_argument('--default-link-rel',
+    sub_arabesque_match.add_argument('--default-link-rel',
+        default="web",
         help="default URL rel for matches (eg, 'publisher', 'web')")
 
     sub_grobid_metadata = subparsers.add_parser('grobid-metadata')

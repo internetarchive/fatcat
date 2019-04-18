@@ -65,6 +65,7 @@ class ArabesqueMatchImporter(EntityImporter):
         assert extid_type in ('doi', 'pmcid', 'pmid')
         self.extid_type = extid_type
         self.default_link_rel = kwargs.get("default_link_rel", "web")
+        assert self.default_link_rel
         self.default_mime = kwargs.get("default_mime", None)
         self.do_updates = kwargs.get("do_updates", False)
         self.require_grobid = require_grobid
@@ -148,6 +149,7 @@ class ArabesqueMatchImporter(EntityImporter):
             self.counts['skip-update-disabled'] += 1
             return False
 
+        # TODO: this code path never gets hit because of the check above
         if set(fe.release_ids) == set(existing.release_ids):
             existing_urls = set([u.url for u in existing.urls])
             new_urls = set([u.url for u in fe.urls])
