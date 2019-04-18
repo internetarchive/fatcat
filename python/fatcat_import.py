@@ -34,6 +34,7 @@ def run_matched(args):
 def run_arabesque_matched(args):
     ami = ArabesqueMatchImporter(args.api,
         do_updates=args.do_updates,
+        require_grobid=(not args.no_require_grobid),
         extid_type=args.extid_type,
         crawl_id=args.crawl_id,
         default_link_rel=args.default_link_rel,
@@ -171,6 +172,9 @@ def main():
     sub_arabesque_matched.add_argument('--do-updates',
         action='store_true',
         help="update pre-existing file entities if new match (instead of skipping)")
+    sub_arabesque_matched.add_argument('--no-require-grobid',
+        action='store_true',
+        help="whether postproc_status column must be '200'")
     sub_arabesque_matched.add_argument('--extid-type',
         default="doi",
         help="identifer type in the database (eg, 'doi', 'pmcid'")

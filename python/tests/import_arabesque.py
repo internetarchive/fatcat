@@ -1,7 +1,7 @@
 
 import json
 import pytest
-from fatcat_tools.importers import ArabesqueMatchImporter, SqlitePusher
+from fatcat_tools.importers import ArabesqueMatchImporter, SqlitePusher, JsonLinePusher
 from fixtures import api
 
 
@@ -12,6 +12,10 @@ def arabesque_importer(api):
 # TODO: use API to check that entities actually created...
 def test_arabesque_importer_basic(arabesque_importer):
     SqlitePusher(arabesque_importer, 'tests/files/arabesque_example.sqlite3', "crawl_result").run()
+
+def test_arabesque_importer_json(arabesque_importer):
+    with open('tests/files/arabesque_example.json', 'r') as f:
+        JsonLinePusher(arabesque_importer, f).run()
 
 def test_arabesque_importer(arabesque_importer):
     last_index = arabesque_importer.api.get_changelog(limit=1)[0].index
