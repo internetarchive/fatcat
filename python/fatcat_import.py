@@ -165,7 +165,7 @@ def main():
     sub_arabesque_matched = subparsers.add_parser('arabesque_matched')
     sub_arabesque_matched.set_defaults(
         func=run_arabesque_matched,
-        auth_var="FATCAT_API_AUTH_TOKEN",
+        auth_var="FATCAT_AUTH_WORKER_CRAWL",
     )
     sub_arabesque_matched.add_argument('db_file',
         help="sqlite database file to import from")
