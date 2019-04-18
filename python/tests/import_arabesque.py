@@ -7,7 +7,7 @@ from fixtures import api
 
 @pytest.fixture(scope="function")
 def arabesque_importer(api):
-    yield ArabesqueMatchImporter(api, extid_type="doi")
+    yield ArabesqueMatchImporter(api, extid_type="doi", crawl_id="DUMMY123")
 
 # TODO: use API to check that entities actually created...
 def test_arabesque_importer_basic(arabesque_importer):
@@ -31,6 +31,7 @@ def test_arabesque_importer(arabesque_importer):
     assert eg.description
     assert "identifier/url seedlist" in eg.description.lower()
     assert eg.extra['git_rev']
+    assert eg.extra['crawl_id'] == "DUMMY123"
     assert "fatcat_tools.ArabesqueMatchImporter" in eg.extra['agent']
 
     # re-insert; should skip

@@ -57,7 +57,7 @@ class ArabesqueMatchImporter(EntityImporter):
         eg_extra = kwargs.get('editgroup_extra', dict())
         eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.ArabesqueMatchImporter')
         if kwargs.get('crawl_id'):
-            eg_extra['crawl_id'] = eg_extra.get('crawl_id')
+            eg_extra['crawl_id'] = kwargs.get('crawl_id')
         super().__init__(api,
             editgroup_description=eg_desc,
             editgroup_extra=eg_extra,
