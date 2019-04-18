@@ -145,8 +145,15 @@ class ArabesqueMatchImporter(EntityImporter):
             return False
 
         if not self.do_updates:
-            self.counts['update-disabled'] += 1
+            self.counts['skip-update-disabled'] += 1
             return False
+
+        if set(fe.release_ids) == set(existing.release_ids):
+            existing_urls = set([u.url for u in existing.urls])
+            new_urls = set([u.url for u in fe.urls])
+            if existing_urls.issuperset(new_urls):
+                self.counts['skip-update-nothing-new'] += 1
+                return False
 
         # merge the existing into this one and update
         existing.urls = list(set([(u.rel, u.url) for u in fe.urls + existing.urls]))
