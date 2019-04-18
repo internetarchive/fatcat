@@ -171,6 +171,7 @@ class EntityImporter:
         self._edit_count = 0
         self._editgroup_id = None
         self._entity_queue = []
+        self._edits_inflight = []
 
     def push_record(self, raw_record):
         """
@@ -199,6 +200,7 @@ class EntityImporter:
             self.api.accept_editgroup(self._editgroup_id)
             self._editgroup_id = None
             self._edit_count = 0
+            self._edits_inflight = []
 
         if self._entity_queue:
             self.insert_batch(self._entity_queue)
@@ -215,6 +217,7 @@ class EntityImporter:
             self.api.accept_editgroup(self._editgroup_id)
             self._editgroup_id = None
             self._edit_count = 0
+            self._edits_inflight = []
 
         if not self._editgroup_id:
             eg = self.api.create_editgroup(

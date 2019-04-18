@@ -149,6 +149,10 @@ class ArabesqueMatchImporter(EntityImporter):
             self.counts['skip-update-disabled'] += 1
             return False
 
+        if existing.ident in [e.ident for e in self._edits_inflight]:
+            self.counts['skip-update-inflight'] += 1
+            return False
+
         # TODO: this code path never gets hit because of the check above
         if set(fe.release_ids) == set(existing.release_ids):
             existing_urls = set([u.url for u in existing.urls])
@@ -162,7 +166,8 @@ class ArabesqueMatchImporter(EntityImporter):
         existing.urls = [fatcat_client.FileEntityUrls(rel=rel, url=url) for (rel, url) in existing.urls]
         existing.release_ids = list(set(fe.release_ids + existing.release_ids))
         existing.mimetype = existing.mimetype or fe.mimetype
-        self.api.update_file(existing.ident, existing, editgroup_id=self.get_editgroup_id())
+        edit = self.api.update_file(existing.ident, existing, editgroup_id=self.get_editgroup_id())
+        self._edits_inflight.append(edit)
         self.counts['update'] += 1
         return False
 
