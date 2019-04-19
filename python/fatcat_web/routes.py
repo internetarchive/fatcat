@@ -292,8 +292,10 @@ def release_view(ident):
         # November 1.
         if ref.extra and ref.extra.get('unstructured'):
             ref.extra['unstructured'] = strip_extlink_xml(ref.extra['unstructured'])
+    # author list to display; ensure it's sorted by index (any othors with
+    # index=None go to end of list)
     authors = [c for c in entity.contribs if c.role in ('author', None)]
-    authors = sorted(authors, key=lambda c: c.index or 99999999)
+    authors = sorted(authors, key=lambda c: (c.index == None and 99999999) or c.index)
     return render_template('release_view.html', release=entity,
         authors=authors, container=entity.container)
 
