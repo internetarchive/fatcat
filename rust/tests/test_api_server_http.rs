@@ -362,6 +362,17 @@ fn test_lookups() {
         Some("bigger example"),
     );
 
+    // not lower-case
+    helpers::check_http_response(
+        request::get(
+            "http://localhost:9411/v0/release/lookup?doi=10.123/ABC",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("bigger example"),
+    );
+
     // URL encoded
     helpers::check_http_response(
         request::get(

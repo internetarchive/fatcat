@@ -277,10 +277,12 @@ impl Server {
             jstor_id,
         ) {
             (Some(doi), None, None, None, None, None, None, None) => {
-                check_doi(doi)?;
+                // DOIs always stored lower-case; lookups are case-insensitive
+                let doi = doi.to_lowercase();
+                check_doi(&doi)?;
                 release_ident::table
                     .inner_join(release_rev::table)
-                    .filter(release_rev::doi.eq(doi))
+                    .filter(release_rev::doi.eq(&doi))
                     .filter(release_ident::is_live.eq(true))
                     .filter(release_ident::redirect_id.is_null())
                     .first(conn)?
