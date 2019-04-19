@@ -93,21 +93,28 @@ class ArabesqueMatchImporter(EntityImporter):
 
         # check/cleanup DOI
         if self.extid_type == 'doi':
-            self.extid_type.replace('http://doi.org/', '')
-            self.extid_type.replace('https://doi.org/', '')
+            extid = extid.lower()
+            extid.replace('http://doi.org/', '')
+            extid.replace('https://doi.org/', '')
+            if extid.startswith('doi:'):
+                extid = extid[4:]
             if not extid.startswith('10.'):
-                self.counts['skip-bad-doi']
+                self.counts['skip-extid-invalid']
                 return None
 
         # lookup extid
         try:
             re = self.api.lookup_release(**{self.extid_type: extid})
         except fatcat_client.rest.ApiException as err:
-            if err.status != 404:
+            if err.status == 404:
+                # bail on 404 (release not in DB)
+                self.counts['skip-extid-not-found'] += 1
+                return None
+            elif err.status == 400:
+                self.counts['skip-extid-invalid'] += 1
+                return None
+            else:
                 raise err
-            # bail on 404 (release not in DB)
-            self.counts['skip-extid-not-found'] += 1
-            return None
 
         url = make_rel_url(row['final_url'], self.default_link_rel)
         if not url:
