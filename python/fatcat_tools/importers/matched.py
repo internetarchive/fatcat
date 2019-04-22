@@ -22,7 +22,7 @@ class MatchedImporter(EntityImporter):
     - sha256 (hex)
     - size (int)
     - cdx (list of objects)
-        - dt
+        - dt (optional; if included creates wayback link)
         - url
     - mimetype
     - urls (list of strings... or objects?)
@@ -77,15 +77,17 @@ class MatchedImporter(EntityImporter):
                 urls.add(url)
         for cdx in obj.get('cdx', []):
             original = cdx['url']
-            wayback = "https://web.archive.org/web/{}/{}".format(
-                cdx['dt'],
-                original)
-            urls.add(("webarchive", wayback))
+            if cdx.get('dt'):
+                wayback = "https://web.archive.org/web/{}/{}".format(
+                    cdx['dt'],
+                    original)
+                urls.add(("webarchive", wayback))
             url = make_rel_url(original, default_link_rel=self.default_link_rel)
             if url != None:
                 urls.add(url)
         urls = [fatcat_client.FileEntityUrls(rel=rel, url=url) for (rel, url) in urls]
         if len(urls) == 0:
+            self.counts['skip-no-urls'] += 1
             return None
 
         size = obj.get('size')
