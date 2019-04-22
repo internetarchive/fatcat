@@ -120,6 +120,9 @@ class ArabesqueMatchImporter(EntityImporter):
         if not url:
             self.counts['skip-url'] += 1
             return None
+        if not row['final_timestamp']:
+            self.counts['skip-missing-timestamp'] += 1
+            return None
         wayback = "https://web.archive.org/web/{}/{}".format(
             row['final_timestamp'],
             row['final_url'])
