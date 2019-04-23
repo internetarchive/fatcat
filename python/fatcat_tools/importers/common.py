@@ -50,7 +50,9 @@ def test_clean():
     assert clean('<b>a&amp;b</b>', force_xml=True) == '<b>a&b</b>'
 
 DOMAIN_REL_MAP = {
-    "archive.org": "repository",
+    "archive.org": "archive",
+    # LOCKSS, Portico, DuraSpace, etc would also be "archive"
+
     "arxiv.org": "repository",
     "babel.hathitrust.org": "repository",
     "cds.cern.ch": "repository",
