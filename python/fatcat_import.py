@@ -28,7 +28,8 @@ def run_journal_metadata(args):
 
 def run_matched(args):
     fmi = MatchedImporter(args.api,
-        edit_batch_size=args.batch_size)
+        edit_batch_size=args.batch_size,
+        editgroup_description=args.editgroup_description_override)
     JsonLinePusher(fmi, args.json_file).run()
 
 def run_arabesque_match(args):
@@ -115,6 +116,9 @@ def main():
     parser.add_argument('--batch-size',
         help="size of batch to send",
         default=50, type=int)
+    parser.add_argument('--editgroup-description-override',
+        help="editgroup description override",
+        default=None, type=str)
     subparsers = parser.add_subparsers()
 
     sub_crossref = subparsers.add_parser('crossref')
@@ -248,6 +252,12 @@ def main():
     if not args.__dict__.get("func"):
         print("tell me what to do!")
         sys.exit(-1)
+
+    # allow editgroup description override via env variable (but CLI arg takes
+    # precedence)
+    if not args.editgroup_description_override \
+            and os.environ.get('FATCAT_EDITGROUP_DESCRIPTION'):
+        args.editgroup_description_override = os.environ.get('FATCAT_EDITGROUP_DESCRIPTION')
 
     args.api = authenticated_api(
         args.host_url,
