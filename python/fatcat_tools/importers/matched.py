@@ -4,7 +4,7 @@ import json
 import sqlite3
 import itertools
 import fatcat_client
-from .common import EntityImporter, clean, make_rel_url
+from .common import EntityImporter, clean, make_rel_url, SANE_MAX_RELEASES, SANE_MAX_URLS
 
 
 class MatchedImporter(EntityImporter):
@@ -68,6 +68,9 @@ class MatchedImporter(EntityImporter):
         if len(release_ids) == 0:
             self.counts['skip-no-doi'] += 1
             return None
+        if len(release_ids) > SANE_MAX_RELEASES:
+            self.counts['skip-too-many-dois'] += 1
+            return None
 
         # parse URLs and CDX
         urls = set()
@@ -88,6 +91,9 @@ class MatchedImporter(EntityImporter):
         urls = [fatcat_client.FileEntityUrls(rel=rel, url=url) for (rel, url) in urls]
         if len(urls) == 0:
             self.counts['skip-no-urls'] += 1
+            return None
+        if len(urls) > SANE_MAX_URLS:
+            self.counts['skip-too-many-urls'] += 1
             return None
 
         size = obj.get('size')
@@ -126,7 +132,13 @@ class MatchedImporter(EntityImporter):
         # merge the existing into this one and update
         existing.urls = list(set([(u.rel, u.url) for u in fe.urls + existing.urls]))
         existing.urls = [fatcat_client.FileEntityUrls(rel=rel, url=url) for (rel, url) in existing.urls]
+        if len(existing.urls) > SANE_MAX_URLS:
+            self.counts['skip-update-too-many-url'] += 1
+            return None
         existing.release_ids = list(set(fe.release_ids + existing.release_ids))
+        if len(existing.release_ids) > SANE_MAX_RELEASES:
+            self.counts['skip-update-too-many-url'] += 1
+            return None
         existing.mimetype = existing.mimetype or fe.mimetype
         existing.size = existing.size or fe.size
         existing.md5 = existing.md5 or fe.md5

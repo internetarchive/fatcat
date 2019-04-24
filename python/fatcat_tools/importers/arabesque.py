@@ -5,7 +5,7 @@ import base64
 import sqlite3
 import itertools
 import fatcat_client
-from .common import EntityImporter, clean, make_rel_url
+from .common import EntityImporter, clean, make_rel_url, SANE_MAX_RELEASES, SANE_MAX_URLS
 
 
 def b32_hex(s):
@@ -130,6 +130,10 @@ class ArabesqueMatchImporter(EntityImporter):
 
         urls = [fatcat_client.FileEntityUrls(rel=rel, url=url) for (rel, url) in urls]
 
+        if len(urls) > SANE_MAX_URLS:
+            self.counts['skip-too-many-url'] += 1
+            return None
+
         fe = fatcat_client.FileEntity(
             sha1=b32_hex(row['final_sha1']),
             mimetype=row['final_mimetype'],
@@ -174,7 +178,13 @@ class ArabesqueMatchImporter(EntityImporter):
         # merge the existing into this one and update
         existing.urls = list(set([(u.rel, u.url) for u in fe.urls + existing.urls]))
         existing.urls = [fatcat_client.FileEntityUrls(rel=rel, url=url) for (rel, url) in existing.urls]
+        if len(existing.urls) > SANE_MAX_URLS:
+            self.counts['skip-update-too-many-url'] += 1
+            return None
         existing.release_ids = list(set(fe.release_ids + existing.release_ids))
+        if len(existing.release_ids) > SANE_MAX_RELEASES:
+            self.counts['skip-update-too-many-url'] += 1
+            return None
         existing.mimetype = existing.mimetype or fe.mimetype
         edit = self.api.update_file(existing.ident, existing, editgroup_id=self.get_editgroup_id())
         self._edits_inflight.append(edit)

@@ -14,6 +14,9 @@ import fatcat_client
 from fatcat_client.rest import ApiException
 
 
+SANE_MAX_RELEASES = 200
+SANE_MAX_URLS = 100
+
 def clean(thing, force_xml=False):
     """
     This function is appropriate to be called on any random, non-markup string,
