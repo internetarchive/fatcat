@@ -33,10 +33,13 @@ In production:
     sudo -u postgres psql fatcat_prod < dump_file_hashes.sql | egrep -v ^BEGIN$ | egrep -v ^ROLLBACK$ | pv -l | pigz > /srv/fatcat/snapshots/file_hashes.tsv.gz
     sudo -u postgres psql fatcat_prod < dump_release_extid.sql | egrep -v ^BEGIN$ | egrep -v ^ROLLBACK$ | pv -l | pigz > /srv/fatcat/snapshots/release_extid.tsv.gz
 
-## HOWTO: Full private database backup and restore
+## HOWTO: Full ("private") database backup and restore
 
     export DATESLUG="`date +%Y-%m-%d.%H%M%S`"
-    time sudo -u postgres pg_dump --verbose --format=tar fatcat_prod | pigz > /srv/fatcat/snapshots/fatcat_private_dbdump_${DATESLUG}.tar.gz
+    time sudo -u postgres pg_dump --verbose --format=tar fatcat_prod | pigz > /srv/fatcat/snapshots/fatcat_full_dbdump_${DATESLUG}.tar.gz
+
+In production (as of 2019-04-24, with a 283 GByte PostgreSQL database), this
+takes 1h40m.
 
 NOTE: by using the "directory" export (along with `--file`) instead of "tar"
 export, it would be possible to use parallel dumping. However, this would put
@@ -45,14 +48,14 @@ issues with users/permissions.
 
 To restore, CAREFULLY, run:
 
-    sudo -u postgres pg_restore --clean --if-exists --create --exit-on-error --jobs=16 DUMP_FILE.tar.gz
-
-    zcat sudo -u postgres pg_restore --clean --if-exists --create --exit-on-error --jobs=16 DUMP_FILE.tar.gz
+    sudo -u postgres pg_restore --clean --if-exists --create --exit-on-error --jobs=16 DUMP_FILE.tar
 
 Or, in production:
 
     sudo su postgres
-    time zcat fatcat_private_dbdump_2020-02-02.022209.tar.gz  | pg_restore --exit-on-error --clean --if-exists --dbname fatcat_prod
+    time zcat fatcat_full_dbdump_2020-02-02.022209.tar.gz  | pg_restore --exit-on-error --clean --if-exists --dbname fatcat_prod
+
+In QA (as of 2019-01-30 dump), this takes about 5h15m.
 
 To just inspect a dump:
 
@@ -75,12 +78,12 @@ Can also run using the remote/SSH options above.
 The `./ia_item_exports_readme.md` and `sqldump` files should be included as a
 `README.md` when appropriate:
 
-    ia upload fatcat_bulk_exports_YYYY-MM-DD ia_item_exports_readme.md --remote-name=README.md
-    ia upload fatcat_sqldump_full_YYYY-MM-DD ia_item_sqldump_readme.md --remote-name=README.md
+    ia upload fatcat_bulk_exports_YYYY-MM-DD ia_exports_item_readme.md --remote-name=README.md
+    ia upload fatcat_sqldump_full_YYYY-MM-DD ia_sqldump_item_readme.md --remote-name=README.md
 
 Metadata should be set as:
 
-- item name: `fatcat_bulk_exports_YYYY-MM-DD` or `fatcat_sqldump_public_YYYY-MM-DD` (or sometimes `sqldump_full`)
+- item name: `fatcat_bulk_exports_YYYY-MM-DD` or `fatcat_sqldump_public_YYYY-MM-DD` (or sometimes `fatcat_sqldump_full`)
 - collection: `ia_biblio_metadata`
 - creator: `Internet Archive Web Group`
 - date: that the dump started (UTC)
