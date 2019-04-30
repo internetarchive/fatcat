@@ -81,6 +81,8 @@ The `./ia_item_exports_readme.md` and `sqldump` files should be included as a
     ia upload fatcat_bulk_exports_YYYY-MM-DD ia_exports_item_readme.md --remote-name=README.md
     ia upload fatcat_sqldump_full_YYYY-MM-DD ia_sqldump_item_readme.md --remote-name=README.md
 
+Uploads should can be `--no-derive` to save cluster time.
+
 Metadata should be set as:
 
 - item name: `fatcat_bulk_exports_YYYY-MM-DD` or `fatcat_sqldump_public_YYYY-MM-DD` (or sometimes `fatcat_sqldump_full`)
