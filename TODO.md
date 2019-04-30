@@ -1,30 +1,10 @@
 
 ## In Progress
 
+- update existing 1.5 mil longtail OA PDFs with container/ISSN-L
 
 ## Next Up
 
-- review bots:
-    - tests
-    - not actually processing work entities
-    - filter out already reviewed
-    - handle deletions, merges
-    - examples of warnings, etc
-- import from arabesque output (eg, specific crawls)
-- test logins, and add loginpass support for: orcid, wikimedia
-- missing test coverage (python):
-    batch create work, fileset, webcapture
-    delete entity (for each entity type)
-    delete entity edits (for each entity type)
-    get entity edit (for each entity type)
-    get entity redirects (for each entity type)
-    get entity revision (for each entity type)
-    get release webcaptures
-    update editor (?)
-    update fileset, webcapture
-    release elastic transform (rich extra)
-    successful web entity edits (create fresh entities first)
-    editgroup web submit, accept, annotate
 
 ## Bugs
 
@@ -39,12 +19,14 @@ Changes to SQL (and swagger):
 
 - structured names in contribs (given/sur)
 - `release_status` => `release_stage`
-- `withdrawn_date` and retraction as a release stage
+- `withdrawn_date`, `withdrawn_state`, and retraction as a release stage
 - subtitle as a string field
     => but what about translation? `original_subtitle`? just combine them?
     => combine in elasticsearch 'title' field
 - size on webcapture CDX lines (we fetch for sha256 anyways, so easy to calculate)
-- ark extid?
+- `ark_id` release identifier
+- `mag_id` (microsoft academic graph) release identifier
+- releases: 'number' (eg, report numbers) and 'version' (for numbered variants) fields
 - missing SQL indices: `ENTITY_edit.editgroup_id, ENTITY_edit.ident_id`
 
 Changes to swagger only:
@@ -65,13 +47,8 @@ Want to minimize edit counts, so will bundle a bunch of changes
 
 ## Production Public Launch Blockers
 
-- `withdrawn_date`
-    => either SQL schema addition, or pull from extra
-    => but what if date isn't known?
-- update /about page
-- login/signup iteration (orcid, etc)
+- view edit revisions in webface
 - audit fatcat metadata for CC-0
-- handle 'wip' status entities in web UI
 - guide updates for auth
 - privacy policy, and link from: create account, create edit
 
@@ -83,6 +60,26 @@ Want to minimize edit counts, so will bundle a bunch of changes
 
 ## Unsorted
 
+- ability to "edit edits" (update in-progress edits)
+- review bots:
+    - tests
+    - not actually processing work entities
+    - filter out already reviewed
+    - handle deletions, merges
+    - examples of warnings, etc
+- missing test coverage (python):
+    batch create work, fileset, webcapture
+    delete entity (for each entity type)
+    delete entity edits (for each entity type)
+    get entity edit (for each entity type)
+    get entity redirects (for each entity type)
+    get entity revision (for each entity type)
+    get release webcaptures
+    update editor (?)
+    update fileset, webcapture
+    release elastic transform (rich extra)
+    successful web entity edits (create fresh entities first)
+    editgroup web submit, accept, annotate
 - API: ability to expand containers (and files, etc?) in releases-for-work
 - API: /releases endpoint (and/or expansion) for releases-for-file (etc)
 - cleanup ./notes/ directory
