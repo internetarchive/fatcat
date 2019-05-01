@@ -1,0 +1,26 @@
+
+check for known bad files (zero bytes, etc) by hash
+
+## extid / ExtidReviewBot
+
+Deeper check of external identifiers.
+
+Checks:
+- duplication of entities: that no entities with the same identifiers already exist
+- DOI numbers should be registered (check doi.org)
+
+## style
+
+Check release entity style.
+
+- release_type, status, etc are set
+- title doesn't end in a period
+- at least one contributor
+
+## URLs
+
+Look at URLs and see if they look valid.
+
+Checks:
+- for "single page" springer domain (and others)
+- no 'None' web.archive.org links (old bug)
