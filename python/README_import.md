@@ -67,3 +67,21 @@ These each take 2-4 hours:
     # GROBID extracted (release+file)
     time zcat /srv/fatcat/datasets/2018-09-23-0405.30-dumpgrobidmetainsertable.longtail_join.filtered.tsv.gz | pv -l | time parallel -j12 --round-robin --pipe ./fatcat_import.py grobid-metadata -
 
+## Arabesque Matches
+
+Prep JSON files from sqlite (for parallel import):
+
+    ~/arabesque/arabesque.py dump_json s2_doi.sqlite --only-identifier-hits | pv -l | gzip > s2_doi.json.gz
+
+Run import in parallel:
+
+    export FATCAT_AUTH_WORKER_CRAWL=...
+    zcat /srv/fatcat/datasets/s2_doi.json.gz | pv -l | time parallel -j12 --round-robin --pipe ./fatcat_import.py arabesque --json-file - --extid-type doi --crawl-id DIRECT-OA-CRAWL-2019 --no-require-grobid
+
+## Other Matched
+
+    export FATCAT_EDITGROUP_DESCRIPTION="File/DOI matching to user-uploaded pre-1923 and pre-1909 paper corpus on archive.org"
+    export FATCAT_API_AUTH_TOKEN=... (FATCAT_AUTH_WORKER_ARCHIVE_ORG)
+
+    zcat /srv/fatcat/datasets/crossref-pre-1923-scholarly-works.matched.json.gz | time parallel -j12 --round-robin --pipe ./fatcat_import.py matched -
+
