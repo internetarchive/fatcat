@@ -24,6 +24,16 @@ See also:
 - API `get_editgroup_annotations` endpoint was requiring auth; this was a typo.
   Going to call this a very minor/backwards-compatible API change and not do a
   minor version bump for it.
+- DOI lookups (for release entities) were not being lower-cased as intended
+  (DOIs are stored lower-case internally)
+
+### Added
+
+- ORCID OAuth login provider
+
+### Changed
+
+- small tweaks to URL domain/rel mapping list
 
 ## [0.2.1] - 2019-04-09
 
