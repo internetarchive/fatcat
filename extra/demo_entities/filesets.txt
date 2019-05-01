@@ -1,0 +1,73 @@
+
+## Goals
+
+"DASH/CDL/IA/Dat importer"
+    => start with local dat clone w/ discovery key; releases that have DOI
+        => but may need to create release if datacite
+    => enumerate and hash all the files under 'data/'
+    => process metadata from cdl_dash_metadata.json
+    => construct fileset entity
+    => set extra['ark_id']
+    => set extra['related_works'] = [] (?)
+        => or group under the work?
+    => add: rel=dweb url=dat://.../files/
+    => add CDL... repo-bundle?
+        https://merritt.cdlib.org/u/ark%3A%2Fb5068%2Fd1rp49/2
+    => add CDL... repo-dir?
+        https://merritt.cdlib.org/d/ark%3A%2Fb5068%2Fd1rp49/2/021611_H929.txt
+
+## Example Works
+
+https://dash.ucop.edu/stash/dataset/doi:10.7280/D1J37Z
+"Jakobshavn Glacier Bed Elevation"
+< 1MByte
+doi:10.7280/D1J37Z
+ark:/13030/m5rg0r8q
+dat://77e94744aa5f967e6ed7e3990bfc29f141dbf2c0fff572eb1212b3bd706882f4
+NOTE: abstract was unicode-mangled for this one; I fixed by hand
+https://fatcat.wiki/fileset/ho376wmdanckpp66iwfs7g22ne
+
+https://dash.ucop.edu/stash/dataset/doi:10.5068/D1RP49
+"Live cell interferometry cell division tracking data files"
+54 MByte, couple dozen files, no directorie
+doi:10.5068/D1RP49
+ark:/b5068/d1rp49
+dat://7f5f95752650ab2968ec6a0c491fe320937ab928f57bd88692b1086248ee2925
+https://fatcat.wiki/fileset/ltjp7k2nrbes3or5h4na5qgxlu
+
+https://dash.ucop.edu/stash/dataset/doi:10.15146/R3201J
+"Data associated with Britten, Thatcher and Caro (PLOS One, 2016). "Zebras and biting flies: quantitative analysis of reflected light from zebra coats in their natural habitat.""
+CC-0
+783 MByte
+doi:10.15146/R3201J
+ark:/13030/m53r5pzm
+dat://c02c88d3989df551e203089d67b1c2a3ae36e933b229c464d78356935acedfd1
+existing fatcat work:h5cb6baxnragxlg4tamgsgpef4 release:qws4ekug5bgivkxsvsgrtwuybe
+https://fatcat.wiki/fileset/vp2azlpw5zgsrjr7d3w7csej2u
+
+stress test:
+https://dash.ucop.edu/stash/dataset/doi:10.7272/Q66Q1V54
+doi:10.7272/Q66Q1V54
+ark:/b7272/q66q1v54
+dat://f0c1cbc00720ff03c47234c737e3a62088f3ec51c5b911f5e6cc73d4571bd3c0
+16 GByte, many files, in sub-directories (for which the dat is broken)
+
+Unfortunately, looks like these ARKs don't result (get a tombstone, "Object in
+restricted Merritt collection"): http://n2t.net/ark:/13030/m53r5pzm
+
+## Commands
+
+First:
+
+    ./fatcat_import.py --host-url https://api.fatcat.wiki/v0 cdl-dash-dat \
+        77e94744aa5f967e6ed7e3990bfc29f141dbf2c0fff572eb1212b3bd706882f4
+
+Then:
+
+    ./fatcat_import.py --host-url https://api.fatcat.wiki/v0 cdl-dash-dat \
+        --editgroup-id xl3rz6uxfrb2pgprzxictbkvxi \
+        7f5f95752650ab2968ec6a0c491fe320937ab928f57bd88692b1086248ee2925
+
+    [etc]
+
+

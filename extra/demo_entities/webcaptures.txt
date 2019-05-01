@@ -43,3 +43,76 @@ And then:
 
     ./fatcat_util.py --host-url https://api.fatcat.wiki/v0 editgroup-accept kpuel5gcgjfrzkowokq54k633q
 
+
+## Links/Works
+
+http://worrydream.com/ClimateChange/
+
+https://joi.ito.com/weblog/2018/05/28/citing-blogs.html
+    => https://fatcat.wiki/release/sejvdbc4mrh6ja73r5ov64l4vi
+
+http://kcoyle.net/mexico.html
+
+http://www.dlib.org/dlib/june01/reich/06reich.html
+    => https://fatcat.wiki/release/z477qzrwfvg2vbx226qwo2gosy
+    => http://web.archive.org/web/20010712114837/http://www.dlib.org/dlib/june01/reich/06reich.html
+http://www.dlib.org/dlib/november12/beaudoin/11beaudoin1.html
+    => https://fatcat.wiki/release/rm4afnxm2jfotbsky2ca5uqlzm
+http://www.dlib.org/dlib/march08/marshall/03marshall-pt1.html
+    => https://fatcat.wiki/release/mjtqtuyhwfdr7j2c3l36uor7uy
+
+https://web.archive.org/web/20141222133249/http://www.genders.org/g58/g58_doyle.html
+    => https://fatcat.wiki/container/nzyvsqxghrhhppt7ruhfsvcnru (?)
+    => https://fatcat.wiki/container/47b5x547gvbw3pbjdpqicyne7u (?)
+
+https://blog.dshr.org/2014/03/the-half-empty-archive.html
+https://blog.dshr.org/2018/10/brief-talk-at-internet-archive-event.html
+
+https://distill.pub/2017/momentum/
+    => https://fatcat.wiki/release/urz24xenybawtlfaflo3yxhcoa
+
+http://people.csail.mit.edu/junyanz/cat/cat_papers.html
+
+## Goals
+
+"static page" script that takes extid (or fatcat id) and wayback link
+   x=> looks up fatcat release entity
+   x=> checks for existing webcapture object with same params
+   x=> fetch wayback base HTML, in re-write mode
+   x=> extract list of all embeds
+   x=> hit CDX server for each embed, as well as base URL
+   x=> create webcapture entity locally
+    => write out CDX snippet to local disk
+   x=> submit to API (controlled by flag) and print editgroup
+
+"add warc file" script; takes CDX snippet and webcapture id
+    => CDX-to-WARC locally
+    => push to a petabox item
+    => update webcapture entity with link
+    => print editgroup
+
+webrecorder workflow
+    => capture single page on webrecorder
+    => download WARC
+    => upload to petabox item
+    => generate CDX snippet
+    => create webcapture entity locally
+    => submit to API (controlled by flag) and print editgroup
+
+helpers:
+x "submit" and "accept" util functions (for editgroups)
+- web view to show submitted/recent/accepted editgroups by editor
+- create entity from JSON
+
+other ideas:
+- general "add a URL" (for files, filesets, webcaptures) helper command
+
+## Commands
+
+    cat gwb_20050408060956.replay.html | hxwls -l \
+        | rg -v '^a\t' \
+        | rg -v '\t//archive.org/' \
+        | rg '\t/web/' \
+        | cut -f3 \
+        | sort -u
+
