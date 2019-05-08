@@ -78,7 +78,7 @@ def release_to_elasticsearch(entity, force_bool=True):
     if release_year:
         t['release_year'] = release_year
 
-    t['any_abstract'] = len(release.abstracts) > 0
+    t['any_abstract'] = len(release.abstracts or []) > 0
     t['ref_count'] = len(release.refs or [])
     t['contrib_count'] = len(release.contribs or [])
     contrib_names = []
