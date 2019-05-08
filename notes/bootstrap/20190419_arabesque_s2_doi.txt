@@ -1,0 +1,36 @@
+
+QA before s2_doi insert, changelog #2307409 
+seeing about 4500 TPS in QA postgres; low CPU load: fair amount of disk I/O
+should bump to ~16 or more parallelism in prod
+
+    1.24M 0:18:07 [1.14k/s]
+    [...]
+    NOT checking GROBID status column
+    Counter({'total': 41786, 'insert': 37519, 'skip-extid-not-found': 3167, 'skip': 3167, 'exists': 1100, 'skip-update-disabled': 20, 'update': 0})
+
+That's a pretty high DOI not found rate! may want to revisit these imports again in the future
+
+    1771.00user 72.13system 18:59.09elapsed 161%CPU (0avgtext+0avgdata 53044maxresident)k
+    1528inputs+365496outputs (1major+270771minor)pagefaults 0swaps
+
+    bnewbold@wbgrp-svc500$ zcat s2_doi.json.gz | wc -l
+    1240389
+
+got a single 400 error in a single thread at:
+
+    re = self.api.lookup_release(**{self.extid_type: extid})
+
+doi lookup was: 10.4244/
+
+final changelog: #2316439
+would expect about 451500 new files, a fraction of the 1.2 million
+did GNU parallel bail early?
+
+## Tried again with silly patch
+
+    worked that time
+    NOT checking GROBID status column
+    Counter({'total': 103489, 'insert': 55521, 'exists': 40023, 'skip': 7945, 'skip-extid-not-found': 7944, 'skip-update-disabled': 40, 'skip-extid-invalid': 1, 'update': 0})
+    4322.79user 166.90system 40:21.69elapsed 185%CPU (0avgtext+0avgdata 48576maxresident)k
+    21432inputs+883888outputs (136major+283424minor)pagefaults 0swaps
+
