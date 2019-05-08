@@ -58,6 +58,16 @@ def test_fileset(api):
     r1 = api.get_release(r1edit.ident, expand="filesets")
     assert r1.filesets[0].manifest == fs1.manifest
 
+    # get redirects (none)
+    assert api.get_fileset_redirects(fs2.ident) == []
+    
+    # delete
+    eg = quick_eg(api)
+    api.delete_fileset(fs2.ident, editgroup_id=eg.editgroup_id)
+    api.accept_editgroup(eg.editgroup_id)
+    fs2 = api.get_fileset(fs2.ident)
+    assert fs2.state == "deleted"
+
 def test_fileset_examples(api):
     fs3 = api.get_fileset('aaaaaaaaaaaaaztgaaaaaaaaam')
 

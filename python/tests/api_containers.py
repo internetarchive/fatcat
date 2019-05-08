@@ -39,6 +39,16 @@ def test_container(api):
     assert c2.revision == c2_rev.revision
     assert c2.name == c2_rev.name
 
+    # get redirects (none)
+    assert api.get_container_redirects(c2.ident) == []
+    
+    # delete
+    eg = quick_eg(api)
+    api.delete_container(c2.ident, editgroup_id=eg.editgroup_id)
+    api.accept_editgroup(eg.editgroup_id)
+    c2 = api.get_container(c2.ident)
+    assert c2.state == "deleted"
+
 def test_container_examples(api):
 
     c1 = api.get_container('aaaaaaaaaaaaaeiraaaaaaaaam')

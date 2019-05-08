@@ -45,6 +45,16 @@ def test_file(api):
     assert f1edit.revision == f2_rev.revision
     assert f2.revision == f2_rev.revision
 
+    # get redirects (none)
+    assert api.get_file_redirects(f2.ident) == []
+    
+    # delete
+    eg = quick_eg(api)
+    api.delete_file(f2.ident, editgroup_id=eg.editgroup_id)
+    api.accept_editgroup(eg.editgroup_id)
+    f2 = api.get_file(f2.ident)
+    assert f2.state == "deleted"
+
 def test_file_examples(api):
 
     api.lookup_file(sha256='ffc1005680cb620eec4c913437dfabbf311b535cfe16cbaeb2faec1f92afc362')

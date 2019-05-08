@@ -96,6 +96,16 @@ def test_release(api):
     # lookup
     # TODO: via all; but need to generate random identifiers
 
+    # get redirects (none)
+    assert api.get_release_redirects(r2.ident) == []
+    
+    # delete
+    eg = quick_eg(api)
+    api.delete_release(r2.ident, editgroup_id=eg.editgroup_id)
+    api.accept_editgroup(eg.editgroup_id)
+    r2 = api.get_release(r2.ident)
+    assert r2.state == "deleted"
+
 def test_release_examples(api):
 
     api.lookup_release(pmid='54321')
@@ -106,6 +116,10 @@ def test_release_examples(api):
     assert len(r1.refs) == 5
     assert r1.contribs[14].role == "editor"
     assert r1.abstracts[0].mimetype == "application/xml+jats"
+
+    api.get_release_files(r1.ident)
+    api.get_release_filesets(r1.ident)
+    api.get_release_webcaptures(r1.ident)
 
 def test_empty_fields(api):
 

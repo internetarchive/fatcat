@@ -74,6 +74,16 @@ def test_webcapture(api):
     print(r1)
     assert r1.webcaptures[0].cdx == wc1.cdx
 
+    # get redirects (none)
+    assert api.get_webcapture_redirects(wc2.ident) == []
+    
+    # delete
+    eg = quick_eg(api)
+    api.delete_webcapture(wc2.ident, editgroup_id=eg.editgroup_id)
+    api.accept_editgroup(eg.editgroup_id)
+    wc2 = api.get_webcapture(wc2.ident)
+    assert wc2.state == "deleted"
+
 def test_webcapture_examples(api):
     wc3 = api.get_webcapture('aaaaaaaaaaaaa53xaaaaaaaaam')
 

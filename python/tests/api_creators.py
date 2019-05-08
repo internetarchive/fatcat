@@ -39,6 +39,16 @@ def test_creators(api):
     assert c2.revision == c2_rev.revision
     assert c2.display_name == c2_rev.display_name
 
+    # get redirects (none)
+    assert api.get_creator_redirects(c2.ident) == []
+    
+    # delete
+    eg = quick_eg(api)
+    api.delete_creator(c2.ident, editgroup_id=eg.editgroup_id)
+    api.accept_editgroup(eg.editgroup_id)
+    c2 = api.get_creator(c2.ident)
+    assert c2.state == "deleted"
+
 # TODO: test expansion of new creator/release pair (release get)?
 
 def test_creators_examples(api):
