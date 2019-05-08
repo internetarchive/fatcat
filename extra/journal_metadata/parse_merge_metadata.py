@@ -121,6 +121,55 @@ def test_gaps():
     assert gaps_to_spans(1950, 1970, [1955, 1956, 1965]) == \
         [[1950, 1954], [1957, 1964], [1966, 1970]]
 
+def merge_spans(old, new):
+    print(old)
+    print(new)
+    if not new:
+        return old
+    if not old:
+        old = []
+    old.extend(new)
+    years = set()
+    for span in old:
+        for y in range(span[0], span[1]):
+            years.add(y)
+    if not years:
+        return []
+    spans = []
+    start = None
+    last = None
+    todo = False
+    for y in sorted(list(years)):
+        if start == None:
+            # very first
+            start = y
+            last = y
+            todo = True
+            continue
+        if y == last + 1:
+            # span continues
+            last = y
+            todo = True
+            continue
+        # a gap just happened!
+        spans.append([start, last])
+        start = y
+        last = y
+        todo = False
+    if todo:
+        spans.append([start, last])
+    return spans
+
+def test_merge_spans():
+    assert merge_spans([[5, 10]], [10, 20]) == \
+        [[5, 20]]
+    assert merge_spans([], []) == \
+        []
+    assert merge_spans([[9, 11]], []) == \
+        [[9,11]]
+    assert merge_spans([[2000, 2000]], [1450, 1900]) == \
+        [[1450, 1900], [2000, 2000]]
+
 class Munger():
     """
     Top-level fields we'd like to fill in if possible:
@@ -495,10 +544,23 @@ class Munger():
             d = self.data[issnl]
             if not 'kbart' in d:
                 self.data[issnl]['kbart'] = dict()
+                d = self.data[issnl]
+            if not name in d['kbart']:
+                self.data[issnl]['kbart'][name] = dict()
+            old_spans = self.data[issnl]['kbart'].get(name, dict()).get('year_spans', [])
             kbart = dict()
             if row['date_first_issue_online'] and row['date_last_issue_online']:
-                kbart['year_spans'] = [[int(row['date_first_issue_online'][:4]), int(row['date_last_issue_online'][:4])]]
-            self.data[issnl]['kbart'][name] = kbart
+                start = int(row['date_first_issue_online'][:4])
+                end = int(row['date_last_issue_online'][:4])
+                if not start <= end:
+                    print("{}: {} not before {}! er, mangling".format(
+                        issnl,
+                        row['date_first_issue_online'],
+                        row['date_last_issue_online']))
+                    new_spans = [end, start]
+                else:
+                    new_spans = [start, end]
+                self.data[issnl]['kbart'][name]['year_spans'] = merge_spans(old_spans, new_spans)
         print(counts)
 
     def load_crossref(self, path):
