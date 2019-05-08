@@ -1,0 +1,373 @@
+
+## Other Matched
+
+    export FATCAT_EDITGROUP_DESCRIPTION="File/DOI matching to user-uploaded pre-1923 and pre-1909 paper corpus on archive.org"
+    export FATCAT_API_AUTH_TOKEN=... (FATCAT_AUTH_WORKER_ARCHIVE_ORG)
+
+    zcat /srv/fatcat/datasets/crossref-pre-1923-scholarly-works.matched.json.gz | time parallel -j12 --round-robin --pipe ./fatcat_import.py matched -
+
+
+    [...]
+    Counter({'total': 35585, 'insert': 35484, 'skip-no-doi': 101, 'skip': 101, 'exists': 0, 'update': 0})
+    Counter({'total': 35013, 'insert': 35002, 'skip-no-doi': 11, 'skip': 11, 'exists': 0, 'update': 0})
+    1091.68user 48.27system 11:07.29elapsed 170%CPU (0avgtext+0avgdata 45464maxresident)k
+    1392inputs+219088outputs (3major+265097minor)pagefaults 0swaps
+
+and the 1909 batch:
+
+    Counter({'total': 86367, 'insert': 86326, 'skip': 40, 'skip-no-doi': 40, 'update': 1, 'exists': 0})
+    Counter({'total': 86243, 'insert': 86210, 'skip': 33, 'skip-no-doi': 33, 'exists': 0, 'update': 0})
+    Counter({'total': 89106, 'insert': 87515, 'skip': 1591, 'skip-no-doi': 1591, 'exists': 0, 'update': 0})
+    Command exited with non-zero status 1
+    2650.97user 122.11system 28:05.67elapsed 164%CPU (0avgtext+0avgdata 51440maxresident)k
+    17192inputs+538064outputs (106major+270585minor)pagefaults 0swaps
+
+
+Oops, got a duplicate-edit error with the above, hrm. In reaction, added a
+'shuf' to the pipeline when importering in prod.
+
+
+
+    (python)fatcat@wbgrp-svc502:/srv/fatcat/src/python$ zcat /srv/fatcat/datasets/crossref-pre-1923-scholarly-works.matched.json.gz | shuf | time parallel -j12 --round-robin --pipe ./fatcat_import.py matched -
+
+    Counter({'total': 32815, 'insert': 32746, 'skip': 69, 'skip-no-doi': 69, 'update': 0, 'exists': 0})
+    Counter({'total': 32822, 'insert': 32747, 'skip-no-doi': 74, 'skip': 74, 'exists': 1, 'update': 0})
+    Counter({'total': 32814, 'insert': 32762, 'skip': 52, 'skip-no-doi': 52, 'exists': 0, 'update': 0})
+    Counter({'total': 35186, 'insert': 35127, 'skip-no-doi': 56, 'skip': 56, 'exists': 3, 'update': 0})
+    Counter({'total': 35539, 'insert': 35470, 'skip-no-doi': 68, 'skip': 68, 'exists': 1, 'update': 0})
+    Counter({'total': 35546, 'insert': 35486, 'skip': 58, 'skip-no-doi': 58, 'exists': 2, 'update': 0})
+    Counter({'total': 35541, 'insert': 35484, 'skip-no-doi': 57, 'skip': 57, 'update': 0, 'exists': 0})
+    Counter({'total': 35564, 'insert': 35507, 'skip-no-doi': 56, 'skip': 56, 'exists': 1, 'update': 0})
+    Counter({'total': 35535, 'insert': 35458, 'skip-no-doi': 77, 'skip': 77, 'exists': 0, 'update': 0})
+    Counter({'total': 35545, 'insert': 35476, 'skip': 67, 'skip-no-doi': 67, 'exists': 2, 'update': 0})
+    Counter({'total': 35551, 'insert': 35479, 'skip-no-doi': 72, 'skip': 72, 'exists': 0, 'update': 0})
+    Counter({'total': 35533, 'insert': 35470, 'skip': 63, 'skip-no-doi': 63, 'update': 0, 'exists': 0})
+    1099.79user 53.88system 11:48.58elapsed 162%CPU (0avgtext+0avgdata 47220maxresident)k
+    568inputs+217448outputs (2major+259599minor)pagefaults 0swaps
+
+
+    zcat /srv/fatcat/datasets/crossref-pre-1909-scholarly-works.matched.json.gz | shuf | time parallel -j12 --round-robin --pipe ./fatcat_import.py matched -
+
+    HTTP response body: {"success":false,"error":"ConstraintViolation","message":"unexpected database error: duplicate key value violates unique constraint \"file_edit_editgroup_id_ident_id_key\""}
+
+    Counter({'total': 81166, 'insert': 80058, 'skip-no-doi': 1108, 'skip': 1108, 'update': 0, 'exists': 0})
+    Counter({'total': 81161, 'insert': 80086, 'skip': 1075, 'skip-no-doi': 1075, 'update': 0, 'exists': 0})
+    Counter({'total': 81157, 'insert': 80061, 'skip': 1096, 'skip-no-doi': 1096, 'exists': 0, 'update': 0})
+    Counter({'total': 81152, 'insert': 80107, 'skip-no-doi': 1045, 'skip': 1045, 'exists': 0, 'update': 0})
+    Counter({'total': 81184, 'insert': 80145, 'skip': 1039, 'skip-no-doi': 1039, 'exists': 0, 'update': 0})
+    Counter({'total': 81161, 'insert': 80170, 'skip': 990, 'skip-no-doi': 990, 'update': 1, 'exists': 0})
+    Counter({'total': 81160, 'insert': 80100, 'skip': 1060, 'skip-no-doi': 1060, 'update': 0, 'exists': 0})
+    Counter({'total': 81165, 'insert': 80152, 'skip-no-doi': 1013, 'skip': 1013, 'exists': 0, 'update': 0})
+    Counter({'total': 81149, 'insert': 80115, 'skip-no-doi': 1034, 'skip': 1034, 'update': 0, 'exists': 0})
+    Counter({'total': 81168, 'insert': 80078, 'skip': 1090, 'skip-no-doi': 1090, 'update': 0, 'exists': 0})
+    Counter({'total': 81147, 'insert': 80135, 'skip-no-doi': 1012, 'skip': 1012, 'update': 0, 'exists': 0})
+    Command exited with non-zero status 1
+    2513.88user 110.92system 26:59.05elapsed 162%CPU (0avgtext+0avgdata 45024maxresident)k
+    13424inputs+509704outputs (86major+270107minor)pagefaults 0swaps
+
+1100087 lines total, and the above indicates only some 973788, so re-trying (with shuf)
+
+    (python)fatcat@wbgrp-svc502:/srv/fatcat/src/python$ zcat /srv/fatcat/datasets/crossref-pre-1909-scholarly-works.matched.json.gz | shuf | time parallel -j12 --round-robin --pipe ./fatcat_import.py matched -
+
+    Counter({'total': 91977, 'exists': 80362, 'insert': 10399, 'skip': 1216, 'skip-no-doi': 1216, 'update': 0})
+    Counter({'total': 91984, 'exists': 80449, 'insert': 10332, 'skip-no-doi': 1203, 'skip': 1203, 'update': 0})
+    Counter({'total': 89277, 'exists': 78061, 'insert': 10106, 'skip': 1110, 'skip-no-doi': 1110, 'update': 0})
+    Counter({'total': 91988, 'exists': 80485, 'insert': 10322, 'skip': 1181, 'skip-no-doi': 1181, 'update': 0})
+    Counter({'total': 91980, 'exists': 80505, 'insert': 10300, 'skip': 1175, 'skip-no-doi': 1175, 'update': 0})
+    Counter({'total': 91975, 'exists': 80430, 'insert': 10343, 'skip': 1202, 'skip-no-doi': 1202, 'update': 0})
+    Counter({'total': 91969, 'exists': 80460, 'insert': 10337, 'skip-no-doi': 1172, 'skip': 1172, 'update': 0})
+    Counter({'total': 91953, 'exists': 80240, 'insert': 10506, 'skip-no-doi': 1207, 'skip': 1207, 'update': 0})
+    Counter({'total': 91995, 'exists': 80369, 'insert': 10438, 'skip': 1187, 'skip-no-doi': 1187, 'update': 1})
+    Counter({'total': 91988, 'exists': 80316, 'insert': 10491, 'skip': 1180, 'skip-no-doi': 1180, 'update': 1})
+    Counter({'total': 90987, 'exists': 79515, 'insert': 10304, 'skip': 1168, 'skip-no-doi': 1168, 'update': 0})
+    Counter({'total': 92014, 'exists': 80176, 'insert': 10613, 'skip-no-doi': 1224, 'skip': 1224, 'update': 1})
+    2666.31user 111.01system 13:51.22elapsed 334%CPU (0avgtext+0avgdata 48972maxresident)k
+    1680inputs+568120outputs (11major+270267minor)pagefaults 0swaps
+
+Whew! Approx. 1103940 lines processed (shot noise) and 1089684 inserted; less
+than 1.3% skipped due to no DOI. Curious about those... due to my Crossref
+importer filtering out some records (intentionally)?
+
+## UNPAYWALL / arabesque matched
+
+Generate JSON arabesque file:
+
+    bnewbold@ia601101$ ~/arabesque/arabesque.py dump_json UNPAYWALL-PDF-CRAWL-2018-07.published.sqlite --only-identifier-hits | pv -l | gzip > UNPAYWALL-PDF-CRAWL-2018-07.published.json.gz
+    102k 0:00:04 [30.1k/s] [       <=>                                                                                  ]
+    2.42M 0:01:30 [23.7k/s] [                 <=>                                                                        ]
+    8.35M 0:05:20 [  26k/s] [                                     <=>                                                    ]
+
+Import in QA:
+
+    export FATCAT_AUTH_WORKER_CRAWL=...
+    zcat /srv/fatcat/datasets/UNPAYWALL-PDF-CRAWL-2018-07.published.json.gz | time parallel -j12 --round-robin --pipe ./fatcat_import.py arabesque --json-file - --extid-type doi --crawl-id UNPAYWALL-PDF-CRAWL-2018-07 --no-require-grobid
+
+    [...]
+
+    NOT checking GROBID status column
+    Counter({'total': 681352, 'exists': 326175, 'insert': 319582, 'skip': 35595, 'skip-extid-not-found': 35595, 'skip-update-disabled': 13571, 'update': 0})
+    NOT checking GROBID status column
+    Counter({'total': 679467, 'exists': 326087, 'insert': 317671, 'skip-extid-not-found': 35709, 'skip': 35709, 'skip-update-disabled': 13647, 'update': 0})
+    NOT checking GROBID status column
+    Counter({'total': 682994, 'exists': 328367, 'insert': 317896, 'skip-extid-not-found': 36731, 'skip': 36731, 'skip-update-disabled': 13874, 'update': 0})
+    NOT checking GROBID status column
+    Counter({'total': 686170, 'exists': 327007, 'insert': 321668, 'skip-extid-not-found': 37495, 'skip': 37495, 'skip-update-disabled': 14357, 'update': 0})
+    24049.74user 1166.90system 3:20:09elapsed 209%CPU (0avgtext+0avgdata 47056maxresident)k
+    14104inputs+6136640outputs (96major+429331minor)pagefaults 0swaps
+
+    some... 3.8 million new files? not sure releases
+    47.7% existing (file), 46.9% new inserted, 5.5% DOI not found (!), 2.1% update only
+
+    uhoh, some bug in here...
+        266903 matches to 10.1007/978-3-319-25546-0_2
+
+Main problem seems to be lots of octet-stream garbage. Should be requiring grobid 200! But also...
+
+- at most 10 releases per file (hash)
+- at most 10 files per identifier (DOI)
+
+Enforce in:
+
+x importer (skip if too many releases or too many URLs)
+x `dump_json`: order by SHA-1
+- QA templates. need index on identifier and sha1, then do group-by checks
+
+    ~/arabesque/arabesque.py dump_json UNPAYWALL-PDF-CRAWL-2018-07.published.sqlite --only-identifier-hits --max-per-identifier 3 | pv -l | gzip > UNPAYWALL-PDF-CRAWL-2018-07.published.json.gz
+
+    zcat /srv/fatcat/datasets/UNPAYWALL-PDF-CRAWL-2018-07.published.json.gz \
+        | grep -v 3I42H3S6NNFQ2MSVX7XZKYAYSCX5QBYJ \
+        | time parallel -j12 --round-robin --pipe ./fatcat_import.py arabesque --json-file - --extid-type doi --crawl-id UNPAYWALL-PDF-CRAWL-2018-07
+
+    Requiring GROBID status == 200
+    Counter({'total': 639950, 'exists': 320256, 'insert': 243785, 'skip': 75909, 'skip-extid-not-found': 15895, 'skip-update-disabled': 13182, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 639832, 'exists': 321805, 'insert': 244289, 'skip': 73738, 'skip-extid-not-found': 16893, 'skip-update-disabled': 10924, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 627848, 'exists': 298165, 'insert': 260491, 'skip': 69192, 'skip-extid-not-found': 21142, 'skip-update-disabled': 10484, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 692841, 'exists': 322200, 'insert': 259219, 'skip': 111422, 'skip-extid-not-found': 18737, 'skip-update-disabled': 13512, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 665955, 'exists': 313336, 'insert': 271423, 'skip': 81196, 'skip-extid-not-found': 20375, 'skip-update-disabled': 11212, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 649087, 'exists': 315209, 'insert': 245836, 'skip': 88042, 'skip-extid-not-found': 25308, 'skip-update-disabled': 13688, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 680638, 'exists': 329554, 'insert': 253982, 'skip': 97102, 'skip-extid-not-found': 19538, 'skip-update-disabled': 9016, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 655779, 'exists': 302463, 'insert': 262046, 'skip': 91270, 'skip-extid-not-found': 21077, 'skip-update-disabled': 12542, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 643072, 'exists': 314854, 'insert': 251074, 'skip': 77144, 'skip-extid-not-found': 14471, 'skip-update-disabled': 13047, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 664700, 'exists': 304654, 'insert': 263845, 'skip': 96201, 'skip-extid-not-found': 28199, 'skip-update-disabled': 9427, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 654083, 'exists': 329392, 'insert': 240759, 'skip': 83932, 'skip-extid-not-found': 18619, 'skip-update-disabled': 11133, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 677734, 'exists': 326340, 'insert': 244112, 'skip': 107282, 'skip-extid-not-found': 24169, 'skip-update-disabled': 12470, 'update': 0})
+    21186.10user 933.59system 2:44:02elapsed 224%CPU (0avgtext+0avgdata 47064maxresident)k
+    11936inputs+5912352outputs (69major+429992minor)pagefaults 0swaps
+
+Then check QA on some "hot" SHA-1:
+
+    677 QYRIPYPV63XVSOSN6QME3GZWUWSUR4VS
+    739 YU7PBYCY4FB3SAAJXX6FTUOU35UTOGQP
+    748 CPVDXIGZZG4AOOANREGPFTB22N6OTPFO
+    840 6H6ITBKFOJ6ZKBWE7MBUCGGEJ77TAACR
+    897 3W55SNTXIAYR2YM4FVWNZWWP22ZQ2FGH
+    955 NTYHS3F7XD4PEZ66VUBQIBSS54PXFSV3
+    1022 USX3KQ7CJTN4XO5TUJJADFKPWNQTT5VP
+    1118 3AIN7IEGCYTHR56YOWYMC7P7G72TRQIU
+    1240 5DB35TDJWP7Y36VBSL3KGDELC2AWCKH4
+    1270 3I42H3S6NNFQ2MSVX7XZKYAYSCX5QBYJ
+
+Sampled a couple of the above; all seem to be dictionaries with legit many DOIs
+pointing into them.
+
+And some hot DOIs...
+
+    10.1007/978-3-319-25546-0_2 (etc?)
+
+Above has several bad matches, all from this import. On the flip side,
+successfully limited in count.
+
+Going to both re-run arabesque, and re-load QA with newer prod snapshot.
+
+## The Saga Continues
+
+Re-ran arabesque forward (etc) overnight.
+    => DONE
+
+Reloaded QA database from recent prod dump (overnight)
+    => DONE
+
+    ~/arabesque/arabesque.py dump_json UNPAYWALL-PDF-CRAWL-2018-07.published.sqlite --only-identifier-hits --only-direct-breadcrumbs --max-per-identifier 3 | pv -l | gzip > UNPAYWALL-PDF-CRAWL-2018-07.published.json.gz
+
+    bnewbold@ia601101$ zcat UNPAYWALL-PDF-CRAWL-2018-07.published.json.gz | wc -l
+    7963103
+
+    zcat /srv/fatcat/datasets/UNPAYWALL-PDF-CRAWL-2018-07.published.json.gz \
+        | shuf \
+        | time parallel -j13 --round-robin --pipe ./fatcat_import.py arabesque --json-file - --extid-type doi --crawl-id UNPAYWALL-PDF-CRAWL-2018-07
+
+    Requiring GROBID status == 200
+    Counter({'total': 653208, 'exists': 319763, 'insert': 245660, 'skip': 87785, 'skip-extid-not-found': 20266, 'skip-update-disabled': 12031, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 651625, 'exists': 318307, 'insert': 245883, 'skip': 87435, 'skip-extid-not-found': 20038, 'skip-update-disabled': 11954, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 649283, 'exists': 317260, 'insert': 244899, 'skip': 87124, 'skip-extid-not-found': 20256, 'skip-update-disabled': 11996, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 650964, 'exists': 318390, 'insert': 245586, 'skip': 86988, 'skip-extid-not-found': 20081, 'skip-update-disabled': 12249, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 649961, 'exists': 317578, 'insert': 245405, 'skip': 86978, 'skip-extid-not-found': 20020, 'skip-update-disabled': 11818, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 651424, 'exists': 318339, 'insert': 246415, 'skip': 86670, 'skip-extid-not-found': 20026, 'skip-update-disabled': 12036, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 649755, 'exists': 317408, 'insert': 245368, 'skip': 86979, 'skip-extid-not-found': 20432, 'skip-update-disabled': 11977, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 651698, 'exists': 318288, 'insert': 246201, 'skip': 87209, 'skip-extid-not-found': 20331, 'skip-update-disabled': 11857, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 651209, 'exists': 317810, 'insert': 246157, 'skip': 87242, 'skip-extid-not-found': 20207, 'skip-update-disabled': 12140, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 651440, 'exists': 318951, 'insert': 245535, 'skip': 86954, 'skip-extid-not-found': 20324, 'skip-update-disabled': 11926, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 655033, 'exists': 319348, 'insert': 247591, 'skip': 88094, 'skip-extid-not-found': 20529, 'skip-update-disabled': 12099, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 653246, 'exists': 319356, 'insert': 246300, 'skip': 87590, 'skip-extid-not-found': 20262, 'skip-update-disabled': 12174, 'update': 0})
+    21456.23user 922.16system 2:53:18elapsed 215%CPU (0avgtext+0avgdata 45204maxresident)k
+    13456inputs+5864232outputs (94major+437047minor)pagefaults 0swaps
+
+Some QA:
+- no matches to "Background and Evolution of Code-Reuse Attacks"
+- good - japanese
+- good - existing
+- good - japanese
+- good - german
+- good
+- good - french
+- good
+- good - spanish
+- good - japanese
+- good - arabic abstract
+- good - foreign
+- good
+- good
+- good
+
+SHA-1 QA:
+- da39a3ee5e6b4b0d3255bfef95601890afd80709 matched to a couple; is invalid? also in pre-1923! zero-length
+- e8c3becc69b3ff8dfaa192f6a30c8b16816128fc matched only to one
+- several other dictionary things only matched to one release
+
+Ok, going for it in prod:
+
+    zcat /srv/fatcat/datasets/UNPAYWALL-PDF-CRAWL-2018-07.published.json.gz \
+        | shuf \
+        | time parallel -j13 --round-robin --pipe ./fatcat_import.py arabesque --json-file - --extid-type doi --crawl-id UNPAYWALL-PDF-CRAWL-2018-07
+
+    Requiring GROBID status == 200
+    Counter({'total': 598058, 'exists': 292221, 'insert': 225232, 'skip': 80605, 'skip-extid-not-found': 18659, 'skip-update-disabled': 10995, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 598059, 'exists': 292497, 'insert': 225635, 'skip': 79927, 'skip-extid-not-found': 18650, 'skip-update-disabled': 11125, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 596060, 'exists': 291419, 'insert': 224995, 'skip': 79646, 'skip-extid-not-found': 18301, 'skip-update-disabled': 10930, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 601496, 'exists': 293425, 'insert': 227748, 'skip': 80323, 'skip-extid-not-found': 18577, 'skip-update-disabled': 11163, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 603614, 'exists': 294758, 'insert': 228133, 'skip': 80723, 'skip-extid-not-found': 18933, 'skip-update-disabled': 11060, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 592196, 'exists': 289435, 'insert': 223533, 'skip': 79228, 'skip-extid-not-found': 18400, 'skip-update-disabled': 10840, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 597941, 'exists': 292967, 'insert': 225225, 'skip': 79749, 'skip-extid-not-found': 18470, 'skip-update-disabled': 10932, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 607111, 'exists': 296380, 'insert': 229360, 'skip': 81371, 'skip-extid-not-found': 18780, 'skip-update-disabled': 11259, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 603664, 'exists': 294309, 'insert': 228601, 'skip': 80754, 'skip-extid-not-found': 18604, 'skip-update-disabled': 11043, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 601467, 'exists': 294254, 'insert': 226468, 'skip': 80745, 'skip-extid-not-found': 18750, 'skip-update-disabled': 11170, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 610623, 'exists': 297871, 'insert': 230964, 'skip': 81788, 'skip-extid-not-found': 18771, 'skip-update-disabled': 11429, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 607209, 'exists': 296370, 'insert': 229307, 'skip': 81532, 'skip-extid-not-found': 18993, 'skip-update-disabled': 11157, 'update': 0})
+    Requiring GROBID status == 200
+    Counter({'total': 601341, 'exists': 294169, 'insert': 226584, 'skip': 80588, 'skip-extid-not-found': 18815, 'skip-update-disabled': 11161, 'update': 0})
+    21462.46user 1094.34system 2:46:40elapsed 225%CPU (0avgtext+0avgdata 46520maxresident)k
+    12872inputs+5827760outputs (95major+451489minor)pagefaults 0swaps
+
+=> 2719008 million inserts total
+
+## CORE DOI DIRECT 
+
+    ~/arabesque/arabesque.py dump_json core_doi.sqlite --only-identifier-hits --only-direct-breadcrumbs --max-per-identifier 3 | pv -l | gzip > DIRECT-OA-CRAWL-2019.core_doi.json.gz
+
+    bnewbold@ia601101$ zcat DIRECT-OA-CRAWL-2019.core_doi.json.gz | wc -l
+    713815
+
+TODO:
+
+    zcat /srv/fatcat/datasets/DIRECT-OA-CRAWL-2019.core_doi.json.gz \
+        | shuf \
+        | time parallel -j13 --round-robin --pipe ./fatcat_import.py arabesque --json-file - --extid-type doi --crawl-id DIRECT-OA-CRAWL-2019 --no-require-grobid
+
+
+    [...]
+    NOT checking GROBID status column
+    Counter({'total': 54834, 'insert': 50423, 'exists': 3097, 'skip': 1314, 'skip-extid-not-found': 1314, 'skip-update-disabled': 9, 'update': 0})
+    NOT checking GROBID status column
+    Counter({'total': 54836, 'insert': 50309, 'exists': 3192, 'skip': 1335, 'skip-extid-not-found': 1335, 'skip-update-disabled': 15, 'update': 0})
+    NOT checking GROBID status column
+    Counter({'total': 54836, 'insert': 50431, 'exists': 3086, 'skip': 1319, 'skip-extid-not-found': 1319, 'skip-update-disabled': 14, 'update': 0})
+    NOT checking GROBID status column
+    Counter({'total': 54835, 'insert': 50524, 'exists': 3031, 'skip': 1280, 'skip-extid-not-found': 1280, 'skip-update-disabled': 14, 'update': 0})
+    NOT checking GROBID status column
+    Counter({'total': 54839, 'insert': 50445, 'exists': 3104, 'skip-extid-not-found': 1290, 'skip': 1290, 'skip-update-disabled': 7, 'update': 0})
+    NOT checking GROBID status column
+    Counter({'total': 54833, 'insert': 50424, 'exists': 3100, 'skip': 1309, 'skip-extid-not-found': 1309, 'skip-update-disabled': 12, 'update': 0})
+    NOT checking GROBID status column
+    Counter({'total': 54844, 'insert': 50372, 'exists': 3100, 'skip-extid-not-found': 1372, 'skip': 1372, 'skip-update-disabled': 11, 'update': 0})
+    NOT checking GROBID status column
+    Counter({'total': 54830, 'insert': 50400, 'exists': 3130, 'skip': 1300, 'skip-extid-not-found': 1300, 'skip-update-disabled': 19, 'update': 0})
+    NOT checking GROBID status column
+    Counter({'total': 54834, 'insert': 50484, 'exists': 3048, 'skip': 1302, 'skip-extid-not-found': 1302, 'skip-update-disabled': 12, 'update': 0})
+    NOT checking GROBID status column
+    Counter({'total': 54839, 'insert': 50334, 'exists': 3187, 'skip': 1318, 'skip-extid-not-found': 1318, 'skip-update-disabled': 13, 'update': 0})
+    NOT checking GROBID status column
+    Counter({'total': 55626, 'insert': 51078, 'exists': 3205, 'skip-extid-not-found': 1343, 'skip': 1343, 'skip-update-disabled': 11, 'update': 0})
+    2000.70user 106.04system 17:55.02elapsed 195%CPU (0avgtext+0avgdata 45228maxresident)k
+    10056inputs+435232outputs (59major+313551minor)pagefaults 0swaps
+
+612936 files inserted
+
+Ok, now in prod:
+
+    zcat /srv/fatcat/datasets/DIRECT-OA-CRAWL-2019.core_doi.json.gz \
+        | shuf \
+        | time parallel -j13 --round-robin --pipe ./fatcat_import.py arabesque --json-file - --extid-type doi --crawl-id DIRECT-OA-CRAWL-2019 --no-require-grobid
+
+    NOT checking GROBID status column
+    Counter({'total': 54842, 'insert': 50375, 'exists': 3121, 'skip-extid-not-found': 1346, 'skip': 1346, 'skip-update-disabled': 9, 'update': 0})
+    NOT checking GROBID status column
+    Counter({'total': 54841, 'insert': 50455, 'exists': 3046, 'skip-extid-not-found': 1340, 'skip': 1340, 'skip-update-disabled': 9, 'update': 0})
+    NOT checking GROBID status column
+    Counter({'total': 54837, 'insert': 50429, 'exists': 3089, 'skip-extid-not-found': 1319, 'skip': 1319, 'skip-update-disabled': 13, 'update': 0})
+    NOT checking GROBID status column
+    Counter({'total': 54832, 'insert': 50476, 'exists': 3072, 'skip-extid-not-found': 1284, 'skip': 1284, 'skip-update-disabled': 14, 'update': 0})
+    NOT checking GROBID status column
+    Counter({'total': 54832, 'insert': 50417, 'exists': 3105, 'skip': 1310, 'skip-extid-not-found': 1310, 'skip-update-disabled': 14, 'update': 0})
+    NOT checking GROBID status column
+    Counter({'total': 54828, 'insert': 50444, 'exists': 3066, 'skip': 1318, 'skip-extid-not-found': 1318, 'skip-update-disabled': 18, 'update': 0})
+    NOT checking GROBID status column
+    Counter({'total': 54835, 'insert': 50470, 'exists': 3087, 'skip-extid-not-found': 1278, 'skip': 1278, 'skip-update-disabled': 10, 'update': 0})
+    NOT checking GROBID status column
+    Counter({'total': 54839, 'insert': 50415, 'exists': 3100, 'skip': 1324, 'skip-extid-not-found': 1324, 'skip-update-disabled': 13, 'update': 0})
+    NOT checking GROBID status column
+    Counter({'total': 54833, 'insert': 50226, 'exists': 3243, 'skip-extid-not-found': 1364, 'skip': 1364, 'skip-update-disabled': 15, 'update': 0})
+    NOT checking GROBID status column
+    Counter({'total': 54837, 'insert': 50434, 'exists': 3126, 'skip': 1277, 'skip-extid-not-found': 1277, 'skip-update-disabled': 11, 'update': 0})
+    NOT checking GROBID status column
+    Counter({'total': 54836, 'insert': 50439, 'exists': 3163, 'skip-extid-not-found': 1234, 'skip': 1234, 'skip-update-disabled': 14, 'update': 0})
+    NOT checking GROBID status column
+    Counter({'total': 54830, 'insert': 50296, 'exists': 3231, 'skip': 1303, 'skip-extid-not-found': 1303, 'skip-update-disabled': 20, 'update': 0})
+    NOT checking GROBID status column
+    Counter({'total': 55625, 'insert': 51152, 'exists': 3108, 'skip': 1365, 'skip-extid-not-found': 1365, 'skip-update-disabled': 8, 'update': 0})
+    2022.62user 102.48system 18:21.79elapsed 192%CPU (0avgtext+0avgdata 51060maxresident)k
+    2224inputs+430800outputs (17major+307716minor)pagefaults 0swaps
+
+613824 or so files inserted
