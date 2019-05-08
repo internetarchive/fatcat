@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 import fatcat_web
 import fatcat_client
 
+from fatcat_client import *
 from fatcat_tools import authenticated_api
 
 @pytest.fixture
@@ -37,6 +38,44 @@ def api():
     api_client = authenticated_api("http://localhost:9411/v0")
     api_client.editor_id = "aaaaaaaaaaaabkvkaaaaaaaaae"
     return api_client
+
+@pytest.fixture
+def api_dummy_entities(api):
+    """
+    This is a sort of bleh fixture. Should probably create an actual
+    object/class with create/accept/clean-up methods?
+    """
+
+    c1 = CreatorEntity(display_name="test creator deletion")
+    j1 = ContainerEntity(name="test journal deletion")
+    r1 = ReleaseEntity(title="test release creator deletion")
+    f1 = FileEntity()
+    fs1 = FilesetEntity()
+    wc1 = WebcaptureEntity(
+        timestamp="2000-01-01T12:34:56Z",
+        original_url="http://example.com/",
+    )
+
+    eg = quick_eg(api)
+    c1 = api.get_creator(api.create_creator(c1, editgroup_id=eg.editgroup_id).ident)
+    j1 = api.get_container(api.create_container(j1, editgroup_id=eg.editgroup_id).ident)
+    r1 = api.get_release(api.create_release(r1, editgroup_id=eg.editgroup_id).ident)
+    w1 = api.get_work(r1.work_id)
+    f1 = api.get_file(api.create_file(f1, editgroup_id=eg.editgroup_id).ident)
+    fs1 = api.get_fileset(api.create_fileset(fs1, editgroup_id=eg.editgroup_id).ident)
+    wc1 = api.get_webcapture(api.create_webcapture(wc1, editgroup_id=eg.editgroup_id).ident)
+
+    return {
+        "api": api,
+        "editgroup": eg,
+        "creator": c1,
+        "container": j1,
+        "file": f1,
+        "fileset": fs1,
+        "webcapture": wc1,
+        "release": r1,
+        "work": w1,
+    }
 
 def test_get_changelog_entry(api):
     """Check that fixture is working"""

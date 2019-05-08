@@ -142,3 +142,42 @@ def test_wip_revision(api):
     assert rev.ident is None
     assert rev.revision == c1.revision
 
+
+def test_edit_get_all(api_dummy_entities):
+
+    ade = api_dummy_entities
+    api = ade['api']
+    eg = api.get_editgroup(ade['editgroup'].editgroup_id)
+
+    assert api.get_creator_edit(eg.edits.creators[0].edit_id)
+    assert api.get_container_edit(eg.edits.containers[0].edit_id)
+    assert api.get_file_edit(eg.edits.files[0].edit_id)
+    assert api.get_fileset_edit(eg.edits.filesets[0].edit_id)
+    assert api.get_webcapture_edit(eg.edits.webcaptures[0].edit_id)
+    assert api.get_release_edit(eg.edits.releases[0].edit_id)
+    assert api.get_work_edit(eg.edits.works[0].edit_id)
+
+def test_edit_delete_all(api_dummy_entities):
+
+    ade = api_dummy_entities
+    api = ade['api']
+    eg = api.get_editgroup(ade['editgroup'].editgroup_id)
+
+    api.delete_creator_edit(eg.edits.creators[0].edit_id)
+    api.delete_container_edit(eg.edits.containers[0].edit_id)
+    api.delete_file_edit(eg.edits.files[0].edit_id)
+    api.delete_fileset_edit(eg.edits.filesets[0].edit_id)
+    api.delete_webcapture_edit(eg.edits.webcaptures[0].edit_id)
+    api.delete_release_edit(eg.edits.releases[0].edit_id)
+    api.delete_work_edit(eg.edits.works[0].edit_id)
+
+    # verify deletion
+    eg = api.get_editgroup(ade['editgroup'].editgroup_id)
+    assert len(eg.edits.creators) == 0
+    assert len(eg.edits.containers) == 0
+    assert len(eg.edits.files) == 0
+    assert len(eg.edits.filesets) == 0
+    assert len(eg.edits.webcaptures) == 0
+    assert len(eg.edits.releases) == 0
+    assert len(eg.edits.works) == 0
+
