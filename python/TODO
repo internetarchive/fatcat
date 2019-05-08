@@ -17,3 +17,10 @@ views
 
 backlog
 - make debugbar really optional (don't import unless we're in debug mode)
+
+Kafka
+- should refactor all the handlers into one place (DRY)
+- harvesters could have shared producer setup/creation
+- broker timeouts after a minute in all cases should at least log if not crash
+  (eg, changelog worker)
+- tic/tok increment counter for lower latency but non-verbose logging?
