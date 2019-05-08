@@ -1,0 +1,26 @@
+
+## 2019-04-19: Jefferson, creating a release
+
+Was able to login and get started on his own. Ran through form mostly fine;
+wanted to hunt down volume/issue but didn't make sense. Single author. Pasted
+title into "Original Title" when not needed, but then removed. Initially
+entered date with slashes (not dashes). Didn't enter edit comments. Recognized
+that the red asterisks were required.
+
+Distractions:
+
+- Original Title should clarify language distinction
+- FCID. (some better UI for these?)
+
+Inability to "go back" and edit is a thing. After creating he tried to click
+"edit metadata" and got an error. Unclear how to get to recent edits (I showed
+him in upper-right). Wanted to add references ("just paste these in?"), and/or
+a web capture.
+
+Indirect (my thoughts while watching, but user didn't interact with or
+mention):
+
+- the mix of "label on left" and "label above" is confusing
+- input boxes could be smaller and a bit less padding (?)
+- no indication of "entirely optional"
+- nowhere to enter bare container name (probably common?)
