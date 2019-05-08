@@ -1,0 +1,45 @@
+<html>
+<head>
+</head>
+<body>
+<h1>PLoS ONE</h1>
+
+<p>The world’s first multidisciplinary Open Access journal, PLOS ONE accepts
+scientifically rigorous research, regardless of novelty. PLOS ONE’s broad scope
+provides a platform to publish primary research, including interdisciplinary
+and replication studies as well as negative results. The journal’s publication
+criteria are based on high ethical standards and the rigor of the methodology
+and conclusions reported. 
+
+<div id="fatcat_container_stats"></div>
+
+<h3>Search for Articles</h3>
+<form class="" role="search" action="https://fatcat.wiki/release/search" method="get">
+  <input type="text" placeholder="Query..." name="q" aria-label="search for articles">
+  <input type="hidden" name="container_issnl" value="1932-6203">
+  <button class="ui button">Search</button>
+</form>
+
+<script>
+function loadFatcatContainerStats() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.open("GET", "https://fatcat.wiki/container/issnl/1932-6203/stats.json", true);
+  xhttp.setRequestHeader('Content-Type', 'application/json');
+  xhttp.onload = function() {
+    //console.log("DEBUG fatcat JSON request: ");
+    //console.log(this);
+    if (this.readyState == 4 && this.status == 200) {
+      stats = JSON.parse(this.responseText);
+      document.querySelectorAll("#fatcat_container_stats").forEach( function(el) {
+        el.innerHTML =
+            "This container (ISSN-L " + stats.issnl + ") contains <b>" + stats.total + "</b> fatcat articles, of which <b>" + stats.in_web + "</b> are available on the public web (and in Wayback).";
+      });
+    }
+  };
+  xhttp.send();
+}
+loadFatcatContainerStats();
+</script>
+
+</body>
+</html>
