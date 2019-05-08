@@ -33,16 +33,18 @@ def test_container(api):
     assert c1.wikidata_qid == c2.wikidata_qid
     assert c1.extra == c2.extra
 
-    # expansion
-    # TODO: via release
-    # lookup
-    # TODO: via issnl; but need to generate random identifiers
+    # get revision
+    c2_rev = api.get_container_revision(c1edit.revision)
+    assert c1edit.revision == c2_rev.revision
+    assert c2.revision == c2_rev.revision
+    assert c2.name == c2_rev.name
 
 def test_container_examples(api):
-
-    api.lookup_container(issnl='1549-1277')
 
     c1 = api.get_container('aaaaaaaaaaaaaeiraaaaaaaaam')
     assert c1.name == "PLOS Medicine"
     assert c1.issnl == "1549-1277"
+
+    c2 = api.lookup_container(issnl=c1.issnl)
+    assert c1.ident == c2.ident
 

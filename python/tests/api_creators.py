@@ -33,12 +33,16 @@ def test_creators(api):
     assert c1.wikidata_qid == c2.wikidata_qid
     assert c1.extra == c2.extra
 
-    # expansion
-    # TODO: via release
-    # lookup
-    # TODO: via issnl; but need to generate random identifiers
+    # get revision
+    c2_rev = api.get_creator_revision(c1edit.revision)
+    assert c1edit.revision == c2_rev.revision
+    assert c2.revision == c2_rev.revision
+    assert c2.display_name == c2_rev.display_name
+
+# TODO: test expansion of new creator/release pair (release get)?
 
 def test_creators_examples(api):
-    # TODO: aaaaaaaaaaaaaircaaaaaaaaam
+    # ident: aaaaaaaaaaaaaircaaaaaaaaam
 
-    api.lookup_creator(orcid='0000-0003-3118-6859')
+    c1 = api.lookup_creator(orcid='0000-0003-3118-6859')
+    assert c1.ident == "aaaaaaaaaaaaaircaaaaaaaaam"

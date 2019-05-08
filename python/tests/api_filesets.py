@@ -44,6 +44,11 @@ def test_fileset(api):
     api.accept_editgroup(eg.editgroup_id)
     fs2 = api.get_fileset(fs1edit.ident)
 
+    # get revision
+    fs2_rev = api.get_fileset_revision(fs1edit.revision)
+    assert fs1edit.revision == fs2_rev.revision
+    assert fs2.revision == fs2_rev.revision
+
     # check that fields match
     assert fs1.urls == fs2.urls
     assert fs1.manifest == fs2.manifest

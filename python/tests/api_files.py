@@ -40,13 +40,23 @@ def test_file(api):
     assert f1.urls == f2.urls
     assert f1.release_ids == f2.release_ids
 
-    # expansion
-    # TODO: via release
-    # lookup
-    # TODO: via hashes; but need to generate random?
+    # get revision
+    f2_rev = api.get_file_revision(f1edit.revision)
+    assert f1edit.revision == f2_rev.revision
+    assert f2.revision == f2_rev.revision
 
 def test_file_examples(api):
 
     api.lookup_file(sha256='ffc1005680cb620eec4c913437dfabbf311b535cfe16cbaeb2faec1f92afc362')
 
     f1 = api.get_file('aaaaaaaaaaaaamztaaaaaaaaam')
+    assert f1.sha256 == "ffc1005680cb620eec4c913437dfabbf311b535cfe16cbaeb2faec1f92afc362"
+
+    # TODO: no "get_file_releases" or expand thing yet...
+    #f1r = api.get_file_releases("aaaaaaaaaaaaamztaaaaaaaaam")
+    #assert f1r
+
+    # expansion (back from release)
+    #r1 = api.get_release(f1r[0].ident, expand="files")
+    #assert r1.files
+    #assert f1.ident in [f.ident for f in r1.files]

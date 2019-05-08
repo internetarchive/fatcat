@@ -51,6 +51,12 @@ def test_webcapture(api):
     api.accept_editgroup(eg.editgroup_id)
     wc2 = api.get_webcapture(wc1edit.ident)
 
+    # get revision
+    wc2_rev = api.get_webcapture_revision(wc1edit.revision)
+    assert wc1edit.revision == wc2_rev.revision
+    assert wc2.revision == wc2_rev.revision
+    assert wc2.timestamp == wc2_rev.timestamp
+
     # check that fields match
     # I don't know why these aren't equal...
     #print(wc1.archive_urls)

@@ -54,6 +54,12 @@ def test_release(api):
     api.accept_editgroup(eg.editgroup_id)
     r2 = api.get_release(r1edit.ident)
 
+    # get revision
+    r2_rev = api.get_release_revision(r1edit.revision)
+    assert r1edit.revision == r2_rev.revision
+    assert r2.revision == r2_rev.revision
+    assert r2.title == r2_rev.title
+
     # check that fields match
     assert r1.title == r2.title
     assert r1.original_title == r2.original_title
