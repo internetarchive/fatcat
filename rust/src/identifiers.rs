@@ -342,7 +342,7 @@ fn test_check_release_type() {
     assert!(check_release_type("book ").is_err());
 }
 
-pub fn check_release_status(raw: &str) -> Result<()> {
+pub fn check_release_stage(raw: &str) -> Result<()> {
     let valid_types = vec![
         // DRIVER types (minus "version" suffix)
         "draft",
@@ -359,19 +359,19 @@ pub fn check_release_status(raw: &str) -> Result<()> {
         }
     }
     Err(FatcatError::NotInControlledVocabulary(
-        "release_status".to_string(),
+        "release_stage".to_string(),
         raw.to_string(),
     ))?
 }
 
 #[test]
-fn test_check_release_status() {
-    assert!(check_release_status("draft").is_ok());
-    assert!(check_release_status("retraction").is_ok());
-    assert!(check_release_status("published").is_ok());
-    assert!(check_release_status("pre-print").is_err());
-    assert!(check_release_status("DRAFT").is_err());
-    assert!(check_release_status("draft ").is_err());
+fn test_check_release_stage() {
+    assert!(check_release_stage("draft").is_ok());
+    assert!(check_release_stage("retraction").is_ok());
+    assert!(check_release_stage("published").is_ok());
+    assert!(check_release_stage("pre-print").is_err());
+    assert!(check_release_stage("DRAFT").is_err());
+    assert!(check_release_stage("draft ").is_err());
 }
 
 pub fn check_contrib_role(raw: &str) -> Result<()> {

@@ -161,10 +161,10 @@ pub struct CreatorRevRow {
     pub id: Uuid,
     pub extra_json: Option<serde_json::Value>,
     pub display_name: String,
-    pub given_name: Option<String>,
-    pub surname: Option<String>,
     pub orcid: Option<String>,
     pub wikidata_qid: Option<String>,
+    pub given_name: Option<String>,
+    pub surname: Option<String>,
 }
 
 #[derive(Debug, Associations, AsChangeset, Insertable)]
@@ -172,10 +172,10 @@ pub struct CreatorRevRow {
 pub struct CreatorRevNewRow {
     pub extra_json: Option<serde_json::Value>,
     pub display_name: String,
-    pub given_name: Option<String>,
-    pub surname: Option<String>,
     pub orcid: Option<String>,
     pub wikidata_qid: Option<String>,
+    pub given_name: Option<String>,
+    pub surname: Option<String>,
 }
 
 entity_structs!(
@@ -311,6 +311,8 @@ pub struct WebcaptureRevCdxRow {
     pub status_code: Option<i64>,
     pub sha1: String,
     pub sha256: Option<String>,
+    pub size_bytes: Option<i64>,
+    pub extra_json: Option<serde_json::Value>,
 }
 
 #[derive(Debug, Queryable, Associations, AsChangeset, Insertable)]
@@ -324,6 +326,8 @@ pub struct WebcaptureRevCdxNewRow {
     pub status_code: Option<i64>,
     pub sha1: String,
     pub sha256: Option<String>,
+    pub size_bytes: Option<i64>,
+    pub extra_json: Option<serde_json::Value>,
 }
 
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]
@@ -380,7 +384,7 @@ pub struct ReleaseRevRow {
     pub title: String,
     pub original_title: Option<String>,
     pub release_type: Option<String>,
-    pub release_status: Option<String>,
+    pub release_stage: Option<String>,
     pub release_date: Option<chrono::NaiveDate>,
     pub release_year: Option<i64>,
     pub doi: Option<String>,
@@ -397,6 +401,14 @@ pub struct ReleaseRevRow {
     pub publisher: Option<String>,
     pub language: Option<String>,
     pub license_slug: Option<String>,
+    pub number: Option<String>,
+    pub version: Option<String>,
+    pub subtitle: Option<String>,
+    pub withdrawn_state: Option<String>,
+    pub withdrawn_date: Option<chrono::NaiveDate>,
+    pub withdrawn_year: Option<i64>,
+    pub mag_id: Option<String>,
+    pub ark_id: Option<String>,
 }
 
 #[derive(Debug, Associations, AsChangeset, Insertable)]
@@ -409,7 +421,7 @@ pub struct ReleaseRevNewRow {
     pub title: String,
     pub original_title: Option<String>,
     pub release_type: Option<String>,
-    pub release_status: Option<String>,
+    pub release_stage: Option<String>,
     pub release_date: Option<chrono::NaiveDate>,
     pub release_year: Option<i64>,
     pub doi: Option<String>,
@@ -426,6 +438,14 @@ pub struct ReleaseRevNewRow {
     pub publisher: Option<String>,
     pub language: Option<String>,
     pub license_slug: Option<String>,
+    pub number: Option<String>,
+    pub version: Option<String>,
+    pub subtitle: Option<String>,
+    pub withdrawn_state: Option<String>,
+    pub withdrawn_date: Option<chrono::NaiveDate>,
+    pub withdrawn_year: Option<i64>,
+    pub mag_id: Option<String>,
+    pub ark_id: Option<String>,
 }
 
 entity_structs!(
@@ -489,6 +509,8 @@ pub struct ReleaseContribRow {
     pub raw_affiliation: Option<String>,
     pub index_val: Option<i32>,
     pub extra_json: Option<serde_json::Value>,
+    pub given_name: Option<String>,
+    pub surname: Option<String>,
 }
 
 #[derive(Debug, Insertable)]
@@ -501,6 +523,8 @@ pub struct ReleaseContribNewRow {
     pub raw_affiliation: Option<String>,
     pub index_val: Option<i32>,
     pub extra_json: Option<serde_json::Value>,
+    pub given_name: Option<String>,
+    pub surname: Option<String>,
 }
 
 #[derive(Debug, Queryable, Insertable, Associations, AsChangeset)]
