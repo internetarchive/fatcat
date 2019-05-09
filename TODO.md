@@ -34,6 +34,7 @@ Changes to swagger only:
 - edit URLs: `editgroup_id` in URL, not a query param
 - changelog API endpoint should needs expand=editors option
 - include 'created' in editgroup object (already in SQL)
+- FileEntityUrls => FileEntityUrl (and similar)
 
 ## Next Full Release "Touch"
 
