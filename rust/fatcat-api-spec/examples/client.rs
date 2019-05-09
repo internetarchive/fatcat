@@ -596,6 +596,8 @@ fn main() {
                     Some("core_id_example".to_string()),
                     Some("arxiv_id_example".to_string()),
                     Some("jstor_id_example".to_string()),
+                    Some("ark_id_example".to_string()),
+                    Some("mag_id_example".to_string()),
                     Some("expand_example".to_string()),
                     Some("hide_example".to_string()),
                 )

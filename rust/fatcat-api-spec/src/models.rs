@@ -706,6 +706,14 @@ pub struct ReleaseContrib {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub raw_name: Option<String>,
 
+    #[serde(rename = "given_name")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub given_name: Option<String>,
+
+    #[serde(rename = "surname")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub surname: Option<String>,
+
     #[serde(rename = "role")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub role: Option<String>,
@@ -727,6 +735,8 @@ impl ReleaseContrib {
             creator_id: None,
             creator: None,
             raw_name: None,
+            given_name: None,
+            surname: None,
             role: None,
             raw_affiliation: None,
             extra: None,
@@ -762,6 +772,14 @@ pub struct ReleaseEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub publisher: Option<String>,
 
+    #[serde(rename = "version")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub version: Option<String>,
+
+    #[serde(rename = "number")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub number: Option<String>,
+
     #[serde(rename = "pages")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pages: Option<String>,
@@ -773,6 +791,14 @@ pub struct ReleaseEntity {
     #[serde(rename = "volume")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub volume: Option<String>,
+
+    #[serde(rename = "mag_id")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub mag_id: Option<String>,
+
+    #[serde(rename = "ark_id")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ark_id: Option<String>,
 
     #[serde(rename = "jstor_id")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -806,6 +832,18 @@ pub struct ReleaseEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub doi: Option<String>,
 
+    #[serde(rename = "withdrawn_year")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub withdrawn_year: Option<i64>,
+
+    #[serde(rename = "withdrawn_date")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub withdrawn_date: Option<chrono::NaiveDate>,
+
+    #[serde(rename = "withdrawn_state")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub withdrawn_state: Option<String>,
+
     #[serde(rename = "release_year")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub release_year: Option<i64>,
@@ -814,9 +852,9 @@ pub struct ReleaseEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub release_date: Option<chrono::NaiveDate>,
 
-    #[serde(rename = "release_status")]
+    #[serde(rename = "release_stage")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub release_status: Option<String>,
+    pub release_stage: Option<String>,
 
     #[serde(rename = "release_type")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -854,6 +892,11 @@ pub struct ReleaseEntity {
     #[serde(rename = "original_title")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub original_title: Option<String>,
+
+    /// Avoid this field if possible, and merge with title; usually English
+    #[serde(rename = "subtitle")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub subtitle: Option<String>,
 
     /// Required for valid entities. The title used in citations and for display; usually English
     #[serde(rename = "title")]
@@ -898,9 +941,13 @@ impl ReleaseEntity {
             license_slug: None,
             language: None,
             publisher: None,
+            version: None,
+            number: None,
             pages: None,
             issue: None,
             volume: None,
+            mag_id: None,
+            ark_id: None,
             jstor_id: None,
             arxiv_id: None,
             core_id: None,
@@ -909,9 +956,12 @@ impl ReleaseEntity {
             isbn13: None,
             wikidata_qid: None,
             doi: None,
+            withdrawn_year: None,
+            withdrawn_date: None,
+            withdrawn_state: None,
             release_year: None,
             release_date: None,
-            release_status: None,
+            release_stage: None,
             release_type: None,
             container_id: None,
             webcaptures: None,
@@ -920,6 +970,7 @@ impl ReleaseEntity {
             container: None,
             work_id: None,
             original_title: None,
+            subtitle: None,
             title: None,
             state: None,
             ident: None,
@@ -1132,12 +1183,20 @@ pub struct WebcaptureEntityCdx {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub status_code: Option<i64>,
 
+    #[serde(rename = "size_bytes")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub size_bytes: Option<i64>,
+
     #[serde(rename = "sha1")]
     pub sha1: String,
 
     #[serde(rename = "sha256")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub sha256: Option<String>,
+
+    #[serde(rename = "extra")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub extra: Option<serde_json::Value>,
 }
 
 impl WebcaptureEntityCdx {
@@ -1148,8 +1207,10 @@ impl WebcaptureEntityCdx {
             url: url,
             mimetype: None,
             status_code: None,
+            size_bytes: None,
             sha1: sha1,
             sha256: None,
+            extra: None,
         }
     }
 }

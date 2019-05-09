@@ -5155,6 +5155,18 @@ paths:
         type: "string"
         formatString: "{:?}"
         example: "Some(\"jstor_id_example\".to_string())"
+      - name: "ark_id"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"ark_id_example\".to_string())"
+      - name: "mag_id"
+        in: "query"
+        required: false
+        type: "string"
+        formatString: "{:?}"
+        example: "Some(\"mag_id_example\".to_string())"
       - name: "expand"
         in: "query"
         description: "List of sub-entities to expand in response."
@@ -7780,14 +7792,18 @@ definitions:
       - sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
         surt: "org,asheesh)/apus/ch1/node15.html"
         status_code: 200
+        size_bytes: 1235
         sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
+        extra: "{}"
         mimetype: "text/html"
         url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
         timestamp: "2016-09-19T17:20:24Z"
       - sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
         surt: "org,asheesh)/apus/ch1/node15.html"
         status_code: 200
+        size_bytes: 1235
         sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
+        extra: "{}"
         mimetype: "text/html"
         url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
         timestamp: "2016-09-19T17:20:24Z"
@@ -7824,12 +7840,20 @@ definitions:
         description: "Two-letter RFC1766/ISO639-1 language code, with extensions"
       publisher:
         type: "string"
+      version:
+        type: "string"
+      number:
+        type: "string"
       pages:
         type: "string"
       issue:
         type: "string"
         example: "12"
       volume:
+        type: "string"
+      mag_id:
+        type: "string"
+      ark_id:
         type: "string"
       jstor_id:
         type: "string"
@@ -7848,6 +7872,15 @@ definitions:
       doi:
         type: "string"
         example: "10.1234/abcde.789"
+      withdrawn_year:
+        type: "integer"
+        format: "int64"
+        example: 2014
+      withdrawn_date:
+        type: "string"
+        format: "date"
+      withdrawn_state:
+        type: "string"
       release_year:
         type: "integer"
         format: "int64"
@@ -7855,7 +7888,7 @@ definitions:
       release_date:
         type: "string"
         format: "date"
-      release_status:
+      release_stage:
         type: "string"
         example: "preprint, retracted"
       release_type:
@@ -7889,6 +7922,10 @@ definitions:
         type: "string"
         description: "Title in original language (or, the language of the full text\
           \ of this release)"
+      subtitle:
+        type: "string"
+        description: "Avoid this field if possible, and merge with title; usually\
+          \ English"
       title:
         type: "string"
         description: "Required for valid entities. The title used in citations and\
@@ -7926,6 +7963,7 @@ definitions:
       edit_extra:
         type: "object"
     example:
+      mag_id: "mag_id"
       container:
         redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
         ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -7950,14 +7988,18 @@ definitions:
         - sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
           surt: "org,asheesh)/apus/ch1/node15.html"
           status_code: 200
+          size_bytes: 1235
           sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
+          extra: "{}"
           mimetype: "text/html"
           url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
           timestamp: "2016-09-19T17:20:24Z"
         - sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
           surt: "org,asheesh)/apus/ch1/node15.html"
           status_code: 200
+          size_bytes: 1235
           sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
+          extra: "{}"
           mimetype: "text/html"
           url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
           timestamp: "2016-09-19T17:20:24Z"
@@ -7981,14 +8023,18 @@ definitions:
         - sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
           surt: "org,asheesh)/apus/ch1/node15.html"
           status_code: 200
+          size_bytes: 1235
           sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
+          extra: "{}"
           mimetype: "text/html"
           url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
           timestamp: "2016-09-19T17:20:24Z"
         - sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
           surt: "org,asheesh)/apus/ch1/node15.html"
           status_code: 200
+          size_bytes: 1235
           sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
+          extra: "{}"
           mimetype: "text/html"
           url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
           timestamp: "2016-09-19T17:20:24Z"
@@ -8004,6 +8050,7 @@ definitions:
       ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
       language: "language"
       title: "title"
+      withdrawn_state: "withdrawn_state"
       contribs:
       - raw_affiliation: "raw_affiliation"
         creator:
@@ -8020,9 +8067,11 @@ definitions:
           revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         raw_name: "raw_name"
         role: "role"
+        surname: "surname"
         extra: "{}"
         creator_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
         index: 1
+        given_name: "given_name"
       - raw_affiliation: "raw_affiliation"
         creator:
           redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -8038,14 +8087,19 @@ definitions:
           revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
         raw_name: "raw_name"
         role: "role"
+        surname: "surname"
         extra: "{}"
         creator_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
         index: 1
+        given_name: "given_name"
+      number: "number"
       pages: "pages"
       core_id: "core_id"
       extra: "{}"
       state: "wip"
       edit_extra: "{}"
+      ark_id: "ark_id"
+      withdrawn_year: 2014
       jstor_id: "jstor_id"
       redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
       work_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -8064,10 +8118,12 @@ definitions:
       release_type: "book"
       wikidata_qid: "wikidata_qid"
       pmid: "pmid"
-      release_status: "preprint, retracted"
+      version: "version"
       revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       volume: "volume"
+      release_stage: "preprint, retracted"
       license_slug: "license_slug"
+      withdrawn_date: "2000-01-23"
       refs:
       - target_release_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
         container_name: "container_name"
@@ -8087,6 +8143,7 @@ definitions:
         key: "key"
       release_date: "2000-01-23"
       isbn13: "isbn13"
+      subtitle: "subtitle"
       publisher: "publisher"
       files:
       - redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -9083,6 +9140,10 @@ definitions:
         $ref: "#/definitions/creator_entity"
       raw_name:
         type: "string"
+      given_name:
+        type: "string"
+      surname:
+        type: "string"
       role:
         type: "string"
       raw_affiliation:
@@ -9106,9 +9167,11 @@ definitions:
         revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       raw_name: "raw_name"
       role: "role"
+      surname: "surname"
       extra: "{}"
       creator_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
       index: 1
+      given_name: "given_name"
     upperCaseName: "RELEASE_CONTRIB"
   auth_oidc:
     type: "object"
@@ -9243,6 +9306,10 @@ definitions:
         type: "integer"
         format: "int64"
         example: 200
+      size_bytes:
+        type: "integer"
+        format: "int64"
+        example: 1235
       sha1:
         type: "string"
         example: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
@@ -9255,11 +9322,15 @@ definitions:
         minLength: 64
         maxLength: 64
         pattern: "[a-f0-9]{64}"
+      extra:
+        type: "object"
     example:
       sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
       surt: "org,asheesh)/apus/ch1/node15.html"
       status_code: 200
+      size_bytes: 1235
       sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
+      extra: "{}"
       mimetype: "text/html"
       url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
       timestamp: "2016-09-19T17:20:24Z"

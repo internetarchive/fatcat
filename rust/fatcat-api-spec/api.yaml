@@ -281,10 +281,17 @@ definitions:
               type: integer
               example: 200
               format: int64
+            size_bytes:
+              type: integer
+              example: 1235
+              format: int64
             sha1:
               <<: *FATCATSHA1
             sha256:
               <<: *FATCATSHA256
+            extra:
+              type: object
+              additionalProperties: {}
       archive_urls:
         type: array
         items:
@@ -320,6 +327,9 @@ definitions:
       title:
         type: string
         description: "Required for valid entities. The title used in citations and for display; usually English"
+      subtitle:
+        type: string
+        description: "Avoid this field if possible, and merge with title; usually English"
       original_title:
         type: string
         description: "Title in original language (or, the language of the full text of this release)"
@@ -350,13 +360,22 @@ definitions:
       release_type:
         type: string
         example: "book"
-      release_status:
+      release_stage:
         type: string
         example: "preprint, retracted"
       release_date:
         type: string
         format: date
       release_year:
+        type: integer
+        example: 2014
+        format: int64
+      withdrawn_state:
+        type: string
+      withdrawn_date:
+        type: string
+        format: date
+      withdrawn_year:
         type: integer
         example: 2014
         format: int64
@@ -380,12 +399,20 @@ definitions:
         type: string
       jstor_id:
         type: string
+      ark_id:
+        type: string
+      mag_id:
+        type: string
       volume:
         type: string
       issue:
         type: string
         example: "12"
       pages:
+        type: string
+      number:
+        type: string
+      version:
         type: string
       publisher:
         type: string
@@ -602,6 +629,10 @@ definitions:
         $ref: "#/definitions/creator_entity"
         description: "Optional; GET-only"
       raw_name:
+        type: string
+      given_name:
+        type: string
+      surname:
         type: string
       role:
         type: string
@@ -2266,6 +2297,14 @@ paths:
           type: string
           required: false
         - name: jstor_id
+          in: query
+          type: string
+          required: false
+        - name: ark_id
+          in: query
+          type: string
+          required: false
+        - name: mag_id
           in: query
           type: string
           required: false

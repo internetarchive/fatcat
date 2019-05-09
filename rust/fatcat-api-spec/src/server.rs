@@ -8281,6 +8281,8 @@ where
                 let param_core_id = query_params.get("core_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_arxiv_id = query_params.get("arxiv_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_jstor_id = query_params.get("jstor_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_ark_id = query_params.get("ark_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_mag_id = query_params.get("mag_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_expand = query_params.get("expand").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
@@ -8294,6 +8296,8 @@ where
                         param_core_id,
                         param_arxiv_id,
                         param_jstor_id,
+                        param_ark_id,
+                        param_mag_id,
                         param_expand,
                         param_hide,
                         context,

@@ -6020,6 +6020,8 @@ impl Api for Client {
         param_core_id: Option<String>,
         param_arxiv_id: Option<String>,
         param_jstor_id: Option<String>,
+        param_ark_id: Option<String>,
+        param_mag_id: Option<String>,
         param_expand: Option<String>,
         param_hide: Option<String>,
         context: &Context,
@@ -6033,11 +6035,13 @@ impl Api for Client {
         let query_core_id = param_core_id.map_or_else(String::new, |query| format!("core_id={core_id}&", core_id = query.to_string()));
         let query_arxiv_id = param_arxiv_id.map_or_else(String::new, |query| format!("arxiv_id={arxiv_id}&", arxiv_id = query.to_string()));
         let query_jstor_id = param_jstor_id.map_or_else(String::new, |query| format!("jstor_id={jstor_id}&", jstor_id = query.to_string()));
+        let query_ark_id = param_ark_id.map_or_else(String::new, |query| format!("ark_id={ark_id}&", ark_id = query.to_string()));
+        let query_mag_id = param_mag_id.map_or_else(String::new, |query| format!("mag_id={mag_id}&", mag_id = query.to_string()));
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
         let url = format!(
-            "{}/v0/release/lookup?{doi}{wikidata_qid}{isbn13}{pmid}{pmcid}{core_id}{arxiv_id}{jstor_id}{expand}{hide}",
+            "{}/v0/release/lookup?{doi}{wikidata_qid}{isbn13}{pmid}{pmcid}{core_id}{arxiv_id}{jstor_id}{ark_id}{mag_id}{expand}{hide}",
             self.base_path,
             doi = utf8_percent_encode(&query_doi, QUERY_ENCODE_SET),
             wikidata_qid = utf8_percent_encode(&query_wikidata_qid, QUERY_ENCODE_SET),
@@ -6047,6 +6051,8 @@ impl Api for Client {
             core_id = utf8_percent_encode(&query_core_id, QUERY_ENCODE_SET),
             arxiv_id = utf8_percent_encode(&query_arxiv_id, QUERY_ENCODE_SET),
             jstor_id = utf8_percent_encode(&query_jstor_id, QUERY_ENCODE_SET),
+            ark_id = utf8_percent_encode(&query_ark_id, QUERY_ENCODE_SET),
+            mag_id = utf8_percent_encode(&query_mag_id, QUERY_ENCODE_SET),
             expand = utf8_percent_encode(&query_expand, QUERY_ENCODE_SET),
             hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
         );
