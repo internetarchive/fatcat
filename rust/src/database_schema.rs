@@ -254,6 +254,8 @@ table! {
         raw_affiliation -> Nullable<Text>,
         index_val -> Nullable<Int4>,
         extra_json -> Nullable<Jsonb>,
+        given_name -> Nullable<Text>,
+        surname -> Nullable<Text>,
     }
 }
 
@@ -297,7 +299,7 @@ table! {
         title -> Text,
         original_title -> Nullable<Text>,
         release_type -> Nullable<Text>,
-        release_status -> Nullable<Text>,
+        release_stage -> Nullable<Text>,
         release_date -> Nullable<Date>,
         release_year -> Nullable<Int8>,
         doi -> Nullable<Text>,
@@ -314,6 +316,14 @@ table! {
         publisher -> Nullable<Text>,
         language -> Nullable<Text>,
         license_slug -> Nullable<Text>,
+        number -> Nullable<Text>,
+        version -> Nullable<Text>,
+        subtitle -> Nullable<Text>,
+        withdrawn_state -> Nullable<Text>,
+        withdrawn_date -> Nullable<Date>,
+        withdrawn_year -> Nullable<Int8>,
+        mag_id -> Nullable<Text>,
+        ark_id -> Nullable<Text>,
     }
 }
 
@@ -369,6 +379,8 @@ table! {
         status_code -> Nullable<Int8>,
         sha1 -> Text,
         sha256 -> Nullable<Text>,
+        size_bytes -> Nullable<Int8>,
+        extra_json -> Nullable<Jsonb>,
     }
 }
 
