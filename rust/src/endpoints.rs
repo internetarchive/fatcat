@@ -673,6 +673,8 @@ impl Api for Server {
         core_id: Option<String>,
         arxiv_id: Option<String>,
         jstor_id: Option<String>,
+        ark_id: Option<String>,
+        mag_id: Option<String>,
         expand: Option<String>,
         hide: Option<String>,
         _context: &Context,
@@ -698,6 +700,8 @@ impl Api for Server {
                 &core_id,
                 &arxiv_id,
                 &jstor_id,
+                &ark_id,
+                &mag_id,
                 expand_flags,
                 hide_flags,
             )

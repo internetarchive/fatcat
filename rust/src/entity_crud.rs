@@ -1441,10 +1441,10 @@ impl EntityCrud for WebcaptureEntity {
                 url: c.url,
                 mimetype: c.mimetype,
                 status_code: c.status_code,
-                // XXX: size_bytes: c.size_bytes,
+                size_bytes: c.size_bytes,
                 sha1: c.sha1,
                 sha256: c.sha256,
-                // XXX: extra_json: c.extra
+                extra: c.extra_json,
             })
             .collect();
 
@@ -1531,10 +1531,10 @@ impl EntityCrud for WebcaptureEntity {
                             url: c.url.clone(),
                             mimetype: c.mimetype.clone(),
                             status_code: c.status_code,
-                            size_bytes: None, // XXX: c.size_bytes,
+                            size_bytes: c.size_bytes,
                             sha1: c.sha1.clone(),
                             sha256: c.sha256.clone(),
-                            extra_json: None, // XXX: c.extra
+                            extra_json: c.extra.clone(),
                         })
                         .collect();
                     webcapture_cdx_rows.extend(these_cdx_rows);
@@ -1620,15 +1620,15 @@ impl EntityCrud for ReleaseEntity {
 
         Ok(ReleaseEntity {
             title: None,
-            // XXX: subtitle: None,
+            subtitle: None,
             original_title: None,
             release_type: None,
-            release_status: None,
+            release_stage: None,
             release_date: None,
             release_year: None,
-            // XXX: withdrawn_state: None,
-            // XXX: withdrawn_date: None,
-            // XXX: withdrawn_year: None,
+            withdrawn_state: None,
+            withdrawn_date: None,
+            withdrawn_year: None,
             doi: None,
             pmid: None,
             pmcid: None,
@@ -1637,13 +1637,13 @@ impl EntityCrud for ReleaseEntity {
             core_id: None,
             arxiv_id: None,
             jstor_id: None,
-            // XXX: ark_id: None,
-            // XXX: mag_id: None,
+            ark_id: None,
+            mag_id: None,
             volume: None,
             issue: None,
             pages: None,
-            // XXX: number: None,
-            // XXX: version: None,
+            number: None,
+            version: None,
             files: None,
             filesets: None,
             webcaptures: None,
@@ -1883,8 +1883,8 @@ impl EntityCrud for ReleaseEntity {
                     .map(|c: ReleaseContribRow| ReleaseContrib {
                         index: c.index_val.map(|v| v as i64),
                         raw_name: c.raw_name,
-                        // XXX: given_name: c.given_name,
-                        // XXX: surname: c.surname,
+                        given_name: c.given_name,
+                        surname: c.surname,
                         role: c.role,
                         raw_affiliation: c.raw_affiliation,
                         extra: c.extra_json,
@@ -1920,11 +1920,15 @@ impl EntityCrud for ReleaseEntity {
 
         Ok(ReleaseEntity {
             title: Some(rev_row.title),
+            subtitle: rev_row.subtitle,
             original_title: rev_row.original_title,
             release_type: rev_row.release_type,
-            release_status: rev_row.release_stage,
+            release_stage: rev_row.release_stage,
             release_date: rev_row.release_date,
             release_year: rev_row.release_year,
+            withdrawn_state: rev_row.withdrawn_state,
+            withdrawn_date: rev_row.withdrawn_date,
+            withdrawn_year: rev_row.withdrawn_year,
             doi: rev_row.doi,
             pmid: rev_row.pmid,
             pmcid: rev_row.pmcid,
@@ -1933,13 +1937,13 @@ impl EntityCrud for ReleaseEntity {
             core_id: rev_row.core_id,
             arxiv_id: rev_row.arxiv_id,
             jstor_id: rev_row.jstor_id,
-            // XXX: ark_id: rev_row.ark_id,
-            // XXX: mag_id: rev_row.mag_id,
+            ark_id: rev_row.ark_id,
+            mag_id: rev_row.mag_id,
             volume: rev_row.volume,
             issue: rev_row.issue,
             pages: rev_row.pages,
-            // XXX: number: rev_row.number,
-            // XXX: version: rev_row.version,
+            number: rev_row.number,
+            version: rev_row.version,
             files: None,
             filesets: None,
             webcaptures: None,
@@ -1982,7 +1986,7 @@ impl EntityCrud for ReleaseEntity {
             if let Some(ref release_type) = entity.release_type {
                 check_release_type(release_type)?;
             }
-            if let Some(ref release_stage) = entity.release_status {
+            if let Some(ref release_stage) = entity.release_stage {
                 check_release_stage(release_stage)?;
             }
             if let Some(ref abstracts) = entity.abstracts {
@@ -2081,15 +2085,15 @@ impl EntityCrud for ReleaseEntity {
                         Ok(ReleaseRevNewRow {
                     refs_blob_sha1: refs_sha1,
                     title: model.title.clone().unwrap(), // titles checked above
-                    subtitle: None, // XXX: model.original_title.clone(),
+                    subtitle: model.original_title.clone(),
                     original_title: model.original_title.clone(),
                     release_type: model.release_type.clone(),
-                    release_stage: model.release_status.clone(),
+                    release_stage: model.release_stage.clone(),
                     release_date: model.release_date,
                     release_year: model.release_year,
-                    withdrawn_state: None, // XXX: model.withdrawn_state.clone(),
-                    withdrawn_date: None, // XXX: model.withdrawn_date,
-                    withdrawn_year: None, // XXX: model.withdrawn_year,
+                    withdrawn_state: model.withdrawn_state.clone(),
+                    withdrawn_date: model.withdrawn_date,
+                    withdrawn_year: model.withdrawn_year,
                     doi: model.doi.clone(),
                     pmid: model.pmid.clone(),
                     pmcid: model.pmcid.clone(),
@@ -2098,13 +2102,13 @@ impl EntityCrud for ReleaseEntity {
                     core_id: model.core_id.clone(),
                     arxiv_id: model.arxiv_id.clone(),
                     jstor_id: model.jstor_id.clone(),
-                    ark_id: None, // XXX: model.ark_id.clone(),
-                    mag_id: None, // XXX: model.mag_id.clone(),
+                    ark_id: model.ark_id.clone(),
+                    mag_id: model.mag_id.clone(),
                     volume: model.volume.clone(),
                     issue: model.issue.clone(),
                     pages: model.pages.clone(),
-                    number: None, // XXX: model.number.clone(),
-                    version: None, // XXX: model.version.clone(),
+                    number: model.number.clone(),
+                    version: model.version.clone(),
                     work_ident_id: match model.work_id.clone() {
                         None => bail!("release_revs must have a work_id by the time they are inserted; this is an internal soundness error"),
                         Some(s) => FatcatId::from_str(&s)?.to_uuid(),
@@ -2167,8 +2171,8 @@ impl EntityCrud for ReleaseEntity {
                                     Some(v) => Some(FatcatId::from_str(&v)?.to_uuid()),
                                 },
                                 raw_name: c.raw_name.clone(),
-                                given_name: None, // XXX: c.given_name.clone(),
-                                surname: None,    // XXX: c.surname.clone(),
+                                given_name: c.given_name.clone(),
+                                surname: c.surname.clone(),
                                 index_val: c.index.map(|v| v as i32),
                                 role: c.role.clone(),
                                 raw_affiliation: c.raw_affiliation.clone(),
