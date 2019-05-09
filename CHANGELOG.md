@@ -16,6 +16,8 @@ See also:
 
 ## [Unreleased]
 
+## [0.2.2] - 2019-05-08
+
 ### Fixed
 
 - fixed major authn/authz bug with fatcat python client which leaked API tokens
