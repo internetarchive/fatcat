@@ -5137,36 +5137,36 @@ paths:
         type: "string"
         formatString: "{:?}"
         example: "Some(\"pmcid_example\".to_string())"
-      - name: "core_id"
+      - name: "core"
         in: "query"
         required: false
         type: "string"
         formatString: "{:?}"
-        example: "Some(\"core_id_example\".to_string())"
-      - name: "arxiv_id"
+        example: "Some(\"core_example\".to_string())"
+      - name: "arxiv"
         in: "query"
         required: false
         type: "string"
         formatString: "{:?}"
-        example: "Some(\"arxiv_id_example\".to_string())"
-      - name: "jstor_id"
+        example: "Some(\"arxiv_example\".to_string())"
+      - name: "jstor"
         in: "query"
         required: false
         type: "string"
         formatString: "{:?}"
-        example: "Some(\"jstor_id_example\".to_string())"
-      - name: "ark_id"
+        example: "Some(\"jstor_example\".to_string())"
+      - name: "ark"
         in: "query"
         required: false
         type: "string"
         formatString: "{:?}"
-        example: "Some(\"ark_id_example\".to_string())"
-      - name: "mag_id"
+        example: "Some(\"ark_example\".to_string())"
+      - name: "mag"
         in: "query"
         required: false
         type: "string"
         formatString: "{:?}"
-        example: "Some(\"mag_id_example\".to_string())"
+        example: "Some(\"mag_example\".to_string())"
       - name: "expand"
         in: "query"
         description: "List of sub-entities to expand in response."
@@ -7817,6 +7817,8 @@ definitions:
     upperCaseName: "WEBCAPTURE_ENTITY"
   release_entity:
     type: "object"
+    required:
+    - "ext_ids"
     properties:
       abstracts:
         type: "array"
@@ -7849,27 +7851,8 @@ definitions:
         example: "12"
       volume:
         type: "string"
-      mag_id:
-        type: "string"
-      ark_id:
-        type: "string"
-      jstor_id:
-        type: "string"
-      arxiv_id:
-        type: "string"
-      core_id:
-        type: "string"
-      pmcid:
-        type: "string"
-      pmid:
-        type: "string"
-      isbn13:
-        type: "string"
-      wikidata_qid:
-        type: "string"
-      doi:
-        type: "string"
-        example: "10.1234/abcde.789"
+      ext_ids:
+        $ref: "#/definitions/release_entity_ext_ids"
       withdrawn_year:
         type: "integer"
         format: "int64"
@@ -7961,7 +7944,6 @@ definitions:
       edit_extra:
         type: "object"
     example:
-      mag_id: "mag_id"
       container:
         redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
         ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
@@ -8088,13 +8070,10 @@ definitions:
         given_name: "given_name"
       number: "number"
       pages: "pages"
-      core_id: "core_id"
       extra: "{}"
       state: "wip"
       edit_extra: "{}"
-      ark_id: "ark_id"
       withdrawn_year: 2014
-      jstor_id: "jstor_id"
       redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
       work_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
       issue: "12"
@@ -8110,11 +8089,20 @@ definitions:
         content: "<jats:p>Some abstract thing goes here</jats:p>"
       release_year: 2014
       release_type: "book"
-      wikidata_qid: "wikidata_qid"
-      pmid: "pmid"
       version: "version"
       revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       volume: "volume"
+      ext_ids:
+        core: "core"
+        mag: "mag"
+        jstor: "jstor"
+        isbn13: "isbn13"
+        arxiv: "arxiv"
+        wikidata_qid: "wikidata_qid"
+        ark: "ark"
+        pmid: "pmid"
+        pmcid: "pmcid"
+        doi: "10.1234/abcde.789"
       release_stage: "preprint, retracted"
       license_slug: "license_slug"
       withdrawn_date: "2000-01-23"
@@ -8136,7 +8124,6 @@ definitions:
         locator: "p123"
         key: "key"
       release_date: "2000-01-23"
-      isbn13: "isbn13"
       subtitle: "subtitle"
       publisher: "publisher"
       files:
@@ -8178,7 +8165,6 @@ definitions:
         - "q3nouwy3nnbsvo3h5klxsx4a7y"
         edit_extra: "{}"
         md5: "1b39813549077b2347c0f370c3864b40"
-      arxiv_id: "arxiv_id"
       filesets:
       - redirect: "q3nouwy3nnbsvo3h5klxsx4a7y"
         urls:
@@ -8234,9 +8220,7 @@ definitions:
         - "q3nouwy3nnbsvo3h5klxsx4a7y"
         edit_extra: "{}"
         revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
-      pmcid: "pmcid"
       container_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
-      doi: "10.1234/abcde.789"
     upperCaseName: "RELEASE_ENTITY"
   work_entity:
     type: "object"
@@ -9349,6 +9333,41 @@ definitions:
       lang: "en"
       content: "<jats:p>Some abstract thing goes here</jats:p>"
     upperCaseName: "RELEASE_ENTITY_ABSTRACTS"
+  release_entity_ext_ids:
+    properties:
+      doi:
+        type: "string"
+        example: "10.1234/abcde.789"
+      wikidata_qid:
+        type: "string"
+      isbn13:
+        type: "string"
+      pmid:
+        type: "string"
+      pmcid:
+        type: "string"
+      core:
+        type: "string"
+      arxiv:
+        type: "string"
+      jstor:
+        type: "string"
+      ark:
+        type: "string"
+      mag:
+        type: "string"
+    example:
+      core: "core"
+      mag: "mag"
+      jstor: "jstor"
+      isbn13: "isbn13"
+      arxiv: "arxiv"
+      wikidata_qid: "wikidata_qid"
+      ark: "ark"
+      pmid: "pmid"
+      pmcid: "pmcid"
+      doi: "10.1234/abcde.789"
+    upperCaseName: "RELEASE_ENTITY_EXT_IDS"
   editgroup_edits:
     properties:
       containers:

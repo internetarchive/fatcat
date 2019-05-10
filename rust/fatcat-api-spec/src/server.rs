@@ -8278,11 +8278,11 @@ where
                 let param_isbn13 = query_params.get("isbn13").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_pmid = query_params.get("pmid").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_pmcid = query_params.get("pmcid").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
-                let param_core_id = query_params.get("core_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
-                let param_arxiv_id = query_params.get("arxiv_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
-                let param_jstor_id = query_params.get("jstor_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
-                let param_ark_id = query_params.get("ark_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
-                let param_mag_id = query_params.get("mag_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_core = query_params.get("core").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_arxiv = query_params.get("arxiv").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_jstor = query_params.get("jstor").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_ark = query_params.get("ark").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
+                let param_mag = query_params.get("mag").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_expand = query_params.get("expand").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
                 let param_hide = query_params.get("hide").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
 
@@ -8293,11 +8293,11 @@ where
                         param_isbn13,
                         param_pmid,
                         param_pmcid,
-                        param_core_id,
-                        param_arxiv_id,
-                        param_jstor_id,
-                        param_ark_id,
-                        param_mag_id,
+                        param_core,
+                        param_arxiv,
+                        param_jstor,
+                        param_ark,
+                        param_mag,
                         param_expand,
                         param_hide,
                         context,

@@ -1577,11 +1577,11 @@ pub trait Api {
         isbn13: Option<String>,
         pmid: Option<String>,
         pmcid: Option<String>,
-        core_id: Option<String>,
-        arxiv_id: Option<String>,
-        jstor_id: Option<String>,
-        ark_id: Option<String>,
-        mag_id: Option<String>,
+        core: Option<String>,
+        arxiv: Option<String>,
+        jstor: Option<String>,
+        ark: Option<String>,
+        mag: Option<String>,
         expand: Option<String>,
         hide: Option<String>,
         context: &Context,
@@ -1865,11 +1865,11 @@ pub trait ApiNoContext {
         isbn13: Option<String>,
         pmid: Option<String>,
         pmcid: Option<String>,
-        core_id: Option<String>,
-        arxiv_id: Option<String>,
-        jstor_id: Option<String>,
-        ark_id: Option<String>,
-        mag_id: Option<String>,
+        core: Option<String>,
+        arxiv: Option<String>,
+        jstor: Option<String>,
+        ark: Option<String>,
+        mag: Option<String>,
         expand: Option<String>,
         hide: Option<String>,
     ) -> Box<Future<Item = LookupReleaseResponse, Error = ApiError> + Send>;
@@ -2308,16 +2308,16 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         isbn13: Option<String>,
         pmid: Option<String>,
         pmcid: Option<String>,
-        core_id: Option<String>,
-        arxiv_id: Option<String>,
-        jstor_id: Option<String>,
-        ark_id: Option<String>,
-        mag_id: Option<String>,
+        core: Option<String>,
+        arxiv: Option<String>,
+        jstor: Option<String>,
+        ark: Option<String>,
+        mag: Option<String>,
         expand: Option<String>,
         hide: Option<String>,
     ) -> Box<Future<Item = LookupReleaseResponse, Error = ApiError> + Send> {
         self.api()
-            .lookup_release(doi, wikidata_qid, isbn13, pmid, pmcid, core_id, arxiv_id, jstor_id, ark_id, mag_id, expand, hide, &self.context())
+            .lookup_release(doi, wikidata_qid, isbn13, pmid, pmcid, core, arxiv, jstor, ark, mag, expand, hide, &self.context())
     }
 
     fn update_release(&self, ident: String, entity: models::ReleaseEntity, editgroup_id: String) -> Box<Future<Item = UpdateReleaseResponse, Error = ApiError> + Send> {

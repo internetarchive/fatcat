@@ -6017,11 +6017,11 @@ impl Api for Client {
         param_isbn13: Option<String>,
         param_pmid: Option<String>,
         param_pmcid: Option<String>,
-        param_core_id: Option<String>,
-        param_arxiv_id: Option<String>,
-        param_jstor_id: Option<String>,
-        param_ark_id: Option<String>,
-        param_mag_id: Option<String>,
+        param_core: Option<String>,
+        param_arxiv: Option<String>,
+        param_jstor: Option<String>,
+        param_ark: Option<String>,
+        param_mag: Option<String>,
         param_expand: Option<String>,
         param_hide: Option<String>,
         context: &Context,
@@ -6032,27 +6032,27 @@ impl Api for Client {
         let query_isbn13 = param_isbn13.map_or_else(String::new, |query| format!("isbn13={isbn13}&", isbn13 = query.to_string()));
         let query_pmid = param_pmid.map_or_else(String::new, |query| format!("pmid={pmid}&", pmid = query.to_string()));
         let query_pmcid = param_pmcid.map_or_else(String::new, |query| format!("pmcid={pmcid}&", pmcid = query.to_string()));
-        let query_core_id = param_core_id.map_or_else(String::new, |query| format!("core_id={core_id}&", core_id = query.to_string()));
-        let query_arxiv_id = param_arxiv_id.map_or_else(String::new, |query| format!("arxiv_id={arxiv_id}&", arxiv_id = query.to_string()));
-        let query_jstor_id = param_jstor_id.map_or_else(String::new, |query| format!("jstor_id={jstor_id}&", jstor_id = query.to_string()));
-        let query_ark_id = param_ark_id.map_or_else(String::new, |query| format!("ark_id={ark_id}&", ark_id = query.to_string()));
-        let query_mag_id = param_mag_id.map_or_else(String::new, |query| format!("mag_id={mag_id}&", mag_id = query.to_string()));
+        let query_core = param_core.map_or_else(String::new, |query| format!("core={core}&", core = query.to_string()));
+        let query_arxiv = param_arxiv.map_or_else(String::new, |query| format!("arxiv={arxiv}&", arxiv = query.to_string()));
+        let query_jstor = param_jstor.map_or_else(String::new, |query| format!("jstor={jstor}&", jstor = query.to_string()));
+        let query_ark = param_ark.map_or_else(String::new, |query| format!("ark={ark}&", ark = query.to_string()));
+        let query_mag = param_mag.map_or_else(String::new, |query| format!("mag={mag}&", mag = query.to_string()));
         let query_expand = param_expand.map_or_else(String::new, |query| format!("expand={expand}&", expand = query.to_string()));
         let query_hide = param_hide.map_or_else(String::new, |query| format!("hide={hide}&", hide = query.to_string()));
 
         let url = format!(
-            "{}/v0/release/lookup?{doi}{wikidata_qid}{isbn13}{pmid}{pmcid}{core_id}{arxiv_id}{jstor_id}{ark_id}{mag_id}{expand}{hide}",
+            "{}/v0/release/lookup?{doi}{wikidata_qid}{isbn13}{pmid}{pmcid}{core}{arxiv}{jstor}{ark}{mag}{expand}{hide}",
             self.base_path,
             doi = utf8_percent_encode(&query_doi, QUERY_ENCODE_SET),
             wikidata_qid = utf8_percent_encode(&query_wikidata_qid, QUERY_ENCODE_SET),
             isbn13 = utf8_percent_encode(&query_isbn13, QUERY_ENCODE_SET),
             pmid = utf8_percent_encode(&query_pmid, QUERY_ENCODE_SET),
             pmcid = utf8_percent_encode(&query_pmcid, QUERY_ENCODE_SET),
-            core_id = utf8_percent_encode(&query_core_id, QUERY_ENCODE_SET),
-            arxiv_id = utf8_percent_encode(&query_arxiv_id, QUERY_ENCODE_SET),
-            jstor_id = utf8_percent_encode(&query_jstor_id, QUERY_ENCODE_SET),
-            ark_id = utf8_percent_encode(&query_ark_id, QUERY_ENCODE_SET),
-            mag_id = utf8_percent_encode(&query_mag_id, QUERY_ENCODE_SET),
+            core = utf8_percent_encode(&query_core, QUERY_ENCODE_SET),
+            arxiv = utf8_percent_encode(&query_arxiv, QUERY_ENCODE_SET),
+            jstor = utf8_percent_encode(&query_jstor, QUERY_ENCODE_SET),
+            ark = utf8_percent_encode(&query_ark, QUERY_ENCODE_SET),
+            mag = utf8_percent_encode(&query_mag, QUERY_ENCODE_SET),
             expand = utf8_percent_encode(&query_expand, QUERY_ENCODE_SET),
             hide = utf8_percent_encode(&query_hide, QUERY_ENCODE_SET)
         );

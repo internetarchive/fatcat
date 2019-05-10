@@ -792,45 +792,8 @@ pub struct ReleaseEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub volume: Option<String>,
 
-    #[serde(rename = "mag_id")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub mag_id: Option<String>,
-
-    #[serde(rename = "ark_id")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub ark_id: Option<String>,
-
-    #[serde(rename = "jstor_id")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub jstor_id: Option<String>,
-
-    #[serde(rename = "arxiv_id")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub arxiv_id: Option<String>,
-
-    #[serde(rename = "core_id")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub core_id: Option<String>,
-
-    #[serde(rename = "pmcid")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub pmcid: Option<String>,
-
-    #[serde(rename = "pmid")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub pmid: Option<String>,
-
-    #[serde(rename = "isbn13")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub isbn13: Option<String>,
-
-    #[serde(rename = "wikidata_qid")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub wikidata_qid: Option<String>,
-
-    #[serde(rename = "doi")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub doi: Option<String>,
+    #[serde(rename = "ext_ids")]
+    pub ext_ids: models::ReleaseEntityExtIds,
 
     #[serde(rename = "withdrawn_year")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -933,7 +896,7 @@ pub struct ReleaseEntity {
 }
 
 impl ReleaseEntity {
-    pub fn new() -> ReleaseEntity {
+    pub fn new(ext_ids: models::ReleaseEntityExtIds) -> ReleaseEntity {
         ReleaseEntity {
             abstracts: None,
             refs: None,
@@ -946,16 +909,7 @@ impl ReleaseEntity {
             pages: None,
             issue: None,
             volume: None,
-            mag_id: None,
-            ark_id: None,
-            jstor_id: None,
-            arxiv_id: None,
-            core_id: None,
-            pmcid: None,
-            pmid: None,
-            isbn13: None,
-            wikidata_qid: None,
-            doi: None,
+            ext_ids: ext_ids,
             withdrawn_year: None,
             withdrawn_date: None,
             withdrawn_status: None,
@@ -1008,6 +962,66 @@ impl ReleaseEntityAbstracts {
             content: None,
             mimetype: None,
             lang: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ReleaseEntityExtIds {
+    #[serde(rename = "doi")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub doi: Option<String>,
+
+    #[serde(rename = "wikidata_qid")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub wikidata_qid: Option<String>,
+
+    #[serde(rename = "isbn13")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub isbn13: Option<String>,
+
+    #[serde(rename = "pmid")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pmid: Option<String>,
+
+    #[serde(rename = "pmcid")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub pmcid: Option<String>,
+
+    #[serde(rename = "core")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub core: Option<String>,
+
+    #[serde(rename = "arxiv")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub arxiv: Option<String>,
+
+    #[serde(rename = "jstor")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub jstor: Option<String>,
+
+    #[serde(rename = "ark")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ark: Option<String>,
+
+    #[serde(rename = "mag")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub mag: Option<String>,
+}
+
+impl ReleaseEntityExtIds {
+    pub fn new() -> ReleaseEntityExtIds {
+        ReleaseEntityExtIds {
+            doi: None,
+            wikidata_qid: None,
+            isbn13: None,
+            pmid: None,
+            pmcid: None,
+            core: None,
+            arxiv: None,
+            jstor: None,
+            ark: None,
+            mag: None,
         }
     }
 }

@@ -319,6 +319,8 @@ definitions:
   release_entity:
     type: object
     # required for creation: title
+    required:
+      - ext_ids
     properties:
       <<: *ENTITYPROPS
       title:
@@ -376,30 +378,33 @@ definitions:
         type: integer
         example: 2014
         format: int64
-      doi:
-        type: string
-        #format: custom
-        example: "10.1234/abcde.789"
-      wikidata_qid:
-        type: string
-      isbn13:
-        type: string
-        #format: custom
-      pmid:
-        type: string
-      pmcid:
-        type: string
-      core_id:
-        type: string
-        #format: custom
-      arxiv_id:
-        type: string
-      jstor_id:
-        type: string
-      ark_id:
-        type: string
-      mag_id:
-        type: string
+      ext_ids:
+        type: object
+        properties:
+          doi:
+            type: string
+            #format: custom
+            example: "10.1234/abcde.789"
+          wikidata_qid:
+            type: string
+          isbn13:
+            type: string
+            #format: custom
+          pmid:
+            type: string
+          pmcid:
+            type: string
+          core:
+            type: string
+            #format: custom
+          arxiv:
+            type: string
+          jstor:
+            type: string
+          ark:
+            type: string
+          mag:
+            type: string
       volume:
         type: string
       issue:
@@ -2285,23 +2290,23 @@ paths:
           in: query
           type: string
           required: false
-        - name: core_id
+        - name: core
           in: query
           type: string
           required: false
-        - name: arxiv_id
+        - name: arxiv
           in: query
           type: string
           required: false
-        - name: jstor_id
+        - name: jstor
           in: query
           type: string
           required: false
-        - name: ark_id
+        - name: ark
           in: query
           type: string
           required: false
-        - name: mag_id
+        - name: mag
           in: query
           type: string
           required: false
