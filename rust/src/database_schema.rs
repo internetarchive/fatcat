@@ -319,7 +319,7 @@ table! {
         number -> Nullable<Text>,
         version -> Nullable<Text>,
         subtitle -> Nullable<Text>,
-        withdrawn_state -> Nullable<Text>,
+        withdrawn_status -> Nullable<Text>,
         withdrawn_date -> Nullable<Date>,
         withdrawn_year -> Nullable<Int8>,
         mag_id -> Nullable<Text>,

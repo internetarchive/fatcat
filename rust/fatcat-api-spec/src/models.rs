@@ -840,9 +840,9 @@ pub struct ReleaseEntity {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub withdrawn_date: Option<chrono::NaiveDate>,
 
-    #[serde(rename = "withdrawn_state")]
+    #[serde(rename = "withdrawn_status")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub withdrawn_state: Option<String>,
+    pub withdrawn_status: Option<String>,
 
     #[serde(rename = "release_year")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -958,7 +958,7 @@ impl ReleaseEntity {
             doi: None,
             withdrawn_year: None,
             withdrawn_date: None,
-            withdrawn_state: None,
+            withdrawn_status: None,
             release_year: None,
             release_date: None,
             release_stage: None,

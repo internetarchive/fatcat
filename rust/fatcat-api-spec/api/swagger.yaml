@@ -7877,7 +7877,7 @@ definitions:
       withdrawn_date:
         type: "string"
         format: "date"
-      withdrawn_state:
+      withdrawn_status:
         type: "string"
       release_year:
         type: "integer"
@@ -8042,9 +8042,9 @@ definitions:
         timestamp: "2000-01-23T04:56:07.000+00:00"
         revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       ident: "q3nouwy3nnbsvo3h5klxsx4a7y"
+      withdrawn_status: "withdrawn_status"
       language: "language"
       title: "title"
-      withdrawn_state: "withdrawn_state"
       contribs:
       - raw_affiliation: "raw_affiliation"
         creator:
