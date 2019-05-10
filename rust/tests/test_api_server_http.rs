@@ -815,6 +815,8 @@ fn test_post_release() {
                 "contribs": [{
                         "index": 1,
                         "raw_name": "textual description of contributor (aka, name)",
+                        "given_name": "western first",
+                        "surname": "western last",
                         "creator_id": "aaaaaaaaaaaaaircaaaaaaaaae",
                         "role": "author"
                     },{
