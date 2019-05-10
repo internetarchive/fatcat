@@ -18,5 +18,4 @@ DROP COLUMN mag_id,
 DROP COLUMN ark_id;
 
 ALTER TABLE webcapture_rev_cdx
-DROP COLUMN size_bytes,
-DROP COLUMN extra_json;
+DROP COLUMN size_bytes;

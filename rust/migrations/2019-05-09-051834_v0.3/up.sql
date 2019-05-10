@@ -30,8 +30,7 @@ ADD COLUMN ark_id                TEXT CHECK (octet_length(ark_id) >= 5);
 -------------------- Web Capture -------------------------------------------
 
 ALTER TABLE webcapture_rev_cdx
-ADD COLUMN size_bytes          BIGINT,
-ADD COLUMN extra_json          JSONB;
+ADD COLUMN size_bytes          BIGINT;
 
 -------------------- Edit Indices ------------------------------------------
 
