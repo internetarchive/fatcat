@@ -20,12 +20,27 @@ ADD COLUMN version               TEXT CHECK (octet_length(version) >= 1),
 ADD COLUMN subtitle              TEXT CHECK (octet_length(subtitle) >= 1),
 ADD COLUMN withdrawn_status       TEXT,  -- TODO: enum?
 ADD COLUMN withdrawn_date        DATE,
-ADD COLUMN withdrawn_year        BIGINT,
-ADD COLUMN mag_id                TEXT CHECK (octet_length(mag_id) >= 1),
-ADD COLUMN ark_id                TEXT CHECK (octet_length(ark_id) >= 5);
+ADD COLUMN withdrawn_year        BIGINT;
 
-CREATE INDEX IF NOT EXISTS release_rev_mag_idx ON release_rev(mag_id);
-CREATE INDEX IF NOT EXISTS release_rev_ark_idx ON release_rev(mag_id);
+-- create new, separate 
+CREATE TABLE release_rev_extid (
+    release_rev     UUID REFERENCES release_rev(id) NOT NULL,
+    extid_type      TEXT NOT NULL CHECK (octet_length(extid_type) >= 1),
+    value           TEXT NOT NULL CHECK (octet_length(value) >= 1),
+    PRIMARY KEY(release_rev, extid_type)
+);
+
+CREATE INDEX release_rev_extid_type_value_idx ON release_rev_extid(extid_type, value);
+
+-- remove now-unused identifier columns
+DROP INDEX IF EXISTS release_rev_isbn13_idx;
+DROP INDEX IF EXISTS release_rev_arxiv_idx;
+DROP INDEX IF EXISTS release_rev_jstor_idx;
+
+ALTER TABLE release_rev
+DROP COLUMN isbn13,
+DROP COLUMN arxiv_id,
+DROP COLUMN jstor_id;
 
 -------------------- Web Capture -------------------------------------------
 
@@ -51,3 +66,15 @@ CREATE INDEX IF NOT EXISTS work_edit_ident_idx ON work_edit(ident_id);
 -- CREATE INDEX IF NOT EXISTS webcapture_edit_editgroup_idx ON webcapture_edit(editgroup_id);
 -- CREATE INDEX IF NOT EXISTS release_edit_editgroup_idx ON release_edit(editgroup_id);
 -- CREATE INDEX IF NOT EXISTS work_edit_editgroup_idx ON work_edit(editgroup_id);
+
+
+-------------------- Update Test Revs --------------------------------------
+
+-- IMPORTANT: don't create new entities here, only mutate existing
+
+INSERT INTO release_rev_extid (release_rev, extid_type, value) VALUES
+    ('00000000-0000-0000-4444-FFF000000002', 'isbn13',  '978-3-16-148410-0'),
+    ('00000000-0000-0000-4444-FFF000000002', 'arxiv',   '1905.03769v1'),
+    ('00000000-0000-0000-4444-FFF000000002', 'jstor',   '1819117828'),
+    ('00000000-0000-0000-4444-FFF000000002', 'ark',     'ark:/asdf/924'),
+    ('00000000-0000-0000-4444-FFF000000002', 'mag',     '992489213');
