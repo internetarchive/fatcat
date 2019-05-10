@@ -332,14 +332,14 @@ fn test_lookups() {
         Some("robots.txt"),
     );
     helpers::check_http_response(
-        request::get(
-            "http://localhost:9411/v0/file/lookup?sha256=ffc1005680cb620eec4c913437dfabbf311b535cfe16cbaeb2faec1f92afc362",
-            headers.clone(),
-            &router,
-        ),
-        status::Ok,
-        Some("0020124&type=printable"),
-    );
+            request::get(
+                "http://localhost:9411/v0/file/lookup?sha256=ffc1005680cb620eec4c913437dfabbf311b535cfe16cbaeb2faec1f92afc362",
+                headers.clone(),
+                &router,
+            ),
+            status::Ok,
+            Some("0020124&type=printable"),
+        );
 
     helpers::check_http_response(
         request::get(
@@ -426,7 +426,37 @@ fn test_lookups() {
 
     helpers::check_http_response(
         request::get(
-            "http://localhost:9411/v0/release/lookup?core_id=42022773",
+            "http://localhost:9411/v0/release/lookup?core=42022773",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("bigger example"),
+    );
+
+    helpers::check_http_response(
+        request::get(
+            "http://localhost:9411/v0/release/lookup?jstor=1819117828",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("bigger example"),
+    );
+
+    helpers::check_http_response(
+        request::get(
+            "http://localhost:9411/v0/release/lookup?mag=992489213",
+            headers.clone(),
+            &router,
+        ),
+        status::Ok,
+        Some("bigger example"),
+    );
+
+    helpers::check_http_response(
+        request::get(
+            "http://localhost:9411/v0/release/lookup?ark=ark:/asdf/924",
             headers.clone(),
             &router,
         ),
@@ -757,6 +787,7 @@ fn test_post_release() {
             headers.clone(),
             // TODO: target_release_id
             r#"{"title": "secret minimal paper",
+                "ext_ids": {},
                 "release_type": "article-journal",
                 "work_id": "aaaaaaaaaaaaavkvaaaaaaaaae"
                 }"#,
@@ -776,6 +807,7 @@ fn test_post_release() {
             headers.clone(),
             // TODO: target_release_id
             r#"{"title": "secret minimal paper the second",
+                "ext_ids": {},
                 "release_type": "article-journal"
                 }"#,
             &router,
@@ -796,11 +828,13 @@ fn test_post_release() {
                 "release_type": "article-journal",
                 "release_date": "2000-01-02",
                 "release_year": 2000,
-                "doi": "10.1234/abcde.781231231239",
-                "pmid": "54321",
-                "pmcid": "PMC12345",
-                "wikidata_qid": "Q12345",
-                "core_id": "7890",
+                "ext_ids": {
+                    "doi": "10.1234/abcde.781231231239",
+                    "pmid": "54321",
+                    "pmcid": "PMC12345",
+                    "wikidata_qid": "Q12345",
+                    "core": "7890"
+                },
                 "volume": "439",
                 "issue": "IV",
                 "pages": "1-399",
@@ -1154,7 +1188,9 @@ fn test_bad_external_idents() {
             ),
             headers.clone(),
             r#"{"title": "secret paper",
-                "wikidata_qid": "P12345"
+                "ext_ids": {
+                  "wikidata_qid": "P12345"
+                }
                 }"#,
             &router,
         ),
@@ -1169,7 +1205,9 @@ fn test_bad_external_idents() {
             ),
             headers.clone(),
             r#"{"name": "my journal",
-                "wikidata_qid": "P12345"
+                "ext_ids": {
+                  "wikidata_qid": "P12345"
+                }
                 }"#,
             &router,
         ),
@@ -1184,7 +1222,9 @@ fn test_bad_external_idents() {
             ),
             headers.clone(),
             r#"{"display_name": "some body",
-                "wikidata_qid": "P12345"
+                "ext_ids": {
+                  "wikidata_qid": "P12345"
+                }
                 }"#,
             &router,
         ),
@@ -1201,7 +1241,9 @@ fn test_bad_external_idents() {
             ),
             headers.clone(),
             r#"{"title": "secret paper",
-                "pmcid": "12345"
+                "ext_ids": {
+                  "pmcid": "12345"
+                }
                 }"#,
             &router,
         ),
@@ -1218,7 +1260,9 @@ fn test_bad_external_idents() {
             ),
             headers.clone(),
             r#"{"title": "secret paper",
-                "pmid": "not-a-number"
+                "ext_ids": {
+                  "pmid": "not-a-number"
+                }
                 }"#,
             &router,
         ),
@@ -1235,7 +1279,9 @@ fn test_bad_external_idents() {
             ),
             headers.clone(),
             r#"{"title": "secret paper",
-                "doi": "asdf"
+                "ext_ids": {
+                  "doi": "asdf"
+                }
                 }"#,
             &router,
         ),
@@ -1252,10 +1298,12 @@ fn test_bad_external_idents() {
             ),
             headers.clone(),
             r#"{"title": "secret paper",
-                "doi": "10.1234/abcde.781231231239",
-                "pmid": "54321",
-                "pmcid": "PMC12345",
-                "wikidata_qid": "Q12345"
+                "ext_ids": {
+                  "doi": "10.1234/abcde.781231231239",
+                  "pmid": "54321",
+                  "pmcid": "PMC12345",
+                  "wikidata_qid": "Q12345"
+                }
                 }"#,
             &router,
         ),
@@ -1277,7 +1325,9 @@ fn test_abstracts() {
             ),
             headers.clone(),
             r#"{"title": "some paper",
-                "doi": "10.1234/iiiiiii",
+                "ext_ids": {
+                  "doi": "10.1234/iiiiiii"
+                },
                 "abstracts": [
                   {"lang": "zh",
                    "mimetype": "text/plain",
@@ -1302,6 +1352,7 @@ fn test_abstracts() {
             ),
             headers.clone(),
             r#"{"title": "some paper again",
+                "ext_ids": {},
                 "abstracts": [
                   {"lang": "zh",
                    "mimetype": "text/plain",
@@ -1374,7 +1425,9 @@ fn test_contribs() {
             ),
             headers.clone(),
             r#"{"title": "some paper",
-                "doi": "10.1234/iiiiiii",
+                "ext_ids": {
+                  "doi": "10.1234/iiiiiii"
+                },
                 "contribs": [{
                         "index": 1,
                         "raw_name": "textual description of contributor (aka, name)",
@@ -1465,6 +1518,7 @@ fn test_release_dates() {
             ),
             headers.clone(),
             r#"{"title": "secret minimal paper",
+                "ext_ids": {},
                 "release_type": "article-journal",
                 "release_date": "2000-01-02"
                 }"#,
@@ -1483,6 +1537,7 @@ fn test_release_dates() {
             ),
             headers.clone(),
             r#"{"title": "secret minimal paper",
+                "ext_ids": {},
                 "release_type": "article-journal",
                 "release_year": 2000
                 }"#,
@@ -1501,6 +1556,7 @@ fn test_release_dates() {
             ),
             headers.clone(),
             r#"{"title": "secret minimal paper",
+                "ext_ids": {},
                 "release_type": "article-journal",
                 "release_year": -100
                 }"#,
@@ -1517,6 +1573,7 @@ fn test_release_dates() {
             ),
             headers.clone(),
             r#"{"title": "secret minimal paper",
+                "ext_ids": {},
                 "release_type": "article-journal",
                 "release_year": 0
                 }"#,
@@ -1535,6 +1592,7 @@ fn test_release_dates() {
             ),
             headers.clone(),
             r#"{"title": "secret minimal paper",
+                "ext_ids": {},
                 "release_type": "article-journal",
                 "release_date": "2000-01-02",
                 "release_year": 2000
@@ -1554,6 +1612,7 @@ fn test_release_dates() {
             ),
             headers.clone(),
             r#"{"title": "secret minimal paper",
+                "ext_ids": {},
                 "release_type": "article-journal",
                 "release_date": "2000-01-02",
                 "release_year": 1999
@@ -1573,6 +1632,7 @@ fn test_release_dates() {
             ),
             headers.clone(),
             r#"{"title": "secret minimal paper",
+                "ext_ids": {},
                 "release_type": "article-journal",
                 "release_date": "2000-01"
                 }"#,
@@ -1591,6 +1651,7 @@ fn test_release_dates() {
             ),
             headers.clone(),
             r#"{"title": "secret minimal paper",
+                "ext_ids": {},
                 "release_type": "article-journal",
                 "release_date": "2005-08-30T00:00:00Z"
                 }"#,
@@ -1609,6 +1670,7 @@ fn test_release_dates() {
             ),
             headers.clone(),
             r#"{"title": "secret minimal paper",
+                "ext_ids": {},
                 "release_type": "article-journal",
                 "release_date": "2000-88-99"
                 }"#,
@@ -1633,6 +1695,7 @@ fn test_release_types() {
             ),
             headers.clone(),
             r#"{"title": "secret minimal paper",
+                "ext_ids": {},
                 "release_type": "article-journal"
                 }"#,
             &router,
@@ -1650,6 +1713,7 @@ fn test_release_types() {
             ),
             headers.clone(),
             r#"{"title": "secret minimal paper",
+                "ext_ids": {},
                 "release_type": "journal-article"
                 }"#,
             &router,

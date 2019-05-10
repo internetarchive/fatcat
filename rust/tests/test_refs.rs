@@ -21,7 +21,7 @@ fn test_refs_blob() {
         make_edit_context(&conn, editor_id, Some(editgroup_id), false, None, None).unwrap();
 
     // this release entity should be unchanged after being inserted/fetched
-    let mut r1 = ReleaseEntity::new();
+    let mut r1 = ReleaseEntity::new(ReleaseEntityExtIds::new());
     r1.title = Some("release-test hashes".to_string());
     r1.refs = Some(vec![
         ReleaseRef {
