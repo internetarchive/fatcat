@@ -260,11 +260,11 @@ impl Server {
         isbn13: &Option<String>,
         pmid: &Option<String>,
         pmcid: &Option<String>,
-        core_id: &Option<String>,
-        arxiv_id: &Option<String>,
-        jstor_id: &Option<String>,
-        ark_id: &Option<String>,
-        mag_id: &Option<String>,
+        core: &Option<String>,
+        arxiv: &Option<String>,
+        jstor: &Option<String>,
+        ark: &Option<String>,
+        mag: &Option<String>,
         expand_flags: ExpandFlags,
         hide_flags: HideFlags,
     ) -> Result<ReleaseEntity> {
@@ -274,11 +274,11 @@ impl Server {
             isbn13,
             pmid,
             pmcid,
-            core_id,
-            arxiv_id,
-            jstor_id,
-            ark_id,
-            mag_id,
+            core,
+            arxiv,
+            jstor,
+            ark,
+            mag,
         ) {
             (Some(doi), None, None, None, None, None, None, None, None, None) => {
                 // DOIs always stored lower-case; lookups are case-insensitive
@@ -302,12 +302,16 @@ impl Server {
             }
             (None, None, Some(isbn13), None, None, None, None, None, None, None) => {
                 // TODO: check_isbn13(isbn13)?;
-                release_ident::table
-                    .inner_join(release_rev::table)
-                    .filter(release_rev::isbn13.eq(isbn13))
-                    .filter(release_ident::is_live.eq(true))
-                    .filter(release_ident::redirect_id.is_null())
-                    .first(conn)?
+                let (rev, ident, _extid): (ReleaseRevRow, ReleaseIdentRow, ReleaseExtidRow) =
+                    release_rev::table
+                        .inner_join(release_ident::table)
+                        .inner_join(release_rev_extid::table)
+                        .filter(release_rev_extid::extid_type.eq("isbn13".to_string()))
+                        .filter(release_rev_extid::value.eq(isbn13))
+                        .filter(release_ident::is_live.eq(true))
+                        .filter(release_ident::redirect_id.is_null())
+                        .first(conn)?;
+                (ident, rev)
             }
             (None, None, None, Some(pmid), None, None, None, None, None, None) => {
                 check_pmid(pmid)?;
@@ -327,50 +331,66 @@ impl Server {
                     .filter(release_ident::redirect_id.is_null())
                     .first(conn)?
             }
-            (None, None, None, None, None, Some(core_id), None, None, None, None) => {
-                // TODO: check_core_id(core_id)?;
+            (None, None, None, None, None, Some(core), None, None, None, None) => {
+                // TODO: check_core_id(core)?;
                 release_ident::table
                     .inner_join(release_rev::table)
-                    .filter(release_rev::core_id.eq(core_id))
+                    .filter(release_rev::core_id.eq(core))
                     .filter(release_ident::is_live.eq(true))
                     .filter(release_ident::redirect_id.is_null())
                     .first(conn)?
             }
-            (None, None, None, None, None, None, Some(arxiv_id), None, None, None) => {
+            (None, None, None, None, None, None, Some(arxiv), None, None, None) => {
                 // TODO: check_arxiv_id(arxiv_id)?;
-                release_ident::table
-                    .inner_join(release_rev::table)
-                    .filter(release_rev::arxiv_id.eq(arxiv_id))
-                    .filter(release_ident::is_live.eq(true))
-                    .filter(release_ident::redirect_id.is_null())
-                    .first(conn)?
+                let (rev, ident, _extid): (ReleaseRevRow, ReleaseIdentRow, ReleaseExtidRow) =
+                    release_rev::table
+                        .inner_join(release_ident::table)
+                        .inner_join(release_rev_extid::table)
+                        .filter(release_rev_extid::extid_type.eq("arxiv".to_string()))
+                        .filter(release_rev_extid::value.eq(arxiv))
+                        .filter(release_ident::is_live.eq(true))
+                        .filter(release_ident::redirect_id.is_null())
+                        .first(conn)?;
+                (ident, rev)
             }
-            (None, None, None, None, None, None, None, Some(jstor_id), None, None) => {
+            (None, None, None, None, None, None, None, Some(jstor), None, None) => {
                 // TODO: check_jstor_id(jstor_id)?;
-                release_ident::table
-                    .inner_join(release_rev::table)
-                    .filter(release_rev::jstor_id.eq(jstor_id))
-                    .filter(release_ident::is_live.eq(true))
-                    .filter(release_ident::redirect_id.is_null())
-                    .first(conn)?
+                let (rev, ident, _extid): (ReleaseRevRow, ReleaseIdentRow, ReleaseExtidRow) =
+                    release_rev::table
+                        .inner_join(release_ident::table)
+                        .inner_join(release_rev_extid::table)
+                        .filter(release_rev_extid::extid_type.eq("jstor".to_string()))
+                        .filter(release_rev_extid::value.eq(jstor))
+                        .filter(release_ident::is_live.eq(true))
+                        .filter(release_ident::redirect_id.is_null())
+                        .first(conn)?;
+                (ident, rev)
             }
-            (None, None, None, None, None, None, None, None, Some(ark_id), None) => {
+            (None, None, None, None, None, None, None, None, Some(ark), None) => {
                 // TODO: check_ark_id(ark_id)?;
-                release_ident::table
-                    .inner_join(release_rev::table)
-                    .filter(release_rev::ark_id.eq(ark_id))
-                    .filter(release_ident::is_live.eq(true))
-                    .filter(release_ident::redirect_id.is_null())
-                    .first(conn)?
+                let (rev, ident, _extid): (ReleaseRevRow, ReleaseIdentRow, ReleaseExtidRow) =
+                    release_rev::table
+                        .inner_join(release_ident::table)
+                        .inner_join(release_rev_extid::table)
+                        .filter(release_rev_extid::extid_type.eq("ark".to_string()))
+                        .filter(release_rev_extid::value.eq(ark))
+                        .filter(release_ident::is_live.eq(true))
+                        .filter(release_ident::redirect_id.is_null())
+                        .first(conn)?;
+                (ident, rev)
             }
-            (None, None, None, None, None, None, None, None, None, Some(mag_id)) => {
-                // TODO: check_ark_id(ark_id)?;
-                release_ident::table
-                    .inner_join(release_rev::table)
-                    .filter(release_rev::mag_id.eq(mag_id))
-                    .filter(release_ident::is_live.eq(true))
-                    .filter(release_ident::redirect_id.is_null())
-                    .first(conn)?
+            (None, None, None, None, None, None, None, None, None, Some(mag)) => {
+                // TODO: check_mag_id(mag_id)?;
+                let (rev, ident, _extid): (ReleaseRevRow, ReleaseIdentRow, ReleaseExtidRow) =
+                    release_rev::table
+                        .inner_join(release_ident::table)
+                        .inner_join(release_rev_extid::table)
+                        .filter(release_rev_extid::extid_type.eq("mag".to_string()))
+                        .filter(release_rev_extid::value.eq(mag))
+                        .filter(release_ident::is_live.eq(true))
+                        .filter(release_ident::redirect_id.is_null())
+                        .first(conn)?;
+                (ident, rev)
             }
             _ => {
                 return Err(

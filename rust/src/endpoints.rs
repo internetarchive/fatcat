@@ -670,11 +670,11 @@ impl Api for Server {
         isbn13: Option<String>,
         pmid: Option<String>,
         pmcid: Option<String>,
-        core_id: Option<String>,
-        arxiv_id: Option<String>,
-        jstor_id: Option<String>,
-        ark_id: Option<String>,
-        mag_id: Option<String>,
+        core: Option<String>,
+        arxiv: Option<String>,
+        jstor: Option<String>,
+        ark: Option<String>,
+        mag: Option<String>,
         expand: Option<String>,
         hide: Option<String>,
         _context: &Context,
@@ -697,11 +697,11 @@ impl Api for Server {
                 &isbn13,
                 &pmid,
                 &pmcid,
-                &core_id,
-                &arxiv_id,
-                &jstor_id,
-                &ark_id,
-                &mag_id,
+                &core,
+                &arxiv,
+                &jstor,
+                &ark,
+                &mag,
                 expand_flags,
                 hide_flags,
             )
@@ -709,7 +709,7 @@ impl Api for Server {
         {
             Ok(entity) => LookupReleaseResponse::FoundEntity(entity),
             // TODO: ensure good 'Not Found" error message here
-            // (was: "Not found: {:?} / {:?} / {:?} / {:?} / {:?} / {:?}", doi, wikidata_qid, isbn13, pmid, pmcid, core_id
+            // (was: "Not found: {:?} / {:?} / {:?} / {:?} / {:?} / {:?}", doi, wikidata_qid, isbn13, pmid, pmcid, core
             Err(fe) => generic_err_responses!(fe, LookupReleaseResponse),
         };
         Box::new(futures::done(Ok(ret)))

@@ -306,10 +306,7 @@ table! {
         pmid -> Nullable<Text>,
         pmcid -> Nullable<Text>,
         wikidata_qid -> Nullable<Text>,
-        isbn13 -> Nullable<Text>,
         core_id -> Nullable<Text>,
-        arxiv_id -> Nullable<Text>,
-        jstor_id -> Nullable<Text>,
         volume -> Nullable<Text>,
         issue -> Nullable<Text>,
         pages -> Nullable<Text>,
@@ -322,8 +319,6 @@ table! {
         withdrawn_status -> Nullable<Text>,
         withdrawn_date -> Nullable<Date>,
         withdrawn_year -> Nullable<Int8>,
-        mag_id -> Nullable<Text>,
-        ark_id -> Nullable<Text>,
     }
 }
 
@@ -334,6 +329,14 @@ table! {
         abstract_sha1 -> Text,
         mimetype -> Nullable<Text>,
         lang -> Nullable<Text>,
+    }
+}
+
+table! {
+    release_rev_extid (release_rev, extid_type) {
+        release_rev -> Uuid,
+        extid_type -> Text,
+        value -> Text,
     }
 }
 
@@ -459,6 +462,7 @@ joinable!(release_rev -> refs_blob (refs_blob_sha1));
 joinable!(release_rev -> work_ident (work_ident_id));
 joinable!(release_rev_abstract -> abstracts (abstract_sha1));
 joinable!(release_rev_abstract -> release_rev (release_rev));
+joinable!(release_rev_extid -> release_rev (release_rev));
 joinable!(webcapture_edit -> editgroup (editgroup_id));
 joinable!(webcapture_ident -> webcapture_rev (rev_id));
 joinable!(webcapture_rev_cdx -> webcapture_rev (webcapture_rev));
@@ -499,6 +503,7 @@ allow_tables_to_appear_in_same_query!(
     release_ref,
     release_rev,
     release_rev_abstract,
+    release_rev_extid,
     webcapture_edit,
     webcapture_ident,
     webcapture_rev,

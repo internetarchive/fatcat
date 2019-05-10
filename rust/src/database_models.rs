@@ -389,10 +389,7 @@ pub struct ReleaseRevRow {
     pub pmid: Option<String>,
     pub pmcid: Option<String>,
     pub wikidata_qid: Option<String>,
-    pub isbn13: Option<String>,
     pub core_id: Option<String>,
-    pub arxiv_id: Option<String>,
-    pub jstor_id: Option<String>,
     pub volume: Option<String>,
     pub issue: Option<String>,
     pub pages: Option<String>,
@@ -405,8 +402,6 @@ pub struct ReleaseRevRow {
     pub withdrawn_status: Option<String>,
     pub withdrawn_date: Option<chrono::NaiveDate>,
     pub withdrawn_year: Option<i64>,
-    pub mag_id: Option<String>,
-    pub ark_id: Option<String>,
 }
 
 #[derive(Debug, Associations, AsChangeset, Insertable)]
@@ -426,10 +421,7 @@ pub struct ReleaseRevNewRow {
     pub pmid: Option<String>,
     pub pmcid: Option<String>,
     pub wikidata_qid: Option<String>,
-    pub isbn13: Option<String>,
     pub core_id: Option<String>,
-    pub arxiv_id: Option<String>,
-    pub jstor_id: Option<String>,
     pub volume: Option<String>,
     pub issue: Option<String>,
     pub pages: Option<String>,
@@ -442,8 +434,14 @@ pub struct ReleaseRevNewRow {
     pub withdrawn_status: Option<String>,
     pub withdrawn_date: Option<chrono::NaiveDate>,
     pub withdrawn_year: Option<i64>,
-    pub mag_id: Option<String>,
-    pub ark_id: Option<String>,
+}
+
+#[derive(Debug, Queryable, Associations, AsChangeset, Insertable)]
+#[table_name = "release_rev_extid"]
+pub struct ReleaseExtidRow {
+    pub release_rev: Uuid,
+    pub extid_type: String,
+    pub value: String,
 }
 
 entity_structs!(

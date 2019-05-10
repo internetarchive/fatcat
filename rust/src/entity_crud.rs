@@ -1627,16 +1627,6 @@ impl EntityCrud for ReleaseEntity {
             withdrawn_status: None,
             withdrawn_date: None,
             withdrawn_year: None,
-            doi: None,
-            pmid: None,
-            pmcid: None,
-            isbn13: None,
-            wikidata_qid: None,
-            core_id: None,
-            arxiv_id: None,
-            jstor_id: None,
-            ark_id: None,
-            mag_id: None,
             volume: None,
             issue: None,
             pages: None,
@@ -1651,6 +1641,18 @@ impl EntityCrud for ReleaseEntity {
             language: None,
             license_slug: None,
             work_id: None,
+            ext_ids: ReleaseEntityExtIds {
+                doi: None,
+                pmid: None,
+                pmcid: None,
+                isbn13: None,
+                wikidata_qid: None,
+                core: None,
+                arxiv: None,
+                jstor: None,
+                ark: None,
+                mag: None,
+            },
             refs: None,
             contribs: None,
             abstracts: None,
@@ -1916,6 +1918,33 @@ impl EntityCrud for ReleaseEntity {
             )
         };
 
+        let mut ext_ids = ReleaseEntityExtIds {
+            doi: rev_row.doi,
+            pmid: rev_row.pmid,
+            pmcid: rev_row.pmcid,
+            wikidata_qid: rev_row.wikidata_qid,
+            core: rev_row.core_id,
+            isbn13: None,
+            arxiv: None,
+            jstor: None,
+            ark: None,
+            mag: None,
+        };
+
+        let extid_rows: Vec<ReleaseExtidRow> = release_rev_extid::table
+            .filter(release_rev_extid::release_rev.eq(rev_row.id))
+            .get_results(conn)?;
+        for extid_row in extid_rows {
+            match extid_row.extid_type.as_ref() {
+                "isbn13" => ext_ids.isbn13 = Some(extid_row.value),
+                "arxiv" => ext_ids.arxiv = Some(extid_row.value),
+                "jstor" => ext_ids.jstor = Some(extid_row.value),
+                "ark" => ext_ids.ark = Some(extid_row.value),
+                "mag" => ext_ids.mag = Some(extid_row.value),
+                _ => (),
+            }
+        }
+
         Ok(ReleaseEntity {
             title: Some(rev_row.title),
             subtitle: rev_row.subtitle,
@@ -1927,16 +1956,7 @@ impl EntityCrud for ReleaseEntity {
             withdrawn_status: rev_row.withdrawn_status,
             withdrawn_date: rev_row.withdrawn_date,
             withdrawn_year: rev_row.withdrawn_year,
-            doi: rev_row.doi,
-            pmid: rev_row.pmid,
-            pmcid: rev_row.pmcid,
-            isbn13: rev_row.isbn13,
-            wikidata_qid: rev_row.wikidata_qid,
-            core_id: rev_row.core_id,
-            arxiv_id: rev_row.arxiv_id,
-            jstor_id: rev_row.jstor_id,
-            ark_id: rev_row.ark_id,
-            mag_id: rev_row.mag_id,
+            ext_ids: ext_ids,
             volume: rev_row.volume,
             issue: rev_row.issue,
             pages: rev_row.pages,
@@ -1968,16 +1988,16 @@ impl EntityCrud for ReleaseEntity {
     fn db_insert_revs(conn: &DbConn, models: &[&Self]) -> Result<Vec<Uuid>> {
         // first verify external identifier syntax
         for entity in models {
-            if let Some(ref extid) = entity.doi {
+            if let Some(ref extid) = entity.ext_ids.doi {
                 check_doi(extid)?;
             }
-            if let Some(ref extid) = entity.pmid {
+            if let Some(ref extid) = entity.ext_ids.pmid {
                 check_pmid(extid)?;
             }
-            if let Some(ref extid) = entity.pmcid {
+            if let Some(ref extid) = entity.ext_ids.pmcid {
                 check_pmcid(extid)?;
             }
-            if let Some(ref extid) = entity.wikidata_qid {
+            if let Some(ref extid) = entity.ext_ids.wikidata_qid {
                 check_wikidata_qid(extid)?;
             }
             // TODO: JSTOR and arxiv IDs
@@ -2092,16 +2112,11 @@ impl EntityCrud for ReleaseEntity {
                     withdrawn_status: model.withdrawn_status.clone(),
                     withdrawn_date: model.withdrawn_date,
                     withdrawn_year: model.withdrawn_year,
-                    doi: model.doi.clone(),
-                    pmid: model.pmid.clone(),
-                    pmcid: model.pmcid.clone(),
-                    wikidata_qid: model.wikidata_qid.clone(),
-                    isbn13: model.isbn13.clone(),
-                    core_id: model.core_id.clone(),
-                    arxiv_id: model.arxiv_id.clone(),
-                    jstor_id: model.jstor_id.clone(),
-                    ark_id: model.ark_id.clone(),
-                    mag_id: model.mag_id.clone(),
+                    doi: model.ext_ids.doi.clone(),
+                    pmid: model.ext_ids.pmid.clone(),
+                    pmcid: model.ext_ids.pmcid.clone(),
+                    wikidata_qid: model.ext_ids.wikidata_qid.clone(),
+                    core_id: model.ext_ids.core.clone(),
                     volume: model.volume.clone(),
                     issue: model.issue.clone(),
                     pages: model.pages.clone(),
@@ -2126,10 +2141,49 @@ impl EntityCrud for ReleaseEntity {
             .returning(release_rev::id)
             .get_results(conn)?;
 
+        let mut release_extid_rows: Vec<ReleaseExtidRow> = vec![];
         let mut release_ref_rows: Vec<ReleaseRefRow> = vec![];
         let mut release_contrib_rows: Vec<ReleaseContribNewRow> = vec![];
         let mut abstract_rows: Vec<AbstractsRow> = vec![];
         let mut release_abstract_rows: Vec<ReleaseRevAbstractNewRow> = vec![];
+
+        for (model, rev_id) in models.iter().zip(rev_ids.iter()) {
+            if let Some(extid) = &model.ext_ids.isbn13 {
+                release_extid_rows.push(ReleaseExtidRow {
+                    release_rev: *rev_id,
+                    extid_type: "isbn13".to_string(),
+                    value: extid.clone(),
+                });
+            };
+            if let Some(extid) = &model.ext_ids.arxiv {
+                release_extid_rows.push(ReleaseExtidRow {
+                    release_rev: *rev_id,
+                    extid_type: "arxiv".to_string(),
+                    value: extid.clone(),
+                });
+            };
+            if let Some(extid) = &model.ext_ids.jstor {
+                release_extid_rows.push(ReleaseExtidRow {
+                    release_rev: *rev_id,
+                    extid_type: "jstor".to_string(),
+                    value: extid.clone(),
+                });
+            };
+            if let Some(extid) = &model.ext_ids.ark {
+                release_extid_rows.push(ReleaseExtidRow {
+                    release_rev: *rev_id,
+                    extid_type: "ark".to_string(),
+                    value: extid.clone(),
+                });
+            };
+            if let Some(extid) = &model.ext_ids.mag {
+                release_extid_rows.push(ReleaseExtidRow {
+                    release_rev: *rev_id,
+                    extid_type: "mag".to_string(),
+                    value: extid.clone(),
+                });
+            };
+        }
 
         for (model, rev_id) in models.iter().zip(rev_ids.iter()) {
             // We didn't know the release_rev id to insert here, so need to re-iterate over refs
@@ -2216,6 +2270,12 @@ impl EntityCrud for ReleaseEntity {
         }
 
         // can't insert more than 65k rows at a time, so take chunks
+        for release_extid_batch in release_extid_rows.chunks(2000) {
+            insert_into(release_rev_extid::table)
+                .values(release_extid_batch)
+                .execute(conn)?;
+        }
+
         for release_ref_batch in release_ref_rows.chunks(2000) {
             insert_into(release_ref::table)
                 .values(release_ref_batch)
