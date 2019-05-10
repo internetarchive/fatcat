@@ -380,7 +380,6 @@ table! {
         sha1 -> Text,
         sha256 -> Nullable<Text>,
         size_bytes -> Nullable<Int8>,
-        extra_json -> Nullable<Jsonb>,
     }
 }
 

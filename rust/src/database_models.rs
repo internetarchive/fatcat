@@ -312,7 +312,6 @@ pub struct WebcaptureRevCdxRow {
     pub sha1: String,
     pub sha256: Option<String>,
     pub size_bytes: Option<i64>,
-    pub extra_json: Option<serde_json::Value>,
 }
 
 #[derive(Debug, Queryable, Associations, AsChangeset, Insertable)]
@@ -327,7 +326,6 @@ pub struct WebcaptureRevCdxNewRow {
     pub sha1: String,
     pub sha256: Option<String>,
     pub size_bytes: Option<i64>,
-    pub extra_json: Option<serde_json::Value>,
 }
 
 #[derive(Debug, Queryable, Identifiable, Associations, AsChangeset)]

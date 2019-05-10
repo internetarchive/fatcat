@@ -289,9 +289,6 @@ definitions:
               <<: *FATCATSHA1
             sha256:
               <<: *FATCATSHA256
-            extra:
-              type: object
-              additionalProperties: {}
       archive_urls:
         type: array
         items:

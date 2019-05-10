@@ -1444,7 +1444,6 @@ impl EntityCrud for WebcaptureEntity {
                 size_bytes: c.size_bytes,
                 sha1: c.sha1,
                 sha256: c.sha256,
-                extra: c.extra_json,
             })
             .collect();
 
@@ -1534,7 +1533,6 @@ impl EntityCrud for WebcaptureEntity {
                             size_bytes: c.size_bytes,
                             sha1: c.sha1.clone(),
                             sha256: c.sha256.clone(),
-                            extra_json: c.extra.clone(),
                         })
                         .collect();
                     webcapture_cdx_rows.extend(these_cdx_rows);

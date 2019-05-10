@@ -1193,10 +1193,6 @@ pub struct WebcaptureEntityCdx {
     #[serde(rename = "sha256")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub sha256: Option<String>,
-
-    #[serde(rename = "extra")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub extra: Option<serde_json::Value>,
 }
 
 impl WebcaptureEntityCdx {
@@ -1210,7 +1206,6 @@ impl WebcaptureEntityCdx {
             size_bytes: None,
             sha1: sha1,
             sha256: None,
-            extra: None,
         }
     }
 }
