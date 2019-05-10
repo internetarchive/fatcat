@@ -24,8 +24,8 @@ ADD COLUMN withdrawn_year        BIGINT,
 ADD COLUMN mag_id                TEXT CHECK (octet_length(mag_id) >= 1),
 ADD COLUMN ark_id                TEXT CHECK (octet_length(ark_id) >= 5);
 
---CREATE INDEX IF NOT EXISTS release_rev_mag_idx ON release_rev(mag_id);
---CREATE INDEX IF NOT EXISTS release_rev_ark_idx ON release_rev(mag_id);
+CREATE INDEX IF NOT EXISTS release_rev_mag_idx ON release_rev(mag_id);
+CREATE INDEX IF NOT EXISTS release_rev_ark_idx ON release_rev(mag_id);
 
 -------------------- Web Capture -------------------------------------------
 
