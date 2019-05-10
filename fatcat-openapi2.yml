@@ -367,7 +367,7 @@ definitions:
         type: integer
         example: 2014
         format: int64
-      withdrawn_state:
+      withdrawn_status:
         type: string
       withdrawn_date:
         type: string

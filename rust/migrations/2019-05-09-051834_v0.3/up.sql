@@ -18,7 +18,7 @@ ALTER TABLE release_rev
 ADD COLUMN number                TEXT CHECK (octet_length(number) >= 1),
 ADD COLUMN version               TEXT CHECK (octet_length(version) >= 1),
 ADD COLUMN subtitle              TEXT CHECK (octet_length(subtitle) >= 1),
-ADD COLUMN withdrawn_state       TEXT,  -- TODO: enum?
+ADD COLUMN withdrawn_status       TEXT,  -- TODO: enum?
 ADD COLUMN withdrawn_date        DATE,
 ADD COLUMN withdrawn_year        BIGINT,
 ADD COLUMN mag_id                TEXT CHECK (octet_length(mag_id) >= 1),

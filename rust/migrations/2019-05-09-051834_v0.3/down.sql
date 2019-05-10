@@ -11,7 +11,7 @@ ALTER TABLE release_rev
 DROP COLUMN number,
 DROP COLUMN version,
 DROP COLUMN subtitle,
-DROP COLUMN withdrawn_state,
+DROP COLUMN withdrawn_status,
 DROP COLUMN withdrawn_date,
 DROP COLUMN withdrawn_year,
 DROP COLUMN mag_id,
