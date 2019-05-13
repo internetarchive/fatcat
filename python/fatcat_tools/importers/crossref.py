@@ -355,10 +355,10 @@ class CrossrefImporter(EntityImporter):
         # release status
         if obj['type'] in ('journal-article', 'conference-proceeding', 'book',
                 'dissertation', 'book-chapter'):
-            release_status = "published"
+            release_stage = "published"
         else:
             # unknown
-            release_status = None
+            release_stage = None
 
         # external identifiers
         extids = self.lookup_ext_ids(doi=obj['DOI'].lower())
@@ -408,18 +408,20 @@ class CrossrefImporter(EntityImporter):
             title=title,
             original_title=original_title,
             release_type=release_type,
-            release_status=release_status,
+            release_stage=release_stage,
             release_date=release_date,
             release_year=release_year,
             publisher=publisher,
-            doi=obj['DOI'].lower(),
-            pmid=extids['pmid'],
-            pmcid=extids['pmcid'],
-            wikidata_qid=extids['wikidata_qid'],
-            isbn13=isbn13,
-            core_id=extids['core_id'],
-            arxiv_id=extids['arxiv_id'],
-            jstor_id=extids['jstor_id'],
+            ext_ids=fatcat_client.ReleaseEntityExtIds(
+                doi=obj['DOI'].lower(),
+                pmid=extids['pmid'],
+                pmcid=extids['pmcid'],
+                wikidata_qid=extids['wikidata_qid'],
+                isbn13=isbn13,
+                core=extids['core_id'],
+                arxiv=extids['arxiv_id'],
+                jstor=extids['jstor_id'],
+            ),
             volume=clean(obj.get('volume')),
             issue=clean(obj.get('issue')),
             pages=clean(obj.get('page')),
@@ -437,7 +439,7 @@ class CrossrefImporter(EntityImporter):
         # lookup existing DOI (don't need to try other ext idents for crossref)
         existing = None
         try:
-            existing = self.api.lookup_release(doi=re.doi)
+            existing = self.api.lookup_release(doi=re.ext_ids.doi)
         except fatcat_client.rest.ApiException as err:
             if err.status != 404:
                 raise err

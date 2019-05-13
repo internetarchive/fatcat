@@ -55,13 +55,13 @@
       <meta name="DC.citation.spage" content="{{ release.pages }}">
       <meta name="citation_first_page" content="{{ release.pages }}">
     {% endif %}
-    {% if release.doi %}
-      <meta name="DC.identifier" content="doi:{{ release.doi }}">
-      <meta name="citation_doi" content="{{ release.doi }}">
+    {% if release.ext_ids.doi %}
+      <meta name="DC.identifier" content="doi:{{ release.ext_ids.doi }}">
+      <meta name="citation_doi" content="{{ release.ext_ids.doi }}">
     {% endif %}
-    {% if release.isbn13 %}
-      <meta name="DC.identifier" content="isbn:{{ release.isbn13}}">
-      <meta name="citation_isbn" content="{{ release.isbn13}}">
+    {% if release.ext_ids.isbn13 %}
+      <meta name="DC.identifier" content="isbn:{{ release.ext_ids.isbn13}}">
+      <meta name="citation_isbn" content="{{ release.ext_ids.isbn13}}">
     {% endif %}
     {% for file in (entity.files or [])[:10] %}{% for url in (file.urls or [])[:10] %}
       {% if '//web.archive.org/web/' in url.url %}
@@ -101,7 +101,7 @@
 
 <div class="ui accordion">
 <div class="title" itemprop="isPartOf" itemscope itemtype="http://schema.org/Periodical" itemid="#container">
-  {% if release.release_status == 'published' %}
+  {% if release.release_stage == 'published' %}
     <i class="dropdown icon"></i>Published in <a href="/container/{{ container.ident }}"><span itemprop="name">{{ container.name }}</span></a>
   {% else %}
     <i class="dropdown icon"></i>Released as a <i>{{ release.release_type }}</i>
@@ -323,13 +323,13 @@
 <span class="ui top attached fluid huge grey button"><i class="file cross icon"></i>No Full Text Available</span>
 {% endif %}
 
-{% if release.release_type or release.release_status or release.release_year %}
+{% if release.release_type or release.release_stage or release.release_year %}
   <div class="ui segment attached">
   {% if release.release_type %}
     <b>Type</b> &nbsp;<code>{{ release.release_type }}</code><br>
   {% endif %}
-  {% if release.release_status %}
-    <b>Status</b> &nbsp; <code>{{ release.release_status or 'unknown' }}</code><br>
+  {% if release.release_stage %}
+    <b>Status</b> &nbsp; <code>{{ release.release_stage or 'unknown' }}</code><br>
   {% endif %}
   {% if release.release_date %}
     <meta itemprop="datePublished" content="{{ release.release_date }}">
@@ -341,22 +341,22 @@
   </div>
 {% endif %}
 
-{% if release.doi or release.pmid or release.pmcid or release.wikidata_qid %}
+{% if release.ext_ids.doi or release.ext_ids.pmid or release.ext_ids.pmcid or release.ext_ids.wikidata_qid %}
 <div class="ui segment attached" style="word-wrap: break-word;">
-{% if release.doi %}
-  <b>DOI </b> &nbsp;<a href="https://doi.org/{{ release.doi }}" title="{{ release.doi }}" itemprop="sameAs">{{ release.doi }}</a><br>
+{% if release.ext_ids.doi %}
+  <b>DOI </b> &nbsp;<a href="https://doi.org/{{ release.ext_ids.doi }}" title="{{ release.ext_ids.doi }}" itemprop="sameAs">{{ release.ext_ids.doi }}</a><br>
 {% endif %}
-{% if release.pmid != None %}
-  <b>PubMed</b> <a href="https://www.ncbi.nlm.nih.gov/pubmed/{{ release.pmid }}">&nbsp;<code>{{ release.pmid }}</code></a><br>
+{% if release.ext_ids.pmid != None %}
+  <b>PubMed</b> <a href="https://www.ncbi.nlm.nih.gov/pubmed/{{ release.ext_ids.pmid }}">&nbsp;<code>{{ release.ext_ids.pmid }}</code></a><br>
 {% endif %}
-{% if release.pmcid != None %}
-  <b>PMC</b> <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/{{ release.pmcid }}">&nbsp;<code>{{ release.pmcid }}</code></a><br>
+{% if release.ext_ids.pmcid != None %}
+  <b>PMC</b> <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/{{ release.ext_ids.pmcid }}">&nbsp;<code>{{ release.ext_ids.pmcid }}</code></a><br>
 {% endif %}
-{% if release.wikidata_qid != None %}
-  <b>Wikidata</b> <a href="https://www.wikidata.org/wiki/{{ release.wikidata_qid }}">&nbsp;<code>{{ release.wikidata_qid }}</code></a><br>
+{% if release.ext_ids.wikidata_qid != None %}
+  <b>Wikidata</b> <a href="https://www.wikidata.org/wiki/{{ release.ext_ids.wikidata_qid }}">&nbsp;<code>{{ release.ext_ids.wikidata_qid }}</code></a><br>
 {% endif %}
-{% if release.isbn13 != None %}
-  <b>ISBN-13 </b> &nbsp;<code>{{ release.isbn13 }}</code>
+{% if release.ext_ids.isbn13 != None %}
+  <b>ISBN-13 </b> &nbsp;<code>{{ release.ext_ids.isbn13 }}</code>
 {% endif %}
 </div>
 {% endif %}
@@ -429,17 +429,17 @@
   {% if container != None and container.issnl != None %}
     <a href="http://www.sherpa.ac.uk/romeo/issn/{{ container.issnl }}/">SHERPA/RoMEO</a> (journal policies)<br/>
   {% endif %}
-  {% if container != None and container.doi != None %}
-    <a href="https://oadoi.org/{{ release.doi }}">oaDOI/unpaywall</a><br/>
+  {% if release != None and release.ext_ids.doi != None %}
+    <a href="https://oadoi.org/{{ release.ext_ids.doi }}">oaDOI/unpaywall</a><br/>
   {% endif %}
-  {% if release.isbn13 != None %}
-    <a href="https://openlibrary.org/search?isbn={{ release.isbn13 }}">Open Library</a><br>
-    <a href="http://www.worldcat.org/search?q=bn%3A{{ release.isbn13 }}">Worldcat</a><br>
+  {% if release.ext_ids.isbn13 != None %}
+    <a href="https://openlibrary.org/search?isbn={{ release.ext_ids.isbn13 }}">Open Library</a><br>
+    <a href="http://www.worldcat.org/search?q=bn%3A{{ release.ext_ids.isbn13 }}">Worldcat</a><br>
   {% else %}
     <a href="http://www.worldcat.org/search?qt=worldcat_org_art&q={{ release.title|urlencode }}">Worldcat</a><br>
   {% endif %}
-  {% if release.doi %}
-  <a href="https://api.crossref.org/v1/works/http://dx.doi.org/{{ release.doi }}">Crossref Metadata</a> (via API)<br>
+  {% if release.ext_ids.doi %}
+  <a href="https://api.crossref.org/v1/works/http://dx.doi.org/{{ release.ext_ids.doi }}">Crossref Metadata</a> (via API)<br>
   {% endif %}
   <a href="https://www.wikidata.org/w/index.php?search={{ release.title|urlencode  }}">wikidata.org</a><br>
   <a href="https://core.ac.uk/search?q={{ release.title|urlencode  }}">CORE.ac.uk</a><br>

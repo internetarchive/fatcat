@@ -9,7 +9,7 @@ from wtforms import SelectField, DateField, StringField, IntegerField, \
     HiddenField, FormField, FieldList, validators
 
 from fatcat_client import ContainerEntity, CreatorEntity, FileEntity, \
-    ReleaseEntity, ReleaseContrib, FileEntityUrls
+    ReleaseEntity, ReleaseContrib, FileEntityUrls, ReleaseEntityExtIds
 
 release_type_options = [
     ('', 'Unknown'),
@@ -21,7 +21,7 @@ release_type_options = [
     ('dataset', 'Dataset'),
     ('stub', 'Invalid/Stub'),
 ]
-release_status_options = [
+release_stage_options = [
     ('', 'Unknown'),
     ('draft', 'Draft'),
     ('submitted', 'Submitted'),
@@ -62,9 +62,10 @@ class ReleaseContribForm(FlaskForm):
         default='author')
 
 RELEASE_SIMPLE_ATTRS = ['title', 'original_title', 'work_id', 'container_id',
-    'release_type', 'release_status', 'release_date', 'doi', 'wikidata_qid',
-    'isbn13', 'pmid', 'pmcid', 'volume', 'issue', 'pages', 'publisher',
-    'language', 'license_slug']
+    'release_type', 'release_stage', 'release_date', 'volume', 'issue',
+    'pages', 'publisher', 'language', 'license_slug']
+
+RELEASE_EXTID_ATTRS = ['doi', 'wikidata_qid', 'isbn13', 'pmid', 'pmcid']
 
 class ReleaseEntityForm(EntityEditForm):
     """
@@ -85,7 +86,7 @@ class ReleaseEntityForm(EntityEditForm):
         [validators.DataRequired()],
         choices=release_type_options,
         default='')
-    release_status = SelectField(choices=release_status_options)
+    release_stage = SelectField(choices=release_stage_options)
     release_date = DateField('Release Date',
         [validators.Optional(True)])
     #release_year
@@ -118,6 +119,9 @@ class ReleaseEntityForm(EntityEditForm):
         for simple_attr in RELEASE_SIMPLE_ATTRS:
             a = getattr(ref, simple_attr)
             a.data = getattr(re, simple_attr)
+        for extid_attr in RELEASE_EXTID_ATTRS:
+            a = getattr(ref, extid_attr)
+            a.data = getattr(re.ext_ids, extid_attr)
         for i, c in enumerate(re.contribs):
             rcf = ReleaseContribForm()
             rcf.prev_index = i
@@ -128,7 +132,7 @@ class ReleaseEntityForm(EntityEditForm):
 
     def to_entity(self):
         assert(self.title.data)
-        entity = ReleaseEntity(title=self.title.data)
+        entity = ReleaseEntity(title=self.title.data, ext_ids=ReleaseEntityExtIds())
         self.update_entity(entity)
         return entity
 
@@ -145,6 +149,12 @@ class ReleaseEntityForm(EntityEditForm):
             if a == '':
                 a = None
             setattr(re, simple_attr, a)
+        for extid_attr in RELEASE_EXTID_ATTRS:
+            a = getattr(self, simple_attr).data
+            # special case blank strings
+            if a == '':
+                a = None
+            setattr(re.ext_ids, simple_attr, a)
         # bunch of complexity here to preserve old contrib metadata (eg,
         # affiliation and extra) not included in current forms
         # TODO: this may be broken; either way needs tests

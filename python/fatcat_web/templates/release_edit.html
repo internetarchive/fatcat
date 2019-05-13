@@ -20,7 +20,7 @@
     <div class="twelve wide column" style="padding-bottom: 0px;">
       <div class="ui equal width fields">
         {{ edit_macros.form_field_basic(form.release_type, "required") }}
-        {{ edit_macros.form_field_basic(form.release_status) }}
+        {{ edit_macros.form_field_basic(form.release_stage) }}
       </div>
     </div>
     <div class="one wide column" style="padding-bottom: 0px;"></div>
@@ -133,7 +133,7 @@ $(document).ready(function() {
   // these javascript dropdowns hide the original <input>, which breaks browser
   // form focusing (eg, for required fields) :(
   //$('#release_type').dropdown();
-  //$('#release_status').dropdown();
+  //$('#release_stage').dropdown();
   $('.ui.accordion').accordion();
 
   var fixup_contrib_numbering = function(group_item) {

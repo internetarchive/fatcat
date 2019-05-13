@@ -60,12 +60,12 @@
         {% if release.release_date %}{{ release.release_date }}{% elif release.release_year %}{{ release.release_year }}{% else %}<i>unknown</i>{% endif %}
       <td class="">
         <b><a href="/release/{{ release.ident }}">{{ release.title }}</a></b>
-        <br><small>{{ release.release_status or "unknown status" }}
+        <br><small>{{ release.release_stage or "unknown status" }}
             | {{ release.release_type or "unknown type" }}
             {% if release.license_slug %} | {{ release.license_slug }}{% endif %}
         </small>
-        {% if release.doi %}
-          <br><a href="https://doi.org/{{ release.doi }}" style="color:green;">doi:{{ release.doi }}</a>
+        {% if release.ext_ids.doi %}
+          <br><a href="https://doi.org/{{ release.ext_ids.doi }}" style="color:green;">doi:{{ release.ext_ids.doi }}</a>
         {% endif %}
 {% endfor %}
 </tbody>

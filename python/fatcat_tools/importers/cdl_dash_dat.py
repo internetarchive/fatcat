@@ -96,7 +96,9 @@ def cdl_dash_release(meta, extra=None):
         ))
 
     r = ReleaseEntity(
-        doi=doi,
+        ext_ids=ReleaseEntityExtIds(
+            doi=doi,
+        ),
         title=clean(meta['title'], force_xml=True),
         publisher=clean(meta['publisher']),
         release_year=int(meta['publicationYear']),
@@ -170,9 +172,9 @@ def auto_cdl_dash_dat(api, dat_path, release_id=None, editgroup_id=None):
                 agent="fatcat_tools.auto_cdl_dash_dat")))
         editgroup_id = eg.editgroup_id
 
-    if not release_id and release.doi:
+    if not release_id and release.ext_ids.doi:
         try:
-            r = api.lookup_release(doi=release.doi)
+            r = api.lookup_release(doi=release.ext_ids.doi)
             release_id = r.ident
         except fatcat_client.rest.ApiException:
             pass

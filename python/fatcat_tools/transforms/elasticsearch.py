@@ -45,17 +45,18 @@ def release_to_elasticsearch(entity, force_bool=True):
         title = release.title,
         original_title = release.original_title,
         release_type = release.release_type,
-        release_status = release.release_status,
+        release_status = release.release_stage,
         language = release.language,
         license = release.license_slug,
-        doi = release.doi,
-        pmid = release.pmid,
-        pmcid = release.pmcid,
-        isbn13 = release.isbn13,
-        wikidata_qid = release.wikidata_qid,
-        core_id = release.core_id,
-        arxiv_id = release.core_id,
-        jstor_id = release.jstor_id,
+        doi = release.ext_ids.doi,
+        pmid = release.ext_ids.pmid,
+        pmcid = release.ext_ids.pmcid,
+        isbn13 = release.ext_ids.isbn13,
+        wikidata_qid = release.ext_ids.wikidata_qid,
+        core_id = release.ext_ids.core,
+        arxiv_id = release.ext_ids.arxiv,
+        jstor_id = release.ext_ids.jstor,
+        # TODO: mag, ark
     )
 
     is_oa = None
@@ -121,7 +122,7 @@ def release_to_elasticsearch(entity, force_bool=True):
     else:
         t['publisher'] = release.publisher
 
-    if release.jstor_id or (release.doi and release.doi.startswith('10.2307/')):
+    if release.ext_ids.jstor or (release.ext_ids.doi and release.ext_ids.doi.startswith('10.2307/')):
         in_jstor = True
 
     files = release.files or []

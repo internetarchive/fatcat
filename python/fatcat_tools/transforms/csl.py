@@ -109,13 +109,13 @@ def release_to_csl(entity):
         container_title=entity.container and entity.container.name,
         #container-title-short
         #dimensions
-        DOI=entity.doi,
+        DOI=entity.ext_ids.doi,
         #edition
         #event
         #event-place
         #first-reference-note-number
         #genre
-        ISBN=entity.isbn13,
+        ISBN=entity.ext_ids.isbn13,
         ISSN=entity.container and entity.container.issnl,
         issue=entity.issue,
         #jurisdiction
@@ -131,8 +131,8 @@ def release_to_csl(entity):
         #original-title
         # TODO: page=entity.pages,
         page_first=entity.pages and entity.pages.split('-')[0],
-        PMCID=entity.pmcid,
-        PMID=entity.pmid,
+        PMCID=entity.ext_ids.pmcid,
+        PMID=entity.ext_ids.pmid,
         publisher=(entity.container and entity.container.publisher) or entity.publisher,
         #publisher-place
         #references

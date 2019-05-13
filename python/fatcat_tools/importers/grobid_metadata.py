@@ -156,6 +156,7 @@ class GrobidMetadataImporter(EntityImporter):
             volume=clean(obj['journal'].get('volume')),
             issue=clean(obj['journal'].get('issue')),
             abstracts=abstracts,
+            ext_ids=fatcat_client.ReleaseEntityExtIds(),
             extra=extra)
         return re
 
