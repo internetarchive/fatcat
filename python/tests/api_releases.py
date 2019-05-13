@@ -90,7 +90,7 @@ def test_release(api):
     assert r1.release_date == r2.release_date
     assert r1.release_year == r2.release_year
     assert r1.withdrawn_status == r2.withdrawn_status
-    assert r1.withdrawn_date == r2.withdrawn_date
+    assert str(r1.withdrawn_date) == str(r2.withdrawn_date)
     assert r1.withdrawn_year == r2.withdrawn_year
     assert r1.ext_ids.doi == r2.ext_ids.doi
     assert r1.ext_ids.pmid == r2.ext_ids.pmid
