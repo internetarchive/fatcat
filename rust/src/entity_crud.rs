@@ -2103,7 +2103,7 @@ impl EntityCrud for ReleaseEntity {
                         Ok(ReleaseRevNewRow {
                     refs_blob_sha1: refs_sha1,
                     title: model.title.clone().unwrap(), // titles checked above
-                    subtitle: model.original_title.clone(),
+                    subtitle: model.subtitle.clone(),
                     original_title: model.original_title.clone(),
                     release_type: model.release_type.clone(),
                     release_stage: model.release_stage.clone(),

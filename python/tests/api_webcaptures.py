@@ -27,6 +27,7 @@ def test_webcapture(api):
                 url="http://example.site/data/thing.tar.gz",
                 mimetype="application/gzip",
                 status_code=200,
+                size_bytes=1234,
                 sha1="455face3598611458efe1f072e58624790a67266",
                 sha256="c7b49f3e84cd1b7cb0b0e3e9f632b7be7e21b4dc229df23331f880a8a7dfa75a",
             ),
@@ -37,6 +38,7 @@ def test_webcapture(api):
                 url="http://example.site/README.md",
                 mimetype="text/markdown",
                 status_code=200,
+                size_bytes=4321,
                 sha1="455face3598611458efe1f072e58624790a67266",
                 sha256="429bcafa4d3d0072d5b2511e12c85c1aac1d304011d1c406da14707f7b9cd905",
             ),
@@ -64,6 +66,8 @@ def test_webcapture(api):
     #assert wc1.archive_urls == wc2.archive_urls
     assert wc1.archive_urls[0].rel == wc2.archive_urls[0].rel
     assert wc1.archive_urls[0].url == wc2.archive_urls[0].url
+    assert wc1.cdx[0] == wc2.cdx[0]
+    assert wc1.cdx[0].size_bytes == wc2.cdx[0].size_bytes
     assert wc1.cdx == wc2.cdx
     assert wc1.release_ids == wc2.release_ids
     assert wc1.timestamp == wc2.timestamp
@@ -96,17 +100,75 @@ def test_bad_webcapture(api):
 
     eg = quick_eg(api)
 
+    # good (as a template)
+    good = WebcaptureEntity(
+        original_url="http://example.site/123.jpg",
+        timestamp="2012-01-02T03:04:05Z",
+        cdx=[WebcaptureEntityCdx(
+            surt="site,example,)/123.jpg",
+            url="http://example.site/123.jpg",
+            sha1="455face3598611458efe1f072e58624790a67266",
+            timestamp="2012-01-02T03:04:05Z")])
+
     bad_list = [
-        # good (for testing test itself)
-        WebcaptureEntity(cdx=[
-            WebcaptureEntityCdx(
+        # uncomment to "test the test"
+        #good,
+        # CDX timestamp format
+        WebcaptureEntity(
+            original_url="http://example.site/123.jpg",
+            timestamp="2012-01-02T03:04:05Z",
+            cdx=[WebcaptureEntityCdx(
                 surt="site,example,)/123.jpg",
                 url="http://example.site/123.jpg",
                 sha1="455face3598611458efe1f072e58624790a67266",
-                timestamp=201506071122)]),
+                size_bytes=123,
+                timestamp="20120102030405")]),
+        # CDX timestamp format (int)
+        WebcaptureEntity(
+            original_url="http://example.site/123.jpg",
+            timestamp="2012-01-02T03:04:05Z",
+            cdx=[WebcaptureEntityCdx(
+                surt="site,example,)/123.jpg",
+                url="http://example.site/123.jpg",
+                sha1="455face3598611458efe1f072e58624790a67266",
+                timestamp=20120102030405)]),
+        # negative size
+        WebcaptureEntity(
+            original_url="http://example.site/123.jpg",
+            timestamp="2012-01-02T03:04:05Z",
+            cdx=[WebcaptureEntityCdx(
+                surt="site,example,)/123.jpg",
+                url="http://example.site/123.jpg",
+                sha1="455face3598611458efe1f072e58624790a67266",
+                size_bytes=-123,
+                timestamp="20120102030405")]),
     ]
 
+    api.create_webcapture(good, editgroup_id=eg.editgroup_id)
     for b in bad_list:
         with pytest.raises(fatcat_client.rest.ApiException):
             api.create_webcapture(b, editgroup_id=eg.editgroup_id)
 
+    with pytest.raises(ValueError):
+        # missing/empty CDX url
+        WebcaptureEntity(
+            original_url="http://example.site/123.jpg",
+            timestamp="2012-01-02T03:04:05Z",
+            cdx=[WebcaptureEntityCdx(
+                #url="http://example.site/123.jpg",
+                surt="site,example,)/123.jpg",
+                sha1="455face3598611458efe1f072e58624790a67266",
+                timestamp="2012-01-02T03:04:05Z",
+            )])
+
+    with pytest.raises(ValueError):
+        # missing/empty CDX timestamp
+        WebcaptureEntity(
+            original_url="http://example.site/123.jpg",
+            timestamp="2012-01-02T03:04:05Z",
+            cdx=[WebcaptureEntityCdx(
+                url="http://example.site/123.jpg",
+                surt="site,example,)/123.jpg",
+                sha1="455face3598611458efe1f072e58624790a67266",
+                #timestamp="2012-01-02T03:04:05Z",
+            )])

@@ -16,11 +16,15 @@ def test_release(api):
     # all the fields!
     r1 = ReleaseEntity(
         title="some title",
+        subtitle="son of some title",
         original_title="оригинальное название",
         release_type="post-weblog",
         release_stage="submitted",
         release_date=datetime.datetime.utcnow().date(),
         release_year=2015,
+        withdrawn_status="withdrawn",
+        withdrawn_year=2017,
+        withdrawn_date="2017-04-10",
         ext_ids=ReleaseEntityExtIds(
             doi="10.5555/12345678",
             pmid="12345",
@@ -30,15 +34,29 @@ def test_release(api):
             core="187348",
             arxiv="aslkdjfh",
             jstor="8328424",
+            mag="9439328",
+            ark="ark:/12025/654xz321",
         ),
         volume="84",
+        number="RFC1234",
+        version="v4",
         issue="XII",
         pages="4-99",
         publisher="some publisher",
         language="en",
         license_slug="CC-0",
         extra=dict(a=1, b=2),
-        contribs=[],
+        contribs=[
+            ReleaseContrib(
+                given_name="Paul",
+                surname="Otlet"),
+            ReleaseContrib(
+                raw_name="Cindy Sherman",
+                given_name="Cindy",
+                surname="Sherman"),
+            ReleaseContrib(
+                raw_name="Andy Warhol"),
+        ],
         refs=[],
         abstracts=[
             ReleaseEntityAbstracts(
@@ -51,6 +69,7 @@ def test_release(api):
                 lang="de"),
         ],
     )
+    r1.bogus = "asdf"
 
     r1edit = api.create_release(r1, editgroup_id=eg.editgroup_id)
     api.accept_editgroup(eg.editgroup_id)
@@ -64,10 +83,15 @@ def test_release(api):
 
     # check that fields match
     assert r1.title == r2.title
+    assert r1.subtitle == r2.subtitle
     assert r1.original_title == r2.original_title
     assert r1.release_type == r2.release_type
+    assert r1.release_stage == r2.release_stage
     assert r1.release_date == r2.release_date
     assert r1.release_year == r2.release_year
+    assert r1.withdrawn_status == r2.withdrawn_status
+    assert r1.withdrawn_date == r2.withdrawn_date
+    assert r1.withdrawn_year == r2.withdrawn_year
     assert r1.ext_ids.doi == r2.ext_ids.doi
     assert r1.ext_ids.pmid == r2.ext_ids.pmid
     assert r1.ext_ids.pmcid == r2.ext_ids.pmcid
@@ -76,6 +100,10 @@ def test_release(api):
     assert r1.ext_ids.core == r2.ext_ids.core
     assert r1.ext_ids.arxiv == r2.ext_ids.arxiv
     assert r1.ext_ids.jstor == r2.ext_ids.jstor
+    assert r1.ext_ids.ark == r2.ext_ids.ark
+    assert r1.ext_ids.mag == r2.ext_ids.mag
+    assert r1.number == r2.number
+    assert r1.version == r2.version
     assert r1.volume == r2.volume
     assert r1.issue == r2.issue
     assert r1.pages == r2.pages
@@ -111,7 +139,26 @@ def test_release(api):
 def test_release_examples(api):
 
     api.lookup_release(pmid='54321')
+    api.lookup_release(doi='10.123/abc')
     api.lookup_release(isbn13='978-3-16-148410-0')
+    api.lookup_release(arxiv='1905.03769v1')
+    api.lookup_release(jstor='1819117828')
+    api.lookup_release(ark='ark:/asdf/924')
+    api.lookup_release(mag='992489213')
+
+    # failed lookup exception type
+    try:
+        api.lookup_release(pmid='5432100')
+    except fatcat_client.rest.ApiException as ae:
+        assert ae.status == 404
+        assert "DatabaseRowNotFound" in ae.body
+
+    # failed lookup formatting
+    try:
+        api.lookup_release(doi='blah')
+    except fatcat_client.rest.ApiException as ae:
+        assert ae.status == 400
+        assert "MalformedExternalId" in ae.body
 
     r1 = api.get_release('aaaaaaaaaaaaarceaaaaaaaaai')
     assert r1.title.startswith("A bigger example")
