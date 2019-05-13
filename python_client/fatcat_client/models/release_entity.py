@@ -21,6 +21,7 @@ from fatcat_client.models.file_entity import FileEntity  # noqa: F401,E501
 from fatcat_client.models.fileset_entity import FilesetEntity  # noqa: F401,E501
 from fatcat_client.models.release_contrib import ReleaseContrib  # noqa: F401,E501
 from fatcat_client.models.release_entity_abstracts import ReleaseEntityAbstracts  # noqa: F401,E501
+from fatcat_client.models.release_entity_ext_ids import ReleaseEntityExtIds  # noqa: F401,E501
 from fatcat_client.models.release_ref import ReleaseRef  # noqa: F401,E501
 from fatcat_client.models.webcapture_entity import WebcaptureEntity  # noqa: F401,E501
 
@@ -45,20 +46,18 @@ class ReleaseEntity(object):
         'license_slug': 'str',
         'language': 'str',
         'publisher': 'str',
+        'version': 'str',
+        'number': 'str',
         'pages': 'str',
         'issue': 'str',
         'volume': 'str',
-        'jstor_id': 'str',
-        'arxiv_id': 'str',
-        'core_id': 'str',
-        'pmcid': 'str',
-        'pmid': 'str',
-        'isbn13': 'str',
-        'wikidata_qid': 'str',
-        'doi': 'str',
+        'ext_ids': 'ReleaseEntityExtIds',
+        'withdrawn_year': 'int',
+        'withdrawn_date': 'date',
+        'withdrawn_status': 'str',
         'release_year': 'int',
         'release_date': 'date',
-        'release_status': 'str',
+        'release_stage': 'str',
         'release_type': 'str',
         'container_id': 'str',
         'webcaptures': 'list[WebcaptureEntity]',
@@ -67,6 +66,7 @@ class ReleaseEntity(object):
         'container': 'ContainerEntity',
         'work_id': 'str',
         'original_title': 'str',
+        'subtitle': 'str',
         'title': 'str',
         'state': 'str',
         'ident': 'str',
@@ -83,20 +83,18 @@ class ReleaseEntity(object):
         'license_slug': 'license_slug',
         'language': 'language',
         'publisher': 'publisher',
+        'version': 'version',
+        'number': 'number',
         'pages': 'pages',
         'issue': 'issue',
         'volume': 'volume',
-        'jstor_id': 'jstor_id',
-        'arxiv_id': 'arxiv_id',
-        'core_id': 'core_id',
-        'pmcid': 'pmcid',
-        'pmid': 'pmid',
-        'isbn13': 'isbn13',
-        'wikidata_qid': 'wikidata_qid',
-        'doi': 'doi',
+        'ext_ids': 'ext_ids',
+        'withdrawn_year': 'withdrawn_year',
+        'withdrawn_date': 'withdrawn_date',
+        'withdrawn_status': 'withdrawn_status',
         'release_year': 'release_year',
         'release_date': 'release_date',
-        'release_status': 'release_status',
+        'release_stage': 'release_stage',
         'release_type': 'release_type',
         'container_id': 'container_id',
         'webcaptures': 'webcaptures',
@@ -105,6 +103,7 @@ class ReleaseEntity(object):
         'container': 'container',
         'work_id': 'work_id',
         'original_title': 'original_title',
+        'subtitle': 'subtitle',
         'title': 'title',
         'state': 'state',
         'ident': 'ident',
@@ -114,7 +113,7 @@ class ReleaseEntity(object):
         'edit_extra': 'edit_extra'
     }
 
-    def __init__(self, abstracts=None, refs=None, contribs=None, license_slug=None, language=None, publisher=None, pages=None, issue=None, volume=None, jstor_id=None, arxiv_id=None, core_id=None, pmcid=None, pmid=None, isbn13=None, wikidata_qid=None, doi=None, release_year=None, release_date=None, release_status=None, release_type=None, container_id=None, webcaptures=None, filesets=None, files=None, container=None, work_id=None, original_title=None, title=None, state=None, ident=None, revision=None, redirect=None, extra=None, edit_extra=None):  # noqa: E501
+    def __init__(self, abstracts=None, refs=None, contribs=None, license_slug=None, language=None, publisher=None, version=None, number=None, pages=None, issue=None, volume=None, ext_ids=None, withdrawn_year=None, withdrawn_date=None, withdrawn_status=None, release_year=None, release_date=None, release_stage=None, release_type=None, container_id=None, webcaptures=None, filesets=None, files=None, container=None, work_id=None, original_title=None, subtitle=None, title=None, state=None, ident=None, revision=None, redirect=None, extra=None, edit_extra=None):  # noqa: E501
         """ReleaseEntity - a model defined in Swagger"""  # noqa: E501
 
         self._abstracts = None
@@ -123,20 +122,18 @@ class ReleaseEntity(object):
         self._license_slug = None
         self._language = None
         self._publisher = None
+        self._version = None
+        self._number = None
         self._pages = None
         self._issue = None
         self._volume = None
-        self._jstor_id = None
-        self._arxiv_id = None
-        self._core_id = None
-        self._pmcid = None
-        self._pmid = None
-        self._isbn13 = None
-        self._wikidata_qid = None
-        self._doi = None
+        self._ext_ids = None
+        self._withdrawn_year = None
+        self._withdrawn_date = None
+        self._withdrawn_status = None
         self._release_year = None
         self._release_date = None
-        self._release_status = None
+        self._release_stage = None
         self._release_type = None
         self._container_id = None
         self._webcaptures = None
@@ -145,6 +142,7 @@ class ReleaseEntity(object):
         self._container = None
         self._work_id = None
         self._original_title = None
+        self._subtitle = None
         self._title = None
         self._state = None
         self._ident = None
@@ -166,34 +164,29 @@ class ReleaseEntity(object):
             self.language = language
         if publisher is not None:
             self.publisher = publisher
+        if version is not None:
+            self.version = version
+        if number is not None:
+            self.number = number
         if pages is not None:
             self.pages = pages
         if issue is not None:
             self.issue = issue
         if volume is not None:
             self.volume = volume
-        if jstor_id is not None:
-            self.jstor_id = jstor_id
-        if arxiv_id is not None:
-            self.arxiv_id = arxiv_id
-        if core_id is not None:
-            self.core_id = core_id
-        if pmcid is not None:
-            self.pmcid = pmcid
-        if pmid is not None:
-            self.pmid = pmid
-        if isbn13 is not None:
-            self.isbn13 = isbn13
-        if wikidata_qid is not None:
-            self.wikidata_qid = wikidata_qid
-        if doi is not None:
-            self.doi = doi
+        self.ext_ids = ext_ids
+        if withdrawn_year is not None:
+            self.withdrawn_year = withdrawn_year
+        if withdrawn_date is not None:
+            self.withdrawn_date = withdrawn_date
+        if withdrawn_status is not None:
+            self.withdrawn_status = withdrawn_status
         if release_year is not None:
             self.release_year = release_year
         if release_date is not None:
             self.release_date = release_date
-        if release_status is not None:
-            self.release_status = release_status
+        if release_stage is not None:
+            self.release_stage = release_stage
         if release_type is not None:
             self.release_type = release_type
         if container_id is not None:
@@ -210,6 +203,8 @@ class ReleaseEntity(object):
             self.work_id = work_id
         if original_title is not None:
             self.original_title = original_title
+        if subtitle is not None:
+            self.subtitle = subtitle
         if title is not None:
             self.title = title
         if state is not None:
@@ -356,6 +351,48 @@ class ReleaseEntity(object):
         self._publisher = publisher
 
     @property
+    def version(self):
+        """Gets the version of this ReleaseEntity.  # noqa: E501
+
+
+        :return: The version of this ReleaseEntity.  # noqa: E501
+        :rtype: str
+        """
+        return self._version
+
+    @version.setter
+    def version(self, version):
+        """Sets the version of this ReleaseEntity.
+
+
+        :param version: The version of this ReleaseEntity.  # noqa: E501
+        :type: str
+        """
+
+        self._version = version
+
+    @property
+    def number(self):
+        """Gets the number of this ReleaseEntity.  # noqa: E501
+
+
+        :return: The number of this ReleaseEntity.  # noqa: E501
+        :rtype: str
+        """
+        return self._number
+
+    @number.setter
+    def number(self, number):
+        """Sets the number of this ReleaseEntity.
+
+
+        :param number: The number of this ReleaseEntity.  # noqa: E501
+        :type: str
+        """
+
+        self._number = number
+
+    @property
     def pages(self):
         """Gets the pages of this ReleaseEntity.  # noqa: E501
 
@@ -419,172 +456,90 @@ class ReleaseEntity(object):
         self._volume = volume
 
     @property
-    def jstor_id(self):
-        """Gets the jstor_id of this ReleaseEntity.  # noqa: E501
+    def ext_ids(self):
+        """Gets the ext_ids of this ReleaseEntity.  # noqa: E501
 
 
-        :return: The jstor_id of this ReleaseEntity.  # noqa: E501
-        :rtype: str
+        :return: The ext_ids of this ReleaseEntity.  # noqa: E501
+        :rtype: ReleaseEntityExtIds
         """
-        return self._jstor_id
+        return self._ext_ids
 
-    @jstor_id.setter
-    def jstor_id(self, jstor_id):
-        """Sets the jstor_id of this ReleaseEntity.
+    @ext_ids.setter
+    def ext_ids(self, ext_ids):
+        """Sets the ext_ids of this ReleaseEntity.
 
 
-        :param jstor_id: The jstor_id of this ReleaseEntity.  # noqa: E501
-        :type: str
+        :param ext_ids: The ext_ids of this ReleaseEntity.  # noqa: E501
+        :type: ReleaseEntityExtIds
         """
+        if ext_ids is None:
+            raise ValueError("Invalid value for `ext_ids`, must not be `None`")  # noqa: E501
 
-        self._jstor_id = jstor_id
+        self._ext_ids = ext_ids
 
     @property
-    def arxiv_id(self):
-        """Gets the arxiv_id of this ReleaseEntity.  # noqa: E501
+    def withdrawn_year(self):
+        """Gets the withdrawn_year of this ReleaseEntity.  # noqa: E501
 
 
-        :return: The arxiv_id of this ReleaseEntity.  # noqa: E501
-        :rtype: str
+        :return: The withdrawn_year of this ReleaseEntity.  # noqa: E501
+        :rtype: int
         """
-        return self._arxiv_id
+        return self._withdrawn_year
 
-    @arxiv_id.setter
-    def arxiv_id(self, arxiv_id):
-        """Sets the arxiv_id of this ReleaseEntity.
+    @withdrawn_year.setter
+    def withdrawn_year(self, withdrawn_year):
+        """Sets the withdrawn_year of this ReleaseEntity.
 
 
-        :param arxiv_id: The arxiv_id of this ReleaseEntity.  # noqa: E501
-        :type: str
+        :param withdrawn_year: The withdrawn_year of this ReleaseEntity.  # noqa: E501
+        :type: int
         """
 
-        self._arxiv_id = arxiv_id
+        self._withdrawn_year = withdrawn_year
 
     @property
-    def core_id(self):
-        """Gets the core_id of this ReleaseEntity.  # noqa: E501
+    def withdrawn_date(self):
+        """Gets the withdrawn_date of this ReleaseEntity.  # noqa: E501
 
 
-        :return: The core_id of this ReleaseEntity.  # noqa: E501
-        :rtype: str
+        :return: The withdrawn_date of this ReleaseEntity.  # noqa: E501
+        :rtype: date
         """
-        return self._core_id
+        return self._withdrawn_date
 
-    @core_id.setter
-    def core_id(self, core_id):
-        """Sets the core_id of this ReleaseEntity.
+    @withdrawn_date.setter
+    def withdrawn_date(self, withdrawn_date):
+        """Sets the withdrawn_date of this ReleaseEntity.
 
 
-        :param core_id: The core_id of this ReleaseEntity.  # noqa: E501
-        :type: str
+        :param withdrawn_date: The withdrawn_date of this ReleaseEntity.  # noqa: E501
+        :type: date
         """
 
-        self._core_id = core_id
+        self._withdrawn_date = withdrawn_date
 
     @property
-    def pmcid(self):
-        """Gets the pmcid of this ReleaseEntity.  # noqa: E501
+    def withdrawn_status(self):
+        """Gets the withdrawn_status of this ReleaseEntity.  # noqa: E501
 
 
-        :return: The pmcid of this ReleaseEntity.  # noqa: E501
+        :return: The withdrawn_status of this ReleaseEntity.  # noqa: E501
         :rtype: str
         """
-        return self._pmcid
+        return self._withdrawn_status
 
-    @pmcid.setter
-    def pmcid(self, pmcid):
-        """Sets the pmcid of this ReleaseEntity.
+    @withdrawn_status.setter
+    def withdrawn_status(self, withdrawn_status):
+        """Sets the withdrawn_status of this ReleaseEntity.
 
 
-        :param pmcid: The pmcid of this ReleaseEntity.  # noqa: E501
+        :param withdrawn_status: The withdrawn_status of this ReleaseEntity.  # noqa: E501
         :type: str
         """
 
-        self._pmcid = pmcid
-
-    @property
-    def pmid(self):
-        """Gets the pmid of this ReleaseEntity.  # noqa: E501
-
-
-        :return: The pmid of this ReleaseEntity.  # noqa: E501
-        :rtype: str
-        """
-        return self._pmid
-
-    @pmid.setter
-    def pmid(self, pmid):
-        """Sets the pmid of this ReleaseEntity.
-
-
-        :param pmid: The pmid of this ReleaseEntity.  # noqa: E501
-        :type: str
-        """
-
-        self._pmid = pmid
-
-    @property
-    def isbn13(self):
-        """Gets the isbn13 of this ReleaseEntity.  # noqa: E501
-
-
-        :return: The isbn13 of this ReleaseEntity.  # noqa: E501
-        :rtype: str
-        """
-        return self._isbn13
-
-    @isbn13.setter
-    def isbn13(self, isbn13):
-        """Sets the isbn13 of this ReleaseEntity.
-
-
-        :param isbn13: The isbn13 of this ReleaseEntity.  # noqa: E501
-        :type: str
-        """
-
-        self._isbn13 = isbn13
-
-    @property
-    def wikidata_qid(self):
-        """Gets the wikidata_qid of this ReleaseEntity.  # noqa: E501
-
-
-        :return: The wikidata_qid of this ReleaseEntity.  # noqa: E501
-        :rtype: str
-        """
-        return self._wikidata_qid
-
-    @wikidata_qid.setter
-    def wikidata_qid(self, wikidata_qid):
-        """Sets the wikidata_qid of this ReleaseEntity.
-
-
-        :param wikidata_qid: The wikidata_qid of this ReleaseEntity.  # noqa: E501
-        :type: str
-        """
-
-        self._wikidata_qid = wikidata_qid
-
-    @property
-    def doi(self):
-        """Gets the doi of this ReleaseEntity.  # noqa: E501
-
-
-        :return: The doi of this ReleaseEntity.  # noqa: E501
-        :rtype: str
-        """
-        return self._doi
-
-    @doi.setter
-    def doi(self, doi):
-        """Sets the doi of this ReleaseEntity.
-
-
-        :param doi: The doi of this ReleaseEntity.  # noqa: E501
-        :type: str
-        """
-
-        self._doi = doi
+        self._withdrawn_status = withdrawn_status
 
     @property
     def release_year(self):
@@ -629,25 +584,25 @@ class ReleaseEntity(object):
         self._release_date = release_date
 
     @property
-    def release_status(self):
-        """Gets the release_status of this ReleaseEntity.  # noqa: E501
+    def release_stage(self):
+        """Gets the release_stage of this ReleaseEntity.  # noqa: E501
 
 
-        :return: The release_status of this ReleaseEntity.  # noqa: E501
+        :return: The release_stage of this ReleaseEntity.  # noqa: E501
         :rtype: str
         """
-        return self._release_status
+        return self._release_stage
 
-    @release_status.setter
-    def release_status(self, release_status):
-        """Sets the release_status of this ReleaseEntity.
+    @release_stage.setter
+    def release_stage(self, release_stage):
+        """Sets the release_stage of this ReleaseEntity.
 
 
-        :param release_status: The release_status of this ReleaseEntity.  # noqa: E501
+        :param release_stage: The release_stage of this ReleaseEntity.  # noqa: E501
         :type: str
         """
 
-        self._release_status = release_status
+        self._release_stage = release_stage
 
     @property
     def release_type(self):
@@ -826,6 +781,29 @@ class ReleaseEntity(object):
         """
 
         self._original_title = original_title
+
+    @property
+    def subtitle(self):
+        """Gets the subtitle of this ReleaseEntity.  # noqa: E501
+
+        Avoid this field if possible, and merge with title; usually English  # noqa: E501
+
+        :return: The subtitle of this ReleaseEntity.  # noqa: E501
+        :rtype: str
+        """
+        return self._subtitle
+
+    @subtitle.setter
+    def subtitle(self, subtitle):
+        """Sets the subtitle of this ReleaseEntity.
+
+        Avoid this field if possible, and merge with title; usually English  # noqa: E501
+
+        :param subtitle: The subtitle of this ReleaseEntity.  # noqa: E501
+        :type: str
+        """
+
+        self._subtitle = subtitle
 
     @property
     def title(self):

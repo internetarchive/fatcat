@@ -190,6 +190,7 @@ Class | Method | HTTP request | Description
  - [ReleaseContrib](docs/ReleaseContrib.md)
  - [ReleaseEntity](docs/ReleaseEntity.md)
  - [ReleaseEntityAbstracts](docs/ReleaseEntityAbstracts.md)
+ - [ReleaseEntityExtIds](docs/ReleaseEntityExtIds.md)
  - [ReleaseRef](docs/ReleaseRef.md)
  - [Success](docs/Success.md)
  - [WebcaptureEntity](docs/WebcaptureEntity.md)

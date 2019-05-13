@@ -34,6 +34,7 @@ from fatcat_client.models.fileset_entity_manifest import FilesetEntityManifest
 from fatcat_client.models.release_contrib import ReleaseContrib
 from fatcat_client.models.release_entity import ReleaseEntity
 from fatcat_client.models.release_entity_abstracts import ReleaseEntityAbstracts
+from fatcat_client.models.release_entity_ext_ids import ReleaseEntityExtIds
 from fatcat_client.models.release_ref import ReleaseRef
 from fatcat_client.models.success import Success
 from fatcat_client.models.webcapture_entity import WebcaptureEntity

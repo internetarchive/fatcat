@@ -36,6 +36,7 @@ class WebcaptureEntityCdx(object):
         'url': 'str',
         'mimetype': 'str',
         'status_code': 'int',
+        'size_bytes': 'int',
         'sha1': 'str',
         'sha256': 'str'
     }
@@ -46,11 +47,12 @@ class WebcaptureEntityCdx(object):
         'url': 'url',
         'mimetype': 'mimetype',
         'status_code': 'status_code',
+        'size_bytes': 'size_bytes',
         'sha1': 'sha1',
         'sha256': 'sha256'
     }
 
-    def __init__(self, surt=None, timestamp=None, url=None, mimetype=None, status_code=None, sha1=None, sha256=None):  # noqa: E501
+    def __init__(self, surt=None, timestamp=None, url=None, mimetype=None, status_code=None, size_bytes=None, sha1=None, sha256=None):  # noqa: E501
         """WebcaptureEntityCdx - a model defined in Swagger"""  # noqa: E501
 
         self._surt = None
@@ -58,6 +60,7 @@ class WebcaptureEntityCdx(object):
         self._url = None
         self._mimetype = None
         self._status_code = None
+        self._size_bytes = None
         self._sha1 = None
         self._sha256 = None
         self.discriminator = None
@@ -69,6 +72,8 @@ class WebcaptureEntityCdx(object):
             self.mimetype = mimetype
         if status_code is not None:
             self.status_code = status_code
+        if size_bytes is not None:
+            self.size_bytes = size_bytes
         self.sha1 = sha1
         if sha256 is not None:
             self.sha256 = sha256
@@ -185,6 +190,27 @@ class WebcaptureEntityCdx(object):
         """
 
         self._status_code = status_code
+
+    @property
+    def size_bytes(self):
+        """Gets the size_bytes of this WebcaptureEntityCdx.  # noqa: E501
+
+
+        :return: The size_bytes of this WebcaptureEntityCdx.  # noqa: E501
+        :rtype: int
+        """
+        return self._size_bytes
+
+    @size_bytes.setter
+    def size_bytes(self, size_bytes):
+        """Sets the size_bytes of this WebcaptureEntityCdx.
+
+
+        :param size_bytes: The size_bytes of this WebcaptureEntityCdx.  # noqa: E501
+        :type: int
+        """
+
+        self._size_bytes = size_bytes
 
     @property
     def sha1(self):

@@ -8891,9 +8891,11 @@ class DefaultApi(object):
         :param str isbn13:
         :param str pmid:
         :param str pmcid:
-        :param str core_id:
-        :param str arxiv_id:
-        :param str jstor_id:
+        :param str core:
+        :param str arxiv:
+        :param str jstor:
+        :param str ark:
+        :param str mag:
         :param str expand: List of sub-entities to expand in response.
         :param str hide: List of sub-entities to expand in response. For releases, 'files', 'filesets, 'webcaptures', 'container', and 'creators' are valid.
         :return: ReleaseEntity
@@ -8921,9 +8923,11 @@ class DefaultApi(object):
         :param str isbn13:
         :param str pmid:
         :param str pmcid:
-        :param str core_id:
-        :param str arxiv_id:
-        :param str jstor_id:
+        :param str core:
+        :param str arxiv:
+        :param str jstor:
+        :param str ark:
+        :param str mag:
         :param str expand: List of sub-entities to expand in response.
         :param str hide: List of sub-entities to expand in response. For releases, 'files', 'filesets, 'webcaptures', 'container', and 'creators' are valid.
         :return: ReleaseEntity
@@ -8931,7 +8935,7 @@ class DefaultApi(object):
                  returns the request thread.
         """
 
-        all_params = ['doi', 'wikidata_qid', 'isbn13', 'pmid', 'pmcid', 'core_id', 'arxiv_id', 'jstor_id', 'expand', 'hide']  # noqa: E501
+        all_params = ['doi', 'wikidata_qid', 'isbn13', 'pmid', 'pmcid', 'core', 'arxiv', 'jstor', 'ark', 'mag', 'expand', 'hide']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -8962,12 +8966,16 @@ class DefaultApi(object):
             query_params.append(('pmid', params['pmid']))  # noqa: E501
         if 'pmcid' in params:
             query_params.append(('pmcid', params['pmcid']))  # noqa: E501
-        if 'core_id' in params:
-            query_params.append(('core_id', params['core_id']))  # noqa: E501
-        if 'arxiv_id' in params:
-            query_params.append(('arxiv_id', params['arxiv_id']))  # noqa: E501
-        if 'jstor_id' in params:
-            query_params.append(('jstor_id', params['jstor_id']))  # noqa: E501
+        if 'core' in params:
+            query_params.append(('core', params['core']))  # noqa: E501
+        if 'arxiv' in params:
+            query_params.append(('arxiv', params['arxiv']))  # noqa: E501
+        if 'jstor' in params:
+            query_params.append(('jstor', params['jstor']))  # noqa: E501
+        if 'ark' in params:
+            query_params.append(('ark', params['ark']))  # noqa: E501
+        if 'mag' in params:
+            query_params.append(('mag', params['mag']))  # noqa: E501
         if 'expand' in params:
             query_params.append(('expand', params['expand']))  # noqa: E501
         if 'hide' in params:

@@ -37,6 +37,8 @@ class ReleaseContrib(object):
         'creator_id': 'str',
         'creator': 'CreatorEntity',
         'raw_name': 'str',
+        'given_name': 'str',
+        'surname': 'str',
         'role': 'str',
         'raw_affiliation': 'str',
         'extra': 'object'
@@ -47,18 +49,22 @@ class ReleaseContrib(object):
         'creator_id': 'creator_id',
         'creator': 'creator',
         'raw_name': 'raw_name',
+        'given_name': 'given_name',
+        'surname': 'surname',
         'role': 'role',
         'raw_affiliation': 'raw_affiliation',
         'extra': 'extra'
     }
 
-    def __init__(self, index=None, creator_id=None, creator=None, raw_name=None, role=None, raw_affiliation=None, extra=None):  # noqa: E501
+    def __init__(self, index=None, creator_id=None, creator=None, raw_name=None, given_name=None, surname=None, role=None, raw_affiliation=None, extra=None):  # noqa: E501
         """ReleaseContrib - a model defined in Swagger"""  # noqa: E501
 
         self._index = None
         self._creator_id = None
         self._creator = None
         self._raw_name = None
+        self._given_name = None
+        self._surname = None
         self._role = None
         self._raw_affiliation = None
         self._extra = None
@@ -72,6 +78,10 @@ class ReleaseContrib(object):
             self.creator = creator
         if raw_name is not None:
             self.raw_name = raw_name
+        if given_name is not None:
+            self.given_name = given_name
+        if surname is not None:
+            self.surname = surname
         if role is not None:
             self.role = role
         if raw_affiliation is not None:
@@ -172,6 +182,48 @@ class ReleaseContrib(object):
         """
 
         self._raw_name = raw_name
+
+    @property
+    def given_name(self):
+        """Gets the given_name of this ReleaseContrib.  # noqa: E501
+
+
+        :return: The given_name of this ReleaseContrib.  # noqa: E501
+        :rtype: str
+        """
+        return self._given_name
+
+    @given_name.setter
+    def given_name(self, given_name):
+        """Sets the given_name of this ReleaseContrib.
+
+
+        :param given_name: The given_name of this ReleaseContrib.  # noqa: E501
+        :type: str
+        """
+
+        self._given_name = given_name
+
+    @property
+    def surname(self):
+        """Gets the surname of this ReleaseContrib.  # noqa: E501
+
+
+        :return: The surname of this ReleaseContrib.  # noqa: E501
+        :rtype: str
+        """
+        return self._surname
+
+    @surname.setter
+    def surname(self, surname):
+        """Sets the surname of this ReleaseContrib.
+
+
+        :param surname: The surname of this ReleaseContrib.  # noqa: E501
+        :type: str
+        """
+
+        self._surname = surname
 
     @property
     def role(self):
