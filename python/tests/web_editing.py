@@ -18,7 +18,7 @@ def test_web_release_create_merge(app_admin, api):
         data={
             'editgroup_id': eg.editgroup_id,
             'release_type': 'badmojo',
-            'release_status': 'published',
+            'release_stage': 'published',
             'title': 'something bogus',
         },
         follow_redirects=True)
@@ -32,7 +32,7 @@ def test_web_release_create_merge(app_admin, api):
         data={
             'editgroup_id': eg.editgroup_id,
             'release_type': 'article-journal',
-            'release_status': 'published',
+            'release_stage': 'published',
             'title': 'something bogus',
         },
         follow_redirects=True)

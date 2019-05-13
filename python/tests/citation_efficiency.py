@@ -12,7 +12,7 @@ def test_citation_indexing(api):
     # indexing is consistent and reacts to change
 
     eg = quick_eg(api)
-    r1 = ReleaseEntity(title="the target")
+    r1 = ReleaseEntity(title="the target", ext_ids=ReleaseEntityExtIds())
     r1.refs = [
         ReleaseRef(key="first", title="the first title"),
         ReleaseRef(key="second", title="the second title"),
@@ -44,9 +44,9 @@ def test_citation_targets(api):
     # also, updates work
 
     eg = quick_eg(api)
-    r1 = ReleaseEntity(title="the target")
+    r1 = ReleaseEntity(title="the target", ext_ids=ReleaseEntityExtIds())
     r1 = api.get_release(api.create_release(r1, editgroup_id=eg.editgroup_id).ident)
-    r2 = ReleaseEntity(title="the citer")
+    r2 = ReleaseEntity(title="the citer", ext_ids=ReleaseEntityExtIds())
     r2.refs = [
         ReleaseRef(key="first", title="something else"),
         ReleaseRef(key="second", title="the target title"),
@@ -70,8 +70,8 @@ def test_citation_targets(api):
 def test_citation_empty_array(api):
     # distinction between empty array (no citations) and no array (hidden)
 
-    r1 = ReleaseEntity(title="citation null")
-    r2 = ReleaseEntity(title="citation empty array")
+    r1 = ReleaseEntity(title="citation null", ext_ids=ReleaseEntityExtIds())
+    r2 = ReleaseEntity(title="citation empty array", ext_ids=ReleaseEntityExtIds())
     r1.refs = None
     r2.refs = []
 
@@ -91,7 +91,7 @@ def test_citation_empty_array(api):
 def test_citation_encoding(api):
     # escape-only changes (eg, \u1234 whatever for ASCII)
 
-    r1 = ReleaseEntity(title="citation encoding")
+    r1 = ReleaseEntity(title="citation encoding", ext_ids=ReleaseEntityExtIds())
     title = "title-unicode \\u0050 \\\" "
     container = "container-unicode ☃︎ ä ö ü スティー"
     extra = extra={'a': 1, 'b': 2, 'ö': 3}

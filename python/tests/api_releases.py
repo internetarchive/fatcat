@@ -18,17 +18,19 @@ def test_release(api):
         title="some title",
         original_title="оригинальное название",
         release_type="post-weblog",
-        release_status="submitted",
+        release_stage="submitted",
         release_date=datetime.datetime.utcnow().date(),
         release_year=2015,
-        doi="10.5555/12345678",
-        pmid="12345",
-        pmcid="PMC4321",
-        wikidata_qid="Q1234",
-        isbn13="978-3-16-148410-0",
-        core_id="187348",
-        arxiv_id="aslkdjfh",
-        jstor_id="8328424",
+        ext_ids=ReleaseEntityExtIds(
+            doi="10.5555/12345678",
+            pmid="12345",
+            pmcid="PMC4321",
+            wikidata_qid="Q1234",
+            isbn13="978-3-16-148410-0",
+            core="187348",
+            arxiv="aslkdjfh",
+            jstor="8328424",
+        ),
         volume="84",
         issue="XII",
         pages="4-99",
@@ -66,14 +68,14 @@ def test_release(api):
     assert r1.release_type == r2.release_type
     assert r1.release_date == r2.release_date
     assert r1.release_year == r2.release_year
-    assert r1.doi == r2.doi
-    assert r1.pmid == r2.pmid
-    assert r1.pmcid == r2.pmcid
-    assert r1.wikidata_qid == r2.wikidata_qid
-    assert r1.isbn13 == r2.isbn13
-    assert r1.core_id == r2.core_id
-    assert r1.arxiv_id == r2.arxiv_id
-    assert r1.jstor_id == r2.jstor_id
+    assert r1.ext_ids.doi == r2.ext_ids.doi
+    assert r1.ext_ids.pmid == r2.ext_ids.pmid
+    assert r1.ext_ids.pmcid == r2.ext_ids.pmcid
+    assert r1.ext_ids.wikidata_qid == r2.ext_ids.wikidata_qid
+    assert r1.ext_ids.isbn13 == r2.ext_ids.isbn13
+    assert r1.ext_ids.core == r2.ext_ids.core
+    assert r1.ext_ids.arxiv == r2.ext_ids.arxiv
+    assert r1.ext_ids.jstor == r2.ext_ids.jstor
     assert r1.volume == r2.volume
     assert r1.issue == r2.issue
     assert r1.pages == r2.pages
@@ -125,29 +127,32 @@ def test_empty_fields(api):
 
     eg = quick_eg(api)
 
-    r1 = ReleaseEntity(title="something", contribs=[ReleaseContrib(raw_name="somebody")])
+    r1 = ReleaseEntity(
+        title="something",
+        contribs=[ReleaseContrib(raw_name="somebody")],
+        ext_ids=ReleaseEntityExtIds())
     r1edit = api.create_release(r1, editgroup_id=eg.editgroup_id)
 
     with pytest.raises(fatcat_client.rest.ApiException):
-        r2 = ReleaseEntity(title="")
+        r2 = ReleaseEntity(title="", ext_ids=ReleaseEntityExtIds())
         api.create_release(r2, editgroup_id=eg.editgroup_id)
     with pytest.raises(fatcat_client.rest.ApiException):
-        r2 = ReleaseEntity(title="something", contribs=[ReleaseContrib(raw_name="")])
+        r2 = ReleaseEntity(title="something", contribs=[ReleaseContrib(raw_name="")], ext_ids=ReleaseEntityExtIds())
         api.create_release(r2, editgroup_id=eg.editgroup_id)
 
 def test_controlled_vocab(api):
 
     eg = quick_eg(api)
 
-    r1 = ReleaseEntity(title="something", release_type="journal-thingie")
+    r1 = ReleaseEntity(title="something", release_type="journal-thingie", ext_ids=ReleaseEntityExtIds())
     with pytest.raises(fatcat_client.rest.ApiException):
         api.create_release(r1, editgroup_id=eg.editgroup_id)
     r1.release_type = "article"
     api.create_release(r1, editgroup_id=eg.editgroup_id)
 
-    r2 = ReleaseEntity(title="something elase", release_status="pre-print")
+    r2 = ReleaseEntity(title="something elase", release_stage="pre-print", ext_ids=ReleaseEntityExtIds())
     with pytest.raises(fatcat_client.rest.ApiException):
         api.create_release(r2, editgroup_id=eg.editgroup_id)
-    r2.release_status = "published"
+    r2.release_stage = "published"
     api.create_release(r2, editgroup_id=eg.editgroup_id)
 

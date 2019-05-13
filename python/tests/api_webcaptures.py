@@ -12,7 +12,7 @@ from fixtures import *
 def test_webcapture(api):
 
     eg = quick_eg(api)
-    r1 = ReleaseEntity(title="test webcapture release")
+    r1 = ReleaseEntity(title="test webcapture release", ext_ids=ReleaseEntityExtIds())
     r1edit = api.create_release(r1, editgroup_id=eg.editgroup_id)
 
     wc1 = WebcaptureEntity(

@@ -252,7 +252,7 @@ def test_web_release_login(full_app, app_admin):
         # these fields are required
         form.title.data = "Creating Releases: A Review"
         form.release_type.data = "article-journal"
-        form.release_status.data = "draft"
+        form.release_stage.data = "draft"
         rv = app_admin.post('/release/create', data=form.data, follow_redirects=True)
         assert rv.status_code == 200
 
@@ -261,7 +261,7 @@ def test_web_release_login(full_app, app_admin):
         # these fields are required
         form.title.data = "Creating Releases: A Review"
         form.release_type.data = "article-journal"
-        form.release_status.data = "draft"
+        form.release_stage.data = "draft"
         # already merged editgroup
         form.editgroup_id.data = "aaaaaaaaaaaabo53aaaaaaaaae"
         rv = app_admin.post('/release/create', data=form.data, follow_redirects=True)

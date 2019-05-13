@@ -75,13 +75,13 @@ def test_crossref_dict_parse(crossref_importer):
 
         print(r.extra)
         assert r.title == "Renormalized perturbation theory by the moment method for degenerate states: Anharmonic oscillators"
-        assert r.doi == "10.1002/(sici)1097-461x(1998)66:4<261::aid-qua1>3.0.co;2-t"
         assert r.publisher == "Wiley-Blackwell"
         assert r.release_type == "article-journal"
-        assert r.release_status == "published"
+        assert r.release_stage == "published"
         assert r.license_slug == "CC-BY-NC-ND"
         assert r.original_title == "Renormalized perturbation theory auf deutsch"
-        assert r.isbn13 == "978-3-16-148410-0"
+        assert r.ext_ids.doi == "10.1002/(sici)1097-461x(1998)66:4<261::aid-qua1>3.0.co;2-t"
+        assert r.ext_ids.isbn13 == "978-3-16-148410-0"
         assert r.language == "fr"
         assert 'subtitle' not in r.extra
         assert 'subtitle' not in r.extra['crossref']

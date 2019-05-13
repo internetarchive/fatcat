@@ -21,6 +21,7 @@ def test_rich_elasticsearch_convert(crossref_importer):
         title="something",
         release_year=1234,
         license_slug="CC-BY-NC",
+        ext_ids=ReleaseEntityExtIds(),
     )
     r.state = 'active'
     r.container = ContainerEntity(

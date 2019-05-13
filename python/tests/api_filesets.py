@@ -11,7 +11,7 @@ from fixtures import *
 def test_fileset(api):
 
     eg = quick_eg(api)
-    r1 = ReleaseEntity(title="test fileset release")
+    r1 = ReleaseEntity(title="test fileset release", ext_ids=ReleaseEntityExtIds())
     r1edit = api.create_release(r1, editgroup_id=eg.editgroup_id)
 
     fs1 = FilesetEntity(
