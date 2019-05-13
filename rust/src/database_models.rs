@@ -161,10 +161,10 @@ pub struct CreatorRevRow {
     pub id: Uuid,
     pub extra_json: Option<serde_json::Value>,
     pub display_name: String,
-    pub orcid: Option<String>,
-    pub wikidata_qid: Option<String>,
     pub given_name: Option<String>,
     pub surname: Option<String>,
+    pub orcid: Option<String>,
+    pub wikidata_qid: Option<String>,
 }
 
 #[derive(Debug, Associations, AsChangeset, Insertable)]
@@ -172,10 +172,10 @@ pub struct CreatorRevRow {
 pub struct CreatorRevNewRow {
     pub extra_json: Option<serde_json::Value>,
     pub display_name: String,
-    pub orcid: Option<String>,
-    pub wikidata_qid: Option<String>,
     pub given_name: Option<String>,
     pub surname: Option<String>,
+    pub orcid: Option<String>,
+    pub wikidata_qid: Option<String>,
 }
 
 entity_structs!(
