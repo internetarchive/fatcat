@@ -1441,7 +1441,7 @@ impl EntityCrud for WebcaptureEntity {
                 url: c.url,
                 mimetype: c.mimetype,
                 status_code: c.status_code,
-                size_bytes: c.size_bytes,
+                size: c.size_bytes,
                 sha1: c.sha1,
                 sha256: c.sha256,
             })
@@ -1530,7 +1530,7 @@ impl EntityCrud for WebcaptureEntity {
                             url: c.url.clone(),
                             mimetype: c.mimetype.clone(),
                             status_code: c.status_code,
-                            size_bytes: c.size_bytes,
+                            size_bytes: c.size,
                             sha1: c.sha1.clone(),
                             sha256: c.sha256.clone(),
                         })
