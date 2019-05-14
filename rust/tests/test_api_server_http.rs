@@ -456,7 +456,7 @@ fn test_lookups() {
 
     helpers::check_http_response(
         request::get(
-            "http://localhost:9411/v0/release/lookup?ark=ark:/asdf/924",
+            "http://localhost:9411/v0/release/lookup?ark=ark:/13030/m53r5pzm",
             headers.clone(),
             &router,
         ),
