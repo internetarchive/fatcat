@@ -54,7 +54,7 @@ No known public archive for this webcapture.
         <div style="margin-left: 1em;">
           {{ row.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}
           {% if row.mimetype %}| {{ row.mimetype }} {% endif %}
-          {% if row.size_bytes %}| {{ row.size_bytes|filesizeformat }} {% endif %}
+          {% if row.size %}| {{ row.size|filesizeformat }} {% endif %}
           <br>
           <code><small style="color: #666;">
             {% if row.sha1 %}sha1:{{ row.sha1 }}<br>{% endif %}

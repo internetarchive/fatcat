@@ -27,7 +27,7 @@ def test_webcapture(api):
                 url="http://example.site/data/thing.tar.gz",
                 mimetype="application/gzip",
                 status_code=200,
-                size_bytes=1234,
+                size=1234,
                 sha1="455face3598611458efe1f072e58624790a67266",
                 sha256="c7b49f3e84cd1b7cb0b0e3e9f632b7be7e21b4dc229df23331f880a8a7dfa75a",
             ),
@@ -38,7 +38,7 @@ def test_webcapture(api):
                 url="http://example.site/README.md",
                 mimetype="text/markdown",
                 status_code=200,
-                size_bytes=4321,
+                size=4321,
                 sha1="455face3598611458efe1f072e58624790a67266",
                 sha256="429bcafa4d3d0072d5b2511e12c85c1aac1d304011d1c406da14707f7b9cd905",
             ),
@@ -67,7 +67,7 @@ def test_webcapture(api):
     assert wc1.archive_urls[0].rel == wc2.archive_urls[0].rel
     assert wc1.archive_urls[0].url == wc2.archive_urls[0].url
     assert wc1.cdx[0] == wc2.cdx[0]
-    assert wc1.cdx[0].size_bytes == wc2.cdx[0].size_bytes
+    assert wc1.cdx[0].size == wc2.cdx[0].size
     assert wc1.cdx == wc2.cdx
     assert wc1.release_ids == wc2.release_ids
     assert wc1.timestamp == wc2.timestamp
@@ -121,7 +121,7 @@ def test_bad_webcapture(api):
                 surt="site,example,)/123.jpg",
                 url="http://example.site/123.jpg",
                 sha1="455face3598611458efe1f072e58624790a67266",
-                size_bytes=123,
+                size=123,
                 timestamp="20120102030405")]),
         # CDX timestamp format (int)
         WebcaptureEntity(
@@ -140,7 +140,7 @@ def test_bad_webcapture(api):
                 surt="site,example,)/123.jpg",
                 url="http://example.site/123.jpg",
                 sha1="455face3598611458efe1f072e58624790a67266",
-                size_bytes=-123,
+                size=-123,
                 timestamp="20120102030405")]),
     ]
 

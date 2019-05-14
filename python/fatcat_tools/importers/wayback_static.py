@@ -120,7 +120,7 @@ def lookup_cdx(embed_url, verify_hashes=True, cdx_output=None):
             resp.raise_for_status()
             assert webcapture_cdx.sha1 == hashlib.sha1(resp.content).digest().hex()
             webcapture_cdx.sha256 = hashlib.sha256(resp.content).digest().hex()
-            webcapture_cdx.size_bytes = len(resp.content)
+            webcapture_cdx.size = len(resp.content)
         return webcapture_cdx
     else:
         return None
