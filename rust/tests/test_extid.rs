@@ -1,9 +1,8 @@
-
+use diesel::insert_into;
 use diesel::prelude::*;
 use fatcat::database_models::*;
 use fatcat::database_schema::*;
 use fatcat::server;
-use diesel::insert_into;
 use std::str::FromStr;
 use uuid::Uuid;
 

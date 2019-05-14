@@ -7792,7 +7792,7 @@ definitions:
       - sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
         surt: "org,asheesh)/apus/ch1/node15.html"
         status_code: 200
-        size_bytes: 1235
+        size: 1048576
         sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
         mimetype: "text/html"
         url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
@@ -7800,7 +7800,7 @@ definitions:
       - sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
         surt: "org,asheesh)/apus/ch1/node15.html"
         status_code: 200
-        size_bytes: 1235
+        size: 1048576
         sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
         mimetype: "text/html"
         url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
@@ -7968,7 +7968,7 @@ definitions:
         - sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
           surt: "org,asheesh)/apus/ch1/node15.html"
           status_code: 200
-          size_bytes: 1235
+          size: 1048576
           sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
           mimetype: "text/html"
           url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
@@ -7976,7 +7976,7 @@ definitions:
         - sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
           surt: "org,asheesh)/apus/ch1/node15.html"
           status_code: 200
-          size_bytes: 1235
+          size: 1048576
           sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
           mimetype: "text/html"
           url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
@@ -8001,7 +8001,7 @@ definitions:
         - sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
           surt: "org,asheesh)/apus/ch1/node15.html"
           status_code: 200
-          size_bytes: 1235
+          size: 1048576
           sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
           mimetype: "text/html"
           url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
@@ -8009,7 +8009,7 @@ definitions:
         - sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
           surt: "org,asheesh)/apus/ch1/node15.html"
           status_code: 200
-          size_bytes: 1235
+          size: 1048576
           sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
           mimetype: "text/html"
           url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
@@ -9284,10 +9284,10 @@ definitions:
         type: "integer"
         format: "int64"
         example: 200
-      size_bytes:
+      size:
         type: "integer"
         format: "int64"
-        example: 1235
+        example: 1048576
       sha1:
         type: "string"
         example: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
@@ -9304,7 +9304,7 @@ definitions:
       sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
       surt: "org,asheesh)/apus/ch1/node15.html"
       status_code: 200
-      size_bytes: 1235
+      size: 1048576
       sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
       mimetype: "text/html"
       url: "http://www.asheesh.org:80/APUS/ch1/node15.html"

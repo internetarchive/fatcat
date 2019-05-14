@@ -1197,9 +1197,9 @@ pub struct WebcaptureEntityCdx {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub status_code: Option<i64>,
 
-    #[serde(rename = "size_bytes")]
+    #[serde(rename = "size")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub size_bytes: Option<i64>,
+    pub size: Option<i64>,
 
     #[serde(rename = "sha1")]
     pub sha1: String,
@@ -1217,7 +1217,7 @@ impl WebcaptureEntityCdx {
             url: url,
             mimetype: None,
             status_code: None,
-            size_bytes: None,
+            size: None,
             sha1: sha1,
             sha256: None,
         }
