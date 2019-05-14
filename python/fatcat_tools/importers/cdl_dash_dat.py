@@ -39,14 +39,14 @@ def single_file(prefix, path):
         if guess:
             mime = guess
 
-    fsm = FilesetEntityManifest(
+    fsf = FilesetFile(
         path=path,
         size=size_bytes,
         md5=hashes[0].hexdigest(),
         sha1=hashes[1].hexdigest(),
         sha256=hashes[2].hexdigest(),
         extra=dict(mimetype=mime))
-    return fsm
+    return fsf
 
 def make_manifest(base_dir):
     manifest = []
@@ -76,7 +76,7 @@ def cdl_dash_release(meta, extra=None):
     abstracts = []
     for desc in meta['descriptions']:
         if desc['type'] == "abstract":
-            abstracts.append(ReleaseEntityAbstracts(
+            abstracts.append(ReleaseAbstract(
                 mimetype="text/html",
                 content=clean(desc['value'])))
             #print(abstracts)
@@ -95,7 +95,7 @@ def cdl_dash_release(meta, extra=None):
         ))
 
     r = ReleaseEntity(
-        ext_ids=ReleaseEntityExtIds(
+        ext_ids=ReleaseExtIds(
             doi=doi,
             ark=ark_id,
         ),

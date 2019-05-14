@@ -27,8 +27,8 @@ def test_relation_states(api, app):
     j1 = ContainerEntity(name="test journal")
     j2 = ContainerEntity(name="another test journal")
     c1 = CreatorEntity(display_name="test person")
-    r1 = ReleaseEntity(title="test article", ext_ids=ReleaseEntityExtIds())
-    r2 = ReleaseEntity(title="another test article", ext_ids=ReleaseEntityExtIds())
+    r1 = ReleaseEntity(title="test article", ext_ids=ReleaseExtIds())
+    r2 = ReleaseEntity(title="another test article", ext_ids=ReleaseExtIds())
     f1 = FileEntity(md5="c60f5b093ef5e6caad9d7b45268be409")
     f2 = FileEntity(md5="0000000000000000ad9d7b45268be409")
 
@@ -100,7 +100,7 @@ def test_relation_states(api, app):
     r2 = api.get_release(r2.ident, expand="container,creators,files")
     assert r2.files == []
     eg = quick_eg(api)
-    api.update_release(r2.ident, ReleaseEntity(redirect=r1.ident, ext_ids=ReleaseEntityExtIds()), editgroup_id=eg.editgroup_id)
+    api.update_release(r2.ident, ReleaseEntity(redirect=r1.ident, ext_ids=ReleaseExtIds()), editgroup_id=eg.editgroup_id)
     f2.release_ids = [r2.ident]
     f2 = api.get_file(api.create_file(f2, editgroup_id=eg.editgroup_id).ident)
     api.accept_editgroup(eg.editgroup_id)
@@ -140,8 +140,8 @@ def test_app_entity_states(api, app):
     j2 = ContainerEntity(name="another test journal")
     c1 = CreatorEntity(display_name="test person")
     c2 = CreatorEntity(display_name="another test person")
-    r1 = ReleaseEntity(title="test article", ext_ids=ReleaseEntityExtIds())
-    r2 = ReleaseEntity(title="another test article", ext_ids=ReleaseEntityExtIds())
+    r1 = ReleaseEntity(title="test article", ext_ids=ReleaseExtIds())
+    r2 = ReleaseEntity(title="another test article", ext_ids=ReleaseExtIds())
     f1 = FileEntity(md5="c60f5b093ef5e6caad9d7b45268be409")
     f2 = FileEntity(md5="0000000000000000ad9d7b45268be409")
 
@@ -165,7 +165,7 @@ def test_app_entity_states(api, app):
     api.update_container(j2.ident, ContainerEntity(redirect=j1.ident), editgroup_id=eg.editgroup_id)
     api.update_creator(c2.ident, CreatorEntity(redirect=c1.ident), editgroup_id=eg.editgroup_id)
     api.update_file(f2.ident, FileEntity(redirect=f1.ident), editgroup_id=eg.editgroup_id)
-    api.update_release(r2.ident, ReleaseEntity(redirect=r1.ident, ext_ids=ReleaseEntityExtIds()), editgroup_id=eg.editgroup_id)
+    api.update_release(r2.ident, ReleaseEntity(redirect=r1.ident, ext_ids=ReleaseExtIds()), editgroup_id=eg.editgroup_id)
     api.update_work(r2.work_id, WorkEntity(redirect=r1.work_id), editgroup_id=eg.editgroup_id)
     api.accept_editgroup(eg.editgroup_id)
 

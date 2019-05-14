@@ -82,7 +82,7 @@ class GrobidMetadataImporter(EntityImporter):
 
         abstract = obj.get('abstract')
         if abstract and len(abstract) < MAX_ABSTRACT_BYTES and len(abstract) > 10:
-            abobj = fatcat_client.ReleaseEntityAbstracts(
+            abobj = fatcat_client.ReleaseAbstract(
                 mimetype="text/plain",
                 content=clean(obj.get('abstract')))
             abstracts = [abobj]
@@ -158,7 +158,7 @@ class GrobidMetadataImporter(EntityImporter):
             volume=clean(obj['journal'].get('volume')),
             issue=clean(obj['journal'].get('issue')),
             abstracts=abstracts,
-            ext_ids=fatcat_client.ReleaseEntityExtIds(),
+            ext_ids=fatcat_client.ReleaseExtIds(),
             extra=extra)
         return re
 
@@ -181,10 +181,10 @@ class GrobidMetadataImporter(EntityImporter):
             cdx['dt'],
             original)
         fe.urls.append(
-            fatcat_client.FileEntityUrls(url=wayback, rel="webarchive"))
+            fatcat_client.FileUrl(url=wayback, rel="webarchive"))
         original_url = make_rel_url(original, default_link_rel=self.default_link_rel)
         if original_url is not None:
-            fe.urls.append(fatcat_client.FileEntityUrls(rel=original_url[0], url=original_url[1]))
+            fe.urls.append(fatcat_client.FileUrl(rel=original_url[0], url=original_url[1]))
 
         return fe
 

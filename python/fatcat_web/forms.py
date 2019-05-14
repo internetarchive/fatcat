@@ -9,7 +9,7 @@ from wtforms import SelectField, DateField, StringField, IntegerField, \
     HiddenField, FormField, FieldList, validators
 
 from fatcat_client import ContainerEntity, CreatorEntity, FileEntity, \
-    ReleaseEntity, ReleaseContrib, FileEntityUrls, ReleaseEntityExtIds
+    ReleaseEntity, ReleaseContrib, FileUrl, ReleaseExtIds
 
 release_type_options = [
     ('', 'Unknown'),
@@ -132,7 +132,7 @@ class ReleaseEntityForm(EntityEditForm):
 
     def to_entity(self):
         assert(self.title.data)
-        entity = ReleaseEntity(title=self.title.data, ext_ids=ReleaseEntityExtIds())
+        entity = ReleaseEntity(title=self.title.data, ext_ids=ReleaseExtIds())
         self.update_entity(entity)
         return entity
 
@@ -327,7 +327,7 @@ class FileEntityForm(EntityEditForm):
             setattr(fe, simple_attr, a)
         fe.urls = []
         for u in self.urls:
-            fe.urls.append(FileEntityUrls(
+            fe.urls.append(FileUrl(
                 rel=u.rel.data or None,
                 url=u.url.data or None,
             ))

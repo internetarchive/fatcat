@@ -104,7 +104,7 @@ def lookup_cdx(embed_url, verify_hashes=True, cdx_output=None):
             cdx_output.write(hit + "\n")
         cdx = hit.split(' ')
         cdx = [x if (x and x != '-') else None for x in cdx]
-        webcapture_cdx = WebcaptureEntityCdx(
+        webcapture_cdx = WebcaptureCdxLine(
             surt=cdx[0],
             timestamp=parse_wbm_timestamp(cdx[1]).isoformat() + "Z",
             url=cdx[2],
@@ -166,7 +166,7 @@ def static_wayback_webcapture(wayback_url, cdx_output=None):
     for url in embeds:
         cdx_obj = lookup_cdx(url, cdx_output=cdx_output)
         cdx_list.append(cdx_obj)
-    archive_urls = [WebcaptureEntityArchiveUrls(
+    archive_urls = [WebcaptureUrl(
         rel="wayback",
         url="https://web.archive.org/web/",
     )]

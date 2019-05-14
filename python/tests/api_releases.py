@@ -25,7 +25,7 @@ def test_release(api):
         withdrawn_status="withdrawn",
         withdrawn_year=2017,
         withdrawn_date="2017-04-10",
-        ext_ids=ReleaseEntityExtIds(
+        ext_ids=ReleaseExtIds(
             doi="10.5555/12345678",
             pmid="12345",
             pmcid="PMC4321",
@@ -59,11 +59,11 @@ def test_release(api):
         ],
         refs=[],
         abstracts=[
-            ReleaseEntityAbstracts(
+            ReleaseAbstract(
                 content="this is some abstract",
                 mimetype="text/plain",
                 lang="en"),
-            ReleaseEntityAbstracts(
+            ReleaseAbstract(
                 content="this is some other abstract",
                 mimetype="text/plain",
                 lang="de"),
@@ -177,27 +177,27 @@ def test_empty_fields(api):
     r1 = ReleaseEntity(
         title="something",
         contribs=[ReleaseContrib(raw_name="somebody")],
-        ext_ids=ReleaseEntityExtIds())
+        ext_ids=ReleaseExtIds())
     r1edit = api.create_release(r1, editgroup_id=eg.editgroup_id)
 
     with pytest.raises(fatcat_client.rest.ApiException):
-        r2 = ReleaseEntity(title="", ext_ids=ReleaseEntityExtIds())
+        r2 = ReleaseEntity(title="", ext_ids=ReleaseExtIds())
         api.create_release(r2, editgroup_id=eg.editgroup_id)
     with pytest.raises(fatcat_client.rest.ApiException):
-        r2 = ReleaseEntity(title="something", contribs=[ReleaseContrib(raw_name="")], ext_ids=ReleaseEntityExtIds())
+        r2 = ReleaseEntity(title="something", contribs=[ReleaseContrib(raw_name="")], ext_ids=ReleaseExtIds())
         api.create_release(r2, editgroup_id=eg.editgroup_id)
 
 def test_controlled_vocab(api):
 
     eg = quick_eg(api)
 
-    r1 = ReleaseEntity(title="something", release_type="journal-thingie", ext_ids=ReleaseEntityExtIds())
+    r1 = ReleaseEntity(title="something", release_type="journal-thingie", ext_ids=ReleaseExtIds())
     with pytest.raises(fatcat_client.rest.ApiException):
         api.create_release(r1, editgroup_id=eg.editgroup_id)
     r1.release_type = "article"
     api.create_release(r1, editgroup_id=eg.editgroup_id)
 
-    r2 = ReleaseEntity(title="something elase", release_stage="pre-print", ext_ids=ReleaseEntityExtIds())
+    r2 = ReleaseEntity(title="something elase", release_stage="pre-print", ext_ids=ReleaseExtIds())
     with pytest.raises(fatcat_client.rest.ApiException):
         api.create_release(r2, editgroup_id=eg.editgroup_id)
     r2.release_stage = "published"

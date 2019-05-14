@@ -309,7 +309,7 @@ class CrossrefImporter(EntityImporter):
         abstracts = []
         abstract = clean(obj.get('abstract'))
         if abstract and len(abstract) > 10:
-            abstracts.append(fatcat_client.ReleaseEntityAbstracts(
+            abstracts.append(fatcat_client.ReleaseAbstract(
                 mimetype="application/xml+jats",
                 content=abstract))
 
@@ -424,7 +424,7 @@ class CrossrefImporter(EntityImporter):
             release_date=release_date,
             release_year=release_year,
             publisher=publisher,
-            ext_ids=fatcat_client.ReleaseEntityExtIds(
+            ext_ids=fatcat_client.ReleaseExtIds(
                 doi=obj['DOI'].lower(),
                 pmid=extids['pmid'],
                 pmcid=extids['pmcid'],

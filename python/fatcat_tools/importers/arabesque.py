@@ -128,7 +128,7 @@ class ArabesqueMatchImporter(EntityImporter):
             row['final_url'])
         urls = [url, ("webarchive", wayback)]
 
-        urls = [fatcat_client.FileEntityUrls(rel=rel, url=url) for (rel, url) in urls]
+        urls = [fatcat_client.FileUrl(rel=rel, url=url) for (rel, url) in urls]
 
         if len(urls) > SANE_MAX_URLS:
             self.counts['skip-too-many-url'] += 1
@@ -177,7 +177,7 @@ class ArabesqueMatchImporter(EntityImporter):
 
         # merge the existing into this one and update
         existing.urls = list(set([(u.rel, u.url) for u in fe.urls + existing.urls]))
-        existing.urls = [fatcat_client.FileEntityUrls(rel=rel, url=url) for (rel, url) in existing.urls]
+        existing.urls = [fatcat_client.FileUrl(rel=rel, url=url) for (rel, url) in existing.urls]
         if len(existing.urls) > SANE_MAX_URLS:
             self.counts['skip-update-too-many-url'] += 1
             return None

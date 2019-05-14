@@ -406,11 +406,11 @@ def test_create_redirect(api):
         assert "redirect" in e.body
 
     # again with releases
-    r1 = ReleaseEntity(title="test one", ext_ids=ReleaseEntityExtIds())
+    r1 = ReleaseEntity(title="test one", ext_ids=ReleaseExtIds())
     eg = quick_eg(api)
     r1 = api.get_release(api.create_release(r1, editgroup_id=eg.editgroup_id).ident)
     api.accept_editgroup(eg.editgroup_id)
-    r2 = ReleaseEntity(title="blah", redirect=c1.ident, ext_ids=ReleaseEntityExtIds())
+    r2 = ReleaseEntity(title="blah", redirect=c1.ident, ext_ids=ReleaseExtIds())
     eg = quick_eg(api)
     try:
         api.create_release(r2, editgroup_id=eg.editgroup_id)
@@ -443,7 +443,7 @@ def test_required_entity_fields(api):
 
     # Release
     try:
-        c1 = ReleaseEntity(ext_ids=ReleaseEntityExtIds())
+        c1 = ReleaseEntity(ext_ids=ReleaseExtIds())
         api.create_release(c1, editgroup_id=eg.editgroup_id)
         assert False
     except fatcat_client.rest.ApiException as e:

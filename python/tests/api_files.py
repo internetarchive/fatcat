@@ -21,7 +21,7 @@ def test_file(api):
         mimetype="application/pdf",
         extra=dict(a=2, b=5),
         urls=[
-            FileEntityUrls(url="https://web.archive.org/web/12345542/something.com/blah.pdf", rel="webarchive"),
+            FileUrl(url="https://web.archive.org/web/12345542/something.com/blah.pdf", rel="webarchive"),
         ],
         release_ids=[],
     )

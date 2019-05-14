@@ -11,12 +11,12 @@ from fixtures import *
 def test_fileset(api):
 
     eg = quick_eg(api)
-    r1 = ReleaseEntity(title="test fileset release", ext_ids=ReleaseEntityExtIds())
+    r1 = ReleaseEntity(title="test fileset release", ext_ids=ReleaseExtIds())
     r1edit = api.create_release(r1, editgroup_id=eg.editgroup_id)
 
     fs1 = FilesetEntity(
         manifest = [
-            FilesetEntityManifest(
+            FilesetFile(
                 path="data/thing.tar.gz",
                 size=54321,
                 md5="540da3ea6e448d8dfb057c05225f853a",
@@ -24,7 +24,7 @@ def test_fileset(api):
                 sha256="c7b49f3e84cd1b7cb0b0e3e9f632b7be7e21b4dc229df23331f880a8a7dfa75a",
                 extra={"a": 1, "b": 3},
             ),
-            FilesetEntityManifest(
+            FilesetFile(
                 path="README.md",
                 size=54210,
                 md5="5f83592b5249671719bbed6ce91ecfa8",
@@ -34,8 +34,8 @@ def test_fileset(api):
             ),
         ],
         urls = [
-            FileEntityUrls(url="https://archive.org/download/fileset-123/", rel="repository"),
-            FileEntityUrls(url="https://humble-host.com/~user123/dataset/", rel="web"),
+            FilesetUrl(url="https://archive.org/download/fileset-123/", rel="repository"),
+            FilesetUrl(url="https://humble-host.com/~user123/dataset/", rel="web"),
         ],
         release_ids = [r1edit.ident],
     )
@@ -82,9 +82,9 @@ def test_bad_fileset(api):
 
     bad_list = [
         # good (for testing test itself)
-        #FilesetEntity(manifest=[FilesetEntityManifest(path="123.jpg", size=1234)]),
-        #FilesetEntity(urls=[FileEntityUrls(url="thing", rel="blah")]),
-        FilesetEntity(manifest=[FilesetEntityManifest(path="123.jpg", size="big")]),
+        #FilesetEntity(manifest=[FilesetFile(path="123.jpg", size=1234)]),
+        #FilesetEntity(urls=[FilesetUrl(url="thing", rel="blah")]),
+        FilesetEntity(manifest=[FilesetFile(path="123.jpg", size="big")]),
         FilesetEntity(release_ids=["asdf"]),
     ]
 

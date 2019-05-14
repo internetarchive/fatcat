@@ -21,7 +21,7 @@ def test_rich_elasticsearch_convert(crossref_importer):
         title="something",
         release_year=1234,
         license_slug="CC-BY-NC",
-        ext_ids=ReleaseEntityExtIds(),
+        ext_ids=ReleaseExtIds(),
     )
     r.state = 'active'
     r.container = ContainerEntity(
@@ -47,9 +47,9 @@ def test_rich_elasticsearch_convert(crossref_importer):
     r.files = [FileEntity(
         mimetype="application/pdf",
         urls=[
-            FileEntityUrls(rel="dweb", url="dat://a954329dlk/thingie"),
-            FileEntityUrls(rel="webarchive", url="https://web.archive.org/web/20001122030405/http://example.com"),
-            FileEntityUrls(rel="web", url="https://archive.org/details/blah/file.pdf"),
+            FileUrl(rel="dweb", url="dat://a954329dlk/thingie"),
+            FileUrl(rel="webarchive", url="https://web.archive.org/web/20001122030405/http://example.com"),
+            FileUrl(rel="web", url="https://archive.org/details/blah/file.pdf"),
         ],
         extra={
             "shadows": {},

@@ -12,7 +12,7 @@ from fixtures import *
 def test_webcapture(api):
 
     eg = quick_eg(api)
-    r1 = ReleaseEntity(title="test webcapture release", ext_ids=ReleaseEntityExtIds())
+    r1 = ReleaseEntity(title="test webcapture release", ext_ids=ReleaseExtIds())
     r1edit = api.create_release(r1, editgroup_id=eg.editgroup_id)
 
     wc1 = WebcaptureEntity(
@@ -20,7 +20,7 @@ def test_webcapture(api):
         #timestamp = "2012-01-02T03:04:05Z",
         timestamp = datetime.datetime.now(datetime.timezone.utc),
         cdx = [
-            WebcaptureEntityCdx(
+            WebcaptureCdxLine(
                 surt="site,example,)/data/thing.tar.gz",
                 #timestamp="2012-01-02T03:04:05Z",
                 timestamp=datetime.datetime.now(datetime.timezone.utc),
@@ -31,7 +31,7 @@ def test_webcapture(api):
                 sha1="455face3598611458efe1f072e58624790a67266",
                 sha256="c7b49f3e84cd1b7cb0b0e3e9f632b7be7e21b4dc229df23331f880a8a7dfa75a",
             ),
-            WebcaptureEntityCdx(
+            WebcaptureCdxLine(
                 surt="site,example,)/README.md",
                 #timestamp="2012-01-02T03:04:05Z",
                 timestamp=datetime.datetime.now(datetime.timezone.utc),
@@ -44,7 +44,7 @@ def test_webcapture(api):
             ),
         ],
         archive_urls = [
-            FileEntityUrls(rel="wayback", url="https://web.archive.org/web/"),
+            FileUrl(rel="wayback", url="https://web.archive.org/web/"),
         ],
         release_ids = [r1edit.ident],
     )
@@ -104,7 +104,7 @@ def test_bad_webcapture(api):
     good = WebcaptureEntity(
         original_url="http://example.site/123.jpg",
         timestamp="2012-01-02T03:04:05Z",
-        cdx=[WebcaptureEntityCdx(
+        cdx=[WebcaptureCdxLine(
             surt="site,example,)/123.jpg",
             url="http://example.site/123.jpg",
             sha1="455face3598611458efe1f072e58624790a67266",
@@ -117,7 +117,7 @@ def test_bad_webcapture(api):
         WebcaptureEntity(
             original_url="http://example.site/123.jpg",
             timestamp="2012-01-02T03:04:05Z",
-            cdx=[WebcaptureEntityCdx(
+            cdx=[WebcaptureCdxLine(
                 surt="site,example,)/123.jpg",
                 url="http://example.site/123.jpg",
                 sha1="455face3598611458efe1f072e58624790a67266",
@@ -127,7 +127,7 @@ def test_bad_webcapture(api):
         WebcaptureEntity(
             original_url="http://example.site/123.jpg",
             timestamp="2012-01-02T03:04:05Z",
-            cdx=[WebcaptureEntityCdx(
+            cdx=[WebcaptureCdxLine(
                 surt="site,example,)/123.jpg",
                 url="http://example.site/123.jpg",
                 sha1="455face3598611458efe1f072e58624790a67266",
@@ -136,7 +136,7 @@ def test_bad_webcapture(api):
         WebcaptureEntity(
             original_url="http://example.site/123.jpg",
             timestamp="2012-01-02T03:04:05Z",
-            cdx=[WebcaptureEntityCdx(
+            cdx=[WebcaptureCdxLine(
                 surt="site,example,)/123.jpg",
                 url="http://example.site/123.jpg",
                 sha1="455face3598611458efe1f072e58624790a67266",
@@ -154,7 +154,7 @@ def test_bad_webcapture(api):
         WebcaptureEntity(
             original_url="http://example.site/123.jpg",
             timestamp="2012-01-02T03:04:05Z",
-            cdx=[WebcaptureEntityCdx(
+            cdx=[WebcaptureCdxLine(
                 #url="http://example.site/123.jpg",
                 surt="site,example,)/123.jpg",
                 sha1="455face3598611458efe1f072e58624790a67266",
@@ -166,7 +166,7 @@ def test_bad_webcapture(api):
         WebcaptureEntity(
             original_url="http://example.site/123.jpg",
             timestamp="2012-01-02T03:04:05Z",
-            cdx=[WebcaptureEntityCdx(
+            cdx=[WebcaptureCdxLine(
                 url="http://example.site/123.jpg",
                 surt="site,example,)/123.jpg",
                 sha1="455face3598611458efe1f072e58624790a67266",

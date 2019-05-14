@@ -88,7 +88,7 @@ class MatchedImporter(EntityImporter):
             url = make_rel_url(original, default_link_rel=self.default_link_rel)
             if url != None:
                 urls.add(url)
-        urls = [fatcat_client.FileEntityUrls(rel=rel, url=url) for (rel, url) in urls]
+        urls = [fatcat_client.FileUrl(rel=rel, url=url) for (rel, url) in urls]
         if len(urls) == 0:
             self.counts['skip-no-urls'] += 1
             return None
@@ -131,7 +131,7 @@ class MatchedImporter(EntityImporter):
 
         # merge the existing into this one and update
         existing.urls = list(set([(u.rel, u.url) for u in fe.urls + existing.urls]))
-        existing.urls = [fatcat_client.FileEntityUrls(rel=rel, url=url) for (rel, url) in existing.urls]
+        existing.urls = [fatcat_client.FileUrl(rel=rel, url=url) for (rel, url) in existing.urls]
         if len(existing.urls) > SANE_MAX_URLS:
             self.counts['skip-update-too-many-url'] += 1
             return None

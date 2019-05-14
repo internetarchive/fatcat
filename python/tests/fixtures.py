@@ -48,7 +48,7 @@ def api_dummy_entities(api):
 
     c1 = CreatorEntity(display_name="test creator deletion")
     j1 = ContainerEntity(name="test journal deletion")
-    r1 = ReleaseEntity(title="test release creator deletion", ext_ids=ReleaseEntityExtIds())
+    r1 = ReleaseEntity(title="test release creator deletion", ext_ids=ReleaseExtIds())
     f1 = FileEntity()
     fs1 = FilesetEntity()
     wc1 = WebcaptureEntity(
