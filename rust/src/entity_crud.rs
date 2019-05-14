@@ -1048,11 +1048,11 @@ impl EntityCrud for FileEntity {
             None => (None, None, None),
         };
 
-        let urls: Vec<FileEntityUrls> = file_rev_url::table
+        let urls: Vec<FileUrl> = file_rev_url::table
             .filter(file_rev_url::file_rev.eq(rev_row.id))
             .get_results(conn)?
             .into_iter()
-            .map(|r: FileRevUrlRow| FileEntityUrls {
+            .map(|r: FileRevUrlRow| FileUrl {
                 rel: r.rel,
                 url: r.url,
             })
@@ -1221,11 +1221,11 @@ impl EntityCrud for FilesetEntity {
             None => (None, None, None),
         };
 
-        let manifest: Vec<FilesetEntityManifest> = fileset_rev_file::table
+        let manifest: Vec<FilesetFile> = fileset_rev_file::table
             .filter(fileset_rev_file::fileset_rev.eq(rev_row.id))
             .get_results(conn)?
             .into_iter()
-            .map(|r: FilesetRevFileRow| FilesetEntityManifest {
+            .map(|r: FilesetRevFileRow| FilesetFile {
                 path: r.path_name,
                 size: r.size_bytes,
                 md5: r.md5,
@@ -1235,11 +1235,11 @@ impl EntityCrud for FilesetEntity {
             })
             .collect();
 
-        let urls: Vec<FileEntityUrls> = fileset_rev_url::table
+        let urls: Vec<FilesetUrl> = fileset_rev_url::table
             .filter(fileset_rev_url::fileset_rev.eq(rev_row.id))
             .get_results(conn)?
             .into_iter()
-            .map(|r: FilesetRevUrlRow| FileEntityUrls {
+            .map(|r: FilesetRevUrlRow| FilesetUrl {
                 rel: r.rel,
                 url: r.url,
             })
@@ -1431,11 +1431,11 @@ impl EntityCrud for WebcaptureEntity {
             None => (None, None, None),
         };
 
-        let cdx: Vec<WebcaptureEntityCdx> = webcapture_rev_cdx::table
+        let cdx: Vec<WebcaptureCdxLine> = webcapture_rev_cdx::table
             .filter(webcapture_rev_cdx::webcapture_rev.eq(rev_row.id))
             .get_results(conn)?
             .into_iter()
-            .map(|c: WebcaptureRevCdxRow| WebcaptureEntityCdx {
+            .map(|c: WebcaptureRevCdxRow| WebcaptureCdxLine {
                 surt: c.surt,
                 timestamp: c.timestamp,
                 url: c.url,
@@ -1447,11 +1447,11 @@ impl EntityCrud for WebcaptureEntity {
             })
             .collect();
 
-        let archive_urls: Vec<WebcaptureEntityArchiveUrls> = webcapture_rev_url::table
+        let archive_urls: Vec<WebcaptureUrl> = webcapture_rev_url::table
             .filter(webcapture_rev_url::webcapture_rev.eq(rev_row.id))
             .get_results(conn)?
             .into_iter()
-            .map(|r: WebcaptureRevUrlRow| WebcaptureEntityArchiveUrls {
+            .map(|r: WebcaptureRevUrlRow| WebcaptureUrl {
                 rel: r.rel,
                 url: r.url,
             })
@@ -1641,7 +1641,7 @@ impl EntityCrud for ReleaseEntity {
             language: None,
             license_slug: None,
             work_id: None,
-            ext_ids: ReleaseEntityExtIds {
+            ext_ids: ReleaseExtIds {
                 doi: None,
                 pmid: None,
                 pmcid: None,
@@ -1897,7 +1897,7 @@ impl EntityCrud for ReleaseEntity {
             ),
         };
 
-        let abstracts: Option<Vec<ReleaseEntityAbstracts>> = if hide.abstracts {
+        let abstracts: Option<Vec<ReleaseAbstract>> = if hide.abstracts {
             None
         } else {
             Some(
@@ -1906,19 +1906,17 @@ impl EntityCrud for ReleaseEntity {
                     .filter(release_rev_abstract::release_rev.eq(rev_row.id))
                     .get_results(conn)?
                     .into_iter()
-                    .map(
-                        |r: (ReleaseRevAbstractRow, AbstractsRow)| ReleaseEntityAbstracts {
-                            sha1: Some(r.0.abstract_sha1),
-                            mimetype: r.0.mimetype,
-                            lang: r.0.lang,
-                            content: Some(r.1.content),
-                        },
-                    )
+                    .map(|r: (ReleaseRevAbstractRow, AbstractsRow)| ReleaseAbstract {
+                        sha1: Some(r.0.abstract_sha1),
+                        mimetype: r.0.mimetype,
+                        lang: r.0.lang,
+                        content: Some(r.1.content),
+                    })
                     .collect(),
             )
         };
 
-        let mut ext_ids = ReleaseEntityExtIds {
+        let mut ext_ids = ReleaseExtIds {
             doi: rev_row.doi,
             pmid: rev_row.pmid,
             pmcid: rev_row.pmcid,

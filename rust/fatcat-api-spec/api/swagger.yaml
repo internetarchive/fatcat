@@ -7561,7 +7561,7 @@ definitions:
       urls:
         type: "array"
         items:
-          $ref: "#/definitions/file_entity_urls"
+          $ref: "#/definitions/file_url"
       sha256:
         type: "string"
         example: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
@@ -7637,6 +7637,23 @@ definitions:
       edit_extra: "{}"
       md5: "1b39813549077b2347c0f370c3864b40"
     upperCaseName: "FILE_ENTITY"
+  file_url:
+    type: "object"
+    required:
+    - "rel"
+    - "url"
+    properties:
+      url:
+        type: "string"
+        format: "url"
+        example: "https://example.edu/~frau/prcding.pdf"
+      rel:
+        type: "string"
+        example: "webarchive"
+    example:
+      rel: "webarchive"
+      url: "https://example.edu/~frau/prcding.pdf"
+    upperCaseName: "FILE_URL"
   fileset_entity:
     type: "object"
     properties:
@@ -7652,11 +7669,11 @@ definitions:
       urls:
         type: "array"
         items:
-          $ref: "#/definitions/file_entity_urls"
+          $ref: "#/definitions/fileset_url"
       manifest:
         type: "array"
         items:
-          $ref: "#/definitions/fileset_entity_manifest"
+          $ref: "#/definitions/fileset_file"
       state:
         type: "string"
         enum:
@@ -7718,6 +7735,64 @@ definitions:
       edit_extra: "{}"
       revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
     upperCaseName: "FILESET_ENTITY"
+  fileset_url:
+    type: "object"
+    required:
+    - "rel"
+    - "url"
+    properties:
+      url:
+        type: "string"
+        format: "url"
+        example: "https://example.edu/~frau/prcding.pdf"
+      rel:
+        type: "string"
+        example: "webarchive"
+    example:
+      rel: "webarchive"
+      url: "https://example.edu/~frau/prcding.pdf"
+    upperCaseName: "FILESET_URL"
+  fileset_file:
+    type: "object"
+    required:
+    - "path"
+    - "size"
+    properties:
+      path:
+        type: "string"
+        example: "img/cat.png"
+      size:
+        type: "integer"
+        format: "int64"
+        example: 1048576
+      md5:
+        type: "string"
+        example: "1b39813549077b2347c0f370c3864b40"
+        minLength: 32
+        maxLength: 32
+        pattern: "[a-f0-9]{32}"
+      sha1:
+        type: "string"
+        example: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
+        minLength: 40
+        maxLength: 40
+        pattern: "[a-f0-9]{40}"
+      sha256:
+        type: "string"
+        example: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
+        minLength: 64
+        maxLength: 64
+        pattern: "[a-f0-9]{64}"
+      extra:
+        type: "object"
+    example:
+      sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
+      path: "img/cat.png"
+      size: 1048576
+      sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
+      extra: "{}"
+      md5: "1b39813549077b2347c0f370c3864b40"
+    upperCaseName: "FILESET_FILE"
   webcapture_entity:
     type: "object"
     properties:
@@ -7743,11 +7818,11 @@ definitions:
       archive_urls:
         type: "array"
         items:
-          $ref: "#/definitions/webcapture_entity_archive_urls"
+          $ref: "#/definitions/webcapture_url"
       cdx:
         type: "array"
         items:
-          $ref: "#/definitions/webcapture_entity_cdx"
+          $ref: "#/definitions/webcapture_cdx_line"
       edit_extra:
         type: "object"
       extra:
@@ -7815,6 +7890,75 @@ definitions:
       timestamp: "2000-01-23T04:56:07.000+00:00"
       revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
     upperCaseName: "WEBCAPTURE_ENTITY"
+  webcapture_cdx_line:
+    type: "object"
+    required:
+    - "sha1"
+    - "surt"
+    - "timestamp"
+    - "url"
+    properties:
+      surt:
+        type: "string"
+        example: "org,asheesh)/apus/ch1/node15.html"
+      timestamp:
+        type: "string"
+        format: "date-time"
+        example: "2016-09-19T17:20:24Z"
+        description: "UTC, 'Z'-terminated, second (or better) precision"
+      url:
+        type: "string"
+        example: "http://www.asheesh.org:80/APUS/ch1/node15.html"
+      mimetype:
+        type: "string"
+        example: "text/html"
+      status_code:
+        type: "integer"
+        format: "int64"
+        example: 200
+      size:
+        type: "integer"
+        format: "int64"
+        example: 1048576
+      sha1:
+        type: "string"
+        example: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
+        minLength: 40
+        maxLength: 40
+        pattern: "[a-f0-9]{40}"
+      sha256:
+        type: "string"
+        example: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
+        minLength: 64
+        maxLength: 64
+        pattern: "[a-f0-9]{64}"
+    example:
+      sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
+      surt: "org,asheesh)/apus/ch1/node15.html"
+      status_code: 200
+      size: 1048576
+      sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
+      mimetype: "text/html"
+      url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
+      timestamp: "2016-09-19T17:20:24Z"
+    upperCaseName: "WEBCAPTURE_CDX_LINE"
+  webcapture_url:
+    type: "object"
+    required:
+    - "rel"
+    - "url"
+    properties:
+      url:
+        type: "string"
+        format: "url"
+        example: "https://web.archive.org/web/"
+      rel:
+        type: "string"
+        example: "wayback"
+    example:
+      rel: "wayback"
+      url: "https://web.archive.org/web/"
+    upperCaseName: "WEBCAPTURE_URL"
   release_entity:
     type: "object"
     required:
@@ -7823,7 +7967,7 @@ definitions:
       abstracts:
         type: "array"
         items:
-          $ref: "#/definitions/release_entity_abstracts"
+          $ref: "#/definitions/release_abstract"
       refs:
         type: "array"
         items:
@@ -7852,7 +7996,7 @@ definitions:
       volume:
         type: "string"
       ext_ids:
-        $ref: "#/definitions/release_entity_ext_ids"
+        $ref: "#/definitions/release_ext_ids"
       withdrawn_year:
         type: "integer"
         format: "int64"
@@ -8222,6 +8366,66 @@ definitions:
         revision: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
       container_id: "q3nouwy3nnbsvo3h5klxsx4a7y"
     upperCaseName: "RELEASE_ENTITY"
+  release_ext_ids:
+    type: "object"
+    properties:
+      doi:
+        type: "string"
+        example: "10.1234/abcde.789"
+      wikidata_qid:
+        type: "string"
+      isbn13:
+        type: "string"
+      pmid:
+        type: "string"
+      pmcid:
+        type: "string"
+      core:
+        type: "string"
+      arxiv:
+        type: "string"
+      jstor:
+        type: "string"
+      ark:
+        type: "string"
+      mag:
+        type: "string"
+    example:
+      core: "core"
+      mag: "mag"
+      jstor: "jstor"
+      isbn13: "isbn13"
+      arxiv: "arxiv"
+      wikidata_qid: "wikidata_qid"
+      ark: "ark"
+      pmid: "pmid"
+      pmcid: "pmcid"
+      doi: "10.1234/abcde.789"
+    upperCaseName: "RELEASE_EXT_IDS"
+  release_abstract:
+    type: "object"
+    properties:
+      sha1:
+        type: "string"
+        example: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
+        minLength: 40
+        maxLength: 40
+        pattern: "[a-f0-9]{40}"
+      content:
+        type: "string"
+        example: "<jats:p>Some abstract thing goes here</jats:p>"
+      mimetype:
+        type: "string"
+        example: "application/xml+jats"
+      lang:
+        type: "string"
+        example: "en"
+    example:
+      sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
+      mimetype: "application/xml+jats"
+      lang: "en"
+      content: "<jats:p>Some abstract thing goes here</jats:p>"
+    upperCaseName: "RELEASE_ABSTRACT"
   work_entity:
     type: "object"
     properties:
@@ -9187,187 +9391,6 @@ definitions:
         username: "zerocool93"
       token: "token"
     upperCaseName: "AUTH_OIDC_RESULT"
-  file_entity_urls:
-    required:
-    - "rel"
-    - "url"
-    properties:
-      url:
-        type: "string"
-        format: "url"
-        example: "https://example.edu/~frau/prcding.pdf"
-      rel:
-        type: "string"
-        example: "webarchive"
-    example:
-      rel: "webarchive"
-      url: "https://example.edu/~frau/prcding.pdf"
-    upperCaseName: "FILE_ENTITY_URLS"
-  fileset_entity_manifest:
-    required:
-    - "path"
-    - "size"
-    properties:
-      path:
-        type: "string"
-        example: "img/cat.png"
-      size:
-        type: "integer"
-        format: "int64"
-        example: 1048576
-      md5:
-        type: "string"
-        example: "1b39813549077b2347c0f370c3864b40"
-        minLength: 32
-        maxLength: 32
-        pattern: "[a-f0-9]{32}"
-      sha1:
-        type: "string"
-        example: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
-        minLength: 40
-        maxLength: 40
-        pattern: "[a-f0-9]{40}"
-      sha256:
-        type: "string"
-        example: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
-        minLength: 64
-        maxLength: 64
-        pattern: "[a-f0-9]{64}"
-      extra:
-        type: "object"
-    example:
-      sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
-      path: "img/cat.png"
-      size: 1048576
-      sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
-      extra: "{}"
-      md5: "1b39813549077b2347c0f370c3864b40"
-    upperCaseName: "FILESET_ENTITY_MANIFEST"
-  webcapture_entity_archive_urls:
-    required:
-    - "rel"
-    - "url"
-    properties:
-      url:
-        type: "string"
-        format: "url"
-        example: "https://web.archive.org/web/"
-      rel:
-        type: "string"
-        example: "wayback"
-    example:
-      rel: "wayback"
-      url: "https://web.archive.org/web/"
-    upperCaseName: "WEBCAPTURE_ENTITY_ARCHIVE_URLS"
-  webcapture_entity_cdx:
-    required:
-    - "sha1"
-    - "surt"
-    - "timestamp"
-    - "url"
-    properties:
-      surt:
-        type: "string"
-        example: "org,asheesh)/apus/ch1/node15.html"
-      timestamp:
-        type: "string"
-        format: "date-time"
-        example: "2016-09-19T17:20:24Z"
-        description: "UTC, 'Z'-terminated, second (or better) precision"
-      url:
-        type: "string"
-        example: "http://www.asheesh.org:80/APUS/ch1/node15.html"
-      mimetype:
-        type: "string"
-        example: "text/html"
-      status_code:
-        type: "integer"
-        format: "int64"
-        example: 200
-      size:
-        type: "integer"
-        format: "int64"
-        example: 1048576
-      sha1:
-        type: "string"
-        example: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
-        minLength: 40
-        maxLength: 40
-        pattern: "[a-f0-9]{40}"
-      sha256:
-        type: "string"
-        example: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
-        minLength: 64
-        maxLength: 64
-        pattern: "[a-f0-9]{64}"
-    example:
-      sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
-      surt: "org,asheesh)/apus/ch1/node15.html"
-      status_code: 200
-      size: 1048576
-      sha256: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
-      mimetype: "text/html"
-      url: "http://www.asheesh.org:80/APUS/ch1/node15.html"
-      timestamp: "2016-09-19T17:20:24Z"
-    upperCaseName: "WEBCAPTURE_ENTITY_CDX"
-  release_entity_abstracts:
-    properties:
-      sha1:
-        type: "string"
-        example: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
-        minLength: 40
-        maxLength: 40
-        pattern: "[a-f0-9]{40}"
-      content:
-        type: "string"
-        example: "<jats:p>Some abstract thing goes here</jats:p>"
-      mimetype:
-        type: "string"
-        example: "application/xml+jats"
-      lang:
-        type: "string"
-        example: "en"
-    example:
-      sha1: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
-      mimetype: "application/xml+jats"
-      lang: "en"
-      content: "<jats:p>Some abstract thing goes here</jats:p>"
-    upperCaseName: "RELEASE_ENTITY_ABSTRACTS"
-  release_entity_ext_ids:
-    properties:
-      doi:
-        type: "string"
-        example: "10.1234/abcde.789"
-      wikidata_qid:
-        type: "string"
-      isbn13:
-        type: "string"
-      pmid:
-        type: "string"
-      pmcid:
-        type: "string"
-      core:
-        type: "string"
-      arxiv:
-        type: "string"
-      jstor:
-        type: "string"
-      ark:
-        type: "string"
-      mag:
-        type: "string"
-    example:
-      core: "core"
-      mag: "mag"
-      jstor: "jstor"
-      isbn13: "isbn13"
-      arxiv: "arxiv"
-      wikidata_qid: "wikidata_qid"
-      ark: "ark"
-      pmid: "pmid"
-      pmcid: "pmcid"
-      doi: "10.1234/abcde.789"
-    upperCaseName: "RELEASE_ENTITY_EXT_IDS"
   editgroup_edits:
     properties:
       containers:

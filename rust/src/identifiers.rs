@@ -275,7 +275,8 @@ fn test_check_doi() {
 
 pub fn check_arxiv_id(raw: &str) -> Result<()> {
     lazy_static! {
-        static ref RE: Regex = Regex::new(r"^(\d{4}.\d{4,5}|[a-z\-]+(\.[A-Z]{2})?/\d{7})v\d+$").unwrap();
+        static ref RE: Regex =
+            Regex::new(r"^(\d{4}.\d{4,5}|[a-z\-]+(\.[A-Z]{2})?/\d{7})v\d+$").unwrap();
     }
     if raw.is_ascii() && RE.is_match(raw) {
         Ok(())

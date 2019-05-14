@@ -507,7 +507,7 @@ pub struct FileEntity {
 
     #[serde(rename = "urls")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub urls: Option<Vec<models::FileEntityUrls>>,
+    pub urls: Option<Vec<models::FileUrl>>,
 
     #[serde(rename = "sha256")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -575,7 +575,7 @@ impl FileEntity {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct FileEntityUrls {
+pub struct FileUrl {
     #[serde(rename = "url")]
     pub url: String,
 
@@ -583,9 +583,9 @@ pub struct FileEntityUrls {
     pub rel: String,
 }
 
-impl FileEntityUrls {
-    pub fn new(url: String, rel: String) -> FileEntityUrls {
-        FileEntityUrls { url: url, rel: rel }
+impl FileUrl {
+    pub fn new(url: String, rel: String) -> FileUrl {
+        FileUrl { url: url, rel: rel }
     }
 }
 
@@ -597,11 +597,11 @@ pub struct FilesetEntity {
 
     #[serde(rename = "urls")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub urls: Option<Vec<models::FileEntityUrls>>,
+    pub urls: Option<Vec<models::FilesetUrl>>,
 
     #[serde(rename = "manifest")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub manifest: Option<Vec<models::FilesetEntityManifest>>,
+    pub manifest: Option<Vec<models::FilesetFile>>,
 
     // Note: inline enums are not fully supported by swagger-codegen
     #[serde(rename = "state")]
@@ -649,7 +649,7 @@ impl FilesetEntity {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct FilesetEntityManifest {
+pub struct FilesetFile {
     #[serde(rename = "path")]
     pub path: String,
 
@@ -673,15 +673,60 @@ pub struct FilesetEntityManifest {
     pub extra: Option<serde_json::Value>,
 }
 
-impl FilesetEntityManifest {
-    pub fn new(path: String, size: i64) -> FilesetEntityManifest {
-        FilesetEntityManifest {
+impl FilesetFile {
+    pub fn new(path: String, size: i64) -> FilesetFile {
+        FilesetFile {
             path: path,
             size: size,
             md5: None,
             sha1: None,
             sha256: None,
             extra: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct FilesetUrl {
+    #[serde(rename = "url")]
+    pub url: String,
+
+    #[serde(rename = "rel")]
+    pub rel: String,
+}
+
+impl FilesetUrl {
+    pub fn new(url: String, rel: String) -> FilesetUrl {
+        FilesetUrl { url: url, rel: rel }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ReleaseAbstract {
+    #[serde(rename = "sha1")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sha1: Option<String>,
+
+    #[serde(rename = "content")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub content: Option<String>,
+
+    #[serde(rename = "mimetype")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub mimetype: Option<String>,
+
+    #[serde(rename = "lang")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub lang: Option<String>,
+}
+
+impl ReleaseAbstract {
+    pub fn new() -> ReleaseAbstract {
+        ReleaseAbstract {
+            sha1: None,
+            content: None,
+            mimetype: None,
+            lang: None,
         }
     }
 }
@@ -748,7 +793,7 @@ impl ReleaseContrib {
 pub struct ReleaseEntity {
     #[serde(rename = "abstracts")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub abstracts: Option<Vec<models::ReleaseEntityAbstracts>>,
+    pub abstracts: Option<Vec<models::ReleaseAbstract>>,
 
     #[serde(rename = "refs")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -793,7 +838,7 @@ pub struct ReleaseEntity {
     pub volume: Option<String>,
 
     #[serde(rename = "ext_ids")]
-    pub ext_ids: models::ReleaseEntityExtIds,
+    pub ext_ids: models::ReleaseExtIds,
 
     #[serde(rename = "withdrawn_year")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -896,7 +941,7 @@ pub struct ReleaseEntity {
 }
 
 impl ReleaseEntity {
-    pub fn new(ext_ids: models::ReleaseEntityExtIds) -> ReleaseEntity {
+    pub fn new(ext_ids: models::ReleaseExtIds) -> ReleaseEntity {
         ReleaseEntity {
             abstracts: None,
             refs: None,
@@ -937,37 +982,7 @@ impl ReleaseEntity {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct ReleaseEntityAbstracts {
-    #[serde(rename = "sha1")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub sha1: Option<String>,
-
-    #[serde(rename = "content")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub content: Option<String>,
-
-    #[serde(rename = "mimetype")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub mimetype: Option<String>,
-
-    #[serde(rename = "lang")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub lang: Option<String>,
-}
-
-impl ReleaseEntityAbstracts {
-    pub fn new() -> ReleaseEntityAbstracts {
-        ReleaseEntityAbstracts {
-            sha1: None,
-            content: None,
-            mimetype: None,
-            lang: None,
-        }
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct ReleaseEntityExtIds {
+pub struct ReleaseExtIds {
     #[serde(rename = "doi")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub doi: Option<String>,
@@ -1009,9 +1024,9 @@ pub struct ReleaseEntityExtIds {
     pub mag: Option<String>,
 }
 
-impl ReleaseEntityExtIds {
-    pub fn new() -> ReleaseEntityExtIds {
-        ReleaseEntityExtIds {
+impl ReleaseExtIds {
+    pub fn new() -> ReleaseExtIds {
+        ReleaseExtIds {
             doi: None,
             wikidata_qid: None,
             isbn13: None,
@@ -1093,6 +1108,53 @@ impl Success {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct WebcaptureCdxLine {
+    #[serde(rename = "surt")]
+    pub surt: String,
+
+    /// UTC, 'Z'-terminated, second (or better) precision
+    #[serde(rename = "timestamp")]
+    pub timestamp: chrono::DateTime<chrono::Utc>,
+
+    #[serde(rename = "url")]
+    pub url: String,
+
+    #[serde(rename = "mimetype")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub mimetype: Option<String>,
+
+    #[serde(rename = "status_code")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub status_code: Option<i64>,
+
+    #[serde(rename = "size")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub size: Option<i64>,
+
+    #[serde(rename = "sha1")]
+    pub sha1: String,
+
+    #[serde(rename = "sha256")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub sha256: Option<String>,
+}
+
+impl WebcaptureCdxLine {
+    pub fn new(surt: String, timestamp: chrono::DateTime<chrono::Utc>, url: String, sha1: String) -> WebcaptureCdxLine {
+        WebcaptureCdxLine {
+            surt: surt,
+            timestamp: timestamp,
+            url: url,
+            mimetype: None,
+            status_code: None,
+            size: None,
+            sha1: sha1,
+            sha256: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct WebcaptureEntity {
     #[serde(rename = "release_ids")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -1109,11 +1171,11 @@ pub struct WebcaptureEntity {
 
     #[serde(rename = "archive_urls")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub archive_urls: Option<Vec<models::WebcaptureEntityArchiveUrls>>,
+    pub archive_urls: Option<Vec<models::WebcaptureUrl>>,
 
     #[serde(rename = "cdx")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub cdx: Option<Vec<models::WebcaptureEntityCdx>>,
+    pub cdx: Option<Vec<models::WebcaptureCdxLine>>,
 
     #[serde(rename = "edit_extra")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -1163,7 +1225,7 @@ impl WebcaptureEntity {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct WebcaptureEntityArchiveUrls {
+pub struct WebcaptureUrl {
     #[serde(rename = "url")]
     pub url: String,
 
@@ -1171,56 +1233,9 @@ pub struct WebcaptureEntityArchiveUrls {
     pub rel: String,
 }
 
-impl WebcaptureEntityArchiveUrls {
-    pub fn new(url: String, rel: String) -> WebcaptureEntityArchiveUrls {
-        WebcaptureEntityArchiveUrls { url: url, rel: rel }
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct WebcaptureEntityCdx {
-    #[serde(rename = "surt")]
-    pub surt: String,
-
-    /// UTC, 'Z'-terminated, second (or better) precision
-    #[serde(rename = "timestamp")]
-    pub timestamp: chrono::DateTime<chrono::Utc>,
-
-    #[serde(rename = "url")]
-    pub url: String,
-
-    #[serde(rename = "mimetype")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub mimetype: Option<String>,
-
-    #[serde(rename = "status_code")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub status_code: Option<i64>,
-
-    #[serde(rename = "size")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub size: Option<i64>,
-
-    #[serde(rename = "sha1")]
-    pub sha1: String,
-
-    #[serde(rename = "sha256")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub sha256: Option<String>,
-}
-
-impl WebcaptureEntityCdx {
-    pub fn new(surt: String, timestamp: chrono::DateTime<chrono::Utc>, url: String, sha1: String) -> WebcaptureEntityCdx {
-        WebcaptureEntityCdx {
-            surt: surt,
-            timestamp: timestamp,
-            url: url,
-            mimetype: None,
-            status_code: None,
-            size: None,
-            sha1: sha1,
-            sha256: None,
-        }
+impl WebcaptureUrl {
+    pub fn new(url: String, rel: String) -> WebcaptureUrl {
+        WebcaptureUrl { url: url, rel: rel }
     }
 }
 
