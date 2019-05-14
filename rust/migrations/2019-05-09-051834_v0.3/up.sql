@@ -72,9 +72,26 @@ CREATE INDEX IF NOT EXISTS work_edit_ident_idx ON work_edit(ident_id);
 
 -- IMPORTANT: don't create new entities here, only mutate existing
 
+BEGIN;
+
+UPDATE release_rev SET
+    subtitle = 'and here a reasonable-length subtitle',
+    withdrawn_status = 'withdrawn',
+    withdrawn_date = '2018-06-07',
+    withdrawn_year = '2018',
+    number = 'RN9594',
+    version = 'v12'
+WHERE id = '00000000-0000-0000-4444-FFF000000002';
+
 INSERT INTO release_rev_extid (release_rev, extid_type, value) VALUES
     ('00000000-0000-0000-4444-FFF000000002', 'isbn13',  '978-3-16-148410-0'),
     ('00000000-0000-0000-4444-FFF000000002', 'arxiv',   '1905.03769v1'),
     ('00000000-0000-0000-4444-FFF000000002', 'jstor',   '1819117828'),
-    ('00000000-0000-0000-4444-FFF000000002', 'ark',     'ark:/asdf/924'),
+    ('00000000-0000-0000-4444-FFF000000002', 'ark',     'ark:/13030/m53r5pzm'),
     ('00000000-0000-0000-4444-FFF000000002', 'mag',     '992489213');
+
+UPDATE release_contrib SET given_name = 'John', surname = 'Ioannidis' WHERE release_rev = '00000000-0000-0000-4444-FFF000000003';
+
+UPDATE webcapture_rev_cdx SET size_bytes = 12345 WHERE webcapture_rev = '00000000-0000-0000-7777-FFF000000003';
+
+commit;
