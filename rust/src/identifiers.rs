@@ -51,7 +51,7 @@ impl FatcatId {
 
 /// Convert fatcat IDs (base32 strings) to UUID
 pub fn fcid2uuid(fcid: &str) -> Result<Uuid> {
-    if fcid.len() != 26 {
+    if fcid.is_ascii() == false || fcid.len() != 26 {
         return Err(FatcatError::InvalidFatcatId(fcid.to_string()).into());
     }
     let mut raw = vec![0; 16];
@@ -72,7 +72,7 @@ pub fn check_username(raw: &str) -> Result<()> {
     lazy_static! {
         static ref RE: Regex = Regex::new(r"^[A-Za-z][A-Za-z0-9._-]{2,24}$").unwrap();
     }
-    if RE.is_match(raw) {
+    if raw.is_ascii() && RE.is_match(raw) {
         Ok(())
     } else {
         Err(FatcatError::MalformedExternalId(
@@ -96,6 +96,7 @@ fn test_check_username() {
     assert!(check_username("").is_err());
     assert!(check_username("_").is_err());
     assert!(check_username("gg").is_err());
+    assert!(check_username("bnewbßasdf").is_err());
     assert!(check_username("adminadminadminadminadminadminadmin").is_err());
     assert!(check_username("bryan newbold").is_err());
     assert!(check_username("01234567-3456-6780").is_err());
@@ -107,7 +108,7 @@ pub fn check_pmcid(raw: &str) -> Result<()> {
     lazy_static! {
         static ref RE: Regex = Regex::new(r"^PMC\d+$").unwrap();
     }
-    if RE.is_match(raw) {
+    if raw.is_ascii() && RE.is_match(raw) {
         Ok(())
     } else {
         Err(FatcatError::MalformedExternalId(
@@ -117,11 +118,19 @@ pub fn check_pmcid(raw: &str) -> Result<()> {
     }
 }
 
+#[test]
+fn test_check_pmcid() {
+    assert!(check_pmcid("PMC12345").is_ok());
+    assert!(check_pmcid("PMC12345 ").is_err());
+    assert!(check_pmcid("PMC").is_err());
+    assert!(check_pmcid("PMC1.2345").is_err());
+}
+
 pub fn check_pmid(raw: &str) -> Result<()> {
     lazy_static! {
         static ref RE: Regex = Regex::new(r"^\d+$").unwrap();
     }
-    if RE.is_match(raw) {
+    if raw.is_ascii() && RE.is_match(raw) {
         Ok(())
     } else {
         Err(FatcatError::MalformedExternalId(
@@ -131,11 +140,93 @@ pub fn check_pmid(raw: &str) -> Result<()> {
     }
 }
 
+#[test]
+fn test_check_pmid() {
+    assert!(check_pmid("1234").is_ok());
+    assert!(check_pmid("1234 ").is_err());
+    assert!(check_pmid("").is_err());
+    assert!(check_pmid("1.234").is_err());
+    assert!(check_pmid("-1234").is_err());
+    assert!(check_pmid(" 1234").is_err());
+}
+
+pub fn check_mag_id(raw: &str) -> Result<()> {
+    lazy_static! {
+        static ref RE: Regex = Regex::new(r"^\d+$").unwrap();
+    }
+    if raw.is_ascii() && RE.is_match(raw) {
+        Ok(())
+    } else {
+        Err(FatcatError::MalformedExternalId(
+            "Microsoft Academic Graph (mag) (expected, eg, '1234')".to_string(),
+            raw.to_string(),
+        ))?
+    }
+}
+
+#[test]
+fn test_check_mag_id() {
+    assert!(check_mag_id("1234").is_ok());
+    assert!(check_mag_id("1234 ").is_err());
+    assert!(check_mag_id("").is_err());
+    assert!(check_mag_id("1.234").is_err());
+    assert!(check_mag_id("-1234").is_err());
+    assert!(check_mag_id(" 1234").is_err());
+}
+
+pub fn check_jstor_id(raw: &str) -> Result<()> {
+    lazy_static! {
+        static ref RE: Regex = Regex::new(r"^\d+$").unwrap();
+    }
+    if raw.is_ascii() && RE.is_match(raw) {
+        Ok(())
+    } else {
+        Err(FatcatError::MalformedExternalId(
+            "JSTOR (jstor_id) (expected, eg, '1234')".to_string(),
+            raw.to_string(),
+        ))?
+    }
+}
+
+#[test]
+fn test_check_jstor_id() {
+    assert!(check_jstor_id("1234").is_ok());
+    assert!(check_jstor_id("1234 ").is_err());
+    assert!(check_jstor_id("").is_err());
+    assert!(check_jstor_id("1.234").is_err());
+    assert!(check_jstor_id("-1234").is_err());
+    assert!(check_jstor_id(" 1234").is_err());
+}
+
+pub fn check_core_id(raw: &str) -> Result<()> {
+    lazy_static! {
+        static ref RE: Regex = Regex::new(r"^\d+$").unwrap();
+    }
+    if raw.is_ascii() && RE.is_match(raw) {
+        Ok(())
+    } else {
+        Err(FatcatError::MalformedExternalId(
+            "CORE.ac.uk (core_id) (expected, eg, '1234')".to_string(),
+            raw.to_string(),
+        ))?
+    }
+}
+
+#[test]
+fn test_check_core_id() {
+    assert!(check_core_id("1234").is_ok());
+    assert!(check_core_id("1234 ").is_err());
+    assert!(check_core_id("").is_err());
+    assert!(check_core_id("1.234").is_err());
+    assert!(check_core_id("-1234").is_err());
+    assert!(check_core_id(" 1234").is_err());
+}
+
 pub fn check_wikidata_qid(raw: &str) -> Result<()> {
     lazy_static! {
         static ref RE: Regex = Regex::new(r"^Q\d+$").unwrap();
     }
-    if RE.is_match(raw) {
+    if raw.is_ascii() && RE.is_match(raw) {
         Ok(())
     } else {
         Err(FatcatError::MalformedExternalId(
@@ -144,12 +235,20 @@ pub fn check_wikidata_qid(raw: &str) -> Result<()> {
         ))?
     }
 }
+#[test]
+fn test_check_wikidata_qid() {
+    assert!(check_wikidata_qid("Q1234").is_ok());
+    assert!(check_wikidata_qid("Q1234 ").is_err());
+    assert!(check_wikidata_qid("Q").is_err());
+    assert!(check_wikidata_qid("Q1-234").is_err());
+    assert!(check_wikidata_qid("1234").is_err());
+}
 
 pub fn check_doi(raw: &str) -> Result<()> {
     lazy_static! {
-        static ref RE: Regex = Regex::new(r"^10.\d{3,6}/.+$").unwrap();
+        static ref RE: Regex = Regex::new(r"^10.\d{3,6}/\S+$").unwrap();
     }
-    if RE.is_match(raw) {
+    if raw.is_ascii() && RE.is_match(raw) {
         Ok(())
     } else {
         Err(FatcatError::MalformedExternalId(
@@ -159,11 +258,111 @@ pub fn check_doi(raw: &str) -> Result<()> {
     }
 }
 
+#[test]
+fn test_check_doi() {
+    assert!(check_doi("10.1234/aksjdfh").is_ok());
+    assert!(check_doi("10.1234/ak../2949_-d.(asdf)fh").is_ok());
+    assert!(check_doi("10.1234/ßs").is_err());
+    assert!(check_doi("10.1234/aksjdfh ").is_err());
+    assert!(check_doi("10.1234/ak sjdfh").is_err());
+    assert!(check_doi("10.1234/aks\tjdfh").is_err());
+    assert!(check_doi("10.1234/ ").is_err());
+    assert!(check_doi("10.2/aksjdfh").is_err());
+    assert!(check_doi("10.1234/\naksjdfh").is_err());
+    assert!(check_doi("10.1234").is_err());
+    assert!(check_doi("10.1234/").is_err());
+}
+
+pub fn check_arxiv_id(raw: &str) -> Result<()> {
+    lazy_static! {
+        static ref RE: Regex = Regex::new(r"^(\d{4}.\d{4,5}|[a-z\-]+(\.[A-Z]{2})?/\d{7})v\d+$").unwrap();
+    }
+    if raw.is_ascii() && RE.is_match(raw) {
+        Ok(())
+    } else {
+        Err(FatcatError::MalformedExternalId(
+            "versioned arXiv identifier (expected, eg, '0806.2878v1')".to_string(),
+            raw.to_string(),
+        ))?
+    }
+}
+
+#[test]
+fn test_check_arxiv_id() {
+    assert!(check_arxiv_id("0806.2878v1").is_ok());
+    assert!(check_arxiv_id("1501.00001v1").is_ok());
+    assert!(check_arxiv_id("hep-th/9901001v1").is_ok());
+    assert!(check_arxiv_id("math.CA/0611800v2").is_ok());
+
+    assert!(check_arxiv_id("hep-TH/9901001v1").is_err());
+    assert!(check_arxiv_id("hßp-th/9901001v1").is_err());
+    assert!(check_arxiv_id("math.CA/06l1800v2").is_err());
+    assert!(check_arxiv_id("mßth.ca/0611800v2").is_err());
+    assert!(check_arxiv_id("MATH.CA/0611800v2").is_err());
+    assert!(check_arxiv_id("0806.2878v23").is_ok());
+    assert!(check_arxiv_id("0806.2878v").is_err());
+    assert!(check_arxiv_id("0806.2878").is_err());
+    assert!(check_arxiv_id("0806.2878v1 ").is_err());
+    assert!(check_arxiv_id("006.2878v1").is_err());
+    assert!(check_arxiv_id("0806.v1").is_err());
+    assert!(check_arxiv_id("08062878v1").is_err());
+}
+
+pub fn check_ark_id(raw: &str) -> Result<()> {
+    lazy_static! {
+        static ref RE: Regex = Regex::new(r"^ark:/\d{5,9}/\S+$").unwrap();
+    }
+    if raw.is_ascii() && RE.is_match(raw) {
+        Ok(())
+    } else {
+        Err(FatcatError::MalformedExternalId(
+            "ARK identifier (expected, eg, 'ark:/13030/m53r5pzm')".to_string(),
+            raw.to_string(),
+        ))?
+    }
+}
+
+#[test]
+fn test_check_ark_id() {
+    assert!(check_ark_id("ark:/13030/m53r5pzm").is_ok());
+    assert!(check_ark_id("ark:/13030/m53r5pzm ").is_err());
+    assert!(check_ark_id("ark:/13030/m53r5ßzm").is_err());
+    assert!(check_ark_id("ARK:/13030/m53r5pzm").is_err());
+    assert!(check_ark_id("ark:/13030/m53r5pzm.bla-deedah").is_ok());
+    assert!(check_ark_id("/13030/m53r5pzm").is_err());
+    assert!(check_ark_id("ark:/blah/m53r5pzm").is_err());
+    assert!(check_ark_id("ark:/13030/").is_err());
+    assert!(check_ark_id("ark:/13030").is_err());
+}
+
+pub fn check_isbn13(raw: &str) -> Result<()> {
+    lazy_static! {
+        // via https://stackoverflow.com/a/4381556
+        static ref RE: Regex = Regex::new(r"^97(?:8|9)-\d{1,5}-\d{1,7}-\d{1,6}-\d$").unwrap();
+    }
+    if raw.len() == 17 && raw.is_ascii() && RE.is_match(raw) {
+        Ok(())
+    } else {
+        Err(FatcatError::MalformedExternalId(
+            "Canonical ISBN-13 (expected, eg, '978-1-56619-909-4')".to_string(),
+            raw.to_string(),
+        ))?
+    }
+}
+
+#[test]
+fn test_check_isbn13() {
+    assert!(check_isbn13("978-1-56619-909-4").is_ok());
+    assert!(check_isbn13("978-1-4028-9462-6").is_ok());
+    assert!(check_isbn13("978-1-56619-909-4 ").is_err());
+    assert!(check_isbn13("9781566199094").is_err());
+}
+
 pub fn check_issn(raw: &str) -> Result<()> {
     lazy_static! {
         static ref RE: Regex = Regex::new(r"^\d{4}-\d{3}[0-9X]$").unwrap();
     }
-    if RE.is_match(raw) {
+    if raw.is_ascii() && RE.is_match(raw) {
         Ok(())
     } else {
         Err(FatcatError::MalformedExternalId(
@@ -173,11 +372,21 @@ pub fn check_issn(raw: &str) -> Result<()> {
     }
 }
 
+#[test]
+fn test_check_issn() {
+    assert!(check_issn("1234-5678").is_ok());
+    assert!(check_issn("1234-567X").is_ok());
+    assert!(check_issn("1234-5678 ").is_err());
+    assert!(check_issn(" 1234-5678").is_err());
+    assert!(check_issn("12345678").is_err());
+    assert!(check_issn("0123-56789").is_err());
+}
+
 pub fn check_orcid(raw: &str) -> Result<()> {
     lazy_static! {
         static ref RE: Regex = Regex::new(r"^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$").unwrap();
     }
-    if RE.is_match(raw) {
+    if raw.is_ascii() && RE.is_match(raw) {
         Ok(())
     } else {
         Err(FatcatError::MalformedExternalId(
@@ -191,6 +400,7 @@ pub fn check_orcid(raw: &str) -> Result<()> {
 fn test_check_orcid() {
     assert!(check_orcid("0123-4567-3456-6789").is_ok());
     assert!(check_orcid("0123-4567-3456-678X").is_ok());
+    assert!(check_orcid("0123-4567-3456-6789 ").is_err());
     assert!(check_orcid("01234567-3456-6780").is_err());
     assert!(check_orcid("0x23-4567-3456-6780").is_err());
 }
@@ -199,7 +409,7 @@ pub fn check_md5(raw: &str) -> Result<()> {
     lazy_static! {
         static ref RE: Regex = Regex::new(r"^[a-f0-9]{32}$").unwrap();
     }
-    if RE.is_match(raw) {
+    if raw.is_ascii() && RE.is_match(raw) {
         Ok(())
     } else {
         Err(FatcatError::MalformedChecksum(
@@ -212,6 +422,7 @@ pub fn check_md5(raw: &str) -> Result<()> {
 #[test]
 fn test_check_md5() {
     assert!(check_md5("1b39813549077b2347c0f370c3864b40").is_ok());
+    assert!(check_md5("1b39813549077b2347c0f370c3864b40 ").is_err());
     assert!(check_md5("1g39813549077b2347c0f370c3864b40").is_err());
     assert!(check_md5("1B39813549077B2347C0F370c3864b40").is_err());
     assert!(check_md5("1b39813549077b2347c0f370c3864b4").is_err());
@@ -222,7 +433,7 @@ pub fn check_sha1(raw: &str) -> Result<()> {
     lazy_static! {
         static ref RE: Regex = Regex::new(r"^[a-f0-9]{40}$").unwrap();
     }
-    if RE.is_match(raw) {
+    if raw.is_ascii() && RE.is_match(raw) {
         Ok(())
     } else {
         Err(FatcatError::MalformedChecksum(
@@ -235,6 +446,7 @@ pub fn check_sha1(raw: &str) -> Result<()> {
 #[test]
 fn test_check_sha1() {
     assert!(check_sha1("e9dd75237c94b209dc3ccd52722de6931a310ba3").is_ok());
+    assert!(check_sha1("e9dd75237c94b209dc3ccd52722de6931a310ba3 ").is_err());
     assert!(check_sha1("g9dd75237c94b209dc3ccd52722de6931a310ba3").is_err());
     assert!(check_sha1("e9DD75237C94B209DC3CCD52722de6931a310ba3").is_err());
     assert!(check_sha1("e9dd75237c94b209dc3ccd52722de6931a310ba").is_err());
@@ -245,7 +457,7 @@ pub fn check_sha256(raw: &str) -> Result<()> {
     lazy_static! {
         static ref RE: Regex = Regex::new(r"^[a-f0-9]{64}$").unwrap();
     }
-    if RE.is_match(raw) {
+    if raw.is_ascii() && RE.is_match(raw) {
         Ok(())
     } else {
         Err(FatcatError::MalformedChecksum(
@@ -259,6 +471,9 @@ pub fn check_sha256(raw: &str) -> Result<()> {
 fn test_check_sha256() {
     assert!(
         check_sha256("cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452").is_ok()
+    );
+    assert!(
+        check_sha256("cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452 ").is_err()
     );
     assert!(
         check_sha256("gb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452").is_err()

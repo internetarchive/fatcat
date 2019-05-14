@@ -301,7 +301,7 @@ impl Server {
                     .first(conn)?
             }
             (None, None, Some(isbn13), None, None, None, None, None, None, None) => {
-                // TODO: check_isbn13(isbn13)?;
+                check_isbn13(isbn13)?;
                 let (rev, ident, _extid): (ReleaseRevRow, ReleaseIdentRow, ReleaseExtidRow) =
                     release_rev::table
                         .inner_join(release_ident::table)
@@ -332,7 +332,7 @@ impl Server {
                     .first(conn)?
             }
             (None, None, None, None, None, Some(core), None, None, None, None) => {
-                // TODO: check_core_id(core)?;
+                check_core_id(core)?;
                 release_ident::table
                     .inner_join(release_rev::table)
                     .filter(release_rev::core_id.eq(core))
@@ -341,7 +341,9 @@ impl Server {
                     .first(conn)?
             }
             (None, None, None, None, None, None, Some(arxiv), None, None, None) => {
-                // TODO: check_arxiv_id(arxiv_id)?;
+                // TODO: this allows only lookup by full, versioned arxiv identifier. Probably also
+                // want to allow lookup by "work" style identifier?
+                check_arxiv_id(arxiv)?;
                 let (rev, ident, _extid): (ReleaseRevRow, ReleaseIdentRow, ReleaseExtidRow) =
                     release_rev::table
                         .inner_join(release_ident::table)
@@ -354,7 +356,7 @@ impl Server {
                 (ident, rev)
             }
             (None, None, None, None, None, None, None, Some(jstor), None, None) => {
-                // TODO: check_jstor_id(jstor_id)?;
+                check_jstor_id(jstor)?;
                 let (rev, ident, _extid): (ReleaseRevRow, ReleaseIdentRow, ReleaseExtidRow) =
                     release_rev::table
                         .inner_join(release_ident::table)
@@ -367,7 +369,7 @@ impl Server {
                 (ident, rev)
             }
             (None, None, None, None, None, None, None, None, Some(ark), None) => {
-                // TODO: check_ark_id(ark_id)?;
+                check_ark_id(ark)?;
                 let (rev, ident, _extid): (ReleaseRevRow, ReleaseIdentRow, ReleaseExtidRow) =
                     release_rev::table
                         .inner_join(release_ident::table)
@@ -380,7 +382,7 @@ impl Server {
                 (ident, rev)
             }
             (None, None, None, None, None, None, None, None, None, Some(mag)) => {
-                // TODO: check_mag_id(mag_id)?;
+                check_mag_id(mag)?;
                 let (rev, ident, _extid): (ReleaseRevRow, ReleaseIdentRow, ReleaseExtidRow) =
                     release_rev::table
                         .inner_join(release_ident::table)

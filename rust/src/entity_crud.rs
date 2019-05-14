@@ -1988,6 +1988,7 @@ impl EntityCrud for ReleaseEntity {
     fn db_insert_revs(conn: &DbConn, models: &[&Self]) -> Result<Vec<Uuid>> {
         // first verify external identifier syntax
         for entity in models {
+            // TODO: yeah... helper function to call all these?
             if let Some(ref extid) = entity.ext_ids.doi {
                 check_doi(extid)?;
             }
@@ -2000,7 +2001,21 @@ impl EntityCrud for ReleaseEntity {
             if let Some(ref extid) = entity.ext_ids.wikidata_qid {
                 check_wikidata_qid(extid)?;
             }
-            // TODO: JSTOR and arxiv IDs
+            if let Some(ref extid) = entity.ext_ids.isbn13 {
+                check_isbn13(extid)?;
+            }
+            if let Some(ref extid) = entity.ext_ids.core {
+                check_core_id(extid)?;
+            }
+            if let Some(ref extid) = entity.ext_ids.jstor {
+                check_jstor_id(extid)?;
+            }
+            if let Some(ref extid) = entity.ext_ids.mag {
+                check_mag_id(extid)?;
+            }
+            if let Some(ref extid) = entity.ext_ids.ark {
+                check_ark_id(extid)?;
+            }
             if let Some(ref release_type) = entity.release_type {
                 check_release_type(release_type)?;
             }
