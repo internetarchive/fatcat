@@ -1069,7 +1069,7 @@ impl EntityCrud for FileEntity {
             sha1: rev_row.sha1,
             sha256: rev_row.sha256,
             md5: rev_row.md5,
-            size: rev_row.size_bytes.map(|v| v as i64),
+            size: rev_row.size_bytes,
             urls: Some(urls),
             mimetype: rev_row.mimetype,
             release_ids: Some(release_ids.iter().map(|fcid| fcid.to_string()).collect()),
