@@ -180,18 +180,7 @@ definitions:
       urls:
         type: array
         items:
-          type: object
-          required:
-            - url
-            - rel
-          properties:
-            url:
-              type: string
-              format: url
-              example: "https://example.edu/~frau/prcding.pdf"
-            rel:
-              type: string
-              example: "webarchive"
+          $ref: "#/definitions/file_url"
       mimetype:
         type: string
         example: "application/pdf"
@@ -199,6 +188,19 @@ definitions:
         type: array
         items:
           <<: *FATCATIDENT
+  file_url:
+    type: object
+    required:
+      - url
+      - rel
+    properties:
+      url:
+        type: string
+        format: url
+        example: "https://example.edu/~frau/prcding.pdf"
+      rel:
+        type: string
+        example: "webarchive"
   fileset_entity:
     type: object
     properties:
@@ -207,46 +209,50 @@ definitions:
         # limit of 200 files, at least to start
         type: array
         items:
-          type: object
-          required:
-            - path
-            - size
-          properties:
-            path:
-              type: string
-              example: "img/cat.png"
-            size:
-              type: integer
-              example: 1048576
-              format: int64
-            md5:
-              <<: *FATCATMD5
-            sha1:
-              <<: *FATCATSHA1
-            sha256:
-              <<: *FATCATSHA256
-            extra:
-              type: object
-              additionalProperties: {}
+          $ref: "#/definitions/fileset_file"
       urls:
         type: array
         items:
-          type: object
-          required:
-            - url
-            - rel
-          properties:
-            url:
-              type: string
-              format: url
-              example: "https://example.edu/~frau/prcding.pdf"
-            rel:
-              type: string
-              example: "webarchive"
+          $ref: "#/definitions/fileset_url"
       release_ids:
         type: array
         items:
           <<: *FATCATIDENT
+  fileset_url:
+    type: object
+    required:
+      - url
+      - rel
+    properties:
+      url:
+        type: string
+        format: url
+        example: "https://example.edu/~frau/prcding.pdf"
+      rel:
+        type: string
+        example: "webarchive"
+  fileset_file:
+    type: object
+    required:
+      - path
+      - size
+    properties:
+      path:
+        type: string
+        example: "img/cat.png"
+      size:
+        type: integer
+        example: 1048576
+        format: int64
+      md5:
+        <<: *FATCATMD5
+      sha1:
+        <<: *FATCATSHA1
+      sha256:
+        <<: *FATCATSHA256
+      extra:
+        type: object
+        additionalProperties: {}
   webcapture_entity:
     type: object
     properties:
@@ -255,55 +261,11 @@ definitions:
         # limit of 200 CDX lines, at least to start?
         type: array
         items:
-          type: object
-          required:
-            - surt
-            - timestamp
-            - url
-            - sha1
-          properties:
-            surt:
-              type: string
-              example: "org,asheesh)/apus/ch1/node15.html"
-            timestamp:
-              type: string
-              format: date-time
-              example: "2016-09-19T17:20:24Z"
-              description: "UTC, 'Z'-terminated, second (or better) precision"
-            url:
-              type: string
-              # NOTE: not format:url to allow alternatives
-              example: "http://www.asheesh.org:80/APUS/ch1/node15.html"
-            mimetype:
-              type: string
-              example: "text/html"
-            status_code:
-              type: integer
-              example: 200
-              format: int64
-            size:
-              type: integer
-              example: 1048576
-              format: int64
-            sha1:
-              <<: *FATCATSHA1
-            sha256:
-              <<: *FATCATSHA256
+          $ref: "#/definitions/webcapture_cdx_line"
       archive_urls:
         type: array
         items:
-          type: object
-          required:
-            - url
-            - rel
-          properties:
-            url:
-              type: string
-              format: url
-              example: "https://web.archive.org/web/"
-            rel:
-              type: string
-              example: "wayback"
+          $ref: "#/definitions/webcapture_url"
       original_url:
         type: string
         format: url
@@ -316,6 +278,54 @@ definitions:
         type: array
         items:
           <<: *FATCATIDENT
+  webcapture_cdx_line:
+    type: object
+    required:
+      - surt
+      - timestamp
+      - url
+      - sha1
+    properties:
+      surt:
+        type: string
+        example: "org,asheesh)/apus/ch1/node15.html"
+      timestamp:
+        type: string
+        format: date-time
+        example: "2016-09-19T17:20:24Z"
+        description: "UTC, 'Z'-terminated, second (or better) precision"
+      url:
+        type: string
+        # NOTE: not format:url to allow alternatives
+        example: "http://www.asheesh.org:80/APUS/ch1/node15.html"
+      mimetype:
+        type: string
+        example: "text/html"
+      status_code:
+        type: integer
+        example: 200
+        format: int64
+      size:
+        type: integer
+        example: 1048576
+        format: int64
+      sha1:
+        <<: *FATCATSHA1
+      sha256:
+        <<: *FATCATSHA256
+  webcapture_url:
+    type: object
+    required:
+      - url
+      - rel
+    properties:
+      url:
+        type: string
+        format: url
+        example: "https://web.archive.org/web/"
+      rel:
+        type: string
+        example: "wayback"
   release_entity:
     type: object
     # required for creation: title
@@ -379,32 +389,7 @@ definitions:
         example: 2014
         format: int64
       ext_ids:
-        type: object
-        properties:
-          doi:
-            type: string
-            #format: custom
-            example: "10.1234/abcde.789"
-          wikidata_qid:
-            type: string
-          isbn13:
-            type: string
-            #format: custom
-          pmid:
-            type: string
-          pmcid:
-            type: string
-          core:
-            type: string
-            #format: custom
-          arxiv:
-            type: string
-          jstor:
-            type: string
-          ark:
-            type: string
-          mag:
-            type: string
+        $ref: "#/definitions/release_ext_ids"
       volume:
         type: string
       issue:
@@ -435,19 +420,48 @@ definitions:
       abstracts:
         type: array
         items:
-          type: object
-          properties:
-            sha1:
-              <<: *FATCATSHA1
-            content:
-              type: string
-              example: "<jats:p>Some abstract thing goes here</jats:p>"
-            mimetype:
-              type: string
-              example: "application/xml+jats"
-            lang:
-              type: string
-              example: "en"
+          $ref: "#/definitions/release_abstract"
+  release_ext_ids:
+    type: object
+    properties:
+      doi:
+        type: string
+        #format: custom
+        example: "10.1234/abcde.789"
+      wikidata_qid:
+        type: string
+      isbn13:
+        type: string
+        #format: custom
+      pmid:
+        type: string
+      pmcid:
+        type: string
+      core:
+        type: string
+        #format: custom
+      arxiv:
+        type: string
+      jstor:
+        type: string
+      ark:
+        type: string
+      mag:
+        type: string
+  release_abstract:
+    type: object
+    properties:
+      sha1:
+        <<: *FATCATSHA1
+      content:
+        type: string
+        example: "<jats:p>Some abstract thing goes here</jats:p>"
+      mimetype:
+        type: string
+        example: "application/xml+jats"
+      lang:
+        type: string
+        example: "en"
   work_entity:
     type: object
     properties:
