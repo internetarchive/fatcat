@@ -16,7 +16,7 @@ import re  # noqa: F401
 
 import six
 
-from fatcat_client.models.file_entity_urls import FileEntityUrls  # noqa: F401,E501
+from fatcat_client.models.file_url import FileUrl  # noqa: F401,E501
 
 
 class FileEntity(object):
@@ -35,7 +35,7 @@ class FileEntity(object):
     swagger_types = {
         'release_ids': 'list[str]',
         'mimetype': 'str',
-        'urls': 'list[FileEntityUrls]',
+        'urls': 'list[FileUrl]',
         'sha256': 'str',
         'sha1': 'str',
         'md5': 'str',
@@ -157,7 +157,7 @@ class FileEntity(object):
 
 
         :return: The urls of this FileEntity.  # noqa: E501
-        :rtype: list[FileEntityUrls]
+        :rtype: list[FileUrl]
         """
         return self._urls
 
@@ -167,7 +167,7 @@ class FileEntity(object):
 
 
         :param urls: The urls of this FileEntity.  # noqa: E501
-        :type: list[FileEntityUrls]
+        :type: list[FileUrl]
         """
 
         self._urls = urls

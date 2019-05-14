@@ -16,8 +16,8 @@ import re  # noqa: F401
 
 import six
 
-from fatcat_client.models.file_entity_urls import FileEntityUrls  # noqa: F401,E501
-from fatcat_client.models.fileset_entity_manifest import FilesetEntityManifest  # noqa: F401,E501
+from fatcat_client.models.fileset_file import FilesetFile  # noqa: F401,E501
+from fatcat_client.models.fileset_url import FilesetUrl  # noqa: F401,E501
 
 
 class FilesetEntity(object):
@@ -35,8 +35,8 @@ class FilesetEntity(object):
     """
     swagger_types = {
         'release_ids': 'list[str]',
-        'urls': 'list[FileEntityUrls]',
-        'manifest': 'list[FilesetEntityManifest]',
+        'urls': 'list[FilesetUrl]',
+        'manifest': 'list[FilesetFile]',
         'state': 'str',
         'ident': 'str',
         'revision': 'str',
@@ -117,7 +117,7 @@ class FilesetEntity(object):
 
 
         :return: The urls of this FilesetEntity.  # noqa: E501
-        :rtype: list[FileEntityUrls]
+        :rtype: list[FilesetUrl]
         """
         return self._urls
 
@@ -127,7 +127,7 @@ class FilesetEntity(object):
 
 
         :param urls: The urls of this FilesetEntity.  # noqa: E501
-        :type: list[FileEntityUrls]
+        :type: list[FilesetUrl]
         """
 
         self._urls = urls
@@ -138,7 +138,7 @@ class FilesetEntity(object):
 
 
         :return: The manifest of this FilesetEntity.  # noqa: E501
-        :rtype: list[FilesetEntityManifest]
+        :rtype: list[FilesetFile]
         """
         return self._manifest
 
@@ -148,7 +148,7 @@ class FilesetEntity(object):
 
 
         :param manifest: The manifest of this FilesetEntity.  # noqa: E501
-        :type: list[FilesetEntityManifest]
+        :type: list[FilesetFile]
         """
 
         self._manifest = manifest

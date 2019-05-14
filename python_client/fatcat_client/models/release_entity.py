@@ -19,9 +19,9 @@ import six
 from fatcat_client.models.container_entity import ContainerEntity  # noqa: F401,E501
 from fatcat_client.models.file_entity import FileEntity  # noqa: F401,E501
 from fatcat_client.models.fileset_entity import FilesetEntity  # noqa: F401,E501
+from fatcat_client.models.release_abstract import ReleaseAbstract  # noqa: F401,E501
 from fatcat_client.models.release_contrib import ReleaseContrib  # noqa: F401,E501
-from fatcat_client.models.release_entity_abstracts import ReleaseEntityAbstracts  # noqa: F401,E501
-from fatcat_client.models.release_entity_ext_ids import ReleaseEntityExtIds  # noqa: F401,E501
+from fatcat_client.models.release_ext_ids import ReleaseExtIds  # noqa: F401,E501
 from fatcat_client.models.release_ref import ReleaseRef  # noqa: F401,E501
 from fatcat_client.models.webcapture_entity import WebcaptureEntity  # noqa: F401,E501
 
@@ -40,7 +40,7 @@ class ReleaseEntity(object):
                             and the value is json key in definition.
     """
     swagger_types = {
-        'abstracts': 'list[ReleaseEntityAbstracts]',
+        'abstracts': 'list[ReleaseAbstract]',
         'refs': 'list[ReleaseRef]',
         'contribs': 'list[ReleaseContrib]',
         'license_slug': 'str',
@@ -51,7 +51,7 @@ class ReleaseEntity(object):
         'pages': 'str',
         'issue': 'str',
         'volume': 'str',
-        'ext_ids': 'ReleaseEntityExtIds',
+        'ext_ids': 'ReleaseExtIds',
         'withdrawn_year': 'int',
         'withdrawn_date': 'date',
         'withdrawn_status': 'str',
@@ -226,7 +226,7 @@ class ReleaseEntity(object):
 
 
         :return: The abstracts of this ReleaseEntity.  # noqa: E501
-        :rtype: list[ReleaseEntityAbstracts]
+        :rtype: list[ReleaseAbstract]
         """
         return self._abstracts
 
@@ -236,7 +236,7 @@ class ReleaseEntity(object):
 
 
         :param abstracts: The abstracts of this ReleaseEntity.  # noqa: E501
-        :type: list[ReleaseEntityAbstracts]
+        :type: list[ReleaseAbstract]
         """
 
         self._abstracts = abstracts
@@ -461,7 +461,7 @@ class ReleaseEntity(object):
 
 
         :return: The ext_ids of this ReleaseEntity.  # noqa: E501
-        :rtype: ReleaseEntityExtIds
+        :rtype: ReleaseExtIds
         """
         return self._ext_ids
 
@@ -471,7 +471,7 @@ class ReleaseEntity(object):
 
 
         :param ext_ids: The ext_ids of this ReleaseEntity.  # noqa: E501
-        :type: ReleaseEntityExtIds
+        :type: ReleaseExtIds
         """
         if ext_ids is None:
             raise ValueError("Invalid value for `ext_ids`, must not be `None`")  # noqa: E501

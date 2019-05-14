@@ -16,8 +16,8 @@ import re  # noqa: F401
 
 import six
 
-from fatcat_client.models.webcapture_entity_archive_urls import WebcaptureEntityArchiveUrls  # noqa: F401,E501
-from fatcat_client.models.webcapture_entity_cdx import WebcaptureEntityCdx  # noqa: F401,E501
+from fatcat_client.models.webcapture_cdx_line import WebcaptureCdxLine  # noqa: F401,E501
+from fatcat_client.models.webcapture_url import WebcaptureUrl  # noqa: F401,E501
 
 
 class WebcaptureEntity(object):
@@ -37,8 +37,8 @@ class WebcaptureEntity(object):
         'release_ids': 'list[str]',
         'timestamp': 'datetime',
         'original_url': 'str',
-        'archive_urls': 'list[WebcaptureEntityArchiveUrls]',
-        'cdx': 'list[WebcaptureEntityCdx]',
+        'archive_urls': 'list[WebcaptureUrl]',
+        'cdx': 'list[WebcaptureCdxLine]',
         'edit_extra': 'object',
         'extra': 'object',
         'redirect': 'str',
@@ -171,7 +171,7 @@ class WebcaptureEntity(object):
 
 
         :return: The archive_urls of this WebcaptureEntity.  # noqa: E501
-        :rtype: list[WebcaptureEntityArchiveUrls]
+        :rtype: list[WebcaptureUrl]
         """
         return self._archive_urls
 
@@ -181,7 +181,7 @@ class WebcaptureEntity(object):
 
 
         :param archive_urls: The archive_urls of this WebcaptureEntity.  # noqa: E501
-        :type: list[WebcaptureEntityArchiveUrls]
+        :type: list[WebcaptureUrl]
         """
 
         self._archive_urls = archive_urls
@@ -192,7 +192,7 @@ class WebcaptureEntity(object):
 
 
         :return: The cdx of this WebcaptureEntity.  # noqa: E501
-        :rtype: list[WebcaptureEntityCdx]
+        :rtype: list[WebcaptureCdxLine]
         """
         return self._cdx
 
@@ -202,7 +202,7 @@ class WebcaptureEntity(object):
 
 
         :param cdx: The cdx of this WebcaptureEntity.  # noqa: E501
-        :type: list[WebcaptureEntityCdx]
+        :type: list[WebcaptureCdxLine]
         """
 
         self._cdx = cdx
