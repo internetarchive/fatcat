@@ -281,9 +281,9 @@ definitions:
               type: integer
               example: 200
               format: int64
-            size_bytes:
+            size:
               type: integer
-              example: 1235
+              example: 1048576
               format: int64
             sha1:
               <<: *FATCATSHA1
