@@ -83,6 +83,7 @@ def test_crossref_dict_parse(crossref_importer):
         assert r.ext_ids.doi == "10.1002/(sici)1097-461x(1998)66:4<261::aid-qua1>3.0.co;2-t"
         assert r.ext_ids.isbn13 == "978-3-16-148410-0"
         assert r.language == "fr"
+        assert r.subtitle == None
         assert 'subtitle' not in r.extra
         assert 'subtitle' not in r.extra['crossref']
         assert 'funder' not in r.extra
@@ -93,6 +94,8 @@ def test_crossref_dict_parse(crossref_importer):
         assert r.extra['crossref']['archive'] == ['Portico', 'LOCKSS']
         assert len(r.contribs) == 6
         assert r.contribs[0].raw_name == "Marcelo D. Radicioni"
+        assert r.contribs[0].given_name == "Marcelo D."
+        assert r.contribs[0].surname == "Radicioni"
         assert r.contribs[0].index == 0
         assert r.contribs[0].extra['seq'] == "first"
         assert r.contribs[1].raw_affiliation == "Some University"
@@ -113,6 +116,24 @@ def test_crossref_dict_parse(crossref_importer):
         assert r.refs[2].extra.get('author') is None
         assert r.refs[2].container_name == "Hypervirial Theorem's, Lecture Notes in Chemistry <3"
         assert r.refs[3].container_name == "Large Order Perturbation Theory and Summation Methods in Quantum Mechanics, Lecture Notes in Chemistry"
+
+def test_crossref_subtitle(crossref_importer):
+    """
+    Tests new subtitle field, explicitly
+    """
+    with open('tests/files/crossref-works.single.json', 'r') as f:
+        # not a single line
+        raw = json.loads(f.read())
+        raw['subtitle'] = ["some bogus subtitle", "blah"]
+        r = crossref_importer.parse_record(raw)
+        # ensure the API server is ok with format
+        JsonLinePusher(crossref_importer, [json.dumps(raw)]).run()
+
+        print(r.extra)
+        assert r.title == "Renormalized perturbation theory by the moment method for degenerate states: Anharmonic oscillators"
+        assert r.subtitle == "some bogus subtitle"
+        assert 'subtitle' not in r.extra
+        assert 'subtitle' not in r.extra['crossref']
 
 def test_stateful_checking(crossref_importer_existing):
     with open('tests/files/crossref-works.single.json', 'r') as f:

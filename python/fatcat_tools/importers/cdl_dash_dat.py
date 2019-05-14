@@ -70,7 +70,6 @@ def cdl_dash_release(meta, extra=None):
         if extid['value'].startswith('ark:'):
             ark_id = extid['value']
     assert ark_id
-    extra['ark_id'] = ark_id
 
     license_slug = lookup_license_slug(meta['rights']['uri'])
 
@@ -98,6 +97,7 @@ def cdl_dash_release(meta, extra=None):
     r = ReleaseEntity(
         ext_ids=ReleaseEntityExtIds(
             doi=doi,
+            ark=ark_id,
         ),
         title=clean(meta['title'], force_xml=True),
         publisher=clean(meta['publisher']),

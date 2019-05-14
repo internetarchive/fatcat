@@ -25,6 +25,8 @@ def test_grobid_metadata_parse(grobid_metadata_importer):
         assert len(re.contribs) == 5
         print(re.contribs)
         assert re.contribs[0].raw_name == "Wahyu Ary"
+        assert re.contribs[0].given_name == "Wahyu"
+        assert re.contribs[0].surname == "Ary"
         assert re.publisher == None
         if re.extra:
             assert re.extra.get('container_name') == None

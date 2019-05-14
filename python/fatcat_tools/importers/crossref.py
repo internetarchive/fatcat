@@ -218,6 +218,8 @@ class CrossrefImporter(EntityImporter):
                     creator_id=creator_id,
                     index=index,
                     raw_name=raw_name,
+                    given_name=clean(am.get('given')),
+                    surname=clean(am.get('family')),
                     raw_affiliation=clean(raw_affiliation),
                     role=ctype,
                     extra=extra))
@@ -318,13 +320,15 @@ class CrossrefImporter(EntityImporter):
         if not container_id:
             if obj.get('container-title'):
                 extra['container_name'] = clean(obj['container-title'][0])
-        for key in ('group-title', 'subtitle'):
+        for key in ('group-title'):
             val = obj.get(key)
             if val:
                 if type(val) == list:
                     val = val[0]
                 if type(val) == str:
-                    extra[key] = clean(val)
+                    val = clean(val)
+                    if val:
+                        extra[key] = clean(val)
                 else:
                     extra[key] = val
         # crossref-nested extra keys
@@ -397,6 +401,13 @@ class CrossrefImporter(EntityImporter):
                 # title can't be just a single character
                 return None
 
+        subtitle = None
+        if obj.get('subtitle'):
+            subtitle = clean(obj.get('subtitle')[0], force_xml=True)
+            if not subtitle or len(subtitle) <= 1:
+                # subtitle can't be just a single character
+                return None
+
         if extra_crossref:
             extra['crossref'] = extra_crossref
         if not extra:
@@ -406,6 +417,7 @@ class CrossrefImporter(EntityImporter):
             work_id=None,
             container_id=container_id,
             title=title,
+            subtitle=subtitle,
             original_title=original_title,
             release_type=release_type,
             release_stage=release_stage,

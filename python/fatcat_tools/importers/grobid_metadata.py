@@ -94,6 +94,8 @@ class GrobidMetadataImporter(EntityImporter):
             contribs.append(fatcat_client.ReleaseContrib(
                 index=i,
                 raw_name=clean(a['name']),
+                given_name=clean(a.get('given_name')),
+                surname=clean(a.get('surname')),
                 role="author",
                 extra=None))
 
