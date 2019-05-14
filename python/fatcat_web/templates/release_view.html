@@ -79,8 +79,15 @@
 <div class="ui stackable mobile reversed grid centered">
 <div class="one wide column"></div>
 <div class="fifteen wide column">
-  <h1 class="ui header"><span itemprop="headline"><span itemprop="name">{{ release.title }}</span></span>
-  <span class="sub header"><code>release {{ release.ident }}</code></span></h1>
+  <h1 class="ui header">
+    <span itemprop="headline"><span itemprop="name">{{ release.title }}</span></span>
+    {% if release.subtitle %}
+      <br><span style="font-size: smaller; font-weight: normal;">{{ release.subtitle }}</span>
+    {% endif %}
+    <span class="sub header">
+      <code>release {{ release.ident }}</code>
+    </span>
+  </h1>
   <p style="font-size: larger;">
   {% if authors != [] %} by {% endif %}
   {% for contrib in authors[:12] %}
@@ -113,6 +120,14 @@
 </div><div class="content" itemscope itemtype="http://schema.org/Periodical" itemid="#container">
   <table class="ui definition single line fixed compact small collapsing unstackable table">
   <tbody>
+    {% if release.number != None %}
+      <tr><td class="right aligned">Number</td>
+          <td class="">{{ release.number }}
+    {% endif %}
+    {% if release.version != None %}
+      <tr><td class="right aligned">Version</td>
+          <td class="">{{ release.version }}
+    {% endif %}
     {% if container != None and container.issnl != None %}
       <tr><td class="right aligned">ISSN-L</td>
           <td class="" itemprop="issn">{{ container.issnl }}
@@ -172,6 +187,11 @@
         <a href="/creator/{{contrib.creator_id}}">{{ contrib.raw_name or 'unknown' }}</a> 
       {% else %}
         {{ contrib.raw_name or '' }}
+      {% endif %}
+      {% if contrib.surname %}
+        <code>&nbsp;
+          ({{ contrib.surname }}{% if contrib.given_name %}, {{ contrib.given_name }}{% endif %})
+        </code>
       {% endif %}
       </span><br><i>{{ contrib.role or 'unknown' }}</i>
 {% endfor %}
@@ -325,12 +345,8 @@
 
 {% if release.release_type or release.release_stage or release.release_year %}
   <div class="ui segment attached">
-  {% if release.release_type %}
-    <b>Type</b> &nbsp;<code>{{ release.release_type }}</code><br>
-  {% endif %}
-  {% if release.release_stage %}
-    <b>Status</b> &nbsp; <code>{{ release.release_stage or 'unknown' }}</code><br>
-  {% endif %}
+  <b>Type</b> &nbsp;<code>{{ release.release_type or 'unknown' }}</code><br>
+  <b>Stage</b> &nbsp; <code>{{ release.release_stage or 'unknown' }}</code><br>
   {% if release.release_date %}
     <meta itemprop="datePublished" content="{{ release.release_date }}">
     <b>Date</b> &nbsp; {{ release.release_date }}<br>
@@ -338,25 +354,37 @@
     <meta itemprop="datePublished" content="{{ release.release_year }}">
     <b>Year</b> &nbsp; {{ release.release_year }}<br>
   {% endif %}
+  {% if release.version %}
+    <b>Version</b> &nbsp; <code>{{ release.version }}</code><br>
+  {% endif %}
   </div>
 {% endif %}
 
-{% if release.ext_ids.doi or release.ext_ids.pmid or release.ext_ids.pmcid or release.ext_ids.wikidata_qid %}
+{% if release.number or release.ext_ids.doi or release.ext_ids.pmid or release.ext_ids.pmcid or release.ext_ids.wikidata_qid or release.ext_ids.isbn13 %}
 <div class="ui segment attached" style="word-wrap: break-word;">
+{% if release.number %}
+  <b>Number</b> &nbsp;<code>{{ release.number }}</code><br>
+{% endif %}
 {% if release.ext_ids.doi %}
-  <b>DOI </b> &nbsp;<a href="https://doi.org/{{ release.ext_ids.doi }}" title="{{ release.ext_ids.doi }}" itemprop="sameAs">{{ release.ext_ids.doi }}</a><br>
-{% endif %}
-{% if release.ext_ids.pmid != None %}
-  <b>PubMed</b> <a href="https://www.ncbi.nlm.nih.gov/pubmed/{{ release.ext_ids.pmid }}">&nbsp;<code>{{ release.ext_ids.pmid }}</code></a><br>
-{% endif %}
-{% if release.ext_ids.pmcid != None %}
-  <b>PMC</b> <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/{{ release.ext_ids.pmcid }}">&nbsp;<code>{{ release.ext_ids.pmcid }}</code></a><br>
-{% endif %}
-{% if release.ext_ids.wikidata_qid != None %}
-  <b>Wikidata</b> <a href="https://www.wikidata.org/wiki/{{ release.ext_ids.wikidata_qid }}">&nbsp;<code>{{ release.ext_ids.wikidata_qid }}</code></a><br>
+  <b>DOI</b> &nbsp;<code><a href="https://doi.org/{{ release.ext_ids.doi }}" title="{{ release.ext_ids.doi }}" itemprop="sameAs">{{ release.ext_ids.doi }}</a></code><br>
 {% endif %}
 {% if release.ext_ids.isbn13 != None %}
-  <b>ISBN-13 </b> &nbsp;<code>{{ release.ext_ids.isbn13 }}</code>
+  <b>ISBN-13</b> &nbsp;<code>{{ release.ext_ids.isbn13 }}</code><br>
+{% endif %}
+{% if release.ext_ids.pmid != None %}
+  <b>PubMed</b> &nbsp;<a href="https://www.ncbi.nlm.nih.gov/pubmed/{{ release.ext_ids.pmid }}"><code>{{ release.ext_ids.pmid }}</code></a><br>
+{% endif %}
+{% if release.ext_ids.pmcid != None %}
+  <b>PMC</b> &nbsp;<a href="https://www.ncbi.nlm.nih.gov/pmc/articles/{{ release.ext_ids.pmcid }}"><code>{{ release.ext_ids.pmcid }}</code></a><br>
+{% endif %}
+{% if release.ext_ids.wikidata_qid != None %}
+  <b>Wikidata</b> &nbsp;<a href="https://www.wikidata.org/wiki/{{ release.ext_ids.wikidata_qid }}"><code>{{ release.ext_ids.wikidata_qid }}</code></a><br>
+{% endif %}
+{% if release.ext_ids.arxiv != None %}
+  <b>arXiv</b> &nbsp;<a href="https://arxiv.org/abs/{{ release.ext_ids.arxiv }}"><code>{{ release.ext_ids.arxiv }}</code></a><br>
+{% endif %}
+{% if release.ext_ids.ark != None %}
+  <b>ARK</b> &nbsp;<a href="https://n2t.net/{{ release.ext_ids.ark }}"><code>{{ release.ext_ids.ark }}</code></a><br>
 {% endif %}
 </div>
 {% endif %}
