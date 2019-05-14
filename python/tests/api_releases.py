@@ -143,7 +143,7 @@ def test_release_examples(api):
     api.lookup_release(isbn13='978-3-16-148410-0')
     api.lookup_release(arxiv='1905.03769v1')
     api.lookup_release(jstor='1819117828')
-    api.lookup_release(ark='ark:/asdf/924')
+    api.lookup_release(ark='ark:/13030/m53r5pzm')
     api.lookup_release(mag='992489213')
 
     # failed lookup exception type
