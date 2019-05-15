@@ -83,5 +83,5 @@ Run import in parallel:
     export FATCAT_EDITGROUP_DESCRIPTION="File/DOI matching to user-uploaded pre-1923 and pre-1909 paper corpus on archive.org"
     export FATCAT_API_AUTH_TOKEN=... (FATCAT_AUTH_WORKER_ARCHIVE_ORG)
 
-    zcat /srv/fatcat/datasets/crossref-pre-1923-scholarly-works.matched.json.gz | time parallel -j12 --round-robin --pipe ./fatcat_import.py matched -
+    zcat /srv/fatcat/datasets/crossref-pre-1923-scholarly-works.matched.json.gz | time parallel -j12 --round-robin --pipe ./fatcat_import.py matched - --default-mime 'application/pdf'
 

@@ -29,7 +29,8 @@ def run_journal_metadata(args):
 def run_matched(args):
     fmi = MatchedImporter(args.api,
         edit_batch_size=args.batch_size,
-        editgroup_description=args.editgroup_description_override)
+        editgroup_description=args.editgroup_description_override,
+        default_mimetype=args.default_mimetype)
     JsonLinePusher(fmi, args.json_file).run()
 
 def run_arabesque_match(args):
@@ -168,6 +169,9 @@ def main():
     sub_matched.add_argument('json_file',
         help="JSON file to import from (or stdin)",
         default=sys.stdin, type=argparse.FileType('r'))
+    sub_matched.add_argument('--default-mimetype',
+        default=None,
+        help="default mimetype for imported files (if not specified per-file)")
     sub_matched.add_argument('--bezerk-mode',
         action='store_true',
         help="don't lookup existing files, just insert (clobbers; only for fast bootstrap)")

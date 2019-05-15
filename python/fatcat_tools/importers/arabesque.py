@@ -66,7 +66,7 @@ class ArabesqueMatchImporter(EntityImporter):
         self.extid_type = extid_type
         self.default_link_rel = kwargs.get("default_link_rel", "web")
         assert self.default_link_rel
-        self.default_mime = kwargs.get("default_mime", None)
+        self.default_mimetype = kwargs.get("default_mimetype", None)
         self.do_updates = kwargs.get("do_updates", False)
         self.require_grobid = require_grobid
         if self.require_grobid:
@@ -136,7 +136,7 @@ class ArabesqueMatchImporter(EntityImporter):
 
         fe = fatcat_client.FileEntity(
             sha1=b32_hex(row['final_sha1']),
-            mimetype=row['final_mimetype'],
+            mimetype=row['final_mimetype'] or self.default_mimetype,
             release_ids=[re.ident],
             urls=urls,
         )

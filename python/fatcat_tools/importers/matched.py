@@ -42,7 +42,7 @@ class MatchedImporter(EntityImporter):
             editgroup_extra=eg_extra,
             **kwargs)
         self.default_link_rel = kwargs.get("default_link_rel", "web")
-        self.default_mime = kwargs.get("default_mime", None)
+        self.default_mimetype = kwargs.get("default_mimetype", None)
 
     def want(self, raw_record):
         return True
@@ -100,12 +100,17 @@ class MatchedImporter(EntityImporter):
         if size:
             size = int(size)
 
+        mimetype = obj.get('mimetype', self.default_mimetype)
+        if not mimetype and urls:
+            if urls[0].url.endswith('.pdf'):
+                mimetype = 'application/pdf'
+
         fe = fatcat_client.FileEntity(
             md5=obj.get('md5'),
             sha1=obj['sha1'],
             sha256=obj.get('sha256'),
             size=size,
-            mimetype=obj.get('mimetype'),
+            mimetype=mimetype,
             release_ids=release_ids,
             urls=urls,
         )
