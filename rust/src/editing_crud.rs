@@ -144,7 +144,7 @@ impl EditgroupCrud for Editgroup {
             let editor_id = FatcatId::from_str(
                 self.editor_id
                     .as_ref()
-                    .expect("tried to expand bare Editor model"),
+                    .expect("tried to expand bare Editgroup model"),
             )?;
             self.editor = Some(Editor::db_get(conn, editor_id)?.into_model());
         }

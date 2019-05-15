@@ -460,7 +460,7 @@ impl Server {
         editgroup: models::Editgroup,
     ) -> Result<Editgroup> {
         let row = editgroup.db_create(conn, false)?;
-        Ok(row.into_model_partial(None))
+        Ok(row.into_model_partial(None, None))
     }
 
     pub fn get_editgroup_handler(
@@ -469,7 +469,8 @@ impl Server {
         editgroup_id: FatcatId,
     ) -> Result<Editgroup> {
         let (eg_row, cl_row) = Editgroup::db_get_with_changelog(conn, editgroup_id)?;
-        let mut editgroup = eg_row.into_model_partial(cl_row.map(|cl| cl.id));
+        let editor = Editor::db_get(&conn, FatcatId::from_uuid(&eg_row.editor_id))?.into_model();
+        let mut editgroup = eg_row.into_model_partial(cl_row.map(|cl| cl.id), Some(editor));
 
         let edits = EditgroupEdits {
             containers: Some(
@@ -546,17 +547,18 @@ impl Server {
     ) -> Result<Vec<ChangelogEntry>> {
         let limit = limit.unwrap_or(50);
 
-        let changes: Vec<(ChangelogRow, EditgroupRow)> = changelog::table
-            .inner_join(editgroup::table)
+        let changes: Vec<(EditgroupRow, ChangelogRow, EditorRow)> = editgroup::table
+            .inner_join(changelog::table)
+            .inner_join(editor::table)
             .order(changelog::id.desc())
             .limit(limit)
             .load(conn)?;
 
         let entries = changes
             .into_iter()
-            .map(|(cl_row, eg_row)| ChangelogEntry {
+            .map(|(eg_row, cl_row, editor_row)| ChangelogEntry {
                 index: cl_row.id,
-                editgroup: Some(eg_row.into_model_partial(None)),
+                editgroup: Some(eg_row.into_model_partial(Some(cl_row.id), Some(editor_row.into_model()))),
                 editgroup_id: uuid2fcid(&cl_row.editgroup_id),
                 timestamp: chrono::DateTime::from_utc(cl_row.timestamp, chrono::Utc),
             })

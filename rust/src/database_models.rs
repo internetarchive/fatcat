@@ -662,11 +662,11 @@ pub struct EditgroupRow {
 impl EditgroupRow {
     /// Returns an Editgroup API model *without* the entity edits actually populated. Useful for,
     /// eg, entity history queries (where we already have the entity edit we want)
-    pub fn into_model_partial(self, changelog_index: Option<i64>) -> Editgroup {
+    pub fn into_model_partial(self, changelog_index: Option<i64>, editor: Option<Editor>) -> Editgroup {
         Editgroup {
             editgroup_id: Some(uuid2fcid(&self.id)),
             editor_id: Some(uuid2fcid(&self.editor_id)),
-            editor: None,
+            editor: editor,
             changelog_index: changelog_index,
             submitted: self
                 .submitted

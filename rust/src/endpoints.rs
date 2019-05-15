@@ -788,9 +788,10 @@ impl Api for Server {
                 let limit = cmp::min(100, limit.unwrap_or(20)) as u64;
                 let rows =
                     Editgroup::db_get_range_for_editor(&conn, editor_id, limit, since, before)?;
+                let editor = Editor::db_get(&conn, editor_id)?.into_model();
                 Ok(rows
                     .into_iter()
-                    .map(|(eg, cl)| eg.into_model_partial(cl.map(|v| v.id)))
+                    .map(|(eg, cl)| eg.into_model_partial(cl.map(|v| v.id), Some(editor.clone())))
                     .collect())
             })
             .map_err(|e: Error| FatcatError::from(e))
@@ -931,7 +932,7 @@ impl Api for Server {
                 let row = Editgroup::db_get_range_reviewable(&conn, limit, since, before)?;
                 let mut editgroups: Vec<Editgroup> = row
                     .into_iter()
-                    .map(|eg| eg.into_model_partial(None))
+                    .map(|eg| eg.into_model_partial(None, None))
                     .collect();
                 if let Some(expand) = expand {
                     let expand = ExpandFlags::from_str(&expand)?;
@@ -1032,7 +1033,7 @@ impl Api for Server {
                 };
                 editgroup
                     .db_update(&conn, editgroup_id, submit)
-                    .map(|eg| eg.into_model_partial(None)) // can't update an accepted editgroup
+                    .map(|eg| eg.into_model_partial(None, None)) // can't update an accepted editgroup
             })
             .map_err(|e: Error| FatcatError::from(e))
         {
