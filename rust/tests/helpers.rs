@@ -64,6 +64,7 @@ pub fn quick_editgroup(conn: &server::DbConn) -> FatcatId {
         editor_id: Some(editor_id.to_string()),
         editor: None,
         changelog_index: None,
+        created: None,
         submitted: None,
         description: Some("quick test editgroup".to_string()),
         extra: None,
