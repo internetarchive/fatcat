@@ -1,10 +1,26 @@
 
 ## In Progress
 
-- update existing 1.5 mil longtail OA PDFs with container/ISSN-L
+x webcapture `size_bytes`/`size (consistency with file and fileset)
+x final decision on `version` field
+    => useful for repositories with multiple versions as incrementing integers
+    => also useful for "unstructuring" some identifiers (arxiv, zenodo DOIs)
+    => but CSL wants to use it (only?) for software versions
+    => what about book editions, or draft revisions?
+    => let's keep, but carefully document scope
+x verifiers for all extid types (including new ark, mag)
+x creation of editgroup via auto_batch needs extra checks
+- test: edit_extra set for each entity type
+- merge new importers branch
+    => fix schema changes
+    => use new schema fields
+    => tests
+- update guide with new schema
+- elasticsearch schema changes (and transforms)
 
 ## Next Up
 
+- update existing 1.5 mil longtail OA PDFs with container/ISSN-L
 
 ## Bugs
 
@@ -17,24 +33,29 @@
 
 Changes to SQL (and swagger):
 
-- structured names in contribs (given/sur)
-- `release_status` => `release_stage`
-- `withdrawn_date`, `withdrawn_state`, and retraction as a release stage
-- subtitle as a string field
+X missing SQL indices: `ENTITY_edit.editgroup_id, ENTITY_edit.ident_id`
+X structured names in contribs (given/sur)
+X `release_status` => `release_stage`
+X size on webcapture CDX lines (we fetch for sha256 anyways, so easy to calculate)
+X `ark_id` release identifier
+X `mag_id` (microsoft academic graph) release identifier
+
+X `withdrawn_date`, `withdrawn_state`, and retraction as a release stage
+    => and `withdrawn_year`?
+X subtitle as a string field
     => but what about translation? `original_subtitle`? just combine them?
     => combine in elasticsearch 'title' field
-- size on webcapture CDX lines (we fetch for sha256 anyways, so easy to calculate)
-- `ark_id` release identifier
-- `mag_id` (microsoft academic graph) release identifier
-- releases: 'number' (eg, report numbers) and 'version' (for numbered variants) fields
-- missing SQL indices: `ENTITY_edit.editgroup_id, ENTITY_edit.ident_id`
+X releases: 'number' (eg, report numbers) and 'version' (for numbered variants) fields
 
 Changes to swagger only:
 
-- edit URLs: `editgroup_id` in URL, not a query param
+- refactor entity mutation (CUD) endpoints to be like `/editgroup/{editgroup_id}/release/{ident}`
+    => changes editgroup_id from query param to URL param
 - changelog API endpoint should needs expand=editors option
+    => editors in a bunch of other return types also?
 - include 'created' in editgroup object (already in SQL)
-- FileEntityUrls => FileEntityUrl (and similar)
+x FileEntityUrls => FileEntityUrl (and similar)
+? refactor bulk POST to include editgroup plus array of entity objects (instead of just a couple fields as query params)
 
 ## Next Full Release "Touch"
 
@@ -195,9 +216,7 @@ new importers:
 
 ## API Schema / Design
 
-- refactor entity mutation (CUD) endpoints to be like `/editgroup/{editgroup_id}/release/{ident}`
-    => changes editgroup_id from query param to URL param
-- refactor bulk POST to include editgroup plus array of entity objects (instead of just a couple fields as query params)
+- `release_month` field. for journals, having the year and month but not day is relatively common (citation needed)
 
 ## Web Interface
 
