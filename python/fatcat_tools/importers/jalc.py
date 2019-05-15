@@ -251,14 +251,8 @@ class JalcImporter(EntityImporter):
             publisher=publisher,
             language=lang,
             #license_slug
-
-            # content, mimetype, lang
-            #abstracts=abstracts,
-
-            # raw_name, role, raw_affiliation, extra
+            container_id=container_id,
             contribs=contribs,
-
-
             extra=extra,
         )
         return re
@@ -280,7 +274,8 @@ class JalcImporter(EntityImporter):
         if existing:
             self.counts['exists'] += 1
             return False
-        return False
+
+        return True
 
     def insert_batch(self, batch):
         self.api.create_release_auto_batch(fatcat_client.ReleaseAutoBatch(
