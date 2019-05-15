@@ -7,13 +7,16 @@ import ftfy
 import sqlite3
 import itertools
 import subprocess
+import unicodedata
 from collections import Counter
 import pykafka
+from bs4 import BeautifulSoup
 
 import fatcat_client
 from fatcat_client.rest import ApiException
 
 
+DATE_FMT = "%Y-%m-%d"
 SANE_MAX_RELEASES = 200
 SANE_MAX_URLS = 100
 
@@ -51,6 +54,23 @@ def test_clean():
     assert clean('a&amp;b') == 'a&b'
     assert clean('<b>a&amp;b</b>') == '<b>a&amp;b</b>'
     assert clean('<b>a&amp;b</b>', force_xml=True) == '<b>a&b</b>'
+
+def is_cjk(s):
+    if not s:
+        return False
+    return unicodedata.name(s[0]).startswith("CJK")
+
+def test_is_cjk():
+    assert is_cjk(None) == False
+    assert is_cjk('') == False
+    assert is_cjk('blah') == False
+    assert is_cjk('岡, 鹿, 梨, 阜, 埼') == True
+    assert is_cjk('菊') == True
+    assert is_cjk('ひヒ') == True
+    assert is_cjk('english with ひヒ') == True
+    assert is_cjk('き゚ゅ') == True
+    assert is_cjk('水道') == True
+    assert is_cjk('ㄴ, ㄹ, ㅁ, ㅂ, ㅅ') == True
 
 DOMAIN_REL_MAP = {
     "archive.org": "archive",
@@ -451,6 +471,22 @@ class SqlitePusher(RecordPusher):
             self.table_name, self.where_clause))
         for row in cur:
             self.importer.push_record(row)
+        counts = self.importer.finish()
+        print(counts)
+        return counts
+
+
+class Bs4XmlFilePusher(RecordPusher):
+
+    def __init__(self, importer, xml_file, record_tag, **kwargs):
+        self.importer = importer
+        self.xml_file = xml_file
+        self.record_tag = record_tag
+
+    def run(self):
+        soup = BeautifulSoup(self.xml_file, "xml")
+        for record in soup.find_all(self.record_tag):
+            self.importer.push_record(record)
         counts = self.importer.finish()
         print(counts)
         return counts
