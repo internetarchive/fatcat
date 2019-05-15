@@ -76,36 +76,36 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**accept_editgroup**](docs/DefaultApi.md#accept_editgroup) | **POST** /editgroup/{editgroup_id}/accept | 
 *DefaultApi* | [**auth_check**](docs/DefaultApi.md#auth_check) | **GET** /auth/check | 
 *DefaultApi* | [**auth_oidc**](docs/DefaultApi.md#auth_oidc) | **POST** /auth/oidc | 
-*DefaultApi* | [**create_container**](docs/DefaultApi.md#create_container) | **POST** /container | 
-*DefaultApi* | [**create_container_batch**](docs/DefaultApi.md#create_container_batch) | **POST** /container/batch | 
-*DefaultApi* | [**create_creator**](docs/DefaultApi.md#create_creator) | **POST** /creator | 
-*DefaultApi* | [**create_creator_batch**](docs/DefaultApi.md#create_creator_batch) | **POST** /creator/batch | 
+*DefaultApi* | [**create_container**](docs/DefaultApi.md#create_container) | **POST** /editgroup/{editgroup_id}/container | 
+*DefaultApi* | [**create_container_auto_batch**](docs/DefaultApi.md#create_container_auto_batch) | **POST** /editgroup/auto/container/batch | 
+*DefaultApi* | [**create_creator**](docs/DefaultApi.md#create_creator) | **POST** /editgroup/{editgroup_id}/creator | 
+*DefaultApi* | [**create_creator_auto_batch**](docs/DefaultApi.md#create_creator_auto_batch) | **POST** /editgroup/auto/creator/batch | 
 *DefaultApi* | [**create_editgroup**](docs/DefaultApi.md#create_editgroup) | **POST** /editgroup | 
 *DefaultApi* | [**create_editgroup_annotation**](docs/DefaultApi.md#create_editgroup_annotation) | **POST** /editgroup/{editgroup_id}/annotation | 
-*DefaultApi* | [**create_file**](docs/DefaultApi.md#create_file) | **POST** /file | 
-*DefaultApi* | [**create_file_batch**](docs/DefaultApi.md#create_file_batch) | **POST** /file/batch | 
-*DefaultApi* | [**create_fileset**](docs/DefaultApi.md#create_fileset) | **POST** /fileset | 
-*DefaultApi* | [**create_fileset_batch**](docs/DefaultApi.md#create_fileset_batch) | **POST** /fileset/batch | 
-*DefaultApi* | [**create_release**](docs/DefaultApi.md#create_release) | **POST** /release | 
-*DefaultApi* | [**create_release_batch**](docs/DefaultApi.md#create_release_batch) | **POST** /release/batch | 
-*DefaultApi* | [**create_webcapture**](docs/DefaultApi.md#create_webcapture) | **POST** /webcapture | 
-*DefaultApi* | [**create_webcapture_batch**](docs/DefaultApi.md#create_webcapture_batch) | **POST** /webcapture/batch | 
-*DefaultApi* | [**create_work**](docs/DefaultApi.md#create_work) | **POST** /work | 
-*DefaultApi* | [**create_work_batch**](docs/DefaultApi.md#create_work_batch) | **POST** /work/batch | 
-*DefaultApi* | [**delete_container**](docs/DefaultApi.md#delete_container) | **DELETE** /container/{ident} | 
-*DefaultApi* | [**delete_container_edit**](docs/DefaultApi.md#delete_container_edit) | **DELETE** /container/edit/{edit_id} | 
-*DefaultApi* | [**delete_creator**](docs/DefaultApi.md#delete_creator) | **DELETE** /creator/{ident} | 
-*DefaultApi* | [**delete_creator_edit**](docs/DefaultApi.md#delete_creator_edit) | **DELETE** /creator/edit/{edit_id} | 
-*DefaultApi* | [**delete_file**](docs/DefaultApi.md#delete_file) | **DELETE** /file/{ident} | 
-*DefaultApi* | [**delete_file_edit**](docs/DefaultApi.md#delete_file_edit) | **DELETE** /file/edit/{edit_id} | 
-*DefaultApi* | [**delete_fileset**](docs/DefaultApi.md#delete_fileset) | **DELETE** /fileset/{ident} | 
-*DefaultApi* | [**delete_fileset_edit**](docs/DefaultApi.md#delete_fileset_edit) | **DELETE** /fileset/edit/{edit_id} | 
-*DefaultApi* | [**delete_release**](docs/DefaultApi.md#delete_release) | **DELETE** /release/{ident} | 
-*DefaultApi* | [**delete_release_edit**](docs/DefaultApi.md#delete_release_edit) | **DELETE** /release/edit/{edit_id} | 
-*DefaultApi* | [**delete_webcapture**](docs/DefaultApi.md#delete_webcapture) | **DELETE** /webcapture/{ident} | 
-*DefaultApi* | [**delete_webcapture_edit**](docs/DefaultApi.md#delete_webcapture_edit) | **DELETE** /webcapture/edit/{edit_id} | 
-*DefaultApi* | [**delete_work**](docs/DefaultApi.md#delete_work) | **DELETE** /work/{ident} | 
-*DefaultApi* | [**delete_work_edit**](docs/DefaultApi.md#delete_work_edit) | **DELETE** /work/edit/{edit_id} | 
+*DefaultApi* | [**create_file**](docs/DefaultApi.md#create_file) | **POST** /editgroup/{editgroup_id}/file | 
+*DefaultApi* | [**create_file_auto_batch**](docs/DefaultApi.md#create_file_auto_batch) | **POST** /editgroup/auto/file/batch | 
+*DefaultApi* | [**create_fileset**](docs/DefaultApi.md#create_fileset) | **POST** /editgroup/{editgroup_id}/fileset | 
+*DefaultApi* | [**create_fileset_auto_batch**](docs/DefaultApi.md#create_fileset_auto_batch) | **POST** /editgroup/auto/fileset/batch | 
+*DefaultApi* | [**create_release**](docs/DefaultApi.md#create_release) | **POST** /editgroup/{editgroup_id}/release | 
+*DefaultApi* | [**create_release_auto_batch**](docs/DefaultApi.md#create_release_auto_batch) | **POST** /editgroup/auto/release/batch | 
+*DefaultApi* | [**create_webcapture**](docs/DefaultApi.md#create_webcapture) | **POST** /editgroup/{editgroup_id}/webcapture | 
+*DefaultApi* | [**create_webcapture_auto_batch**](docs/DefaultApi.md#create_webcapture_auto_batch) | **POST** /editgroup/auto/webcapture/batch | 
+*DefaultApi* | [**create_work**](docs/DefaultApi.md#create_work) | **POST** /editgroup/{editgroup_id}/work | 
+*DefaultApi* | [**create_work_auto_batch**](docs/DefaultApi.md#create_work_auto_batch) | **POST** /editgroup/auto/work/batch | 
+*DefaultApi* | [**delete_container**](docs/DefaultApi.md#delete_container) | **DELETE** /editgroup/{editgroup_id}/container/{ident} | 
+*DefaultApi* | [**delete_container_edit**](docs/DefaultApi.md#delete_container_edit) | **DELETE** /editgroup/{editgroup_id}/container/edit/{edit_id} | 
+*DefaultApi* | [**delete_creator**](docs/DefaultApi.md#delete_creator) | **DELETE** /editgroup/{editgroup_id}/creator/{ident} | 
+*DefaultApi* | [**delete_creator_edit**](docs/DefaultApi.md#delete_creator_edit) | **DELETE** /editgroup/{editgroup_id}/creator/edit/{edit_id} | 
+*DefaultApi* | [**delete_file**](docs/DefaultApi.md#delete_file) | **DELETE** /editgroup/{editgroup_id}/file/{ident} | 
+*DefaultApi* | [**delete_file_edit**](docs/DefaultApi.md#delete_file_edit) | **DELETE** /editgroup/{editgroup_id}/file/edit/{edit_id} | 
+*DefaultApi* | [**delete_fileset**](docs/DefaultApi.md#delete_fileset) | **DELETE** /editgroup/{editgroup_id}/fileset/{ident} | 
+*DefaultApi* | [**delete_fileset_edit**](docs/DefaultApi.md#delete_fileset_edit) | **DELETE** /editgroup/{editgroup_id}/fileset/edit/{edit_id} | 
+*DefaultApi* | [**delete_release**](docs/DefaultApi.md#delete_release) | **DELETE** /editgroup/{editgroup_id}/release/{ident} | 
+*DefaultApi* | [**delete_release_edit**](docs/DefaultApi.md#delete_release_edit) | **DELETE** /editgroup/{editgroup_id}/release/edit/{edit_id} | 
+*DefaultApi* | [**delete_webcapture**](docs/DefaultApi.md#delete_webcapture) | **DELETE** /editgroup/{editgroup_id}/webcapture/{ident} | 
+*DefaultApi* | [**delete_webcapture_edit**](docs/DefaultApi.md#delete_webcapture_edit) | **DELETE** /editgroup/{editgroup_id}/webcapture/edit/{edit_id} | 
+*DefaultApi* | [**delete_work**](docs/DefaultApi.md#delete_work) | **DELETE** /editgroup/{editgroup_id}/work/{ident} | 
+*DefaultApi* | [**delete_work_edit**](docs/DefaultApi.md#delete_work_edit) | **DELETE** /editgroup/{editgroup_id}/work/edit/{edit_id} | 
 *DefaultApi* | [**get_changelog**](docs/DefaultApi.md#get_changelog) | **GET** /changelog | 
 *DefaultApi* | [**get_changelog_entry**](docs/DefaultApi.md#get_changelog_entry) | **GET** /changelog/{index} | 
 *DefaultApi* | [**get_container**](docs/DefaultApi.md#get_container) | **GET** /container/{ident} | 
@@ -158,15 +158,15 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**lookup_creator**](docs/DefaultApi.md#lookup_creator) | **GET** /creator/lookup | 
 *DefaultApi* | [**lookup_file**](docs/DefaultApi.md#lookup_file) | **GET** /file/lookup | 
 *DefaultApi* | [**lookup_release**](docs/DefaultApi.md#lookup_release) | **GET** /release/lookup | 
-*DefaultApi* | [**update_container**](docs/DefaultApi.md#update_container) | **PUT** /container/{ident} | 
-*DefaultApi* | [**update_creator**](docs/DefaultApi.md#update_creator) | **PUT** /creator/{ident} | 
+*DefaultApi* | [**update_container**](docs/DefaultApi.md#update_container) | **PUT** /editgroup/{editgroup_id}/container/{ident} | 
+*DefaultApi* | [**update_creator**](docs/DefaultApi.md#update_creator) | **PUT** /editgroup/{editgroup_id}/creator/{ident} | 
 *DefaultApi* | [**update_editgroup**](docs/DefaultApi.md#update_editgroup) | **PUT** /editgroup/{editgroup_id} | 
 *DefaultApi* | [**update_editor**](docs/DefaultApi.md#update_editor) | **PUT** /editor/{editor_id} | 
-*DefaultApi* | [**update_file**](docs/DefaultApi.md#update_file) | **PUT** /file/{ident} | 
-*DefaultApi* | [**update_fileset**](docs/DefaultApi.md#update_fileset) | **PUT** /fileset/{ident} | 
-*DefaultApi* | [**update_release**](docs/DefaultApi.md#update_release) | **PUT** /release/{ident} | 
-*DefaultApi* | [**update_webcapture**](docs/DefaultApi.md#update_webcapture) | **PUT** /webcapture/{ident} | 
-*DefaultApi* | [**update_work**](docs/DefaultApi.md#update_work) | **PUT** /work/{ident} | 
+*DefaultApi* | [**update_file**](docs/DefaultApi.md#update_file) | **PUT** /editgroup/{editgroup_id}/file/{ident} | 
+*DefaultApi* | [**update_fileset**](docs/DefaultApi.md#update_fileset) | **PUT** /editgroup/{editgroup_id}/fileset/{ident} | 
+*DefaultApi* | [**update_release**](docs/DefaultApi.md#update_release) | **PUT** /editgroup/{editgroup_id}/release/{ident} | 
+*DefaultApi* | [**update_webcapture**](docs/DefaultApi.md#update_webcapture) | **PUT** /editgroup/{editgroup_id}/webcapture/{ident} | 
+*DefaultApi* | [**update_work**](docs/DefaultApi.md#update_work) | **PUT** /editgroup/{editgroup_id}/work/{ident} | 
 
 
 ## Documentation For Models
@@ -174,7 +174,9 @@ Class | Method | HTTP request | Description
  - [AuthOidc](docs/AuthOidc.md)
  - [AuthOidcResult](docs/AuthOidcResult.md)
  - [ChangelogEntry](docs/ChangelogEntry.md)
+ - [ContainerAutoBatch](docs/ContainerAutoBatch.md)
  - [ContainerEntity](docs/ContainerEntity.md)
+ - [CreatorAutoBatch](docs/CreatorAutoBatch.md)
  - [CreatorEntity](docs/CreatorEntity.md)
  - [Editgroup](docs/Editgroup.md)
  - [EditgroupAnnotation](docs/EditgroupAnnotation.md)
@@ -183,20 +185,25 @@ Class | Method | HTTP request | Description
  - [EntityEdit](docs/EntityEdit.md)
  - [EntityHistoryEntry](docs/EntityHistoryEntry.md)
  - [ErrorResponse](docs/ErrorResponse.md)
+ - [FileAutoBatch](docs/FileAutoBatch.md)
  - [FileEntity](docs/FileEntity.md)
  - [FileUrl](docs/FileUrl.md)
+ - [FilesetAutoBatch](docs/FilesetAutoBatch.md)
  - [FilesetEntity](docs/FilesetEntity.md)
  - [FilesetFile](docs/FilesetFile.md)
  - [FilesetUrl](docs/FilesetUrl.md)
  - [ReleaseAbstract](docs/ReleaseAbstract.md)
+ - [ReleaseAutoBatch](docs/ReleaseAutoBatch.md)
  - [ReleaseContrib](docs/ReleaseContrib.md)
  - [ReleaseEntity](docs/ReleaseEntity.md)
  - [ReleaseExtIds](docs/ReleaseExtIds.md)
  - [ReleaseRef](docs/ReleaseRef.md)
  - [Success](docs/Success.md)
+ - [WebcaptureAutoBatch](docs/WebcaptureAutoBatch.md)
  - [WebcaptureCdxLine](docs/WebcaptureCdxLine.md)
  - [WebcaptureEntity](docs/WebcaptureEntity.md)
  - [WebcaptureUrl](docs/WebcaptureUrl.md)
+ - [WorkAutoBatch](docs/WorkAutoBatch.md)
  - [WorkEntity](docs/WorkEntity.md)
 
 

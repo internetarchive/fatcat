@@ -328,45 +328,45 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def create_container(self, entity, editgroup_id, **kwargs):  # noqa: E501
+    def create_container(self, editgroup_id, entity, **kwargs):  # noqa: E501
         """create_container  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.create_container(entity, editgroup_id, async=True)
+        >>> thread = api.create_container(editgroup_id, entity, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param ContainerEntity entity: (required)
         :param str editgroup_id: (required)
+        :param ContainerEntity entity: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.create_container_with_http_info(entity, editgroup_id, **kwargs)  # noqa: E501
+            return self.create_container_with_http_info(editgroup_id, entity, **kwargs)  # noqa: E501
         else:
-            (data) = self.create_container_with_http_info(entity, editgroup_id, **kwargs)  # noqa: E501
+            (data) = self.create_container_with_http_info(editgroup_id, entity, **kwargs)  # noqa: E501
             return data
 
-    def create_container_with_http_info(self, entity, editgroup_id, **kwargs):  # noqa: E501
+    def create_container_with_http_info(self, editgroup_id, entity, **kwargs):  # noqa: E501
         """create_container  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.create_container_with_http_info(entity, editgroup_id, async=True)
+        >>> thread = api.create_container_with_http_info(editgroup_id, entity, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param ContainerEntity entity: (required)
         :param str editgroup_id: (required)
+        :param ContainerEntity entity: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['entity', 'editgroup_id']  # noqa: E501
+        all_params = ['editgroup_id', 'entity']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -381,22 +381,22 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
-        # verify the required parameter 'entity' is set
-        if ('entity' not in params or
-                params['entity'] is None):
-            raise ValueError("Missing the required parameter `entity` when calling `create_container`")  # noqa: E501
         # verify the required parameter 'editgroup_id' is set
         if ('editgroup_id' not in params or
                 params['editgroup_id'] is None):
             raise ValueError("Missing the required parameter `editgroup_id` when calling `create_container`")  # noqa: E501
+        # verify the required parameter 'entity' is set
+        if ('entity' not in params or
+                params['entity'] is None):
+            raise ValueError("Missing the required parameter `entity` when calling `create_container`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
+        if 'editgroup_id' in params:
+            path_params['editgroup_id'] = params['editgroup_id']  # noqa: E501
 
         query_params = []
-        if 'editgroup_id' in params:
-            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
 
         header_params = {}
 
@@ -418,7 +418,7 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/container', 'POST',
+            '/editgroup/{editgroup_id}/container', 'POST',
             path_params,
             query_params,
             header_params,
@@ -433,51 +433,43 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def create_container_batch(self, entity_list, **kwargs):  # noqa: E501
-        """create_container_batch  # noqa: E501
+    def create_container_auto_batch(self, auto_batch, **kwargs):  # noqa: E501
+        """create_container_auto_batch  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.create_container_batch(entity_list, async=True)
+        >>> thread = api.create_container_auto_batch(auto_batch, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param list[ContainerEntity] entity_list: (required)
-        :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
-        :param str editgroup_id: Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)
-        :param str description:
-        :param str extra:
-        :return: list[EntityEdit]
+        :param ContainerAutoBatch auto_batch: (required)
+        :return: Editgroup
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.create_container_batch_with_http_info(entity_list, **kwargs)  # noqa: E501
+            return self.create_container_auto_batch_with_http_info(auto_batch, **kwargs)  # noqa: E501
         else:
-            (data) = self.create_container_batch_with_http_info(entity_list, **kwargs)  # noqa: E501
+            (data) = self.create_container_auto_batch_with_http_info(auto_batch, **kwargs)  # noqa: E501
             return data
 
-    def create_container_batch_with_http_info(self, entity_list, **kwargs):  # noqa: E501
-        """create_container_batch  # noqa: E501
+    def create_container_auto_batch_with_http_info(self, auto_batch, **kwargs):  # noqa: E501
+        """create_container_auto_batch  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.create_container_batch_with_http_info(entity_list, async=True)
+        >>> thread = api.create_container_auto_batch_with_http_info(auto_batch, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param list[ContainerEntity] entity_list: (required)
-        :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
-        :param str editgroup_id: Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)
-        :param str description:
-        :param str extra:
-        :return: list[EntityEdit]
+        :param ContainerAutoBatch auto_batch: (required)
+        :return: Editgroup
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['entity_list', 'autoaccept', 'editgroup_id', 'description', 'extra']  # noqa: E501
+        all_params = ['auto_batch']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -488,28 +480,20 @@ class DefaultApi(object):
             if key not in all_params:
                 raise TypeError(
                     "Got an unexpected keyword argument '%s'"
-                    " to method create_container_batch" % key
+                    " to method create_container_auto_batch" % key
                 )
             params[key] = val
         del params['kwargs']
-        # verify the required parameter 'entity_list' is set
-        if ('entity_list' not in params or
-                params['entity_list'] is None):
-            raise ValueError("Missing the required parameter `entity_list` when calling `create_container_batch`")  # noqa: E501
+        # verify the required parameter 'auto_batch' is set
+        if ('auto_batch' not in params or
+                params['auto_batch'] is None):
+            raise ValueError("Missing the required parameter `auto_batch` when calling `create_container_auto_batch`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
 
         query_params = []
-        if 'autoaccept' in params:
-            query_params.append(('autoaccept', params['autoaccept']))  # noqa: E501
-        if 'editgroup_id' in params:
-            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
-        if 'description' in params:
-            query_params.append(('description', params['description']))  # noqa: E501
-        if 'extra' in params:
-            query_params.append(('extra', params['extra']))  # noqa: E501
 
         header_params = {}
 
@@ -517,8 +501,8 @@ class DefaultApi(object):
         local_var_files = {}
 
         body_params = None
-        if 'entity_list' in params:
-            body_params = params['entity_list']
+        if 'auto_batch' in params:
+            body_params = params['auto_batch']
         # HTTP header `Accept`
         header_params['Accept'] = self.api_client.select_header_accept(
             ['application/json'])  # noqa: E501
@@ -531,14 +515,14 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/container/batch', 'POST',
+            '/editgroup/auto/container/batch', 'POST',
             path_params,
             query_params,
             header_params,
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type='list[EntityEdit]',  # noqa: E501
+            response_type='Editgroup',  # noqa: E501
             auth_settings=auth_settings,
             async=params.get('async'),
             _return_http_data_only=params.get('_return_http_data_only'),
@@ -546,45 +530,45 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def create_creator(self, entity, editgroup_id, **kwargs):  # noqa: E501
+    def create_creator(self, editgroup_id, entity, **kwargs):  # noqa: E501
         """create_creator  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.create_creator(entity, editgroup_id, async=True)
+        >>> thread = api.create_creator(editgroup_id, entity, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param CreatorEntity entity: (required)
         :param str editgroup_id: (required)
+        :param CreatorEntity entity: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.create_creator_with_http_info(entity, editgroup_id, **kwargs)  # noqa: E501
+            return self.create_creator_with_http_info(editgroup_id, entity, **kwargs)  # noqa: E501
         else:
-            (data) = self.create_creator_with_http_info(entity, editgroup_id, **kwargs)  # noqa: E501
+            (data) = self.create_creator_with_http_info(editgroup_id, entity, **kwargs)  # noqa: E501
             return data
 
-    def create_creator_with_http_info(self, entity, editgroup_id, **kwargs):  # noqa: E501
+    def create_creator_with_http_info(self, editgroup_id, entity, **kwargs):  # noqa: E501
         """create_creator  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.create_creator_with_http_info(entity, editgroup_id, async=True)
+        >>> thread = api.create_creator_with_http_info(editgroup_id, entity, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param CreatorEntity entity: (required)
         :param str editgroup_id: (required)
+        :param CreatorEntity entity: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['entity', 'editgroup_id']  # noqa: E501
+        all_params = ['editgroup_id', 'entity']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -599,22 +583,22 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
-        # verify the required parameter 'entity' is set
-        if ('entity' not in params or
-                params['entity'] is None):
-            raise ValueError("Missing the required parameter `entity` when calling `create_creator`")  # noqa: E501
         # verify the required parameter 'editgroup_id' is set
         if ('editgroup_id' not in params or
                 params['editgroup_id'] is None):
             raise ValueError("Missing the required parameter `editgroup_id` when calling `create_creator`")  # noqa: E501
+        # verify the required parameter 'entity' is set
+        if ('entity' not in params or
+                params['entity'] is None):
+            raise ValueError("Missing the required parameter `entity` when calling `create_creator`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
+        if 'editgroup_id' in params:
+            path_params['editgroup_id'] = params['editgroup_id']  # noqa: E501
 
         query_params = []
-        if 'editgroup_id' in params:
-            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
 
         header_params = {}
 
@@ -636,7 +620,7 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/creator', 'POST',
+            '/editgroup/{editgroup_id}/creator', 'POST',
             path_params,
             query_params,
             header_params,
@@ -651,51 +635,43 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def create_creator_batch(self, entity_list, **kwargs):  # noqa: E501
-        """create_creator_batch  # noqa: E501
+    def create_creator_auto_batch(self, auto_batch, **kwargs):  # noqa: E501
+        """create_creator_auto_batch  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.create_creator_batch(entity_list, async=True)
+        >>> thread = api.create_creator_auto_batch(auto_batch, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param list[CreatorEntity] entity_list: (required)
-        :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
-        :param str editgroup_id: Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)
-        :param str description:
-        :param str extra:
-        :return: list[EntityEdit]
+        :param CreatorAutoBatch auto_batch: (required)
+        :return: Editgroup
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.create_creator_batch_with_http_info(entity_list, **kwargs)  # noqa: E501
+            return self.create_creator_auto_batch_with_http_info(auto_batch, **kwargs)  # noqa: E501
         else:
-            (data) = self.create_creator_batch_with_http_info(entity_list, **kwargs)  # noqa: E501
+            (data) = self.create_creator_auto_batch_with_http_info(auto_batch, **kwargs)  # noqa: E501
             return data
 
-    def create_creator_batch_with_http_info(self, entity_list, **kwargs):  # noqa: E501
-        """create_creator_batch  # noqa: E501
+    def create_creator_auto_batch_with_http_info(self, auto_batch, **kwargs):  # noqa: E501
+        """create_creator_auto_batch  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.create_creator_batch_with_http_info(entity_list, async=True)
+        >>> thread = api.create_creator_auto_batch_with_http_info(auto_batch, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param list[CreatorEntity] entity_list: (required)
-        :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
-        :param str editgroup_id: Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)
-        :param str description:
-        :param str extra:
-        :return: list[EntityEdit]
+        :param CreatorAutoBatch auto_batch: (required)
+        :return: Editgroup
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['entity_list', 'autoaccept', 'editgroup_id', 'description', 'extra']  # noqa: E501
+        all_params = ['auto_batch']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -706,28 +682,20 @@ class DefaultApi(object):
             if key not in all_params:
                 raise TypeError(
                     "Got an unexpected keyword argument '%s'"
-                    " to method create_creator_batch" % key
+                    " to method create_creator_auto_batch" % key
                 )
             params[key] = val
         del params['kwargs']
-        # verify the required parameter 'entity_list' is set
-        if ('entity_list' not in params or
-                params['entity_list'] is None):
-            raise ValueError("Missing the required parameter `entity_list` when calling `create_creator_batch`")  # noqa: E501
+        # verify the required parameter 'auto_batch' is set
+        if ('auto_batch' not in params or
+                params['auto_batch'] is None):
+            raise ValueError("Missing the required parameter `auto_batch` when calling `create_creator_auto_batch`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
 
         query_params = []
-        if 'autoaccept' in params:
-            query_params.append(('autoaccept', params['autoaccept']))  # noqa: E501
-        if 'editgroup_id' in params:
-            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
-        if 'description' in params:
-            query_params.append(('description', params['description']))  # noqa: E501
-        if 'extra' in params:
-            query_params.append(('extra', params['extra']))  # noqa: E501
 
         header_params = {}
 
@@ -735,8 +703,8 @@ class DefaultApi(object):
         local_var_files = {}
 
         body_params = None
-        if 'entity_list' in params:
-            body_params = params['entity_list']
+        if 'auto_batch' in params:
+            body_params = params['auto_batch']
         # HTTP header `Accept`
         header_params['Accept'] = self.api_client.select_header_accept(
             ['application/json'])  # noqa: E501
@@ -749,14 +717,14 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/creator/batch', 'POST',
+            '/editgroup/auto/creator/batch', 'POST',
             path_params,
             query_params,
             header_params,
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type='list[EntityEdit]',  # noqa: E501
+            response_type='Editgroup',  # noqa: E501
             auth_settings=auth_settings,
             async=params.get('async'),
             _return_http_data_only=params.get('_return_http_data_only'),
@@ -974,45 +942,45 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def create_file(self, entity, editgroup_id, **kwargs):  # noqa: E501
+    def create_file(self, editgroup_id, entity, **kwargs):  # noqa: E501
         """create_file  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.create_file(entity, editgroup_id, async=True)
+        >>> thread = api.create_file(editgroup_id, entity, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param FileEntity entity: (required)
         :param str editgroup_id: (required)
+        :param FileEntity entity: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.create_file_with_http_info(entity, editgroup_id, **kwargs)  # noqa: E501
+            return self.create_file_with_http_info(editgroup_id, entity, **kwargs)  # noqa: E501
         else:
-            (data) = self.create_file_with_http_info(entity, editgroup_id, **kwargs)  # noqa: E501
+            (data) = self.create_file_with_http_info(editgroup_id, entity, **kwargs)  # noqa: E501
             return data
 
-    def create_file_with_http_info(self, entity, editgroup_id, **kwargs):  # noqa: E501
+    def create_file_with_http_info(self, editgroup_id, entity, **kwargs):  # noqa: E501
         """create_file  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.create_file_with_http_info(entity, editgroup_id, async=True)
+        >>> thread = api.create_file_with_http_info(editgroup_id, entity, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param FileEntity entity: (required)
         :param str editgroup_id: (required)
+        :param FileEntity entity: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['entity', 'editgroup_id']  # noqa: E501
+        all_params = ['editgroup_id', 'entity']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -1027,22 +995,22 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
-        # verify the required parameter 'entity' is set
-        if ('entity' not in params or
-                params['entity'] is None):
-            raise ValueError("Missing the required parameter `entity` when calling `create_file`")  # noqa: E501
         # verify the required parameter 'editgroup_id' is set
         if ('editgroup_id' not in params or
                 params['editgroup_id'] is None):
             raise ValueError("Missing the required parameter `editgroup_id` when calling `create_file`")  # noqa: E501
+        # verify the required parameter 'entity' is set
+        if ('entity' not in params or
+                params['entity'] is None):
+            raise ValueError("Missing the required parameter `entity` when calling `create_file`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
+        if 'editgroup_id' in params:
+            path_params['editgroup_id'] = params['editgroup_id']  # noqa: E501
 
         query_params = []
-        if 'editgroup_id' in params:
-            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
 
         header_params = {}
 
@@ -1064,7 +1032,7 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/file', 'POST',
+            '/editgroup/{editgroup_id}/file', 'POST',
             path_params,
             query_params,
             header_params,
@@ -1079,51 +1047,43 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def create_file_batch(self, entity_list, **kwargs):  # noqa: E501
-        """create_file_batch  # noqa: E501
+    def create_file_auto_batch(self, auto_batch, **kwargs):  # noqa: E501
+        """create_file_auto_batch  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.create_file_batch(entity_list, async=True)
+        >>> thread = api.create_file_auto_batch(auto_batch, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param list[FileEntity] entity_list: (required)
-        :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
-        :param str editgroup_id: Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)
-        :param str description:
-        :param str extra:
-        :return: list[EntityEdit]
+        :param FileAutoBatch auto_batch: (required)
+        :return: Editgroup
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.create_file_batch_with_http_info(entity_list, **kwargs)  # noqa: E501
+            return self.create_file_auto_batch_with_http_info(auto_batch, **kwargs)  # noqa: E501
         else:
-            (data) = self.create_file_batch_with_http_info(entity_list, **kwargs)  # noqa: E501
+            (data) = self.create_file_auto_batch_with_http_info(auto_batch, **kwargs)  # noqa: E501
             return data
 
-    def create_file_batch_with_http_info(self, entity_list, **kwargs):  # noqa: E501
-        """create_file_batch  # noqa: E501
+    def create_file_auto_batch_with_http_info(self, auto_batch, **kwargs):  # noqa: E501
+        """create_file_auto_batch  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.create_file_batch_with_http_info(entity_list, async=True)
+        >>> thread = api.create_file_auto_batch_with_http_info(auto_batch, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param list[FileEntity] entity_list: (required)
-        :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
-        :param str editgroup_id: Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)
-        :param str description:
-        :param str extra:
-        :return: list[EntityEdit]
+        :param FileAutoBatch auto_batch: (required)
+        :return: Editgroup
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['entity_list', 'autoaccept', 'editgroup_id', 'description', 'extra']  # noqa: E501
+        all_params = ['auto_batch']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -1134,28 +1094,20 @@ class DefaultApi(object):
             if key not in all_params:
                 raise TypeError(
                     "Got an unexpected keyword argument '%s'"
-                    " to method create_file_batch" % key
+                    " to method create_file_auto_batch" % key
                 )
             params[key] = val
         del params['kwargs']
-        # verify the required parameter 'entity_list' is set
-        if ('entity_list' not in params or
-                params['entity_list'] is None):
-            raise ValueError("Missing the required parameter `entity_list` when calling `create_file_batch`")  # noqa: E501
+        # verify the required parameter 'auto_batch' is set
+        if ('auto_batch' not in params or
+                params['auto_batch'] is None):
+            raise ValueError("Missing the required parameter `auto_batch` when calling `create_file_auto_batch`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
 
         query_params = []
-        if 'autoaccept' in params:
-            query_params.append(('autoaccept', params['autoaccept']))  # noqa: E501
-        if 'editgroup_id' in params:
-            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
-        if 'description' in params:
-            query_params.append(('description', params['description']))  # noqa: E501
-        if 'extra' in params:
-            query_params.append(('extra', params['extra']))  # noqa: E501
 
         header_params = {}
 
@@ -1163,8 +1115,8 @@ class DefaultApi(object):
         local_var_files = {}
 
         body_params = None
-        if 'entity_list' in params:
-            body_params = params['entity_list']
+        if 'auto_batch' in params:
+            body_params = params['auto_batch']
         # HTTP header `Accept`
         header_params['Accept'] = self.api_client.select_header_accept(
             ['application/json'])  # noqa: E501
@@ -1177,14 +1129,14 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/file/batch', 'POST',
+            '/editgroup/auto/file/batch', 'POST',
             path_params,
             query_params,
             header_params,
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type='list[EntityEdit]',  # noqa: E501
+            response_type='Editgroup',  # noqa: E501
             auth_settings=auth_settings,
             async=params.get('async'),
             _return_http_data_only=params.get('_return_http_data_only'),
@@ -1192,45 +1144,45 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def create_fileset(self, entity, editgroup_id, **kwargs):  # noqa: E501
+    def create_fileset(self, editgroup_id, entity, **kwargs):  # noqa: E501
         """create_fileset  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.create_fileset(entity, editgroup_id, async=True)
+        >>> thread = api.create_fileset(editgroup_id, entity, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param FilesetEntity entity: (required)
         :param str editgroup_id: (required)
+        :param FilesetEntity entity: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.create_fileset_with_http_info(entity, editgroup_id, **kwargs)  # noqa: E501
+            return self.create_fileset_with_http_info(editgroup_id, entity, **kwargs)  # noqa: E501
         else:
-            (data) = self.create_fileset_with_http_info(entity, editgroup_id, **kwargs)  # noqa: E501
+            (data) = self.create_fileset_with_http_info(editgroup_id, entity, **kwargs)  # noqa: E501
             return data
 
-    def create_fileset_with_http_info(self, entity, editgroup_id, **kwargs):  # noqa: E501
+    def create_fileset_with_http_info(self, editgroup_id, entity, **kwargs):  # noqa: E501
         """create_fileset  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.create_fileset_with_http_info(entity, editgroup_id, async=True)
+        >>> thread = api.create_fileset_with_http_info(editgroup_id, entity, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param FilesetEntity entity: (required)
         :param str editgroup_id: (required)
+        :param FilesetEntity entity: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['entity', 'editgroup_id']  # noqa: E501
+        all_params = ['editgroup_id', 'entity']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -1245,22 +1197,22 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
-        # verify the required parameter 'entity' is set
-        if ('entity' not in params or
-                params['entity'] is None):
-            raise ValueError("Missing the required parameter `entity` when calling `create_fileset`")  # noqa: E501
         # verify the required parameter 'editgroup_id' is set
         if ('editgroup_id' not in params or
                 params['editgroup_id'] is None):
             raise ValueError("Missing the required parameter `editgroup_id` when calling `create_fileset`")  # noqa: E501
+        # verify the required parameter 'entity' is set
+        if ('entity' not in params or
+                params['entity'] is None):
+            raise ValueError("Missing the required parameter `entity` when calling `create_fileset`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
+        if 'editgroup_id' in params:
+            path_params['editgroup_id'] = params['editgroup_id']  # noqa: E501
 
         query_params = []
-        if 'editgroup_id' in params:
-            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
 
         header_params = {}
 
@@ -1282,7 +1234,7 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/fileset', 'POST',
+            '/editgroup/{editgroup_id}/fileset', 'POST',
             path_params,
             query_params,
             header_params,
@@ -1297,51 +1249,43 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def create_fileset_batch(self, entity_list, **kwargs):  # noqa: E501
-        """create_fileset_batch  # noqa: E501
+    def create_fileset_auto_batch(self, auto_batch, **kwargs):  # noqa: E501
+        """create_fileset_auto_batch  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.create_fileset_batch(entity_list, async=True)
+        >>> thread = api.create_fileset_auto_batch(auto_batch, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param list[FilesetEntity] entity_list: (required)
-        :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
-        :param str editgroup_id: Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)
-        :param str description:
-        :param str extra:
-        :return: list[EntityEdit]
+        :param FilesetAutoBatch auto_batch: (required)
+        :return: Editgroup
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.create_fileset_batch_with_http_info(entity_list, **kwargs)  # noqa: E501
+            return self.create_fileset_auto_batch_with_http_info(auto_batch, **kwargs)  # noqa: E501
         else:
-            (data) = self.create_fileset_batch_with_http_info(entity_list, **kwargs)  # noqa: E501
+            (data) = self.create_fileset_auto_batch_with_http_info(auto_batch, **kwargs)  # noqa: E501
             return data
 
-    def create_fileset_batch_with_http_info(self, entity_list, **kwargs):  # noqa: E501
-        """create_fileset_batch  # noqa: E501
+    def create_fileset_auto_batch_with_http_info(self, auto_batch, **kwargs):  # noqa: E501
+        """create_fileset_auto_batch  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.create_fileset_batch_with_http_info(entity_list, async=True)
+        >>> thread = api.create_fileset_auto_batch_with_http_info(auto_batch, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param list[FilesetEntity] entity_list: (required)
-        :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
-        :param str editgroup_id: Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)
-        :param str description:
-        :param str extra:
-        :return: list[EntityEdit]
+        :param FilesetAutoBatch auto_batch: (required)
+        :return: Editgroup
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['entity_list', 'autoaccept', 'editgroup_id', 'description', 'extra']  # noqa: E501
+        all_params = ['auto_batch']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -1352,28 +1296,20 @@ class DefaultApi(object):
             if key not in all_params:
                 raise TypeError(
                     "Got an unexpected keyword argument '%s'"
-                    " to method create_fileset_batch" % key
+                    " to method create_fileset_auto_batch" % key
                 )
             params[key] = val
         del params['kwargs']
-        # verify the required parameter 'entity_list' is set
-        if ('entity_list' not in params or
-                params['entity_list'] is None):
-            raise ValueError("Missing the required parameter `entity_list` when calling `create_fileset_batch`")  # noqa: E501
+        # verify the required parameter 'auto_batch' is set
+        if ('auto_batch' not in params or
+                params['auto_batch'] is None):
+            raise ValueError("Missing the required parameter `auto_batch` when calling `create_fileset_auto_batch`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
 
         query_params = []
-        if 'autoaccept' in params:
-            query_params.append(('autoaccept', params['autoaccept']))  # noqa: E501
-        if 'editgroup_id' in params:
-            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
-        if 'description' in params:
-            query_params.append(('description', params['description']))  # noqa: E501
-        if 'extra' in params:
-            query_params.append(('extra', params['extra']))  # noqa: E501
 
         header_params = {}
 
@@ -1381,8 +1317,8 @@ class DefaultApi(object):
         local_var_files = {}
 
         body_params = None
-        if 'entity_list' in params:
-            body_params = params['entity_list']
+        if 'auto_batch' in params:
+            body_params = params['auto_batch']
         # HTTP header `Accept`
         header_params['Accept'] = self.api_client.select_header_accept(
             ['application/json'])  # noqa: E501
@@ -1395,14 +1331,14 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/fileset/batch', 'POST',
+            '/editgroup/auto/fileset/batch', 'POST',
             path_params,
             query_params,
             header_params,
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type='list[EntityEdit]',  # noqa: E501
+            response_type='Editgroup',  # noqa: E501
             auth_settings=auth_settings,
             async=params.get('async'),
             _return_http_data_only=params.get('_return_http_data_only'),
@@ -1410,45 +1346,45 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def create_release(self, entity, editgroup_id, **kwargs):  # noqa: E501
+    def create_release(self, editgroup_id, entity, **kwargs):  # noqa: E501
         """create_release  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.create_release(entity, editgroup_id, async=True)
+        >>> thread = api.create_release(editgroup_id, entity, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param ReleaseEntity entity: (required)
         :param str editgroup_id: (required)
+        :param ReleaseEntity entity: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.create_release_with_http_info(entity, editgroup_id, **kwargs)  # noqa: E501
+            return self.create_release_with_http_info(editgroup_id, entity, **kwargs)  # noqa: E501
         else:
-            (data) = self.create_release_with_http_info(entity, editgroup_id, **kwargs)  # noqa: E501
+            (data) = self.create_release_with_http_info(editgroup_id, entity, **kwargs)  # noqa: E501
             return data
 
-    def create_release_with_http_info(self, entity, editgroup_id, **kwargs):  # noqa: E501
+    def create_release_with_http_info(self, editgroup_id, entity, **kwargs):  # noqa: E501
         """create_release  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.create_release_with_http_info(entity, editgroup_id, async=True)
+        >>> thread = api.create_release_with_http_info(editgroup_id, entity, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param ReleaseEntity entity: (required)
         :param str editgroup_id: (required)
+        :param ReleaseEntity entity: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['entity', 'editgroup_id']  # noqa: E501
+        all_params = ['editgroup_id', 'entity']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -1463,22 +1399,22 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
-        # verify the required parameter 'entity' is set
-        if ('entity' not in params or
-                params['entity'] is None):
-            raise ValueError("Missing the required parameter `entity` when calling `create_release`")  # noqa: E501
         # verify the required parameter 'editgroup_id' is set
         if ('editgroup_id' not in params or
                 params['editgroup_id'] is None):
             raise ValueError("Missing the required parameter `editgroup_id` when calling `create_release`")  # noqa: E501
+        # verify the required parameter 'entity' is set
+        if ('entity' not in params or
+                params['entity'] is None):
+            raise ValueError("Missing the required parameter `entity` when calling `create_release`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
+        if 'editgroup_id' in params:
+            path_params['editgroup_id'] = params['editgroup_id']  # noqa: E501
 
         query_params = []
-        if 'editgroup_id' in params:
-            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
 
         header_params = {}
 
@@ -1500,7 +1436,7 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/release', 'POST',
+            '/editgroup/{editgroup_id}/release', 'POST',
             path_params,
             query_params,
             header_params,
@@ -1515,51 +1451,43 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def create_release_batch(self, entity_list, **kwargs):  # noqa: E501
-        """create_release_batch  # noqa: E501
+    def create_release_auto_batch(self, auto_batch, **kwargs):  # noqa: E501
+        """create_release_auto_batch  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.create_release_batch(entity_list, async=True)
+        >>> thread = api.create_release_auto_batch(auto_batch, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param list[ReleaseEntity] entity_list: (required)
-        :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
-        :param str editgroup_id: Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)
-        :param str description:
-        :param str extra:
-        :return: list[EntityEdit]
+        :param ReleaseAutoBatch auto_batch: (required)
+        :return: Editgroup
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.create_release_batch_with_http_info(entity_list, **kwargs)  # noqa: E501
+            return self.create_release_auto_batch_with_http_info(auto_batch, **kwargs)  # noqa: E501
         else:
-            (data) = self.create_release_batch_with_http_info(entity_list, **kwargs)  # noqa: E501
+            (data) = self.create_release_auto_batch_with_http_info(auto_batch, **kwargs)  # noqa: E501
             return data
 
-    def create_release_batch_with_http_info(self, entity_list, **kwargs):  # noqa: E501
-        """create_release_batch  # noqa: E501
+    def create_release_auto_batch_with_http_info(self, auto_batch, **kwargs):  # noqa: E501
+        """create_release_auto_batch  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.create_release_batch_with_http_info(entity_list, async=True)
+        >>> thread = api.create_release_auto_batch_with_http_info(auto_batch, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param list[ReleaseEntity] entity_list: (required)
-        :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
-        :param str editgroup_id: Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)
-        :param str description:
-        :param str extra:
-        :return: list[EntityEdit]
+        :param ReleaseAutoBatch auto_batch: (required)
+        :return: Editgroup
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['entity_list', 'autoaccept', 'editgroup_id', 'description', 'extra']  # noqa: E501
+        all_params = ['auto_batch']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -1570,28 +1498,20 @@ class DefaultApi(object):
             if key not in all_params:
                 raise TypeError(
                     "Got an unexpected keyword argument '%s'"
-                    " to method create_release_batch" % key
+                    " to method create_release_auto_batch" % key
                 )
             params[key] = val
         del params['kwargs']
-        # verify the required parameter 'entity_list' is set
-        if ('entity_list' not in params or
-                params['entity_list'] is None):
-            raise ValueError("Missing the required parameter `entity_list` when calling `create_release_batch`")  # noqa: E501
+        # verify the required parameter 'auto_batch' is set
+        if ('auto_batch' not in params or
+                params['auto_batch'] is None):
+            raise ValueError("Missing the required parameter `auto_batch` when calling `create_release_auto_batch`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
 
         query_params = []
-        if 'autoaccept' in params:
-            query_params.append(('autoaccept', params['autoaccept']))  # noqa: E501
-        if 'editgroup_id' in params:
-            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
-        if 'description' in params:
-            query_params.append(('description', params['description']))  # noqa: E501
-        if 'extra' in params:
-            query_params.append(('extra', params['extra']))  # noqa: E501
 
         header_params = {}
 
@@ -1599,8 +1519,8 @@ class DefaultApi(object):
         local_var_files = {}
 
         body_params = None
-        if 'entity_list' in params:
-            body_params = params['entity_list']
+        if 'auto_batch' in params:
+            body_params = params['auto_batch']
         # HTTP header `Accept`
         header_params['Accept'] = self.api_client.select_header_accept(
             ['application/json'])  # noqa: E501
@@ -1613,14 +1533,14 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/release/batch', 'POST',
+            '/editgroup/auto/release/batch', 'POST',
             path_params,
             query_params,
             header_params,
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type='list[EntityEdit]',  # noqa: E501
+            response_type='Editgroup',  # noqa: E501
             auth_settings=auth_settings,
             async=params.get('async'),
             _return_http_data_only=params.get('_return_http_data_only'),
@@ -1628,45 +1548,45 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def create_webcapture(self, entity, editgroup_id, **kwargs):  # noqa: E501
+    def create_webcapture(self, editgroup_id, entity, **kwargs):  # noqa: E501
         """create_webcapture  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.create_webcapture(entity, editgroup_id, async=True)
+        >>> thread = api.create_webcapture(editgroup_id, entity, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param WebcaptureEntity entity: (required)
         :param str editgroup_id: (required)
+        :param WebcaptureEntity entity: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.create_webcapture_with_http_info(entity, editgroup_id, **kwargs)  # noqa: E501
+            return self.create_webcapture_with_http_info(editgroup_id, entity, **kwargs)  # noqa: E501
         else:
-            (data) = self.create_webcapture_with_http_info(entity, editgroup_id, **kwargs)  # noqa: E501
+            (data) = self.create_webcapture_with_http_info(editgroup_id, entity, **kwargs)  # noqa: E501
             return data
 
-    def create_webcapture_with_http_info(self, entity, editgroup_id, **kwargs):  # noqa: E501
+    def create_webcapture_with_http_info(self, editgroup_id, entity, **kwargs):  # noqa: E501
         """create_webcapture  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.create_webcapture_with_http_info(entity, editgroup_id, async=True)
+        >>> thread = api.create_webcapture_with_http_info(editgroup_id, entity, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param WebcaptureEntity entity: (required)
         :param str editgroup_id: (required)
+        :param WebcaptureEntity entity: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['entity', 'editgroup_id']  # noqa: E501
+        all_params = ['editgroup_id', 'entity']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -1681,22 +1601,22 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
-        # verify the required parameter 'entity' is set
-        if ('entity' not in params or
-                params['entity'] is None):
-            raise ValueError("Missing the required parameter `entity` when calling `create_webcapture`")  # noqa: E501
         # verify the required parameter 'editgroup_id' is set
         if ('editgroup_id' not in params or
                 params['editgroup_id'] is None):
             raise ValueError("Missing the required parameter `editgroup_id` when calling `create_webcapture`")  # noqa: E501
+        # verify the required parameter 'entity' is set
+        if ('entity' not in params or
+                params['entity'] is None):
+            raise ValueError("Missing the required parameter `entity` when calling `create_webcapture`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
+        if 'editgroup_id' in params:
+            path_params['editgroup_id'] = params['editgroup_id']  # noqa: E501
 
         query_params = []
-        if 'editgroup_id' in params:
-            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
 
         header_params = {}
 
@@ -1718,7 +1638,7 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/webcapture', 'POST',
+            '/editgroup/{editgroup_id}/webcapture', 'POST',
             path_params,
             query_params,
             header_params,
@@ -1733,51 +1653,43 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def create_webcapture_batch(self, entity_list, **kwargs):  # noqa: E501
-        """create_webcapture_batch  # noqa: E501
+    def create_webcapture_auto_batch(self, auto_batch, **kwargs):  # noqa: E501
+        """create_webcapture_auto_batch  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.create_webcapture_batch(entity_list, async=True)
+        >>> thread = api.create_webcapture_auto_batch(auto_batch, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param list[WebcaptureEntity] entity_list: (required)
-        :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
-        :param str editgroup_id: Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)
-        :param str description:
-        :param str extra:
-        :return: list[EntityEdit]
+        :param WebcaptureAutoBatch auto_batch: (required)
+        :return: Editgroup
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.create_webcapture_batch_with_http_info(entity_list, **kwargs)  # noqa: E501
+            return self.create_webcapture_auto_batch_with_http_info(auto_batch, **kwargs)  # noqa: E501
         else:
-            (data) = self.create_webcapture_batch_with_http_info(entity_list, **kwargs)  # noqa: E501
+            (data) = self.create_webcapture_auto_batch_with_http_info(auto_batch, **kwargs)  # noqa: E501
             return data
 
-    def create_webcapture_batch_with_http_info(self, entity_list, **kwargs):  # noqa: E501
-        """create_webcapture_batch  # noqa: E501
+    def create_webcapture_auto_batch_with_http_info(self, auto_batch, **kwargs):  # noqa: E501
+        """create_webcapture_auto_batch  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.create_webcapture_batch_with_http_info(entity_list, async=True)
+        >>> thread = api.create_webcapture_auto_batch_with_http_info(auto_batch, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param list[WebcaptureEntity] entity_list: (required)
-        :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
-        :param str editgroup_id: Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)
-        :param str description:
-        :param str extra:
-        :return: list[EntityEdit]
+        :param WebcaptureAutoBatch auto_batch: (required)
+        :return: Editgroup
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['entity_list', 'autoaccept', 'editgroup_id', 'description', 'extra']  # noqa: E501
+        all_params = ['auto_batch']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -1788,28 +1700,20 @@ class DefaultApi(object):
             if key not in all_params:
                 raise TypeError(
                     "Got an unexpected keyword argument '%s'"
-                    " to method create_webcapture_batch" % key
+                    " to method create_webcapture_auto_batch" % key
                 )
             params[key] = val
         del params['kwargs']
-        # verify the required parameter 'entity_list' is set
-        if ('entity_list' not in params or
-                params['entity_list'] is None):
-            raise ValueError("Missing the required parameter `entity_list` when calling `create_webcapture_batch`")  # noqa: E501
+        # verify the required parameter 'auto_batch' is set
+        if ('auto_batch' not in params or
+                params['auto_batch'] is None):
+            raise ValueError("Missing the required parameter `auto_batch` when calling `create_webcapture_auto_batch`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
 
         query_params = []
-        if 'autoaccept' in params:
-            query_params.append(('autoaccept', params['autoaccept']))  # noqa: E501
-        if 'editgroup_id' in params:
-            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
-        if 'description' in params:
-            query_params.append(('description', params['description']))  # noqa: E501
-        if 'extra' in params:
-            query_params.append(('extra', params['extra']))  # noqa: E501
 
         header_params = {}
 
@@ -1817,8 +1721,8 @@ class DefaultApi(object):
         local_var_files = {}
 
         body_params = None
-        if 'entity_list' in params:
-            body_params = params['entity_list']
+        if 'auto_batch' in params:
+            body_params = params['auto_batch']
         # HTTP header `Accept`
         header_params['Accept'] = self.api_client.select_header_accept(
             ['application/json'])  # noqa: E501
@@ -1831,14 +1735,14 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/webcapture/batch', 'POST',
+            '/editgroup/auto/webcapture/batch', 'POST',
             path_params,
             query_params,
             header_params,
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type='list[EntityEdit]',  # noqa: E501
+            response_type='Editgroup',  # noqa: E501
             auth_settings=auth_settings,
             async=params.get('async'),
             _return_http_data_only=params.get('_return_http_data_only'),
@@ -1846,45 +1750,45 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def create_work(self, entity, editgroup_id, **kwargs):  # noqa: E501
+    def create_work(self, editgroup_id, entity, **kwargs):  # noqa: E501
         """create_work  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.create_work(entity, editgroup_id, async=True)
+        >>> thread = api.create_work(editgroup_id, entity, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param WorkEntity entity: (required)
         :param str editgroup_id: (required)
+        :param WorkEntity entity: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.create_work_with_http_info(entity, editgroup_id, **kwargs)  # noqa: E501
+            return self.create_work_with_http_info(editgroup_id, entity, **kwargs)  # noqa: E501
         else:
-            (data) = self.create_work_with_http_info(entity, editgroup_id, **kwargs)  # noqa: E501
+            (data) = self.create_work_with_http_info(editgroup_id, entity, **kwargs)  # noqa: E501
             return data
 
-    def create_work_with_http_info(self, entity, editgroup_id, **kwargs):  # noqa: E501
+    def create_work_with_http_info(self, editgroup_id, entity, **kwargs):  # noqa: E501
         """create_work  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.create_work_with_http_info(entity, editgroup_id, async=True)
+        >>> thread = api.create_work_with_http_info(editgroup_id, entity, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param WorkEntity entity: (required)
         :param str editgroup_id: (required)
+        :param WorkEntity entity: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['entity', 'editgroup_id']  # noqa: E501
+        all_params = ['editgroup_id', 'entity']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -1899,22 +1803,22 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
-        # verify the required parameter 'entity' is set
-        if ('entity' not in params or
-                params['entity'] is None):
-            raise ValueError("Missing the required parameter `entity` when calling `create_work`")  # noqa: E501
         # verify the required parameter 'editgroup_id' is set
         if ('editgroup_id' not in params or
                 params['editgroup_id'] is None):
             raise ValueError("Missing the required parameter `editgroup_id` when calling `create_work`")  # noqa: E501
+        # verify the required parameter 'entity' is set
+        if ('entity' not in params or
+                params['entity'] is None):
+            raise ValueError("Missing the required parameter `entity` when calling `create_work`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
+        if 'editgroup_id' in params:
+            path_params['editgroup_id'] = params['editgroup_id']  # noqa: E501
 
         query_params = []
-        if 'editgroup_id' in params:
-            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
 
         header_params = {}
 
@@ -1936,7 +1840,7 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/work', 'POST',
+            '/editgroup/{editgroup_id}/work', 'POST',
             path_params,
             query_params,
             header_params,
@@ -1951,51 +1855,43 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def create_work_batch(self, entity_list, **kwargs):  # noqa: E501
-        """create_work_batch  # noqa: E501
+    def create_work_auto_batch(self, auto_batch, **kwargs):  # noqa: E501
+        """create_work_auto_batch  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.create_work_batch(entity_list, async=True)
+        >>> thread = api.create_work_auto_batch(auto_batch, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param list[WorkEntity] entity_list: (required)
-        :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
-        :param str editgroup_id: Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)
-        :param str description:
-        :param str extra:
-        :return: list[EntityEdit]
+        :param WorkAutoBatch auto_batch: (required)
+        :return: Editgroup
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.create_work_batch_with_http_info(entity_list, **kwargs)  # noqa: E501
+            return self.create_work_auto_batch_with_http_info(auto_batch, **kwargs)  # noqa: E501
         else:
-            (data) = self.create_work_batch_with_http_info(entity_list, **kwargs)  # noqa: E501
+            (data) = self.create_work_auto_batch_with_http_info(auto_batch, **kwargs)  # noqa: E501
             return data
 
-    def create_work_batch_with_http_info(self, entity_list, **kwargs):  # noqa: E501
-        """create_work_batch  # noqa: E501
+    def create_work_auto_batch_with_http_info(self, auto_batch, **kwargs):  # noqa: E501
+        """create_work_auto_batch  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.create_work_batch_with_http_info(entity_list, async=True)
+        >>> thread = api.create_work_auto_batch_with_http_info(auto_batch, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param list[WorkEntity] entity_list: (required)
-        :param bool autoaccept: If true, and editor is authorized, batch is accepted all at once
-        :param str editgroup_id: Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)
-        :param str description:
-        :param str extra:
-        :return: list[EntityEdit]
+        :param WorkAutoBatch auto_batch: (required)
+        :return: Editgroup
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['entity_list', 'autoaccept', 'editgroup_id', 'description', 'extra']  # noqa: E501
+        all_params = ['auto_batch']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -2006,28 +1902,20 @@ class DefaultApi(object):
             if key not in all_params:
                 raise TypeError(
                     "Got an unexpected keyword argument '%s'"
-                    " to method create_work_batch" % key
+                    " to method create_work_auto_batch" % key
                 )
             params[key] = val
         del params['kwargs']
-        # verify the required parameter 'entity_list' is set
-        if ('entity_list' not in params or
-                params['entity_list'] is None):
-            raise ValueError("Missing the required parameter `entity_list` when calling `create_work_batch`")  # noqa: E501
+        # verify the required parameter 'auto_batch' is set
+        if ('auto_batch' not in params or
+                params['auto_batch'] is None):
+            raise ValueError("Missing the required parameter `auto_batch` when calling `create_work_auto_batch`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
 
         query_params = []
-        if 'autoaccept' in params:
-            query_params.append(('autoaccept', params['autoaccept']))  # noqa: E501
-        if 'editgroup_id' in params:
-            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
-        if 'description' in params:
-            query_params.append(('description', params['description']))  # noqa: E501
-        if 'extra' in params:
-            query_params.append(('extra', params['extra']))  # noqa: E501
 
         header_params = {}
 
@@ -2035,8 +1923,8 @@ class DefaultApi(object):
         local_var_files = {}
 
         body_params = None
-        if 'entity_list' in params:
-            body_params = params['entity_list']
+        if 'auto_batch' in params:
+            body_params = params['auto_batch']
         # HTTP header `Accept`
         header_params['Accept'] = self.api_client.select_header_accept(
             ['application/json'])  # noqa: E501
@@ -2049,14 +1937,14 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/work/batch', 'POST',
+            '/editgroup/auto/work/batch', 'POST',
             path_params,
             query_params,
             header_params,
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type='list[EntityEdit]',  # noqa: E501
+            response_type='Editgroup',  # noqa: E501
             auth_settings=auth_settings,
             async=params.get('async'),
             _return_http_data_only=params.get('_return_http_data_only'),
@@ -2064,45 +1952,45 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def delete_container(self, ident, editgroup_id, **kwargs):  # noqa: E501
+    def delete_container(self, editgroup_id, ident, **kwargs):  # noqa: E501
         """delete_container  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.delete_container(ident, editgroup_id, async=True)
+        >>> thread = api.delete_container(editgroup_id, ident, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str ident: (required)
         :param str editgroup_id: (required)
+        :param str ident: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.delete_container_with_http_info(ident, editgroup_id, **kwargs)  # noqa: E501
+            return self.delete_container_with_http_info(editgroup_id, ident, **kwargs)  # noqa: E501
         else:
-            (data) = self.delete_container_with_http_info(ident, editgroup_id, **kwargs)  # noqa: E501
+            (data) = self.delete_container_with_http_info(editgroup_id, ident, **kwargs)  # noqa: E501
             return data
 
-    def delete_container_with_http_info(self, ident, editgroup_id, **kwargs):  # noqa: E501
+    def delete_container_with_http_info(self, editgroup_id, ident, **kwargs):  # noqa: E501
         """delete_container  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.delete_container_with_http_info(ident, editgroup_id, async=True)
+        >>> thread = api.delete_container_with_http_info(editgroup_id, ident, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str ident: (required)
         :param str editgroup_id: (required)
+        :param str ident: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['ident', 'editgroup_id']  # noqa: E501
+        all_params = ['editgroup_id', 'ident']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -2117,24 +2005,24 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
-        # verify the required parameter 'ident' is set
-        if ('ident' not in params or
-                params['ident'] is None):
-            raise ValueError("Missing the required parameter `ident` when calling `delete_container`")  # noqa: E501
         # verify the required parameter 'editgroup_id' is set
         if ('editgroup_id' not in params or
                 params['editgroup_id'] is None):
             raise ValueError("Missing the required parameter `editgroup_id` when calling `delete_container`")  # noqa: E501
+        # verify the required parameter 'ident' is set
+        if ('ident' not in params or
+                params['ident'] is None):
+            raise ValueError("Missing the required parameter `ident` when calling `delete_container`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
+        if 'editgroup_id' in params:
+            path_params['editgroup_id'] = params['editgroup_id']  # noqa: E501
         if 'ident' in params:
             path_params['ident'] = params['ident']  # noqa: E501
 
         query_params = []
-        if 'editgroup_id' in params:
-            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
 
         header_params = {}
 
@@ -2154,7 +2042,7 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/container/{ident}', 'DELETE',
+            '/editgroup/{editgroup_id}/container/{ident}', 'DELETE',
             path_params,
             query_params,
             header_params,
@@ -2169,15 +2057,16 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def delete_container_edit(self, edit_id, **kwargs):  # noqa: E501
+    def delete_container_edit(self, editgroup_id, edit_id, **kwargs):  # noqa: E501
         """delete_container_edit  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.delete_container_edit(edit_id, async=True)
+        >>> thread = api.delete_container_edit(editgroup_id, edit_id, async=True)
         >>> result = thread.get()
 
         :param async bool
+        :param str editgroup_id: (required)
         :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: Success
                  If the method is called asynchronously,
@@ -2185,27 +2074,28 @@ class DefaultApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.delete_container_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+            return self.delete_container_edit_with_http_info(editgroup_id, edit_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.delete_container_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+            (data) = self.delete_container_edit_with_http_info(editgroup_id, edit_id, **kwargs)  # noqa: E501
             return data
 
-    def delete_container_edit_with_http_info(self, edit_id, **kwargs):  # noqa: E501
+    def delete_container_edit_with_http_info(self, editgroup_id, edit_id, **kwargs):  # noqa: E501
         """delete_container_edit  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.delete_container_edit_with_http_info(edit_id, async=True)
+        >>> thread = api.delete_container_edit_with_http_info(editgroup_id, edit_id, async=True)
         >>> result = thread.get()
 
         :param async bool
+        :param str editgroup_id: (required)
         :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: Success
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['edit_id']  # noqa: E501
+        all_params = ['editgroup_id', 'edit_id']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -2220,6 +2110,10 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
+        # verify the required parameter 'editgroup_id' is set
+        if ('editgroup_id' not in params or
+                params['editgroup_id'] is None):
+            raise ValueError("Missing the required parameter `editgroup_id` when calling `delete_container_edit`")  # noqa: E501
         # verify the required parameter 'edit_id' is set
         if ('edit_id' not in params or
                 params['edit_id'] is None):
@@ -2236,6 +2130,8 @@ class DefaultApi(object):
         collection_formats = {}
 
         path_params = {}
+        if 'editgroup_id' in params:
+            path_params['editgroup_id'] = params['editgroup_id']  # noqa: E501
         if 'edit_id' in params:
             path_params['edit_id'] = params['edit_id']  # noqa: E501
 
@@ -2259,7 +2155,7 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/container/edit/{edit_id}', 'DELETE',
+            '/editgroup/{editgroup_id}/container/edit/{edit_id}', 'DELETE',
             path_params,
             query_params,
             header_params,
@@ -2274,45 +2170,45 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def delete_creator(self, ident, editgroup_id, **kwargs):  # noqa: E501
+    def delete_creator(self, editgroup_id, ident, **kwargs):  # noqa: E501
         """delete_creator  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.delete_creator(ident, editgroup_id, async=True)
+        >>> thread = api.delete_creator(editgroup_id, ident, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str ident: (required)
         :param str editgroup_id: (required)
+        :param str ident: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.delete_creator_with_http_info(ident, editgroup_id, **kwargs)  # noqa: E501
+            return self.delete_creator_with_http_info(editgroup_id, ident, **kwargs)  # noqa: E501
         else:
-            (data) = self.delete_creator_with_http_info(ident, editgroup_id, **kwargs)  # noqa: E501
+            (data) = self.delete_creator_with_http_info(editgroup_id, ident, **kwargs)  # noqa: E501
             return data
 
-    def delete_creator_with_http_info(self, ident, editgroup_id, **kwargs):  # noqa: E501
+    def delete_creator_with_http_info(self, editgroup_id, ident, **kwargs):  # noqa: E501
         """delete_creator  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.delete_creator_with_http_info(ident, editgroup_id, async=True)
+        >>> thread = api.delete_creator_with_http_info(editgroup_id, ident, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str ident: (required)
         :param str editgroup_id: (required)
+        :param str ident: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['ident', 'editgroup_id']  # noqa: E501
+        all_params = ['editgroup_id', 'ident']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -2327,24 +2223,24 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
-        # verify the required parameter 'ident' is set
-        if ('ident' not in params or
-                params['ident'] is None):
-            raise ValueError("Missing the required parameter `ident` when calling `delete_creator`")  # noqa: E501
         # verify the required parameter 'editgroup_id' is set
         if ('editgroup_id' not in params or
                 params['editgroup_id'] is None):
             raise ValueError("Missing the required parameter `editgroup_id` when calling `delete_creator`")  # noqa: E501
+        # verify the required parameter 'ident' is set
+        if ('ident' not in params or
+                params['ident'] is None):
+            raise ValueError("Missing the required parameter `ident` when calling `delete_creator`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
+        if 'editgroup_id' in params:
+            path_params['editgroup_id'] = params['editgroup_id']  # noqa: E501
         if 'ident' in params:
             path_params['ident'] = params['ident']  # noqa: E501
 
         query_params = []
-        if 'editgroup_id' in params:
-            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
 
         header_params = {}
 
@@ -2364,7 +2260,7 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/creator/{ident}', 'DELETE',
+            '/editgroup/{editgroup_id}/creator/{ident}', 'DELETE',
             path_params,
             query_params,
             header_params,
@@ -2379,15 +2275,16 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def delete_creator_edit(self, edit_id, **kwargs):  # noqa: E501
+    def delete_creator_edit(self, editgroup_id, edit_id, **kwargs):  # noqa: E501
         """delete_creator_edit  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.delete_creator_edit(edit_id, async=True)
+        >>> thread = api.delete_creator_edit(editgroup_id, edit_id, async=True)
         >>> result = thread.get()
 
         :param async bool
+        :param str editgroup_id: (required)
         :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: Success
                  If the method is called asynchronously,
@@ -2395,27 +2292,28 @@ class DefaultApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.delete_creator_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+            return self.delete_creator_edit_with_http_info(editgroup_id, edit_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.delete_creator_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+            (data) = self.delete_creator_edit_with_http_info(editgroup_id, edit_id, **kwargs)  # noqa: E501
             return data
 
-    def delete_creator_edit_with_http_info(self, edit_id, **kwargs):  # noqa: E501
+    def delete_creator_edit_with_http_info(self, editgroup_id, edit_id, **kwargs):  # noqa: E501
         """delete_creator_edit  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.delete_creator_edit_with_http_info(edit_id, async=True)
+        >>> thread = api.delete_creator_edit_with_http_info(editgroup_id, edit_id, async=True)
         >>> result = thread.get()
 
         :param async bool
+        :param str editgroup_id: (required)
         :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: Success
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['edit_id']  # noqa: E501
+        all_params = ['editgroup_id', 'edit_id']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -2430,6 +2328,10 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
+        # verify the required parameter 'editgroup_id' is set
+        if ('editgroup_id' not in params or
+                params['editgroup_id'] is None):
+            raise ValueError("Missing the required parameter `editgroup_id` when calling `delete_creator_edit`")  # noqa: E501
         # verify the required parameter 'edit_id' is set
         if ('edit_id' not in params or
                 params['edit_id'] is None):
@@ -2446,6 +2348,8 @@ class DefaultApi(object):
         collection_formats = {}
 
         path_params = {}
+        if 'editgroup_id' in params:
+            path_params['editgroup_id'] = params['editgroup_id']  # noqa: E501
         if 'edit_id' in params:
             path_params['edit_id'] = params['edit_id']  # noqa: E501
 
@@ -2469,7 +2373,7 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/creator/edit/{edit_id}', 'DELETE',
+            '/editgroup/{editgroup_id}/creator/edit/{edit_id}', 'DELETE',
             path_params,
             query_params,
             header_params,
@@ -2484,45 +2388,45 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def delete_file(self, ident, editgroup_id, **kwargs):  # noqa: E501
+    def delete_file(self, editgroup_id, ident, **kwargs):  # noqa: E501
         """delete_file  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.delete_file(ident, editgroup_id, async=True)
+        >>> thread = api.delete_file(editgroup_id, ident, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str ident: (required)
         :param str editgroup_id: (required)
+        :param str ident: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.delete_file_with_http_info(ident, editgroup_id, **kwargs)  # noqa: E501
+            return self.delete_file_with_http_info(editgroup_id, ident, **kwargs)  # noqa: E501
         else:
-            (data) = self.delete_file_with_http_info(ident, editgroup_id, **kwargs)  # noqa: E501
+            (data) = self.delete_file_with_http_info(editgroup_id, ident, **kwargs)  # noqa: E501
             return data
 
-    def delete_file_with_http_info(self, ident, editgroup_id, **kwargs):  # noqa: E501
+    def delete_file_with_http_info(self, editgroup_id, ident, **kwargs):  # noqa: E501
         """delete_file  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.delete_file_with_http_info(ident, editgroup_id, async=True)
+        >>> thread = api.delete_file_with_http_info(editgroup_id, ident, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str ident: (required)
         :param str editgroup_id: (required)
+        :param str ident: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['ident', 'editgroup_id']  # noqa: E501
+        all_params = ['editgroup_id', 'ident']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -2537,24 +2441,24 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
-        # verify the required parameter 'ident' is set
-        if ('ident' not in params or
-                params['ident'] is None):
-            raise ValueError("Missing the required parameter `ident` when calling `delete_file`")  # noqa: E501
         # verify the required parameter 'editgroup_id' is set
         if ('editgroup_id' not in params or
                 params['editgroup_id'] is None):
             raise ValueError("Missing the required parameter `editgroup_id` when calling `delete_file`")  # noqa: E501
+        # verify the required parameter 'ident' is set
+        if ('ident' not in params or
+                params['ident'] is None):
+            raise ValueError("Missing the required parameter `ident` when calling `delete_file`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
+        if 'editgroup_id' in params:
+            path_params['editgroup_id'] = params['editgroup_id']  # noqa: E501
         if 'ident' in params:
             path_params['ident'] = params['ident']  # noqa: E501
 
         query_params = []
-        if 'editgroup_id' in params:
-            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
 
         header_params = {}
 
@@ -2574,7 +2478,7 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/file/{ident}', 'DELETE',
+            '/editgroup/{editgroup_id}/file/{ident}', 'DELETE',
             path_params,
             query_params,
             header_params,
@@ -2589,15 +2493,16 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def delete_file_edit(self, edit_id, **kwargs):  # noqa: E501
+    def delete_file_edit(self, editgroup_id, edit_id, **kwargs):  # noqa: E501
         """delete_file_edit  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.delete_file_edit(edit_id, async=True)
+        >>> thread = api.delete_file_edit(editgroup_id, edit_id, async=True)
         >>> result = thread.get()
 
         :param async bool
+        :param str editgroup_id: (required)
         :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: Success
                  If the method is called asynchronously,
@@ -2605,27 +2510,28 @@ class DefaultApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.delete_file_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+            return self.delete_file_edit_with_http_info(editgroup_id, edit_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.delete_file_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+            (data) = self.delete_file_edit_with_http_info(editgroup_id, edit_id, **kwargs)  # noqa: E501
             return data
 
-    def delete_file_edit_with_http_info(self, edit_id, **kwargs):  # noqa: E501
+    def delete_file_edit_with_http_info(self, editgroup_id, edit_id, **kwargs):  # noqa: E501
         """delete_file_edit  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.delete_file_edit_with_http_info(edit_id, async=True)
+        >>> thread = api.delete_file_edit_with_http_info(editgroup_id, edit_id, async=True)
         >>> result = thread.get()
 
         :param async bool
+        :param str editgroup_id: (required)
         :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: Success
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['edit_id']  # noqa: E501
+        all_params = ['editgroup_id', 'edit_id']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -2640,6 +2546,10 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
+        # verify the required parameter 'editgroup_id' is set
+        if ('editgroup_id' not in params or
+                params['editgroup_id'] is None):
+            raise ValueError("Missing the required parameter `editgroup_id` when calling `delete_file_edit`")  # noqa: E501
         # verify the required parameter 'edit_id' is set
         if ('edit_id' not in params or
                 params['edit_id'] is None):
@@ -2656,6 +2566,8 @@ class DefaultApi(object):
         collection_formats = {}
 
         path_params = {}
+        if 'editgroup_id' in params:
+            path_params['editgroup_id'] = params['editgroup_id']  # noqa: E501
         if 'edit_id' in params:
             path_params['edit_id'] = params['edit_id']  # noqa: E501
 
@@ -2679,7 +2591,7 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/file/edit/{edit_id}', 'DELETE',
+            '/editgroup/{editgroup_id}/file/edit/{edit_id}', 'DELETE',
             path_params,
             query_params,
             header_params,
@@ -2694,45 +2606,45 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def delete_fileset(self, ident, editgroup_id, **kwargs):  # noqa: E501
+    def delete_fileset(self, editgroup_id, ident, **kwargs):  # noqa: E501
         """delete_fileset  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.delete_fileset(ident, editgroup_id, async=True)
+        >>> thread = api.delete_fileset(editgroup_id, ident, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str ident: (required)
         :param str editgroup_id: (required)
+        :param str ident: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.delete_fileset_with_http_info(ident, editgroup_id, **kwargs)  # noqa: E501
+            return self.delete_fileset_with_http_info(editgroup_id, ident, **kwargs)  # noqa: E501
         else:
-            (data) = self.delete_fileset_with_http_info(ident, editgroup_id, **kwargs)  # noqa: E501
+            (data) = self.delete_fileset_with_http_info(editgroup_id, ident, **kwargs)  # noqa: E501
             return data
 
-    def delete_fileset_with_http_info(self, ident, editgroup_id, **kwargs):  # noqa: E501
+    def delete_fileset_with_http_info(self, editgroup_id, ident, **kwargs):  # noqa: E501
         """delete_fileset  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.delete_fileset_with_http_info(ident, editgroup_id, async=True)
+        >>> thread = api.delete_fileset_with_http_info(editgroup_id, ident, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str ident: (required)
         :param str editgroup_id: (required)
+        :param str ident: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['ident', 'editgroup_id']  # noqa: E501
+        all_params = ['editgroup_id', 'ident']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -2747,24 +2659,24 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
-        # verify the required parameter 'ident' is set
-        if ('ident' not in params or
-                params['ident'] is None):
-            raise ValueError("Missing the required parameter `ident` when calling `delete_fileset`")  # noqa: E501
         # verify the required parameter 'editgroup_id' is set
         if ('editgroup_id' not in params or
                 params['editgroup_id'] is None):
             raise ValueError("Missing the required parameter `editgroup_id` when calling `delete_fileset`")  # noqa: E501
+        # verify the required parameter 'ident' is set
+        if ('ident' not in params or
+                params['ident'] is None):
+            raise ValueError("Missing the required parameter `ident` when calling `delete_fileset`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
+        if 'editgroup_id' in params:
+            path_params['editgroup_id'] = params['editgroup_id']  # noqa: E501
         if 'ident' in params:
             path_params['ident'] = params['ident']  # noqa: E501
 
         query_params = []
-        if 'editgroup_id' in params:
-            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
 
         header_params = {}
 
@@ -2784,7 +2696,7 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/fileset/{ident}', 'DELETE',
+            '/editgroup/{editgroup_id}/fileset/{ident}', 'DELETE',
             path_params,
             query_params,
             header_params,
@@ -2799,15 +2711,16 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def delete_fileset_edit(self, edit_id, **kwargs):  # noqa: E501
+    def delete_fileset_edit(self, editgroup_id, edit_id, **kwargs):  # noqa: E501
         """delete_fileset_edit  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.delete_fileset_edit(edit_id, async=True)
+        >>> thread = api.delete_fileset_edit(editgroup_id, edit_id, async=True)
         >>> result = thread.get()
 
         :param async bool
+        :param str editgroup_id: (required)
         :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: Success
                  If the method is called asynchronously,
@@ -2815,27 +2728,28 @@ class DefaultApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.delete_fileset_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+            return self.delete_fileset_edit_with_http_info(editgroup_id, edit_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.delete_fileset_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+            (data) = self.delete_fileset_edit_with_http_info(editgroup_id, edit_id, **kwargs)  # noqa: E501
             return data
 
-    def delete_fileset_edit_with_http_info(self, edit_id, **kwargs):  # noqa: E501
+    def delete_fileset_edit_with_http_info(self, editgroup_id, edit_id, **kwargs):  # noqa: E501
         """delete_fileset_edit  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.delete_fileset_edit_with_http_info(edit_id, async=True)
+        >>> thread = api.delete_fileset_edit_with_http_info(editgroup_id, edit_id, async=True)
         >>> result = thread.get()
 
         :param async bool
+        :param str editgroup_id: (required)
         :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: Success
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['edit_id']  # noqa: E501
+        all_params = ['editgroup_id', 'edit_id']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -2850,6 +2764,10 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
+        # verify the required parameter 'editgroup_id' is set
+        if ('editgroup_id' not in params or
+                params['editgroup_id'] is None):
+            raise ValueError("Missing the required parameter `editgroup_id` when calling `delete_fileset_edit`")  # noqa: E501
         # verify the required parameter 'edit_id' is set
         if ('edit_id' not in params or
                 params['edit_id'] is None):
@@ -2866,6 +2784,8 @@ class DefaultApi(object):
         collection_formats = {}
 
         path_params = {}
+        if 'editgroup_id' in params:
+            path_params['editgroup_id'] = params['editgroup_id']  # noqa: E501
         if 'edit_id' in params:
             path_params['edit_id'] = params['edit_id']  # noqa: E501
 
@@ -2889,7 +2809,7 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/fileset/edit/{edit_id}', 'DELETE',
+            '/editgroup/{editgroup_id}/fileset/edit/{edit_id}', 'DELETE',
             path_params,
             query_params,
             header_params,
@@ -2904,45 +2824,45 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def delete_release(self, ident, editgroup_id, **kwargs):  # noqa: E501
+    def delete_release(self, editgroup_id, ident, **kwargs):  # noqa: E501
         """delete_release  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.delete_release(ident, editgroup_id, async=True)
+        >>> thread = api.delete_release(editgroup_id, ident, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str ident: (required)
         :param str editgroup_id: (required)
+        :param str ident: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.delete_release_with_http_info(ident, editgroup_id, **kwargs)  # noqa: E501
+            return self.delete_release_with_http_info(editgroup_id, ident, **kwargs)  # noqa: E501
         else:
-            (data) = self.delete_release_with_http_info(ident, editgroup_id, **kwargs)  # noqa: E501
+            (data) = self.delete_release_with_http_info(editgroup_id, ident, **kwargs)  # noqa: E501
             return data
 
-    def delete_release_with_http_info(self, ident, editgroup_id, **kwargs):  # noqa: E501
+    def delete_release_with_http_info(self, editgroup_id, ident, **kwargs):  # noqa: E501
         """delete_release  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.delete_release_with_http_info(ident, editgroup_id, async=True)
+        >>> thread = api.delete_release_with_http_info(editgroup_id, ident, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str ident: (required)
         :param str editgroup_id: (required)
+        :param str ident: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['ident', 'editgroup_id']  # noqa: E501
+        all_params = ['editgroup_id', 'ident']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -2957,24 +2877,24 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
-        # verify the required parameter 'ident' is set
-        if ('ident' not in params or
-                params['ident'] is None):
-            raise ValueError("Missing the required parameter `ident` when calling `delete_release`")  # noqa: E501
         # verify the required parameter 'editgroup_id' is set
         if ('editgroup_id' not in params or
                 params['editgroup_id'] is None):
             raise ValueError("Missing the required parameter `editgroup_id` when calling `delete_release`")  # noqa: E501
+        # verify the required parameter 'ident' is set
+        if ('ident' not in params or
+                params['ident'] is None):
+            raise ValueError("Missing the required parameter `ident` when calling `delete_release`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
+        if 'editgroup_id' in params:
+            path_params['editgroup_id'] = params['editgroup_id']  # noqa: E501
         if 'ident' in params:
             path_params['ident'] = params['ident']  # noqa: E501
 
         query_params = []
-        if 'editgroup_id' in params:
-            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
 
         header_params = {}
 
@@ -2994,7 +2914,7 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/release/{ident}', 'DELETE',
+            '/editgroup/{editgroup_id}/release/{ident}', 'DELETE',
             path_params,
             query_params,
             header_params,
@@ -3009,15 +2929,16 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def delete_release_edit(self, edit_id, **kwargs):  # noqa: E501
+    def delete_release_edit(self, editgroup_id, edit_id, **kwargs):  # noqa: E501
         """delete_release_edit  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.delete_release_edit(edit_id, async=True)
+        >>> thread = api.delete_release_edit(editgroup_id, edit_id, async=True)
         >>> result = thread.get()
 
         :param async bool
+        :param str editgroup_id: (required)
         :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: Success
                  If the method is called asynchronously,
@@ -3025,27 +2946,28 @@ class DefaultApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.delete_release_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+            return self.delete_release_edit_with_http_info(editgroup_id, edit_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.delete_release_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+            (data) = self.delete_release_edit_with_http_info(editgroup_id, edit_id, **kwargs)  # noqa: E501
             return data
 
-    def delete_release_edit_with_http_info(self, edit_id, **kwargs):  # noqa: E501
+    def delete_release_edit_with_http_info(self, editgroup_id, edit_id, **kwargs):  # noqa: E501
         """delete_release_edit  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.delete_release_edit_with_http_info(edit_id, async=True)
+        >>> thread = api.delete_release_edit_with_http_info(editgroup_id, edit_id, async=True)
         >>> result = thread.get()
 
         :param async bool
+        :param str editgroup_id: (required)
         :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: Success
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['edit_id']  # noqa: E501
+        all_params = ['editgroup_id', 'edit_id']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -3060,6 +2982,10 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
+        # verify the required parameter 'editgroup_id' is set
+        if ('editgroup_id' not in params or
+                params['editgroup_id'] is None):
+            raise ValueError("Missing the required parameter `editgroup_id` when calling `delete_release_edit`")  # noqa: E501
         # verify the required parameter 'edit_id' is set
         if ('edit_id' not in params or
                 params['edit_id'] is None):
@@ -3076,6 +3002,8 @@ class DefaultApi(object):
         collection_formats = {}
 
         path_params = {}
+        if 'editgroup_id' in params:
+            path_params['editgroup_id'] = params['editgroup_id']  # noqa: E501
         if 'edit_id' in params:
             path_params['edit_id'] = params['edit_id']  # noqa: E501
 
@@ -3099,7 +3027,7 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/release/edit/{edit_id}', 'DELETE',
+            '/editgroup/{editgroup_id}/release/edit/{edit_id}', 'DELETE',
             path_params,
             query_params,
             header_params,
@@ -3114,45 +3042,45 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def delete_webcapture(self, ident, editgroup_id, **kwargs):  # noqa: E501
+    def delete_webcapture(self, editgroup_id, ident, **kwargs):  # noqa: E501
         """delete_webcapture  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.delete_webcapture(ident, editgroup_id, async=True)
+        >>> thread = api.delete_webcapture(editgroup_id, ident, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str ident: (required)
         :param str editgroup_id: (required)
+        :param str ident: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.delete_webcapture_with_http_info(ident, editgroup_id, **kwargs)  # noqa: E501
+            return self.delete_webcapture_with_http_info(editgroup_id, ident, **kwargs)  # noqa: E501
         else:
-            (data) = self.delete_webcapture_with_http_info(ident, editgroup_id, **kwargs)  # noqa: E501
+            (data) = self.delete_webcapture_with_http_info(editgroup_id, ident, **kwargs)  # noqa: E501
             return data
 
-    def delete_webcapture_with_http_info(self, ident, editgroup_id, **kwargs):  # noqa: E501
+    def delete_webcapture_with_http_info(self, editgroup_id, ident, **kwargs):  # noqa: E501
         """delete_webcapture  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.delete_webcapture_with_http_info(ident, editgroup_id, async=True)
+        >>> thread = api.delete_webcapture_with_http_info(editgroup_id, ident, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str ident: (required)
         :param str editgroup_id: (required)
+        :param str ident: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['ident', 'editgroup_id']  # noqa: E501
+        all_params = ['editgroup_id', 'ident']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -3167,24 +3095,24 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
-        # verify the required parameter 'ident' is set
-        if ('ident' not in params or
-                params['ident'] is None):
-            raise ValueError("Missing the required parameter `ident` when calling `delete_webcapture`")  # noqa: E501
         # verify the required parameter 'editgroup_id' is set
         if ('editgroup_id' not in params or
                 params['editgroup_id'] is None):
             raise ValueError("Missing the required parameter `editgroup_id` when calling `delete_webcapture`")  # noqa: E501
+        # verify the required parameter 'ident' is set
+        if ('ident' not in params or
+                params['ident'] is None):
+            raise ValueError("Missing the required parameter `ident` when calling `delete_webcapture`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
+        if 'editgroup_id' in params:
+            path_params['editgroup_id'] = params['editgroup_id']  # noqa: E501
         if 'ident' in params:
             path_params['ident'] = params['ident']  # noqa: E501
 
         query_params = []
-        if 'editgroup_id' in params:
-            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
 
         header_params = {}
 
@@ -3204,7 +3132,7 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/webcapture/{ident}', 'DELETE',
+            '/editgroup/{editgroup_id}/webcapture/{ident}', 'DELETE',
             path_params,
             query_params,
             header_params,
@@ -3219,15 +3147,16 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def delete_webcapture_edit(self, edit_id, **kwargs):  # noqa: E501
+    def delete_webcapture_edit(self, editgroup_id, edit_id, **kwargs):  # noqa: E501
         """delete_webcapture_edit  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.delete_webcapture_edit(edit_id, async=True)
+        >>> thread = api.delete_webcapture_edit(editgroup_id, edit_id, async=True)
         >>> result = thread.get()
 
         :param async bool
+        :param str editgroup_id: (required)
         :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: Success
                  If the method is called asynchronously,
@@ -3235,27 +3164,28 @@ class DefaultApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.delete_webcapture_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+            return self.delete_webcapture_edit_with_http_info(editgroup_id, edit_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.delete_webcapture_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+            (data) = self.delete_webcapture_edit_with_http_info(editgroup_id, edit_id, **kwargs)  # noqa: E501
             return data
 
-    def delete_webcapture_edit_with_http_info(self, edit_id, **kwargs):  # noqa: E501
+    def delete_webcapture_edit_with_http_info(self, editgroup_id, edit_id, **kwargs):  # noqa: E501
         """delete_webcapture_edit  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.delete_webcapture_edit_with_http_info(edit_id, async=True)
+        >>> thread = api.delete_webcapture_edit_with_http_info(editgroup_id, edit_id, async=True)
         >>> result = thread.get()
 
         :param async bool
+        :param str editgroup_id: (required)
         :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: Success
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['edit_id']  # noqa: E501
+        all_params = ['editgroup_id', 'edit_id']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -3270,6 +3200,10 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
+        # verify the required parameter 'editgroup_id' is set
+        if ('editgroup_id' not in params or
+                params['editgroup_id'] is None):
+            raise ValueError("Missing the required parameter `editgroup_id` when calling `delete_webcapture_edit`")  # noqa: E501
         # verify the required parameter 'edit_id' is set
         if ('edit_id' not in params or
                 params['edit_id'] is None):
@@ -3286,6 +3220,8 @@ class DefaultApi(object):
         collection_formats = {}
 
         path_params = {}
+        if 'editgroup_id' in params:
+            path_params['editgroup_id'] = params['editgroup_id']  # noqa: E501
         if 'edit_id' in params:
             path_params['edit_id'] = params['edit_id']  # noqa: E501
 
@@ -3309,7 +3245,7 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/webcapture/edit/{edit_id}', 'DELETE',
+            '/editgroup/{editgroup_id}/webcapture/edit/{edit_id}', 'DELETE',
             path_params,
             query_params,
             header_params,
@@ -3324,45 +3260,45 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def delete_work(self, ident, editgroup_id, **kwargs):  # noqa: E501
+    def delete_work(self, editgroup_id, ident, **kwargs):  # noqa: E501
         """delete_work  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.delete_work(ident, editgroup_id, async=True)
+        >>> thread = api.delete_work(editgroup_id, ident, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str ident: (required)
         :param str editgroup_id: (required)
+        :param str ident: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.delete_work_with_http_info(ident, editgroup_id, **kwargs)  # noqa: E501
+            return self.delete_work_with_http_info(editgroup_id, ident, **kwargs)  # noqa: E501
         else:
-            (data) = self.delete_work_with_http_info(ident, editgroup_id, **kwargs)  # noqa: E501
+            (data) = self.delete_work_with_http_info(editgroup_id, ident, **kwargs)  # noqa: E501
             return data
 
-    def delete_work_with_http_info(self, ident, editgroup_id, **kwargs):  # noqa: E501
+    def delete_work_with_http_info(self, editgroup_id, ident, **kwargs):  # noqa: E501
         """delete_work  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.delete_work_with_http_info(ident, editgroup_id, async=True)
+        >>> thread = api.delete_work_with_http_info(editgroup_id, ident, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str ident: (required)
         :param str editgroup_id: (required)
+        :param str ident: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['ident', 'editgroup_id']  # noqa: E501
+        all_params = ['editgroup_id', 'ident']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -3377,24 +3313,24 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
-        # verify the required parameter 'ident' is set
-        if ('ident' not in params or
-                params['ident'] is None):
-            raise ValueError("Missing the required parameter `ident` when calling `delete_work`")  # noqa: E501
         # verify the required parameter 'editgroup_id' is set
         if ('editgroup_id' not in params or
                 params['editgroup_id'] is None):
             raise ValueError("Missing the required parameter `editgroup_id` when calling `delete_work`")  # noqa: E501
+        # verify the required parameter 'ident' is set
+        if ('ident' not in params or
+                params['ident'] is None):
+            raise ValueError("Missing the required parameter `ident` when calling `delete_work`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
+        if 'editgroup_id' in params:
+            path_params['editgroup_id'] = params['editgroup_id']  # noqa: E501
         if 'ident' in params:
             path_params['ident'] = params['ident']  # noqa: E501
 
         query_params = []
-        if 'editgroup_id' in params:
-            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
 
         header_params = {}
 
@@ -3414,7 +3350,7 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/work/{ident}', 'DELETE',
+            '/editgroup/{editgroup_id}/work/{ident}', 'DELETE',
             path_params,
             query_params,
             header_params,
@@ -3429,15 +3365,16 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def delete_work_edit(self, edit_id, **kwargs):  # noqa: E501
+    def delete_work_edit(self, editgroup_id, edit_id, **kwargs):  # noqa: E501
         """delete_work_edit  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.delete_work_edit(edit_id, async=True)
+        >>> thread = api.delete_work_edit(editgroup_id, edit_id, async=True)
         >>> result = thread.get()
 
         :param async bool
+        :param str editgroup_id: (required)
         :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: Success
                  If the method is called asynchronously,
@@ -3445,27 +3382,28 @@ class DefaultApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.delete_work_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+            return self.delete_work_edit_with_http_info(editgroup_id, edit_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.delete_work_edit_with_http_info(edit_id, **kwargs)  # noqa: E501
+            (data) = self.delete_work_edit_with_http_info(editgroup_id, edit_id, **kwargs)  # noqa: E501
             return data
 
-    def delete_work_edit_with_http_info(self, edit_id, **kwargs):  # noqa: E501
+    def delete_work_edit_with_http_info(self, editgroup_id, edit_id, **kwargs):  # noqa: E501
         """delete_work_edit  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.delete_work_edit_with_http_info(edit_id, async=True)
+        >>> thread = api.delete_work_edit_with_http_info(editgroup_id, edit_id, async=True)
         >>> result = thread.get()
 
         :param async bool
+        :param str editgroup_id: (required)
         :param str edit_id: UUID (lower-case, dash-separated, hex-encoded 128-bit) (required)
         :return: Success
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['edit_id']  # noqa: E501
+        all_params = ['editgroup_id', 'edit_id']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -3480,6 +3418,10 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
+        # verify the required parameter 'editgroup_id' is set
+        if ('editgroup_id' not in params or
+                params['editgroup_id'] is None):
+            raise ValueError("Missing the required parameter `editgroup_id` when calling `delete_work_edit`")  # noqa: E501
         # verify the required parameter 'edit_id' is set
         if ('edit_id' not in params or
                 params['edit_id'] is None):
@@ -3496,6 +3438,8 @@ class DefaultApi(object):
         collection_formats = {}
 
         path_params = {}
+        if 'editgroup_id' in params:
+            path_params['editgroup_id'] = params['editgroup_id']  # noqa: E501
         if 'edit_id' in params:
             path_params['edit_id'] = params['edit_id']  # noqa: E501
 
@@ -3519,7 +3463,7 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/work/edit/{edit_id}', 'DELETE',
+            '/editgroup/{editgroup_id}/work/edit/{edit_id}', 'DELETE',
             path_params,
             query_params,
             header_params,
@@ -9014,47 +8958,47 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def update_container(self, ident, entity, editgroup_id, **kwargs):  # noqa: E501
+    def update_container(self, editgroup_id, ident, entity, **kwargs):  # noqa: E501
         """update_container  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.update_container(ident, entity, editgroup_id, async=True)
+        >>> thread = api.update_container(editgroup_id, ident, entity, async=True)
         >>> result = thread.get()
 
         :param async bool
+        :param str editgroup_id: (required)
         :param str ident: (required)
         :param ContainerEntity entity: (required)
-        :param str editgroup_id: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.update_container_with_http_info(ident, entity, editgroup_id, **kwargs)  # noqa: E501
+            return self.update_container_with_http_info(editgroup_id, ident, entity, **kwargs)  # noqa: E501
         else:
-            (data) = self.update_container_with_http_info(ident, entity, editgroup_id, **kwargs)  # noqa: E501
+            (data) = self.update_container_with_http_info(editgroup_id, ident, entity, **kwargs)  # noqa: E501
             return data
 
-    def update_container_with_http_info(self, ident, entity, editgroup_id, **kwargs):  # noqa: E501
+    def update_container_with_http_info(self, editgroup_id, ident, entity, **kwargs):  # noqa: E501
         """update_container  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.update_container_with_http_info(ident, entity, editgroup_id, async=True)
+        >>> thread = api.update_container_with_http_info(editgroup_id, ident, entity, async=True)
         >>> result = thread.get()
 
         :param async bool
+        :param str editgroup_id: (required)
         :param str ident: (required)
         :param ContainerEntity entity: (required)
-        :param str editgroup_id: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['ident', 'entity', 'editgroup_id']  # noqa: E501
+        all_params = ['editgroup_id', 'ident', 'entity']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -9069,6 +9013,10 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
+        # verify the required parameter 'editgroup_id' is set
+        if ('editgroup_id' not in params or
+                params['editgroup_id'] is None):
+            raise ValueError("Missing the required parameter `editgroup_id` when calling `update_container`")  # noqa: E501
         # verify the required parameter 'ident' is set
         if ('ident' not in params or
                 params['ident'] is None):
@@ -9077,20 +9025,16 @@ class DefaultApi(object):
         if ('entity' not in params or
                 params['entity'] is None):
             raise ValueError("Missing the required parameter `entity` when calling `update_container`")  # noqa: E501
-        # verify the required parameter 'editgroup_id' is set
-        if ('editgroup_id' not in params or
-                params['editgroup_id'] is None):
-            raise ValueError("Missing the required parameter `editgroup_id` when calling `update_container`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
+        if 'editgroup_id' in params:
+            path_params['editgroup_id'] = params['editgroup_id']  # noqa: E501
         if 'ident' in params:
             path_params['ident'] = params['ident']  # noqa: E501
 
         query_params = []
-        if 'editgroup_id' in params:
-            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
 
         header_params = {}
 
@@ -9112,7 +9056,7 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/container/{ident}', 'PUT',
+            '/editgroup/{editgroup_id}/container/{ident}', 'PUT',
             path_params,
             query_params,
             header_params,
@@ -9127,47 +9071,47 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def update_creator(self, ident, entity, editgroup_id, **kwargs):  # noqa: E501
+    def update_creator(self, editgroup_id, ident, entity, **kwargs):  # noqa: E501
         """update_creator  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.update_creator(ident, entity, editgroup_id, async=True)
+        >>> thread = api.update_creator(editgroup_id, ident, entity, async=True)
         >>> result = thread.get()
 
         :param async bool
+        :param str editgroup_id: (required)
         :param str ident: (required)
         :param CreatorEntity entity: (required)
-        :param str editgroup_id: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.update_creator_with_http_info(ident, entity, editgroup_id, **kwargs)  # noqa: E501
+            return self.update_creator_with_http_info(editgroup_id, ident, entity, **kwargs)  # noqa: E501
         else:
-            (data) = self.update_creator_with_http_info(ident, entity, editgroup_id, **kwargs)  # noqa: E501
+            (data) = self.update_creator_with_http_info(editgroup_id, ident, entity, **kwargs)  # noqa: E501
             return data
 
-    def update_creator_with_http_info(self, ident, entity, editgroup_id, **kwargs):  # noqa: E501
+    def update_creator_with_http_info(self, editgroup_id, ident, entity, **kwargs):  # noqa: E501
         """update_creator  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.update_creator_with_http_info(ident, entity, editgroup_id, async=True)
+        >>> thread = api.update_creator_with_http_info(editgroup_id, ident, entity, async=True)
         >>> result = thread.get()
 
         :param async bool
+        :param str editgroup_id: (required)
         :param str ident: (required)
         :param CreatorEntity entity: (required)
-        :param str editgroup_id: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['ident', 'entity', 'editgroup_id']  # noqa: E501
+        all_params = ['editgroup_id', 'ident', 'entity']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -9182,6 +9126,10 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
+        # verify the required parameter 'editgroup_id' is set
+        if ('editgroup_id' not in params or
+                params['editgroup_id'] is None):
+            raise ValueError("Missing the required parameter `editgroup_id` when calling `update_creator`")  # noqa: E501
         # verify the required parameter 'ident' is set
         if ('ident' not in params or
                 params['ident'] is None):
@@ -9190,20 +9138,16 @@ class DefaultApi(object):
         if ('entity' not in params or
                 params['entity'] is None):
             raise ValueError("Missing the required parameter `entity` when calling `update_creator`")  # noqa: E501
-        # verify the required parameter 'editgroup_id' is set
-        if ('editgroup_id' not in params or
-                params['editgroup_id'] is None):
-            raise ValueError("Missing the required parameter `editgroup_id` when calling `update_creator`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
+        if 'editgroup_id' in params:
+            path_params['editgroup_id'] = params['editgroup_id']  # noqa: E501
         if 'ident' in params:
             path_params['ident'] = params['ident']  # noqa: E501
 
         query_params = []
-        if 'editgroup_id' in params:
-            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
 
         header_params = {}
 
@@ -9225,7 +9169,7 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/creator/{ident}', 'PUT',
+            '/editgroup/{editgroup_id}/creator/{ident}', 'PUT',
             path_params,
             query_params,
             header_params,
@@ -9462,47 +9406,47 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def update_file(self, ident, entity, editgroup_id, **kwargs):  # noqa: E501
+    def update_file(self, editgroup_id, ident, entity, **kwargs):  # noqa: E501
         """update_file  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.update_file(ident, entity, editgroup_id, async=True)
+        >>> thread = api.update_file(editgroup_id, ident, entity, async=True)
         >>> result = thread.get()
 
         :param async bool
+        :param str editgroup_id: (required)
         :param str ident: (required)
         :param FileEntity entity: (required)
-        :param str editgroup_id: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.update_file_with_http_info(ident, entity, editgroup_id, **kwargs)  # noqa: E501
+            return self.update_file_with_http_info(editgroup_id, ident, entity, **kwargs)  # noqa: E501
         else:
-            (data) = self.update_file_with_http_info(ident, entity, editgroup_id, **kwargs)  # noqa: E501
+            (data) = self.update_file_with_http_info(editgroup_id, ident, entity, **kwargs)  # noqa: E501
             return data
 
-    def update_file_with_http_info(self, ident, entity, editgroup_id, **kwargs):  # noqa: E501
+    def update_file_with_http_info(self, editgroup_id, ident, entity, **kwargs):  # noqa: E501
         """update_file  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.update_file_with_http_info(ident, entity, editgroup_id, async=True)
+        >>> thread = api.update_file_with_http_info(editgroup_id, ident, entity, async=True)
         >>> result = thread.get()
 
         :param async bool
+        :param str editgroup_id: (required)
         :param str ident: (required)
         :param FileEntity entity: (required)
-        :param str editgroup_id: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['ident', 'entity', 'editgroup_id']  # noqa: E501
+        all_params = ['editgroup_id', 'ident', 'entity']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -9517,6 +9461,10 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
+        # verify the required parameter 'editgroup_id' is set
+        if ('editgroup_id' not in params or
+                params['editgroup_id'] is None):
+            raise ValueError("Missing the required parameter `editgroup_id` when calling `update_file`")  # noqa: E501
         # verify the required parameter 'ident' is set
         if ('ident' not in params or
                 params['ident'] is None):
@@ -9525,20 +9473,16 @@ class DefaultApi(object):
         if ('entity' not in params or
                 params['entity'] is None):
             raise ValueError("Missing the required parameter `entity` when calling `update_file`")  # noqa: E501
-        # verify the required parameter 'editgroup_id' is set
-        if ('editgroup_id' not in params or
-                params['editgroup_id'] is None):
-            raise ValueError("Missing the required parameter `editgroup_id` when calling `update_file`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
+        if 'editgroup_id' in params:
+            path_params['editgroup_id'] = params['editgroup_id']  # noqa: E501
         if 'ident' in params:
             path_params['ident'] = params['ident']  # noqa: E501
 
         query_params = []
-        if 'editgroup_id' in params:
-            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
 
         header_params = {}
 
@@ -9560,7 +9504,7 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/file/{ident}', 'PUT',
+            '/editgroup/{editgroup_id}/file/{ident}', 'PUT',
             path_params,
             query_params,
             header_params,
@@ -9575,47 +9519,47 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def update_fileset(self, ident, entity, editgroup_id, **kwargs):  # noqa: E501
+    def update_fileset(self, editgroup_id, ident, entity, **kwargs):  # noqa: E501
         """update_fileset  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.update_fileset(ident, entity, editgroup_id, async=True)
+        >>> thread = api.update_fileset(editgroup_id, ident, entity, async=True)
         >>> result = thread.get()
 
         :param async bool
+        :param str editgroup_id: (required)
         :param str ident: (required)
         :param FilesetEntity entity: (required)
-        :param str editgroup_id: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.update_fileset_with_http_info(ident, entity, editgroup_id, **kwargs)  # noqa: E501
+            return self.update_fileset_with_http_info(editgroup_id, ident, entity, **kwargs)  # noqa: E501
         else:
-            (data) = self.update_fileset_with_http_info(ident, entity, editgroup_id, **kwargs)  # noqa: E501
+            (data) = self.update_fileset_with_http_info(editgroup_id, ident, entity, **kwargs)  # noqa: E501
             return data
 
-    def update_fileset_with_http_info(self, ident, entity, editgroup_id, **kwargs):  # noqa: E501
+    def update_fileset_with_http_info(self, editgroup_id, ident, entity, **kwargs):  # noqa: E501
         """update_fileset  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.update_fileset_with_http_info(ident, entity, editgroup_id, async=True)
+        >>> thread = api.update_fileset_with_http_info(editgroup_id, ident, entity, async=True)
         >>> result = thread.get()
 
         :param async bool
+        :param str editgroup_id: (required)
         :param str ident: (required)
         :param FilesetEntity entity: (required)
-        :param str editgroup_id: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['ident', 'entity', 'editgroup_id']  # noqa: E501
+        all_params = ['editgroup_id', 'ident', 'entity']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -9630,6 +9574,10 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
+        # verify the required parameter 'editgroup_id' is set
+        if ('editgroup_id' not in params or
+                params['editgroup_id'] is None):
+            raise ValueError("Missing the required parameter `editgroup_id` when calling `update_fileset`")  # noqa: E501
         # verify the required parameter 'ident' is set
         if ('ident' not in params or
                 params['ident'] is None):
@@ -9638,20 +9586,16 @@ class DefaultApi(object):
         if ('entity' not in params or
                 params['entity'] is None):
             raise ValueError("Missing the required parameter `entity` when calling `update_fileset`")  # noqa: E501
-        # verify the required parameter 'editgroup_id' is set
-        if ('editgroup_id' not in params or
-                params['editgroup_id'] is None):
-            raise ValueError("Missing the required parameter `editgroup_id` when calling `update_fileset`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
+        if 'editgroup_id' in params:
+            path_params['editgroup_id'] = params['editgroup_id']  # noqa: E501
         if 'ident' in params:
             path_params['ident'] = params['ident']  # noqa: E501
 
         query_params = []
-        if 'editgroup_id' in params:
-            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
 
         header_params = {}
 
@@ -9673,7 +9617,7 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/fileset/{ident}', 'PUT',
+            '/editgroup/{editgroup_id}/fileset/{ident}', 'PUT',
             path_params,
             query_params,
             header_params,
@@ -9688,47 +9632,47 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def update_release(self, ident, entity, editgroup_id, **kwargs):  # noqa: E501
+    def update_release(self, editgroup_id, ident, entity, **kwargs):  # noqa: E501
         """update_release  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.update_release(ident, entity, editgroup_id, async=True)
+        >>> thread = api.update_release(editgroup_id, ident, entity, async=True)
         >>> result = thread.get()
 
         :param async bool
+        :param str editgroup_id: (required)
         :param str ident: (required)
         :param ReleaseEntity entity: (required)
-        :param str editgroup_id: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.update_release_with_http_info(ident, entity, editgroup_id, **kwargs)  # noqa: E501
+            return self.update_release_with_http_info(editgroup_id, ident, entity, **kwargs)  # noqa: E501
         else:
-            (data) = self.update_release_with_http_info(ident, entity, editgroup_id, **kwargs)  # noqa: E501
+            (data) = self.update_release_with_http_info(editgroup_id, ident, entity, **kwargs)  # noqa: E501
             return data
 
-    def update_release_with_http_info(self, ident, entity, editgroup_id, **kwargs):  # noqa: E501
+    def update_release_with_http_info(self, editgroup_id, ident, entity, **kwargs):  # noqa: E501
         """update_release  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.update_release_with_http_info(ident, entity, editgroup_id, async=True)
+        >>> thread = api.update_release_with_http_info(editgroup_id, ident, entity, async=True)
         >>> result = thread.get()
 
         :param async bool
+        :param str editgroup_id: (required)
         :param str ident: (required)
         :param ReleaseEntity entity: (required)
-        :param str editgroup_id: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['ident', 'entity', 'editgroup_id']  # noqa: E501
+        all_params = ['editgroup_id', 'ident', 'entity']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -9743,6 +9687,10 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
+        # verify the required parameter 'editgroup_id' is set
+        if ('editgroup_id' not in params or
+                params['editgroup_id'] is None):
+            raise ValueError("Missing the required parameter `editgroup_id` when calling `update_release`")  # noqa: E501
         # verify the required parameter 'ident' is set
         if ('ident' not in params or
                 params['ident'] is None):
@@ -9751,20 +9699,16 @@ class DefaultApi(object):
         if ('entity' not in params or
                 params['entity'] is None):
             raise ValueError("Missing the required parameter `entity` when calling `update_release`")  # noqa: E501
-        # verify the required parameter 'editgroup_id' is set
-        if ('editgroup_id' not in params or
-                params['editgroup_id'] is None):
-            raise ValueError("Missing the required parameter `editgroup_id` when calling `update_release`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
+        if 'editgroup_id' in params:
+            path_params['editgroup_id'] = params['editgroup_id']  # noqa: E501
         if 'ident' in params:
             path_params['ident'] = params['ident']  # noqa: E501
 
         query_params = []
-        if 'editgroup_id' in params:
-            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
 
         header_params = {}
 
@@ -9786,7 +9730,7 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/release/{ident}', 'PUT',
+            '/editgroup/{editgroup_id}/release/{ident}', 'PUT',
             path_params,
             query_params,
             header_params,
@@ -9801,47 +9745,47 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def update_webcapture(self, ident, entity, editgroup_id, **kwargs):  # noqa: E501
+    def update_webcapture(self, editgroup_id, ident, entity, **kwargs):  # noqa: E501
         """update_webcapture  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.update_webcapture(ident, entity, editgroup_id, async=True)
+        >>> thread = api.update_webcapture(editgroup_id, ident, entity, async=True)
         >>> result = thread.get()
 
         :param async bool
+        :param str editgroup_id: (required)
         :param str ident: (required)
         :param WebcaptureEntity entity: (required)
-        :param str editgroup_id: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.update_webcapture_with_http_info(ident, entity, editgroup_id, **kwargs)  # noqa: E501
+            return self.update_webcapture_with_http_info(editgroup_id, ident, entity, **kwargs)  # noqa: E501
         else:
-            (data) = self.update_webcapture_with_http_info(ident, entity, editgroup_id, **kwargs)  # noqa: E501
+            (data) = self.update_webcapture_with_http_info(editgroup_id, ident, entity, **kwargs)  # noqa: E501
             return data
 
-    def update_webcapture_with_http_info(self, ident, entity, editgroup_id, **kwargs):  # noqa: E501
+    def update_webcapture_with_http_info(self, editgroup_id, ident, entity, **kwargs):  # noqa: E501
         """update_webcapture  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.update_webcapture_with_http_info(ident, entity, editgroup_id, async=True)
+        >>> thread = api.update_webcapture_with_http_info(editgroup_id, ident, entity, async=True)
         >>> result = thread.get()
 
         :param async bool
+        :param str editgroup_id: (required)
         :param str ident: (required)
         :param WebcaptureEntity entity: (required)
-        :param str editgroup_id: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['ident', 'entity', 'editgroup_id']  # noqa: E501
+        all_params = ['editgroup_id', 'ident', 'entity']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -9856,6 +9800,10 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
+        # verify the required parameter 'editgroup_id' is set
+        if ('editgroup_id' not in params or
+                params['editgroup_id'] is None):
+            raise ValueError("Missing the required parameter `editgroup_id` when calling `update_webcapture`")  # noqa: E501
         # verify the required parameter 'ident' is set
         if ('ident' not in params or
                 params['ident'] is None):
@@ -9864,20 +9812,16 @@ class DefaultApi(object):
         if ('entity' not in params or
                 params['entity'] is None):
             raise ValueError("Missing the required parameter `entity` when calling `update_webcapture`")  # noqa: E501
-        # verify the required parameter 'editgroup_id' is set
-        if ('editgroup_id' not in params or
-                params['editgroup_id'] is None):
-            raise ValueError("Missing the required parameter `editgroup_id` when calling `update_webcapture`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
+        if 'editgroup_id' in params:
+            path_params['editgroup_id'] = params['editgroup_id']  # noqa: E501
         if 'ident' in params:
             path_params['ident'] = params['ident']  # noqa: E501
 
         query_params = []
-        if 'editgroup_id' in params:
-            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
 
         header_params = {}
 
@@ -9899,7 +9843,7 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/webcapture/{ident}', 'PUT',
+            '/editgroup/{editgroup_id}/webcapture/{ident}', 'PUT',
             path_params,
             query_params,
             header_params,
@@ -9914,47 +9858,47 @@ class DefaultApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def update_work(self, ident, entity, editgroup_id, **kwargs):  # noqa: E501
+    def update_work(self, editgroup_id, ident, entity, **kwargs):  # noqa: E501
         """update_work  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.update_work(ident, entity, editgroup_id, async=True)
+        >>> thread = api.update_work(editgroup_id, ident, entity, async=True)
         >>> result = thread.get()
 
         :param async bool
+        :param str editgroup_id: (required)
         :param str ident: (required)
         :param WorkEntity entity: (required)
-        :param str editgroup_id: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.update_work_with_http_info(ident, entity, editgroup_id, **kwargs)  # noqa: E501
+            return self.update_work_with_http_info(editgroup_id, ident, entity, **kwargs)  # noqa: E501
         else:
-            (data) = self.update_work_with_http_info(ident, entity, editgroup_id, **kwargs)  # noqa: E501
+            (data) = self.update_work_with_http_info(editgroup_id, ident, entity, **kwargs)  # noqa: E501
             return data
 
-    def update_work_with_http_info(self, ident, entity, editgroup_id, **kwargs):  # noqa: E501
+    def update_work_with_http_info(self, editgroup_id, ident, entity, **kwargs):  # noqa: E501
         """update_work  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.update_work_with_http_info(ident, entity, editgroup_id, async=True)
+        >>> thread = api.update_work_with_http_info(editgroup_id, ident, entity, async=True)
         >>> result = thread.get()
 
         :param async bool
+        :param str editgroup_id: (required)
         :param str ident: (required)
         :param WorkEntity entity: (required)
-        :param str editgroup_id: (required)
         :return: EntityEdit
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['ident', 'entity', 'editgroup_id']  # noqa: E501
+        all_params = ['editgroup_id', 'ident', 'entity']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -9969,6 +9913,10 @@ class DefaultApi(object):
                 )
             params[key] = val
         del params['kwargs']
+        # verify the required parameter 'editgroup_id' is set
+        if ('editgroup_id' not in params or
+                params['editgroup_id'] is None):
+            raise ValueError("Missing the required parameter `editgroup_id` when calling `update_work`")  # noqa: E501
         # verify the required parameter 'ident' is set
         if ('ident' not in params or
                 params['ident'] is None):
@@ -9977,20 +9925,16 @@ class DefaultApi(object):
         if ('entity' not in params or
                 params['entity'] is None):
             raise ValueError("Missing the required parameter `entity` when calling `update_work`")  # noqa: E501
-        # verify the required parameter 'editgroup_id' is set
-        if ('editgroup_id' not in params or
-                params['editgroup_id'] is None):
-            raise ValueError("Missing the required parameter `editgroup_id` when calling `update_work`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
+        if 'editgroup_id' in params:
+            path_params['editgroup_id'] = params['editgroup_id']  # noqa: E501
         if 'ident' in params:
             path_params['ident'] = params['ident']  # noqa: E501
 
         query_params = []
-        if 'editgroup_id' in params:
-            query_params.append(('editgroup_id', params['editgroup_id']))  # noqa: E501
 
         header_params = {}
 
@@ -10012,7 +9956,7 @@ class DefaultApi(object):
         auth_settings = ['Bearer']  # noqa: E501
 
         return self.api_client.call_api(
-            '/work/{ident}', 'PUT',
+            '/editgroup/{editgroup_id}/work/{ident}', 'PUT',
             path_params,
             query_params,
             header_params,

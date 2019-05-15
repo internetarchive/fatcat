@@ -53,8 +53,8 @@ class TestDefaultApi(unittest.TestCase):
         """
         pass
 
-    def test_create_container_batch(self):
-        """Test case for create_container_batch
+    def test_create_container_auto_batch(self):
+        """Test case for create_container_auto_batch
 
         """
         pass
@@ -65,8 +65,8 @@ class TestDefaultApi(unittest.TestCase):
         """
         pass
 
-    def test_create_creator_batch(self):
-        """Test case for create_creator_batch
+    def test_create_creator_auto_batch(self):
+        """Test case for create_creator_auto_batch
 
         """
         pass
@@ -89,8 +89,8 @@ class TestDefaultApi(unittest.TestCase):
         """
         pass
 
-    def test_create_file_batch(self):
-        """Test case for create_file_batch
+    def test_create_file_auto_batch(self):
+        """Test case for create_file_auto_batch
 
         """
         pass
@@ -101,8 +101,8 @@ class TestDefaultApi(unittest.TestCase):
         """
         pass
 
-    def test_create_fileset_batch(self):
-        """Test case for create_fileset_batch
+    def test_create_fileset_auto_batch(self):
+        """Test case for create_fileset_auto_batch
 
         """
         pass
@@ -113,8 +113,8 @@ class TestDefaultApi(unittest.TestCase):
         """
         pass
 
-    def test_create_release_batch(self):
-        """Test case for create_release_batch
+    def test_create_release_auto_batch(self):
+        """Test case for create_release_auto_batch
 
         """
         pass
@@ -125,8 +125,8 @@ class TestDefaultApi(unittest.TestCase):
         """
         pass
 
-    def test_create_webcapture_batch(self):
-        """Test case for create_webcapture_batch
+    def test_create_webcapture_auto_batch(self):
+        """Test case for create_webcapture_auto_batch
 
         """
         pass
@@ -137,8 +137,8 @@ class TestDefaultApi(unittest.TestCase):
         """
         pass
 
-    def test_create_work_batch(self):
-        """Test case for create_work_batch
+    def test_create_work_auto_batch(self):
+        """Test case for create_work_auto_batch
 
         """
         pass
