@@ -126,7 +126,7 @@ class ArxivRawXmlParser():
                 both = abst.split('-----')
                 abst = both[0].strip()
                 orig = both[1].strip()
-            if '$' in abst or '{' in abstr:
+            if '$' in abst or '{' in abst:
                 mime = "application/x-latex"
                 abst_plain = latex2text.latex_to_text(abst)
                 abstracts.append(dict(content=abst_plain, mime="text/plain", lang="en"))

@@ -114,7 +114,8 @@ class JstorXmlParser():
             release_type = "letter"
         elif "[Poem" in title or "[Photograph" in title:
             release_type = None
-        else if title.startswith("[") and title.endswith("]"):
+
+        if title.startswith("[") and title.endswith("]"):
             # strip brackets if that is all that is there (eg, translation or non-english)
             title = title[1:-1]
 

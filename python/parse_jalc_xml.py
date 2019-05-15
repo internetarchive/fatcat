@@ -94,7 +94,7 @@ class JalcXmlParser():
         if date:
             date = date.string
             if len(date) is 10:
-                release_date = datetime.datetime.strptime(state['completed-date'], DATE_FMT).date()
+                release_date = datetime.datetime.strptime(date['completed-date'], DATE_FMT).date()
                 release_year = release_date.year
                 release_date = release_date.isoformat()
             elif len(date) is 4:
