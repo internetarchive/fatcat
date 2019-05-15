@@ -71,7 +71,7 @@ def test_release(api):
     )
     r1.bogus = "asdf"
 
-    r1edit = api.create_release(r1, editgroup_id=eg.editgroup_id)
+    r1edit = api.create_release(eg.editgroup_id, r1)
     api.accept_editgroup(eg.editgroup_id)
     r2 = api.get_release(r1edit.ident)
 
@@ -131,7 +131,7 @@ def test_release(api):
     
     # delete
     eg = quick_eg(api)
-    api.delete_release(r2.ident, editgroup_id=eg.editgroup_id)
+    api.delete_release(eg.editgroup_id, r2.ident)
     api.accept_editgroup(eg.editgroup_id)
     r2 = api.get_release(r2.ident)
     assert r2.state == "deleted"
@@ -178,14 +178,14 @@ def test_empty_fields(api):
         title="something",
         contribs=[ReleaseContrib(raw_name="somebody")],
         ext_ids=ReleaseExtIds())
-    r1edit = api.create_release(r1, editgroup_id=eg.editgroup_id)
+    r1edit = api.create_release(eg.editgroup_id, r1)
 
     with pytest.raises(fatcat_client.rest.ApiException):
         r2 = ReleaseEntity(title="", ext_ids=ReleaseExtIds())
-        api.create_release(r2, editgroup_id=eg.editgroup_id)
+        api.create_release(eg.editgroup_id, r2)
     with pytest.raises(fatcat_client.rest.ApiException):
         r2 = ReleaseEntity(title="something", contribs=[ReleaseContrib(raw_name="")], ext_ids=ReleaseExtIds())
-        api.create_release(r2, editgroup_id=eg.editgroup_id)
+        api.create_release(eg.editgroup_id, r2)
 
 def test_controlled_vocab(api):
 
@@ -193,13 +193,13 @@ def test_controlled_vocab(api):
 
     r1 = ReleaseEntity(title="something", release_type="journal-thingie", ext_ids=ReleaseExtIds())
     with pytest.raises(fatcat_client.rest.ApiException):
-        api.create_release(r1, editgroup_id=eg.editgroup_id)
+        api.create_release(eg.editgroup_id, r1)
     r1.release_type = "article"
-    api.create_release(r1, editgroup_id=eg.editgroup_id)
+    api.create_release(eg.editgroup_id, r1)
 
     r2 = ReleaseEntity(title="something elase", release_stage="pre-print", ext_ids=ReleaseExtIds())
     with pytest.raises(fatcat_client.rest.ApiException):
-        api.create_release(r2, editgroup_id=eg.editgroup_id)
+        api.create_release(eg.editgroup_id, r2)
     r2.release_stage = "published"
-    api.create_release(r2, editgroup_id=eg.editgroup_id)
+    api.create_release(eg.editgroup_id, r2)
 

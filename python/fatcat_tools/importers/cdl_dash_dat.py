@@ -179,7 +179,7 @@ def auto_cdl_dash_dat(api, dat_path, release_id=None, editgroup_id=None):
         except fatcat_client.rest.ApiException:
             pass
     if not release_id:
-        edit = api.create_release(release, editgroup_id=editgroup_id)
+        edit = api.create_release(eg.editgroup_id, release)
         release_id = edit.ident
 
     release = api.get_release(release_id, expand="filesets")
@@ -188,7 +188,7 @@ def auto_cdl_dash_dat(api, dat_path, release_id=None, editgroup_id=None):
         return (None, None, None)
 
     fileset.release_ids = [release.ident]
-    edit = api.create_fileset(fileset, editgroup_id=editgroup_id)
+    edit = api.create_fileset(eg.editgroup_id, fileset)
     fileset = api.get_fileset(edit.ident)
     return (editgroup_id, release, fileset)
 

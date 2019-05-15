@@ -34,20 +34,20 @@ def test_relation_states(api, app):
 
     # WIP container
     eg = quick_eg(api)
-    j2 = api.get_container(api.create_container(j2, editgroup_id=eg.editgroup_id).ident)
+    j2 = api.get_container(api.create_container(eg.editgroup_id, j2).ident)
     rv = app.get('/container/{}'.format(j2.ident))
     assert rv.status_code == 200
 
     # create inter-related entities
     eg = quick_eg(api)
-    j1 = api.get_container(api.create_container(j1, editgroup_id=eg.editgroup_id).ident)
-    c1 = api.get_creator(api.create_creator(c1, editgroup_id=eg.editgroup_id).ident)
+    j1 = api.get_container(api.create_container(eg.editgroup_id, j1).ident)
+    c1 = api.get_creator(api.create_creator(eg.editgroup_id, c1).ident)
     r1.container_id = j1.ident
     r1.contribs = [ReleaseContrib(creator_id=c1.ident)]
-    r1 = api.get_release(api.create_release(r1, editgroup_id=eg.editgroup_id).ident)
-    r2 = api.get_release(api.create_release(r2, editgroup_id=eg.editgroup_id).ident)
+    r1 = api.get_release(api.create_release(eg.editgroup_id, r1).ident)
+    r2 = api.get_release(api.create_release(eg.editgroup_id, r2).ident)
     f1.release_ids = [r1.ident]
-    f1 = api.get_file(api.create_file(f1, editgroup_id=eg.editgroup_id).ident)
+    f1 = api.get_file(api.create_file(eg.editgroup_id, f1).ident)
     api.accept_editgroup(eg.editgroup_id)
 
     r1 = api.get_release(r1.ident, expand="container,creators,files")
@@ -61,7 +61,7 @@ def test_relation_states(api, app):
 
     # delete creator
     eg = quick_eg(api)
-    api.delete_creator(c1.ident, editgroup_id=eg.editgroup_id)
+    api.delete_creator(eg.editgroup_id, c1.ident)
     api.accept_editgroup(eg.editgroup_id)
     rv = app.get('/creator/{}'.format(c1.ident))
     assert rv.status_code == 200 # TODO: HTTP status "Gone"?
@@ -82,7 +82,7 @@ def test_relation_states(api, app):
     # wip container
     eg = quick_eg(api)
     r1.container_id = j2.ident
-    api.update_release(r1.ident, r1, editgroup_id=eg.editgroup_id)
+    api.update_release(eg.editgroup_id, r1.ident, r1)
     api.accept_editgroup(eg.editgroup_id)
 
     r1 = api.get_release(r1.ident, expand="container,creators,files")
@@ -100,9 +100,9 @@ def test_relation_states(api, app):
     r2 = api.get_release(r2.ident, expand="container,creators,files")
     assert r2.files == []
     eg = quick_eg(api)
-    api.update_release(r2.ident, ReleaseEntity(redirect=r1.ident, ext_ids=ReleaseExtIds()), editgroup_id=eg.editgroup_id)
+    api.update_release(eg.editgroup_id, r2.ident, ReleaseEntity(redirect=r1.ident, ext_ids=ReleaseExtIds()))
     f2.release_ids = [r2.ident]
-    f2 = api.get_file(api.create_file(f2, editgroup_id=eg.editgroup_id).ident)
+    f2 = api.get_file(api.create_file(eg.editgroup_id, f2).ident)
     api.accept_editgroup(eg.editgroup_id)
     r2 = api.get_release(r2.ident, expand="container,creators,files")
     assert r2.container_id == j2.ident
@@ -120,7 +120,7 @@ def test_relation_states(api, app):
 
     # delete release
     eg = quick_eg(api)
-    api.delete_release(r2.ident, editgroup_id=eg.editgroup_id)
+    api.delete_release(eg.editgroup_id, r2.ident)
     api.accept_editgroup(eg.editgroup_id)
     r2 = api.get_release(r2.ident, expand="container,creators,files")
     assert r2.container_id is None
@@ -147,26 +147,26 @@ def test_app_entity_states(api, app):
 
     # create inter-related entities
     eg = quick_eg(api)
-    j1 = api.get_container(api.create_container(j1, editgroup_id=eg.editgroup_id).ident)
-    j2 = api.get_container(api.create_container(j2, editgroup_id=eg.editgroup_id).ident)
-    c1 = api.get_creator(api.create_creator(c1, editgroup_id=eg.editgroup_id).ident)
-    c2 = api.get_creator(api.create_creator(c2, editgroup_id=eg.editgroup_id).ident)
+    j1 = api.get_container(api.create_container(eg.editgroup_id, j1).ident)
+    j2 = api.get_container(api.create_container(eg.editgroup_id, j2).ident)
+    c1 = api.get_creator(api.create_creator(eg.editgroup_id, c1).ident)
+    c2 = api.get_creator(api.create_creator(eg.editgroup_id, c2).ident)
     r1.container_id = j1.ident
     r1.contribs = [ReleaseContrib(creator_id=c1.ident)]
-    r1 = api.get_release(api.create_release(r1, editgroup_id=eg.editgroup_id).ident)
-    r2 = api.get_release(api.create_release(r2, editgroup_id=eg.editgroup_id).ident)
+    r1 = api.get_release(api.create_release(eg.editgroup_id, r1).ident)
+    r2 = api.get_release(api.create_release(eg.editgroup_id, r2).ident)
     f1.release_ids = [r1.ident]
-    f1 = api.get_file(api.create_file(f1, editgroup_id=eg.editgroup_id).ident)
-    f2 = api.get_file(api.create_file(f2, editgroup_id=eg.editgroup_id).ident)
+    f1 = api.get_file(api.create_file(eg.editgroup_id, f1).ident)
+    f2 = api.get_file(api.create_file(eg.editgroup_id, f2).ident)
     api.accept_editgroup(eg.editgroup_id)
 
     # create redirects
     eg = quick_eg(api)
-    api.update_container(j2.ident, ContainerEntity(redirect=j1.ident), editgroup_id=eg.editgroup_id)
-    api.update_creator(c2.ident, CreatorEntity(redirect=c1.ident), editgroup_id=eg.editgroup_id)
-    api.update_file(f2.ident, FileEntity(redirect=f1.ident), editgroup_id=eg.editgroup_id)
-    api.update_release(r2.ident, ReleaseEntity(redirect=r1.ident, ext_ids=ReleaseExtIds()), editgroup_id=eg.editgroup_id)
-    api.update_work(r2.work_id, WorkEntity(redirect=r1.work_id), editgroup_id=eg.editgroup_id)
+    api.update_container(eg.editgroup_id, j2.ident, ContainerEntity(redirect=j1.ident))
+    api.update_creator(eg.editgroup_id, c2.ident, CreatorEntity(redirect=c1.ident))
+    api.update_file(eg.editgroup_id, f2.ident, FileEntity(redirect=f1.ident))
+    api.update_release(eg.editgroup_id, r2.ident, ReleaseEntity(redirect=r1.ident, ext_ids=ReleaseExtIds()))
+    api.update_work(eg.editgroup_id, r2.work_id, WorkEntity(redirect=r1.work_id))
     api.accept_editgroup(eg.editgroup_id)
 
     # all entities
@@ -193,11 +193,11 @@ def test_app_entity_states(api, app):
 
     # delete targets
     eg = quick_eg(api)
-    api.delete_container(j1.ident, editgroup_id=eg.editgroup_id)
-    api.delete_creator(c1.ident, editgroup_id=eg.editgroup_id)
-    api.delete_file(f1.ident, editgroup_id=eg.editgroup_id)
-    api.delete_release(r1.ident, editgroup_id=eg.editgroup_id)
-    api.delete_work(r1.work_id, editgroup_id=eg.editgroup_id)
+    api.delete_container(eg.editgroup_id, j1.ident)
+    api.delete_creator(eg.editgroup_id, c1.ident)
+    api.delete_file(eg.editgroup_id, f1.ident)
+    api.delete_release(eg.editgroup_id, r1.ident)
+    api.delete_work(eg.editgroup_id, r1.work_id)
     api.accept_editgroup(eg.editgroup_id)
 
     # all entities

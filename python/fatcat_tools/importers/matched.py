@@ -143,13 +143,14 @@ class MatchedImporter(EntityImporter):
         existing.size = existing.size or fe.size
         existing.md5 = existing.md5 or fe.md5
         existing.sha256 = existing.sha256 or fe.sha256
-        self.api.update_file(existing.ident, existing, editgroup_id=self.get_editgroup_id())
+        self.api.update_file(self.get_editgroup_id(), existing.ident, existing)
         self.counts['update'] += 1
         return False
 
     def insert_batch(self, batch):
-        self.api.create_file_batch(batch,
-            autoaccept=True,
-            description=self.editgroup_description,
-            extra=json.dumps(self.editgroup_extra))
+        self.api.create_file_auto_batch(fatcat_client.FileAutoBatch(
+            editgroup=fatcat_client.Editgroup(
+                description=self.editgroup_description,
+                extra=self.editgroup_extra),
+            entity_list=batch))
 

@@ -15,7 +15,7 @@ def test_editgroup_submit(api):
 
     c1 = CreatorEntity(display_name="test updates")
     eg = quick_eg(api)
-    c1 = api.get_creator(api.create_creator(c1, editgroup_id=eg.editgroup_id).ident)
+    c1 = api.get_creator(api.create_creator(eg.editgroup_id, c1).ident)
 
     eg2 = api.get_editgroup(eg.editgroup_id)
     assert not eg2.submitted
@@ -86,55 +86,32 @@ def test_editgroup_ordering(api):
     assert r1[0].submitted <= r1[1].submitted
 
 
-def test_editgroup_autoaccept(api):
-    # autoaccept changes: editgroups required when, in what combination
+def test_editgroup_auto_batch(api):
 
-    eg = quick_eg(api)
-    c1 = CreatorEntity(display_name="test autoaccept")
-    c2 = CreatorEntity(display_name="test another autoaccept")
+    c1 = CreatorEntity(display_name="test auto_batch")
+    c2 = CreatorEntity(display_name="test another auto_batch")
 
-    with pytest.raises(fatcat_client.rest.ApiException):
-        edits = api.create_creator_batch([c1, c2])
+    eg1 = api.create_creator_auto_batch(CreatorAutoBatch(
+        editgroup=Editgroup(),
+        entity_list=[c1, c2]))
 
-    with pytest.raises(fatcat_client.rest.ApiException):
-        edits = api.create_creator_batch([c1, c2], editgroup_id=eg.editgroup_id, autoaccept=True)
-
-    edits1 = api.create_creator_batch([c1, c2], editgroup_id=eg.editgroup_id)
-    edits2 = api.create_creator_batch([c1, c2], autoaccept=True)
-
-    assert edits1[0].editgroup_id == eg.editgroup_id
-    assert edits1[0].editgroup_id != edits2[1].editgroup_id
-    eg1 = api.get_editgroup(edits1[0].editgroup_id)
-    eg2 = api.get_editgroup(edits2[0].editgroup_id)
-
-    assert not eg1.changelog_index
-    assert eg2.changelog_index
-    #print(edits1)
-    #print(eg1.edits.creators)
-    assert eg1.edits.creators[0].ident in [t.ident for t in edits1]
-    assert eg2.edits.creators[0].ident in [t.ident for t in edits2]
+    assert eg1.changelog_index
+    assert len(eg1.edits.creators) == 2
 
 
 def test_batch_params(api):
 
     eg = quick_eg(api)
-    c1 = CreatorEntity(display_name="test autoaccept")
-    c2 = CreatorEntity(display_name="test another autoaccept")
-
-    with pytest.raises(fatcat_client.rest.ApiException):
-        edits = api.create_creator_batch([c1, c2])
+    c1 = CreatorEntity(display_name="test auto_batch")
+    c2 = CreatorEntity(display_name="test another auto_batch")
 
     desc = "test description"
     extra = dict(a=75, q="thing")
-    edits = api.create_creator_batch([c1, c2], autoaccept=True, description=desc, extra=json.dumps(extra))
-    eg = api.get_editgroup(edits[0].editgroup_id)
+    eg1 = api.create_creator_auto_batch(CreatorAutoBatch(
+        editgroup=Editgroup(
+            description=desc,
+            extra=extra),
+        entity_list=[c1, c2]))
 
-    assert eg.description == desc
-    assert eg.extra == extra
-
-    # currently must manually json dumps() extra field
-    with pytest.raises(fatcat_client.rest.ApiException):
-        api.create_creator_batch([c1, c2], autoaccept=True, description=desc, extra=extra)
-
-    with pytest.raises(fatcat_client.rest.ApiException):
-        api.create_creator_batch([c1, c2], autoaccept=True, description=desc, extra="{")
+    assert eg1.description == desc
+    assert eg1.extra == extra

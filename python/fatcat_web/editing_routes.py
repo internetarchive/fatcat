@@ -63,7 +63,7 @@ def container_create():
                 # no merge or anything hard to do; just create the entity
                 entity = form.to_entity()
                 try:
-                    edit = user_api.create_container(entity, editgroup_id=eg.editgroup_id)
+                    edit = user_api.create_container(eg.editgroup_id, entity)
                 except ApiException as ae:
                     app.log.warning(ae)
                     abort(ae.status)
@@ -98,8 +98,7 @@ def container_edit(ident):
                 # all the tricky logic is in the update method
                 form.update_entity(entity)
                 try:
-                    edit = user_api.update_container(entity.ident, entity,
-                        editgroup_id=eg.editgroup_id)
+                    edit = user_api.update_container(eg.editgroup_id, entity.ident, entity)
                 except ApiException as ae:
                     app.log.warning(ae)
                     abort(ae.status)
@@ -144,7 +143,7 @@ def file_create():
                 # no merge or anything hard to do; just create the entity
                 entity = form.to_entity()
                 try:
-                    edit = user_api.create_file(entity, editgroup_id=eg.editgroup_id)
+                    edit = user_api.create_file(eg.editgroup_id, entity)
                 except ApiException as ae:
                     app.log.warning(ae)
                     abort(ae.status)
@@ -181,8 +180,7 @@ def file_edit(ident):
                 # all the tricky logic is in the update method
                 form.update_entity(entity)
                 try:
-                    edit = user_api.update_file(entity.ident, entity,
-                        editgroup_id=eg.editgroup_id)
+                    edit = user_api.update_file(eg.editgroup_id, entity.ident, entity)
                 except ApiException as ae:
                     app.log.warning(ae)
                     abort(ae.status)
@@ -238,7 +236,7 @@ def release_create():
                 # no merge or anything hard to do; just create the entity
                 entity = form.to_entity()
                 try:
-                    edit = user_api.create_release(entity, editgroup_id=eg.editgroup_id)
+                    edit = user_api.create_release(eg.editgroup_id, entity)
                 except ApiException as ae:
                     app.log.warning(ae)
                     abort(ae.status)
@@ -274,8 +272,7 @@ def release_edit(ident):
                 # all the tricky logic is in the update method
                 form.update_entity(entity)
                 try:
-                    edit = user_api.update_release(entity.ident, entity,
-                        editgroup_id=eg.editgroup_id)
+                    edit = user_api.update_release(eg.editgroup_id, entity.ident, entity)
                 except ApiException as ae:
                     app.log.warning(ae)
                     abort(ae.status)

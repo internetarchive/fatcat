@@ -21,7 +21,7 @@ def test_creators(api):
         extra=dict(a=1, b=5),
     )
 
-    c1edit = api.create_creator(c1, editgroup_id=eg.editgroup_id)
+    c1edit = api.create_creator(eg.editgroup_id, c1)
     api.accept_editgroup(eg.editgroup_id)
     c2 = api.get_creator(c1edit.ident)
 
@@ -44,7 +44,7 @@ def test_creators(api):
     
     # delete
     eg = quick_eg(api)
-    api.delete_creator(c2.ident, editgroup_id=eg.editgroup_id)
+    api.delete_creator(eg.editgroup_id, c2.ident)
     api.accept_editgroup(eg.editgroup_id)
     c2 = api.get_creator(c2.ident)
     assert c2.state == "deleted"

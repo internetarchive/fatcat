@@ -26,7 +26,7 @@ def test_file(api):
         release_ids=[],
     )
 
-    f1edit = api.create_file(f1, editgroup_id=eg.editgroup_id)
+    f1edit = api.create_file(eg.editgroup_id, f1)
     api.accept_editgroup(eg.editgroup_id)
     f2 = api.get_file(f1edit.ident)
 
@@ -50,7 +50,7 @@ def test_file(api):
     
     # delete
     eg = quick_eg(api)
-    api.delete_file(f2.ident, editgroup_id=eg.editgroup_id)
+    api.delete_file(eg.editgroup_id, f2.ident)
     api.accept_editgroup(eg.editgroup_id)
     f2 = api.get_file(f2.ident)
     assert f2.state == "deleted"

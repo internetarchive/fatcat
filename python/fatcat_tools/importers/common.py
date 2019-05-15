@@ -237,17 +237,17 @@ class EntityImporter:
     def create_container(self, entity):
         eg_id = self.get_editgroup_id()
         self.counts['inserted.container'] += 1
-        return self.api.create_container(entity, editgroup_id=eg_id)
+        return self.api.create_container(eg_id, entity)
 
     def create_release(self, entity):
         eg_id = self.get_editgroup_id()
         self.counts['inserted.release'] += 1
-        return self.api.create_release(entity, editgroup_id=eg_id)
+        return self.api.create_release(eg_id, entity)
 
     def create_file(self, entity):
         eg_id = self.get_editgroup_id()
         self.counts['inserted.file'] += 1
-        return self.api.create_file(entity, editgroup_id=eg_id)
+        return self.api.create_file(eg_id, entity)
 
     def updated(self):
         """

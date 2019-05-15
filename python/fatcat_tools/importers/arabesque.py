@@ -186,14 +186,15 @@ class ArabesqueMatchImporter(EntityImporter):
             self.counts['skip-update-too-many-url'] += 1
             return None
         existing.mimetype = existing.mimetype or fe.mimetype
-        edit = self.api.update_file(existing.ident, existing, editgroup_id=self.get_editgroup_id())
+        edit = self.api.update_file(self.get_editgroup_id(), existing.ident, existing)
         self._edits_inflight.append(edit)
         self.counts['update'] += 1
         return False
 
     def insert_batch(self, batch):
-        self.api.create_file_batch(batch,
-            autoaccept=True,
-            description=self.editgroup_description,
-            extra=json.dumps(self.editgroup_extra))
+        self.api.create_file_auto_batch(fatcat_client.FileAutoBatch(
+            editgroup=fatcat_client.Editgroup(
+                description=self.editgroup_description,
+                extra=self.editgroup_extra),
+            entity_list=batch))
 

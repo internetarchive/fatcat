@@ -18,7 +18,7 @@ def test_citation_indexing(api):
         ReleaseRef(key="second", title="the second title"),
         ReleaseRef(key="third", title="a third title"),
     ]
-    r1 = api.get_release(api.create_release(r1, editgroup_id=eg.editgroup_id).ident)
+    r1 = api.get_release(api.create_release(eg.editgroup_id, r1).ident)
     api.accept_editgroup(eg.editgroup_id)
 
     assert r1.refs[0].index == 0
@@ -30,7 +30,7 @@ def test_citation_indexing(api):
 
     r1.refs.pop(1)
     eg = quick_eg(api)
-    api.update_release(r1.ident, r1, editgroup_id=eg.editgroup_id)
+    api.update_release(eg.editgroup_id, r1.ident, r1)
     api.accept_editgroup(eg.editgroup_id)
     r1 = api.get_release(r1.ident)
 
@@ -45,18 +45,18 @@ def test_citation_targets(api):
 
     eg = quick_eg(api)
     r1 = ReleaseEntity(title="the target", ext_ids=ReleaseExtIds())
-    r1 = api.get_release(api.create_release(r1, editgroup_id=eg.editgroup_id).ident)
+    r1 = api.get_release(api.create_release(eg.editgroup_id, r1).ident)
     r2 = ReleaseEntity(title="the citer", ext_ids=ReleaseExtIds())
     r2.refs = [
         ReleaseRef(key="first", title="something else"),
         ReleaseRef(key="second", title="the target title"),
     ]
-    r2 = api.get_release(api.create_release(r2, editgroup_id=eg.editgroup_id).ident)
+    r2 = api.get_release(api.create_release(eg.editgroup_id, r2).ident)
     api.accept_editgroup(eg.editgroup_id)
 
     eg = quick_eg(api)
     r2.refs[1].target_release_id = r1.ident
-    api.update_release(r2.ident, r2, editgroup_id=eg.editgroup_id)
+    api.update_release(eg.editgroup_id, r2.ident, r2)
     api.accept_editgroup(eg.editgroup_id)
     r2 = api.get_release(r2.ident)
     assert r2.refs[0].key == "first"
@@ -76,8 +76,8 @@ def test_citation_empty_array(api):
     r2.refs = []
 
     eg = quick_eg(api)
-    r1 = api.get_release(api.create_release(r1, editgroup_id=eg.editgroup_id).ident)
-    r2 = api.get_release(api.create_release(r2, editgroup_id=eg.editgroup_id).ident)
+    r1 = api.get_release(api.create_release(eg.editgroup_id, r1).ident)
+    r2 = api.get_release(api.create_release(eg.editgroup_id, r2).ident)
     api.accept_editgroup(eg.editgroup_id)
 
     print(r1.refs)
@@ -103,7 +103,7 @@ def test_citation_encoding(api):
     ]
 
     eg = quick_eg(api)
-    r1 = api.get_release(api.create_release(r1, editgroup_id=eg.editgroup_id).ident)
+    r1 = api.get_release(api.create_release(eg.editgroup_id, r1).ident)
     api.accept_editgroup(eg.editgroup_id)
 
     assert title == r1.refs[0].title

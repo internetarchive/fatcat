@@ -13,7 +13,7 @@ def test_webcapture(api):
 
     eg = quick_eg(api)
     r1 = ReleaseEntity(title="test webcapture release", ext_ids=ReleaseExtIds())
-    r1edit = api.create_release(r1, editgroup_id=eg.editgroup_id)
+    r1edit = api.create_release(eg.editgroup_id, r1)
 
     wc1 = WebcaptureEntity(
         original_url = "http://example.site",
@@ -49,7 +49,7 @@ def test_webcapture(api):
         release_ids = [r1edit.ident],
     )
 
-    wc1edit = api.create_webcapture(wc1, editgroup_id=eg.editgroup_id)
+    wc1edit = api.create_webcapture(eg.editgroup_id, wc1)
     api.accept_editgroup(eg.editgroup_id)
     wc2 = api.get_webcapture(wc1edit.ident)
 
@@ -83,7 +83,7 @@ def test_webcapture(api):
     
     # delete
     eg = quick_eg(api)
-    api.delete_webcapture(wc2.ident, editgroup_id=eg.editgroup_id)
+    api.delete_webcapture(eg.editgroup_id, wc2.ident)
     api.accept_editgroup(eg.editgroup_id)
     wc2 = api.get_webcapture(wc2.ident)
     assert wc2.state == "deleted"
@@ -144,10 +144,10 @@ def test_bad_webcapture(api):
                 timestamp="20120102030405")]),
     ]
 
-    api.create_webcapture(good, editgroup_id=eg.editgroup_id)
+    api.create_webcapture(eg.editgroup_id, good)
     for b in bad_list:
         with pytest.raises(fatcat_client.rest.ApiException):
-            api.create_webcapture(b, editgroup_id=eg.editgroup_id)
+            api.create_webcapture(eg.editgroup_id, b)
 
     with pytest.raises(ValueError):
         # missing/empty CDX url

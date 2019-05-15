@@ -207,7 +207,7 @@ def auto_wayback_static(api, release_id, wayback_url, editgroup_id=None):
                 git_rev=git_rev,
                 agent="fatcat_tools.auto_wayback_static")))
         editgroup_id = eg.editgroup_id
-    edit = api.create_webcapture(wc, editgroup_id=editgroup_id)
+    edit = api.create_webcapture(eg.editgroup_id, wc)
     return (editgroup_id, edit)
 
 def main():

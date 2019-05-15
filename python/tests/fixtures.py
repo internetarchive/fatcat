@@ -57,13 +57,13 @@ def api_dummy_entities(api):
     )
 
     eg = quick_eg(api)
-    c1 = api.get_creator(api.create_creator(c1, editgroup_id=eg.editgroup_id).ident)
-    j1 = api.get_container(api.create_container(j1, editgroup_id=eg.editgroup_id).ident)
-    r1 = api.get_release(api.create_release(r1, editgroup_id=eg.editgroup_id).ident)
+    c1 = api.get_creator(api.create_creator(eg.editgroup_id, c1).ident)
+    j1 = api.get_container(api.create_container(eg.editgroup_id, j1).ident)
+    r1 = api.get_release(api.create_release(eg.editgroup_id, r1).ident)
     w1 = api.get_work(r1.work_id)
-    f1 = api.get_file(api.create_file(f1, editgroup_id=eg.editgroup_id).ident)
-    fs1 = api.get_fileset(api.create_fileset(fs1, editgroup_id=eg.editgroup_id).ident)
-    wc1 = api.get_webcapture(api.create_webcapture(wc1, editgroup_id=eg.editgroup_id).ident)
+    f1 = api.get_file(api.create_file(eg.editgroup_id, f1).ident)
+    fs1 = api.get_fileset(api.create_fileset(eg.editgroup_id, fs1).ident)
+    wc1 = api.get_webcapture(api.create_webcapture(eg.editgroup_id, wc1).ident)
 
     return {
         "api": api,

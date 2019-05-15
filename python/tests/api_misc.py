@@ -38,5 +38,5 @@ def test_unexpected_body(api):
         sha1="88888888888888892dd2657a1e3c992b5dc45dd2",
     )
     f1.urls = [dict(url="http://thing", rel="repository", asdf="blue")]
-    api.create_file(f1, editgroup_id=eg.editgroup_id)
+    api.create_file(eg.editgroup_id, f1)
 

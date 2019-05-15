@@ -21,7 +21,7 @@ def test_container(api):
         extra=dict(a=1, b=2),
     )
 
-    c1edit = api.create_container(c1, editgroup_id=eg.editgroup_id)
+    c1edit = api.create_container(eg.editgroup_id, c1)
     api.accept_editgroup(eg.editgroup_id)
     c2 = api.get_container(c1edit.ident)
 
@@ -44,7 +44,7 @@ def test_container(api):
     
     # delete
     eg = quick_eg(api)
-    api.delete_container(c2.ident, editgroup_id=eg.editgroup_id)
+    api.delete_container(eg.editgroup_id, c2.ident)
     api.accept_editgroup(eg.editgroup_id)
     c2 = api.get_container(c2.ident)
     assert c2.state == "deleted"

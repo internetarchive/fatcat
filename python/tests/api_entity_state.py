@@ -37,8 +37,8 @@ def test_redirect_entity(api):
 
     # create two creators
     eg = quick_eg(api)
-    c1_edit = api.create_creator(c1, editgroup_id=eg.editgroup_id)
-    c2_edit = api.create_creator(c2, editgroup_id=eg.editgroup_id)
+    c1_edit = api.create_creator(eg.editgroup_id, c1)
+    c2_edit = api.create_creator(eg.editgroup_id, c2)
     c1 = api.get_creator(c1_edit.ident)
     c2 = api.get_creator(c2_edit.ident)
     assert c1_edit.prev_revision is None
@@ -50,7 +50,7 @@ def test_redirect_entity(api):
     # merge second into first
     c2_redirect = CreatorEntity(redirect=c1.ident)
     eg = quick_eg(api)
-    merge_edit = api.update_creator(c2.ident, c2_redirect, editgroup_id=eg.editgroup_id)
+    merge_edit = api.update_creator(eg.editgroup_id, c2.ident, c2_redirect)
     assert merge_edit.prev_revision == c2.revision
     redirs = api.get_creator_redirects(c1.ident)
     assert redirs == []
@@ -76,7 +76,7 @@ def test_redirect_entity(api):
     # update first; check that get on second updates
     c1.display_name = "test one one"
     eg = quick_eg(api)
-    update_edit = api.update_creator(c1.ident, c1, editgroup_id=eg.editgroup_id)
+    update_edit = api.update_creator(eg.editgroup_id, c1.ident, c1)
     assert update_edit.prev_revision == c1.revision
     api.accept_editgroup(eg.editgroup_id)
     res = api.get_creator(c2.ident)
@@ -85,7 +85,7 @@ def test_redirect_entity(api):
 
     # delete first; check that second is deleted (but state is redirect)
     eg = quick_eg(api)
-    del_edit = api.delete_creator(c1.ident, editgroup_id=eg.editgroup_id)
+    del_edit = api.delete_creator(eg.editgroup_id, c1.ident)
     assert del_edit.prev_revision == update_edit.revision
     api.accept_editgroup(eg.editgroup_id)
     res = api.get_creator(c1.ident)
@@ -100,7 +100,7 @@ def test_redirect_entity(api):
 
     # undelete first; check that second is a redirect
     eg = quick_eg(api)
-    undelete_edit = api.update_creator(c1.ident, c1, editgroup_id=eg.editgroup_id)
+    undelete_edit = api.update_creator(eg.editgroup_id, c1.ident, c1)
     assert undelete_edit.prev_revision is None
     api.accept_editgroup(eg.editgroup_id)
     res = api.get_creator(c2.ident)
@@ -113,7 +113,7 @@ def test_redirect_entity(api):
     assert c2.revision
     assert c2.redirect is None
     eg = quick_eg(api)
-    update_edit = api.update_creator(c2.ident, c2, editgroup_id=eg.editgroup_id)
+    update_edit = api.update_creator(eg.editgroup_id, c2.ident, c2)
     # prev_revision should be none after an un-redirect
     assert update_edit.prev_revision is None
     redirs = api.get_creator_redirects(c1.ident)
@@ -129,8 +129,8 @@ def test_redirect_entity(api):
 
     # cleanup
     eg = quick_eg(api)
-    api.delete_creator(c1.ident, eg.editgroup_id)
-    api.delete_creator(c2.ident, eg.editgroup_id)
+    api.delete_creator(eg.editgroup_id, c1.ident)
+    api.delete_creator(eg.editgroup_id, c2.ident)
     api.accept_editgroup(eg.editgroup_id)
 
 
@@ -151,7 +151,7 @@ def test_delete_entity(api):
 
     # create
     eg = quick_eg(api)
-    c1 = api.get_creator(api.create_creator(c1, editgroup_id=eg.editgroup_id).ident)
+    c1 = api.get_creator(api.create_creator(eg.editgroup_id, c1).ident)
     api.accept_editgroup(eg.editgroup_id)
     res = api.get_creator(c1.ident)
     assert res.state == "active"
@@ -162,10 +162,10 @@ def test_delete_entity(api):
 
     # delete
     eg = quick_eg(api)
-    api.delete_creator(c1.ident, editgroup_id=eg.editgroup_id)
+    api.delete_creator(eg.editgroup_id, c1.ident)
     with pytest.raises(fatcat_client.rest.ApiException):
         # can't re-delete in same editgroup
-        api.delete_creator(c1.ident, editgroup_id=eg.editgroup_id)
+        api.delete_creator(eg.editgroup_id, c1.ident)
     api.accept_editgroup(eg.editgroup_id)
     res = api.get_creator(c1.ident)
     assert res.state == "deleted"
@@ -177,7 +177,7 @@ def test_delete_entity(api):
     eg = quick_eg(api)
     try:
         # can't re-delete an entity
-        api.delete_creator(c1.ident, editgroup_id=eg.editgroup_id)
+        api.delete_creator(eg.editgroup_id, c1.ident)
         #api.accept_editgroup(eg.editgroup_id)
         assert False
     except fatcat_client.rest.ApiException as e:
@@ -185,7 +185,7 @@ def test_delete_entity(api):
 
     # undelete
     eg = quick_eg(api)
-    api.update_creator(c1.ident, c1, editgroup_id=eg.editgroup_id)
+    api.update_creator(eg.editgroup_id, c1.ident, c1)
     api.accept_editgroup(eg.editgroup_id)
     res = api.get_creator(c1.ident)
     assert res.state == "active"
@@ -196,7 +196,7 @@ def test_delete_entity(api):
 
     # cleanup
     eg = quick_eg(api)
-    api.delete_creator(c1.ident, eg.editgroup_id)
+    api.delete_creator(eg.editgroup_id, c1.ident)
     api.accept_editgroup(eg.editgroup_id)
 
 
@@ -231,9 +231,9 @@ def test_recursive_redirects_entity(api):
 
     # create three creators
     eg = quick_eg(api)
-    c1 = api.get_creator(api.create_creator(c1, editgroup_id=eg.editgroup_id).ident)
-    c2 = api.get_creator(api.create_creator(c2, editgroup_id=eg.editgroup_id).ident)
-    c3 = api.get_creator(api.create_creator(c3, editgroup_id=eg.editgroup_id).ident)
+    c1 = api.get_creator(api.create_creator(eg.editgroup_id, c1).ident)
+    c2 = api.get_creator(api.create_creator(eg.editgroup_id, c2).ident)
+    c3 = api.get_creator(api.create_creator(eg.editgroup_id, c3).ident)
     api.accept_editgroup(eg.editgroup_id)
     res = api.get_creator(c3.ident)
     assert res.display_name == "test three"
@@ -241,7 +241,7 @@ def test_recursive_redirects_entity(api):
     # redirect third to second
     c3_redirect = CreatorEntity(redirect=c2.ident)
     eg = quick_eg(api)
-    api.update_creator(c3.ident, c3_redirect, editgroup_id=eg.editgroup_id)
+    api.update_creator(eg.editgroup_id, c3.ident, c3_redirect)
     api.accept_editgroup(eg.editgroup_id)
     res = api.get_creator(c3.ident)
     assert res.display_name == "test two"
@@ -249,7 +249,7 @@ def test_recursive_redirects_entity(api):
     # redirect second to first: should be an error at merge time
     c2_redirect = CreatorEntity(redirect=c1.ident)
     eg = quick_eg(api)
-    api.update_creator(c2.ident, c2_redirect, editgroup_id=eg.editgroup_id)
+    api.update_creator(eg.editgroup_id, c2.ident, c2_redirect)
     with pytest.raises(fatcat_client.rest.ApiException):
         api.accept_editgroup(eg.editgroup_id)
     res = api.get_creator(c2.ident)
@@ -262,7 +262,7 @@ def test_recursive_redirects_entity(api):
     # redirect first to third: should be an error at merge time
     c1_redirect = CreatorEntity(redirect=c3.ident)
     eg = quick_eg(api)
-    api.update_creator(c1.ident, c1_redirect, editgroup_id=eg.editgroup_id)
+    api.update_creator(eg.editgroup_id, c1.ident, c1_redirect)
     with pytest.raises(fatcat_client.rest.ApiException):
         api.accept_editgroup(eg.editgroup_id)
     res = api.get_creator(c1.ident)
@@ -271,7 +271,7 @@ def test_recursive_redirects_entity(api):
     # update second; check that third updated
     c2.display_name = "test two updated"
     eg = quick_eg(api)
-    api.update_creator(c2.ident, c2, editgroup_id=eg.editgroup_id)
+    api.update_creator(eg.editgroup_id, c2.ident, c2)
     api.accept_editgroup(eg.editgroup_id)
     res = api.get_creator(c2.ident)
     c2 = res
@@ -284,7 +284,7 @@ def test_recursive_redirects_entity(api):
 
     # delete second; check that third updated
     eg = quick_eg(api)
-    api.delete_creator(c2.ident, editgroup_id=eg.editgroup_id)
+    api.delete_creator(eg.editgroup_id, c2.ident)
     api.accept_editgroup(eg.editgroup_id)
     res = api.get_creator(c2.ident)
     assert res.state == "deleted"
@@ -297,7 +297,7 @@ def test_recursive_redirects_entity(api):
     # undelete second; check that third updated
     eg = quick_eg(api)
     c2_undelete = CreatorEntity(revision=c2.revision)
-    api.update_creator(c2.ident, c2_undelete, editgroup_id=eg.editgroup_id)
+    api.update_creator(eg.editgroup_id, c2.ident, c2_undelete)
     api.accept_editgroup(eg.editgroup_id)
     res = api.get_creator(c2.ident)
     assert res.state == "active"
@@ -308,7 +308,7 @@ def test_recursive_redirects_entity(api):
 
     # delete third (a redirect)
     eg = quick_eg(api)
-    api.delete_creator(c3.ident, editgroup_id=eg.editgroup_id)
+    api.delete_creator(eg.editgroup_id, c3.ident)
     api.accept_editgroup(eg.editgroup_id)
     res = api.get_creator(c3.ident)
     assert res.state == "deleted"
@@ -316,7 +316,7 @@ def test_recursive_redirects_entity(api):
 
     # re-redirect third
     eg = quick_eg(api)
-    api.update_creator(c3.ident, c3_redirect, editgroup_id=eg.editgroup_id)
+    api.update_creator(eg.editgroup_id, c3.ident, c3_redirect)
     api.accept_editgroup(eg.editgroup_id)
     res = api.get_creator(c3.ident)
     assert res.state == "redirect"
@@ -324,7 +324,7 @@ def test_recursive_redirects_entity(api):
 
     # delete second, then delete third
     eg = quick_eg(api)
-    api.delete_creator(c2.ident, editgroup_id=eg.editgroup_id)
+    api.delete_creator(eg.editgroup_id, c2.ident)
     api.accept_editgroup(eg.editgroup_id)
     res = api.get_creator(c3.ident)
     assert res.state == "redirect"
@@ -332,7 +332,7 @@ def test_recursive_redirects_entity(api):
     with pytest.raises(fatcat_client.rest.ApiException):
         res = api.lookup_creator(orcid=o2)
     eg = quick_eg(api)
-    api.delete_creator(c3.ident, editgroup_id=eg.editgroup_id)
+    api.delete_creator(eg.editgroup_id, c3.ident)
     api.accept_editgroup(eg.editgroup_id)
     res = api.get_creator(c3.ident)
     assert res.state == "deleted"
@@ -340,7 +340,7 @@ def test_recursive_redirects_entity(api):
 
     # cleanup
     eg = quick_eg(api)
-    api.delete_creator(c1.ident, eg.editgroup_id)
+    api.delete_creator(eg.editgroup_id, c1.ident)
     # c2 already deleted
     # c3 already deleted
     api.accept_editgroup(eg.editgroup_id)
@@ -352,14 +352,14 @@ def test_self_redirect(api):
 
     # create creator
     eg = quick_eg(api)
-    c1 = api.get_creator(api.create_creator(c1, editgroup_id=eg.editgroup_id).ident)
+    c1 = api.get_creator(api.create_creator(eg.editgroup_id, c1).ident)
     api.accept_editgroup(eg.editgroup_id)
 
     # redirect first to itself; should error on PUT
     c1_redirect = CreatorEntity(redirect=c1.ident)
     eg = quick_eg(api)
     with pytest.raises(fatcat_client.rest.ApiException):
-        merge_edit = api.update_creator(c1.ident, c1_redirect, editgroup_id=eg.editgroup_id)
+        merge_edit = api.update_creator(eg.editgroup_id, c1.ident, c1_redirect)
 
 
 def test_wip_redirect(api):
@@ -367,20 +367,20 @@ def test_wip_redirect(api):
     # create first
     c1 = CreatorEntity(display_name="test one")
     eg = quick_eg(api)
-    c1 = api.get_creator(api.create_creator(c1, editgroup_id=eg.editgroup_id).ident)
+    c1 = api.get_creator(api.create_creator(eg.editgroup_id, c1).ident)
     api.accept_editgroup(eg.editgroup_id)
 
     # start creating second entity
     c2 = CreatorEntity(display_name="test two")
     eg = quick_eg(api)
-    c2 = api.get_creator(api.create_creator(c2, editgroup_id=eg.editgroup_id).ident)
+    c2 = api.get_creator(api.create_creator(eg.editgroup_id, c2).ident)
     assert c2.state == "wip"
 
     # redirect first to second (should fail)
     eg = quick_eg(api)
     c1_redirect = CreatorEntity(redirect=c2.ident)
     try:
-        api.update_creator(c1.ident, c1_redirect, editgroup_id=eg.editgroup_id)
+        api.update_creator(eg.editgroup_id, c1.ident, c1_redirect)
         assert False
     except fatcat_client.rest.ApiException as e:
         assert 400 <= e.status < 500
@@ -392,14 +392,14 @@ def test_create_redirect(api):
     # create first
     c1 = CreatorEntity(display_name="test one")
     eg = quick_eg(api)
-    c1 = api.get_creator(api.create_creator(c1, editgroup_id=eg.editgroup_id).ident)
+    c1 = api.get_creator(api.create_creator(eg.editgroup_id, c1).ident)
     api.accept_editgroup(eg.editgroup_id)
 
     # create second
     c2 = CreatorEntity(display_name="blah", redirect=c1.ident)
     eg = quick_eg(api)
     try:
-        api.create_creator(c2, editgroup_id=eg.editgroup_id)
+        api.create_creator(eg.editgroup_id, c2)
         assert False
     except fatcat_client.rest.ApiException as e:
         assert 400 <= e.status < 500
@@ -408,12 +408,12 @@ def test_create_redirect(api):
     # again with releases
     r1 = ReleaseEntity(title="test one", ext_ids=ReleaseExtIds())
     eg = quick_eg(api)
-    r1 = api.get_release(api.create_release(r1, editgroup_id=eg.editgroup_id).ident)
+    r1 = api.get_release(api.create_release(eg.editgroup_id, r1).ident)
     api.accept_editgroup(eg.editgroup_id)
     r2 = ReleaseEntity(title="blah", redirect=c1.ident, ext_ids=ReleaseExtIds())
     eg = quick_eg(api)
     try:
-        api.create_release(r2, editgroup_id=eg.editgroup_id)
+        api.create_release(eg.editgroup_id, r2)
         assert False
     except fatcat_client.rest.ApiException as e:
         assert 400 <= e.status < 500
@@ -426,7 +426,7 @@ def test_required_entity_fields(api):
     # Creator
     try:
         c1 = CreatorEntity()
-        api.create_creator(c1, editgroup_id=eg.editgroup_id)
+        api.create_creator(eg.editgroup_id, c1)
         assert False
     except fatcat_client.rest.ApiException as e:
         assert 400 <= e.status < 500
@@ -435,7 +435,7 @@ def test_required_entity_fields(api):
     # Container
     try:
         c1 = ContainerEntity()
-        api.create_container(c1, editgroup_id=eg.editgroup_id)
+        api.create_container(eg.editgroup_id, c1)
         assert False
     except fatcat_client.rest.ApiException as e:
         assert 400 <= e.status < 500
@@ -444,7 +444,7 @@ def test_required_entity_fields(api):
     # Release
     try:
         c1 = ReleaseEntity(ext_ids=ReleaseExtIds())
-        api.create_release(c1, editgroup_id=eg.editgroup_id)
+        api.create_release(eg.editgroup_id, c1)
         assert False
     except fatcat_client.rest.ApiException as e:
         assert 400 <= e.status < 500
@@ -456,14 +456,14 @@ def test_revert_current_status(api):
 
     # create
     eg = quick_eg(api)
-    c1 = api.get_creator(api.create_creator(c1, editgroup_id=eg.editgroup_id).ident)
+    c1 = api.get_creator(api.create_creator(eg.editgroup_id, c1).ident)
     api.accept_editgroup(eg.editgroup_id)
 
     # try to "revert" to current revision
     eg = quick_eg(api)
     c1_revert = CreatorEntity(revision=c1.revision)
     try:
-        api.update_creator(c1.ident, c1_revert, editgroup_id=eg.editgroup_id)
+        api.update_creator(eg.editgroup_id, c1.ident, c1_revert)
         assert False
     except fatcat_client.rest.ApiException as e:
         assert 400 <= e.status < 500

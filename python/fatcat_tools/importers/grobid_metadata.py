@@ -193,7 +193,8 @@ class GrobidMetadataImporter(EntityImporter):
         return True
 
     def insert_batch(self, batch):
-        self.api.create_file_batch(batch,
-            autoaccept=True,
-            description=self.editgroup_description,
-            extra=json.dumps(self.editgroup_extra))
+        self.api.create_file_auto_batch(fatcat_client.FileAutoBatch(
+            editgroup=fatcat_client.Editgroup(
+                description=self.editgroup_description,
+                extra=self.editgroup_extra),
+            entity_list=batch))

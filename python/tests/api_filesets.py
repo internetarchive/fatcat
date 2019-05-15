@@ -12,7 +12,7 @@ def test_fileset(api):
 
     eg = quick_eg(api)
     r1 = ReleaseEntity(title="test fileset release", ext_ids=ReleaseExtIds())
-    r1edit = api.create_release(r1, editgroup_id=eg.editgroup_id)
+    r1edit = api.create_release(eg.editgroup_id, r1)
 
     fs1 = FilesetEntity(
         manifest = [
@@ -40,7 +40,7 @@ def test_fileset(api):
         release_ids = [r1edit.ident],
     )
 
-    fs1edit = api.create_fileset(fs1, editgroup_id=eg.editgroup_id)
+    fs1edit = api.create_fileset(eg.editgroup_id, fs1)
     api.accept_editgroup(eg.editgroup_id)
     fs2 = api.get_fileset(fs1edit.ident)
 
@@ -63,7 +63,7 @@ def test_fileset(api):
     
     # delete
     eg = quick_eg(api)
-    api.delete_fileset(fs2.ident, editgroup_id=eg.editgroup_id)
+    api.delete_fileset(eg.editgroup_id, fs2.ident)
     api.accept_editgroup(eg.editgroup_id)
     fs2 = api.get_fileset(fs2.ident)
     assert fs2.state == "deleted"
@@ -90,5 +90,5 @@ def test_bad_fileset(api):
 
     for b in bad_list:
         with pytest.raises(fatcat_client.rest.ApiException):
-            api.create_fileset(b, editgroup_id=eg.editgroup_id)
+            api.create_fileset(eg.editgroup_id, b)
 
