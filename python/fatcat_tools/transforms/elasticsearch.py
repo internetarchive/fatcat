@@ -137,7 +137,7 @@ def release_to_elasticsearch(entity, force_bool=True):
         if f.extra and f.extra.get('shadows'):
             # TODO: shadow check goes here
             in_shadows = True
-        is_pdf = 'pdf' in (f.mimetype or '')
+        is_pdf = 'pdf' in (f.mimetype or '') or 'pdf' in url.lower()
         for url in (f.urls or []):
             if url.url.lower().startswith('http'):
                 in_web = True
