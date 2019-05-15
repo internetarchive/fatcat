@@ -658,6 +658,90 @@ definitions:
       extra:
         type: object
         additionalProperties: {}
+  container_auto_batch:
+    type: object
+    required:
+      - editgroup
+      - entity_list
+    properties:
+      editgroup:
+        $ref: "#/definitions/editgroup"
+      entity_list:
+        type: array
+        items:
+          $ref: "#/definitions/container_entity"
+  creator_auto_batch:
+    type: object
+    required:
+      - editgroup
+      - entity_list
+    properties:
+      editgroup:
+        $ref: "#/definitions/editgroup"
+      entity_list:
+        type: array
+        items:
+          $ref: "#/definitions/creator_entity"
+  file_auto_batch:
+    type: object
+    required:
+      - editgroup
+      - entity_list
+    properties:
+      editgroup:
+        $ref: "#/definitions/editgroup"
+      entity_list:
+        type: array
+        items:
+          $ref: "#/definitions/file_entity"
+  fileset_auto_batch:
+    type: object
+    required:
+      - editgroup
+      - entity_list
+    properties:
+      editgroup:
+        $ref: "#/definitions/editgroup"
+      entity_list:
+        type: array
+        items:
+          $ref: "#/definitions/fileset_entity"
+  webcapture_auto_batch:
+    type: object
+    required:
+      - editgroup
+      - entity_list
+    properties:
+      editgroup:
+        $ref: "#/definitions/editgroup"
+      entity_list:
+        type: array
+        items:
+          $ref: "#/definitions/webcapture_entity"
+  release_auto_batch:
+    type: object
+    required:
+      - editgroup
+      - entity_list
+    properties:
+      editgroup:
+        $ref: "#/definitions/editgroup"
+      entity_list:
+        type: array
+        items:
+          $ref: "#/definitions/release_entity"
+  work_auto_batch:
+    type: object
+    required:
+      - editgroup
+      - entity_list
+    properties:
+      editgroup:
+        $ref: "#/definitions/editgroup"
+      entity_list:
+        type: array
+        items:
+            $ref: "#/definitions/work_entity"
   auth_oidc:
     type: object
     required:
@@ -712,7 +796,12 @@ x-entity-responses: &ENTITYRESPONSES
       $ref: "#/definitions/error_response"
 
 paths:
-  /container:
+  /editgroup/{editgroup_id}/container:
+    parameters:
+      - name: editgroup_id
+        in: path
+        type: string
+        required: true
     post:
       operationId: "create_container"
       tags: # TAGLINE
@@ -723,10 +812,6 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/container_entity"
-        - name: editgroup_id
-          in: query
-          required: true
-          type: string
       security:
         - Bearer: []
       responses:
@@ -736,46 +821,24 @@ paths:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
         <<: *AUTHRESPONSES
-  /container/batch:
+  /editgroup/auto/container/batch:
     post:
-      operationId: "create_container_batch"
+      operationId: "create_container_auto_batch"
       tags: # TAGLINE
         - containers # TAGLINE
       parameters:
-        - name: autoaccept
-          in: query
-          type: boolean
-          required: false
-          description: "If true, and editor is authorized, batch is accepted all at once"
-        - name: editgroup_id
-          in: query
-          type: string
-          required: false
-          description: "Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)"
-        - name: description
-          in: query
-          type: string
-          required: false
-        - name: extra
-          in: query
-          type: string
-          required: false
-        - name: entity_list
+        - name: auto_batch
           in: body
           required: true
           schema:
-            type: array
-            items:
-              $ref: "#/definitions/container_entity"
+            $ref: "#/definitions/container_auto_batch"
       security:
         - Bearer: []
       responses:
         201:
-          description: Created Entities
+          description: Created Editgroup
           schema:
-            type: array
-            items:
-              $ref: "#/definitions/entity_edit"
+            $ref: "#/definitions/editgroup"
         <<: *ENTITYRESPONSES
         <<: *AUTHRESPONSES
   /container/{ident}:
@@ -805,6 +868,16 @@ paths:
           schema:
             $ref: "#/definitions/container_entity"
         <<: *ENTITYRESPONSES
+  /editgroup/{editgroup_id}/container/{ident}:
+    parameters:
+      - name: editgroup_id
+        in: path
+        type: string
+        required: true
+      - name: ident
+        in: path
+        type: string
+        required: true
     put:
       operationId: "update_container"
       tags: # TAGLINE
@@ -815,10 +888,6 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/container_entity"
-        - name: editgroup_id
-          in: query
-          required: true
-          type: string
       security:
         - Bearer: []
       responses:
@@ -832,11 +901,6 @@ paths:
       operationId: "delete_container"
       tags: # TAGLINE
         - containers # TAGLINE
-      parameters:
-        - name: editgroup_id
-          in: query
-          required: true
-          type: string
       security:
         - Bearer: []
       responses:
@@ -959,15 +1023,20 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+  /editgroup/{editgroup_id}/container/edit/{edit_id}:
+    parameters:
+      - name: editgroup_id
+        in: path
+        required: true
+        type: string
+      - name: edit_id
+        in: path
+        required: true
+        <<: *FATCATUUID
     delete:
       operationId: "delete_container_edit"
       tags: # TAGLINE
         - containers # TAGLINE
-      parameters:
-        - name: edit_id
-          in: path
-          required: true
-          <<: *FATCATUUID
       security:
         - Bearer: []
       responses:
@@ -977,7 +1046,12 @@ paths:
             $ref: "#/definitions/success"
         <<: *ENTITYRESPONSES
         <<: *AUTHRESPONSES
-  /creator:
+  /editgroup/{editgroup_id}/creator:
+    parameters:
+      - name: editgroup_id
+        in: path
+        type: string
+        required: true
     post:
       operationId: "create_creator"
       tags: # TAGLINE
@@ -988,10 +1062,6 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/creator_entity"
-        - name: editgroup_id
-          in: query
-          required: true
-          type: string
       security:
         - Bearer: []
       responses:
@@ -1001,46 +1071,24 @@ paths:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
         <<: *AUTHRESPONSES
-  /creator/batch:
+  /editgroup/auto/creator/batch:
     post:
-      operationId: "create_creator_batch"
+      operationId: "create_creator_auto_batch"
       tags: # TAGLINE
         - creators # TAGLINE
       parameters:
-        - name: autoaccept
-          in: query
-          type: boolean
-          required: false
-          description: "If true, and editor is authorized, batch is accepted all at once"
-        - name: editgroup_id
-          in: query
-          type: string
-          required: false
-          description: "Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)"
-        - name: description
-          in: query
-          type: string
-          required: false
-        - name: extra
-          in: query
-          type: string
-          required: false
-        - name: entity_list
+        - name: auto_batch
           in: body
           required: true
           schema:
-            type: array
-            items:
-              $ref: "#/definitions/creator_entity"
+            $ref: "#/definitions/creator_auto_batch"
       security:
         - Bearer: []
       responses:
         201:
-          description: Created Entities
+          description: Created Editgroup
           schema:
-            type: array
-            items:
-              $ref: "#/definitions/entity_edit"
+            $ref: "#/definitions/editgroup"
         <<: *ENTITYRESPONSES
         <<: *AUTHRESPONSES
   /creator/{ident}:
@@ -1070,6 +1118,16 @@ paths:
           schema:
             $ref: "#/definitions/creator_entity"
         <<: *ENTITYRESPONSES
+  /editgroup/{editgroup_id}/creator/{ident}:
+    parameters:
+      - name: editgroup_id
+        in: path
+        type: string
+        required: true
+      - name: ident
+        in: path
+        type: string
+        required: true
     put:
       operationId: "update_creator"
       tags: # TAGLINE
@@ -1080,10 +1138,6 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/creator_entity"
-        - name: editgroup_id
-          in: query
-          required: true
-          type: string
       security:
         - Bearer: []
       responses:
@@ -1097,11 +1151,6 @@ paths:
       operationId: "delete_creator"
       tags: # TAGLINE
         - creators # TAGLINE
-      parameters:
-        - name: editgroup_id
-          in: query
-          required: true
-          type: string
       security:
         - Bearer: []
       responses:
@@ -1247,15 +1296,20 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+  /editgroup/{editgroup_id}/creator/edit/{edit_id}:
+    parameters:
+      - name: editgroup_id
+        in: path
+        required: true
+        type: string
+      - name: edit_id
+        in: path
+        required: true
+        <<: *FATCATUUID
     delete:
       operationId: "delete_creator_edit"
       tags: # TAGLINE
         - creators # TAGLINE
-      parameters:
-        - name: edit_id
-          in: path
-          required: true
-          <<: *FATCATUUID
       security:
         - Bearer: []
       responses:
@@ -1265,7 +1319,12 @@ paths:
             $ref: "#/definitions/success"
         <<: *ENTITYRESPONSES
         <<: *AUTHRESPONSES
-  /file:
+  /editgroup/{editgroup_id}/file:
+    parameters:
+      - name: editgroup_id
+        in: path
+        type: string
+        required: true
     post:
       operationId: "create_file"
       tags: # TAGLINE
@@ -1276,10 +1335,6 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/file_entity"
-        - name: editgroup_id
-          in: query
-          required: true
-          type: string
       security:
         - Bearer: []
       responses:
@@ -1289,46 +1344,24 @@ paths:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
         <<: *AUTHRESPONSES
-  /file/batch:
+  /editgroup/auto/file/batch:
     post:
-      operationId: "create_file_batch"
+      operationId: "create_file_auto_batch"
       tags: # TAGLINE
         - files # TAGLINE
       parameters:
-        - name: autoaccept
-          in: query
-          type: boolean
-          required: false
-          description: "If true, and editor is authorized, batch is accepted all at once"
-        - name: editgroup_id
-          in: query
-          type: string
-          required: false
-          description: "Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)"
-        - name: description
-          in: query
-          type: string
-          required: false
-        - name: extra
-          in: query
-          type: string
-          required: false
-        - name: entity_list
+        - name: auto_batch
           in: body
           required: true
           schema:
-            type: array
-            items:
-              $ref: "#/definitions/file_entity"
+            $ref: "#/definitions/file_auto_batch"
       security:
         - Bearer: []
       responses:
         201:
-          description: Created Entities
+          description: Created Editgroup
           schema:
-            type: array
-            items:
-              $ref: "#/definitions/entity_edit"
+            $ref: "#/definitions/editgroup"
         <<: *ENTITYRESPONSES
         <<: *AUTHRESPONSES
   /file/{ident}:
@@ -1358,6 +1391,16 @@ paths:
           schema:
             $ref: "#/definitions/file_entity"
         <<: *ENTITYRESPONSES
+  /editgroup/{editgroup_id}/file/{ident}:
+    parameters:
+      - name: editgroup_id
+        in: path
+        type: string
+        required: true
+      - name: ident
+        in: path
+        type: string
+        required: true
     put:
       operationId: "update_file"
       tags: # TAGLINE
@@ -1368,10 +1411,6 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/file_entity"
-        - name: editgroup_id
-          in: query
-          required: true
-          type: string
       security:
         - Bearer: []
       responses:
@@ -1385,11 +1424,6 @@ paths:
       operationId: "delete_file"
       tags: # TAGLINE
         - files # TAGLINE
-      parameters:
-        - name: editgroup_id
-          in: query
-          required: true
-          type: string
       security:
         - Bearer: []
       responses:
@@ -1517,15 +1551,20 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+  /editgroup/{editgroup_id}/file/edit/{edit_id}:
+    parameters:
+      - name: editgroup_id
+        in: path
+        required: true
+        type: string
+      - name: edit_id
+        in: path
+        required: true
+        <<: *FATCATUUID
     delete:
       operationId: "delete_file_edit"
       tags: # TAGLINE
         - files # TAGLINE
-      parameters:
-        - name: edit_id
-          in: path
-          required: true
-          <<: *FATCATUUID
       security:
         - Bearer: []
       responses:
@@ -1535,7 +1574,12 @@ paths:
             $ref: "#/definitions/success"
         <<: *ENTITYRESPONSES
         <<: *AUTHRESPONSES
-  /fileset:
+  /editgroup/{editgroup_id}/fileset:
+    parameters:
+      - name: editgroup_id
+        in: path
+        type: string
+        required: true
     post:
       operationId: "create_fileset"
       tags: # TAGLINE
@@ -1546,10 +1590,6 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/fileset_entity"
-        - name: editgroup_id
-          in: query
-          required: true
-          type: string
       security:
         - Bearer: []
       responses:
@@ -1559,46 +1599,24 @@ paths:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
         <<: *AUTHRESPONSES
-  /fileset/batch:
+  /editgroup/auto/fileset/batch:
     post:
-      operationId: "create_fileset_batch"
+      operationId: "create_fileset_auto_batch"
       tags: # TAGLINE
         - filesets # TAGLINE
       parameters:
-        - name: autoaccept
-          in: query
-          type: boolean
-          required: false
-          description: "If true, and editor is authorized, batch is accepted all at once"
-        - name: editgroup_id
-          in: query
-          type: string
-          required: false
-          description: "Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)"
-        - name: description
-          in: query
-          type: string
-          required: false
-        - name: extra
-          in: query
-          type: string
-          required: false
-        - name: entity_list
+        - name: auto_batch
           in: body
           required: true
           schema:
-            type: array
-            items:
-              $ref: "#/definitions/fileset_entity"
+            $ref: "#/definitions/fileset_auto_batch"
       security:
         - Bearer: []
       responses:
         201:
-          description: Created Entities
+          description: Created Editgroup
           schema:
-            type: array
-            items:
-              $ref: "#/definitions/entity_edit"
+            $ref: "#/definitions/editgroup"
         <<: *ENTITYRESPONSES
         <<: *AUTHRESPONSES
   /fileset/{ident}:
@@ -1628,6 +1646,16 @@ paths:
           schema:
             $ref: "#/definitions/fileset_entity"
         <<: *ENTITYRESPONSES
+  /editgroup/{editgroup_id}/fileset/{ident}:
+    parameters:
+      - name: editgroup_id
+        in: path
+        type: string
+        required: true
+      - name: ident
+        in: path
+        type: string
+        required: true
     put:
       operationId: "update_fileset"
       tags: # TAGLINE
@@ -1638,10 +1666,6 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/fileset_entity"
-        - name: editgroup_id
-          in: query
-          required: true
-          type: string
       security:
         - Bearer: []
       responses:
@@ -1655,11 +1679,6 @@ paths:
       operationId: "delete_fileset"
       tags: # TAGLINE
         - filesets # TAGLINE
-      parameters:
-        - name: editgroup_id
-          in: query
-          required: true
-          type: string
       security:
         - Bearer: []
       responses:
@@ -1753,15 +1772,20 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+  /editgroup/{editgroup_id}/fileset/edit/{edit_id}:
+    parameters:
+      - name: editgroup_id
+        in: path
+        required: true
+        type: string
+      - name: edit_id
+        in: path
+        required: true
+        <<: *FATCATUUID
     delete:
       operationId: "delete_fileset_edit"
       tags: # TAGLINE
         - filesets # TAGLINE
-      parameters:
-        - name: edit_id
-          in: path
-          required: true
-          <<: *FATCATUUID
       security:
         - Bearer: []
       responses:
@@ -1771,7 +1795,12 @@ paths:
             $ref: "#/definitions/success"
         <<: *ENTITYRESPONSES
         <<: *AUTHRESPONSES
-  /webcapture:
+  /editgroup/{editgroup_id}/webcapture:
+    parameters:
+      - name: editgroup_id
+        in: path
+        type: string
+        required: true
     post:
       operationId: "create_webcapture"
       tags: # TAGLINE
@@ -1782,10 +1811,6 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/webcapture_entity"
-        - name: editgroup_id
-          in: query
-          required: true
-          type: string
       security:
         - Bearer: []
       responses:
@@ -1795,46 +1820,24 @@ paths:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
         <<: *AUTHRESPONSES
-  /webcapture/batch:
+  /editgroup/auto/webcapture/batch:
     post:
-      operationId: "create_webcapture_batch"
+      operationId: "create_webcapture_auto_batch"
       tags: # TAGLINE
         - webcaptures # TAGLINE
       parameters:
-        - name: autoaccept
-          in: query
-          type: boolean
-          required: false
-          description: "If true, and editor is authorized, batch is accepted all at once"
-        - name: editgroup_id
-          in: query
-          type: string
-          required: false
-          description: "Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)"
-        - name: description
-          in: query
-          type: string
-          required: false
-        - name: extra
-          in: query
-          type: string
-          required: false
-        - name: entity_list
+        - name: auto_batch
           in: body
           required: true
           schema:
-            type: array
-            items:
-              $ref: "#/definitions/webcapture_entity"
+            $ref: "#/definitions/webcapture_auto_batch"
       security:
         - Bearer: []
       responses:
         201:
-          description: Created Entities
+          description: Created Editgroup
           schema:
-            type: array
-            items:
-              $ref: "#/definitions/entity_edit"
+            $ref: "#/definitions/editgroup"
         <<: *ENTITYRESPONSES
         <<: *AUTHRESPONSES
   /webcapture/{ident}:
@@ -1864,6 +1867,16 @@ paths:
           schema:
             $ref: "#/definitions/webcapture_entity"
         <<: *ENTITYRESPONSES
+  /editgroup/{editgroup_id}/webcapture/{ident}:
+    parameters:
+      - name: editgroup_id
+        in: path
+        type: string
+        required: true
+      - name: ident
+        in: path
+        type: string
+        required: true
     put:
       operationId: "update_webcapture"
       tags: # TAGLINE
@@ -1874,10 +1887,6 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/webcapture_entity"
-        - name: editgroup_id
-          in: query
-          required: true
-          type: string
       security:
         - Bearer: []
       responses:
@@ -1891,11 +1900,6 @@ paths:
       operationId: "delete_webcapture"
       tags: # TAGLINE
         - webcaptures # TAGLINE
-      parameters:
-        - name: editgroup_id
-          in: query
-          required: true
-          type: string
       security:
         - Bearer: []
       responses:
@@ -1989,15 +1993,20 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+  /editgroup/{editgroup_id}/webcapture/edit/{edit_id}:
+    parameters:
+      - name: editgroup_id
+        in: path
+        required: true
+        type: string
+      - name: edit_id
+        in: path
+        required: true
+        <<: *FATCATUUID
     delete:
       operationId: "delete_webcapture_edit"
       tags: # TAGLINE
         - webcaptures # TAGLINE
-      parameters:
-        - name: edit_id
-          in: path
-          required: true
-          <<: *FATCATUUID
       security:
         - Bearer: []
       responses:
@@ -2007,7 +2016,12 @@ paths:
             $ref: "#/definitions/success"
         <<: *ENTITYRESPONSES
         <<: *AUTHRESPONSES
-  /release:
+  /editgroup/{editgroup_id}/release:
+    parameters:
+      - name: editgroup_id
+        in: path
+        type: string
+        required: true
     post:
       operationId: "create_release"
       tags: # TAGLINE
@@ -2018,10 +2032,6 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/release_entity"
-        - name: editgroup_id
-          in: query
-          required: true
-          type: string
       security:
         - Bearer: []
       responses:
@@ -2031,46 +2041,24 @@ paths:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
         <<: *AUTHRESPONSES
-  /release/batch:
+  /editgroup/auto/release/batch:
     post:
-      operationId: "create_release_batch"
+      operationId: "create_release_auto_batch"
       tags: # TAGLINE
         - releases # TAGLINE
       parameters:
-        - name: autoaccept
-          in: query
-          type: boolean
-          required: false
-          description: "If true, and editor is authorized, batch is accepted all at once"
-        - name: editgroup_id
-          in: query
-          type: string
-          required: false
-          description: "Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)"
-        - name: description
-          in: query
-          type: string
-          required: false
-        - name: extra
-          in: query
-          type: string
-          required: false
-        - name: entity_list
+        - name: auto_batch
           in: body
           required: true
           schema:
-            type: array
-            items:
-              $ref: "#/definitions/release_entity"
+            $ref: "#/definitions/release_auto_batch"
       security:
         - Bearer: []
       responses:
         201:
-          description: Created Entities
+          description: Created Editgroup
           schema:
-            type: array
-            items:
-              $ref: "#/definitions/entity_edit"
+            $ref: "#/definitions/editgroup"
         <<: *ENTITYRESPONSES
         <<: *AUTHRESPONSES
   /release/{ident}:
@@ -2100,6 +2088,16 @@ paths:
           schema:
             $ref: "#/definitions/release_entity"
         <<: *ENTITYRESPONSES
+  /editgroup/{editgroup_id}/release/{ident}:
+    parameters:
+      - name: editgroup_id
+        in: path
+        type: string
+        required: true
+      - name: ident
+        in: path
+        type: string
+        required: true
     put:
       operationId: "update_release"
       tags: # TAGLINE
@@ -2110,10 +2108,6 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/release_entity"
-        - name: editgroup_id
-          in: query
-          required: true
-          type: string
       security:
         - Bearer: []
       responses:
@@ -2127,11 +2121,6 @@ paths:
       operationId: "delete_release"
       tags: # TAGLINE
         - releases # TAGLINE
-      parameters:
-        - name: editgroup_id
-          in: query
-          required: true
-          type: string
       security:
         - Bearer: []
       responses:
@@ -2356,15 +2345,20 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+  /editgroup/{editgroup_id}/release/edit/{edit_id}:
+    parameters:
+      - name: editgroup_id
+        in: path
+        required: true
+        type: string
+      - name: edit_id
+        in: path
+        required: true
+        <<: *FATCATUUID
     delete:
       operationId: "delete_release_edit"
       tags: # TAGLINE
         - releases # TAGLINE
-      parameters:
-        - name: edit_id
-          in: path
-          required: true
-          <<: *FATCATUUID
       security:
         - Bearer: []
       responses:
@@ -2374,7 +2368,12 @@ paths:
             $ref: "#/definitions/success"
         <<: *ENTITYRESPONSES
         <<: *AUTHRESPONSES
-  /work:
+  /editgroup/{editgroup_id}/work:
+    parameters:
+      - name: editgroup_id
+        in: path
+        type: string
+        required: true
     post:
       operationId: "create_work"
       tags: # TAGLINE
@@ -2385,10 +2384,6 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/work_entity"
-        - name: editgroup_id
-          in: query
-          required: true
-          type: string
       security:
         - Bearer: []
       responses:
@@ -2398,46 +2393,24 @@ paths:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
         <<: *AUTHRESPONSES
-  /work/batch:
+  /editgroup/auto/work/batch:
     post:
-      operationId: "create_work_batch"
+      operationId: "create_work_auto_batch"
       tags: # TAGLINE
         - works # TAGLINE
       parameters:
-        - name: autoaccept
-          in: query
-          type: boolean
-          required: false
-          description: "If true, and editor is authorized, batch is accepted all at once"
-        - name: editgroup_id
-          in: query
-          type: string
-          required: false
-          description: "Editgroup to auto-accept and apply to all entities (required if 'autoaccept' is True)"
-        - name: description
-          in: query
-          type: string
-          required: false
-        - name: extra
-          in: query
-          type: string
-          required: false
-        - name: entity_list
+        - name: auto_batch
           in: body
           required: true
           schema:
-            type: array
-            items:
-              $ref: "#/definitions/work_entity"
+            $ref: "#/definitions/work_auto_batch"
       security:
         - Bearer: []
       responses:
         201:
-          description: Created Entities
+          description: Created Editgroup
           schema:
-            type: array
-            items:
-              $ref: "#/definitions/entity_edit"
+            $ref: "#/definitions/editgroup"
         <<: *ENTITYRESPONSES
         <<: *AUTHRESPONSES
   /work/{ident}:
@@ -2467,6 +2440,16 @@ paths:
           schema:
             $ref: "#/definitions/work_entity"
         <<: *ENTITYRESPONSES
+  /editgroup/{editgroup_id}/work/{ident}:
+    parameters:
+      - name: editgroup_id
+        in: path
+        type: string
+        required: true
+      - name: ident
+        in: path
+        type: string
+        required: true
     put:
       operationId: "update_work"
       tags: # TAGLINE
@@ -2477,10 +2460,6 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/work_entity"
-        - name: editgroup_id
-          in: query
-          required: true
-          type: string
       security:
         - Bearer: []
       responses:
@@ -2494,11 +2473,6 @@ paths:
       operationId: "delete_work"
       tags: # TAGLINE
         - works # TAGLINE
-      parameters:
-        - name: editgroup_id
-          in: query
-          required: true
-          type: string
       security:
         - Bearer: []
       responses:
@@ -2615,15 +2589,20 @@ paths:
           schema:
             $ref: "#/definitions/entity_edit"
         <<: *ENTITYRESPONSES
+  /editgroup/{editgroup_id}/work/edit/{edit_id}:
+    parameters:
+      - name: editgroup_id
+        in: path
+        required: true
+        type: string
+      - name: edit_id
+        in: path
+        required: true
+        <<: *FATCATUUID
     delete:
       operationId: "delete_work_edit"
       tags: # TAGLINE
         - works # TAGLINE
-      parameters:
-        - name: edit_id
-          in: path
-          required: true
-          <<: *FATCATUUID
       security:
         - Bearer: []
       responses:
