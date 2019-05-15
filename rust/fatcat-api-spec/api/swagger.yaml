@@ -8345,6 +8345,7 @@ definitions:
           username: "zerocool93"
         changelog_index: 1048576
         submitted: "2000-01-23T04:56:07.000+00:00"
+        created: "2000-01-23T04:56:07.000+00:00"
         extra: "{}"
         edits:
           works:
@@ -8498,6 +8499,7 @@ definitions:
             username: "zerocool93"
           changelog_index: 1048576
           submitted: "2000-01-23T04:56:07.000+00:00"
+          created: "2000-01-23T04:56:07.000+00:00"
           extra: "{}"
           edits:
             works:
@@ -8748,6 +8750,9 @@ definitions:
         type: "integer"
         format: "int64"
         example: 1048576
+      created:
+        type: "string"
+        format: "date-time"
       submitted:
         type: "string"
         format: "date-time"
@@ -8770,6 +8775,7 @@ definitions:
         username: "zerocool93"
       changelog_index: 1048576
       submitted: "2000-01-23T04:56:07.000+00:00"
+      created: "2000-01-23T04:56:07.000+00:00"
       extra: "{}"
       edits:
         works:
@@ -8981,6 +8987,7 @@ definitions:
           username: "zerocool93"
         changelog_index: 1048576
         submitted: "2000-01-23T04:56:07.000+00:00"
+        created: "2000-01-23T04:56:07.000+00:00"
         extra: "{}"
         edits:
           works:

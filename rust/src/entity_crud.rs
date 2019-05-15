@@ -538,14 +538,15 @@ macro_rules! generic_db_get_history {
         ) -> Result<Vec<EntityHistoryEntry>> {
             let limit = limit.unwrap_or(50); // TODO: make a static
 
-            let rows: Vec<(EditgroupRow, ChangelogRow, Self::EditRow, EditorRow)> = editgroup::table
-                .inner_join(changelog::table)
-                .inner_join($edit_table::table)
-                .inner_join(editor::table)
-                .filter($edit_table::ident_id.eq(ident.to_uuid()))
-                .order(changelog::id.desc())
-                .limit(limit)
-                .get_results(conn)?;
+            let rows: Vec<(EditgroupRow, ChangelogRow, Self::EditRow, EditorRow)> =
+                editgroup::table
+                    .inner_join(changelog::table)
+                    .inner_join($edit_table::table)
+                    .inner_join(editor::table)
+                    .filter($edit_table::ident_id.eq(ident.to_uuid()))
+                    .order(changelog::id.desc())
+                    .limit(limit)
+                    .get_results(conn)?;
 
             let history: Result<Vec<EntityHistoryEntry>> = rows
                 .into_iter()

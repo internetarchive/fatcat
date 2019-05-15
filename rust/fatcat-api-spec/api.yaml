@@ -530,6 +530,9 @@ definitions:
         type: integer
         example: 1048576
         format: int64
+      created:
+        type: string
+        format: date-time
       submitted:
         type: string
         format: date-time

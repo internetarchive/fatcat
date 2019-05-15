@@ -39,6 +39,7 @@ class Editgroup(object):
         'editor_id': 'str',
         'editor': 'Editor',
         'changelog_index': 'int',
+        'created': 'datetime',
         'submitted': 'datetime',
         'description': 'str',
         'extra': 'object',
@@ -51,6 +52,7 @@ class Editgroup(object):
         'editor_id': 'editor_id',
         'editor': 'editor',
         'changelog_index': 'changelog_index',
+        'created': 'created',
         'submitted': 'submitted',
         'description': 'description',
         'extra': 'extra',
@@ -58,13 +60,14 @@ class Editgroup(object):
         'edits': 'edits'
     }
 
-    def __init__(self, editgroup_id=None, editor_id=None, editor=None, changelog_index=None, submitted=None, description=None, extra=None, annotations=None, edits=None):  # noqa: E501
+    def __init__(self, editgroup_id=None, editor_id=None, editor=None, changelog_index=None, created=None, submitted=None, description=None, extra=None, annotations=None, edits=None):  # noqa: E501
         """Editgroup - a model defined in Swagger"""  # noqa: E501
 
         self._editgroup_id = None
         self._editor_id = None
         self._editor = None
         self._changelog_index = None
+        self._created = None
         self._submitted = None
         self._description = None
         self._extra = None
@@ -80,6 +83,8 @@ class Editgroup(object):
             self.editor = editor
         if changelog_index is not None:
             self.changelog_index = changelog_index
+        if created is not None:
+            self.created = created
         if submitted is not None:
             self.submitted = submitted
         if description is not None:
@@ -190,6 +195,27 @@ class Editgroup(object):
         """
 
         self._changelog_index = changelog_index
+
+    @property
+    def created(self):
+        """Gets the created of this Editgroup.  # noqa: E501
+
+
+        :return: The created of this Editgroup.  # noqa: E501
+        :rtype: datetime
+        """
+        return self._created
+
+    @created.setter
+    def created(self, created):
+        """Sets the created of this Editgroup.
+
+
+        :param created: The created of this Editgroup.  # noqa: E501
+        :type: datetime
+        """
+
+        self._created = created
 
     @property
     def submitted(self):

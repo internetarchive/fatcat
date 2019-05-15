@@ -558,7 +558,9 @@ impl Server {
             .into_iter()
             .map(|(eg_row, cl_row, editor_row)| ChangelogEntry {
                 index: cl_row.id,
-                editgroup: Some(eg_row.into_model_partial(Some(cl_row.id), Some(editor_row.into_model()))),
+                editgroup: Some(
+                    eg_row.into_model_partial(Some(cl_row.id), Some(editor_row.into_model())),
+                ),
                 editgroup_id: uuid2fcid(&cl_row.editgroup_id),
                 timestamp: chrono::DateTime::from_utc(cl_row.timestamp, chrono::Utc),
             })
