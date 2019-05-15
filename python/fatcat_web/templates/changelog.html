@@ -15,15 +15,13 @@ Limited to the most recent entries.
   <tr><td><a href="/changelog/{{ entry.index }}">#{{ entry.index }}</a>
           <br>{{ entry.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}
       <td>
-        {#
         {% if entry.editgroup.editor.is_bot %}
           <i class="icon bug"></i>
         {% else %}
           <i class="icon user"></i>
         {% endif %}
-        #}
-        Editor: <code><a href="/editor/{{ entry.editgroup.editor_id }}">
-          {{ entry.editgroup.editor_id[:8] }}...</a>
+        <code><a href="/editor/{{ entry.editgroup.editor_id }}">
+          {{ entry.editgroup.editor.username }}</a>
         </a></code>
         <br>
         <small><code><a href="/editgroup/{{ entry.editgroup.editgroup_id }}">
