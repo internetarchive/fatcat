@@ -69,11 +69,12 @@ macro_rules! wrap_entity_handlers {
     // stable doesn't have a mechanism to "concat" or generate new identifiers in macros, at least
     // in the context of defining new functions.
     // The only stable approach I know of would be: https://github.com/dtolnay/mashup
-    ($get_fn:ident, $get_resp:ident, $post_fn:ident, $post_resp:ident, $post_batch_fn:ident,
-    $post_batch_handler:ident, $post_batch_resp:ident, $update_fn:ident, $update_resp:ident,
-    $delete_fn:ident, $delete_resp:ident, $get_history_fn:ident, $get_history_resp:ident,
-    $get_edit_fn:ident, $get_edit_resp:ident, $delete_edit_fn:ident, $delete_edit_resp:ident,
-    $get_rev_fn:ident, $get_rev_resp:ident, $get_redirects_fn:ident, $get_redirects_resp:ident,
+    ($get_fn:ident, $get_resp:ident, $post_fn:ident, $post_resp:ident, $auto_batch_type:ident,
+    $post_auto_batch_fn:ident, $post_auto_batch_handler:ident, $post_auto_batch_resp:ident,
+    $update_fn:ident, $update_resp:ident, $delete_fn:ident, $delete_resp:ident,
+    $get_history_fn:ident, $get_history_resp:ident, $get_edit_fn:ident, $get_edit_resp:ident,
+    $delete_edit_fn:ident, $delete_edit_resp:ident, $get_rev_fn:ident, $get_rev_resp:ident,
+    $get_redirects_fn:ident, $get_redirects_resp:ident,
     $model:ident) => {
 
         fn $get_fn(
@@ -110,8 +111,8 @@ macro_rules! wrap_entity_handlers {
 
         fn $post_fn(
             &self,
-            entity: models::$model,
             editgroup_id: String,
+            entity: models::$model,
             context: &Context,
         ) -> Box<Future<Item = $post_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
@@ -120,7 +121,7 @@ macro_rules! wrap_entity_handlers {
                 let auth_context = self.auth_confectionary.require_auth(&conn, &context.auth_data, Some(stringify!($post_fn)))?;
                 auth_context.require_role(FatcatRole::Editor)?;
                 auth_context.require_editgroup(&conn, editgroup_id)?;
-                let edit_context = make_edit_context(&conn, auth_context.editor_id, Some(editgroup_id), false, None, None)?;
+                let edit_context = make_edit_context(auth_context.editor_id, editgroup_id, false)?;
                 edit_context.check(&conn)?;
                 entity.db_create(&conn, &edit_context)?.into_model()
             }).map_err(|e| FatcatError::from(e)) {
@@ -133,54 +134,51 @@ macro_rules! wrap_entity_handlers {
             Box::new(futures::done(Ok(ret)))
         }
 
-        fn $post_batch_fn(
+        fn $post_auto_batch_fn(
             &self,
-            entity_list: &Vec<models::$model>,
-            autoaccept: Option<bool>,
-            editgroup_id: Option<String>,
-            description: Option<String>,
-            extra: Option<String>,
+            auto_batch: $auto_batch_type,
             context: &Context,
-        ) -> Box<Future<Item = $post_batch_resp, Error = ApiError> + Send> {
+        ) -> Box<Future<Item = $post_auto_batch_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             let ret = match conn.transaction(|| {
-                let auth_context = self.auth_confectionary.require_auth(&conn, &context.auth_data, Some(stringify!($post_batch_fn)))?;
-                let autoaccept = autoaccept.unwrap_or(false);
-                if autoaccept {
-                    auth_context.require_role(FatcatRole::Admin)?;
-                } else {
-                    auth_context.require_role(FatcatRole::Editor)?;
+                let auth_context = self.auth_confectionary.require_auth(&conn, &context.auth_data, Some(stringify!($post_auto_batch_fn)))?;
+                auth_context.require_role(FatcatRole::Admin)?;
+                let mut editgroup = auto_batch.editgroup.clone();
+                // TODO: this is duplicated code with create_editgroup()
+                match editgroup.editor_id.clone() {
+                    Some(editor_id) => {
+                        if editor_id != auth_context.editor_id.to_string()
+                            && !auth_context.has_role(FatcatRole::Admin)
+                        {
+                            return Err(FatcatError::InsufficientPrivileges(
+                                "not authorized to create editgroups in others' names".to_string()
+                            ))
+                        }
+                    }
+                    None => {
+                        editgroup.editor_id = Some(auth_context.editor_id.to_string());
+                    }
                 };
-                let editgroup_id = if let Some(s) = editgroup_id {
-                    // make_edit_context() checks for "both editgroup_id and autosubmit" error case
-                    let eg_id = FatcatId::from_str(&s)?;
-                    auth_context.require_editgroup(&conn, eg_id)?;
-                    Some(eg_id)
-                } else { None };
-                let extra: Option<serde_json::Value> = match extra {
-                    Some(v) => serde_json::from_str(&v)?,
-                    None => None,
-                };
-                self.$post_batch_handler(&conn, entity_list, autoaccept, auth_context.editor_id, editgroup_id, description, extra)
-            }).map_err(|e| FatcatError::from(e)) {
-                Ok(edits) => {
-                    self.metrics.count("entities.created", edits.len() as i64).ok();
-                    if let Some(true) = autoaccept {
-                        self.metrics.incr("editgroup.created").ok();
-                        self.metrics.incr("editgroup.accepted").ok();
-                    };
-                    $post_batch_resp::CreatedEntities(edits)
+                self.$post_auto_batch_handler(&conn, editgroup, &auto_batch.entity_list, auth_context.editor_id)
+                    .map_err(|e| FatcatError::from(e))
+            }) {
+                Ok(editgroup) => {
+                    // TODO: need a count helper on editgroup
+                    //self.metrics.count("entities.created", count as i64).ok();
+                    self.metrics.incr("editgroup.created").ok();
+                    self.metrics.incr("editgroup.accepted").ok();
+                    $post_auto_batch_resp::CreatedEditgroup(editgroup)
                 },
-                Err(fe) => generic_auth_err_responses!(fe, $post_batch_resp),
+                Err(fe) => generic_auth_err_responses!(fe, $post_auto_batch_resp),
             };
             Box::new(futures::done(Ok(ret)))
         }
 
         fn $update_fn(
             &self,
+            editgroup_id: String,
             ident: String,
             entity: models::$model,
-            editgroup_id: String,
             context: &Context,
         ) -> Box<Future<Item = $update_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
@@ -190,7 +188,7 @@ macro_rules! wrap_entity_handlers {
                 auth_context.require_role(FatcatRole::Editor)?;
                 let entity_id = FatcatId::from_str(&ident)?;
                 auth_context.require_editgroup(&conn, editgroup_id)?;
-                let edit_context = make_edit_context(&conn, auth_context.editor_id, Some(editgroup_id), false, None, None)?;
+                let edit_context = make_edit_context(auth_context.editor_id, editgroup_id, false)?;
                 edit_context.check(&conn)?;
                 entity.db_update(&conn, &edit_context, entity_id)?.into_model()
             }).map_err(|e| FatcatError::from(e)) {
@@ -205,8 +203,8 @@ macro_rules! wrap_entity_handlers {
 
         fn $delete_fn(
             &self,
-            ident: String,
             editgroup_id: String,
+            ident: String,
             context: &Context,
         ) -> Box<Future<Item = $delete_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
@@ -216,7 +214,7 @@ macro_rules! wrap_entity_handlers {
                 auth_context.require_role(FatcatRole::Editor)?;
                 let entity_id = FatcatId::from_str(&ident)?;
                 auth_context.require_editgroup(&conn, editgroup_id)?;
-                let edit_context = make_edit_context(&conn, auth_context.editor_id, Some(editgroup_id), false, None, None)?;
+                let edit_context = make_edit_context(auth_context.editor_id, editgroup_id, false)?;
                 edit_context.check(&conn)?;
                 $model::db_delete(&conn, &edit_context, entity_id)?.into_model()
             }).map_err(|e| FatcatError::from(e)) {
@@ -300,18 +298,27 @@ macro_rules! wrap_entity_handlers {
 
         fn $delete_edit_fn(
             &self,
+            editgroup_id: String,
             edit_id: String,
             context: &Context,
         ) -> Box<Future<Item = $delete_edit_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             let ret = match conn.transaction(|| {
+                let editgroup_id = FatcatId::from_str(&editgroup_id)?;
                 let edit_id = Uuid::from_str(&edit_id)?;
                 let auth_context = self.auth_confectionary.require_auth(&conn, &context.auth_data, Some(stringify!($delete_edit_fn)))?;
                 auth_context.require_role(FatcatRole::Editor)?;
                 let edit = $model::db_get_edit(&conn, edit_id)?;
-                auth_context.require_editgroup(&conn, FatcatId::from_uuid(&edit.editgroup_id))?;
+                if !(edit.editgroup_id == editgroup_id.to_uuid()) {
+                    return Err(FatcatError::BadRequest(
+                        "editgroup_id parameter didn't match that of the edit".to_string()
+                    ))
+                }
+                auth_context.require_editgroup(&conn, editgroup_id)?;
+                // check for editgroup being deleted happens in db_delete_edit()
                 $model::db_delete_edit(&conn, edit_id)
-            }).map_err(|e| FatcatError::from(e)) {
+                    .map_err(|e| FatcatError::from(e))
+            }) {
                 Ok(()) =>
                     $delete_edit_resp::DeletedEdit(Success {
                         success: true,
@@ -429,9 +436,10 @@ impl Api for Server {
         GetContainerResponse,
         create_container,
         CreateContainerResponse,
-        create_container_batch,
-        create_container_batch_handler,
-        CreateContainerBatchResponse,
+        ContainerAutoBatch,
+        create_container_auto_batch,
+        create_container_auto_batch_handler,
+        CreateContainerAutoBatchResponse,
         update_container,
         UpdateContainerResponse,
         delete_container,
@@ -454,9 +462,10 @@ impl Api for Server {
         GetCreatorResponse,
         create_creator,
         CreateCreatorResponse,
-        create_creator_batch,
-        create_creator_batch_handler,
-        CreateCreatorBatchResponse,
+        CreatorAutoBatch,
+        create_creator_auto_batch,
+        create_creator_auto_batch_handler,
+        CreateCreatorAutoBatchResponse,
         update_creator,
         UpdateCreatorResponse,
         delete_creator,
@@ -478,9 +487,10 @@ impl Api for Server {
         GetFileResponse,
         create_file,
         CreateFileResponse,
-        create_file_batch,
-        create_file_batch_handler,
-        CreateFileBatchResponse,
+        FileAutoBatch,
+        create_file_auto_batch,
+        create_file_auto_batch_handler,
+        CreateFileAutoBatchResponse,
         update_file,
         UpdateFileResponse,
         delete_file,
@@ -502,9 +512,10 @@ impl Api for Server {
         GetFilesetResponse,
         create_fileset,
         CreateFilesetResponse,
-        create_fileset_batch,
-        create_fileset_batch_handler,
-        CreateFilesetBatchResponse,
+        FilesetAutoBatch,
+        create_fileset_auto_batch,
+        create_fileset_auto_batch_handler,
+        CreateFilesetAutoBatchResponse,
         update_fileset,
         UpdateFilesetResponse,
         delete_fileset,
@@ -526,9 +537,10 @@ impl Api for Server {
         GetWebcaptureResponse,
         create_webcapture,
         CreateWebcaptureResponse,
-        create_webcapture_batch,
-        create_webcapture_batch_handler,
-        CreateWebcaptureBatchResponse,
+        WebcaptureAutoBatch,
+        create_webcapture_auto_batch,
+        create_webcapture_auto_batch_handler,
+        CreateWebcaptureAutoBatchResponse,
         update_webcapture,
         UpdateWebcaptureResponse,
         delete_webcapture,
@@ -550,9 +562,10 @@ impl Api for Server {
         GetReleaseResponse,
         create_release,
         CreateReleaseResponse,
-        create_release_batch,
-        create_release_batch_handler,
-        CreateReleaseBatchResponse,
+        ReleaseAutoBatch,
+        create_release_auto_batch,
+        create_release_auto_batch_handler,
+        CreateReleaseAutoBatchResponse,
         update_release,
         UpdateReleaseResponse,
         delete_release,
@@ -574,9 +587,10 @@ impl Api for Server {
         GetWorkResponse,
         create_work,
         CreateWorkResponse,
-        create_work_batch,
-        create_work_batch_handler,
-        CreateWorkBatchResponse,
+        WorkAutoBatch,
+        create_work_auto_batch,
+        create_work_auto_batch_handler,
+        CreateWorkAutoBatchResponse,
         update_work,
         UpdateWorkResponse,
         delete_work,
@@ -941,31 +955,31 @@ impl Api for Server {
         context: &Context,
     ) -> Box<Future<Item = CreateEditgroupResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let ret = match conn
-            .transaction(|| {
-                let auth_context = self.auth_confectionary.require_auth(
-                    &conn,
-                    &context.auth_data,
-                    Some("create_editgroup"),
-                )?;
-                auth_context.require_role(FatcatRole::Editor)?;
-                let mut entity = entity.clone();
-                match entity.editor_id.clone() {
-                    Some(editor_id) => {
-                        if editor_id != auth_context.editor_id.to_string()
-                            && !auth_context.has_role(FatcatRole::Admin)
-                        {
-                            bail!("not authorized to create editgroups in others' names");
-                        }
+        let ret = match conn.transaction(|| {
+            let auth_context = self.auth_confectionary.require_auth(
+                &conn,
+                &context.auth_data,
+                Some("create_editgroup"),
+            )?;
+            auth_context.require_role(FatcatRole::Editor)?;
+            let mut entity = entity.clone();
+            match entity.editor_id.clone() {
+                Some(editor_id) => {
+                    if editor_id != auth_context.editor_id.to_string()
+                        && !auth_context.has_role(FatcatRole::Admin)
+                    {
+                        return Err(FatcatError::InsufficientPrivileges(
+                            "not authorized to create editgroups in others' names".to_string(),
+                        ));
                     }
-                    None => {
-                        entity.editor_id = Some(auth_context.editor_id.to_string());
-                    }
-                };
-                self.create_editgroup_handler(&conn, entity)
-            })
-            .map_err(|e| FatcatError::from(e))
-        {
+                }
+                None => {
+                    entity.editor_id = Some(auth_context.editor_id.to_string());
+                }
+            };
+            self.create_editgroup_handler(&conn, entity)
+                .map_err(|e| FatcatError::from(e))
+        }) {
             Ok(eg) => {
                 self.metrics.incr("editgroup.created").ok();
                 CreateEditgroupResponse::SuccessfullyCreated(eg)
@@ -1035,33 +1049,35 @@ impl Api for Server {
         context: &Context,
     ) -> Box<Future<Item = CreateEditgroupAnnotationResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
-        let ret = match conn
-            .transaction(|| {
-                let auth_context = self.auth_confectionary.require_auth(
-                    &conn,
-                    &context.auth_data,
-                    Some("create_editgroup_annotation"),
-                )?;
-                auth_context.require_role(FatcatRole::Editor)?;
-                let editgroup_id = FatcatId::from_str(&editgroup_id)?;
-                let mut annotation = annotation.clone();
-                annotation.editgroup_id = Some(editgroup_id.to_string());
-                match annotation.editor_id.clone() {
-                    Some(editor_id) => {
-                        if editor_id != auth_context.editor_id.to_string()
-                            && !auth_context.has_role(FatcatRole::Superuser)
-                        {
-                            bail!("not authorized to annotate in others' names");
-                        }
+        let ret = match conn.transaction(|| {
+            let auth_context = self.auth_confectionary.require_auth(
+                &conn,
+                &context.auth_data,
+                Some("create_editgroup_annotation"),
+            )?;
+            auth_context.require_role(FatcatRole::Editor)?;
+            let editgroup_id = FatcatId::from_str(&editgroup_id)?;
+            let mut annotation = annotation.clone();
+            annotation.editgroup_id = Some(editgroup_id.to_string());
+            match annotation.editor_id.clone() {
+                Some(editor_id) => {
+                    if editor_id != auth_context.editor_id.to_string()
+                        && !auth_context.has_role(FatcatRole::Superuser)
+                    {
+                        return Err(FatcatError::BadRequest(
+                            "not authorized to annotate in others' names".to_string(),
+                        ));
                     }
-                    None => {
-                        annotation.editor_id = Some(auth_context.editor_id.to_string());
-                    }
-                };
-                annotation.db_create(&conn).map(|a| a.into_model())
-            })
-            .map_err(|e: Error| FatcatError::from(e))
-        {
+                }
+                None => {
+                    annotation.editor_id = Some(auth_context.editor_id.to_string());
+                }
+            };
+            annotation
+                .db_create(&conn)
+                .map(|a| a.into_model())
+                .map_err(|e: Error| FatcatError::from(e))
+        }) {
             Ok(annotation) => CreateEditgroupAnnotationResponse::Created(annotation),
             Err(fe) => generic_auth_err_responses!(fe, CreateEditgroupAnnotationResponse),
         };

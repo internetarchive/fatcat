@@ -17,30 +17,28 @@ use diesel::prelude::*;
 use fatcat_api_spec::models;
 use fatcat_api_spec::models::*;
 
-macro_rules! entity_batch_handler {
-    ($post_batch_handler:ident, $model:ident) => {
-        pub fn $post_batch_handler(
+macro_rules! entity_auto_batch_handler {
+    ($post_auto_batch_handler:ident, $model:ident) => {
+        pub fn $post_auto_batch_handler(
             &self,
             conn: &DbConn,
+            editgroup: Editgroup,
             entity_list: &[models::$model],
-            autoaccept: bool,
             editor_id: FatcatId,
-            editgroup_id: Option<FatcatId>,
-            description: Option<String>,
-            extra: Option<serde_json::Value>,
-        ) -> Result<Vec<EntityEdit>> {
+        ) -> Result<Editgroup> {
 
-            let edit_context = make_edit_context(conn, editor_id, editgroup_id, autoaccept, description, extra)?;
+            let editgroup_row = editgroup.db_create(conn, true)?;
+            let editgroup_id = FatcatId::from_uuid(&editgroup_row.id);
+            let edit_context = make_edit_context(editor_id, editgroup_id, true)?;
             edit_context.check(&conn)?;
             let model_list: Vec<&models::$model> = entity_list.iter().map(|e| e).collect();
-            let edits = $model::db_create_batch(conn, &edit_context, model_list.as_slice())?;
+            let _edits = $model::db_create_batch(conn, &edit_context, model_list.as_slice())?;
 
-            if autoaccept {
-                let _clr: ChangelogRow = diesel::insert_into(changelog::table)
-                    .values((changelog::editgroup_id.eq(edit_context.editgroup_id.to_uuid()),))
-                    .get_result(conn)?;
-            }
-            edits.into_iter().map(|e| e.into_model()).collect()
+            let _clr: ChangelogRow = diesel::insert_into(changelog::table)
+                .values((changelog::editgroup_id.eq(edit_context.editgroup_id.to_uuid()),))
+                .get_result(conn)?;
+            // XXX: edits.into_iter().map(|e| e.into_model()).collect()
+            self.get_editgroup_handler(conn, editgroup_id)
         }
     }
 }
@@ -620,11 +618,11 @@ impl Server {
         Ok((editor_row.into_model(), created))
     }
 
-    entity_batch_handler!(create_container_batch_handler, ContainerEntity);
-    entity_batch_handler!(create_creator_batch_handler, CreatorEntity);
-    entity_batch_handler!(create_file_batch_handler, FileEntity);
-    entity_batch_handler!(create_fileset_batch_handler, FilesetEntity);
-    entity_batch_handler!(create_webcapture_batch_handler, WebcaptureEntity);
-    entity_batch_handler!(create_release_batch_handler, ReleaseEntity);
-    entity_batch_handler!(create_work_batch_handler, WorkEntity);
+    entity_auto_batch_handler!(create_container_auto_batch_handler, ContainerEntity);
+    entity_auto_batch_handler!(create_creator_auto_batch_handler, CreatorEntity);
+    entity_auto_batch_handler!(create_file_auto_batch_handler, FileEntity);
+    entity_auto_batch_handler!(create_fileset_auto_batch_handler, FilesetEntity);
+    entity_auto_batch_handler!(create_webcapture_auto_batch_handler, WebcaptureEntity);
+    entity_auto_batch_handler!(create_release_auto_batch_handler, ReleaseEntity);
+    entity_auto_batch_handler!(create_work_auto_batch_handler, WorkEntity);
 }

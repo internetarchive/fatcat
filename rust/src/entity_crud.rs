@@ -385,13 +385,14 @@ macro_rules! generic_db_create_batch {
                     rev_ids
                         .into_iter()
                         .zip(ident_ids.into_iter())
-                        .map(|(rev_id, ident_id)| Self::EditNewRow {
+                        .zip(models.into_iter().map(|m| m.edit_extra.clone()))
+                        .map(|((rev_id, ident_id), edit_extra)| Self::EditNewRow {
                             editgroup_id: edit_context.editgroup_id.to_uuid(),
                             rev_id: Some(rev_id),
                             ident_id,
                             redirect_id: None,
                             prev_rev: None,
-                            extra_json: edit_context.extra_json.clone(),
+                            extra_json: edit_extra,
                         })
                         .collect::<Vec<Self::EditNewRow>>(),
                 )
@@ -519,7 +520,7 @@ macro_rules! generic_db_delete {
                     $edit_table::rev_id.eq(None::<Uuid>),
                     $edit_table::redirect_id.eq(None::<Uuid>),
                     $edit_table::prev_rev.eq(current.rev_id),
-                    $edit_table::extra_json.eq(&edit_context.extra_json),
+                    //$edit_table::extra_json.eq(None::<?>),
                 ))
                 .get_result(conn)?;
 
@@ -1816,13 +1817,14 @@ impl EntityCrud for ReleaseEntity {
                 rev_ids
                     .into_iter()
                     .zip(ident_ids.into_iter())
-                    .map(|(rev_id, ident_id)| Self::EditNewRow {
+                    .zip(models.into_iter().map(|m| m.edit_extra.clone()))
+                    .map(|((rev_id, ident_id), edit_extra)| Self::EditNewRow {
                         editgroup_id: edit_context.editgroup_id.to_uuid(),
                         rev_id: Some(rev_id),
                         ident_id,
                         redirect_id: None,
                         prev_rev: None,
-                        extra_json: edit_context.extra_json.clone(),
+                        extra_json: edit_extra,
                     })
                     .collect::<Vec<Self::EditNewRow>>(),
             )

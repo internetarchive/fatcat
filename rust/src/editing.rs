@@ -5,7 +5,6 @@
 
 use crate::database_models::*;
 use crate::database_schema::*;
-use crate::editing_crud::EditgroupCrud;
 use crate::entity_crud::EntityCrud;
 use crate::errors::{FatcatError, Result};
 use crate::identifiers::FatcatId;
@@ -37,37 +36,12 @@ impl EditContext {
     }
 }
 
+// This function used to be more complex, and take a database response.
 pub fn make_edit_context(
-    conn: &DbConn,
     editor_id: FatcatId,
-    editgroup_id: Option<FatcatId>,
+    editgroup_id: FatcatId,
     autoaccept: bool,
-    description: Option<String>,
-    extra: Option<serde_json::Value>,
 ) -> Result<EditContext> {
-    // *either* autoaccept is false and editgroup_id is Some, *or* autoaccept is true and
-    // editgroup_id is None
-    let editgroup_id: FatcatId = match (editgroup_id, autoaccept) {
-        (Some(eg), false) => eg,
-        (None, true) => {
-            let eg = Editgroup {
-                editgroup_id: None,
-                editor_id: Some(editor_id.to_string()),
-                editor: None,
-                changelog_index: None,
-                submitted: None,
-                description: description,
-                extra: extra,
-                annotations: None,
-                edits: None,
-            };
-            let row = eg.db_create(conn, autoaccept)?;
-            FatcatId::from_uuid(&row.id)
-        }
-        _ => Err(FatcatError::BadRequest(
-            "unsupported batch editgroup/accept combination".to_string(),
-        ))?,
-    };
     Ok(EditContext {
         editor_id,
         editgroup_id,

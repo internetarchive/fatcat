@@ -528,7 +528,7 @@ fn test_post_container() {
     helpers::check_http_response(
         request::post(
             &format!(
-                "http://localhost:9411/v0/container?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/container",
                 editgroup_id
             ),
             headers,
@@ -546,9 +546,10 @@ fn test_post_batch_container() {
 
     helpers::check_http_response(
         request::post(
-            "http://localhost:9411/v0/container/batch?autoaccept=true",
+            "http://localhost:9411/v0/editgroup/auto/container/batch",
             headers,
-            r#"[{"name": "test journal"}, {"name": "another test journal"}]"#,
+            r#"{"editgroup": {},
+                "entity_list": [{"name": "test journal"}, {"name": "another test journal"}]}"#,
             &router,
         ),
         status::Created,
@@ -564,7 +565,7 @@ fn test_post_creator() {
     helpers::check_http_response(
         request::post(
             &format!(
-                "http://localhost:9411/v0/creator?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/creator",
                 editgroup_id
             ),
             headers,
@@ -583,10 +584,7 @@ fn test_post_file() {
 
     helpers::check_http_response(
         request::post(
-            &format!(
-                "http://localhost:9411/v0/file?editgroup_id={}",
-                editgroup_id
-            ),
+            &format!("http://localhost:9411/v0/editgroup/{}/file", editgroup_id),
             headers.clone(),
             r#"{ }"#,
             &router,
@@ -597,7 +595,7 @@ fn test_post_file() {
 
     helpers::check_http_response(
         request::post(
-            &format!("http://localhost:9411/v0/file?editgroup_id={}", editgroup_id),
+            &format!("http://localhost:9411/v0/editgroup/{}/file", editgroup_id),
             headers.clone(),
             r#"{"size": 76543,
                 "sha1": "f0000000000000008b7eb2a93e6d0440c1f3e7f8",
@@ -653,7 +651,7 @@ fn test_post_fileset() {
     helpers::check_http_response(
         request::post(
             &format!(
-                "http://localhost:9411/v0/fileset?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/fileset",
                 editgroup_id
             ),
             headers.clone(),
@@ -666,7 +664,7 @@ fn test_post_fileset() {
 
     helpers::check_http_response(
         request::post(
-            &format!("http://localhost:9411/v0/fileset?editgroup_id={}", editgroup_id),
+            &format!("http://localhost:9411/v0/editgroup/{}/fileset", editgroup_id),
             headers.clone(),
             r#"{"manifest": [
                     {"path": "new_file.txt", "size": 12345, "sha1": "e9dd75237c94b209dc3ccd52722de6931a310ba3" },
@@ -712,7 +710,7 @@ fn test_post_webcapture() {
     helpers::check_http_response(
         request::post(
             &format!(
-                "http://localhost:9411/v0/webcapture?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/webcapture",
                 editgroup_id
             ),
             headers.clone(),
@@ -727,7 +725,7 @@ fn test_post_webcapture() {
     helpers::check_http_response(
         request::post(
             &format!(
-                "http://localhost:9411/v0/webcapture?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/webcapture",
                 editgroup_id
             ),
             headers.clone(),
@@ -781,7 +779,7 @@ fn test_post_release() {
     helpers::check_http_response(
         request::post(
             &format!(
-                "http://localhost:9411/v0/release?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/release",
                 editgroup_id
             ),
             headers.clone(),
@@ -801,7 +799,7 @@ fn test_post_release() {
     helpers::check_http_response(
         request::post(
             &format!(
-                "http://localhost:9411/v0/release?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/release",
                 editgroup_id
             ),
             headers.clone(),
@@ -819,7 +817,7 @@ fn test_post_release() {
     helpers::check_http_response(
         request::post(
             &format!(
-                "http://localhost:9411/v0/release?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/release",
                 editgroup_id
             ),
             headers.clone(),
@@ -868,7 +866,7 @@ fn test_post_release() {
     /* XXX: doesn't fail
     helpers::check_http_response(
         request::post(
-            &format!("http://localhost:9411/v0/release?editgroup_id={}", editgroup_id),
+            &format!("http://localhost:9411/v0/editgroup/{}/release", editgroup_id),
             headers.clone(),
             r#"{"title": "secret minimal paper the second",
                 "asdf123": "lalala"
@@ -888,10 +886,7 @@ fn test_post_work() {
 
     helpers::check_http_response(
         request::post(
-            &format!(
-                "http://localhost:9411/v0/work?editgroup_id={}",
-                editgroup_id
-            ),
+            &format!("http://localhost:9411/v0/editgroup/{}/work", editgroup_id),
             headers.clone(),
             // TODO: target_work_id
             r#"{
@@ -911,10 +906,7 @@ fn test_update_work() {
 
     helpers::check_http_response(
         request::post(
-            &format!(
-                "http://localhost:9411/v0/work?editgroup_id={}",
-                editgroup_id
-            ),
+            &format!("http://localhost:9411/v0/editgroup/{}/work", editgroup_id),
             headers.clone(),
             r#"{
                 "extra": { "source": "other speculation" }
@@ -945,7 +937,7 @@ fn test_delete_work() {
     helpers::check_http_response(
         request::delete(
             &format!(
-                "http://localhost:9411/v0/work/aaaaaaaaaaaaavkvaaaaaaaaai?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/work/aaaaaaaaaaaaavkvaaaaaaaaai",
                 editgroup_id
             ),
             headers.clone(),
@@ -988,7 +980,7 @@ fn test_accept_editgroup() {
     helpers::check_http_response(
         request::post(
             &format!(
-                "http://localhost:9411/v0/container?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/container",
                 editgroup_id
             ),
             headers.clone(),
@@ -1004,7 +996,7 @@ fn test_accept_editgroup() {
     helpers::check_http_response(
         request::post(
             &format!(
-                "http://localhost:9411/v0/container?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/container",
                 editgroup_id
             ),
             headers.clone(),
@@ -1104,7 +1096,7 @@ fn test_400() {
     helpers::check_http_response(
         request::post(
             &format!(
-                "http://localhost:9411/v0/release?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/release",
                 editgroup_id
             ),
             headers,
@@ -1183,7 +1175,7 @@ fn test_bad_external_idents() {
     helpers::check_http_response(
         request::post(
             &format!(
-                "http://localhost:9411/v0/release?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/release",
                 editgroup_id
             ),
             headers.clone(),
@@ -1200,7 +1192,7 @@ fn test_bad_external_idents() {
     helpers::check_http_response(
         request::post(
             &format!(
-                "http://localhost:9411/v0/release?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/release",
                 editgroup_id
             ),
             headers.clone(),
@@ -1217,7 +1209,7 @@ fn test_bad_external_idents() {
     helpers::check_http_response(
         request::post(
             &format!(
-                "http://localhost:9411/v0/release?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/release",
                 editgroup_id
             ),
             headers.clone(),
@@ -1236,7 +1228,7 @@ fn test_bad_external_idents() {
     helpers::check_http_response(
         request::post(
             &format!(
-                "http://localhost:9411/v0/release?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/release",
                 editgroup_id
             ),
             headers.clone(),
@@ -1255,7 +1247,7 @@ fn test_bad_external_idents() {
     helpers::check_http_response(
         request::post(
             &format!(
-                "http://localhost:9411/v0/release?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/release",
                 editgroup_id
             ),
             headers.clone(),
@@ -1274,7 +1266,7 @@ fn test_bad_external_idents() {
     helpers::check_http_response(
         request::post(
             &format!(
-                "http://localhost:9411/v0/release?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/release",
                 editgroup_id
             ),
             headers.clone(),
@@ -1293,7 +1285,7 @@ fn test_bad_external_idents() {
     helpers::check_http_response(
         request::post(
             &format!(
-                "http://localhost:9411/v0/release?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/release",
                 editgroup_id
             ),
             headers.clone(),
@@ -1320,7 +1312,7 @@ fn test_abstracts() {
     helpers::check_http_response(
         request::post(
             &format!(
-                "http://localhost:9411/v0/release?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/release",
                 editgroup_id
             ),
             headers.clone(),
@@ -1347,7 +1339,7 @@ fn test_abstracts() {
     helpers::check_http_response(
         request::post(
             &format!(
-                "http://localhost:9411/v0/release?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/release",
                 editgroup_id
             ),
             headers.clone(),
@@ -1420,7 +1412,7 @@ fn test_contribs() {
     helpers::check_http_response(
         request::post(
             &format!(
-                "http://localhost:9411/v0/release?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/release",
                 editgroup_id
             ),
             headers.clone(),
@@ -1460,51 +1452,6 @@ fn test_contribs() {
 }
 
 #[test]
-fn test_post_batch_autoaccept() {
-    let (headers, router, conn) = helpers::setup_http();
-
-    // "true"
-    helpers::check_http_response(
-        request::post(
-            "http://localhost:9411/v0/container/batch?autoaccept=true",
-            headers.clone(),
-            r#"[{"name": "test journal"}, {"name": "another test journal"}]"#,
-            &router,
-        ),
-        status::Created,
-        None,
-    );
-
-    // "n" (TODO)
-    let editgroup_id = helpers::quick_editgroup(&conn);
-    helpers::check_http_response(
-        request::post(
-            &format!(
-                "http://localhost:9411/v0/container/batch?autoaccept=n&editgroup_id={}",
-                editgroup_id
-            ),
-            headers.clone(),
-            r#"[{"name": "test journal"}, {"name": "another test journal"}]"#,
-            &router,
-        ),
-        status::BadRequest, // TODO
-        None,
-    );
-
-    // editgroup
-    helpers::check_http_response(
-        request::post(
-            "http://localhost:9411/v0/container/batch?autoaccept=yes&editgroup_id=asdf",
-            headers.clone(),
-            r#"[{"name": "test journal"}, {"name": "another test journal"}]"#,
-            &router,
-        ),
-        status::BadRequest,
-        None,
-    );
-}
-
-#[test]
 fn test_release_dates() {
     let (headers, router, conn) = helpers::setup_http();
     let editgroup_id = helpers::quick_editgroup(&conn);
@@ -1513,7 +1460,7 @@ fn test_release_dates() {
     helpers::check_http_response(
         request::post(
             &format!(
-                "http://localhost:9411/v0/release?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/release",
                 editgroup_id
             ),
             headers.clone(),
@@ -1532,7 +1479,7 @@ fn test_release_dates() {
     helpers::check_http_response(
         request::post(
             &format!(
-                "http://localhost:9411/v0/release?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/release",
                 editgroup_id
             ),
             headers.clone(),
@@ -1551,7 +1498,7 @@ fn test_release_dates() {
     helpers::check_http_response(
         request::post(
             &format!(
-                "http://localhost:9411/v0/release?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/release",
                 editgroup_id
             ),
             headers.clone(),
@@ -1568,7 +1515,7 @@ fn test_release_dates() {
     helpers::check_http_response(
         request::post(
             &format!(
-                "http://localhost:9411/v0/release?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/release",
                 editgroup_id
             ),
             headers.clone(),
@@ -1587,7 +1534,7 @@ fn test_release_dates() {
     helpers::check_http_response(
         request::post(
             &format!(
-                "http://localhost:9411/v0/release?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/release",
                 editgroup_id
             ),
             headers.clone(),
@@ -1607,7 +1554,7 @@ fn test_release_dates() {
     helpers::check_http_response(
         request::post(
             &format!(
-                "http://localhost:9411/v0/release?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/release",
                 editgroup_id
             ),
             headers.clone(),
@@ -1627,7 +1574,7 @@ fn test_release_dates() {
     helpers::check_http_response(
         request::post(
             &format!(
-                "http://localhost:9411/v0/release?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/release",
                 editgroup_id
             ),
             headers.clone(),
@@ -1646,7 +1593,7 @@ fn test_release_dates() {
     helpers::check_http_response(
         request::post(
             &format!(
-                "http://localhost:9411/v0/release?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/release",
                 editgroup_id
             ),
             headers.clone(),
@@ -1665,7 +1612,7 @@ fn test_release_dates() {
     helpers::check_http_response(
         request::post(
             &format!(
-                "http://localhost:9411/v0/release?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/release",
                 editgroup_id
             ),
             headers.clone(),
@@ -1690,7 +1637,7 @@ fn test_release_types() {
     helpers::check_http_response(
         request::post(
             &format!(
-                "http://localhost:9411/v0/release?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/release",
                 editgroup_id
             ),
             headers.clone(),
@@ -1708,7 +1655,7 @@ fn test_release_types() {
     helpers::check_http_response(
         request::post(
             &format!(
-                "http://localhost:9411/v0/release?editgroup_id={}",
+                "http://localhost:9411/v0/editgroup/{}/release",
                 editgroup_id
             ),
             headers.clone(),
@@ -1953,20 +1900,11 @@ fn test_query_params() {
 
     helpers::check_http_response(
         request::post(
-            "http://localhost:9411/v0/container/batch?autoaccept=asdf",
+            "http://localhost:9411/v0/editgroup/auto/container/batch",
             headers.clone(),
-            r#"[{"name": "test journal"}, {"name": "another test journal"}]"#,
-            &router,
-        ),
-        status::BadRequest,
-        Some("boolean"),
-    );
-
-    helpers::check_http_response(
-        request::post(
-            "http://localhost:9411/v0/container/batch?autoaccept=True",
-            headers.clone(),
-            r#"[{"name": "test journal"}, {"name": "another test journal"}]"#,
+            r#"{"editgroup": {},
+                "entity_list": [{"name": "test journal"}, {"name": "another test journal"}]
+               }"#,
             &router,
         ),
         status::Created,
