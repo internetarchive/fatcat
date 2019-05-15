@@ -23,12 +23,18 @@ consumes:
 produces:
 - "application/json"
 paths:
-  /container:
+  /editgroup/{editgroup_id}/container:
     post:
       tags:
       - "containers"
       operationId: "create_container"
       parameters:
+      - name: "editgroup_id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       - in: "body"
         name: "entity"
         required: true
@@ -41,12 +47,6 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "CREATE_CONTAINER"
         consumesJson: true
-      - name: "editgroup_id"
-        in: "query"
-        required: true
-        type: "string"
-        formatString: "\\\"{}\\\""
-        example: "\"editgroup_id_example\".to_string()"
       responses:
         201:
           description: "Created Entity"
@@ -109,67 +109,37 @@ paths:
       - Bearer: []
       operation_id: "create_container"
       uppercase_operation_id: "CREATE_CONTAINER"
-      path: "/container"
+      path: "/editgroup/:editgroup_id/container"
       HttpMethod: "Post"
       httpmethod: "post"
       noClientExample: true
-  /container/batch:
+  /editgroup/auto/container/batch:
     post:
       tags:
       - "containers"
-      operationId: "create_container_batch"
+      operationId: "create_container_auto_batch"
       parameters:
-      - name: "autoaccept"
-        in: "query"
-        description: "If true, and editor is authorized, batch is accepted all at\
-          \ once"
-        required: false
-        type: "boolean"
-        formatString: "{:?}"
-        example: "Some(true)"
-      - name: "editgroup_id"
-        in: "query"
-        description: "Editgroup to auto-accept and apply to all entities (required\
-          \ if 'autoaccept' is True)"
-        required: false
-        type: "string"
-        formatString: "{:?}"
-        example: "Some(\"editgroup_id_example\".to_string())"
-      - name: "description"
-        in: "query"
-        required: false
-        type: "string"
-        formatString: "{:?}"
-        example: "Some(\"description_example\".to_string())"
-      - name: "extra"
-        in: "query"
-        required: false
-        type: "string"
-        formatString: "{:?}"
-        example: "Some(\"extra_example\".to_string())"
       - in: "body"
-        name: "entity_list"
+        name: "auto_batch"
         required: true
         schema:
-          type: "array"
-          items:
-            $ref: "#/definitions/container_entity"
+          $ref: "#/definitions/container_auto_batch"
+        uppercase_data_type: "CONTAINERAUTOBATCH"
+        refName: "container_auto_batch"
         formatString: "{:?}"
-        example: "&Vec::new()"
+        example: "???"
         model_key: "editgroup_edits"
-        uppercase_operation_id: "CREATE_CONTAINER_BATCH"
+        uppercase_operation_id: "CREATE_CONTAINER_AUTO_BATCH"
         consumesJson: true
       responses:
         201:
-          description: "Created Entities"
+          description: "Created Editgroup"
           schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/entity_edit"
-          x-responseId: "CreatedEntities"
-          x-uppercaseResponseId: "CREATED_ENTITIES"
-          uppercase_operation_id: "CREATE_CONTAINER_BATCH"
-          uppercase_data_type: "VEC<ENTITYEDIT>"
+            $ref: "#/definitions/editgroup"
+          x-responseId: "CreatedEditgroup"
+          x-uppercaseResponseId: "CREATED_EDITGROUP"
+          uppercase_operation_id: "CREATE_CONTAINER_AUTO_BATCH"
+          uppercase_data_type: "EDITGROUP"
           producesJson: true
         400:
           description: "Bad Request"
@@ -177,7 +147,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
-          uppercase_operation_id: "CREATE_CONTAINER_BATCH"
+          uppercase_operation_id: "CREATE_CONTAINER_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         401:
@@ -189,7 +159,7 @@ paths:
               type: "string"
           x-responseId: "NotAuthorized"
           x-uppercaseResponseId: "NOT_AUTHORIZED"
-          uppercase_operation_id: "CREATE_CONTAINER_BATCH"
+          uppercase_operation_id: "CREATE_CONTAINER_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         403:
@@ -198,7 +168,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "Forbidden"
           x-uppercaseResponseId: "FORBIDDEN"
-          uppercase_operation_id: "CREATE_CONTAINER_BATCH"
+          uppercase_operation_id: "CREATE_CONTAINER_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
@@ -207,7 +177,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "CREATE_CONTAINER_BATCH"
+          uppercase_operation_id: "CREATE_CONTAINER_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         500:
@@ -216,16 +186,17 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "CREATE_CONTAINER_BATCH"
+          uppercase_operation_id: "CREATE_CONTAINER_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
       security:
       - Bearer: []
-      operation_id: "create_container_batch"
-      uppercase_operation_id: "CREATE_CONTAINER_BATCH"
-      path: "/container/batch"
+      operation_id: "create_container_auto_batch"
+      uppercase_operation_id: "CREATE_CONTAINER_AUTO_BATCH"
+      path: "/editgroup/auto/container/batch"
       HttpMethod: "Post"
       httpmethod: "post"
+      noClientExample: true
   /container/{ident}:
     get:
       tags:
@@ -296,11 +267,18 @@ paths:
       path: "/container/:ident"
       HttpMethod: "Get"
       httpmethod: "get"
+  /editgroup/{editgroup_id}/container/{ident}:
     put:
       tags:
       - "containers"
       operationId: "update_container"
       parameters:
+      - name: "editgroup_id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       - name: "ident"
         in: "path"
         required: true
@@ -319,12 +297,6 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "UPDATE_CONTAINER"
         consumesJson: true
-      - name: "editgroup_id"
-        in: "query"
-        required: true
-        type: "string"
-        formatString: "\\\"{}\\\""
-        example: "\"editgroup_id_example\".to_string()"
       responses:
         200:
           description: "Updated Entity"
@@ -387,7 +359,7 @@ paths:
       - Bearer: []
       operation_id: "update_container"
       uppercase_operation_id: "UPDATE_CONTAINER"
-      path: "/container/:ident"
+      path: "/editgroup/:editgroup_id/container/:ident"
       HttpMethod: "Put"
       httpmethod: "put"
       noClientExample: true
@@ -396,18 +368,18 @@ paths:
       - "containers"
       operationId: "delete_container"
       parameters:
+      - name: "editgroup_id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
         example: "\"ident_example\".to_string()"
-      - name: "editgroup_id"
-        in: "query"
-        required: true
-        type: "string"
-        formatString: "\\\"{}\\\""
-        example: "\"editgroup_id_example\".to_string()"
       responses:
         200:
           description: "Deleted Entity"
@@ -470,7 +442,7 @@ paths:
       - Bearer: []
       operation_id: "delete_container"
       uppercase_operation_id: "DELETE_CONTAINER"
-      path: "/container/:ident"
+      path: "/editgroup/:editgroup_id/container/:ident"
       HttpMethod: "Delete"
       httpmethod: "delete"
   /container/rev/{rev_id}:
@@ -806,11 +778,18 @@ paths:
       path: "/container/edit/:edit_id"
       HttpMethod: "Get"
       httpmethod: "get"
+  /editgroup/{editgroup_id}/container/edit/{edit_id}:
     delete:
       tags:
       - "containers"
       operationId: "delete_container_edit"
       parameters:
+      - name: "editgroup_id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       - name: "edit_id"
         in: "path"
         description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
@@ -883,15 +862,21 @@ paths:
       - Bearer: []
       operation_id: "delete_container_edit"
       uppercase_operation_id: "DELETE_CONTAINER_EDIT"
-      path: "/container/edit/:edit_id"
+      path: "/editgroup/:editgroup_id/container/edit/:edit_id"
       HttpMethod: "Delete"
       httpmethod: "delete"
-  /creator:
+  /editgroup/{editgroup_id}/creator:
     post:
       tags:
       - "creators"
       operationId: "create_creator"
       parameters:
+      - name: "editgroup_id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       - in: "body"
         name: "entity"
         required: true
@@ -904,12 +889,6 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "CREATE_CREATOR"
         consumesJson: true
-      - name: "editgroup_id"
-        in: "query"
-        required: true
-        type: "string"
-        formatString: "\\\"{}\\\""
-        example: "\"editgroup_id_example\".to_string()"
       responses:
         201:
           description: "Created Entity"
@@ -972,67 +951,37 @@ paths:
       - Bearer: []
       operation_id: "create_creator"
       uppercase_operation_id: "CREATE_CREATOR"
-      path: "/creator"
+      path: "/editgroup/:editgroup_id/creator"
       HttpMethod: "Post"
       httpmethod: "post"
       noClientExample: true
-  /creator/batch:
+  /editgroup/auto/creator/batch:
     post:
       tags:
       - "creators"
-      operationId: "create_creator_batch"
+      operationId: "create_creator_auto_batch"
       parameters:
-      - name: "autoaccept"
-        in: "query"
-        description: "If true, and editor is authorized, batch is accepted all at\
-          \ once"
-        required: false
-        type: "boolean"
-        formatString: "{:?}"
-        example: "Some(true)"
-      - name: "editgroup_id"
-        in: "query"
-        description: "Editgroup to auto-accept and apply to all entities (required\
-          \ if 'autoaccept' is True)"
-        required: false
-        type: "string"
-        formatString: "{:?}"
-        example: "Some(\"editgroup_id_example\".to_string())"
-      - name: "description"
-        in: "query"
-        required: false
-        type: "string"
-        formatString: "{:?}"
-        example: "Some(\"description_example\".to_string())"
-      - name: "extra"
-        in: "query"
-        required: false
-        type: "string"
-        formatString: "{:?}"
-        example: "Some(\"extra_example\".to_string())"
       - in: "body"
-        name: "entity_list"
+        name: "auto_batch"
         required: true
         schema:
-          type: "array"
-          items:
-            $ref: "#/definitions/creator_entity"
+          $ref: "#/definitions/creator_auto_batch"
+        uppercase_data_type: "CREATORAUTOBATCH"
+        refName: "creator_auto_batch"
         formatString: "{:?}"
-        example: "&Vec::new()"
+        example: "???"
         model_key: "editgroup_edits"
-        uppercase_operation_id: "CREATE_CREATOR_BATCH"
+        uppercase_operation_id: "CREATE_CREATOR_AUTO_BATCH"
         consumesJson: true
       responses:
         201:
-          description: "Created Entities"
+          description: "Created Editgroup"
           schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/entity_edit"
-          x-responseId: "CreatedEntities"
-          x-uppercaseResponseId: "CREATED_ENTITIES"
-          uppercase_operation_id: "CREATE_CREATOR_BATCH"
-          uppercase_data_type: "VEC<ENTITYEDIT>"
+            $ref: "#/definitions/editgroup"
+          x-responseId: "CreatedEditgroup"
+          x-uppercaseResponseId: "CREATED_EDITGROUP"
+          uppercase_operation_id: "CREATE_CREATOR_AUTO_BATCH"
+          uppercase_data_type: "EDITGROUP"
           producesJson: true
         400:
           description: "Bad Request"
@@ -1040,7 +989,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
-          uppercase_operation_id: "CREATE_CREATOR_BATCH"
+          uppercase_operation_id: "CREATE_CREATOR_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         401:
@@ -1052,7 +1001,7 @@ paths:
               type: "string"
           x-responseId: "NotAuthorized"
           x-uppercaseResponseId: "NOT_AUTHORIZED"
-          uppercase_operation_id: "CREATE_CREATOR_BATCH"
+          uppercase_operation_id: "CREATE_CREATOR_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         403:
@@ -1061,7 +1010,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "Forbidden"
           x-uppercaseResponseId: "FORBIDDEN"
-          uppercase_operation_id: "CREATE_CREATOR_BATCH"
+          uppercase_operation_id: "CREATE_CREATOR_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
@@ -1070,7 +1019,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "CREATE_CREATOR_BATCH"
+          uppercase_operation_id: "CREATE_CREATOR_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         500:
@@ -1079,16 +1028,17 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "CREATE_CREATOR_BATCH"
+          uppercase_operation_id: "CREATE_CREATOR_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
       security:
       - Bearer: []
-      operation_id: "create_creator_batch"
-      uppercase_operation_id: "CREATE_CREATOR_BATCH"
-      path: "/creator/batch"
+      operation_id: "create_creator_auto_batch"
+      uppercase_operation_id: "CREATE_CREATOR_AUTO_BATCH"
+      path: "/editgroup/auto/creator/batch"
       HttpMethod: "Post"
       httpmethod: "post"
+      noClientExample: true
   /creator/{ident}:
     get:
       tags:
@@ -1159,11 +1109,18 @@ paths:
       path: "/creator/:ident"
       HttpMethod: "Get"
       httpmethod: "get"
+  /editgroup/{editgroup_id}/creator/{ident}:
     put:
       tags:
       - "creators"
       operationId: "update_creator"
       parameters:
+      - name: "editgroup_id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       - name: "ident"
         in: "path"
         required: true
@@ -1182,12 +1139,6 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "UPDATE_CREATOR"
         consumesJson: true
-      - name: "editgroup_id"
-        in: "query"
-        required: true
-        type: "string"
-        formatString: "\\\"{}\\\""
-        example: "\"editgroup_id_example\".to_string()"
       responses:
         200:
           description: "Updated Entity"
@@ -1250,7 +1201,7 @@ paths:
       - Bearer: []
       operation_id: "update_creator"
       uppercase_operation_id: "UPDATE_CREATOR"
-      path: "/creator/:ident"
+      path: "/editgroup/:editgroup_id/creator/:ident"
       HttpMethod: "Put"
       httpmethod: "put"
       noClientExample: true
@@ -1259,18 +1210,18 @@ paths:
       - "creators"
       operationId: "delete_creator"
       parameters:
+      - name: "editgroup_id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
         example: "\"ident_example\".to_string()"
-      - name: "editgroup_id"
-        in: "query"
-        required: true
-        type: "string"
-        formatString: "\\\"{}\\\""
-        example: "\"editgroup_id_example\".to_string()"
       responses:
         200:
           description: "Deleted Entity"
@@ -1333,7 +1284,7 @@ paths:
       - Bearer: []
       operation_id: "delete_creator"
       uppercase_operation_id: "DELETE_CREATOR"
-      path: "/creator/:ident"
+      path: "/editgroup/:editgroup_id/creator/:ident"
       HttpMethod: "Delete"
       httpmethod: "delete"
   /creator/rev/{rev_id}:
@@ -1733,11 +1684,18 @@ paths:
       path: "/creator/edit/:edit_id"
       HttpMethod: "Get"
       httpmethod: "get"
+  /editgroup/{editgroup_id}/creator/edit/{edit_id}:
     delete:
       tags:
       - "creators"
       operationId: "delete_creator_edit"
       parameters:
+      - name: "editgroup_id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       - name: "edit_id"
         in: "path"
         description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
@@ -1810,15 +1768,21 @@ paths:
       - Bearer: []
       operation_id: "delete_creator_edit"
       uppercase_operation_id: "DELETE_CREATOR_EDIT"
-      path: "/creator/edit/:edit_id"
+      path: "/editgroup/:editgroup_id/creator/edit/:edit_id"
       HttpMethod: "Delete"
       httpmethod: "delete"
-  /file:
+  /editgroup/{editgroup_id}/file:
     post:
       tags:
       - "files"
       operationId: "create_file"
       parameters:
+      - name: "editgroup_id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       - in: "body"
         name: "entity"
         required: true
@@ -1831,12 +1795,6 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "CREATE_FILE"
         consumesJson: true
-      - name: "editgroup_id"
-        in: "query"
-        required: true
-        type: "string"
-        formatString: "\\\"{}\\\""
-        example: "\"editgroup_id_example\".to_string()"
       responses:
         201:
           description: "Created Entity"
@@ -1899,67 +1857,37 @@ paths:
       - Bearer: []
       operation_id: "create_file"
       uppercase_operation_id: "CREATE_FILE"
-      path: "/file"
+      path: "/editgroup/:editgroup_id/file"
       HttpMethod: "Post"
       httpmethod: "post"
       noClientExample: true
-  /file/batch:
+  /editgroup/auto/file/batch:
     post:
       tags:
       - "files"
-      operationId: "create_file_batch"
+      operationId: "create_file_auto_batch"
       parameters:
-      - name: "autoaccept"
-        in: "query"
-        description: "If true, and editor is authorized, batch is accepted all at\
-          \ once"
-        required: false
-        type: "boolean"
-        formatString: "{:?}"
-        example: "Some(true)"
-      - name: "editgroup_id"
-        in: "query"
-        description: "Editgroup to auto-accept and apply to all entities (required\
-          \ if 'autoaccept' is True)"
-        required: false
-        type: "string"
-        formatString: "{:?}"
-        example: "Some(\"editgroup_id_example\".to_string())"
-      - name: "description"
-        in: "query"
-        required: false
-        type: "string"
-        formatString: "{:?}"
-        example: "Some(\"description_example\".to_string())"
-      - name: "extra"
-        in: "query"
-        required: false
-        type: "string"
-        formatString: "{:?}"
-        example: "Some(\"extra_example\".to_string())"
       - in: "body"
-        name: "entity_list"
+        name: "auto_batch"
         required: true
         schema:
-          type: "array"
-          items:
-            $ref: "#/definitions/file_entity"
+          $ref: "#/definitions/file_auto_batch"
+        uppercase_data_type: "FILEAUTOBATCH"
+        refName: "file_auto_batch"
         formatString: "{:?}"
-        example: "&Vec::new()"
+        example: "???"
         model_key: "editgroup_edits"
-        uppercase_operation_id: "CREATE_FILE_BATCH"
+        uppercase_operation_id: "CREATE_FILE_AUTO_BATCH"
         consumesJson: true
       responses:
         201:
-          description: "Created Entities"
+          description: "Created Editgroup"
           schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/entity_edit"
-          x-responseId: "CreatedEntities"
-          x-uppercaseResponseId: "CREATED_ENTITIES"
-          uppercase_operation_id: "CREATE_FILE_BATCH"
-          uppercase_data_type: "VEC<ENTITYEDIT>"
+            $ref: "#/definitions/editgroup"
+          x-responseId: "CreatedEditgroup"
+          x-uppercaseResponseId: "CREATED_EDITGROUP"
+          uppercase_operation_id: "CREATE_FILE_AUTO_BATCH"
+          uppercase_data_type: "EDITGROUP"
           producesJson: true
         400:
           description: "Bad Request"
@@ -1967,7 +1895,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
-          uppercase_operation_id: "CREATE_FILE_BATCH"
+          uppercase_operation_id: "CREATE_FILE_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         401:
@@ -1979,7 +1907,7 @@ paths:
               type: "string"
           x-responseId: "NotAuthorized"
           x-uppercaseResponseId: "NOT_AUTHORIZED"
-          uppercase_operation_id: "CREATE_FILE_BATCH"
+          uppercase_operation_id: "CREATE_FILE_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         403:
@@ -1988,7 +1916,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "Forbidden"
           x-uppercaseResponseId: "FORBIDDEN"
-          uppercase_operation_id: "CREATE_FILE_BATCH"
+          uppercase_operation_id: "CREATE_FILE_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
@@ -1997,7 +1925,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "CREATE_FILE_BATCH"
+          uppercase_operation_id: "CREATE_FILE_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         500:
@@ -2006,16 +1934,17 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "CREATE_FILE_BATCH"
+          uppercase_operation_id: "CREATE_FILE_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
       security:
       - Bearer: []
-      operation_id: "create_file_batch"
-      uppercase_operation_id: "CREATE_FILE_BATCH"
-      path: "/file/batch"
+      operation_id: "create_file_auto_batch"
+      uppercase_operation_id: "CREATE_FILE_AUTO_BATCH"
+      path: "/editgroup/auto/file/batch"
       HttpMethod: "Post"
       httpmethod: "post"
+      noClientExample: true
   /file/{ident}:
     get:
       tags:
@@ -2086,11 +2015,18 @@ paths:
       path: "/file/:ident"
       HttpMethod: "Get"
       httpmethod: "get"
+  /editgroup/{editgroup_id}/file/{ident}:
     put:
       tags:
       - "files"
       operationId: "update_file"
       parameters:
+      - name: "editgroup_id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       - name: "ident"
         in: "path"
         required: true
@@ -2109,12 +2045,6 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "UPDATE_FILE"
         consumesJson: true
-      - name: "editgroup_id"
-        in: "query"
-        required: true
-        type: "string"
-        formatString: "\\\"{}\\\""
-        example: "\"editgroup_id_example\".to_string()"
       responses:
         200:
           description: "Updated Entity"
@@ -2177,7 +2107,7 @@ paths:
       - Bearer: []
       operation_id: "update_file"
       uppercase_operation_id: "UPDATE_FILE"
-      path: "/file/:ident"
+      path: "/editgroup/:editgroup_id/file/:ident"
       HttpMethod: "Put"
       httpmethod: "put"
       noClientExample: true
@@ -2186,18 +2116,18 @@ paths:
       - "files"
       operationId: "delete_file"
       parameters:
+      - name: "editgroup_id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
         example: "\"ident_example\".to_string()"
-      - name: "editgroup_id"
-        in: "query"
-        required: true
-        type: "string"
-        formatString: "\\\"{}\\\""
-        example: "\"editgroup_id_example\".to_string()"
       responses:
         200:
           description: "Deleted Entity"
@@ -2260,7 +2190,7 @@ paths:
       - Bearer: []
       operation_id: "delete_file"
       uppercase_operation_id: "DELETE_FILE"
-      path: "/file/:ident"
+      path: "/editgroup/:editgroup_id/file/:ident"
       HttpMethod: "Delete"
       httpmethod: "delete"
   /file/rev/{rev_id}:
@@ -2609,11 +2539,18 @@ paths:
       path: "/file/edit/:edit_id"
       HttpMethod: "Get"
       httpmethod: "get"
+  /editgroup/{editgroup_id}/file/edit/{edit_id}:
     delete:
       tags:
       - "files"
       operationId: "delete_file_edit"
       parameters:
+      - name: "editgroup_id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       - name: "edit_id"
         in: "path"
         description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
@@ -2686,15 +2623,21 @@ paths:
       - Bearer: []
       operation_id: "delete_file_edit"
       uppercase_operation_id: "DELETE_FILE_EDIT"
-      path: "/file/edit/:edit_id"
+      path: "/editgroup/:editgroup_id/file/edit/:edit_id"
       HttpMethod: "Delete"
       httpmethod: "delete"
-  /fileset:
+  /editgroup/{editgroup_id}/fileset:
     post:
       tags:
       - "filesets"
       operationId: "create_fileset"
       parameters:
+      - name: "editgroup_id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       - in: "body"
         name: "entity"
         required: true
@@ -2707,12 +2650,6 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "CREATE_FILESET"
         consumesJson: true
-      - name: "editgroup_id"
-        in: "query"
-        required: true
-        type: "string"
-        formatString: "\\\"{}\\\""
-        example: "\"editgroup_id_example\".to_string()"
       responses:
         201:
           description: "Created Entity"
@@ -2775,67 +2712,37 @@ paths:
       - Bearer: []
       operation_id: "create_fileset"
       uppercase_operation_id: "CREATE_FILESET"
-      path: "/fileset"
+      path: "/editgroup/:editgroup_id/fileset"
       HttpMethod: "Post"
       httpmethod: "post"
       noClientExample: true
-  /fileset/batch:
+  /editgroup/auto/fileset/batch:
     post:
       tags:
       - "filesets"
-      operationId: "create_fileset_batch"
+      operationId: "create_fileset_auto_batch"
       parameters:
-      - name: "autoaccept"
-        in: "query"
-        description: "If true, and editor is authorized, batch is accepted all at\
-          \ once"
-        required: false
-        type: "boolean"
-        formatString: "{:?}"
-        example: "Some(true)"
-      - name: "editgroup_id"
-        in: "query"
-        description: "Editgroup to auto-accept and apply to all entities (required\
-          \ if 'autoaccept' is True)"
-        required: false
-        type: "string"
-        formatString: "{:?}"
-        example: "Some(\"editgroup_id_example\".to_string())"
-      - name: "description"
-        in: "query"
-        required: false
-        type: "string"
-        formatString: "{:?}"
-        example: "Some(\"description_example\".to_string())"
-      - name: "extra"
-        in: "query"
-        required: false
-        type: "string"
-        formatString: "{:?}"
-        example: "Some(\"extra_example\".to_string())"
       - in: "body"
-        name: "entity_list"
+        name: "auto_batch"
         required: true
         schema:
-          type: "array"
-          items:
-            $ref: "#/definitions/fileset_entity"
+          $ref: "#/definitions/fileset_auto_batch"
+        uppercase_data_type: "FILESETAUTOBATCH"
+        refName: "fileset_auto_batch"
         formatString: "{:?}"
-        example: "&Vec::new()"
+        example: "???"
         model_key: "editgroup_edits"
-        uppercase_operation_id: "CREATE_FILESET_BATCH"
+        uppercase_operation_id: "CREATE_FILESET_AUTO_BATCH"
         consumesJson: true
       responses:
         201:
-          description: "Created Entities"
+          description: "Created Editgroup"
           schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/entity_edit"
-          x-responseId: "CreatedEntities"
-          x-uppercaseResponseId: "CREATED_ENTITIES"
-          uppercase_operation_id: "CREATE_FILESET_BATCH"
-          uppercase_data_type: "VEC<ENTITYEDIT>"
+            $ref: "#/definitions/editgroup"
+          x-responseId: "CreatedEditgroup"
+          x-uppercaseResponseId: "CREATED_EDITGROUP"
+          uppercase_operation_id: "CREATE_FILESET_AUTO_BATCH"
+          uppercase_data_type: "EDITGROUP"
           producesJson: true
         400:
           description: "Bad Request"
@@ -2843,7 +2750,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
-          uppercase_operation_id: "CREATE_FILESET_BATCH"
+          uppercase_operation_id: "CREATE_FILESET_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         401:
@@ -2855,7 +2762,7 @@ paths:
               type: "string"
           x-responseId: "NotAuthorized"
           x-uppercaseResponseId: "NOT_AUTHORIZED"
-          uppercase_operation_id: "CREATE_FILESET_BATCH"
+          uppercase_operation_id: "CREATE_FILESET_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         403:
@@ -2864,7 +2771,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "Forbidden"
           x-uppercaseResponseId: "FORBIDDEN"
-          uppercase_operation_id: "CREATE_FILESET_BATCH"
+          uppercase_operation_id: "CREATE_FILESET_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
@@ -2873,7 +2780,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "CREATE_FILESET_BATCH"
+          uppercase_operation_id: "CREATE_FILESET_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         500:
@@ -2882,16 +2789,17 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "CREATE_FILESET_BATCH"
+          uppercase_operation_id: "CREATE_FILESET_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
       security:
       - Bearer: []
-      operation_id: "create_fileset_batch"
-      uppercase_operation_id: "CREATE_FILESET_BATCH"
-      path: "/fileset/batch"
+      operation_id: "create_fileset_auto_batch"
+      uppercase_operation_id: "CREATE_FILESET_AUTO_BATCH"
+      path: "/editgroup/auto/fileset/batch"
       HttpMethod: "Post"
       httpmethod: "post"
+      noClientExample: true
   /fileset/{ident}:
     get:
       tags:
@@ -2962,11 +2870,18 @@ paths:
       path: "/fileset/:ident"
       HttpMethod: "Get"
       httpmethod: "get"
+  /editgroup/{editgroup_id}/fileset/{ident}:
     put:
       tags:
       - "filesets"
       operationId: "update_fileset"
       parameters:
+      - name: "editgroup_id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       - name: "ident"
         in: "path"
         required: true
@@ -2985,12 +2900,6 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "UPDATE_FILESET"
         consumesJson: true
-      - name: "editgroup_id"
-        in: "query"
-        required: true
-        type: "string"
-        formatString: "\\\"{}\\\""
-        example: "\"editgroup_id_example\".to_string()"
       responses:
         200:
           description: "Updated Entity"
@@ -3053,7 +2962,7 @@ paths:
       - Bearer: []
       operation_id: "update_fileset"
       uppercase_operation_id: "UPDATE_FILESET"
-      path: "/fileset/:ident"
+      path: "/editgroup/:editgroup_id/fileset/:ident"
       HttpMethod: "Put"
       httpmethod: "put"
       noClientExample: true
@@ -3062,18 +2971,18 @@ paths:
       - "filesets"
       operationId: "delete_fileset"
       parameters:
+      - name: "editgroup_id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
         example: "\"ident_example\".to_string()"
-      - name: "editgroup_id"
-        in: "query"
-        required: true
-        type: "string"
-        formatString: "\\\"{}\\\""
-        example: "\"editgroup_id_example\".to_string()"
       responses:
         200:
           description: "Deleted Entity"
@@ -3136,7 +3045,7 @@ paths:
       - Bearer: []
       operation_id: "delete_fileset"
       uppercase_operation_id: "DELETE_FILESET"
-      path: "/fileset/:ident"
+      path: "/editgroup/:editgroup_id/fileset/:ident"
       HttpMethod: "Delete"
       httpmethod: "delete"
   /fileset/rev/{rev_id}:
@@ -3395,11 +3304,18 @@ paths:
       path: "/fileset/edit/:edit_id"
       HttpMethod: "Get"
       httpmethod: "get"
+  /editgroup/{editgroup_id}/fileset/edit/{edit_id}:
     delete:
       tags:
       - "filesets"
       operationId: "delete_fileset_edit"
       parameters:
+      - name: "editgroup_id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       - name: "edit_id"
         in: "path"
         description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
@@ -3472,15 +3388,21 @@ paths:
       - Bearer: []
       operation_id: "delete_fileset_edit"
       uppercase_operation_id: "DELETE_FILESET_EDIT"
-      path: "/fileset/edit/:edit_id"
+      path: "/editgroup/:editgroup_id/fileset/edit/:edit_id"
       HttpMethod: "Delete"
       httpmethod: "delete"
-  /webcapture:
+  /editgroup/{editgroup_id}/webcapture:
     post:
       tags:
       - "webcaptures"
       operationId: "create_webcapture"
       parameters:
+      - name: "editgroup_id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       - in: "body"
         name: "entity"
         required: true
@@ -3493,12 +3415,6 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "CREATE_WEBCAPTURE"
         consumesJson: true
-      - name: "editgroup_id"
-        in: "query"
-        required: true
-        type: "string"
-        formatString: "\\\"{}\\\""
-        example: "\"editgroup_id_example\".to_string()"
       responses:
         201:
           description: "Created Entity"
@@ -3561,67 +3477,37 @@ paths:
       - Bearer: []
       operation_id: "create_webcapture"
       uppercase_operation_id: "CREATE_WEBCAPTURE"
-      path: "/webcapture"
+      path: "/editgroup/:editgroup_id/webcapture"
       HttpMethod: "Post"
       httpmethod: "post"
       noClientExample: true
-  /webcapture/batch:
+  /editgroup/auto/webcapture/batch:
     post:
       tags:
       - "webcaptures"
-      operationId: "create_webcapture_batch"
+      operationId: "create_webcapture_auto_batch"
       parameters:
-      - name: "autoaccept"
-        in: "query"
-        description: "If true, and editor is authorized, batch is accepted all at\
-          \ once"
-        required: false
-        type: "boolean"
-        formatString: "{:?}"
-        example: "Some(true)"
-      - name: "editgroup_id"
-        in: "query"
-        description: "Editgroup to auto-accept and apply to all entities (required\
-          \ if 'autoaccept' is True)"
-        required: false
-        type: "string"
-        formatString: "{:?}"
-        example: "Some(\"editgroup_id_example\".to_string())"
-      - name: "description"
-        in: "query"
-        required: false
-        type: "string"
-        formatString: "{:?}"
-        example: "Some(\"description_example\".to_string())"
-      - name: "extra"
-        in: "query"
-        required: false
-        type: "string"
-        formatString: "{:?}"
-        example: "Some(\"extra_example\".to_string())"
       - in: "body"
-        name: "entity_list"
+        name: "auto_batch"
         required: true
         schema:
-          type: "array"
-          items:
-            $ref: "#/definitions/webcapture_entity"
+          $ref: "#/definitions/webcapture_auto_batch"
+        uppercase_data_type: "WEBCAPTUREAUTOBATCH"
+        refName: "webcapture_auto_batch"
         formatString: "{:?}"
-        example: "&Vec::new()"
+        example: "???"
         model_key: "editgroup_edits"
-        uppercase_operation_id: "CREATE_WEBCAPTURE_BATCH"
+        uppercase_operation_id: "CREATE_WEBCAPTURE_AUTO_BATCH"
         consumesJson: true
       responses:
         201:
-          description: "Created Entities"
+          description: "Created Editgroup"
           schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/entity_edit"
-          x-responseId: "CreatedEntities"
-          x-uppercaseResponseId: "CREATED_ENTITIES"
-          uppercase_operation_id: "CREATE_WEBCAPTURE_BATCH"
-          uppercase_data_type: "VEC<ENTITYEDIT>"
+            $ref: "#/definitions/editgroup"
+          x-responseId: "CreatedEditgroup"
+          x-uppercaseResponseId: "CREATED_EDITGROUP"
+          uppercase_operation_id: "CREATE_WEBCAPTURE_AUTO_BATCH"
+          uppercase_data_type: "EDITGROUP"
           producesJson: true
         400:
           description: "Bad Request"
@@ -3629,7 +3515,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
-          uppercase_operation_id: "CREATE_WEBCAPTURE_BATCH"
+          uppercase_operation_id: "CREATE_WEBCAPTURE_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         401:
@@ -3641,7 +3527,7 @@ paths:
               type: "string"
           x-responseId: "NotAuthorized"
           x-uppercaseResponseId: "NOT_AUTHORIZED"
-          uppercase_operation_id: "CREATE_WEBCAPTURE_BATCH"
+          uppercase_operation_id: "CREATE_WEBCAPTURE_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         403:
@@ -3650,7 +3536,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "Forbidden"
           x-uppercaseResponseId: "FORBIDDEN"
-          uppercase_operation_id: "CREATE_WEBCAPTURE_BATCH"
+          uppercase_operation_id: "CREATE_WEBCAPTURE_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
@@ -3659,7 +3545,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "CREATE_WEBCAPTURE_BATCH"
+          uppercase_operation_id: "CREATE_WEBCAPTURE_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         500:
@@ -3668,16 +3554,17 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "CREATE_WEBCAPTURE_BATCH"
+          uppercase_operation_id: "CREATE_WEBCAPTURE_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
       security:
       - Bearer: []
-      operation_id: "create_webcapture_batch"
-      uppercase_operation_id: "CREATE_WEBCAPTURE_BATCH"
-      path: "/webcapture/batch"
+      operation_id: "create_webcapture_auto_batch"
+      uppercase_operation_id: "CREATE_WEBCAPTURE_AUTO_BATCH"
+      path: "/editgroup/auto/webcapture/batch"
       HttpMethod: "Post"
       httpmethod: "post"
+      noClientExample: true
   /webcapture/{ident}:
     get:
       tags:
@@ -3748,11 +3635,18 @@ paths:
       path: "/webcapture/:ident"
       HttpMethod: "Get"
       httpmethod: "get"
+  /editgroup/{editgroup_id}/webcapture/{ident}:
     put:
       tags:
       - "webcaptures"
       operationId: "update_webcapture"
       parameters:
+      - name: "editgroup_id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       - name: "ident"
         in: "path"
         required: true
@@ -3771,12 +3665,6 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "UPDATE_WEBCAPTURE"
         consumesJson: true
-      - name: "editgroup_id"
-        in: "query"
-        required: true
-        type: "string"
-        formatString: "\\\"{}\\\""
-        example: "\"editgroup_id_example\".to_string()"
       responses:
         200:
           description: "Updated Entity"
@@ -3839,7 +3727,7 @@ paths:
       - Bearer: []
       operation_id: "update_webcapture"
       uppercase_operation_id: "UPDATE_WEBCAPTURE"
-      path: "/webcapture/:ident"
+      path: "/editgroup/:editgroup_id/webcapture/:ident"
       HttpMethod: "Put"
       httpmethod: "put"
       noClientExample: true
@@ -3848,18 +3736,18 @@ paths:
       - "webcaptures"
       operationId: "delete_webcapture"
       parameters:
+      - name: "editgroup_id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
         example: "\"ident_example\".to_string()"
-      - name: "editgroup_id"
-        in: "query"
-        required: true
-        type: "string"
-        formatString: "\\\"{}\\\""
-        example: "\"editgroup_id_example\".to_string()"
       responses:
         200:
           description: "Deleted Entity"
@@ -3922,7 +3810,7 @@ paths:
       - Bearer: []
       operation_id: "delete_webcapture"
       uppercase_operation_id: "DELETE_WEBCAPTURE"
-      path: "/webcapture/:ident"
+      path: "/editgroup/:editgroup_id/webcapture/:ident"
       HttpMethod: "Delete"
       httpmethod: "delete"
   /webcapture/rev/{rev_id}:
@@ -4181,11 +4069,18 @@ paths:
       path: "/webcapture/edit/:edit_id"
       HttpMethod: "Get"
       httpmethod: "get"
+  /editgroup/{editgroup_id}/webcapture/edit/{edit_id}:
     delete:
       tags:
       - "webcaptures"
       operationId: "delete_webcapture_edit"
       parameters:
+      - name: "editgroup_id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       - name: "edit_id"
         in: "path"
         description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
@@ -4258,15 +4153,21 @@ paths:
       - Bearer: []
       operation_id: "delete_webcapture_edit"
       uppercase_operation_id: "DELETE_WEBCAPTURE_EDIT"
-      path: "/webcapture/edit/:edit_id"
+      path: "/editgroup/:editgroup_id/webcapture/edit/:edit_id"
       HttpMethod: "Delete"
       httpmethod: "delete"
-  /release:
+  /editgroup/{editgroup_id}/release:
     post:
       tags:
       - "releases"
       operationId: "create_release"
       parameters:
+      - name: "editgroup_id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       - in: "body"
         name: "entity"
         required: true
@@ -4279,12 +4180,6 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "CREATE_RELEASE"
         consumesJson: true
-      - name: "editgroup_id"
-        in: "query"
-        required: true
-        type: "string"
-        formatString: "\\\"{}\\\""
-        example: "\"editgroup_id_example\".to_string()"
       responses:
         201:
           description: "Created Entity"
@@ -4347,67 +4242,37 @@ paths:
       - Bearer: []
       operation_id: "create_release"
       uppercase_operation_id: "CREATE_RELEASE"
-      path: "/release"
+      path: "/editgroup/:editgroup_id/release"
       HttpMethod: "Post"
       httpmethod: "post"
       noClientExample: true
-  /release/batch:
+  /editgroup/auto/release/batch:
     post:
       tags:
       - "releases"
-      operationId: "create_release_batch"
+      operationId: "create_release_auto_batch"
       parameters:
-      - name: "autoaccept"
-        in: "query"
-        description: "If true, and editor is authorized, batch is accepted all at\
-          \ once"
-        required: false
-        type: "boolean"
-        formatString: "{:?}"
-        example: "Some(true)"
-      - name: "editgroup_id"
-        in: "query"
-        description: "Editgroup to auto-accept and apply to all entities (required\
-          \ if 'autoaccept' is True)"
-        required: false
-        type: "string"
-        formatString: "{:?}"
-        example: "Some(\"editgroup_id_example\".to_string())"
-      - name: "description"
-        in: "query"
-        required: false
-        type: "string"
-        formatString: "{:?}"
-        example: "Some(\"description_example\".to_string())"
-      - name: "extra"
-        in: "query"
-        required: false
-        type: "string"
-        formatString: "{:?}"
-        example: "Some(\"extra_example\".to_string())"
       - in: "body"
-        name: "entity_list"
+        name: "auto_batch"
         required: true
         schema:
-          type: "array"
-          items:
-            $ref: "#/definitions/release_entity"
+          $ref: "#/definitions/release_auto_batch"
+        uppercase_data_type: "RELEASEAUTOBATCH"
+        refName: "release_auto_batch"
         formatString: "{:?}"
-        example: "&Vec::new()"
+        example: "???"
         model_key: "editgroup_edits"
-        uppercase_operation_id: "CREATE_RELEASE_BATCH"
+        uppercase_operation_id: "CREATE_RELEASE_AUTO_BATCH"
         consumesJson: true
       responses:
         201:
-          description: "Created Entities"
+          description: "Created Editgroup"
           schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/entity_edit"
-          x-responseId: "CreatedEntities"
-          x-uppercaseResponseId: "CREATED_ENTITIES"
-          uppercase_operation_id: "CREATE_RELEASE_BATCH"
-          uppercase_data_type: "VEC<ENTITYEDIT>"
+            $ref: "#/definitions/editgroup"
+          x-responseId: "CreatedEditgroup"
+          x-uppercaseResponseId: "CREATED_EDITGROUP"
+          uppercase_operation_id: "CREATE_RELEASE_AUTO_BATCH"
+          uppercase_data_type: "EDITGROUP"
           producesJson: true
         400:
           description: "Bad Request"
@@ -4415,7 +4280,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
-          uppercase_operation_id: "CREATE_RELEASE_BATCH"
+          uppercase_operation_id: "CREATE_RELEASE_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         401:
@@ -4427,7 +4292,7 @@ paths:
               type: "string"
           x-responseId: "NotAuthorized"
           x-uppercaseResponseId: "NOT_AUTHORIZED"
-          uppercase_operation_id: "CREATE_RELEASE_BATCH"
+          uppercase_operation_id: "CREATE_RELEASE_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         403:
@@ -4436,7 +4301,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "Forbidden"
           x-uppercaseResponseId: "FORBIDDEN"
-          uppercase_operation_id: "CREATE_RELEASE_BATCH"
+          uppercase_operation_id: "CREATE_RELEASE_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
@@ -4445,7 +4310,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "CREATE_RELEASE_BATCH"
+          uppercase_operation_id: "CREATE_RELEASE_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         500:
@@ -4454,16 +4319,17 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "CREATE_RELEASE_BATCH"
+          uppercase_operation_id: "CREATE_RELEASE_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
       security:
       - Bearer: []
-      operation_id: "create_release_batch"
-      uppercase_operation_id: "CREATE_RELEASE_BATCH"
-      path: "/release/batch"
+      operation_id: "create_release_auto_batch"
+      uppercase_operation_id: "CREATE_RELEASE_AUTO_BATCH"
+      path: "/editgroup/auto/release/batch"
       HttpMethod: "Post"
       httpmethod: "post"
+      noClientExample: true
   /release/{ident}:
     get:
       tags:
@@ -4534,11 +4400,18 @@ paths:
       path: "/release/:ident"
       HttpMethod: "Get"
       httpmethod: "get"
+  /editgroup/{editgroup_id}/release/{ident}:
     put:
       tags:
       - "releases"
       operationId: "update_release"
       parameters:
+      - name: "editgroup_id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       - name: "ident"
         in: "path"
         required: true
@@ -4557,12 +4430,6 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "UPDATE_RELEASE"
         consumesJson: true
-      - name: "editgroup_id"
-        in: "query"
-        required: true
-        type: "string"
-        formatString: "\\\"{}\\\""
-        example: "\"editgroup_id_example\".to_string()"
       responses:
         200:
           description: "Updated Entity"
@@ -4625,7 +4492,7 @@ paths:
       - Bearer: []
       operation_id: "update_release"
       uppercase_operation_id: "UPDATE_RELEASE"
-      path: "/release/:ident"
+      path: "/editgroup/:editgroup_id/release/:ident"
       HttpMethod: "Put"
       httpmethod: "put"
       noClientExample: true
@@ -4634,18 +4501,18 @@ paths:
       - "releases"
       operationId: "delete_release"
       parameters:
+      - name: "editgroup_id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
         example: "\"ident_example\".to_string()"
-      - name: "editgroup_id"
-        in: "query"
-        required: true
-        type: "string"
-        formatString: "\\\"{}\\\""
-        example: "\"editgroup_id_example\".to_string()"
       responses:
         200:
           description: "Deleted Entity"
@@ -4708,7 +4575,7 @@ paths:
       - Bearer: []
       operation_id: "delete_release"
       uppercase_operation_id: "DELETE_RELEASE"
-      path: "/release/:ident"
+      path: "/editgroup/:editgroup_id/release/:ident"
       HttpMethod: "Delete"
       httpmethod: "delete"
   /release/rev/{rev_id}:
@@ -5282,11 +5149,18 @@ paths:
       path: "/release/edit/:edit_id"
       HttpMethod: "Get"
       httpmethod: "get"
+  /editgroup/{editgroup_id}/release/edit/{edit_id}:
     delete:
       tags:
       - "releases"
       operationId: "delete_release_edit"
       parameters:
+      - name: "editgroup_id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       - name: "edit_id"
         in: "path"
         description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
@@ -5359,15 +5233,21 @@ paths:
       - Bearer: []
       operation_id: "delete_release_edit"
       uppercase_operation_id: "DELETE_RELEASE_EDIT"
-      path: "/release/edit/:edit_id"
+      path: "/editgroup/:editgroup_id/release/edit/:edit_id"
       HttpMethod: "Delete"
       httpmethod: "delete"
-  /work:
+  /editgroup/{editgroup_id}/work:
     post:
       tags:
       - "releases"
       operationId: "create_work"
       parameters:
+      - name: "editgroup_id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       - in: "body"
         name: "entity"
         required: true
@@ -5380,12 +5260,6 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "CREATE_WORK"
         consumesJson: true
-      - name: "editgroup_id"
-        in: "query"
-        required: true
-        type: "string"
-        formatString: "\\\"{}\\\""
-        example: "\"editgroup_id_example\".to_string()"
       responses:
         201:
           description: "Created Entity"
@@ -5448,67 +5322,37 @@ paths:
       - Bearer: []
       operation_id: "create_work"
       uppercase_operation_id: "CREATE_WORK"
-      path: "/work"
+      path: "/editgroup/:editgroup_id/work"
       HttpMethod: "Post"
       httpmethod: "post"
       noClientExample: true
-  /work/batch:
+  /editgroup/auto/work/batch:
     post:
       tags:
       - "works"
-      operationId: "create_work_batch"
+      operationId: "create_work_auto_batch"
       parameters:
-      - name: "autoaccept"
-        in: "query"
-        description: "If true, and editor is authorized, batch is accepted all at\
-          \ once"
-        required: false
-        type: "boolean"
-        formatString: "{:?}"
-        example: "Some(true)"
-      - name: "editgroup_id"
-        in: "query"
-        description: "Editgroup to auto-accept and apply to all entities (required\
-          \ if 'autoaccept' is True)"
-        required: false
-        type: "string"
-        formatString: "{:?}"
-        example: "Some(\"editgroup_id_example\".to_string())"
-      - name: "description"
-        in: "query"
-        required: false
-        type: "string"
-        formatString: "{:?}"
-        example: "Some(\"description_example\".to_string())"
-      - name: "extra"
-        in: "query"
-        required: false
-        type: "string"
-        formatString: "{:?}"
-        example: "Some(\"extra_example\".to_string())"
       - in: "body"
-        name: "entity_list"
+        name: "auto_batch"
         required: true
         schema:
-          type: "array"
-          items:
-            $ref: "#/definitions/work_entity"
+          $ref: "#/definitions/work_auto_batch"
+        uppercase_data_type: "WORKAUTOBATCH"
+        refName: "work_auto_batch"
         formatString: "{:?}"
-        example: "&Vec::new()"
+        example: "???"
         model_key: "editgroup_edits"
-        uppercase_operation_id: "CREATE_WORK_BATCH"
+        uppercase_operation_id: "CREATE_WORK_AUTO_BATCH"
         consumesJson: true
       responses:
         201:
-          description: "Created Entities"
+          description: "Created Editgroup"
           schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/entity_edit"
-          x-responseId: "CreatedEntities"
-          x-uppercaseResponseId: "CREATED_ENTITIES"
-          uppercase_operation_id: "CREATE_WORK_BATCH"
-          uppercase_data_type: "VEC<ENTITYEDIT>"
+            $ref: "#/definitions/editgroup"
+          x-responseId: "CreatedEditgroup"
+          x-uppercaseResponseId: "CREATED_EDITGROUP"
+          uppercase_operation_id: "CREATE_WORK_AUTO_BATCH"
+          uppercase_data_type: "EDITGROUP"
           producesJson: true
         400:
           description: "Bad Request"
@@ -5516,7 +5360,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "BadRequest"
           x-uppercaseResponseId: "BAD_REQUEST"
-          uppercase_operation_id: "CREATE_WORK_BATCH"
+          uppercase_operation_id: "CREATE_WORK_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         401:
@@ -5528,7 +5372,7 @@ paths:
               type: "string"
           x-responseId: "NotAuthorized"
           x-uppercaseResponseId: "NOT_AUTHORIZED"
-          uppercase_operation_id: "CREATE_WORK_BATCH"
+          uppercase_operation_id: "CREATE_WORK_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         403:
@@ -5537,7 +5381,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "Forbidden"
           x-uppercaseResponseId: "FORBIDDEN"
-          uppercase_operation_id: "CREATE_WORK_BATCH"
+          uppercase_operation_id: "CREATE_WORK_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         404:
@@ -5546,7 +5390,7 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "NotFound"
           x-uppercaseResponseId: "NOT_FOUND"
-          uppercase_operation_id: "CREATE_WORK_BATCH"
+          uppercase_operation_id: "CREATE_WORK_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
         500:
@@ -5555,16 +5399,17 @@ paths:
             $ref: "#/definitions/error_response"
           x-responseId: "GenericError"
           x-uppercaseResponseId: "GENERIC_ERROR"
-          uppercase_operation_id: "CREATE_WORK_BATCH"
+          uppercase_operation_id: "CREATE_WORK_AUTO_BATCH"
           uppercase_data_type: "ERRORRESPONSE"
           producesJson: true
       security:
       - Bearer: []
-      operation_id: "create_work_batch"
-      uppercase_operation_id: "CREATE_WORK_BATCH"
-      path: "/work/batch"
+      operation_id: "create_work_auto_batch"
+      uppercase_operation_id: "CREATE_WORK_AUTO_BATCH"
+      path: "/editgroup/auto/work/batch"
       HttpMethod: "Post"
       httpmethod: "post"
+      noClientExample: true
   /work/{ident}:
     get:
       tags:
@@ -5635,11 +5480,18 @@ paths:
       path: "/work/:ident"
       HttpMethod: "Get"
       httpmethod: "get"
+  /editgroup/{editgroup_id}/work/{ident}:
     put:
       tags:
       - "works"
       operationId: "update_work"
       parameters:
+      - name: "editgroup_id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       - name: "ident"
         in: "path"
         required: true
@@ -5658,12 +5510,6 @@ paths:
         model_key: "editgroup_edits"
         uppercase_operation_id: "UPDATE_WORK"
         consumesJson: true
-      - name: "editgroup_id"
-        in: "query"
-        required: true
-        type: "string"
-        formatString: "\\\"{}\\\""
-        example: "\"editgroup_id_example\".to_string()"
       responses:
         200:
           description: "Updated Entity"
@@ -5726,7 +5572,7 @@ paths:
       - Bearer: []
       operation_id: "update_work"
       uppercase_operation_id: "UPDATE_WORK"
-      path: "/work/:ident"
+      path: "/editgroup/:editgroup_id/work/:ident"
       HttpMethod: "Put"
       httpmethod: "put"
       noClientExample: true
@@ -5735,18 +5581,18 @@ paths:
       - "works"
       operationId: "delete_work"
       parameters:
+      - name: "editgroup_id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       - name: "ident"
         in: "path"
         required: true
         type: "string"
         formatString: "\\\"{}\\\""
         example: "\"ident_example\".to_string()"
-      - name: "editgroup_id"
-        in: "query"
-        required: true
-        type: "string"
-        formatString: "\\\"{}\\\""
-        example: "\"editgroup_id_example\".to_string()"
       responses:
         200:
           description: "Deleted Entity"
@@ -5809,7 +5655,7 @@ paths:
       - Bearer: []
       operation_id: "delete_work"
       uppercase_operation_id: "DELETE_WORK"
-      path: "/work/:ident"
+      path: "/editgroup/:editgroup_id/work/:ident"
       HttpMethod: "Delete"
       httpmethod: "delete"
   /work/rev/{rev_id}:
@@ -6132,11 +5978,18 @@ paths:
       path: "/work/edit/:edit_id"
       HttpMethod: "Get"
       httpmethod: "get"
+  /editgroup/{editgroup_id}/work/edit/{edit_id}:
     delete:
       tags:
       - "works"
       operationId: "delete_work_edit"
       parameters:
+      - name: "editgroup_id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"editgroup_id_example\".to_string()"
       - name: "edit_id"
         in: "path"
         description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
@@ -6209,7 +6062,7 @@ paths:
       - Bearer: []
       operation_id: "delete_work_edit"
       uppercase_operation_id: "DELETE_WORK_EDIT"
-      path: "/work/edit/:edit_id"
+      path: "/editgroup/:editgroup_id/work/edit/:edit_id"
       HttpMethod: "Delete"
       httpmethod: "delete"
   /editor/{editor_id}:
@@ -9355,6 +9208,97 @@ definitions:
       index: 1
       given_name: "given_name"
     upperCaseName: "RELEASE_CONTRIB"
+  container_auto_batch:
+    type: "object"
+    required:
+    - "editgroup"
+    - "entity_list"
+    properties:
+      editgroup:
+        $ref: "#/definitions/editgroup"
+      entity_list:
+        type: "array"
+        items:
+          $ref: "#/definitions/container_entity"
+    upperCaseName: "CONTAINER_AUTO_BATCH"
+  creator_auto_batch:
+    type: "object"
+    required:
+    - "editgroup"
+    - "entity_list"
+    properties:
+      editgroup:
+        $ref: "#/definitions/editgroup"
+      entity_list:
+        type: "array"
+        items:
+          $ref: "#/definitions/creator_entity"
+    upperCaseName: "CREATOR_AUTO_BATCH"
+  file_auto_batch:
+    type: "object"
+    required:
+    - "editgroup"
+    - "entity_list"
+    properties:
+      editgroup:
+        $ref: "#/definitions/editgroup"
+      entity_list:
+        type: "array"
+        items:
+          $ref: "#/definitions/file_entity"
+    upperCaseName: "FILE_AUTO_BATCH"
+  fileset_auto_batch:
+    type: "object"
+    required:
+    - "editgroup"
+    - "entity_list"
+    properties:
+      editgroup:
+        $ref: "#/definitions/editgroup"
+      entity_list:
+        type: "array"
+        items:
+          $ref: "#/definitions/fileset_entity"
+    upperCaseName: "FILESET_AUTO_BATCH"
+  webcapture_auto_batch:
+    type: "object"
+    required:
+    - "editgroup"
+    - "entity_list"
+    properties:
+      editgroup:
+        $ref: "#/definitions/editgroup"
+      entity_list:
+        type: "array"
+        items:
+          $ref: "#/definitions/webcapture_entity"
+    upperCaseName: "WEBCAPTURE_AUTO_BATCH"
+  release_auto_batch:
+    type: "object"
+    required:
+    - "editgroup"
+    - "entity_list"
+    properties:
+      editgroup:
+        $ref: "#/definitions/editgroup"
+      entity_list:
+        type: "array"
+        items:
+          $ref: "#/definitions/release_entity"
+    upperCaseName: "RELEASE_AUTO_BATCH"
+  work_auto_batch:
+    type: "object"
+    required:
+    - "editgroup"
+    - "entity_list"
+    properties:
+      editgroup:
+        $ref: "#/definitions/editgroup"
+      entity_list:
+        type: "array"
+        items:
+          $ref: "#/definitions/work_entity"
+    upperCaseName: "WORK_AUTO_BATCH"
   auth_oidc:
     type: "object"
     required:

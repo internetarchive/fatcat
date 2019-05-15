@@ -28,29 +28,29 @@ pub mod responses {
     lazy_static! {
         pub static ref CREATE_CONTAINER_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateContainerBatch
+    /// Create Mime objects for the response content types for CreateContainerAutoBatch
     lazy_static! {
-        pub static ref CREATE_CONTAINER_BATCH_CREATED_ENTITIES: Mime = mime!(Application / Json);
+        pub static ref CREATE_CONTAINER_AUTO_BATCH_CREATED_EDITGROUP: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateContainerBatch
+    /// Create Mime objects for the response content types for CreateContainerAutoBatch
     lazy_static! {
-        pub static ref CREATE_CONTAINER_BATCH_BAD_REQUEST: Mime = mime!(Application / Json);
+        pub static ref CREATE_CONTAINER_AUTO_BATCH_BAD_REQUEST: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateContainerBatch
+    /// Create Mime objects for the response content types for CreateContainerAutoBatch
     lazy_static! {
-        pub static ref CREATE_CONTAINER_BATCH_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+        pub static ref CREATE_CONTAINER_AUTO_BATCH_NOT_AUTHORIZED: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateContainerBatch
+    /// Create Mime objects for the response content types for CreateContainerAutoBatch
     lazy_static! {
-        pub static ref CREATE_CONTAINER_BATCH_FORBIDDEN: Mime = mime!(Application / Json);
+        pub static ref CREATE_CONTAINER_AUTO_BATCH_FORBIDDEN: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateContainerBatch
+    /// Create Mime objects for the response content types for CreateContainerAutoBatch
     lazy_static! {
-        pub static ref CREATE_CONTAINER_BATCH_NOT_FOUND: Mime = mime!(Application / Json);
+        pub static ref CREATE_CONTAINER_AUTO_BATCH_NOT_FOUND: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateContainerBatch
+    /// Create Mime objects for the response content types for CreateContainerAutoBatch
     lazy_static! {
-        pub static ref CREATE_CONTAINER_BATCH_GENERIC_ERROR: Mime = mime!(Application / Json);
+        pub static ref CREATE_CONTAINER_AUTO_BATCH_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for DeleteContainer
     lazy_static! {
@@ -244,29 +244,29 @@ pub mod responses {
     lazy_static! {
         pub static ref CREATE_CREATOR_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateCreatorBatch
+    /// Create Mime objects for the response content types for CreateCreatorAutoBatch
     lazy_static! {
-        pub static ref CREATE_CREATOR_BATCH_CREATED_ENTITIES: Mime = mime!(Application / Json);
+        pub static ref CREATE_CREATOR_AUTO_BATCH_CREATED_EDITGROUP: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateCreatorBatch
+    /// Create Mime objects for the response content types for CreateCreatorAutoBatch
     lazy_static! {
-        pub static ref CREATE_CREATOR_BATCH_BAD_REQUEST: Mime = mime!(Application / Json);
+        pub static ref CREATE_CREATOR_AUTO_BATCH_BAD_REQUEST: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateCreatorBatch
+    /// Create Mime objects for the response content types for CreateCreatorAutoBatch
     lazy_static! {
-        pub static ref CREATE_CREATOR_BATCH_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+        pub static ref CREATE_CREATOR_AUTO_BATCH_NOT_AUTHORIZED: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateCreatorBatch
+    /// Create Mime objects for the response content types for CreateCreatorAutoBatch
     lazy_static! {
-        pub static ref CREATE_CREATOR_BATCH_FORBIDDEN: Mime = mime!(Application / Json);
+        pub static ref CREATE_CREATOR_AUTO_BATCH_FORBIDDEN: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateCreatorBatch
+    /// Create Mime objects for the response content types for CreateCreatorAutoBatch
     lazy_static! {
-        pub static ref CREATE_CREATOR_BATCH_NOT_FOUND: Mime = mime!(Application / Json);
+        pub static ref CREATE_CREATOR_AUTO_BATCH_NOT_FOUND: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateCreatorBatch
+    /// Create Mime objects for the response content types for CreateCreatorAutoBatch
     lazy_static! {
-        pub static ref CREATE_CREATOR_BATCH_GENERIC_ERROR: Mime = mime!(Application / Json);
+        pub static ref CREATE_CREATOR_AUTO_BATCH_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for DeleteCreator
     lazy_static! {
@@ -788,29 +788,29 @@ pub mod responses {
     lazy_static! {
         pub static ref CREATE_FILE_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateFileBatch
+    /// Create Mime objects for the response content types for CreateFileAutoBatch
     lazy_static! {
-        pub static ref CREATE_FILE_BATCH_CREATED_ENTITIES: Mime = mime!(Application / Json);
+        pub static ref CREATE_FILE_AUTO_BATCH_CREATED_EDITGROUP: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateFileBatch
+    /// Create Mime objects for the response content types for CreateFileAutoBatch
     lazy_static! {
-        pub static ref CREATE_FILE_BATCH_BAD_REQUEST: Mime = mime!(Application / Json);
+        pub static ref CREATE_FILE_AUTO_BATCH_BAD_REQUEST: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateFileBatch
+    /// Create Mime objects for the response content types for CreateFileAutoBatch
     lazy_static! {
-        pub static ref CREATE_FILE_BATCH_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+        pub static ref CREATE_FILE_AUTO_BATCH_NOT_AUTHORIZED: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateFileBatch
+    /// Create Mime objects for the response content types for CreateFileAutoBatch
     lazy_static! {
-        pub static ref CREATE_FILE_BATCH_FORBIDDEN: Mime = mime!(Application / Json);
+        pub static ref CREATE_FILE_AUTO_BATCH_FORBIDDEN: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateFileBatch
+    /// Create Mime objects for the response content types for CreateFileAutoBatch
     lazy_static! {
-        pub static ref CREATE_FILE_BATCH_NOT_FOUND: Mime = mime!(Application / Json);
+        pub static ref CREATE_FILE_AUTO_BATCH_NOT_FOUND: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateFileBatch
+    /// Create Mime objects for the response content types for CreateFileAutoBatch
     lazy_static! {
-        pub static ref CREATE_FILE_BATCH_GENERIC_ERROR: Mime = mime!(Application / Json);
+        pub static ref CREATE_FILE_AUTO_BATCH_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for DeleteFile
     lazy_static! {
@@ -1004,29 +1004,29 @@ pub mod responses {
     lazy_static! {
         pub static ref CREATE_FILESET_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateFilesetBatch
+    /// Create Mime objects for the response content types for CreateFilesetAutoBatch
     lazy_static! {
-        pub static ref CREATE_FILESET_BATCH_CREATED_ENTITIES: Mime = mime!(Application / Json);
+        pub static ref CREATE_FILESET_AUTO_BATCH_CREATED_EDITGROUP: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateFilesetBatch
+    /// Create Mime objects for the response content types for CreateFilesetAutoBatch
     lazy_static! {
-        pub static ref CREATE_FILESET_BATCH_BAD_REQUEST: Mime = mime!(Application / Json);
+        pub static ref CREATE_FILESET_AUTO_BATCH_BAD_REQUEST: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateFilesetBatch
+    /// Create Mime objects for the response content types for CreateFilesetAutoBatch
     lazy_static! {
-        pub static ref CREATE_FILESET_BATCH_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+        pub static ref CREATE_FILESET_AUTO_BATCH_NOT_AUTHORIZED: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateFilesetBatch
+    /// Create Mime objects for the response content types for CreateFilesetAutoBatch
     lazy_static! {
-        pub static ref CREATE_FILESET_BATCH_FORBIDDEN: Mime = mime!(Application / Json);
+        pub static ref CREATE_FILESET_AUTO_BATCH_FORBIDDEN: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateFilesetBatch
+    /// Create Mime objects for the response content types for CreateFilesetAutoBatch
     lazy_static! {
-        pub static ref CREATE_FILESET_BATCH_NOT_FOUND: Mime = mime!(Application / Json);
+        pub static ref CREATE_FILESET_AUTO_BATCH_NOT_FOUND: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateFilesetBatch
+    /// Create Mime objects for the response content types for CreateFilesetAutoBatch
     lazy_static! {
-        pub static ref CREATE_FILESET_BATCH_GENERIC_ERROR: Mime = mime!(Application / Json);
+        pub static ref CREATE_FILESET_AUTO_BATCH_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for DeleteFileset
     lazy_static! {
@@ -1204,29 +1204,29 @@ pub mod responses {
     lazy_static! {
         pub static ref CREATE_RELEASE_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateReleaseBatch
+    /// Create Mime objects for the response content types for CreateReleaseAutoBatch
     lazy_static! {
-        pub static ref CREATE_RELEASE_BATCH_CREATED_ENTITIES: Mime = mime!(Application / Json);
+        pub static ref CREATE_RELEASE_AUTO_BATCH_CREATED_EDITGROUP: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateReleaseBatch
+    /// Create Mime objects for the response content types for CreateReleaseAutoBatch
     lazy_static! {
-        pub static ref CREATE_RELEASE_BATCH_BAD_REQUEST: Mime = mime!(Application / Json);
+        pub static ref CREATE_RELEASE_AUTO_BATCH_BAD_REQUEST: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateReleaseBatch
+    /// Create Mime objects for the response content types for CreateReleaseAutoBatch
     lazy_static! {
-        pub static ref CREATE_RELEASE_BATCH_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+        pub static ref CREATE_RELEASE_AUTO_BATCH_NOT_AUTHORIZED: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateReleaseBatch
+    /// Create Mime objects for the response content types for CreateReleaseAutoBatch
     lazy_static! {
-        pub static ref CREATE_RELEASE_BATCH_FORBIDDEN: Mime = mime!(Application / Json);
+        pub static ref CREATE_RELEASE_AUTO_BATCH_FORBIDDEN: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateReleaseBatch
+    /// Create Mime objects for the response content types for CreateReleaseAutoBatch
     lazy_static! {
-        pub static ref CREATE_RELEASE_BATCH_NOT_FOUND: Mime = mime!(Application / Json);
+        pub static ref CREATE_RELEASE_AUTO_BATCH_NOT_FOUND: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateReleaseBatch
+    /// Create Mime objects for the response content types for CreateReleaseAutoBatch
     lazy_static! {
-        pub static ref CREATE_RELEASE_BATCH_GENERIC_ERROR: Mime = mime!(Application / Json);
+        pub static ref CREATE_RELEASE_AUTO_BATCH_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for CreateWork
     lazy_static! {
@@ -1492,29 +1492,29 @@ pub mod responses {
     lazy_static! {
         pub static ref CREATE_WEBCAPTURE_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateWebcaptureBatch
+    /// Create Mime objects for the response content types for CreateWebcaptureAutoBatch
     lazy_static! {
-        pub static ref CREATE_WEBCAPTURE_BATCH_CREATED_ENTITIES: Mime = mime!(Application / Json);
+        pub static ref CREATE_WEBCAPTURE_AUTO_BATCH_CREATED_EDITGROUP: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateWebcaptureBatch
+    /// Create Mime objects for the response content types for CreateWebcaptureAutoBatch
     lazy_static! {
-        pub static ref CREATE_WEBCAPTURE_BATCH_BAD_REQUEST: Mime = mime!(Application / Json);
+        pub static ref CREATE_WEBCAPTURE_AUTO_BATCH_BAD_REQUEST: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateWebcaptureBatch
+    /// Create Mime objects for the response content types for CreateWebcaptureAutoBatch
     lazy_static! {
-        pub static ref CREATE_WEBCAPTURE_BATCH_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+        pub static ref CREATE_WEBCAPTURE_AUTO_BATCH_NOT_AUTHORIZED: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateWebcaptureBatch
+    /// Create Mime objects for the response content types for CreateWebcaptureAutoBatch
     lazy_static! {
-        pub static ref CREATE_WEBCAPTURE_BATCH_FORBIDDEN: Mime = mime!(Application / Json);
+        pub static ref CREATE_WEBCAPTURE_AUTO_BATCH_FORBIDDEN: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateWebcaptureBatch
+    /// Create Mime objects for the response content types for CreateWebcaptureAutoBatch
     lazy_static! {
-        pub static ref CREATE_WEBCAPTURE_BATCH_NOT_FOUND: Mime = mime!(Application / Json);
+        pub static ref CREATE_WEBCAPTURE_AUTO_BATCH_NOT_FOUND: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateWebcaptureBatch
+    /// Create Mime objects for the response content types for CreateWebcaptureAutoBatch
     lazy_static! {
-        pub static ref CREATE_WEBCAPTURE_BATCH_GENERIC_ERROR: Mime = mime!(Application / Json);
+        pub static ref CREATE_WEBCAPTURE_AUTO_BATCH_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for DeleteWebcapture
     lazy_static! {
@@ -1668,29 +1668,29 @@ pub mod responses {
     lazy_static! {
         pub static ref UPDATE_WEBCAPTURE_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateWorkBatch
+    /// Create Mime objects for the response content types for CreateWorkAutoBatch
     lazy_static! {
-        pub static ref CREATE_WORK_BATCH_CREATED_ENTITIES: Mime = mime!(Application / Json);
+        pub static ref CREATE_WORK_AUTO_BATCH_CREATED_EDITGROUP: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateWorkBatch
+    /// Create Mime objects for the response content types for CreateWorkAutoBatch
     lazy_static! {
-        pub static ref CREATE_WORK_BATCH_BAD_REQUEST: Mime = mime!(Application / Json);
+        pub static ref CREATE_WORK_AUTO_BATCH_BAD_REQUEST: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateWorkBatch
+    /// Create Mime objects for the response content types for CreateWorkAutoBatch
     lazy_static! {
-        pub static ref CREATE_WORK_BATCH_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+        pub static ref CREATE_WORK_AUTO_BATCH_NOT_AUTHORIZED: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateWorkBatch
+    /// Create Mime objects for the response content types for CreateWorkAutoBatch
     lazy_static! {
-        pub static ref CREATE_WORK_BATCH_FORBIDDEN: Mime = mime!(Application / Json);
+        pub static ref CREATE_WORK_AUTO_BATCH_FORBIDDEN: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateWorkBatch
+    /// Create Mime objects for the response content types for CreateWorkAutoBatch
     lazy_static! {
-        pub static ref CREATE_WORK_BATCH_NOT_FOUND: Mime = mime!(Application / Json);
+        pub static ref CREATE_WORK_AUTO_BATCH_NOT_FOUND: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateWorkBatch
+    /// Create Mime objects for the response content types for CreateWorkAutoBatch
     lazy_static! {
-        pub static ref CREATE_WORK_BATCH_GENERIC_ERROR: Mime = mime!(Application / Json);
+        pub static ref CREATE_WORK_AUTO_BATCH_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for DeleteWork
     lazy_static! {
@@ -1869,9 +1869,9 @@ pub mod requests {
     lazy_static! {
         pub static ref CREATE_CONTAINER: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the request content types for CreateContainerBatch
+    /// Create Mime objects for the request content types for CreateContainerAutoBatch
     lazy_static! {
-        pub static ref CREATE_CONTAINER_BATCH: Mime = mime!(Application / Json);
+        pub static ref CREATE_CONTAINER_AUTO_BATCH: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the request content types for UpdateContainer
     lazy_static! {
@@ -1881,9 +1881,9 @@ pub mod requests {
     lazy_static! {
         pub static ref CREATE_CREATOR: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the request content types for CreateCreatorBatch
+    /// Create Mime objects for the request content types for CreateCreatorAutoBatch
     lazy_static! {
-        pub static ref CREATE_CREATOR_BATCH: Mime = mime!(Application / Json);
+        pub static ref CREATE_CREATOR_AUTO_BATCH: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the request content types for UpdateCreator
     lazy_static! {
@@ -1913,9 +1913,9 @@ pub mod requests {
     lazy_static! {
         pub static ref CREATE_FILE: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the request content types for CreateFileBatch
+    /// Create Mime objects for the request content types for CreateFileAutoBatch
     lazy_static! {
-        pub static ref CREATE_FILE_BATCH: Mime = mime!(Application / Json);
+        pub static ref CREATE_FILE_AUTO_BATCH: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the request content types for UpdateFile
     lazy_static! {
@@ -1925,9 +1925,9 @@ pub mod requests {
     lazy_static! {
         pub static ref CREATE_FILESET: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the request content types for CreateFilesetBatch
+    /// Create Mime objects for the request content types for CreateFilesetAutoBatch
     lazy_static! {
-        pub static ref CREATE_FILESET_BATCH: Mime = mime!(Application / Json);
+        pub static ref CREATE_FILESET_AUTO_BATCH: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the request content types for UpdateFileset
     lazy_static! {
@@ -1937,9 +1937,9 @@ pub mod requests {
     lazy_static! {
         pub static ref CREATE_RELEASE: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the request content types for CreateReleaseBatch
+    /// Create Mime objects for the request content types for CreateReleaseAutoBatch
     lazy_static! {
-        pub static ref CREATE_RELEASE_BATCH: Mime = mime!(Application / Json);
+        pub static ref CREATE_RELEASE_AUTO_BATCH: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the request content types for CreateWork
     lazy_static! {
@@ -1953,17 +1953,17 @@ pub mod requests {
     lazy_static! {
         pub static ref CREATE_WEBCAPTURE: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the request content types for CreateWebcaptureBatch
+    /// Create Mime objects for the request content types for CreateWebcaptureAutoBatch
     lazy_static! {
-        pub static ref CREATE_WEBCAPTURE_BATCH: Mime = mime!(Application / Json);
+        pub static ref CREATE_WEBCAPTURE_AUTO_BATCH: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the request content types for UpdateWebcapture
     lazy_static! {
         pub static ref UPDATE_WEBCAPTURE: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the request content types for CreateWorkBatch
+    /// Create Mime objects for the request content types for CreateWorkAutoBatch
     lazy_static! {
-        pub static ref CREATE_WORK_BATCH: Mime = mime!(Application / Json);
+        pub static ref CREATE_WORK_AUTO_BATCH: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the request content types for UpdateWork
     lazy_static! {

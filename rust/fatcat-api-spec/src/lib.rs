@@ -49,9 +49,9 @@ pub enum CreateContainerResponse {
 }
 
 #[derive(Debug, PartialEq)]
-pub enum CreateContainerBatchResponse {
-    /// Created Entities
-    CreatedEntities(Vec<models::EntityEdit>),
+pub enum CreateContainerAutoBatchResponse {
+    /// Created Editgroup
+    CreatedEditgroup(models::Editgroup),
     /// Bad Request
     BadRequest(models::ErrorResponse),
     /// Not Authorized
@@ -201,9 +201,9 @@ pub enum CreateCreatorResponse {
 }
 
 #[derive(Debug, PartialEq)]
-pub enum CreateCreatorBatchResponse {
-    /// Created Entities
-    CreatedEntities(Vec<models::EntityEdit>),
+pub enum CreateCreatorAutoBatchResponse {
+    /// Created Editgroup
+    CreatedEditgroup(models::Editgroup),
     /// Bad Request
     BadRequest(models::ErrorResponse),
     /// Not Authorized
@@ -581,9 +581,9 @@ pub enum CreateFileResponse {
 }
 
 #[derive(Debug, PartialEq)]
-pub enum CreateFileBatchResponse {
-    /// Created Entities
-    CreatedEntities(Vec<models::EntityEdit>),
+pub enum CreateFileAutoBatchResponse {
+    /// Created Editgroup
+    CreatedEditgroup(models::Editgroup),
     /// Bad Request
     BadRequest(models::ErrorResponse),
     /// Not Authorized
@@ -733,9 +733,9 @@ pub enum CreateFilesetResponse {
 }
 
 #[derive(Debug, PartialEq)]
-pub enum CreateFilesetBatchResponse {
-    /// Created Entities
-    CreatedEntities(Vec<models::EntityEdit>),
+pub enum CreateFilesetAutoBatchResponse {
+    /// Created Editgroup
+    CreatedEditgroup(models::Editgroup),
     /// Bad Request
     BadRequest(models::ErrorResponse),
     /// Not Authorized
@@ -873,9 +873,9 @@ pub enum CreateReleaseResponse {
 }
 
 #[derive(Debug, PartialEq)]
-pub enum CreateReleaseBatchResponse {
-    /// Created Entities
-    CreatedEntities(Vec<models::EntityEdit>),
+pub enum CreateReleaseAutoBatchResponse {
+    /// Created Editgroup
+    CreatedEditgroup(models::Editgroup),
     /// Bad Request
     BadRequest(models::ErrorResponse),
     /// Not Authorized
@@ -1077,9 +1077,9 @@ pub enum CreateWebcaptureResponse {
 }
 
 #[derive(Debug, PartialEq)]
-pub enum CreateWebcaptureBatchResponse {
-    /// Created Entities
-    CreatedEntities(Vec<models::EntityEdit>),
+pub enum CreateWebcaptureAutoBatchResponse {
+    /// Created Editgroup
+    CreatedEditgroup(models::Editgroup),
     /// Bad Request
     BadRequest(models::ErrorResponse),
     /// Not Authorized
@@ -1201,9 +1201,9 @@ pub enum UpdateWebcaptureResponse {
 }
 
 #[derive(Debug, PartialEq)]
-pub enum CreateWorkBatchResponse {
-    /// Created Entities
-    CreatedEntities(Vec<models::EntityEdit>),
+pub enum CreateWorkAutoBatchResponse {
+    /// Created Editgroup
+    CreatedEditgroup(models::Editgroup),
     /// Bad Request
     BadRequest(models::ErrorResponse),
     /// Not Authorized
@@ -1338,21 +1338,13 @@ pub enum UpdateWorkResponse {
 
 /// API
 pub trait Api {
-    fn create_container(&self, entity: models::ContainerEntity, editgroup_id: String, context: &Context) -> Box<Future<Item = CreateContainerResponse, Error = ApiError> + Send>;
+    fn create_container(&self, editgroup_id: String, entity: models::ContainerEntity, context: &Context) -> Box<Future<Item = CreateContainerResponse, Error = ApiError> + Send>;
 
-    fn create_container_batch(
-        &self,
-        entity_list: &Vec<models::ContainerEntity>,
-        autoaccept: Option<bool>,
-        editgroup_id: Option<String>,
-        description: Option<String>,
-        extra: Option<String>,
-        context: &Context,
-    ) -> Box<Future<Item = CreateContainerBatchResponse, Error = ApiError> + Send>;
+    fn create_container_auto_batch(&self, auto_batch: models::ContainerAutoBatch, context: &Context) -> Box<Future<Item = CreateContainerAutoBatchResponse, Error = ApiError> + Send>;
 
-    fn delete_container(&self, ident: String, editgroup_id: String, context: &Context) -> Box<Future<Item = DeleteContainerResponse, Error = ApiError> + Send>;
+    fn delete_container(&self, editgroup_id: String, ident: String, context: &Context) -> Box<Future<Item = DeleteContainerResponse, Error = ApiError> + Send>;
 
-    fn delete_container_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = DeleteContainerEditResponse, Error = ApiError> + Send>;
+    fn delete_container_edit(&self, editgroup_id: String, edit_id: String, context: &Context) -> Box<Future<Item = DeleteContainerEditResponse, Error = ApiError> + Send>;
 
     fn get_container(&self, ident: String, expand: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = GetContainerResponse, Error = ApiError> + Send>;
 
@@ -1373,23 +1365,15 @@ pub trait Api {
         context: &Context,
     ) -> Box<Future<Item = LookupContainerResponse, Error = ApiError> + Send>;
 
-    fn update_container(&self, ident: String, entity: models::ContainerEntity, editgroup_id: String, context: &Context) -> Box<Future<Item = UpdateContainerResponse, Error = ApiError> + Send>;
+    fn update_container(&self, editgroup_id: String, ident: String, entity: models::ContainerEntity, context: &Context) -> Box<Future<Item = UpdateContainerResponse, Error = ApiError> + Send>;
 
-    fn create_creator(&self, entity: models::CreatorEntity, editgroup_id: String, context: &Context) -> Box<Future<Item = CreateCreatorResponse, Error = ApiError> + Send>;
+    fn create_creator(&self, editgroup_id: String, entity: models::CreatorEntity, context: &Context) -> Box<Future<Item = CreateCreatorResponse, Error = ApiError> + Send>;
 
-    fn create_creator_batch(
-        &self,
-        entity_list: &Vec<models::CreatorEntity>,
-        autoaccept: Option<bool>,
-        editgroup_id: Option<String>,
-        description: Option<String>,
-        extra: Option<String>,
-        context: &Context,
-    ) -> Box<Future<Item = CreateCreatorBatchResponse, Error = ApiError> + Send>;
+    fn create_creator_auto_batch(&self, auto_batch: models::CreatorAutoBatch, context: &Context) -> Box<Future<Item = CreateCreatorAutoBatchResponse, Error = ApiError> + Send>;
 
-    fn delete_creator(&self, ident: String, editgroup_id: String, context: &Context) -> Box<Future<Item = DeleteCreatorResponse, Error = ApiError> + Send>;
+    fn delete_creator(&self, editgroup_id: String, ident: String, context: &Context) -> Box<Future<Item = DeleteCreatorResponse, Error = ApiError> + Send>;
 
-    fn delete_creator_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = DeleteCreatorEditResponse, Error = ApiError> + Send>;
+    fn delete_creator_edit(&self, editgroup_id: String, edit_id: String, context: &Context) -> Box<Future<Item = DeleteCreatorEditResponse, Error = ApiError> + Send>;
 
     fn get_creator(&self, ident: String, expand: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send>;
 
@@ -1412,7 +1396,7 @@ pub trait Api {
         context: &Context,
     ) -> Box<Future<Item = LookupCreatorResponse, Error = ApiError> + Send>;
 
-    fn update_creator(&self, ident: String, entity: models::CreatorEntity, editgroup_id: String, context: &Context) -> Box<Future<Item = UpdateCreatorResponse, Error = ApiError> + Send>;
+    fn update_creator(&self, editgroup_id: String, ident: String, entity: models::CreatorEntity, context: &Context) -> Box<Future<Item = UpdateCreatorResponse, Error = ApiError> + Send>;
 
     fn auth_check(&self, role: Option<String>, context: &Context) -> Box<Future<Item = AuthCheckResponse, Error = ApiError> + Send>;
 
@@ -1470,21 +1454,13 @@ pub trait Api {
         context: &Context,
     ) -> Box<Future<Item = GetEditorAnnotationsResponse, Error = ApiError> + Send>;
 
-    fn create_file(&self, entity: models::FileEntity, editgroup_id: String, context: &Context) -> Box<Future<Item = CreateFileResponse, Error = ApiError> + Send>;
+    fn create_file(&self, editgroup_id: String, entity: models::FileEntity, context: &Context) -> Box<Future<Item = CreateFileResponse, Error = ApiError> + Send>;
 
-    fn create_file_batch(
-        &self,
-        entity_list: &Vec<models::FileEntity>,
-        autoaccept: Option<bool>,
-        editgroup_id: Option<String>,
-        description: Option<String>,
-        extra: Option<String>,
-        context: &Context,
-    ) -> Box<Future<Item = CreateFileBatchResponse, Error = ApiError> + Send>;
+    fn create_file_auto_batch(&self, auto_batch: models::FileAutoBatch, context: &Context) -> Box<Future<Item = CreateFileAutoBatchResponse, Error = ApiError> + Send>;
 
-    fn delete_file(&self, ident: String, editgroup_id: String, context: &Context) -> Box<Future<Item = DeleteFileResponse, Error = ApiError> + Send>;
+    fn delete_file(&self, editgroup_id: String, ident: String, context: &Context) -> Box<Future<Item = DeleteFileResponse, Error = ApiError> + Send>;
 
-    fn delete_file_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = DeleteFileEditResponse, Error = ApiError> + Send>;
+    fn delete_file_edit(&self, editgroup_id: String, edit_id: String, context: &Context) -> Box<Future<Item = DeleteFileEditResponse, Error = ApiError> + Send>;
 
     fn get_file(&self, ident: String, expand: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = GetFileResponse, Error = ApiError> + Send>;
 
@@ -1506,23 +1482,15 @@ pub trait Api {
         context: &Context,
     ) -> Box<Future<Item = LookupFileResponse, Error = ApiError> + Send>;
 
-    fn update_file(&self, ident: String, entity: models::FileEntity, editgroup_id: String, context: &Context) -> Box<Future<Item = UpdateFileResponse, Error = ApiError> + Send>;
+    fn update_file(&self, editgroup_id: String, ident: String, entity: models::FileEntity, context: &Context) -> Box<Future<Item = UpdateFileResponse, Error = ApiError> + Send>;
 
-    fn create_fileset(&self, entity: models::FilesetEntity, editgroup_id: String, context: &Context) -> Box<Future<Item = CreateFilesetResponse, Error = ApiError> + Send>;
+    fn create_fileset(&self, editgroup_id: String, entity: models::FilesetEntity, context: &Context) -> Box<Future<Item = CreateFilesetResponse, Error = ApiError> + Send>;
 
-    fn create_fileset_batch(
-        &self,
-        entity_list: &Vec<models::FilesetEntity>,
-        autoaccept: Option<bool>,
-        editgroup_id: Option<String>,
-        description: Option<String>,
-        extra: Option<String>,
-        context: &Context,
-    ) -> Box<Future<Item = CreateFilesetBatchResponse, Error = ApiError> + Send>;
+    fn create_fileset_auto_batch(&self, auto_batch: models::FilesetAutoBatch, context: &Context) -> Box<Future<Item = CreateFilesetAutoBatchResponse, Error = ApiError> + Send>;
 
-    fn delete_fileset(&self, ident: String, editgroup_id: String, context: &Context) -> Box<Future<Item = DeleteFilesetResponse, Error = ApiError> + Send>;
+    fn delete_fileset(&self, editgroup_id: String, ident: String, context: &Context) -> Box<Future<Item = DeleteFilesetResponse, Error = ApiError> + Send>;
 
-    fn delete_fileset_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = DeleteFilesetEditResponse, Error = ApiError> + Send>;
+    fn delete_fileset_edit(&self, editgroup_id: String, edit_id: String, context: &Context) -> Box<Future<Item = DeleteFilesetEditResponse, Error = ApiError> + Send>;
 
     fn get_fileset(&self, ident: String, expand: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = GetFilesetResponse, Error = ApiError> + Send>;
 
@@ -1534,25 +1502,17 @@ pub trait Api {
 
     fn get_fileset_revision(&self, rev_id: String, expand: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = GetFilesetRevisionResponse, Error = ApiError> + Send>;
 
-    fn update_fileset(&self, ident: String, entity: models::FilesetEntity, editgroup_id: String, context: &Context) -> Box<Future<Item = UpdateFilesetResponse, Error = ApiError> + Send>;
+    fn update_fileset(&self, editgroup_id: String, ident: String, entity: models::FilesetEntity, context: &Context) -> Box<Future<Item = UpdateFilesetResponse, Error = ApiError> + Send>;
 
-    fn create_release(&self, entity: models::ReleaseEntity, editgroup_id: String, context: &Context) -> Box<Future<Item = CreateReleaseResponse, Error = ApiError> + Send>;
+    fn create_release(&self, editgroup_id: String, entity: models::ReleaseEntity, context: &Context) -> Box<Future<Item = CreateReleaseResponse, Error = ApiError> + Send>;
 
-    fn create_release_batch(
-        &self,
-        entity_list: &Vec<models::ReleaseEntity>,
-        autoaccept: Option<bool>,
-        editgroup_id: Option<String>,
-        description: Option<String>,
-        extra: Option<String>,
-        context: &Context,
-    ) -> Box<Future<Item = CreateReleaseBatchResponse, Error = ApiError> + Send>;
+    fn create_release_auto_batch(&self, auto_batch: models::ReleaseAutoBatch, context: &Context) -> Box<Future<Item = CreateReleaseAutoBatchResponse, Error = ApiError> + Send>;
 
-    fn create_work(&self, entity: models::WorkEntity, editgroup_id: String, context: &Context) -> Box<Future<Item = CreateWorkResponse, Error = ApiError> + Send>;
+    fn create_work(&self, editgroup_id: String, entity: models::WorkEntity, context: &Context) -> Box<Future<Item = CreateWorkResponse, Error = ApiError> + Send>;
 
-    fn delete_release(&self, ident: String, editgroup_id: String, context: &Context) -> Box<Future<Item = DeleteReleaseResponse, Error = ApiError> + Send>;
+    fn delete_release(&self, editgroup_id: String, ident: String, context: &Context) -> Box<Future<Item = DeleteReleaseResponse, Error = ApiError> + Send>;
 
-    fn delete_release_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = DeleteReleaseEditResponse, Error = ApiError> + Send>;
+    fn delete_release_edit(&self, editgroup_id: String, edit_id: String, context: &Context) -> Box<Future<Item = DeleteReleaseEditResponse, Error = ApiError> + Send>;
 
     fn get_release(&self, ident: String, expand: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send>;
 
@@ -1587,23 +1547,15 @@ pub trait Api {
         context: &Context,
     ) -> Box<Future<Item = LookupReleaseResponse, Error = ApiError> + Send>;
 
-    fn update_release(&self, ident: String, entity: models::ReleaseEntity, editgroup_id: String, context: &Context) -> Box<Future<Item = UpdateReleaseResponse, Error = ApiError> + Send>;
+    fn update_release(&self, editgroup_id: String, ident: String, entity: models::ReleaseEntity, context: &Context) -> Box<Future<Item = UpdateReleaseResponse, Error = ApiError> + Send>;
 
-    fn create_webcapture(&self, entity: models::WebcaptureEntity, editgroup_id: String, context: &Context) -> Box<Future<Item = CreateWebcaptureResponse, Error = ApiError> + Send>;
+    fn create_webcapture(&self, editgroup_id: String, entity: models::WebcaptureEntity, context: &Context) -> Box<Future<Item = CreateWebcaptureResponse, Error = ApiError> + Send>;
 
-    fn create_webcapture_batch(
-        &self,
-        entity_list: &Vec<models::WebcaptureEntity>,
-        autoaccept: Option<bool>,
-        editgroup_id: Option<String>,
-        description: Option<String>,
-        extra: Option<String>,
-        context: &Context,
-    ) -> Box<Future<Item = CreateWebcaptureBatchResponse, Error = ApiError> + Send>;
+    fn create_webcapture_auto_batch(&self, auto_batch: models::WebcaptureAutoBatch, context: &Context) -> Box<Future<Item = CreateWebcaptureAutoBatchResponse, Error = ApiError> + Send>;
 
-    fn delete_webcapture(&self, ident: String, editgroup_id: String, context: &Context) -> Box<Future<Item = DeleteWebcaptureResponse, Error = ApiError> + Send>;
+    fn delete_webcapture(&self, editgroup_id: String, ident: String, context: &Context) -> Box<Future<Item = DeleteWebcaptureResponse, Error = ApiError> + Send>;
 
-    fn delete_webcapture_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = DeleteWebcaptureEditResponse, Error = ApiError> + Send>;
+    fn delete_webcapture_edit(&self, editgroup_id: String, edit_id: String, context: &Context) -> Box<Future<Item = DeleteWebcaptureEditResponse, Error = ApiError> + Send>;
 
     fn get_webcapture(&self, ident: String, expand: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = GetWebcaptureResponse, Error = ApiError> + Send>;
 
@@ -1615,21 +1567,13 @@ pub trait Api {
 
     fn get_webcapture_revision(&self, rev_id: String, expand: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = GetWebcaptureRevisionResponse, Error = ApiError> + Send>;
 
-    fn update_webcapture(&self, ident: String, entity: models::WebcaptureEntity, editgroup_id: String, context: &Context) -> Box<Future<Item = UpdateWebcaptureResponse, Error = ApiError> + Send>;
+    fn update_webcapture(&self, editgroup_id: String, ident: String, entity: models::WebcaptureEntity, context: &Context) -> Box<Future<Item = UpdateWebcaptureResponse, Error = ApiError> + Send>;
 
-    fn create_work_batch(
-        &self,
-        entity_list: &Vec<models::WorkEntity>,
-        autoaccept: Option<bool>,
-        editgroup_id: Option<String>,
-        description: Option<String>,
-        extra: Option<String>,
-        context: &Context,
-    ) -> Box<Future<Item = CreateWorkBatchResponse, Error = ApiError> + Send>;
+    fn create_work_auto_batch(&self, auto_batch: models::WorkAutoBatch, context: &Context) -> Box<Future<Item = CreateWorkAutoBatchResponse, Error = ApiError> + Send>;
 
-    fn delete_work(&self, ident: String, editgroup_id: String, context: &Context) -> Box<Future<Item = DeleteWorkResponse, Error = ApiError> + Send>;
+    fn delete_work(&self, editgroup_id: String, ident: String, context: &Context) -> Box<Future<Item = DeleteWorkResponse, Error = ApiError> + Send>;
 
-    fn delete_work_edit(&self, edit_id: String, context: &Context) -> Box<Future<Item = DeleteWorkEditResponse, Error = ApiError> + Send>;
+    fn delete_work_edit(&self, editgroup_id: String, edit_id: String, context: &Context) -> Box<Future<Item = DeleteWorkEditResponse, Error = ApiError> + Send>;
 
     fn get_work(&self, ident: String, expand: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send>;
 
@@ -1643,25 +1587,18 @@ pub trait Api {
 
     fn get_work_revision(&self, rev_id: String, expand: Option<String>, hide: Option<String>, context: &Context) -> Box<Future<Item = GetWorkRevisionResponse, Error = ApiError> + Send>;
 
-    fn update_work(&self, ident: String, entity: models::WorkEntity, editgroup_id: String, context: &Context) -> Box<Future<Item = UpdateWorkResponse, Error = ApiError> + Send>;
+    fn update_work(&self, editgroup_id: String, ident: String, entity: models::WorkEntity, context: &Context) -> Box<Future<Item = UpdateWorkResponse, Error = ApiError> + Send>;
 }
 
 /// API without a `Context`
 pub trait ApiNoContext {
-    fn create_container(&self, entity: models::ContainerEntity, editgroup_id: String) -> Box<Future<Item = CreateContainerResponse, Error = ApiError> + Send>;
+    fn create_container(&self, editgroup_id: String, entity: models::ContainerEntity) -> Box<Future<Item = CreateContainerResponse, Error = ApiError> + Send>;
 
-    fn create_container_batch(
-        &self,
-        entity_list: &Vec<models::ContainerEntity>,
-        autoaccept: Option<bool>,
-        editgroup_id: Option<String>,
-        description: Option<String>,
-        extra: Option<String>,
-    ) -> Box<Future<Item = CreateContainerBatchResponse, Error = ApiError> + Send>;
+    fn create_container_auto_batch(&self, auto_batch: models::ContainerAutoBatch) -> Box<Future<Item = CreateContainerAutoBatchResponse, Error = ApiError> + Send>;
 
-    fn delete_container(&self, ident: String, editgroup_id: String) -> Box<Future<Item = DeleteContainerResponse, Error = ApiError> + Send>;
+    fn delete_container(&self, editgroup_id: String, ident: String) -> Box<Future<Item = DeleteContainerResponse, Error = ApiError> + Send>;
 
-    fn delete_container_edit(&self, edit_id: String) -> Box<Future<Item = DeleteContainerEditResponse, Error = ApiError> + Send>;
+    fn delete_container_edit(&self, editgroup_id: String, edit_id: String) -> Box<Future<Item = DeleteContainerEditResponse, Error = ApiError> + Send>;
 
     fn get_container(&self, ident: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetContainerResponse, Error = ApiError> + Send>;
 
@@ -1681,22 +1618,15 @@ pub trait ApiNoContext {
         hide: Option<String>,
     ) -> Box<Future<Item = LookupContainerResponse, Error = ApiError> + Send>;
 
-    fn update_container(&self, ident: String, entity: models::ContainerEntity, editgroup_id: String) -> Box<Future<Item = UpdateContainerResponse, Error = ApiError> + Send>;
+    fn update_container(&self, editgroup_id: String, ident: String, entity: models::ContainerEntity) -> Box<Future<Item = UpdateContainerResponse, Error = ApiError> + Send>;
 
-    fn create_creator(&self, entity: models::CreatorEntity, editgroup_id: String) -> Box<Future<Item = CreateCreatorResponse, Error = ApiError> + Send>;
+    fn create_creator(&self, editgroup_id: String, entity: models::CreatorEntity) -> Box<Future<Item = CreateCreatorResponse, Error = ApiError> + Send>;
 
-    fn create_creator_batch(
-        &self,
-        entity_list: &Vec<models::CreatorEntity>,
-        autoaccept: Option<bool>,
-        editgroup_id: Option<String>,
-        description: Option<String>,
-        extra: Option<String>,
-    ) -> Box<Future<Item = CreateCreatorBatchResponse, Error = ApiError> + Send>;
+    fn create_creator_auto_batch(&self, auto_batch: models::CreatorAutoBatch) -> Box<Future<Item = CreateCreatorAutoBatchResponse, Error = ApiError> + Send>;
 
-    fn delete_creator(&self, ident: String, editgroup_id: String) -> Box<Future<Item = DeleteCreatorResponse, Error = ApiError> + Send>;
+    fn delete_creator(&self, editgroup_id: String, ident: String) -> Box<Future<Item = DeleteCreatorResponse, Error = ApiError> + Send>;
 
-    fn delete_creator_edit(&self, edit_id: String) -> Box<Future<Item = DeleteCreatorEditResponse, Error = ApiError> + Send>;
+    fn delete_creator_edit(&self, editgroup_id: String, edit_id: String) -> Box<Future<Item = DeleteCreatorEditResponse, Error = ApiError> + Send>;
 
     fn get_creator(&self, ident: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send>;
 
@@ -1712,7 +1642,7 @@ pub trait ApiNoContext {
 
     fn lookup_creator(&self, orcid: Option<String>, wikidata_qid: Option<String>, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = LookupCreatorResponse, Error = ApiError> + Send>;
 
-    fn update_creator(&self, ident: String, entity: models::CreatorEntity, editgroup_id: String) -> Box<Future<Item = UpdateCreatorResponse, Error = ApiError> + Send>;
+    fn update_creator(&self, editgroup_id: String, ident: String, entity: models::CreatorEntity) -> Box<Future<Item = UpdateCreatorResponse, Error = ApiError> + Send>;
 
     fn auth_check(&self, role: Option<String>) -> Box<Future<Item = AuthCheckResponse, Error = ApiError> + Send>;
 
@@ -1762,20 +1692,13 @@ pub trait ApiNoContext {
         since: Option<chrono::DateTime<chrono::Utc>>,
     ) -> Box<Future<Item = GetEditorAnnotationsResponse, Error = ApiError> + Send>;
 
-    fn create_file(&self, entity: models::FileEntity, editgroup_id: String) -> Box<Future<Item = CreateFileResponse, Error = ApiError> + Send>;
+    fn create_file(&self, editgroup_id: String, entity: models::FileEntity) -> Box<Future<Item = CreateFileResponse, Error = ApiError> + Send>;
 
-    fn create_file_batch(
-        &self,
-        entity_list: &Vec<models::FileEntity>,
-        autoaccept: Option<bool>,
-        editgroup_id: Option<String>,
-        description: Option<String>,
-        extra: Option<String>,
-    ) -> Box<Future<Item = CreateFileBatchResponse, Error = ApiError> + Send>;
+    fn create_file_auto_batch(&self, auto_batch: models::FileAutoBatch) -> Box<Future<Item = CreateFileAutoBatchResponse, Error = ApiError> + Send>;
 
-    fn delete_file(&self, ident: String, editgroup_id: String) -> Box<Future<Item = DeleteFileResponse, Error = ApiError> + Send>;
+    fn delete_file(&self, editgroup_id: String, ident: String) -> Box<Future<Item = DeleteFileResponse, Error = ApiError> + Send>;
 
-    fn delete_file_edit(&self, edit_id: String) -> Box<Future<Item = DeleteFileEditResponse, Error = ApiError> + Send>;
+    fn delete_file_edit(&self, editgroup_id: String, edit_id: String) -> Box<Future<Item = DeleteFileEditResponse, Error = ApiError> + Send>;
 
     fn get_file(&self, ident: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetFileResponse, Error = ApiError> + Send>;
 
@@ -1796,22 +1719,15 @@ pub trait ApiNoContext {
         hide: Option<String>,
     ) -> Box<Future<Item = LookupFileResponse, Error = ApiError> + Send>;
 
-    fn update_file(&self, ident: String, entity: models::FileEntity, editgroup_id: String) -> Box<Future<Item = UpdateFileResponse, Error = ApiError> + Send>;
+    fn update_file(&self, editgroup_id: String, ident: String, entity: models::FileEntity) -> Box<Future<Item = UpdateFileResponse, Error = ApiError> + Send>;
 
-    fn create_fileset(&self, entity: models::FilesetEntity, editgroup_id: String) -> Box<Future<Item = CreateFilesetResponse, Error = ApiError> + Send>;
+    fn create_fileset(&self, editgroup_id: String, entity: models::FilesetEntity) -> Box<Future<Item = CreateFilesetResponse, Error = ApiError> + Send>;
 
-    fn create_fileset_batch(
-        &self,
-        entity_list: &Vec<models::FilesetEntity>,
-        autoaccept: Option<bool>,
-        editgroup_id: Option<String>,
-        description: Option<String>,
-        extra: Option<String>,
-    ) -> Box<Future<Item = CreateFilesetBatchResponse, Error = ApiError> + Send>;
+    fn create_fileset_auto_batch(&self, auto_batch: models::FilesetAutoBatch) -> Box<Future<Item = CreateFilesetAutoBatchResponse, Error = ApiError> + Send>;
 
-    fn delete_fileset(&self, ident: String, editgroup_id: String) -> Box<Future<Item = DeleteFilesetResponse, Error = ApiError> + Send>;
+    fn delete_fileset(&self, editgroup_id: String, ident: String) -> Box<Future<Item = DeleteFilesetResponse, Error = ApiError> + Send>;
 
-    fn delete_fileset_edit(&self, edit_id: String) -> Box<Future<Item = DeleteFilesetEditResponse, Error = ApiError> + Send>;
+    fn delete_fileset_edit(&self, editgroup_id: String, edit_id: String) -> Box<Future<Item = DeleteFilesetEditResponse, Error = ApiError> + Send>;
 
     fn get_fileset(&self, ident: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetFilesetResponse, Error = ApiError> + Send>;
 
@@ -1823,24 +1739,17 @@ pub trait ApiNoContext {
 
     fn get_fileset_revision(&self, rev_id: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetFilesetRevisionResponse, Error = ApiError> + Send>;
 
-    fn update_fileset(&self, ident: String, entity: models::FilesetEntity, editgroup_id: String) -> Box<Future<Item = UpdateFilesetResponse, Error = ApiError> + Send>;
+    fn update_fileset(&self, editgroup_id: String, ident: String, entity: models::FilesetEntity) -> Box<Future<Item = UpdateFilesetResponse, Error = ApiError> + Send>;
 
-    fn create_release(&self, entity: models::ReleaseEntity, editgroup_id: String) -> Box<Future<Item = CreateReleaseResponse, Error = ApiError> + Send>;
+    fn create_release(&self, editgroup_id: String, entity: models::ReleaseEntity) -> Box<Future<Item = CreateReleaseResponse, Error = ApiError> + Send>;
 
-    fn create_release_batch(
-        &self,
-        entity_list: &Vec<models::ReleaseEntity>,
-        autoaccept: Option<bool>,
-        editgroup_id: Option<String>,
-        description: Option<String>,
-        extra: Option<String>,
-    ) -> Box<Future<Item = CreateReleaseBatchResponse, Error = ApiError> + Send>;
+    fn create_release_auto_batch(&self, auto_batch: models::ReleaseAutoBatch) -> Box<Future<Item = CreateReleaseAutoBatchResponse, Error = ApiError> + Send>;
 
-    fn create_work(&self, entity: models::WorkEntity, editgroup_id: String) -> Box<Future<Item = CreateWorkResponse, Error = ApiError> + Send>;
+    fn create_work(&self, editgroup_id: String, entity: models::WorkEntity) -> Box<Future<Item = CreateWorkResponse, Error = ApiError> + Send>;
 
-    fn delete_release(&self, ident: String, editgroup_id: String) -> Box<Future<Item = DeleteReleaseResponse, Error = ApiError> + Send>;
+    fn delete_release(&self, editgroup_id: String, ident: String) -> Box<Future<Item = DeleteReleaseResponse, Error = ApiError> + Send>;
 
-    fn delete_release_edit(&self, edit_id: String) -> Box<Future<Item = DeleteReleaseEditResponse, Error = ApiError> + Send>;
+    fn delete_release_edit(&self, editgroup_id: String, edit_id: String) -> Box<Future<Item = DeleteReleaseEditResponse, Error = ApiError> + Send>;
 
     fn get_release(&self, ident: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send>;
 
@@ -1874,22 +1783,15 @@ pub trait ApiNoContext {
         hide: Option<String>,
     ) -> Box<Future<Item = LookupReleaseResponse, Error = ApiError> + Send>;
 
-    fn update_release(&self, ident: String, entity: models::ReleaseEntity, editgroup_id: String) -> Box<Future<Item = UpdateReleaseResponse, Error = ApiError> + Send>;
+    fn update_release(&self, editgroup_id: String, ident: String, entity: models::ReleaseEntity) -> Box<Future<Item = UpdateReleaseResponse, Error = ApiError> + Send>;
 
-    fn create_webcapture(&self, entity: models::WebcaptureEntity, editgroup_id: String) -> Box<Future<Item = CreateWebcaptureResponse, Error = ApiError> + Send>;
+    fn create_webcapture(&self, editgroup_id: String, entity: models::WebcaptureEntity) -> Box<Future<Item = CreateWebcaptureResponse, Error = ApiError> + Send>;
 
-    fn create_webcapture_batch(
-        &self,
-        entity_list: &Vec<models::WebcaptureEntity>,
-        autoaccept: Option<bool>,
-        editgroup_id: Option<String>,
-        description: Option<String>,
-        extra: Option<String>,
-    ) -> Box<Future<Item = CreateWebcaptureBatchResponse, Error = ApiError> + Send>;
+    fn create_webcapture_auto_batch(&self, auto_batch: models::WebcaptureAutoBatch) -> Box<Future<Item = CreateWebcaptureAutoBatchResponse, Error = ApiError> + Send>;
 
-    fn delete_webcapture(&self, ident: String, editgroup_id: String) -> Box<Future<Item = DeleteWebcaptureResponse, Error = ApiError> + Send>;
+    fn delete_webcapture(&self, editgroup_id: String, ident: String) -> Box<Future<Item = DeleteWebcaptureResponse, Error = ApiError> + Send>;
 
-    fn delete_webcapture_edit(&self, edit_id: String) -> Box<Future<Item = DeleteWebcaptureEditResponse, Error = ApiError> + Send>;
+    fn delete_webcapture_edit(&self, editgroup_id: String, edit_id: String) -> Box<Future<Item = DeleteWebcaptureEditResponse, Error = ApiError> + Send>;
 
     fn get_webcapture(&self, ident: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetWebcaptureResponse, Error = ApiError> + Send>;
 
@@ -1901,20 +1803,13 @@ pub trait ApiNoContext {
 
     fn get_webcapture_revision(&self, rev_id: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetWebcaptureRevisionResponse, Error = ApiError> + Send>;
 
-    fn update_webcapture(&self, ident: String, entity: models::WebcaptureEntity, editgroup_id: String) -> Box<Future<Item = UpdateWebcaptureResponse, Error = ApiError> + Send>;
+    fn update_webcapture(&self, editgroup_id: String, ident: String, entity: models::WebcaptureEntity) -> Box<Future<Item = UpdateWebcaptureResponse, Error = ApiError> + Send>;
 
-    fn create_work_batch(
-        &self,
-        entity_list: &Vec<models::WorkEntity>,
-        autoaccept: Option<bool>,
-        editgroup_id: Option<String>,
-        description: Option<String>,
-        extra: Option<String>,
-    ) -> Box<Future<Item = CreateWorkBatchResponse, Error = ApiError> + Send>;
+    fn create_work_auto_batch(&self, auto_batch: models::WorkAutoBatch) -> Box<Future<Item = CreateWorkAutoBatchResponse, Error = ApiError> + Send>;
 
-    fn delete_work(&self, ident: String, editgroup_id: String) -> Box<Future<Item = DeleteWorkResponse, Error = ApiError> + Send>;
+    fn delete_work(&self, editgroup_id: String, ident: String) -> Box<Future<Item = DeleteWorkResponse, Error = ApiError> + Send>;
 
-    fn delete_work_edit(&self, edit_id: String) -> Box<Future<Item = DeleteWorkEditResponse, Error = ApiError> + Send>;
+    fn delete_work_edit(&self, editgroup_id: String, edit_id: String) -> Box<Future<Item = DeleteWorkEditResponse, Error = ApiError> + Send>;
 
     fn get_work(&self, ident: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send>;
 
@@ -1928,7 +1823,7 @@ pub trait ApiNoContext {
 
     fn get_work_revision(&self, rev_id: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetWorkRevisionResponse, Error = ApiError> + Send>;
 
-    fn update_work(&self, ident: String, entity: models::WorkEntity, editgroup_id: String) -> Box<Future<Item = UpdateWorkResponse, Error = ApiError> + Send>;
+    fn update_work(&self, editgroup_id: String, ident: String, entity: models::WorkEntity) -> Box<Future<Item = UpdateWorkResponse, Error = ApiError> + Send>;
 }
 
 /// Trait to extend an API to make it easy to bind it to a context.
@@ -1947,27 +1842,20 @@ impl<'a, T: Api + Sized> ContextWrapperExt<'a> for T {
 }
 
 impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
-    fn create_container(&self, entity: models::ContainerEntity, editgroup_id: String) -> Box<Future<Item = CreateContainerResponse, Error = ApiError> + Send> {
-        self.api().create_container(entity, editgroup_id, &self.context())
+    fn create_container(&self, editgroup_id: String, entity: models::ContainerEntity) -> Box<Future<Item = CreateContainerResponse, Error = ApiError> + Send> {
+        self.api().create_container(editgroup_id, entity, &self.context())
     }
 
-    fn create_container_batch(
-        &self,
-        entity_list: &Vec<models::ContainerEntity>,
-        autoaccept: Option<bool>,
-        editgroup_id: Option<String>,
-        description: Option<String>,
-        extra: Option<String>,
-    ) -> Box<Future<Item = CreateContainerBatchResponse, Error = ApiError> + Send> {
-        self.api().create_container_batch(entity_list, autoaccept, editgroup_id, description, extra, &self.context())
+    fn create_container_auto_batch(&self, auto_batch: models::ContainerAutoBatch) -> Box<Future<Item = CreateContainerAutoBatchResponse, Error = ApiError> + Send> {
+        self.api().create_container_auto_batch(auto_batch, &self.context())
     }
 
-    fn delete_container(&self, ident: String, editgroup_id: String) -> Box<Future<Item = DeleteContainerResponse, Error = ApiError> + Send> {
-        self.api().delete_container(ident, editgroup_id, &self.context())
+    fn delete_container(&self, editgroup_id: String, ident: String) -> Box<Future<Item = DeleteContainerResponse, Error = ApiError> + Send> {
+        self.api().delete_container(editgroup_id, ident, &self.context())
     }
 
-    fn delete_container_edit(&self, edit_id: String) -> Box<Future<Item = DeleteContainerEditResponse, Error = ApiError> + Send> {
-        self.api().delete_container_edit(edit_id, &self.context())
+    fn delete_container_edit(&self, editgroup_id: String, edit_id: String) -> Box<Future<Item = DeleteContainerEditResponse, Error = ApiError> + Send> {
+        self.api().delete_container_edit(editgroup_id, edit_id, &self.context())
     }
 
     fn get_container(&self, ident: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetContainerResponse, Error = ApiError> + Send> {
@@ -2000,31 +1888,24 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().lookup_container(issnl, wikidata_qid, expand, hide, &self.context())
     }
 
-    fn update_container(&self, ident: String, entity: models::ContainerEntity, editgroup_id: String) -> Box<Future<Item = UpdateContainerResponse, Error = ApiError> + Send> {
-        self.api().update_container(ident, entity, editgroup_id, &self.context())
+    fn update_container(&self, editgroup_id: String, ident: String, entity: models::ContainerEntity) -> Box<Future<Item = UpdateContainerResponse, Error = ApiError> + Send> {
+        self.api().update_container(editgroup_id, ident, entity, &self.context())
     }
 
-    fn create_creator(&self, entity: models::CreatorEntity, editgroup_id: String) -> Box<Future<Item = CreateCreatorResponse, Error = ApiError> + Send> {
-        self.api().create_creator(entity, editgroup_id, &self.context())
+    fn create_creator(&self, editgroup_id: String, entity: models::CreatorEntity) -> Box<Future<Item = CreateCreatorResponse, Error = ApiError> + Send> {
+        self.api().create_creator(editgroup_id, entity, &self.context())
     }
 
-    fn create_creator_batch(
-        &self,
-        entity_list: &Vec<models::CreatorEntity>,
-        autoaccept: Option<bool>,
-        editgroup_id: Option<String>,
-        description: Option<String>,
-        extra: Option<String>,
-    ) -> Box<Future<Item = CreateCreatorBatchResponse, Error = ApiError> + Send> {
-        self.api().create_creator_batch(entity_list, autoaccept, editgroup_id, description, extra, &self.context())
+    fn create_creator_auto_batch(&self, auto_batch: models::CreatorAutoBatch) -> Box<Future<Item = CreateCreatorAutoBatchResponse, Error = ApiError> + Send> {
+        self.api().create_creator_auto_batch(auto_batch, &self.context())
     }
 
-    fn delete_creator(&self, ident: String, editgroup_id: String) -> Box<Future<Item = DeleteCreatorResponse, Error = ApiError> + Send> {
-        self.api().delete_creator(ident, editgroup_id, &self.context())
+    fn delete_creator(&self, editgroup_id: String, ident: String) -> Box<Future<Item = DeleteCreatorResponse, Error = ApiError> + Send> {
+        self.api().delete_creator(editgroup_id, ident, &self.context())
     }
 
-    fn delete_creator_edit(&self, edit_id: String) -> Box<Future<Item = DeleteCreatorEditResponse, Error = ApiError> + Send> {
-        self.api().delete_creator_edit(edit_id, &self.context())
+    fn delete_creator_edit(&self, editgroup_id: String, edit_id: String) -> Box<Future<Item = DeleteCreatorEditResponse, Error = ApiError> + Send> {
+        self.api().delete_creator_edit(editgroup_id, edit_id, &self.context())
     }
 
     fn get_creator(&self, ident: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetCreatorResponse, Error = ApiError> + Send> {
@@ -2055,8 +1936,8 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().lookup_creator(orcid, wikidata_qid, expand, hide, &self.context())
     }
 
-    fn update_creator(&self, ident: String, entity: models::CreatorEntity, editgroup_id: String) -> Box<Future<Item = UpdateCreatorResponse, Error = ApiError> + Send> {
-        self.api().update_creator(ident, entity, editgroup_id, &self.context())
+    fn update_creator(&self, editgroup_id: String, ident: String, entity: models::CreatorEntity) -> Box<Future<Item = UpdateCreatorResponse, Error = ApiError> + Send> {
+        self.api().update_creator(editgroup_id, ident, entity, &self.context())
     }
 
     fn auth_check(&self, role: Option<String>) -> Box<Future<Item = AuthCheckResponse, Error = ApiError> + Send> {
@@ -2137,27 +2018,20 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().get_editor_annotations(editor_id, limit, before, since, &self.context())
     }
 
-    fn create_file(&self, entity: models::FileEntity, editgroup_id: String) -> Box<Future<Item = CreateFileResponse, Error = ApiError> + Send> {
-        self.api().create_file(entity, editgroup_id, &self.context())
+    fn create_file(&self, editgroup_id: String, entity: models::FileEntity) -> Box<Future<Item = CreateFileResponse, Error = ApiError> + Send> {
+        self.api().create_file(editgroup_id, entity, &self.context())
     }
 
-    fn create_file_batch(
-        &self,
-        entity_list: &Vec<models::FileEntity>,
-        autoaccept: Option<bool>,
-        editgroup_id: Option<String>,
-        description: Option<String>,
-        extra: Option<String>,
-    ) -> Box<Future<Item = CreateFileBatchResponse, Error = ApiError> + Send> {
-        self.api().create_file_batch(entity_list, autoaccept, editgroup_id, description, extra, &self.context())
+    fn create_file_auto_batch(&self, auto_batch: models::FileAutoBatch) -> Box<Future<Item = CreateFileAutoBatchResponse, Error = ApiError> + Send> {
+        self.api().create_file_auto_batch(auto_batch, &self.context())
     }
 
-    fn delete_file(&self, ident: String, editgroup_id: String) -> Box<Future<Item = DeleteFileResponse, Error = ApiError> + Send> {
-        self.api().delete_file(ident, editgroup_id, &self.context())
+    fn delete_file(&self, editgroup_id: String, ident: String) -> Box<Future<Item = DeleteFileResponse, Error = ApiError> + Send> {
+        self.api().delete_file(editgroup_id, ident, &self.context())
     }
 
-    fn delete_file_edit(&self, edit_id: String) -> Box<Future<Item = DeleteFileEditResponse, Error = ApiError> + Send> {
-        self.api().delete_file_edit(edit_id, &self.context())
+    fn delete_file_edit(&self, editgroup_id: String, edit_id: String) -> Box<Future<Item = DeleteFileEditResponse, Error = ApiError> + Send> {
+        self.api().delete_file_edit(editgroup_id, edit_id, &self.context())
     }
 
     fn get_file(&self, ident: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetFileResponse, Error = ApiError> + Send> {
@@ -2191,31 +2065,24 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().lookup_file(md5, sha1, sha256, expand, hide, &self.context())
     }
 
-    fn update_file(&self, ident: String, entity: models::FileEntity, editgroup_id: String) -> Box<Future<Item = UpdateFileResponse, Error = ApiError> + Send> {
-        self.api().update_file(ident, entity, editgroup_id, &self.context())
+    fn update_file(&self, editgroup_id: String, ident: String, entity: models::FileEntity) -> Box<Future<Item = UpdateFileResponse, Error = ApiError> + Send> {
+        self.api().update_file(editgroup_id, ident, entity, &self.context())
     }
 
-    fn create_fileset(&self, entity: models::FilesetEntity, editgroup_id: String) -> Box<Future<Item = CreateFilesetResponse, Error = ApiError> + Send> {
-        self.api().create_fileset(entity, editgroup_id, &self.context())
+    fn create_fileset(&self, editgroup_id: String, entity: models::FilesetEntity) -> Box<Future<Item = CreateFilesetResponse, Error = ApiError> + Send> {
+        self.api().create_fileset(editgroup_id, entity, &self.context())
     }
 
-    fn create_fileset_batch(
-        &self,
-        entity_list: &Vec<models::FilesetEntity>,
-        autoaccept: Option<bool>,
-        editgroup_id: Option<String>,
-        description: Option<String>,
-        extra: Option<String>,
-    ) -> Box<Future<Item = CreateFilesetBatchResponse, Error = ApiError> + Send> {
-        self.api().create_fileset_batch(entity_list, autoaccept, editgroup_id, description, extra, &self.context())
+    fn create_fileset_auto_batch(&self, auto_batch: models::FilesetAutoBatch) -> Box<Future<Item = CreateFilesetAutoBatchResponse, Error = ApiError> + Send> {
+        self.api().create_fileset_auto_batch(auto_batch, &self.context())
     }
 
-    fn delete_fileset(&self, ident: String, editgroup_id: String) -> Box<Future<Item = DeleteFilesetResponse, Error = ApiError> + Send> {
-        self.api().delete_fileset(ident, editgroup_id, &self.context())
+    fn delete_fileset(&self, editgroup_id: String, ident: String) -> Box<Future<Item = DeleteFilesetResponse, Error = ApiError> + Send> {
+        self.api().delete_fileset(editgroup_id, ident, &self.context())
     }
 
-    fn delete_fileset_edit(&self, edit_id: String) -> Box<Future<Item = DeleteFilesetEditResponse, Error = ApiError> + Send> {
-        self.api().delete_fileset_edit(edit_id, &self.context())
+    fn delete_fileset_edit(&self, editgroup_id: String, edit_id: String) -> Box<Future<Item = DeleteFilesetEditResponse, Error = ApiError> + Send> {
+        self.api().delete_fileset_edit(editgroup_id, edit_id, &self.context())
     }
 
     fn get_fileset(&self, ident: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetFilesetResponse, Error = ApiError> + Send> {
@@ -2238,35 +2105,28 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().get_fileset_revision(rev_id, expand, hide, &self.context())
     }
 
-    fn update_fileset(&self, ident: String, entity: models::FilesetEntity, editgroup_id: String) -> Box<Future<Item = UpdateFilesetResponse, Error = ApiError> + Send> {
-        self.api().update_fileset(ident, entity, editgroup_id, &self.context())
+    fn update_fileset(&self, editgroup_id: String, ident: String, entity: models::FilesetEntity) -> Box<Future<Item = UpdateFilesetResponse, Error = ApiError> + Send> {
+        self.api().update_fileset(editgroup_id, ident, entity, &self.context())
     }
 
-    fn create_release(&self, entity: models::ReleaseEntity, editgroup_id: String) -> Box<Future<Item = CreateReleaseResponse, Error = ApiError> + Send> {
-        self.api().create_release(entity, editgroup_id, &self.context())
+    fn create_release(&self, editgroup_id: String, entity: models::ReleaseEntity) -> Box<Future<Item = CreateReleaseResponse, Error = ApiError> + Send> {
+        self.api().create_release(editgroup_id, entity, &self.context())
     }
 
-    fn create_release_batch(
-        &self,
-        entity_list: &Vec<models::ReleaseEntity>,
-        autoaccept: Option<bool>,
-        editgroup_id: Option<String>,
-        description: Option<String>,
-        extra: Option<String>,
-    ) -> Box<Future<Item = CreateReleaseBatchResponse, Error = ApiError> + Send> {
-        self.api().create_release_batch(entity_list, autoaccept, editgroup_id, description, extra, &self.context())
+    fn create_release_auto_batch(&self, auto_batch: models::ReleaseAutoBatch) -> Box<Future<Item = CreateReleaseAutoBatchResponse, Error = ApiError> + Send> {
+        self.api().create_release_auto_batch(auto_batch, &self.context())
     }
 
-    fn create_work(&self, entity: models::WorkEntity, editgroup_id: String) -> Box<Future<Item = CreateWorkResponse, Error = ApiError> + Send> {
-        self.api().create_work(entity, editgroup_id, &self.context())
+    fn create_work(&self, editgroup_id: String, entity: models::WorkEntity) -> Box<Future<Item = CreateWorkResponse, Error = ApiError> + Send> {
+        self.api().create_work(editgroup_id, entity, &self.context())
     }
 
-    fn delete_release(&self, ident: String, editgroup_id: String) -> Box<Future<Item = DeleteReleaseResponse, Error = ApiError> + Send> {
-        self.api().delete_release(ident, editgroup_id, &self.context())
+    fn delete_release(&self, editgroup_id: String, ident: String) -> Box<Future<Item = DeleteReleaseResponse, Error = ApiError> + Send> {
+        self.api().delete_release(editgroup_id, ident, &self.context())
     }
 
-    fn delete_release_edit(&self, edit_id: String) -> Box<Future<Item = DeleteReleaseEditResponse, Error = ApiError> + Send> {
-        self.api().delete_release_edit(edit_id, &self.context())
+    fn delete_release_edit(&self, editgroup_id: String, edit_id: String) -> Box<Future<Item = DeleteReleaseEditResponse, Error = ApiError> + Send> {
+        self.api().delete_release_edit(editgroup_id, edit_id, &self.context())
     }
 
     fn get_release(&self, ident: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetReleaseResponse, Error = ApiError> + Send> {
@@ -2320,31 +2180,24 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
             .lookup_release(doi, wikidata_qid, isbn13, pmid, pmcid, core, arxiv, jstor, ark, mag, expand, hide, &self.context())
     }
 
-    fn update_release(&self, ident: String, entity: models::ReleaseEntity, editgroup_id: String) -> Box<Future<Item = UpdateReleaseResponse, Error = ApiError> + Send> {
-        self.api().update_release(ident, entity, editgroup_id, &self.context())
+    fn update_release(&self, editgroup_id: String, ident: String, entity: models::ReleaseEntity) -> Box<Future<Item = UpdateReleaseResponse, Error = ApiError> + Send> {
+        self.api().update_release(editgroup_id, ident, entity, &self.context())
     }
 
-    fn create_webcapture(&self, entity: models::WebcaptureEntity, editgroup_id: String) -> Box<Future<Item = CreateWebcaptureResponse, Error = ApiError> + Send> {
-        self.api().create_webcapture(entity, editgroup_id, &self.context())
+    fn create_webcapture(&self, editgroup_id: String, entity: models::WebcaptureEntity) -> Box<Future<Item = CreateWebcaptureResponse, Error = ApiError> + Send> {
+        self.api().create_webcapture(editgroup_id, entity, &self.context())
     }
 
-    fn create_webcapture_batch(
-        &self,
-        entity_list: &Vec<models::WebcaptureEntity>,
-        autoaccept: Option<bool>,
-        editgroup_id: Option<String>,
-        description: Option<String>,
-        extra: Option<String>,
-    ) -> Box<Future<Item = CreateWebcaptureBatchResponse, Error = ApiError> + Send> {
-        self.api().create_webcapture_batch(entity_list, autoaccept, editgroup_id, description, extra, &self.context())
+    fn create_webcapture_auto_batch(&self, auto_batch: models::WebcaptureAutoBatch) -> Box<Future<Item = CreateWebcaptureAutoBatchResponse, Error = ApiError> + Send> {
+        self.api().create_webcapture_auto_batch(auto_batch, &self.context())
     }
 
-    fn delete_webcapture(&self, ident: String, editgroup_id: String) -> Box<Future<Item = DeleteWebcaptureResponse, Error = ApiError> + Send> {
-        self.api().delete_webcapture(ident, editgroup_id, &self.context())
+    fn delete_webcapture(&self, editgroup_id: String, ident: String) -> Box<Future<Item = DeleteWebcaptureResponse, Error = ApiError> + Send> {
+        self.api().delete_webcapture(editgroup_id, ident, &self.context())
     }
 
-    fn delete_webcapture_edit(&self, edit_id: String) -> Box<Future<Item = DeleteWebcaptureEditResponse, Error = ApiError> + Send> {
-        self.api().delete_webcapture_edit(edit_id, &self.context())
+    fn delete_webcapture_edit(&self, editgroup_id: String, edit_id: String) -> Box<Future<Item = DeleteWebcaptureEditResponse, Error = ApiError> + Send> {
+        self.api().delete_webcapture_edit(editgroup_id, edit_id, &self.context())
     }
 
     fn get_webcapture(&self, ident: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetWebcaptureResponse, Error = ApiError> + Send> {
@@ -2367,27 +2220,20 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().get_webcapture_revision(rev_id, expand, hide, &self.context())
     }
 
-    fn update_webcapture(&self, ident: String, entity: models::WebcaptureEntity, editgroup_id: String) -> Box<Future<Item = UpdateWebcaptureResponse, Error = ApiError> + Send> {
-        self.api().update_webcapture(ident, entity, editgroup_id, &self.context())
+    fn update_webcapture(&self, editgroup_id: String, ident: String, entity: models::WebcaptureEntity) -> Box<Future<Item = UpdateWebcaptureResponse, Error = ApiError> + Send> {
+        self.api().update_webcapture(editgroup_id, ident, entity, &self.context())
     }
 
-    fn create_work_batch(
-        &self,
-        entity_list: &Vec<models::WorkEntity>,
-        autoaccept: Option<bool>,
-        editgroup_id: Option<String>,
-        description: Option<String>,
-        extra: Option<String>,
-    ) -> Box<Future<Item = CreateWorkBatchResponse, Error = ApiError> + Send> {
-        self.api().create_work_batch(entity_list, autoaccept, editgroup_id, description, extra, &self.context())
+    fn create_work_auto_batch(&self, auto_batch: models::WorkAutoBatch) -> Box<Future<Item = CreateWorkAutoBatchResponse, Error = ApiError> + Send> {
+        self.api().create_work_auto_batch(auto_batch, &self.context())
     }
 
-    fn delete_work(&self, ident: String, editgroup_id: String) -> Box<Future<Item = DeleteWorkResponse, Error = ApiError> + Send> {
-        self.api().delete_work(ident, editgroup_id, &self.context())
+    fn delete_work(&self, editgroup_id: String, ident: String) -> Box<Future<Item = DeleteWorkResponse, Error = ApiError> + Send> {
+        self.api().delete_work(editgroup_id, ident, &self.context())
     }
 
-    fn delete_work_edit(&self, edit_id: String) -> Box<Future<Item = DeleteWorkEditResponse, Error = ApiError> + Send> {
-        self.api().delete_work_edit(edit_id, &self.context())
+    fn delete_work_edit(&self, editgroup_id: String, edit_id: String) -> Box<Future<Item = DeleteWorkEditResponse, Error = ApiError> + Send> {
+        self.api().delete_work_edit(editgroup_id, edit_id, &self.context())
     }
 
     fn get_work(&self, ident: String, expand: Option<String>, hide: Option<String>) -> Box<Future<Item = GetWorkResponse, Error = ApiError> + Send> {
@@ -2414,8 +2260,8 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
         self.api().get_work_revision(rev_id, expand, hide, &self.context())
     }
 
-    fn update_work(&self, ident: String, entity: models::WorkEntity, editgroup_id: String) -> Box<Future<Item = UpdateWorkResponse, Error = ApiError> + Send> {
-        self.api().update_work(ident, entity, editgroup_id, &self.context())
+    fn update_work(&self, editgroup_id: String, ident: String, entity: models::WorkEntity) -> Box<Future<Item = UpdateWorkResponse, Error = ApiError> + Send> {
+        self.api().update_work(editgroup_id, ident, entity, &self.context())
     }
 }
 

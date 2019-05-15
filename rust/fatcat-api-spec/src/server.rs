@@ -37,9 +37,9 @@ use swagger::{ApiError, Context, XSpanId};
 #[allow(unused_imports)]
 use models;
 use {
-    AcceptEditgroupResponse, Api, AuthCheckResponse, AuthOidcResponse, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse,
-    CreateEditgroupAnnotationResponse, CreateEditgroupResponse, CreateFileBatchResponse, CreateFileResponse, CreateFilesetBatchResponse, CreateFilesetResponse, CreateReleaseBatchResponse,
-    CreateReleaseResponse, CreateWebcaptureBatchResponse, CreateWebcaptureResponse, CreateWorkBatchResponse, CreateWorkResponse, DeleteContainerEditResponse, DeleteContainerResponse,
+    AcceptEditgroupResponse, Api, AuthCheckResponse, AuthOidcResponse, CreateContainerAutoBatchResponse, CreateContainerResponse, CreateCreatorAutoBatchResponse, CreateCreatorResponse,
+    CreateEditgroupAnnotationResponse, CreateEditgroupResponse, CreateFileAutoBatchResponse, CreateFileResponse, CreateFilesetAutoBatchResponse, CreateFilesetResponse, CreateReleaseAutoBatchResponse,
+    CreateReleaseResponse, CreateWebcaptureAutoBatchResponse, CreateWebcaptureResponse, CreateWorkAutoBatchResponse, CreateWorkResponse, DeleteContainerEditResponse, DeleteContainerResponse,
     DeleteCreatorEditResponse, DeleteCreatorResponse, DeleteFileEditResponse, DeleteFileResponse, DeleteFilesetEditResponse, DeleteFilesetResponse, DeleteReleaseEditResponse, DeleteReleaseResponse,
     DeleteWebcaptureEditResponse, DeleteWebcaptureResponse, DeleteWorkEditResponse, DeleteWorkResponse, GetChangelogEntryResponse, GetChangelogResponse, GetContainerEditResponse,
     GetContainerHistoryResponse, GetContainerRedirectsResponse, GetContainerResponse, GetContainerRevisionResponse, GetCreatorEditResponse, GetCreatorHistoryResponse, GetCreatorRedirectsResponse,
@@ -99,7 +99,7 @@ where
 {
     let api_clone = api.clone();
     router.post(
-        "/v0/container",
+        "/v0/editgroup/:editgroup_id/container",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -114,15 +114,20 @@ where
 
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
-                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
-                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params
-                    .get("editgroup_id")
-                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
-                    .first()
-                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
-                    .parse::<String>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
+                // Path parameters
+                let param_editgroup_id = {
+                    let param = req
+                        .extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("editgroup_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter editgroup_id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter editgroup_id: {}", e))))?
+                };
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -149,7 +154,7 @@ where
                 };
                 let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
 
-                match api.create_container(param_entity, param_editgroup_id, context).wait() {
+                match api.create_container(param_editgroup_id, param_entity, context).wait() {
                     Ok(rsp) => match rsp {
                         CreateContainerResponse::CreatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -245,7 +250,7 @@ where
 
     let api_clone = api.clone();
     router.post(
-        "/v0/container/batch",
+        "/v0/editgroup/auto/container/batch",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -260,53 +265,38 @@ where
 
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
-                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
-                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_autoaccept = query_params
-                    .get("autoaccept")
-                    .and_then(|list| list.first())
-                    .and_then(|x| Some(x.to_lowercase().parse::<bool>()))
-                    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
-                    .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected boolean)".to_string())))?;
-                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
-                let param_description = query_params.get("description").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
-                let param_extra = query_params.get("extra").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
-
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_entity_list = req
+                let param_auto_batch = req
                     .get::<bodyparser::Raw>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity_list - not valid UTF-8: {}", e))))?;
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter auto_batch - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
 
-                let param_entity_list = if let Some(param_entity_list_raw) = param_entity_list {
-                    let deserializer = &mut serde_json::Deserializer::from_str(&param_entity_list_raw);
+                let param_auto_batch = if let Some(param_auto_batch_raw) = param_auto_batch {
+                    let deserializer = &mut serde_json::Deserializer::from_str(&param_auto_batch_raw);
 
-                    let param_entity_list: Option<Vec<models::ContainerEntity>> = serde_ignored::deserialize(deserializer, |path| {
+                    let param_auto_batch: Option<models::ContainerAutoBatch> = serde_ignored::deserialize(deserializer, |path| {
                         warn!("Ignoring unknown field in body: {}", path);
                         unused_elements.push(path.to_string());
                     })
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity_list - doesn't match schema: {}", e))))?;
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter auto_batch - doesn't match schema: {}", e))))?;
 
-                    param_entity_list
+                    param_auto_batch
                 } else {
                     None
                 };
-                let param_entity_list = param_entity_list.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity_list".to_string())))?;
+                let param_auto_batch = param_auto_batch.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter auto_batch".to_string())))?;
 
-                match api
-                    .create_container_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup_id, param_description, param_extra, context)
-                    .wait()
-                {
+                match api.create_container_auto_batch(param_auto_batch, context).wait() {
                     Ok(rsp) => match rsp {
-                        CreateContainerBatchResponse::CreatedEntities(body) => {
+                        CreateContainerAutoBatchResponse::CreatedEditgroup(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(201), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_CONTAINER_BATCH_CREATED_ENTITIES.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_CONTAINER_AUTO_BATCH_CREATED_EDITGROUP.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -314,11 +304,11 @@ where
                             }
                             Ok(response)
                         }
-                        CreateContainerBatchResponse::BadRequest(body) => {
+                        CreateContainerAutoBatchResponse::BadRequest(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_CONTAINER_BATCH_BAD_REQUEST.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_CONTAINER_AUTO_BATCH_BAD_REQUEST.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -326,14 +316,14 @@ where
                             }
                             Ok(response)
                         }
-                        CreateContainerBatchResponse::NotAuthorized { body, www_authenticate } => {
+                        CreateContainerAutoBatchResponse::NotAuthorized { body, www_authenticate } => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(401), body_string));
                             header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
                             response.headers.set(ResponseWwwAuthenticate(www_authenticate));
 
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_CONTAINER_BATCH_NOT_AUTHORIZED.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_CONTAINER_AUTO_BATCH_NOT_AUTHORIZED.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -341,11 +331,11 @@ where
                             }
                             Ok(response)
                         }
-                        CreateContainerBatchResponse::Forbidden(body) => {
+                        CreateContainerAutoBatchResponse::Forbidden(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(403), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_CONTAINER_BATCH_FORBIDDEN.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_CONTAINER_AUTO_BATCH_FORBIDDEN.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -353,11 +343,11 @@ where
                             }
                             Ok(response)
                         }
-                        CreateContainerBatchResponse::NotFound(body) => {
+                        CreateContainerAutoBatchResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(404), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_CONTAINER_BATCH_NOT_FOUND.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_CONTAINER_AUTO_BATCH_NOT_FOUND.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -365,11 +355,11 @@ where
                             }
                             Ok(response)
                         }
-                        CreateContainerBatchResponse::GenericError(body) => {
+                        CreateContainerAutoBatchResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(500), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_CONTAINER_BATCH_GENERIC_ERROR.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_CONTAINER_AUTO_BATCH_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -391,12 +381,12 @@ where
                 Ok(response)
             })
         },
-        "CreateContainerBatch",
+        "CreateContainerAutoBatch",
     );
 
     let api_clone = api.clone();
     router.delete(
-        "/v0/container/:ident",
+        "/v0/editgroup/:editgroup_id/container/:ident",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -412,6 +402,19 @@ where
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
                 // Path parameters
+                let param_editgroup_id = {
+                    let param = req
+                        .extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("editgroup_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter editgroup_id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter editgroup_id: {}", e))))?
+                };
                 let param_ident = {
                     let param = req
                         .extensions
@@ -426,17 +429,7 @@ where
                         .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
-                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
-                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params
-                    .get("editgroup_id")
-                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
-                    .first()
-                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
-                    .parse::<String>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
-
-                match api.delete_container(param_ident, param_editgroup_id, context).wait() {
+                match api.delete_container(param_editgroup_id, param_ident, context).wait() {
                     Ok(rsp) => match rsp {
                         DeleteContainerResponse::DeletedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -520,7 +513,7 @@ where
 
     let api_clone = api.clone();
     router.delete(
-        "/v0/container/edit/:edit_id",
+        "/v0/editgroup/:editgroup_id/container/edit/:edit_id",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -536,6 +529,19 @@ where
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
                 // Path parameters
+                let param_editgroup_id = {
+                    let param = req
+                        .extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("editgroup_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter editgroup_id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter editgroup_id: {}", e))))?
+                };
                 let param_edit_id = {
                     let param = req
                         .extensions
@@ -550,7 +556,7 @@ where
                         .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter edit_id: {}", e))))?
                 };
 
-                match api.delete_container_edit(param_edit_id, context).wait() {
+                match api.delete_container_edit(param_editgroup_id, param_edit_id, context).wait() {
                     Ok(rsp) => match rsp {
                         DeleteContainerEditResponse::DeletedEdit(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -1179,7 +1185,7 @@ where
 
     let api_clone = api.clone();
     router.put(
-        "/v0/container/:ident",
+        "/v0/editgroup/:editgroup_id/container/:ident",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -1195,6 +1201,19 @@ where
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
                 // Path parameters
+                let param_editgroup_id = {
+                    let param = req
+                        .extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("editgroup_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter editgroup_id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter editgroup_id: {}", e))))?
+                };
                 let param_ident = {
                     let param = req
                         .extensions
@@ -1208,16 +1227,6 @@ where
                         .parse()
                         .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
-
-                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
-                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params
-                    .get("editgroup_id")
-                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
-                    .first()
-                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
-                    .parse::<String>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -1244,7 +1253,7 @@ where
                 };
                 let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
 
-                match api.update_container(param_ident, param_entity, param_editgroup_id, context).wait() {
+                match api.update_container(param_editgroup_id, param_ident, param_entity, context).wait() {
                     Ok(rsp) => match rsp {
                         UpdateContainerResponse::UpdatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -1340,7 +1349,7 @@ where
 
     let api_clone = api.clone();
     router.post(
-        "/v0/creator",
+        "/v0/editgroup/:editgroup_id/creator",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -1355,15 +1364,20 @@ where
 
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
-                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
-                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params
-                    .get("editgroup_id")
-                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
-                    .first()
-                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
-                    .parse::<String>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
+                // Path parameters
+                let param_editgroup_id = {
+                    let param = req
+                        .extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("editgroup_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter editgroup_id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter editgroup_id: {}", e))))?
+                };
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -1390,7 +1404,7 @@ where
                 };
                 let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
 
-                match api.create_creator(param_entity, param_editgroup_id, context).wait() {
+                match api.create_creator(param_editgroup_id, param_entity, context).wait() {
                     Ok(rsp) => match rsp {
                         CreateCreatorResponse::CreatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -1486,7 +1500,7 @@ where
 
     let api_clone = api.clone();
     router.post(
-        "/v0/creator/batch",
+        "/v0/editgroup/auto/creator/batch",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -1501,53 +1515,38 @@ where
 
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
-                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
-                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_autoaccept = query_params
-                    .get("autoaccept")
-                    .and_then(|list| list.first())
-                    .and_then(|x| Some(x.to_lowercase().parse::<bool>()))
-                    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
-                    .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected boolean)".to_string())))?;
-                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
-                let param_description = query_params.get("description").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
-                let param_extra = query_params.get("extra").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
-
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_entity_list = req
+                let param_auto_batch = req
                     .get::<bodyparser::Raw>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity_list - not valid UTF-8: {}", e))))?;
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter auto_batch - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
 
-                let param_entity_list = if let Some(param_entity_list_raw) = param_entity_list {
-                    let deserializer = &mut serde_json::Deserializer::from_str(&param_entity_list_raw);
+                let param_auto_batch = if let Some(param_auto_batch_raw) = param_auto_batch {
+                    let deserializer = &mut serde_json::Deserializer::from_str(&param_auto_batch_raw);
 
-                    let param_entity_list: Option<Vec<models::CreatorEntity>> = serde_ignored::deserialize(deserializer, |path| {
+                    let param_auto_batch: Option<models::CreatorAutoBatch> = serde_ignored::deserialize(deserializer, |path| {
                         warn!("Ignoring unknown field in body: {}", path);
                         unused_elements.push(path.to_string());
                     })
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity_list - doesn't match schema: {}", e))))?;
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter auto_batch - doesn't match schema: {}", e))))?;
 
-                    param_entity_list
+                    param_auto_batch
                 } else {
                     None
                 };
-                let param_entity_list = param_entity_list.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity_list".to_string())))?;
+                let param_auto_batch = param_auto_batch.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter auto_batch".to_string())))?;
 
-                match api
-                    .create_creator_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup_id, param_description, param_extra, context)
-                    .wait()
-                {
+                match api.create_creator_auto_batch(param_auto_batch, context).wait() {
                     Ok(rsp) => match rsp {
-                        CreateCreatorBatchResponse::CreatedEntities(body) => {
+                        CreateCreatorAutoBatchResponse::CreatedEditgroup(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(201), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_CREATOR_BATCH_CREATED_ENTITIES.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_CREATOR_AUTO_BATCH_CREATED_EDITGROUP.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -1555,11 +1554,11 @@ where
                             }
                             Ok(response)
                         }
-                        CreateCreatorBatchResponse::BadRequest(body) => {
+                        CreateCreatorAutoBatchResponse::BadRequest(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_CREATOR_BATCH_BAD_REQUEST.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_CREATOR_AUTO_BATCH_BAD_REQUEST.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -1567,14 +1566,14 @@ where
                             }
                             Ok(response)
                         }
-                        CreateCreatorBatchResponse::NotAuthorized { body, www_authenticate } => {
+                        CreateCreatorAutoBatchResponse::NotAuthorized { body, www_authenticate } => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(401), body_string));
                             header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
                             response.headers.set(ResponseWwwAuthenticate(www_authenticate));
 
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_CREATOR_BATCH_NOT_AUTHORIZED.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_CREATOR_AUTO_BATCH_NOT_AUTHORIZED.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -1582,11 +1581,11 @@ where
                             }
                             Ok(response)
                         }
-                        CreateCreatorBatchResponse::Forbidden(body) => {
+                        CreateCreatorAutoBatchResponse::Forbidden(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(403), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_CREATOR_BATCH_FORBIDDEN.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_CREATOR_AUTO_BATCH_FORBIDDEN.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -1594,11 +1593,11 @@ where
                             }
                             Ok(response)
                         }
-                        CreateCreatorBatchResponse::NotFound(body) => {
+                        CreateCreatorAutoBatchResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(404), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_CREATOR_BATCH_NOT_FOUND.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_CREATOR_AUTO_BATCH_NOT_FOUND.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -1606,11 +1605,11 @@ where
                             }
                             Ok(response)
                         }
-                        CreateCreatorBatchResponse::GenericError(body) => {
+                        CreateCreatorAutoBatchResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(500), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_CREATOR_BATCH_GENERIC_ERROR.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_CREATOR_AUTO_BATCH_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -1632,12 +1631,12 @@ where
                 Ok(response)
             })
         },
-        "CreateCreatorBatch",
+        "CreateCreatorAutoBatch",
     );
 
     let api_clone = api.clone();
     router.delete(
-        "/v0/creator/:ident",
+        "/v0/editgroup/:editgroup_id/creator/:ident",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -1653,6 +1652,19 @@ where
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
                 // Path parameters
+                let param_editgroup_id = {
+                    let param = req
+                        .extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("editgroup_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter editgroup_id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter editgroup_id: {}", e))))?
+                };
                 let param_ident = {
                     let param = req
                         .extensions
@@ -1667,17 +1679,7 @@ where
                         .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
-                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
-                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params
-                    .get("editgroup_id")
-                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
-                    .first()
-                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
-                    .parse::<String>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
-
-                match api.delete_creator(param_ident, param_editgroup_id, context).wait() {
+                match api.delete_creator(param_editgroup_id, param_ident, context).wait() {
                     Ok(rsp) => match rsp {
                         DeleteCreatorResponse::DeletedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -1761,7 +1763,7 @@ where
 
     let api_clone = api.clone();
     router.delete(
-        "/v0/creator/edit/:edit_id",
+        "/v0/editgroup/:editgroup_id/creator/edit/:edit_id",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -1777,6 +1779,19 @@ where
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
                 // Path parameters
+                let param_editgroup_id = {
+                    let param = req
+                        .extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("editgroup_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter editgroup_id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter editgroup_id: {}", e))))?
+                };
                 let param_edit_id = {
                     let param = req
                         .extensions
@@ -1791,7 +1806,7 @@ where
                         .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter edit_id: {}", e))))?
                 };
 
-                match api.delete_creator_edit(param_edit_id, context).wait() {
+                match api.delete_creator_edit(param_editgroup_id, param_edit_id, context).wait() {
                     Ok(rsp) => match rsp {
                         DeleteCreatorEditResponse::DeletedEdit(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -2513,7 +2528,7 @@ where
 
     let api_clone = api.clone();
     router.put(
-        "/v0/creator/:ident",
+        "/v0/editgroup/:editgroup_id/creator/:ident",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -2529,6 +2544,19 @@ where
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
                 // Path parameters
+                let param_editgroup_id = {
+                    let param = req
+                        .extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("editgroup_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter editgroup_id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter editgroup_id: {}", e))))?
+                };
                 let param_ident = {
                     let param = req
                         .extensions
@@ -2542,16 +2570,6 @@ where
                         .parse()
                         .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
-
-                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
-                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params
-                    .get("editgroup_id")
-                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
-                    .first()
-                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
-                    .parse::<String>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -2578,7 +2596,7 @@ where
                 };
                 let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
 
-                match api.update_creator(param_ident, param_entity, param_editgroup_id, context).wait() {
+                match api.update_creator(param_editgroup_id, param_ident, param_entity, context).wait() {
                     Ok(rsp) => match rsp {
                         UpdateCreatorResponse::UpdatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -4432,7 +4450,7 @@ where
 
     let api_clone = api.clone();
     router.post(
-        "/v0/file",
+        "/v0/editgroup/:editgroup_id/file",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -4447,15 +4465,20 @@ where
 
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
-                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
-                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params
-                    .get("editgroup_id")
-                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
-                    .first()
-                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
-                    .parse::<String>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
+                // Path parameters
+                let param_editgroup_id = {
+                    let param = req
+                        .extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("editgroup_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter editgroup_id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter editgroup_id: {}", e))))?
+                };
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -4482,7 +4505,7 @@ where
                 };
                 let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
 
-                match api.create_file(param_entity, param_editgroup_id, context).wait() {
+                match api.create_file(param_editgroup_id, param_entity, context).wait() {
                     Ok(rsp) => match rsp {
                         CreateFileResponse::CreatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -4578,7 +4601,7 @@ where
 
     let api_clone = api.clone();
     router.post(
-        "/v0/file/batch",
+        "/v0/editgroup/auto/file/batch",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -4593,53 +4616,38 @@ where
 
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
-                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
-                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_autoaccept = query_params
-                    .get("autoaccept")
-                    .and_then(|list| list.first())
-                    .and_then(|x| Some(x.to_lowercase().parse::<bool>()))
-                    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
-                    .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected boolean)".to_string())))?;
-                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
-                let param_description = query_params.get("description").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
-                let param_extra = query_params.get("extra").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
-
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_entity_list = req
+                let param_auto_batch = req
                     .get::<bodyparser::Raw>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity_list - not valid UTF-8: {}", e))))?;
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter auto_batch - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
 
-                let param_entity_list = if let Some(param_entity_list_raw) = param_entity_list {
-                    let deserializer = &mut serde_json::Deserializer::from_str(&param_entity_list_raw);
+                let param_auto_batch = if let Some(param_auto_batch_raw) = param_auto_batch {
+                    let deserializer = &mut serde_json::Deserializer::from_str(&param_auto_batch_raw);
 
-                    let param_entity_list: Option<Vec<models::FileEntity>> = serde_ignored::deserialize(deserializer, |path| {
+                    let param_auto_batch: Option<models::FileAutoBatch> = serde_ignored::deserialize(deserializer, |path| {
                         warn!("Ignoring unknown field in body: {}", path);
                         unused_elements.push(path.to_string());
                     })
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity_list - doesn't match schema: {}", e))))?;
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter auto_batch - doesn't match schema: {}", e))))?;
 
-                    param_entity_list
+                    param_auto_batch
                 } else {
                     None
                 };
-                let param_entity_list = param_entity_list.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity_list".to_string())))?;
+                let param_auto_batch = param_auto_batch.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter auto_batch".to_string())))?;
 
-                match api
-                    .create_file_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup_id, param_description, param_extra, context)
-                    .wait()
-                {
+                match api.create_file_auto_batch(param_auto_batch, context).wait() {
                     Ok(rsp) => match rsp {
-                        CreateFileBatchResponse::CreatedEntities(body) => {
+                        CreateFileAutoBatchResponse::CreatedEditgroup(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(201), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_FILE_BATCH_CREATED_ENTITIES.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_FILE_AUTO_BATCH_CREATED_EDITGROUP.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -4647,11 +4655,11 @@ where
                             }
                             Ok(response)
                         }
-                        CreateFileBatchResponse::BadRequest(body) => {
+                        CreateFileAutoBatchResponse::BadRequest(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_FILE_BATCH_BAD_REQUEST.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_FILE_AUTO_BATCH_BAD_REQUEST.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -4659,14 +4667,14 @@ where
                             }
                             Ok(response)
                         }
-                        CreateFileBatchResponse::NotAuthorized { body, www_authenticate } => {
+                        CreateFileAutoBatchResponse::NotAuthorized { body, www_authenticate } => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(401), body_string));
                             header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
                             response.headers.set(ResponseWwwAuthenticate(www_authenticate));
 
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_FILE_BATCH_NOT_AUTHORIZED.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_FILE_AUTO_BATCH_NOT_AUTHORIZED.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -4674,11 +4682,11 @@ where
                             }
                             Ok(response)
                         }
-                        CreateFileBatchResponse::Forbidden(body) => {
+                        CreateFileAutoBatchResponse::Forbidden(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(403), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_FILE_BATCH_FORBIDDEN.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_FILE_AUTO_BATCH_FORBIDDEN.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -4686,11 +4694,11 @@ where
                             }
                             Ok(response)
                         }
-                        CreateFileBatchResponse::NotFound(body) => {
+                        CreateFileAutoBatchResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(404), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_FILE_BATCH_NOT_FOUND.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_FILE_AUTO_BATCH_NOT_FOUND.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -4698,11 +4706,11 @@ where
                             }
                             Ok(response)
                         }
-                        CreateFileBatchResponse::GenericError(body) => {
+                        CreateFileAutoBatchResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(500), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_FILE_BATCH_GENERIC_ERROR.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_FILE_AUTO_BATCH_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -4724,12 +4732,12 @@ where
                 Ok(response)
             })
         },
-        "CreateFileBatch",
+        "CreateFileAutoBatch",
     );
 
     let api_clone = api.clone();
     router.delete(
-        "/v0/file/:ident",
+        "/v0/editgroup/:editgroup_id/file/:ident",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -4745,6 +4753,19 @@ where
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
                 // Path parameters
+                let param_editgroup_id = {
+                    let param = req
+                        .extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("editgroup_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter editgroup_id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter editgroup_id: {}", e))))?
+                };
                 let param_ident = {
                     let param = req
                         .extensions
@@ -4759,17 +4780,7 @@ where
                         .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
-                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
-                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params
-                    .get("editgroup_id")
-                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
-                    .first()
-                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
-                    .parse::<String>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
-
-                match api.delete_file(param_ident, param_editgroup_id, context).wait() {
+                match api.delete_file(param_editgroup_id, param_ident, context).wait() {
                     Ok(rsp) => match rsp {
                         DeleteFileResponse::DeletedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -4853,7 +4864,7 @@ where
 
     let api_clone = api.clone();
     router.delete(
-        "/v0/file/edit/:edit_id",
+        "/v0/editgroup/:editgroup_id/file/edit/:edit_id",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -4869,6 +4880,19 @@ where
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
                 // Path parameters
+                let param_editgroup_id = {
+                    let param = req
+                        .extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("editgroup_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter editgroup_id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter editgroup_id: {}", e))))?
+                };
                 let param_edit_id = {
                     let param = req
                         .extensions
@@ -4883,7 +4907,7 @@ where
                         .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter edit_id: {}", e))))?
                 };
 
-                match api.delete_file_edit(param_edit_id, context).wait() {
+                match api.delete_file_edit(param_editgroup_id, param_edit_id, context).wait() {
                     Ok(rsp) => match rsp {
                         DeleteFileEditResponse::DeletedEdit(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -5513,7 +5537,7 @@ where
 
     let api_clone = api.clone();
     router.put(
-        "/v0/file/:ident",
+        "/v0/editgroup/:editgroup_id/file/:ident",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -5529,6 +5553,19 @@ where
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
                 // Path parameters
+                let param_editgroup_id = {
+                    let param = req
+                        .extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("editgroup_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter editgroup_id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter editgroup_id: {}", e))))?
+                };
                 let param_ident = {
                     let param = req
                         .extensions
@@ -5542,16 +5579,6 @@ where
                         .parse()
                         .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
-
-                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
-                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params
-                    .get("editgroup_id")
-                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
-                    .first()
-                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
-                    .parse::<String>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -5578,7 +5605,7 @@ where
                 };
                 let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
 
-                match api.update_file(param_ident, param_entity, param_editgroup_id, context).wait() {
+                match api.update_file(param_editgroup_id, param_ident, param_entity, context).wait() {
                     Ok(rsp) => match rsp {
                         UpdateFileResponse::UpdatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -5674,7 +5701,7 @@ where
 
     let api_clone = api.clone();
     router.post(
-        "/v0/fileset",
+        "/v0/editgroup/:editgroup_id/fileset",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -5689,15 +5716,20 @@ where
 
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
-                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
-                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params
-                    .get("editgroup_id")
-                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
-                    .first()
-                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
-                    .parse::<String>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
+                // Path parameters
+                let param_editgroup_id = {
+                    let param = req
+                        .extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("editgroup_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter editgroup_id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter editgroup_id: {}", e))))?
+                };
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -5724,7 +5756,7 @@ where
                 };
                 let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
 
-                match api.create_fileset(param_entity, param_editgroup_id, context).wait() {
+                match api.create_fileset(param_editgroup_id, param_entity, context).wait() {
                     Ok(rsp) => match rsp {
                         CreateFilesetResponse::CreatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -5820,7 +5852,7 @@ where
 
     let api_clone = api.clone();
     router.post(
-        "/v0/fileset/batch",
+        "/v0/editgroup/auto/fileset/batch",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -5835,53 +5867,38 @@ where
 
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
-                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
-                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_autoaccept = query_params
-                    .get("autoaccept")
-                    .and_then(|list| list.first())
-                    .and_then(|x| Some(x.to_lowercase().parse::<bool>()))
-                    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
-                    .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected boolean)".to_string())))?;
-                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
-                let param_description = query_params.get("description").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
-                let param_extra = query_params.get("extra").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
-
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_entity_list = req
+                let param_auto_batch = req
                     .get::<bodyparser::Raw>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity_list - not valid UTF-8: {}", e))))?;
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter auto_batch - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
 
-                let param_entity_list = if let Some(param_entity_list_raw) = param_entity_list {
-                    let deserializer = &mut serde_json::Deserializer::from_str(&param_entity_list_raw);
+                let param_auto_batch = if let Some(param_auto_batch_raw) = param_auto_batch {
+                    let deserializer = &mut serde_json::Deserializer::from_str(&param_auto_batch_raw);
 
-                    let param_entity_list: Option<Vec<models::FilesetEntity>> = serde_ignored::deserialize(deserializer, |path| {
+                    let param_auto_batch: Option<models::FilesetAutoBatch> = serde_ignored::deserialize(deserializer, |path| {
                         warn!("Ignoring unknown field in body: {}", path);
                         unused_elements.push(path.to_string());
                     })
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity_list - doesn't match schema: {}", e))))?;
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter auto_batch - doesn't match schema: {}", e))))?;
 
-                    param_entity_list
+                    param_auto_batch
                 } else {
                     None
                 };
-                let param_entity_list = param_entity_list.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity_list".to_string())))?;
+                let param_auto_batch = param_auto_batch.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter auto_batch".to_string())))?;
 
-                match api
-                    .create_fileset_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup_id, param_description, param_extra, context)
-                    .wait()
-                {
+                match api.create_fileset_auto_batch(param_auto_batch, context).wait() {
                     Ok(rsp) => match rsp {
-                        CreateFilesetBatchResponse::CreatedEntities(body) => {
+                        CreateFilesetAutoBatchResponse::CreatedEditgroup(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(201), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_FILESET_BATCH_CREATED_ENTITIES.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_FILESET_AUTO_BATCH_CREATED_EDITGROUP.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -5889,11 +5906,11 @@ where
                             }
                             Ok(response)
                         }
-                        CreateFilesetBatchResponse::BadRequest(body) => {
+                        CreateFilesetAutoBatchResponse::BadRequest(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_FILESET_BATCH_BAD_REQUEST.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_FILESET_AUTO_BATCH_BAD_REQUEST.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -5901,14 +5918,14 @@ where
                             }
                             Ok(response)
                         }
-                        CreateFilesetBatchResponse::NotAuthorized { body, www_authenticate } => {
+                        CreateFilesetAutoBatchResponse::NotAuthorized { body, www_authenticate } => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(401), body_string));
                             header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
                             response.headers.set(ResponseWwwAuthenticate(www_authenticate));
 
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_FILESET_BATCH_NOT_AUTHORIZED.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_FILESET_AUTO_BATCH_NOT_AUTHORIZED.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -5916,11 +5933,11 @@ where
                             }
                             Ok(response)
                         }
-                        CreateFilesetBatchResponse::Forbidden(body) => {
+                        CreateFilesetAutoBatchResponse::Forbidden(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(403), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_FILESET_BATCH_FORBIDDEN.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_FILESET_AUTO_BATCH_FORBIDDEN.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -5928,11 +5945,11 @@ where
                             }
                             Ok(response)
                         }
-                        CreateFilesetBatchResponse::NotFound(body) => {
+                        CreateFilesetAutoBatchResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(404), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_FILESET_BATCH_NOT_FOUND.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_FILESET_AUTO_BATCH_NOT_FOUND.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -5940,11 +5957,11 @@ where
                             }
                             Ok(response)
                         }
-                        CreateFilesetBatchResponse::GenericError(body) => {
+                        CreateFilesetAutoBatchResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(500), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_FILESET_BATCH_GENERIC_ERROR.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_FILESET_AUTO_BATCH_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -5966,12 +5983,12 @@ where
                 Ok(response)
             })
         },
-        "CreateFilesetBatch",
+        "CreateFilesetAutoBatch",
     );
 
     let api_clone = api.clone();
     router.delete(
-        "/v0/fileset/:ident",
+        "/v0/editgroup/:editgroup_id/fileset/:ident",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -5987,6 +6004,19 @@ where
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
                 // Path parameters
+                let param_editgroup_id = {
+                    let param = req
+                        .extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("editgroup_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter editgroup_id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter editgroup_id: {}", e))))?
+                };
                 let param_ident = {
                     let param = req
                         .extensions
@@ -6001,17 +6031,7 @@ where
                         .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
-                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
-                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params
-                    .get("editgroup_id")
-                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
-                    .first()
-                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
-                    .parse::<String>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
-
-                match api.delete_fileset(param_ident, param_editgroup_id, context).wait() {
+                match api.delete_fileset(param_editgroup_id, param_ident, context).wait() {
                     Ok(rsp) => match rsp {
                         DeleteFilesetResponse::DeletedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -6095,7 +6115,7 @@ where
 
     let api_clone = api.clone();
     router.delete(
-        "/v0/fileset/edit/:edit_id",
+        "/v0/editgroup/:editgroup_id/fileset/edit/:edit_id",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -6111,6 +6131,19 @@ where
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
                 // Path parameters
+                let param_editgroup_id = {
+                    let param = req
+                        .extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("editgroup_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter editgroup_id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter editgroup_id: {}", e))))?
+                };
                 let param_edit_id = {
                     let param = req
                         .extensions
@@ -6125,7 +6158,7 @@ where
                         .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter edit_id: {}", e))))?
                 };
 
-                match api.delete_fileset_edit(param_edit_id, context).wait() {
+                match api.delete_fileset_edit(param_editgroup_id, param_edit_id, context).wait() {
                     Ok(rsp) => match rsp {
                         DeleteFilesetEditResponse::DeletedEdit(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -6673,7 +6706,7 @@ where
 
     let api_clone = api.clone();
     router.put(
-        "/v0/fileset/:ident",
+        "/v0/editgroup/:editgroup_id/fileset/:ident",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -6689,6 +6722,19 @@ where
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
                 // Path parameters
+                let param_editgroup_id = {
+                    let param = req
+                        .extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("editgroup_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter editgroup_id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter editgroup_id: {}", e))))?
+                };
                 let param_ident = {
                     let param = req
                         .extensions
@@ -6702,16 +6748,6 @@ where
                         .parse()
                         .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
-
-                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
-                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params
-                    .get("editgroup_id")
-                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
-                    .first()
-                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
-                    .parse::<String>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -6738,7 +6774,7 @@ where
                 };
                 let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
 
-                match api.update_fileset(param_ident, param_entity, param_editgroup_id, context).wait() {
+                match api.update_fileset(param_editgroup_id, param_ident, param_entity, context).wait() {
                     Ok(rsp) => match rsp {
                         UpdateFilesetResponse::UpdatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -6834,7 +6870,7 @@ where
 
     let api_clone = api.clone();
     router.post(
-        "/v0/release",
+        "/v0/editgroup/:editgroup_id/release",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -6849,15 +6885,20 @@ where
 
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
-                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
-                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params
-                    .get("editgroup_id")
-                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
-                    .first()
-                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
-                    .parse::<String>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
+                // Path parameters
+                let param_editgroup_id = {
+                    let param = req
+                        .extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("editgroup_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter editgroup_id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter editgroup_id: {}", e))))?
+                };
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -6884,7 +6925,7 @@ where
                 };
                 let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
 
-                match api.create_release(param_entity, param_editgroup_id, context).wait() {
+                match api.create_release(param_editgroup_id, param_entity, context).wait() {
                     Ok(rsp) => match rsp {
                         CreateReleaseResponse::CreatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -6980,7 +7021,7 @@ where
 
     let api_clone = api.clone();
     router.post(
-        "/v0/release/batch",
+        "/v0/editgroup/auto/release/batch",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -6995,53 +7036,38 @@ where
 
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
-                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
-                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_autoaccept = query_params
-                    .get("autoaccept")
-                    .and_then(|list| list.first())
-                    .and_then(|x| Some(x.to_lowercase().parse::<bool>()))
-                    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
-                    .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected boolean)".to_string())))?;
-                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
-                let param_description = query_params.get("description").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
-                let param_extra = query_params.get("extra").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
-
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_entity_list = req
+                let param_auto_batch = req
                     .get::<bodyparser::Raw>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity_list - not valid UTF-8: {}", e))))?;
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter auto_batch - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
 
-                let param_entity_list = if let Some(param_entity_list_raw) = param_entity_list {
-                    let deserializer = &mut serde_json::Deserializer::from_str(&param_entity_list_raw);
+                let param_auto_batch = if let Some(param_auto_batch_raw) = param_auto_batch {
+                    let deserializer = &mut serde_json::Deserializer::from_str(&param_auto_batch_raw);
 
-                    let param_entity_list: Option<Vec<models::ReleaseEntity>> = serde_ignored::deserialize(deserializer, |path| {
+                    let param_auto_batch: Option<models::ReleaseAutoBatch> = serde_ignored::deserialize(deserializer, |path| {
                         warn!("Ignoring unknown field in body: {}", path);
                         unused_elements.push(path.to_string());
                     })
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity_list - doesn't match schema: {}", e))))?;
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter auto_batch - doesn't match schema: {}", e))))?;
 
-                    param_entity_list
+                    param_auto_batch
                 } else {
                     None
                 };
-                let param_entity_list = param_entity_list.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity_list".to_string())))?;
+                let param_auto_batch = param_auto_batch.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter auto_batch".to_string())))?;
 
-                match api
-                    .create_release_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup_id, param_description, param_extra, context)
-                    .wait()
-                {
+                match api.create_release_auto_batch(param_auto_batch, context).wait() {
                     Ok(rsp) => match rsp {
-                        CreateReleaseBatchResponse::CreatedEntities(body) => {
+                        CreateReleaseAutoBatchResponse::CreatedEditgroup(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(201), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_RELEASE_BATCH_CREATED_ENTITIES.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_RELEASE_AUTO_BATCH_CREATED_EDITGROUP.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -7049,11 +7075,11 @@ where
                             }
                             Ok(response)
                         }
-                        CreateReleaseBatchResponse::BadRequest(body) => {
+                        CreateReleaseAutoBatchResponse::BadRequest(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_RELEASE_BATCH_BAD_REQUEST.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_RELEASE_AUTO_BATCH_BAD_REQUEST.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -7061,14 +7087,14 @@ where
                             }
                             Ok(response)
                         }
-                        CreateReleaseBatchResponse::NotAuthorized { body, www_authenticate } => {
+                        CreateReleaseAutoBatchResponse::NotAuthorized { body, www_authenticate } => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(401), body_string));
                             header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
                             response.headers.set(ResponseWwwAuthenticate(www_authenticate));
 
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_RELEASE_BATCH_NOT_AUTHORIZED.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_RELEASE_AUTO_BATCH_NOT_AUTHORIZED.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -7076,11 +7102,11 @@ where
                             }
                             Ok(response)
                         }
-                        CreateReleaseBatchResponse::Forbidden(body) => {
+                        CreateReleaseAutoBatchResponse::Forbidden(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(403), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_RELEASE_BATCH_FORBIDDEN.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_RELEASE_AUTO_BATCH_FORBIDDEN.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -7088,11 +7114,11 @@ where
                             }
                             Ok(response)
                         }
-                        CreateReleaseBatchResponse::NotFound(body) => {
+                        CreateReleaseAutoBatchResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(404), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_RELEASE_BATCH_NOT_FOUND.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_RELEASE_AUTO_BATCH_NOT_FOUND.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -7100,11 +7126,11 @@ where
                             }
                             Ok(response)
                         }
-                        CreateReleaseBatchResponse::GenericError(body) => {
+                        CreateReleaseAutoBatchResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(500), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_RELEASE_BATCH_GENERIC_ERROR.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_RELEASE_AUTO_BATCH_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -7126,12 +7152,12 @@ where
                 Ok(response)
             })
         },
-        "CreateReleaseBatch",
+        "CreateReleaseAutoBatch",
     );
 
     let api_clone = api.clone();
     router.post(
-        "/v0/work",
+        "/v0/editgroup/:editgroup_id/work",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -7146,15 +7172,20 @@ where
 
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
-                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
-                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params
-                    .get("editgroup_id")
-                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
-                    .first()
-                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
-                    .parse::<String>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
+                // Path parameters
+                let param_editgroup_id = {
+                    let param = req
+                        .extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("editgroup_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter editgroup_id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter editgroup_id: {}", e))))?
+                };
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -7181,7 +7212,7 @@ where
                 };
                 let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
 
-                match api.create_work(param_entity, param_editgroup_id, context).wait() {
+                match api.create_work(param_editgroup_id, param_entity, context).wait() {
                     Ok(rsp) => match rsp {
                         CreateWorkResponse::CreatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -7277,7 +7308,7 @@ where
 
     let api_clone = api.clone();
     router.delete(
-        "/v0/release/:ident",
+        "/v0/editgroup/:editgroup_id/release/:ident",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -7293,6 +7324,19 @@ where
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
                 // Path parameters
+                let param_editgroup_id = {
+                    let param = req
+                        .extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("editgroup_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter editgroup_id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter editgroup_id: {}", e))))?
+                };
                 let param_ident = {
                     let param = req
                         .extensions
@@ -7307,17 +7351,7 @@ where
                         .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
-                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
-                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params
-                    .get("editgroup_id")
-                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
-                    .first()
-                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
-                    .parse::<String>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
-
-                match api.delete_release(param_ident, param_editgroup_id, context).wait() {
+                match api.delete_release(param_editgroup_id, param_ident, context).wait() {
                     Ok(rsp) => match rsp {
                         DeleteReleaseResponse::DeletedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -7401,7 +7435,7 @@ where
 
     let api_clone = api.clone();
     router.delete(
-        "/v0/release/edit/:edit_id",
+        "/v0/editgroup/:editgroup_id/release/edit/:edit_id",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -7417,6 +7451,19 @@ where
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
                 // Path parameters
+                let param_editgroup_id = {
+                    let param = req
+                        .extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("editgroup_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter editgroup_id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter editgroup_id: {}", e))))?
+                };
                 let param_edit_id = {
                     let param = req
                         .extensions
@@ -7431,7 +7478,7 @@ where
                         .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter edit_id: {}", e))))?
                 };
 
-                match api.delete_release_edit(param_edit_id, context).wait() {
+                match api.delete_release_edit(param_editgroup_id, param_edit_id, context).wait() {
                     Ok(rsp) => match rsp {
                         DeleteReleaseEditResponse::DeletedEdit(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -8364,7 +8411,7 @@ where
 
     let api_clone = api.clone();
     router.put(
-        "/v0/release/:ident",
+        "/v0/editgroup/:editgroup_id/release/:ident",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -8380,6 +8427,19 @@ where
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
                 // Path parameters
+                let param_editgroup_id = {
+                    let param = req
+                        .extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("editgroup_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter editgroup_id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter editgroup_id: {}", e))))?
+                };
                 let param_ident = {
                     let param = req
                         .extensions
@@ -8393,16 +8453,6 @@ where
                         .parse()
                         .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
-
-                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
-                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params
-                    .get("editgroup_id")
-                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
-                    .first()
-                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
-                    .parse::<String>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -8429,7 +8479,7 @@ where
                 };
                 let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
 
-                match api.update_release(param_ident, param_entity, param_editgroup_id, context).wait() {
+                match api.update_release(param_editgroup_id, param_ident, param_entity, context).wait() {
                     Ok(rsp) => match rsp {
                         UpdateReleaseResponse::UpdatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -8525,7 +8575,7 @@ where
 
     let api_clone = api.clone();
     router.post(
-        "/v0/webcapture",
+        "/v0/editgroup/:editgroup_id/webcapture",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -8540,15 +8590,20 @@ where
 
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
-                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
-                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params
-                    .get("editgroup_id")
-                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
-                    .first()
-                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
-                    .parse::<String>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
+                // Path parameters
+                let param_editgroup_id = {
+                    let param = req
+                        .extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("editgroup_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter editgroup_id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter editgroup_id: {}", e))))?
+                };
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -8575,7 +8630,7 @@ where
                 };
                 let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
 
-                match api.create_webcapture(param_entity, param_editgroup_id, context).wait() {
+                match api.create_webcapture(param_editgroup_id, param_entity, context).wait() {
                     Ok(rsp) => match rsp {
                         CreateWebcaptureResponse::CreatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -8671,7 +8726,7 @@ where
 
     let api_clone = api.clone();
     router.post(
-        "/v0/webcapture/batch",
+        "/v0/editgroup/auto/webcapture/batch",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -8686,53 +8741,38 @@ where
 
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
-                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
-                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_autoaccept = query_params
-                    .get("autoaccept")
-                    .and_then(|list| list.first())
-                    .and_then(|x| Some(x.to_lowercase().parse::<bool>()))
-                    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
-                    .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected boolean)".to_string())))?;
-                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
-                let param_description = query_params.get("description").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
-                let param_extra = query_params.get("extra").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
-
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_entity_list = req
+                let param_auto_batch = req
                     .get::<bodyparser::Raw>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity_list - not valid UTF-8: {}", e))))?;
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter auto_batch - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
 
-                let param_entity_list = if let Some(param_entity_list_raw) = param_entity_list {
-                    let deserializer = &mut serde_json::Deserializer::from_str(&param_entity_list_raw);
+                let param_auto_batch = if let Some(param_auto_batch_raw) = param_auto_batch {
+                    let deserializer = &mut serde_json::Deserializer::from_str(&param_auto_batch_raw);
 
-                    let param_entity_list: Option<Vec<models::WebcaptureEntity>> = serde_ignored::deserialize(deserializer, |path| {
+                    let param_auto_batch: Option<models::WebcaptureAutoBatch> = serde_ignored::deserialize(deserializer, |path| {
                         warn!("Ignoring unknown field in body: {}", path);
                         unused_elements.push(path.to_string());
                     })
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity_list - doesn't match schema: {}", e))))?;
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter auto_batch - doesn't match schema: {}", e))))?;
 
-                    param_entity_list
+                    param_auto_batch
                 } else {
                     None
                 };
-                let param_entity_list = param_entity_list.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity_list".to_string())))?;
+                let param_auto_batch = param_auto_batch.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter auto_batch".to_string())))?;
 
-                match api
-                    .create_webcapture_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup_id, param_description, param_extra, context)
-                    .wait()
-                {
+                match api.create_webcapture_auto_batch(param_auto_batch, context).wait() {
                     Ok(rsp) => match rsp {
-                        CreateWebcaptureBatchResponse::CreatedEntities(body) => {
+                        CreateWebcaptureAutoBatchResponse::CreatedEditgroup(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(201), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_WEBCAPTURE_BATCH_CREATED_ENTITIES.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_WEBCAPTURE_AUTO_BATCH_CREATED_EDITGROUP.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -8740,11 +8780,11 @@ where
                             }
                             Ok(response)
                         }
-                        CreateWebcaptureBatchResponse::BadRequest(body) => {
+                        CreateWebcaptureAutoBatchResponse::BadRequest(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_WEBCAPTURE_BATCH_BAD_REQUEST.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_WEBCAPTURE_AUTO_BATCH_BAD_REQUEST.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -8752,14 +8792,14 @@ where
                             }
                             Ok(response)
                         }
-                        CreateWebcaptureBatchResponse::NotAuthorized { body, www_authenticate } => {
+                        CreateWebcaptureAutoBatchResponse::NotAuthorized { body, www_authenticate } => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(401), body_string));
                             header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
                             response.headers.set(ResponseWwwAuthenticate(www_authenticate));
 
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_WEBCAPTURE_BATCH_NOT_AUTHORIZED.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_WEBCAPTURE_AUTO_BATCH_NOT_AUTHORIZED.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -8767,11 +8807,11 @@ where
                             }
                             Ok(response)
                         }
-                        CreateWebcaptureBatchResponse::Forbidden(body) => {
+                        CreateWebcaptureAutoBatchResponse::Forbidden(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(403), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_WEBCAPTURE_BATCH_FORBIDDEN.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_WEBCAPTURE_AUTO_BATCH_FORBIDDEN.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -8779,11 +8819,11 @@ where
                             }
                             Ok(response)
                         }
-                        CreateWebcaptureBatchResponse::NotFound(body) => {
+                        CreateWebcaptureAutoBatchResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(404), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_WEBCAPTURE_BATCH_NOT_FOUND.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_WEBCAPTURE_AUTO_BATCH_NOT_FOUND.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -8791,11 +8831,11 @@ where
                             }
                             Ok(response)
                         }
-                        CreateWebcaptureBatchResponse::GenericError(body) => {
+                        CreateWebcaptureAutoBatchResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(500), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_WEBCAPTURE_BATCH_GENERIC_ERROR.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_WEBCAPTURE_AUTO_BATCH_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -8817,12 +8857,12 @@ where
                 Ok(response)
             })
         },
-        "CreateWebcaptureBatch",
+        "CreateWebcaptureAutoBatch",
     );
 
     let api_clone = api.clone();
     router.delete(
-        "/v0/webcapture/:ident",
+        "/v0/editgroup/:editgroup_id/webcapture/:ident",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -8838,6 +8878,19 @@ where
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
                 // Path parameters
+                let param_editgroup_id = {
+                    let param = req
+                        .extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("editgroup_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter editgroup_id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter editgroup_id: {}", e))))?
+                };
                 let param_ident = {
                     let param = req
                         .extensions
@@ -8852,17 +8905,7 @@ where
                         .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
-                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
-                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params
-                    .get("editgroup_id")
-                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
-                    .first()
-                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
-                    .parse::<String>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
-
-                match api.delete_webcapture(param_ident, param_editgroup_id, context).wait() {
+                match api.delete_webcapture(param_editgroup_id, param_ident, context).wait() {
                     Ok(rsp) => match rsp {
                         DeleteWebcaptureResponse::DeletedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -8946,7 +8989,7 @@ where
 
     let api_clone = api.clone();
     router.delete(
-        "/v0/webcapture/edit/:edit_id",
+        "/v0/editgroup/:editgroup_id/webcapture/edit/:edit_id",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -8962,6 +9005,19 @@ where
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
                 // Path parameters
+                let param_editgroup_id = {
+                    let param = req
+                        .extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("editgroup_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter editgroup_id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter editgroup_id: {}", e))))?
+                };
                 let param_edit_id = {
                     let param = req
                         .extensions
@@ -8976,7 +9032,7 @@ where
                         .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter edit_id: {}", e))))?
                 };
 
-                match api.delete_webcapture_edit(param_edit_id, context).wait() {
+                match api.delete_webcapture_edit(param_editgroup_id, param_edit_id, context).wait() {
                     Ok(rsp) => match rsp {
                         DeleteWebcaptureEditResponse::DeletedEdit(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -9524,7 +9580,7 @@ where
 
     let api_clone = api.clone();
     router.put(
-        "/v0/webcapture/:ident",
+        "/v0/editgroup/:editgroup_id/webcapture/:ident",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -9540,6 +9596,19 @@ where
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
                 // Path parameters
+                let param_editgroup_id = {
+                    let param = req
+                        .extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("editgroup_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter editgroup_id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter editgroup_id: {}", e))))?
+                };
                 let param_ident = {
                     let param = req
                         .extensions
@@ -9553,16 +9622,6 @@ where
                         .parse()
                         .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
-
-                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
-                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params
-                    .get("editgroup_id")
-                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
-                    .first()
-                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
-                    .parse::<String>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -9589,7 +9648,7 @@ where
                 };
                 let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
 
-                match api.update_webcapture(param_ident, param_entity, param_editgroup_id, context).wait() {
+                match api.update_webcapture(param_editgroup_id, param_ident, param_entity, context).wait() {
                     Ok(rsp) => match rsp {
                         UpdateWebcaptureResponse::UpdatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -9685,7 +9744,7 @@ where
 
     let api_clone = api.clone();
     router.post(
-        "/v0/work/batch",
+        "/v0/editgroup/auto/work/batch",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -9700,53 +9759,38 @@ where
 
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
-                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
-                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_autoaccept = query_params
-                    .get("autoaccept")
-                    .and_then(|list| list.first())
-                    .and_then(|x| Some(x.to_lowercase().parse::<bool>()))
-                    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
-                    .map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected boolean)".to_string())))?;
-                let param_editgroup_id = query_params.get("editgroup_id").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
-                let param_description = query_params.get("description").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
-                let param_extra = query_params.get("extra").and_then(|list| list.first()).and_then(|x| x.parse::<String>().ok());
-
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
                 // any unused fields.
 
-                let param_entity_list = req
+                let param_auto_batch = req
                     .get::<bodyparser::Raw>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity_list - not valid UTF-8: {}", e))))?;
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter auto_batch - not valid UTF-8: {}", e))))?;
 
                 let mut unused_elements = Vec::new();
 
-                let param_entity_list = if let Some(param_entity_list_raw) = param_entity_list {
-                    let deserializer = &mut serde_json::Deserializer::from_str(&param_entity_list_raw);
+                let param_auto_batch = if let Some(param_auto_batch_raw) = param_auto_batch {
+                    let deserializer = &mut serde_json::Deserializer::from_str(&param_auto_batch_raw);
 
-                    let param_entity_list: Option<Vec<models::WorkEntity>> = serde_ignored::deserialize(deserializer, |path| {
+                    let param_auto_batch: Option<models::WorkAutoBatch> = serde_ignored::deserialize(deserializer, |path| {
                         warn!("Ignoring unknown field in body: {}", path);
                         unused_elements.push(path.to_string());
                     })
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter entity_list - doesn't match schema: {}", e))))?;
+                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse body parameter auto_batch - doesn't match schema: {}", e))))?;
 
-                    param_entity_list
+                    param_auto_batch
                 } else {
                     None
                 };
-                let param_entity_list = param_entity_list.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity_list".to_string())))?;
+                let param_auto_batch = param_auto_batch.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter auto_batch".to_string())))?;
 
-                match api
-                    .create_work_batch(param_entity_list.as_ref(), param_autoaccept, param_editgroup_id, param_description, param_extra, context)
-                    .wait()
-                {
+                match api.create_work_auto_batch(param_auto_batch, context).wait() {
                     Ok(rsp) => match rsp {
-                        CreateWorkBatchResponse::CreatedEntities(body) => {
+                        CreateWorkAutoBatchResponse::CreatedEditgroup(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(201), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_WORK_BATCH_CREATED_ENTITIES.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_WORK_AUTO_BATCH_CREATED_EDITGROUP.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -9754,11 +9798,11 @@ where
                             }
                             Ok(response)
                         }
-                        CreateWorkBatchResponse::BadRequest(body) => {
+                        CreateWorkAutoBatchResponse::BadRequest(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(400), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_WORK_BATCH_BAD_REQUEST.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_WORK_AUTO_BATCH_BAD_REQUEST.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -9766,14 +9810,14 @@ where
                             }
                             Ok(response)
                         }
-                        CreateWorkBatchResponse::NotAuthorized { body, www_authenticate } => {
+                        CreateWorkAutoBatchResponse::NotAuthorized { body, www_authenticate } => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(401), body_string));
                             header! { (ResponseWwwAuthenticate, "WWW_Authenticate") => [String] }
                             response.headers.set(ResponseWwwAuthenticate(www_authenticate));
 
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_WORK_BATCH_NOT_AUTHORIZED.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_WORK_AUTO_BATCH_NOT_AUTHORIZED.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -9781,11 +9825,11 @@ where
                             }
                             Ok(response)
                         }
-                        CreateWorkBatchResponse::Forbidden(body) => {
+                        CreateWorkAutoBatchResponse::Forbidden(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(403), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_WORK_BATCH_FORBIDDEN.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_WORK_AUTO_BATCH_FORBIDDEN.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -9793,11 +9837,11 @@ where
                             }
                             Ok(response)
                         }
-                        CreateWorkBatchResponse::NotFound(body) => {
+                        CreateWorkAutoBatchResponse::NotFound(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(404), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_WORK_BATCH_NOT_FOUND.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_WORK_AUTO_BATCH_NOT_FOUND.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -9805,11 +9849,11 @@ where
                             }
                             Ok(response)
                         }
-                        CreateWorkBatchResponse::GenericError(body) => {
+                        CreateWorkAutoBatchResponse::GenericError(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
 
                             let mut response = Response::with((status::Status::from_u16(500), body_string));
-                            response.headers.set(ContentType(mimetypes::responses::CREATE_WORK_BATCH_GENERIC_ERROR.clone()));
+                            response.headers.set(ContentType(mimetypes::responses::CREATE_WORK_AUTO_BATCH_GENERIC_ERROR.clone()));
 
                             context.x_span_id.as_ref().map(|header| response.headers.set(XSpanId(header.clone())));
                             if !unused_elements.is_empty() {
@@ -9831,12 +9875,12 @@ where
                 Ok(response)
             })
         },
-        "CreateWorkBatch",
+        "CreateWorkAutoBatch",
     );
 
     let api_clone = api.clone();
     router.delete(
-        "/v0/work/:ident",
+        "/v0/editgroup/:editgroup_id/work/:ident",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -9852,6 +9896,19 @@ where
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
                 // Path parameters
+                let param_editgroup_id = {
+                    let param = req
+                        .extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("editgroup_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter editgroup_id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter editgroup_id: {}", e))))?
+                };
                 let param_ident = {
                     let param = req
                         .extensions
@@ -9866,17 +9923,7 @@ where
                         .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
 
-                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
-                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params
-                    .get("editgroup_id")
-                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
-                    .first()
-                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
-                    .parse::<String>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
-
-                match api.delete_work(param_ident, param_editgroup_id, context).wait() {
+                match api.delete_work(param_editgroup_id, param_ident, context).wait() {
                     Ok(rsp) => match rsp {
                         DeleteWorkResponse::DeletedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -9960,7 +10007,7 @@ where
 
     let api_clone = api.clone();
     router.delete(
-        "/v0/work/edit/:edit_id",
+        "/v0/editgroup/:editgroup_id/work/edit/:edit_id",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -9976,6 +10023,19 @@ where
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
                 // Path parameters
+                let param_editgroup_id = {
+                    let param = req
+                        .extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("editgroup_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter editgroup_id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter editgroup_id: {}", e))))?
+                };
                 let param_edit_id = {
                     let param = req
                         .extensions
@@ -9990,7 +10050,7 @@ where
                         .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter edit_id: {}", e))))?
                 };
 
-                match api.delete_work_edit(param_edit_id, context).wait() {
+                match api.delete_work_edit(param_editgroup_id, param_edit_id, context).wait() {
                     Ok(rsp) => match rsp {
                         DeleteWorkEditResponse::DeletedEdit(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");
@@ -10631,7 +10691,7 @@ where
 
     let api_clone = api.clone();
     router.put(
-        "/v0/work/:ident",
+        "/v0/editgroup/:editgroup_id/work/:ident",
         move |req: &mut Request| {
             let mut context = Context::default();
 
@@ -10647,6 +10707,19 @@ where
                 let authorization = context.authorization.as_ref().ok_or_else(|| Response::with((status::Forbidden, "Unauthenticated".to_string())))?;
 
                 // Path parameters
+                let param_editgroup_id = {
+                    let param = req
+                        .extensions
+                        .get::<Router>()
+                        .ok_or_else(|| Response::with((status::InternalServerError, "An internal error occurred".to_string())))?
+                        .find("editgroup_id")
+                        .ok_or_else(|| Response::with((status::BadRequest, "Missing path parameter editgroup_id".to_string())))?;
+                    percent_decode(param.as_bytes())
+                        .decode_utf8()
+                        .map_err(|_| Response::with((status::BadRequest, format!("Couldn't percent-decode path parameter as UTF-8: {}", param))))?
+                        .parse()
+                        .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter editgroup_id: {}", e))))?
+                };
                 let param_ident = {
                     let param = req
                         .extensions
@@ -10660,16 +10733,6 @@ where
                         .parse()
                         .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse path parameter ident: {}", e))))?
                 };
-
-                // Query parameters (note that non-required or collection query parameters will ignore garbage values, rather than causing a 400 response)
-                let query_params = req.get::<UrlEncodedQuery>().unwrap_or_default();
-                let param_editgroup_id = query_params
-                    .get("editgroup_id")
-                    .ok_or_else(|| Response::with((status::BadRequest, "Missing required query parameter editgroup_id".to_string())))?
-                    .first()
-                    .ok_or_else(|| Response::with((status::BadRequest, "Required query parameter editgroup_id was empty".to_string())))?
-                    .parse::<String>()
-                    .map_err(|e| Response::with((status::BadRequest, format!("Couldn't parse query parameter editgroup_id - doesn't match schema: {}", e))))?;
 
                 // Body parameters (note that non-required body parameters will ignore garbage
                 // values, rather than causing a 400 response). Produce warning header and logs for
@@ -10696,7 +10759,7 @@ where
                 };
                 let param_entity = param_entity.ok_or_else(|| Response::with((status::BadRequest, "Missing required body parameter entity".to_string())))?;
 
-                match api.update_work(param_ident, param_entity, param_editgroup_id, context).wait() {
+                match api.update_work(param_editgroup_id, param_ident, param_entity, context).wait() {
                     Ok(rsp) => match rsp {
                         UpdateWorkResponse::UpdatedEntity(body) => {
                             let body_string = serde_json::to_string(&body).expect("impossible to fail to serialize");

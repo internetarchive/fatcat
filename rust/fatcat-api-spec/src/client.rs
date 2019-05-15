@@ -35,9 +35,9 @@ use swagger::{ApiError, Context, XSpanId};
 
 use models;
 use {
-    AcceptEditgroupResponse, Api, AuthCheckResponse, AuthOidcResponse, CreateContainerBatchResponse, CreateContainerResponse, CreateCreatorBatchResponse, CreateCreatorResponse,
-    CreateEditgroupAnnotationResponse, CreateEditgroupResponse, CreateFileBatchResponse, CreateFileResponse, CreateFilesetBatchResponse, CreateFilesetResponse, CreateReleaseBatchResponse,
-    CreateReleaseResponse, CreateWebcaptureBatchResponse, CreateWebcaptureResponse, CreateWorkBatchResponse, CreateWorkResponse, DeleteContainerEditResponse, DeleteContainerResponse,
+    AcceptEditgroupResponse, Api, AuthCheckResponse, AuthOidcResponse, CreateContainerAutoBatchResponse, CreateContainerResponse, CreateCreatorAutoBatchResponse, CreateCreatorResponse,
+    CreateEditgroupAnnotationResponse, CreateEditgroupResponse, CreateFileAutoBatchResponse, CreateFileResponse, CreateFilesetAutoBatchResponse, CreateFilesetResponse, CreateReleaseAutoBatchResponse,
+    CreateReleaseResponse, CreateWebcaptureAutoBatchResponse, CreateWebcaptureResponse, CreateWorkAutoBatchResponse, CreateWorkResponse, DeleteContainerEditResponse, DeleteContainerResponse,
     DeleteCreatorEditResponse, DeleteCreatorResponse, DeleteFileEditResponse, DeleteFileResponse, DeleteFilesetEditResponse, DeleteFilesetResponse, DeleteReleaseEditResponse, DeleteReleaseResponse,
     DeleteWebcaptureEditResponse, DeleteWebcaptureResponse, DeleteWorkEditResponse, DeleteWorkResponse, GetChangelogEntryResponse, GetChangelogResponse, GetContainerEditResponse,
     GetContainerHistoryResponse, GetContainerRedirectsResponse, GetContainerResponse, GetContainerRevisionResponse, GetCreatorEditResponse, GetCreatorHistoryResponse, GetCreatorRedirectsResponse,
@@ -173,14 +173,11 @@ impl Client {
 }
 
 impl Api for Client {
-    fn create_container(&self, param_entity: models::ContainerEntity, param_editgroup_id: String, context: &Context) -> Box<Future<Item = CreateContainerResponse, Error = ApiError> + Send> {
-        // Query parameters
-        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
-
+    fn create_container(&self, param_editgroup_id: String, param_entity: models::ContainerEntity, context: &Context) -> Box<Future<Item = CreateContainerResponse, Error = ApiError> + Send> {
         let url = format!(
-            "{}/v0/container?{editgroup_id}",
+            "{}/v0/editgroup/{editgroup_id}/container",
             self.base_path,
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET)
         );
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
@@ -267,31 +264,10 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_container_batch(
-        &self,
-        param_entity_list: &Vec<models::ContainerEntity>,
-        param_autoaccept: Option<bool>,
-        param_editgroup_id: Option<String>,
-        param_description: Option<String>,
-        param_extra: Option<String>,
-        context: &Context,
-    ) -> Box<Future<Item = CreateContainerBatchResponse, Error = ApiError> + Send> {
-        // Query parameters
-        let query_autoaccept = param_autoaccept.map_or_else(String::new, |query| format!("autoaccept={autoaccept}&", autoaccept = query.to_string()));
-        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
-        let query_description = param_description.map_or_else(String::new, |query| format!("description={description}&", description = query.to_string()));
-        let query_extra = param_extra.map_or_else(String::new, |query| format!("extra={extra}&", extra = query.to_string()));
+    fn create_container_auto_batch(&self, param_auto_batch: models::ContainerAutoBatch, context: &Context) -> Box<Future<Item = CreateContainerAutoBatchResponse, Error = ApiError> + Send> {
+        let url = format!("{}/v0/editgroup/auto/container/batch", self.base_path);
 
-        let url = format!(
-            "{}/v0/container/batch?{autoaccept}{editgroup_id}{description}{extra}",
-            self.base_path,
-            autoaccept = utf8_percent_encode(&query_autoaccept, QUERY_ENCODE_SET),
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET),
-            description = utf8_percent_encode(&query_description, QUERY_ENCODE_SET),
-            extra = utf8_percent_encode(&query_extra, QUERY_ENCODE_SET)
-        );
-
-        let body = serde_json::to_string(&param_entity_list).expect("impossible to fail to serialize");
+        let body = serde_json::to_string(&param_auto_batch).expect("impossible to fail to serialize");
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Post, &url);
@@ -299,27 +275,27 @@ impl Api for Client {
 
         let request = request.body(&body);
 
-        custom_headers.set(ContentType(mimetypes::requests::CREATE_CONTAINER_BATCH.clone()));
+        custom_headers.set(ContentType(mimetypes::requests::CREATE_CONTAINER_AUTO_BATCH.clone()));
         context.x_span_id.as_ref().map(|header| custom_headers.set(XSpanId(header.clone())));
 
         let request = request.headers(custom_headers);
 
         // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
-        fn parse_response(mut response: hyper::client::response::Response) -> Result<CreateContainerBatchResponse, ApiError> {
+        fn parse_response(mut response: hyper::client::response::Response) -> Result<CreateContainerAutoBatchResponse, ApiError> {
             match response.status.to_u16() {
                 201 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
-                    let body = serde_json::from_str::<Vec<models::EntityEdit>>(&buf)?;
+                    let body = serde_json::from_str::<models::Editgroup>(&buf)?;
 
-                    Ok(CreateContainerBatchResponse::CreatedEntities(body))
+                    Ok(CreateContainerAutoBatchResponse::CreatedEditgroup(body))
                 }
                 400 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(CreateContainerBatchResponse::BadRequest(body))
+                    Ok(CreateContainerAutoBatchResponse::BadRequest(body))
                 }
                 401 => {
                     let mut buf = String::new();
@@ -331,7 +307,7 @@ impl Api for Client {
                         .get::<ResponseWwwAuthenticate>()
                         .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
 
-                    Ok(CreateContainerBatchResponse::NotAuthorized {
+                    Ok(CreateContainerAutoBatchResponse::NotAuthorized {
                         body: body,
                         www_authenticate: response_www_authenticate.0.clone(),
                     })
@@ -341,21 +317,21 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(CreateContainerBatchResponse::Forbidden(body))
+                    Ok(CreateContainerAutoBatchResponse::Forbidden(body))
                 }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(CreateContainerBatchResponse::NotFound(body))
+                    Ok(CreateContainerAutoBatchResponse::NotFound(body))
                 }
                 500 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(CreateContainerBatchResponse::GenericError(body))
+                    Ok(CreateContainerAutoBatchResponse::GenericError(body))
                 }
                 code => {
                     let mut buf = [0; 100];
@@ -375,15 +351,12 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_container(&self, param_ident: String, param_editgroup_id: String, context: &Context) -> Box<Future<Item = DeleteContainerResponse, Error = ApiError> + Send> {
-        // Query parameters
-        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
-
+    fn delete_container(&self, param_editgroup_id: String, param_ident: String, context: &Context) -> Box<Future<Item = DeleteContainerResponse, Error = ApiError> + Send> {
         let url = format!(
-            "{}/v0/container/{ident}?{editgroup_id}",
+            "{}/v0/editgroup/{editgroup_id}/container/{ident}",
             self.base_path,
-            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET)
         );
 
         let hyper_client = (self.hyper_client)();
@@ -465,10 +438,11 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_container_edit(&self, param_edit_id: String, context: &Context) -> Box<Future<Item = DeleteContainerEditResponse, Error = ApiError> + Send> {
+    fn delete_container_edit(&self, param_editgroup_id: String, param_edit_id: String, context: &Context) -> Box<Future<Item = DeleteContainerEditResponse, Error = ApiError> + Send> {
         let url = format!(
-            "{}/v0/container/edit/{edit_id}",
+            "{}/v0/editgroup/{editgroup_id}/container/edit/{edit_id}",
             self.base_path,
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET),
             edit_id = utf8_percent_encode(&param_edit_id.to_string(), PATH_SEGMENT_ENCODE_SET)
         );
 
@@ -975,19 +949,16 @@ impl Api for Client {
 
     fn update_container(
         &self,
+        param_editgroup_id: String,
         param_ident: String,
         param_entity: models::ContainerEntity,
-        param_editgroup_id: String,
         context: &Context,
     ) -> Box<Future<Item = UpdateContainerResponse, Error = ApiError> + Send> {
-        // Query parameters
-        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
-
         let url = format!(
-            "{}/v0/container/{ident}?{editgroup_id}",
+            "{}/v0/editgroup/{editgroup_id}/container/{ident}",
             self.base_path,
-            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET)
         );
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
@@ -1074,14 +1045,11 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_creator(&self, param_entity: models::CreatorEntity, param_editgroup_id: String, context: &Context) -> Box<Future<Item = CreateCreatorResponse, Error = ApiError> + Send> {
-        // Query parameters
-        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
-
+    fn create_creator(&self, param_editgroup_id: String, param_entity: models::CreatorEntity, context: &Context) -> Box<Future<Item = CreateCreatorResponse, Error = ApiError> + Send> {
         let url = format!(
-            "{}/v0/creator?{editgroup_id}",
+            "{}/v0/editgroup/{editgroup_id}/creator",
             self.base_path,
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET)
         );
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
@@ -1168,31 +1136,10 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_creator_batch(
-        &self,
-        param_entity_list: &Vec<models::CreatorEntity>,
-        param_autoaccept: Option<bool>,
-        param_editgroup_id: Option<String>,
-        param_description: Option<String>,
-        param_extra: Option<String>,
-        context: &Context,
-    ) -> Box<Future<Item = CreateCreatorBatchResponse, Error = ApiError> + Send> {
-        // Query parameters
-        let query_autoaccept = param_autoaccept.map_or_else(String::new, |query| format!("autoaccept={autoaccept}&", autoaccept = query.to_string()));
-        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
-        let query_description = param_description.map_or_else(String::new, |query| format!("description={description}&", description = query.to_string()));
-        let query_extra = param_extra.map_or_else(String::new, |query| format!("extra={extra}&", extra = query.to_string()));
+    fn create_creator_auto_batch(&self, param_auto_batch: models::CreatorAutoBatch, context: &Context) -> Box<Future<Item = CreateCreatorAutoBatchResponse, Error = ApiError> + Send> {
+        let url = format!("{}/v0/editgroup/auto/creator/batch", self.base_path);
 
-        let url = format!(
-            "{}/v0/creator/batch?{autoaccept}{editgroup_id}{description}{extra}",
-            self.base_path,
-            autoaccept = utf8_percent_encode(&query_autoaccept, QUERY_ENCODE_SET),
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET),
-            description = utf8_percent_encode(&query_description, QUERY_ENCODE_SET),
-            extra = utf8_percent_encode(&query_extra, QUERY_ENCODE_SET)
-        );
-
-        let body = serde_json::to_string(&param_entity_list).expect("impossible to fail to serialize");
+        let body = serde_json::to_string(&param_auto_batch).expect("impossible to fail to serialize");
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Post, &url);
@@ -1200,27 +1147,27 @@ impl Api for Client {
 
         let request = request.body(&body);
 
-        custom_headers.set(ContentType(mimetypes::requests::CREATE_CREATOR_BATCH.clone()));
+        custom_headers.set(ContentType(mimetypes::requests::CREATE_CREATOR_AUTO_BATCH.clone()));
         context.x_span_id.as_ref().map(|header| custom_headers.set(XSpanId(header.clone())));
 
         let request = request.headers(custom_headers);
 
         // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
-        fn parse_response(mut response: hyper::client::response::Response) -> Result<CreateCreatorBatchResponse, ApiError> {
+        fn parse_response(mut response: hyper::client::response::Response) -> Result<CreateCreatorAutoBatchResponse, ApiError> {
             match response.status.to_u16() {
                 201 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
-                    let body = serde_json::from_str::<Vec<models::EntityEdit>>(&buf)?;
+                    let body = serde_json::from_str::<models::Editgroup>(&buf)?;
 
-                    Ok(CreateCreatorBatchResponse::CreatedEntities(body))
+                    Ok(CreateCreatorAutoBatchResponse::CreatedEditgroup(body))
                 }
                 400 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(CreateCreatorBatchResponse::BadRequest(body))
+                    Ok(CreateCreatorAutoBatchResponse::BadRequest(body))
                 }
                 401 => {
                     let mut buf = String::new();
@@ -1232,7 +1179,7 @@ impl Api for Client {
                         .get::<ResponseWwwAuthenticate>()
                         .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
 
-                    Ok(CreateCreatorBatchResponse::NotAuthorized {
+                    Ok(CreateCreatorAutoBatchResponse::NotAuthorized {
                         body: body,
                         www_authenticate: response_www_authenticate.0.clone(),
                     })
@@ -1242,21 +1189,21 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(CreateCreatorBatchResponse::Forbidden(body))
+                    Ok(CreateCreatorAutoBatchResponse::Forbidden(body))
                 }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(CreateCreatorBatchResponse::NotFound(body))
+                    Ok(CreateCreatorAutoBatchResponse::NotFound(body))
                 }
                 500 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(CreateCreatorBatchResponse::GenericError(body))
+                    Ok(CreateCreatorAutoBatchResponse::GenericError(body))
                 }
                 code => {
                     let mut buf = [0; 100];
@@ -1276,15 +1223,12 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_creator(&self, param_ident: String, param_editgroup_id: String, context: &Context) -> Box<Future<Item = DeleteCreatorResponse, Error = ApiError> + Send> {
-        // Query parameters
-        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
-
+    fn delete_creator(&self, param_editgroup_id: String, param_ident: String, context: &Context) -> Box<Future<Item = DeleteCreatorResponse, Error = ApiError> + Send> {
         let url = format!(
-            "{}/v0/creator/{ident}?{editgroup_id}",
+            "{}/v0/editgroup/{editgroup_id}/creator/{ident}",
             self.base_path,
-            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET)
         );
 
         let hyper_client = (self.hyper_client)();
@@ -1366,10 +1310,11 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_creator_edit(&self, param_edit_id: String, context: &Context) -> Box<Future<Item = DeleteCreatorEditResponse, Error = ApiError> + Send> {
+    fn delete_creator_edit(&self, param_editgroup_id: String, param_edit_id: String, context: &Context) -> Box<Future<Item = DeleteCreatorEditResponse, Error = ApiError> + Send> {
         let url = format!(
-            "{}/v0/creator/edit/{edit_id}",
+            "{}/v0/editgroup/{editgroup_id}/creator/edit/{edit_id}",
             self.base_path,
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET),
             edit_id = utf8_percent_encode(&param_edit_id.to_string(), PATH_SEGMENT_ENCODE_SET)
         );
 
@@ -1944,19 +1889,16 @@ impl Api for Client {
 
     fn update_creator(
         &self,
+        param_editgroup_id: String,
         param_ident: String,
         param_entity: models::CreatorEntity,
-        param_editgroup_id: String,
         context: &Context,
     ) -> Box<Future<Item = UpdateCreatorResponse, Error = ApiError> + Send> {
-        // Query parameters
-        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
-
         let url = format!(
-            "{}/v0/creator/{ident}?{editgroup_id}",
+            "{}/v0/editgroup/{editgroup_id}/creator/{ident}",
             self.base_path,
-            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET)
         );
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
@@ -3281,11 +3223,12 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_file(&self, param_entity: models::FileEntity, param_editgroup_id: String, context: &Context) -> Box<Future<Item = CreateFileResponse, Error = ApiError> + Send> {
-        // Query parameters
-        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
-
-        let url = format!("{}/v0/file?{editgroup_id}", self.base_path, editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET));
+    fn create_file(&self, param_editgroup_id: String, param_entity: models::FileEntity, context: &Context) -> Box<Future<Item = CreateFileResponse, Error = ApiError> + Send> {
+        let url = format!(
+            "{}/v0/editgroup/{editgroup_id}/file",
+            self.base_path,
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET)
+        );
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
 
@@ -3371,31 +3314,10 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_file_batch(
-        &self,
-        param_entity_list: &Vec<models::FileEntity>,
-        param_autoaccept: Option<bool>,
-        param_editgroup_id: Option<String>,
-        param_description: Option<String>,
-        param_extra: Option<String>,
-        context: &Context,
-    ) -> Box<Future<Item = CreateFileBatchResponse, Error = ApiError> + Send> {
-        // Query parameters
-        let query_autoaccept = param_autoaccept.map_or_else(String::new, |query| format!("autoaccept={autoaccept}&", autoaccept = query.to_string()));
-        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
-        let query_description = param_description.map_or_else(String::new, |query| format!("description={description}&", description = query.to_string()));
-        let query_extra = param_extra.map_or_else(String::new, |query| format!("extra={extra}&", extra = query.to_string()));
+    fn create_file_auto_batch(&self, param_auto_batch: models::FileAutoBatch, context: &Context) -> Box<Future<Item = CreateFileAutoBatchResponse, Error = ApiError> + Send> {
+        let url = format!("{}/v0/editgroup/auto/file/batch", self.base_path);
 
-        let url = format!(
-            "{}/v0/file/batch?{autoaccept}{editgroup_id}{description}{extra}",
-            self.base_path,
-            autoaccept = utf8_percent_encode(&query_autoaccept, QUERY_ENCODE_SET),
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET),
-            description = utf8_percent_encode(&query_description, QUERY_ENCODE_SET),
-            extra = utf8_percent_encode(&query_extra, QUERY_ENCODE_SET)
-        );
-
-        let body = serde_json::to_string(&param_entity_list).expect("impossible to fail to serialize");
+        let body = serde_json::to_string(&param_auto_batch).expect("impossible to fail to serialize");
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Post, &url);
@@ -3403,27 +3325,27 @@ impl Api for Client {
 
         let request = request.body(&body);
 
-        custom_headers.set(ContentType(mimetypes::requests::CREATE_FILE_BATCH.clone()));
+        custom_headers.set(ContentType(mimetypes::requests::CREATE_FILE_AUTO_BATCH.clone()));
         context.x_span_id.as_ref().map(|header| custom_headers.set(XSpanId(header.clone())));
 
         let request = request.headers(custom_headers);
 
         // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
-        fn parse_response(mut response: hyper::client::response::Response) -> Result<CreateFileBatchResponse, ApiError> {
+        fn parse_response(mut response: hyper::client::response::Response) -> Result<CreateFileAutoBatchResponse, ApiError> {
             match response.status.to_u16() {
                 201 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
-                    let body = serde_json::from_str::<Vec<models::EntityEdit>>(&buf)?;
+                    let body = serde_json::from_str::<models::Editgroup>(&buf)?;
 
-                    Ok(CreateFileBatchResponse::CreatedEntities(body))
+                    Ok(CreateFileAutoBatchResponse::CreatedEditgroup(body))
                 }
                 400 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(CreateFileBatchResponse::BadRequest(body))
+                    Ok(CreateFileAutoBatchResponse::BadRequest(body))
                 }
                 401 => {
                     let mut buf = String::new();
@@ -3435,7 +3357,7 @@ impl Api for Client {
                         .get::<ResponseWwwAuthenticate>()
                         .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
 
-                    Ok(CreateFileBatchResponse::NotAuthorized {
+                    Ok(CreateFileAutoBatchResponse::NotAuthorized {
                         body: body,
                         www_authenticate: response_www_authenticate.0.clone(),
                     })
@@ -3445,21 +3367,21 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(CreateFileBatchResponse::Forbidden(body))
+                    Ok(CreateFileAutoBatchResponse::Forbidden(body))
                 }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(CreateFileBatchResponse::NotFound(body))
+                    Ok(CreateFileAutoBatchResponse::NotFound(body))
                 }
                 500 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(CreateFileBatchResponse::GenericError(body))
+                    Ok(CreateFileAutoBatchResponse::GenericError(body))
                 }
                 code => {
                     let mut buf = [0; 100];
@@ -3479,15 +3401,12 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_file(&self, param_ident: String, param_editgroup_id: String, context: &Context) -> Box<Future<Item = DeleteFileResponse, Error = ApiError> + Send> {
-        // Query parameters
-        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
-
+    fn delete_file(&self, param_editgroup_id: String, param_ident: String, context: &Context) -> Box<Future<Item = DeleteFileResponse, Error = ApiError> + Send> {
         let url = format!(
-            "{}/v0/file/{ident}?{editgroup_id}",
+            "{}/v0/editgroup/{editgroup_id}/file/{ident}",
             self.base_path,
-            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET)
         );
 
         let hyper_client = (self.hyper_client)();
@@ -3569,10 +3488,11 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_file_edit(&self, param_edit_id: String, context: &Context) -> Box<Future<Item = DeleteFileEditResponse, Error = ApiError> + Send> {
+    fn delete_file_edit(&self, param_editgroup_id: String, param_edit_id: String, context: &Context) -> Box<Future<Item = DeleteFileEditResponse, Error = ApiError> + Send> {
         let url = format!(
-            "{}/v0/file/edit/{edit_id}",
+            "{}/v0/editgroup/{editgroup_id}/file/edit/{edit_id}",
             self.base_path,
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET),
             edit_id = utf8_percent_encode(&param_edit_id.to_string(), PATH_SEGMENT_ENCODE_SET)
         );
 
@@ -4080,15 +4000,12 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn update_file(&self, param_ident: String, param_entity: models::FileEntity, param_editgroup_id: String, context: &Context) -> Box<Future<Item = UpdateFileResponse, Error = ApiError> + Send> {
-        // Query parameters
-        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
-
+    fn update_file(&self, param_editgroup_id: String, param_ident: String, param_entity: models::FileEntity, context: &Context) -> Box<Future<Item = UpdateFileResponse, Error = ApiError> + Send> {
         let url = format!(
-            "{}/v0/file/{ident}?{editgroup_id}",
+            "{}/v0/editgroup/{editgroup_id}/file/{ident}",
             self.base_path,
-            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET)
         );
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
@@ -4175,14 +4092,11 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_fileset(&self, param_entity: models::FilesetEntity, param_editgroup_id: String, context: &Context) -> Box<Future<Item = CreateFilesetResponse, Error = ApiError> + Send> {
-        // Query parameters
-        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
-
+    fn create_fileset(&self, param_editgroup_id: String, param_entity: models::FilesetEntity, context: &Context) -> Box<Future<Item = CreateFilesetResponse, Error = ApiError> + Send> {
         let url = format!(
-            "{}/v0/fileset?{editgroup_id}",
+            "{}/v0/editgroup/{editgroup_id}/fileset",
             self.base_path,
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET)
         );
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
@@ -4269,31 +4183,10 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_fileset_batch(
-        &self,
-        param_entity_list: &Vec<models::FilesetEntity>,
-        param_autoaccept: Option<bool>,
-        param_editgroup_id: Option<String>,
-        param_description: Option<String>,
-        param_extra: Option<String>,
-        context: &Context,
-    ) -> Box<Future<Item = CreateFilesetBatchResponse, Error = ApiError> + Send> {
-        // Query parameters
-        let query_autoaccept = param_autoaccept.map_or_else(String::new, |query| format!("autoaccept={autoaccept}&", autoaccept = query.to_string()));
-        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
-        let query_description = param_description.map_or_else(String::new, |query| format!("description={description}&", description = query.to_string()));
-        let query_extra = param_extra.map_or_else(String::new, |query| format!("extra={extra}&", extra = query.to_string()));
+    fn create_fileset_auto_batch(&self, param_auto_batch: models::FilesetAutoBatch, context: &Context) -> Box<Future<Item = CreateFilesetAutoBatchResponse, Error = ApiError> + Send> {
+        let url = format!("{}/v0/editgroup/auto/fileset/batch", self.base_path);
 
-        let url = format!(
-            "{}/v0/fileset/batch?{autoaccept}{editgroup_id}{description}{extra}",
-            self.base_path,
-            autoaccept = utf8_percent_encode(&query_autoaccept, QUERY_ENCODE_SET),
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET),
-            description = utf8_percent_encode(&query_description, QUERY_ENCODE_SET),
-            extra = utf8_percent_encode(&query_extra, QUERY_ENCODE_SET)
-        );
-
-        let body = serde_json::to_string(&param_entity_list).expect("impossible to fail to serialize");
+        let body = serde_json::to_string(&param_auto_batch).expect("impossible to fail to serialize");
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Post, &url);
@@ -4301,27 +4194,27 @@ impl Api for Client {
 
         let request = request.body(&body);
 
-        custom_headers.set(ContentType(mimetypes::requests::CREATE_FILESET_BATCH.clone()));
+        custom_headers.set(ContentType(mimetypes::requests::CREATE_FILESET_AUTO_BATCH.clone()));
         context.x_span_id.as_ref().map(|header| custom_headers.set(XSpanId(header.clone())));
 
         let request = request.headers(custom_headers);
 
         // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
-        fn parse_response(mut response: hyper::client::response::Response) -> Result<CreateFilesetBatchResponse, ApiError> {
+        fn parse_response(mut response: hyper::client::response::Response) -> Result<CreateFilesetAutoBatchResponse, ApiError> {
             match response.status.to_u16() {
                 201 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
-                    let body = serde_json::from_str::<Vec<models::EntityEdit>>(&buf)?;
+                    let body = serde_json::from_str::<models::Editgroup>(&buf)?;
 
-                    Ok(CreateFilesetBatchResponse::CreatedEntities(body))
+                    Ok(CreateFilesetAutoBatchResponse::CreatedEditgroup(body))
                 }
                 400 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(CreateFilesetBatchResponse::BadRequest(body))
+                    Ok(CreateFilesetAutoBatchResponse::BadRequest(body))
                 }
                 401 => {
                     let mut buf = String::new();
@@ -4333,7 +4226,7 @@ impl Api for Client {
                         .get::<ResponseWwwAuthenticate>()
                         .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
 
-                    Ok(CreateFilesetBatchResponse::NotAuthorized {
+                    Ok(CreateFilesetAutoBatchResponse::NotAuthorized {
                         body: body,
                         www_authenticate: response_www_authenticate.0.clone(),
                     })
@@ -4343,21 +4236,21 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(CreateFilesetBatchResponse::Forbidden(body))
+                    Ok(CreateFilesetAutoBatchResponse::Forbidden(body))
                 }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(CreateFilesetBatchResponse::NotFound(body))
+                    Ok(CreateFilesetAutoBatchResponse::NotFound(body))
                 }
                 500 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(CreateFilesetBatchResponse::GenericError(body))
+                    Ok(CreateFilesetAutoBatchResponse::GenericError(body))
                 }
                 code => {
                     let mut buf = [0; 100];
@@ -4377,15 +4270,12 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_fileset(&self, param_ident: String, param_editgroup_id: String, context: &Context) -> Box<Future<Item = DeleteFilesetResponse, Error = ApiError> + Send> {
-        // Query parameters
-        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
-
+    fn delete_fileset(&self, param_editgroup_id: String, param_ident: String, context: &Context) -> Box<Future<Item = DeleteFilesetResponse, Error = ApiError> + Send> {
         let url = format!(
-            "{}/v0/fileset/{ident}?{editgroup_id}",
+            "{}/v0/editgroup/{editgroup_id}/fileset/{ident}",
             self.base_path,
-            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET)
         );
 
         let hyper_client = (self.hyper_client)();
@@ -4467,10 +4357,11 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_fileset_edit(&self, param_edit_id: String, context: &Context) -> Box<Future<Item = DeleteFilesetEditResponse, Error = ApiError> + Send> {
+    fn delete_fileset_edit(&self, param_editgroup_id: String, param_edit_id: String, context: &Context) -> Box<Future<Item = DeleteFilesetEditResponse, Error = ApiError> + Send> {
         let url = format!(
-            "{}/v0/fileset/edit/{edit_id}",
+            "{}/v0/editgroup/{editgroup_id}/fileset/edit/{edit_id}",
             self.base_path,
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET),
             edit_id = utf8_percent_encode(&param_edit_id.to_string(), PATH_SEGMENT_ENCODE_SET)
         );
 
@@ -4897,19 +4788,16 @@ impl Api for Client {
 
     fn update_fileset(
         &self,
+        param_editgroup_id: String,
         param_ident: String,
         param_entity: models::FilesetEntity,
-        param_editgroup_id: String,
         context: &Context,
     ) -> Box<Future<Item = UpdateFilesetResponse, Error = ApiError> + Send> {
-        // Query parameters
-        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
-
         let url = format!(
-            "{}/v0/fileset/{ident}?{editgroup_id}",
+            "{}/v0/editgroup/{editgroup_id}/fileset/{ident}",
             self.base_path,
-            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET)
         );
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
@@ -4996,14 +4884,11 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_release(&self, param_entity: models::ReleaseEntity, param_editgroup_id: String, context: &Context) -> Box<Future<Item = CreateReleaseResponse, Error = ApiError> + Send> {
-        // Query parameters
-        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
-
+    fn create_release(&self, param_editgroup_id: String, param_entity: models::ReleaseEntity, context: &Context) -> Box<Future<Item = CreateReleaseResponse, Error = ApiError> + Send> {
         let url = format!(
-            "{}/v0/release?{editgroup_id}",
+            "{}/v0/editgroup/{editgroup_id}/release",
             self.base_path,
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET)
         );
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
@@ -5090,31 +4975,10 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_release_batch(
-        &self,
-        param_entity_list: &Vec<models::ReleaseEntity>,
-        param_autoaccept: Option<bool>,
-        param_editgroup_id: Option<String>,
-        param_description: Option<String>,
-        param_extra: Option<String>,
-        context: &Context,
-    ) -> Box<Future<Item = CreateReleaseBatchResponse, Error = ApiError> + Send> {
-        // Query parameters
-        let query_autoaccept = param_autoaccept.map_or_else(String::new, |query| format!("autoaccept={autoaccept}&", autoaccept = query.to_string()));
-        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
-        let query_description = param_description.map_or_else(String::new, |query| format!("description={description}&", description = query.to_string()));
-        let query_extra = param_extra.map_or_else(String::new, |query| format!("extra={extra}&", extra = query.to_string()));
+    fn create_release_auto_batch(&self, param_auto_batch: models::ReleaseAutoBatch, context: &Context) -> Box<Future<Item = CreateReleaseAutoBatchResponse, Error = ApiError> + Send> {
+        let url = format!("{}/v0/editgroup/auto/release/batch", self.base_path);
 
-        let url = format!(
-            "{}/v0/release/batch?{autoaccept}{editgroup_id}{description}{extra}",
-            self.base_path,
-            autoaccept = utf8_percent_encode(&query_autoaccept, QUERY_ENCODE_SET),
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET),
-            description = utf8_percent_encode(&query_description, QUERY_ENCODE_SET),
-            extra = utf8_percent_encode(&query_extra, QUERY_ENCODE_SET)
-        );
-
-        let body = serde_json::to_string(&param_entity_list).expect("impossible to fail to serialize");
+        let body = serde_json::to_string(&param_auto_batch).expect("impossible to fail to serialize");
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Post, &url);
@@ -5122,27 +4986,27 @@ impl Api for Client {
 
         let request = request.body(&body);
 
-        custom_headers.set(ContentType(mimetypes::requests::CREATE_RELEASE_BATCH.clone()));
+        custom_headers.set(ContentType(mimetypes::requests::CREATE_RELEASE_AUTO_BATCH.clone()));
         context.x_span_id.as_ref().map(|header| custom_headers.set(XSpanId(header.clone())));
 
         let request = request.headers(custom_headers);
 
         // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
-        fn parse_response(mut response: hyper::client::response::Response) -> Result<CreateReleaseBatchResponse, ApiError> {
+        fn parse_response(mut response: hyper::client::response::Response) -> Result<CreateReleaseAutoBatchResponse, ApiError> {
             match response.status.to_u16() {
                 201 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
-                    let body = serde_json::from_str::<Vec<models::EntityEdit>>(&buf)?;
+                    let body = serde_json::from_str::<models::Editgroup>(&buf)?;
 
-                    Ok(CreateReleaseBatchResponse::CreatedEntities(body))
+                    Ok(CreateReleaseAutoBatchResponse::CreatedEditgroup(body))
                 }
                 400 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(CreateReleaseBatchResponse::BadRequest(body))
+                    Ok(CreateReleaseAutoBatchResponse::BadRequest(body))
                 }
                 401 => {
                     let mut buf = String::new();
@@ -5154,7 +5018,7 @@ impl Api for Client {
                         .get::<ResponseWwwAuthenticate>()
                         .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
 
-                    Ok(CreateReleaseBatchResponse::NotAuthorized {
+                    Ok(CreateReleaseAutoBatchResponse::NotAuthorized {
                         body: body,
                         www_authenticate: response_www_authenticate.0.clone(),
                     })
@@ -5164,21 +5028,21 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(CreateReleaseBatchResponse::Forbidden(body))
+                    Ok(CreateReleaseAutoBatchResponse::Forbidden(body))
                 }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(CreateReleaseBatchResponse::NotFound(body))
+                    Ok(CreateReleaseAutoBatchResponse::NotFound(body))
                 }
                 500 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(CreateReleaseBatchResponse::GenericError(body))
+                    Ok(CreateReleaseAutoBatchResponse::GenericError(body))
                 }
                 code => {
                     let mut buf = [0; 100];
@@ -5198,11 +5062,12 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_work(&self, param_entity: models::WorkEntity, param_editgroup_id: String, context: &Context) -> Box<Future<Item = CreateWorkResponse, Error = ApiError> + Send> {
-        // Query parameters
-        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
-
-        let url = format!("{}/v0/work?{editgroup_id}", self.base_path, editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET));
+    fn create_work(&self, param_editgroup_id: String, param_entity: models::WorkEntity, context: &Context) -> Box<Future<Item = CreateWorkResponse, Error = ApiError> + Send> {
+        let url = format!(
+            "{}/v0/editgroup/{editgroup_id}/work",
+            self.base_path,
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET)
+        );
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
 
@@ -5288,15 +5153,12 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_release(&self, param_ident: String, param_editgroup_id: String, context: &Context) -> Box<Future<Item = DeleteReleaseResponse, Error = ApiError> + Send> {
-        // Query parameters
-        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
-
+    fn delete_release(&self, param_editgroup_id: String, param_ident: String, context: &Context) -> Box<Future<Item = DeleteReleaseResponse, Error = ApiError> + Send> {
         let url = format!(
-            "{}/v0/release/{ident}?{editgroup_id}",
+            "{}/v0/editgroup/{editgroup_id}/release/{ident}",
             self.base_path,
-            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET)
         );
 
         let hyper_client = (self.hyper_client)();
@@ -5378,10 +5240,11 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_release_edit(&self, param_edit_id: String, context: &Context) -> Box<Future<Item = DeleteReleaseEditResponse, Error = ApiError> + Send> {
+    fn delete_release_edit(&self, param_editgroup_id: String, param_edit_id: String, context: &Context) -> Box<Future<Item = DeleteReleaseEditResponse, Error = ApiError> + Send> {
         let url = format!(
-            "{}/v0/release/edit/{edit_id}",
+            "{}/v0/editgroup/{editgroup_id}/release/edit/{edit_id}",
             self.base_path,
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET),
             edit_id = utf8_percent_encode(&param_edit_id.to_string(), PATH_SEGMENT_ENCODE_SET)
         );
 
@@ -6116,19 +5979,16 @@ impl Api for Client {
 
     fn update_release(
         &self,
+        param_editgroup_id: String,
         param_ident: String,
         param_entity: models::ReleaseEntity,
-        param_editgroup_id: String,
         context: &Context,
     ) -> Box<Future<Item = UpdateReleaseResponse, Error = ApiError> + Send> {
-        // Query parameters
-        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
-
         let url = format!(
-            "{}/v0/release/{ident}?{editgroup_id}",
+            "{}/v0/editgroup/{editgroup_id}/release/{ident}",
             self.base_path,
-            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET)
         );
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
@@ -6215,14 +6075,11 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_webcapture(&self, param_entity: models::WebcaptureEntity, param_editgroup_id: String, context: &Context) -> Box<Future<Item = CreateWebcaptureResponse, Error = ApiError> + Send> {
-        // Query parameters
-        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
-
+    fn create_webcapture(&self, param_editgroup_id: String, param_entity: models::WebcaptureEntity, context: &Context) -> Box<Future<Item = CreateWebcaptureResponse, Error = ApiError> + Send> {
         let url = format!(
-            "{}/v0/webcapture?{editgroup_id}",
+            "{}/v0/editgroup/{editgroup_id}/webcapture",
             self.base_path,
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET)
         );
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
@@ -6309,31 +6166,10 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_webcapture_batch(
-        &self,
-        param_entity_list: &Vec<models::WebcaptureEntity>,
-        param_autoaccept: Option<bool>,
-        param_editgroup_id: Option<String>,
-        param_description: Option<String>,
-        param_extra: Option<String>,
-        context: &Context,
-    ) -> Box<Future<Item = CreateWebcaptureBatchResponse, Error = ApiError> + Send> {
-        // Query parameters
-        let query_autoaccept = param_autoaccept.map_or_else(String::new, |query| format!("autoaccept={autoaccept}&", autoaccept = query.to_string()));
-        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
-        let query_description = param_description.map_or_else(String::new, |query| format!("description={description}&", description = query.to_string()));
-        let query_extra = param_extra.map_or_else(String::new, |query| format!("extra={extra}&", extra = query.to_string()));
+    fn create_webcapture_auto_batch(&self, param_auto_batch: models::WebcaptureAutoBatch, context: &Context) -> Box<Future<Item = CreateWebcaptureAutoBatchResponse, Error = ApiError> + Send> {
+        let url = format!("{}/v0/editgroup/auto/webcapture/batch", self.base_path);
 
-        let url = format!(
-            "{}/v0/webcapture/batch?{autoaccept}{editgroup_id}{description}{extra}",
-            self.base_path,
-            autoaccept = utf8_percent_encode(&query_autoaccept, QUERY_ENCODE_SET),
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET),
-            description = utf8_percent_encode(&query_description, QUERY_ENCODE_SET),
-            extra = utf8_percent_encode(&query_extra, QUERY_ENCODE_SET)
-        );
-
-        let body = serde_json::to_string(&param_entity_list).expect("impossible to fail to serialize");
+        let body = serde_json::to_string(&param_auto_batch).expect("impossible to fail to serialize");
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Post, &url);
@@ -6341,27 +6177,27 @@ impl Api for Client {
 
         let request = request.body(&body);
 
-        custom_headers.set(ContentType(mimetypes::requests::CREATE_WEBCAPTURE_BATCH.clone()));
+        custom_headers.set(ContentType(mimetypes::requests::CREATE_WEBCAPTURE_AUTO_BATCH.clone()));
         context.x_span_id.as_ref().map(|header| custom_headers.set(XSpanId(header.clone())));
 
         let request = request.headers(custom_headers);
 
         // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
-        fn parse_response(mut response: hyper::client::response::Response) -> Result<CreateWebcaptureBatchResponse, ApiError> {
+        fn parse_response(mut response: hyper::client::response::Response) -> Result<CreateWebcaptureAutoBatchResponse, ApiError> {
             match response.status.to_u16() {
                 201 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
-                    let body = serde_json::from_str::<Vec<models::EntityEdit>>(&buf)?;
+                    let body = serde_json::from_str::<models::Editgroup>(&buf)?;
 
-                    Ok(CreateWebcaptureBatchResponse::CreatedEntities(body))
+                    Ok(CreateWebcaptureAutoBatchResponse::CreatedEditgroup(body))
                 }
                 400 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(CreateWebcaptureBatchResponse::BadRequest(body))
+                    Ok(CreateWebcaptureAutoBatchResponse::BadRequest(body))
                 }
                 401 => {
                     let mut buf = String::new();
@@ -6373,7 +6209,7 @@ impl Api for Client {
                         .get::<ResponseWwwAuthenticate>()
                         .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
 
-                    Ok(CreateWebcaptureBatchResponse::NotAuthorized {
+                    Ok(CreateWebcaptureAutoBatchResponse::NotAuthorized {
                         body: body,
                         www_authenticate: response_www_authenticate.0.clone(),
                     })
@@ -6383,21 +6219,21 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(CreateWebcaptureBatchResponse::Forbidden(body))
+                    Ok(CreateWebcaptureAutoBatchResponse::Forbidden(body))
                 }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(CreateWebcaptureBatchResponse::NotFound(body))
+                    Ok(CreateWebcaptureAutoBatchResponse::NotFound(body))
                 }
                 500 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(CreateWebcaptureBatchResponse::GenericError(body))
+                    Ok(CreateWebcaptureAutoBatchResponse::GenericError(body))
                 }
                 code => {
                     let mut buf = [0; 100];
@@ -6417,15 +6253,12 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_webcapture(&self, param_ident: String, param_editgroup_id: String, context: &Context) -> Box<Future<Item = DeleteWebcaptureResponse, Error = ApiError> + Send> {
-        // Query parameters
-        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
-
+    fn delete_webcapture(&self, param_editgroup_id: String, param_ident: String, context: &Context) -> Box<Future<Item = DeleteWebcaptureResponse, Error = ApiError> + Send> {
         let url = format!(
-            "{}/v0/webcapture/{ident}?{editgroup_id}",
+            "{}/v0/editgroup/{editgroup_id}/webcapture/{ident}",
             self.base_path,
-            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET)
         );
 
         let hyper_client = (self.hyper_client)();
@@ -6507,10 +6340,11 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_webcapture_edit(&self, param_edit_id: String, context: &Context) -> Box<Future<Item = DeleteWebcaptureEditResponse, Error = ApiError> + Send> {
+    fn delete_webcapture_edit(&self, param_editgroup_id: String, param_edit_id: String, context: &Context) -> Box<Future<Item = DeleteWebcaptureEditResponse, Error = ApiError> + Send> {
         let url = format!(
-            "{}/v0/webcapture/edit/{edit_id}",
+            "{}/v0/editgroup/{editgroup_id}/webcapture/edit/{edit_id}",
             self.base_path,
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET),
             edit_id = utf8_percent_encode(&param_edit_id.to_string(), PATH_SEGMENT_ENCODE_SET)
         );
 
@@ -6937,19 +6771,16 @@ impl Api for Client {
 
     fn update_webcapture(
         &self,
+        param_editgroup_id: String,
         param_ident: String,
         param_entity: models::WebcaptureEntity,
-        param_editgroup_id: String,
         context: &Context,
     ) -> Box<Future<Item = UpdateWebcaptureResponse, Error = ApiError> + Send> {
-        // Query parameters
-        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
-
         let url = format!(
-            "{}/v0/webcapture/{ident}?{editgroup_id}",
+            "{}/v0/editgroup/{editgroup_id}/webcapture/{ident}",
             self.base_path,
-            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET)
         );
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");
@@ -7036,31 +6867,10 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn create_work_batch(
-        &self,
-        param_entity_list: &Vec<models::WorkEntity>,
-        param_autoaccept: Option<bool>,
-        param_editgroup_id: Option<String>,
-        param_description: Option<String>,
-        param_extra: Option<String>,
-        context: &Context,
-    ) -> Box<Future<Item = CreateWorkBatchResponse, Error = ApiError> + Send> {
-        // Query parameters
-        let query_autoaccept = param_autoaccept.map_or_else(String::new, |query| format!("autoaccept={autoaccept}&", autoaccept = query.to_string()));
-        let query_editgroup_id = param_editgroup_id.map_or_else(String::new, |query| format!("editgroup_id={editgroup_id}&", editgroup_id = query.to_string()));
-        let query_description = param_description.map_or_else(String::new, |query| format!("description={description}&", description = query.to_string()));
-        let query_extra = param_extra.map_or_else(String::new, |query| format!("extra={extra}&", extra = query.to_string()));
+    fn create_work_auto_batch(&self, param_auto_batch: models::WorkAutoBatch, context: &Context) -> Box<Future<Item = CreateWorkAutoBatchResponse, Error = ApiError> + Send> {
+        let url = format!("{}/v0/editgroup/auto/work/batch", self.base_path);
 
-        let url = format!(
-            "{}/v0/work/batch?{autoaccept}{editgroup_id}{description}{extra}",
-            self.base_path,
-            autoaccept = utf8_percent_encode(&query_autoaccept, QUERY_ENCODE_SET),
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET),
-            description = utf8_percent_encode(&query_description, QUERY_ENCODE_SET),
-            extra = utf8_percent_encode(&query_extra, QUERY_ENCODE_SET)
-        );
-
-        let body = serde_json::to_string(&param_entity_list).expect("impossible to fail to serialize");
+        let body = serde_json::to_string(&param_auto_batch).expect("impossible to fail to serialize");
 
         let hyper_client = (self.hyper_client)();
         let request = hyper_client.request(hyper::method::Method::Post, &url);
@@ -7068,27 +6878,27 @@ impl Api for Client {
 
         let request = request.body(&body);
 
-        custom_headers.set(ContentType(mimetypes::requests::CREATE_WORK_BATCH.clone()));
+        custom_headers.set(ContentType(mimetypes::requests::CREATE_WORK_AUTO_BATCH.clone()));
         context.x_span_id.as_ref().map(|header| custom_headers.set(XSpanId(header.clone())));
 
         let request = request.headers(custom_headers);
 
         // Helper function to provide a code block to use `?` in (to be replaced by the `catch` block when it exists).
-        fn parse_response(mut response: hyper::client::response::Response) -> Result<CreateWorkBatchResponse, ApiError> {
+        fn parse_response(mut response: hyper::client::response::Response) -> Result<CreateWorkAutoBatchResponse, ApiError> {
             match response.status.to_u16() {
                 201 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
-                    let body = serde_json::from_str::<Vec<models::EntityEdit>>(&buf)?;
+                    let body = serde_json::from_str::<models::Editgroup>(&buf)?;
 
-                    Ok(CreateWorkBatchResponse::CreatedEntities(body))
+                    Ok(CreateWorkAutoBatchResponse::CreatedEditgroup(body))
                 }
                 400 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(CreateWorkBatchResponse::BadRequest(body))
+                    Ok(CreateWorkAutoBatchResponse::BadRequest(body))
                 }
                 401 => {
                     let mut buf = String::new();
@@ -7100,7 +6910,7 @@ impl Api for Client {
                         .get::<ResponseWwwAuthenticate>()
                         .ok_or_else(|| "Required response header WWW_Authenticate for response 401 was not found.")?;
 
-                    Ok(CreateWorkBatchResponse::NotAuthorized {
+                    Ok(CreateWorkAutoBatchResponse::NotAuthorized {
                         body: body,
                         www_authenticate: response_www_authenticate.0.clone(),
                     })
@@ -7110,21 +6920,21 @@ impl Api for Client {
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(CreateWorkBatchResponse::Forbidden(body))
+                    Ok(CreateWorkAutoBatchResponse::Forbidden(body))
                 }
                 404 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(CreateWorkBatchResponse::NotFound(body))
+                    Ok(CreateWorkAutoBatchResponse::NotFound(body))
                 }
                 500 => {
                     let mut buf = String::new();
                     response.read_to_string(&mut buf).map_err(|e| ApiError(format!("Response was not valid UTF8: {}", e)))?;
                     let body = serde_json::from_str::<models::ErrorResponse>(&buf)?;
 
-                    Ok(CreateWorkBatchResponse::GenericError(body))
+                    Ok(CreateWorkAutoBatchResponse::GenericError(body))
                 }
                 code => {
                     let mut buf = [0; 100];
@@ -7144,15 +6954,12 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_work(&self, param_ident: String, param_editgroup_id: String, context: &Context) -> Box<Future<Item = DeleteWorkResponse, Error = ApiError> + Send> {
-        // Query parameters
-        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
-
+    fn delete_work(&self, param_editgroup_id: String, param_ident: String, context: &Context) -> Box<Future<Item = DeleteWorkResponse, Error = ApiError> + Send> {
         let url = format!(
-            "{}/v0/work/{ident}?{editgroup_id}",
+            "{}/v0/editgroup/{editgroup_id}/work/{ident}",
             self.base_path,
-            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET)
         );
 
         let hyper_client = (self.hyper_client)();
@@ -7234,10 +7041,11 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn delete_work_edit(&self, param_edit_id: String, context: &Context) -> Box<Future<Item = DeleteWorkEditResponse, Error = ApiError> + Send> {
+    fn delete_work_edit(&self, param_editgroup_id: String, param_edit_id: String, context: &Context) -> Box<Future<Item = DeleteWorkEditResponse, Error = ApiError> + Send> {
         let url = format!(
-            "{}/v0/work/edit/{edit_id}",
+            "{}/v0/editgroup/{editgroup_id}/work/edit/{edit_id}",
             self.base_path,
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET),
             edit_id = utf8_percent_encode(&param_edit_id.to_string(), PATH_SEGMENT_ENCODE_SET)
         );
 
@@ -7730,15 +7538,12 @@ impl Api for Client {
         Box::new(futures::done(result))
     }
 
-    fn update_work(&self, param_ident: String, param_entity: models::WorkEntity, param_editgroup_id: String, context: &Context) -> Box<Future<Item = UpdateWorkResponse, Error = ApiError> + Send> {
-        // Query parameters
-        let query_editgroup_id = format!("editgroup_id={editgroup_id}&", editgroup_id = param_editgroup_id.to_string());
-
+    fn update_work(&self, param_editgroup_id: String, param_ident: String, param_entity: models::WorkEntity, context: &Context) -> Box<Future<Item = UpdateWorkResponse, Error = ApiError> + Send> {
         let url = format!(
-            "{}/v0/work/{ident}?{editgroup_id}",
+            "{}/v0/editgroup/{editgroup_id}/work/{ident}",
             self.base_path,
-            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET),
-            editgroup_id = utf8_percent_encode(&query_editgroup_id, QUERY_ENCODE_SET)
+            editgroup_id = utf8_percent_encode(&param_editgroup_id.to_string(), PATH_SEGMENT_ENCODE_SET),
+            ident = utf8_percent_encode(&param_ident.to_string(), PATH_SEGMENT_ENCODE_SET)
         );
 
         let body = serde_json::to_string(&param_entity).expect("impossible to fail to serialize");

@@ -78,6 +78,24 @@ impl ChangelogEntry {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ContainerAutoBatch {
+    #[serde(rename = "editgroup")]
+    pub editgroup: models::Editgroup,
+
+    #[serde(rename = "entity_list")]
+    pub entity_list: Vec<models::ContainerEntity>,
+}
+
+impl ContainerAutoBatch {
+    pub fn new(editgroup: models::Editgroup, entity_list: Vec<models::ContainerEntity>) -> ContainerAutoBatch {
+        ContainerAutoBatch {
+            editgroup: editgroup,
+            entity_list: entity_list,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ContainerEntity {
     #[serde(rename = "wikidata_qid")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -144,6 +162,24 @@ impl ContainerEntity {
             revision: None,
             ident: None,
             state: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CreatorAutoBatch {
+    #[serde(rename = "editgroup")]
+    pub editgroup: models::Editgroup,
+
+    #[serde(rename = "entity_list")]
+    pub entity_list: Vec<models::CreatorEntity>,
+}
+
+impl CreatorAutoBatch {
+    pub fn new(editgroup: models::Editgroup, entity_list: Vec<models::CreatorEntity>) -> CreatorAutoBatch {
+        CreatorAutoBatch {
+            editgroup: editgroup,
+            entity_list: entity_list,
         }
     }
 }
@@ -496,6 +532,24 @@ impl ErrorResponse {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct FileAutoBatch {
+    #[serde(rename = "editgroup")]
+    pub editgroup: models::Editgroup,
+
+    #[serde(rename = "entity_list")]
+    pub entity_list: Vec<models::FileEntity>,
+}
+
+impl FileAutoBatch {
+    pub fn new(editgroup: models::Editgroup, entity_list: Vec<models::FileEntity>) -> FileAutoBatch {
+        FileAutoBatch {
+            editgroup: editgroup,
+            entity_list: entity_list,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct FileEntity {
     #[serde(rename = "release_ids")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -586,6 +640,24 @@ pub struct FileUrl {
 impl FileUrl {
     pub fn new(url: String, rel: String) -> FileUrl {
         FileUrl { url: url, rel: rel }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct FilesetAutoBatch {
+    #[serde(rename = "editgroup")]
+    pub editgroup: models::Editgroup,
+
+    #[serde(rename = "entity_list")]
+    pub entity_list: Vec<models::FilesetEntity>,
+}
+
+impl FilesetAutoBatch {
+    pub fn new(editgroup: models::Editgroup, entity_list: Vec<models::FilesetEntity>) -> FilesetAutoBatch {
+        FilesetAutoBatch {
+            editgroup: editgroup,
+            entity_list: entity_list,
+        }
     }
 }
 
@@ -727,6 +799,24 @@ impl ReleaseAbstract {
             content: None,
             mimetype: None,
             lang: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ReleaseAutoBatch {
+    #[serde(rename = "editgroup")]
+    pub editgroup: models::Editgroup,
+
+    #[serde(rename = "entity_list")]
+    pub entity_list: Vec<models::ReleaseEntity>,
+}
+
+impl ReleaseAutoBatch {
+    pub fn new(editgroup: models::Editgroup, entity_list: Vec<models::ReleaseEntity>) -> ReleaseAutoBatch {
+        ReleaseAutoBatch {
+            editgroup: editgroup,
+            entity_list: entity_list,
         }
     }
 }
@@ -1108,6 +1198,24 @@ impl Success {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct WebcaptureAutoBatch {
+    #[serde(rename = "editgroup")]
+    pub editgroup: models::Editgroup,
+
+    #[serde(rename = "entity_list")]
+    pub entity_list: Vec<models::WebcaptureEntity>,
+}
+
+impl WebcaptureAutoBatch {
+    pub fn new(editgroup: models::Editgroup, entity_list: Vec<models::WebcaptureEntity>) -> WebcaptureAutoBatch {
+        WebcaptureAutoBatch {
+            editgroup: editgroup,
+            entity_list: entity_list,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct WebcaptureCdxLine {
     #[serde(rename = "surt")]
     pub surt: String,
@@ -1236,6 +1344,24 @@ pub struct WebcaptureUrl {
 impl WebcaptureUrl {
     pub fn new(url: String, rel: String) -> WebcaptureUrl {
         WebcaptureUrl { url: url, rel: rel }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct WorkAutoBatch {
+    #[serde(rename = "editgroup")]
+    pub editgroup: models::Editgroup,
+
+    #[serde(rename = "entity_list")]
+    pub entity_list: Vec<models::WorkEntity>,
+}
+
+impl WorkAutoBatch {
+    pub fn new(editgroup: models::Editgroup, entity_list: Vec<models::WorkEntity>) -> WorkAutoBatch {
+        WorkAutoBatch {
+            editgroup: editgroup,
+            entity_list: entity_list,
+        }
     }
 }
 
