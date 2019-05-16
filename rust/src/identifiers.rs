@@ -536,6 +536,7 @@ pub fn check_release_type(raw: &str) -> Result<()> {
         "editorial",
         "letter",
         "stub",
+        "retraction",
     ];
     for good in valid_types {
         if raw == good {
@@ -551,6 +552,7 @@ pub fn check_release_type(raw: &str) -> Result<()> {
 #[test]
 fn test_check_release_type() {
     assert!(check_release_type("book").is_ok());
+    assert!(check_release_type("retraction").is_ok());
     assert!(check_release_type("article-journal").is_ok());
     assert!(check_release_type("standard").is_ok());
     assert!(check_release_type("journal-article").is_err());

@@ -16,6 +16,9 @@ See also:
 
 ## [Unreleased]
 
+- added `retraction` as an allowable `release_type`, for a publication. When
+  used, the `release_type` should also be `retraction`.
+
 ## [0.2.2] - 2019-05-08
 
 ### Fixed
