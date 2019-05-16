@@ -43,7 +43,7 @@ def test_jalc_importer(jalc_importer):
     assert counts['skip'] == 0
     assert last_index == jalc_importer.api.get_changelog(limit=1)[0].index
 
-def test_jalc_dict_parse(jalc_importer):
+def test_jalc_xml_parse(jalc_importer):
     with open('tests/files/jalc_lod_sample.xml', 'r') as f:
         soup = BeautifulSoup(f, "xml")
         r = jalc_importer.parse_record(soup.find_all("Description")[0])
@@ -62,11 +62,6 @@ def test_jalc_dict_parse(jalc_importer):
     assert r.issue == "8"
     assert r.pages == "898-902"
     assert r.release_year == 1989
-    # XXX:
-    #assert 'subtitle' not in r.extra
-    #assert 'subtitle' not in r.extra['jalc']
-    #assert 'funder' not in r.extra
-    #assert 'funder' not in r.extra['jalc']
     # matched by ISSN, so shouldn't be in there?
     #assert extra['container_name'] == "International Journal of Quantum Chemistry"
     assert len(r.contribs) == 4
