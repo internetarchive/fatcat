@@ -1,5 +1,4 @@
 
-
 import sys
 import json
 import sqlite3
@@ -228,7 +227,7 @@ class JstorImporter(EntityImporter):
         # then try DOI lookup if there is one
         if not existing and re.ext_ids.doi:
             try:
-                existing = self.api.lookup_release(jstor=re.ext_ids.jstor)
+                existing = self.api.lookup_release(doi=re.ext_ids.doi)
             except fatcat_client.rest.ApiException as err:
                 if err.status != 404:
                     raise err
