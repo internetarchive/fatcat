@@ -52,7 +52,7 @@ def test_arxiv_xml_parse(arxiv_importer):
     assert r1.title == "Martingale theory for housekeeping heat"
     assert r1.subtitle == None
     assert r1.original_title == None
-    assert r1.release_type == "article-journal"
+    assert r1.release_type == "article"
     assert r1.release_stage == "submitted"
     assert r2.release_stage == "published"
     assert r1.license_slug == "ARXIV-NED-1.0"

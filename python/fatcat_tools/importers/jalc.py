@@ -301,5 +301,5 @@ class JalcImporter(EntityImporter):
 
 
 if __name__=='__main__':
-    parser = JalcXmlParser()
+    parser = JalcImporter(None, None)
     parser.parse_file(open(sys.argv[1]))

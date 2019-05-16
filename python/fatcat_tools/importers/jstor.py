@@ -1,20 +1,12 @@
 
 import sys
 import json
-import sqlite3
 import datetime
-import itertools
-import subprocess
+import warnings
 from bs4 import BeautifulSoup
 
 import fatcat_client
-from .common import EntityImporter, clean
-
-# is this just ISO 3-char to ISO 2-char?
-# XXX: more entries
-JSTOR_LANG_MAP = {
-    'eng': 'en',
-}
+from .common import EntityImporter, clean, LANG_MAP_MARC
 
 # XXX: more entries
 JSTOR_CONTRIB_MAP = {
@@ -136,7 +128,9 @@ class JstorImporter(EntityImporter):
         cm = article_meta.find("custom-meta")
         if cm.find("meta-name").string == "lang":
             language = cm.find("meta-value").string
-            language = JSTOR_LANG_MAP.get(language)
+            language = LANG_MAP_MARC.get(language)
+            if not language:
+                warnings.warn("MISSING MARC LANG: {}".format(cm.find("meta-value").string))
 
         release_type = "article-journal"
         if "[Abstract]" in title:
@@ -238,7 +232,7 @@ class JstorImporter(EntityImporter):
             return False
         elif existing:
             # but do update if only DOI was set
-            existing.ext_ids.jstor = re.jstor_id
+            existing.ext_ids.jstor = re.ext_ids.jstor
             existing.extra['jstor'] = re.extra['jstor']
             self.api.update_release(self.get_editgroup_id(), existing.ident, existing)
             self.counts['update'] += 1
@@ -265,5 +259,5 @@ class JstorImporter(EntityImporter):
             #sys.exit(-1)
 
 if __name__=='__main__':
-    parser = JstorImporter()
+    parser = JstorImporter(None, None)
     parser.parse_file(open(sys.argv[1]))

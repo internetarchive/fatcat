@@ -103,7 +103,8 @@ class ArxivRawImporter(EntityImporter):
                 lang = 'ru'
             # more languages?
 
-        release_type = "article-journal"
+        # don't know!
+        release_type = "article"
 
         if metadata.find('journal-ref') and metadata.find('journal-ref').string:
             journal_ref = metadata.find('journal-ref').string.strip()
@@ -166,7 +167,7 @@ class ArxivRawImporter(EntityImporter):
                 title=title,
                 #original_title
                 version=version['version'],
-                release_type="article-journal",
+                release_type="article",
                 release_stage='submitted',
                 release_date=release_date.isoformat(),
                 release_year=release_date.year,
@@ -294,5 +295,5 @@ class ArxivRawImporter(EntityImporter):
             #sys.exit(-1)
 
 if __name__=='__main__':
-    parser = ArxivRawImporter()
+    parser = ArxivRawImporter(None)
     parser.parse_file(open(sys.argv[1]))

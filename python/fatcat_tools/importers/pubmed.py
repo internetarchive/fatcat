@@ -115,9 +115,6 @@ class PubmedImporter(EntityImporter):
     XXX: full author names
     """
 
-    def __init__(self):
-        pass
-
     def __init__(self, api, issn_map_file, **kwargs):
 
         eg_desc = kwargs.get('editgroup_description',
@@ -181,7 +178,8 @@ class PubmedImporter(EntityImporter):
 
         pmcid = identifiers.find("ArticleId", IdType="pmc")
         if pmcid:
-            pmcid = pmcid.string
+            # XXX: strip the version part? or retain?
+            pmcid = pmcid.string.split('.')[0]
 
         release_type = None
         pub_types = []
@@ -471,7 +469,7 @@ class PubmedImporter(EntityImporter):
                 self.counts['exists-pmid-doi-mismatch'] += 1
                 return False
 
-        if existing and existing.ext_ids.pmid and existing.refs:
+        if existing and existing.ext_ids.pmid and (existing.refs or not re.refs):
             # TODO: any other reasons to do an update?
             # don't update if it already has PMID
             self.counts['exists'] += 1
@@ -508,5 +506,5 @@ class PubmedImporter(EntityImporter):
             #sys.exit(-1)
 
 if __name__=='__main__':
-    parser = PubMedParser()
+    parser = PubmedImporter(None, None)
     parser.parse_file(open(sys.argv[1]))

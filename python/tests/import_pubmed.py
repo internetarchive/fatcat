@@ -21,7 +21,7 @@ def test_pubmed_importer(pubmed_importer):
     with open('tests/files/pubmedsample_2019.xml', 'r') as f:
         pubmed_importer.bezerk_mode = True
         counts = Bs4XmlFilePusher(pubmed_importer, f, "PubmedArticle").run()
-    assert counts['insert'] == 1
+    assert counts['insert'] == 176
     assert counts['exists'] == 0
     assert counts['skip'] == 0
 
@@ -39,7 +39,7 @@ def test_pubmed_importer(pubmed_importer):
         pubmed_importer.reset()
         counts = Bs4XmlFilePusher(pubmed_importer, f, "PubmedArticle").run()
     assert counts['insert'] == 0
-    assert counts['exists'] == 1
+    assert counts['exists'] == 176
     assert counts['skip'] == 0
     assert last_index == pubmed_importer.api.get_changelog(limit=1)[0].index
 
