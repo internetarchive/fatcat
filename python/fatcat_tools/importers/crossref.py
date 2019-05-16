@@ -73,6 +73,7 @@ LICENSE_SLUG_MAP = {
     # //www.acm.org/publications/policies/copyright_policy#Background is closed
     # //rsc.li/journals-terms-of-use is closed for vor (am open)
     # //www.ieee.org/publications_standards/publications/rights/ieeecopyrightform.pdf is 404 (!)
+    "//arxiv.org/licenses/nonexclusive-distrib/1.0/": "ARXIV-NED-1.0", # XXX
 }
 
 def lookup_license_slug(raw):
