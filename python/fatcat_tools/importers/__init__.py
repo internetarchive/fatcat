@@ -16,6 +16,7 @@ from .common import EntityImporter, JsonLinePusher, LinePusher, CsvPusher, Sqlit
 from .crossref import CrossrefImporter, CROSSREF_TYPE_MAP
 from .jalc import JalcImporter
 from .jstor import JstorImporter
+from .arxiv import ArxivRawImporter
 from .grobid_metadata import GrobidMetadataImporter
 from .journal_metadata import JournalMetadataImporter
 from .matched import MatchedImporter
