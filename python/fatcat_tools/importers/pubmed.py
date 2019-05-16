@@ -1,9 +1,14 @@
 
 import sys
 import json
+import sqlite3
 import datetime
+import warnings
 from bs4 import BeautifulSoup
 from bs4.element import NavigableString
+
+import fatcat_client
+from .common import EntityImporter, clean, LANG_MAP_MARC
 
 # from: https://www.ncbi.nlm.nih.gov/books/NBK3827/table/pubmedhelp.T.publication_types/?report=objectonly
 PUBMED_RELEASE_TYPE_MAP = {
@@ -99,29 +104,68 @@ MONTH_ABBR_MAP = {
     "Dec": 12, "12": 12,
 }
 
-class PubMedParser():
-    """
-    Converts PubMed/MEDLINE XML into in release entity (which can dump as JSON)
 
+class PubmedImporter(EntityImporter):
+    """
+    Importer for PubMed/MEDLINE XML metadata.
+    
     TODO: MEDLINE doesn't include PMC/OA license; could include in importer?
     TODO: clean (ftfy) title, original title, etc
+    XXX: withdrawn
+    XXX: full author names
     """
 
     def __init__(self):
         pass
 
-    def parse_file(self, handle):
+    def __init__(self, api, issn_map_file, **kwargs):
 
-        # 1. open with beautiful soup
-        soup = BeautifulSoup(handle, "xml")
+        eg_desc = kwargs.get('editgroup_description',
+            "Automated import of PubMed/MEDLINE XML metadata")
+        eg_extra = kwargs.get('editgroup_extra', dict())
+        eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.PubmedImporter')
+        super().__init__(api,
+            issn_map_file=issn_map_file,
+            editgroup_description=eg_desc,
+            editgroup_extra=eg_extra,
+            **kwargs)
 
-        # 2. iterate over articles, call parse_article on each
-        for article in soup.find_all("PubmedArticle"):
-            resp = self.parse_article(article)
-            print(json.dumps(resp))
-            #sys.exit(-1)
+        extid_map_file = kwargs.get('extid_map_file')
+        self.extid_map_db = None
+        if extid_map_file:
+            db_uri = "file:{}?mode=ro".format(extid_map_file)
+            print("Using external ID map: {}".format(db_uri))
+            self.extid_map_db = sqlite3.connect(db_uri, uri=True)
+        else:
+            print("Not using external ID map")
 
-    def parse_article(self, a):
+        self.create_containers = kwargs.get('create_containers')
+        self.read_issn_map_file(issn_map_file)
+
+    def lookup_ext_ids(self, pmid):
+        if self.extid_map_db is None:
+            return dict(doi=None, core_id=None, pmid=None, pmcid=None,
+                wikidata_qid=None, arxiv_id=None, jstor_id=None)
+        row = self.extid_map_db.execute("SELECT core, doi, pmcid, wikidata FROM ids WHERE pmid=? LIMIT 1",
+            [pmid]).fetchone()
+        if row is None:
+            return dict(doi=None, core_id=None, pmid=None, pmcid=None,
+                wikidata_qid=None, arxiv_id=None, jstor_id=None)
+        row = [str(cell or '') or None for cell in row]
+        return dict(
+            core_id=row[0],
+            doi=row[1],
+            pmcid=row[2],
+            wikidata_qid=row[3],
+            # TODO:
+            arxiv_id=None,
+            jstor_id=None,
+        )
+
+    def want(self, obj):
+        return True
+
+    def parse_record(self, a):
 
         medline = a.MedlineCitation
         # PubmedData isn't required by DTD, but seems to always be present
@@ -130,6 +174,7 @@ class PubMedParser():
         extra_pubmed = dict()
 
         identifiers = pubmed.ArticleIdList
+        pmid = medline.PMID.string.strip()
         doi = identifiers.find("ArticleId", IdType="doi")
         if doi:
             doi = doi.string.lower()
@@ -139,10 +184,14 @@ class PubMedParser():
             pmcid = pmcid.string
 
         release_type = None
+        pub_types = []
         for pub_type in medline.Article.PublicationTypeList.find_all("PublicationType"):
+            pub_types.append(pub_type.string)
             if pub_type.string in PUBMED_RELEASE_TYPE_MAP:
                 release_type = PUBMED_RELEASE_TYPE_MAP[pub_type.string]
-            break
+                break
+        if pub_types:
+            extra_pubmed['pub_types'] = pub_types
         if medline.Article.PublicationTypeList.find(string="Retraction of Publication"):
             release_type = "retraction"
             retraction_of = medline.find("CommentsCorrections", RefType="RetractionOf")
@@ -151,11 +200,13 @@ class PubMedParser():
                 extra_pubmed['retraction_of_pmid'] = retraction_of.PMID.string
 
         # everything in medline is published
-        release_status = "published"
+        release_stage = "published"
         if medline.Article.PublicationTypeList.find(string="Corrected and Republished Article"):
-            release_status = "updated"
+            release_stage = "updated"
+        if medline.Article.PublicationTypeList.find(string="Retraction of Publication"):
+            release_stage = "retraction"
         if medline.Article.PublicationTypeList.find(string="Retracted Publication"):
-            release_status = "retracted"
+            withdrawn_status = "retracted"
 
         pages = medline.find('MedlinePgn')
         if pages:
@@ -188,27 +239,37 @@ class PubMedParser():
             if language in ("und", "un"):
                 # "undetermined"
                 language = None
+            else:
+                language = LANG_MAP_MARC.get(language)
+                if not language:
+                    warnings.warn("MISSING MARC LANG: {}".format(medline.Article.Language.string))
 
         ### Journal/Issue Metadata
         # MedlineJournalInfo is always present
-        container = dict()
+        issnl = None
+        container_id = None
+        container_name = None
         container_extra = dict()
         mji = medline.MedlineJournalInfo
         if mji.find("Country"):
             container_extra['country_name'] = mji.Country.string
         if mji.find("ISSNLinking"):
-            container['issnl'] = mji.ISSNLinking.string
+            issnl = mji.ISSNLinking.string
 
         journal = medline.Article.Journal
         issnp = journal.find("ISSN", IssnType="Print")
         if issnp:
             container_extra['issnp'] = issnp.string
+        if not issnl:
+            issnll = self.issn2issnl(issnp)
+
+        if issnl:
+            container_id = self.lookup_issnl(issnl)
 
         pub_date = journal.PubDate
         release_date = None
-        if pub_date.find("MedlineDate"):
-            release_year = int(pub_date.MedlineDate.string.split()[0][:4])
-        else:
+        release_year = None
+        if pub_date.Year:
             release_year = int(pub_date.Year.string)
             if pub_date.find("Day") and pub_date.find("Month"):
                 release_date = datetime.date(
@@ -216,6 +277,24 @@ class PubMedParser():
                     MONTH_ABBR_MAP[pub_date.Month.string],
                     int(pub_date.Day.string))
                 release_date = release_date.isoformat()
+        elif pub_date.find("MedlineDate") and False: #XXX more/better date parsing?
+            release_year = int(pub_date.MedlineDate.string.split()[0][:4])
+
+        if journal.find("Title"):
+            container_name = journal.Title.string
+
+        if (container_id is None and self.create_containers and (issnl is not None)
+                and container_name):
+            # name, type, publisher, issnl
+            # extra: issnp, issne, original_name, languages, country
+            ce = fatcat_client.ContainerEntity(
+                name=container_name,
+                container_type='journal',
+                #XXX: publisher not included?
+                issnl=issnl,
+                extra=(container_extra or None))
+            ce_edit = self.create_container(ce)
+            container_id = ce_edit.ident
        
         ji = journal.JournalIssue
         volume = None
@@ -224,13 +303,6 @@ class PubMedParser():
         issue = None
         if ji.find("Issue"):
             issue = ji.Issue.string
-        if journal.find("Title"):
-            container['name'] = journal.Title.string
-
-        if extra_pubmed:
-            extra['pubmed'] = extra_pubmed
-        if not extra:
-            extra = None
 
         ### Abstracts
         # "All abstracts are in English"
@@ -238,20 +310,20 @@ class PubMedParser():
         first_abstract = medline.find("AbstractText")
         if first_abstract and first_abstract.get('NlmCategory'):
             joined = "\n".join([m.get_text() for m in medline.find_all("AbstractText")])
-            abstracts.append(dict(
+            abstracts.append(fatcat_client.ReleaseAbstract(
                 content=joined,
                 mimetype="text/plain",
                 lang="en",
             ))
         else:
             for abstract in medline.find_all("AbstractText"):
-                abstracts.append(dict(
+                abstracts.append(fatcat_client.ReleaseAbstract(
                     content=abstract.get_text().strip(),
                     mimetype="text/plain",
                     lang="en",
                 ))
                 if abstract.find('math'):
-                    abstracts.append(dict(
+                    abstracts.append(fatcat_client.ReleaseAbstract(
                         # strip the <AbstractText> tags
                         content=str(abstract)[14:-15],
                         mimetype="application/mathml+xml",
@@ -264,13 +336,17 @@ class PubMedParser():
         contribs = []
         if medline.AuthorList:
             for author in medline.AuthorList.find_all("Author"):
-                contrib = dict(
-                    role="author",
-                )
+                given_name = None
+                surname = None
+                raw_name = None
                 if author.ForeName:
-                    contrib['raw_name'] = "{} {}".format(author.ForeName.string, author.LastName.string)
-                elif author.LastName:
-                    contrib['raw_name'] = author.LastName.string
+                    given_name = author.ForeName.string
+                if author.LastName:
+                    surname = author.LastName.string
+                if given_name and surname:
+                    raw_name = "{} {}".format(given_name, surname)
+                elif surname:
+                    raw_name = surname
                 contrib_extra = dict()
                 orcid = author.find("Identifier", Source="ORCID")
                 if orcid:
@@ -287,19 +363,26 @@ class PubMedParser():
                             orcid[8:12],
                             orcid[12:16],
                         )
-                    contrib_extra['orcid'] = orcid
+                    # XXX: do lookup by ORCID
+                    #contrib_extra['orcid'] = orcid
                 affiliation = author.find("Affiliation")
+                raw_affiliation = None
                 if affiliation:
-                    contrib['raw_affiliation'] = affiliation.string
+                    raw_affiliation = affiliation.string
                 if author.find("EqualContrib"):
                     # TODO: schema for this?
                     contrib_extra['equal_contrib'] = True
-                if contrib_extra:
-                    contrib['extra'] = contrib_extra
-                contribs.append(contrib)
+                contribs.append(fatcat_client.ReleaseContrib(
+                    raw_name=raw_name,
+                    given_name=given_name,
+                    surname=surname,
+                    role="author",
+                    raw_affiliation=raw_affiliation,
+                    extra=contrib_extra,
+                ))
 
             if medline.AuthorList['CompleteYN'] == 'N':
-                contribs.append(dict(raw_name="et al."))
+                contribs.append(fatcat_client.ReleaseContrib(raw_name="et al."))
         if not contribs:
             contribs = None
 
@@ -312,60 +395,117 @@ class PubMedParser():
                 ref_pmid = ref.find("ArticleId", IdType="pubmed")
                 if ref_pmid:
                     ref_extra['pmid'] = ref_pmid.string
+                    # TODO: do reference lookups here based on PMID/DOI
                 ref_raw = ref.Citation
                 if ref_raw:
-                    ref_extra['raw'] = ref_raw.string
+                    ref_extra['unstructured'] = ref_raw.string
                 if ref_extra:
                     ref_obj['extra'] = ref_extra
-                refs.append(ref_obj)
+                refs.append(fatcat_client.ReleaseRef(
+                    extra=ref_obj.get('extra'),
+                ))
         if not refs:
             refs = None
 
-        re = dict(
+        # extra:
+        #   withdrawn_date
+        #   translation_of
+        #   subtitle
+        #   aliases
+        #   container_name
+        #   group-title
+        #   pubmed: retraction refs
+        if extra_pubmed:
+            extra['pubmed'] = extra_pubmed
+        if not extra:
+            extra = None
+
+        re = fatcat_client.ReleaseEntity(
             work_id=None,
-            title=title,
-            original_title=original_title,
+            title=clean(title),
+            original_title=clean(original_title),
             release_type=release_type,
-            release_status=release_status,
+            release_stage=release_stage,
             release_date=release_date,
             release_year=release_year,
-            doi=doi,
-            pmid=int(medline.PMID.string), # always present
-            pmcid=pmcid,
-            #isbn13     # never in Article
+            ext_ids=fatcat_client.ReleaseExtIds(
+                doi=doi,
+                pmid=pmid,
+                pmcid=pmcid,
+                #isbn13     # never in Article
+            ),
             volume=volume,
             issue=issue,
             pages=pages,
             #publisher  # not included?
             language=language,
             #license_slug   # not in MEDLINE
-
-            # content, mimetype, lang
             abstracts=abstracts,
-
-            # raw_name, role, raw_affiliation, extra
             contribs=contribs,
-
-            # key, year, container_name, title, locator
-            # extra: volume, authors, issue, publisher, identifiers
             refs=refs,
-
-            #   name, type, publisher, issnl
-            #   extra: issnp, issne, original_name, languages, country
-            container=container,
-
-            # extra:
-            #   withdrawn_date
-            #   translation_of
-            #   subtitle
-            #   aliases
-            #   container_name
-            #   group-title
-            #   pubmed: retraction refs
+            container_id=container_id,
             extra=extra,
         )
-
         return re
+
+    def try_update(self, re):
+
+        # first, lookup existing by PMID (which must be defined)
+        existing = None
+        try:
+            existing = self.api.lookup_release(pmid=re.ext_ids.pmid)
+        except fatcat_client.rest.ApiException as err:
+            if err.status != 404:
+                raise err
+
+        # then try DOI lookup if there is one
+        if not existing and re.ext_ids.doi:
+            try:
+                existing = self.api.lookup_release(doi=re.ext_ids.doi)
+            except fatcat_client.rest.ApiException as err:
+                if err.status != 404:
+                    raise err
+            if existing and existing.ext_ids.pmid and existing.ext_ids.pmid != re.ext_ids.pmid:
+                warnings.warn("PMID/DOI mismatch: release {}, pmid {} != {}".format(
+                    existing.ident, existing.ext_ids.pmid, re.ext_ids.pmid))
+                self.counts['exists-pmid-doi-mismatch'] += 1
+                return False
+
+        if existing and existing.ext_ids.pmid and existing.refs:
+            # TODO: any other reasons to do an update?
+            # don't update if it already has PMID
+            self.counts['exists'] += 1
+            return False
+        elif existing:
+            # but do update if only DOI was set
+            existing.ext_ids.doi = existing.ext_ids.doi or re.ext_ids.doi
+            existing.ext_ids.pmid = existing.ext_ids.pmid or re.ext_ids.pmid
+            existing.ext_ids.pmcid = existing.ext_ids.pmcid or re.ext_ids.pmcid
+            existing.refs = existing.refs or re.refs
+            existing.extra['pubmed'] = re.extra['pubmed']
+            self.api.update_release(self.get_editgroup_id(), existing.ident, existing)
+            self.counts['update'] += 1
+            return False
+
+        return True
+
+    def insert_batch(self, batch):
+        self.api.create_release_auto_batch(fatcat_client.ReleaseAutoBatch(
+            editgroup=fatcat_client.Editgroup(
+                description=self.editgroup_description,
+                extra=self.editgroup_extra),
+            entity_list=batch))
+
+    def parse_file(self, handle):
+
+        # 1. open with beautiful soup
+        soup = BeautifulSoup(handle, "xml")
+
+        # 2. iterate over articles, call parse_article on each
+        for article in soup.find_all("PubmedArticle"):
+            resp = self.parse_article(article)
+            print(json.dumps(resp))
+            #sys.exit(-1)
 
 if __name__=='__main__':
     parser = PubMedParser()

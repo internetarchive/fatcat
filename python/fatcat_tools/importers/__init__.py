@@ -12,11 +12,12 @@ To run an import you combine two classes; one each of:
 
 """
 
-from .common import EntityImporter, JsonLinePusher, LinePusher, CsvPusher, SqlitePusher, Bs4XmlFilePusher, KafkaJsonPusher, make_kafka_consumer, clean, is_cjk
-from .crossref import CrossrefImporter, CROSSREF_TYPE_MAP
+from .common import EntityImporter, JsonLinePusher, LinePusher, CsvPusher, SqlitePusher, Bs4XmlFilePusher, KafkaJsonPusher, make_kafka_consumer, clean, is_cjk, LANG_MAP_MARC
+from .crossref import CrossrefImporter, CROSSREF_TYPE_MAP, lookup_license_slug
 from .jalc import JalcImporter
 from .jstor import JstorImporter
 from .arxiv import ArxivRawImporter
+from .pubmed import PubmedImporter
 from .grobid_metadata import GrobidMetadataImporter
 from .journal_metadata import JournalMetadataImporter
 from .matched import MatchedImporter
