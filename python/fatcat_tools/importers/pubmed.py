@@ -501,7 +501,7 @@ class PubmedImporter(EntityImporter):
 
         # 2. iterate over articles, call parse_article on each
         for article in soup.find_all("PubmedArticle"):
-            resp = self.parse_article(article)
+            resp = self.parse_record(article)
             print(json.dumps(resp))
             #sys.exit(-1)
 
