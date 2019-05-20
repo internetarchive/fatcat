@@ -45,7 +45,6 @@ def test_release(api):
         publisher="some publisher",
         language="en",
         license_slug="CC-0",
-        extra=dict(a=1, b=2),
         contribs=[
             ReleaseContrib(
                 given_name="Paul",
@@ -68,10 +67,13 @@ def test_release(api):
                 mimetype="text/plain",
                 lang="de"),
         ],
+        extra=dict(a=1, b=2),
+        edit_extra=dict(test_key="releases rule"),
     )
     r1.bogus = "asdf"
 
     r1edit = api.create_release(eg.editgroup_id, r1)
+    assert r1edit.extra == r1.edit_extra
     api.accept_editgroup(eg.editgroup_id)
     r2 = api.get_release(r1edit.ident)
 

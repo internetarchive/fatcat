@@ -19,9 +19,11 @@ def test_container(api):
         issnl="1234-567X",
         wikidata_qid="Q954248",
         extra=dict(a=1, b=2),
+        edit_extra=dict(test_key="containers rule"),
     )
 
     c1edit = api.create_container(eg.editgroup_id, c1)
+    assert c1edit.extra == c1.edit_extra
     api.accept_editgroup(eg.editgroup_id)
     c2 = api.get_container(c1edit.ident)
 

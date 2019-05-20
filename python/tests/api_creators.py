@@ -19,9 +19,11 @@ def test_creators(api):
         orcid="0000-0002-1825-0097",
         wikidata_qid="Q9542248",
         extra=dict(a=1, b=5),
+        edit_extra=dict(test_key="creators rule"),
     )
 
     c1edit = api.create_creator(eg.editgroup_id, c1)
+    assert c1edit.extra == c1.edit_extra
     api.accept_editgroup(eg.editgroup_id)
     c2 = api.get_creator(c1edit.ident)
 
@@ -41,10 +43,20 @@ def test_creators(api):
 
     # get redirects (none)
     assert api.get_creator_redirects(c2.ident) == []
+
+    # also try a batch insert
+    c3_eg = api.create_creator_auto_batch(CreatorAutoBatch(Editgroup(), [c1]))
+    c3edit = c3_eg.edits.creators[0]
+    assert c3edit.extra == c1.edit_extra
+    c3 = api.get_creator(c3edit.ident)
+
+    assert c1.display_name == c3.display_name
+    assert c1.extra == c3.extra
     
     # delete
     eg = quick_eg(api)
     api.delete_creator(eg.editgroup_id, c2.ident)
+    api.delete_creator(eg.editgroup_id, c3.ident)
     api.accept_editgroup(eg.editgroup_id)
     c2 = api.get_creator(c2.ident)
     assert c2.state == "deleted"

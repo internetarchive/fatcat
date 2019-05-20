@@ -38,9 +38,12 @@ def test_fileset(api):
             FilesetUrl(url="https://humble-host.com/~user123/dataset/", rel="web"),
         ],
         release_ids = [r1edit.ident],
+        extra=dict(t=4, u=9),
+        edit_extra=dict(test_key="filesets rule"),
     )
 
     fs1edit = api.create_fileset(eg.editgroup_id, fs1)
+    assert fs1edit.extra == fs1.edit_extra
     api.accept_editgroup(eg.editgroup_id)
     fs2 = api.get_fileset(fs1edit.ident)
 
@@ -53,6 +56,7 @@ def test_fileset(api):
     assert fs1.urls == fs2.urls
     assert fs1.manifest == fs2.manifest
     assert fs1.release_ids == fs2.release_ids
+    assert fs1.extra == fs2.extra
 
     # expansion
     r1 = api.get_release(r1edit.ident, expand="filesets")

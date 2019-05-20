@@ -19,14 +19,16 @@ def test_file(api):
         sha1="027e7ed3ea1a40e92dd2657a1e3c992b5dc45dd2",
         sha256="f1f4f18a904e76818863ccbc6141fce92b0dcb47b0d6041aec98bc6806e393c3",
         mimetype="application/pdf",
-        extra=dict(a=2, b=5),
         urls=[
             FileUrl(url="https://web.archive.org/web/12345542/something.com/blah.pdf", rel="webarchive"),
         ],
         release_ids=[],
+        extra=dict(a=2, b=5),
+        edit_extra=dict(test_key="files rule"),
     )
 
     f1edit = api.create_file(eg.editgroup_id, f1)
+    assert f1edit.extra == f1.edit_extra
     api.accept_editgroup(eg.editgroup_id)
     f2 = api.get_file(f1edit.ident)
 
@@ -39,6 +41,7 @@ def test_file(api):
     assert f1.extra == f2.extra
     assert f1.urls == f2.urls
     assert f1.release_ids == f2.release_ids
+    assert f1.extra == f2.extra
 
     # get revision
     f2_rev = api.get_file_revision(f1edit.revision)

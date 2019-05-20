@@ -47,9 +47,12 @@ def test_webcapture(api):
             FileUrl(rel="wayback", url="https://web.archive.org/web/"),
         ],
         release_ids = [r1edit.ident],
+        extra=dict(c=1, b=2),
+        edit_extra=dict(test_key="webcaptures rule"),
     )
 
     wc1edit = api.create_webcapture(eg.editgroup_id, wc1)
+    assert wc1edit.extra == wc1.edit_extra
     api.accept_editgroup(eg.editgroup_id)
     wc2 = api.get_webcapture(wc1edit.ident)
 
@@ -72,6 +75,7 @@ def test_webcapture(api):
     assert wc1.release_ids == wc2.release_ids
     assert wc1.timestamp == wc2.timestamp
     assert wc1.original_url == wc2.original_url
+    assert wc1.extra == wc2.extra
 
     # TODO: check release expansion
     r1 = api.get_release(r1edit.ident, expand="webcaptures")
