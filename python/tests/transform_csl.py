@@ -44,7 +44,7 @@ def test_csl_pubmed_bibtex(crossref_importer):
         r = entity_from_json(f.readline(), ReleaseEntity)
     csl = release_to_csl(r)
     print(citeproc_csl(csl, 'bibtex'))
-    # XXX: what's with the '`' in volume?
+    # TODO: what's with the '`' in volume?
     assert citeproc_csl(csl, 'bibtex').strip() == """
 @article{mędrela-kuder_szymura_2018, 
   title={Selected anti-health behaviours among women with osteoporosis}, 

@@ -47,6 +47,6 @@ fn test_auth_db() {
     auth::revoke_tokens(&conn, editor_id).unwrap();
 
     // verification should fail
-    // XXX: one-second slop breaks this
+    // TODO: one-second slop breaks this
     //assert!(c.parse_macaroon_token(&conn, &token, None).is_err());
 }

@@ -14,7 +14,7 @@ from fatcat_client import ApiClient
 def contribs_by_role(contribs, role):
     ret = [c.copy() for c in contribs if c['role'] == role]
     [c.pop('role') for c in ret]
-    # XXX:
+    # TODO: some note to self here
     [c.pop('literal') for c in ret if 'literal' in c]
     if not ret:
         return None
@@ -83,7 +83,7 @@ def release_to_csl(entity):
     csl = dict(
         #id,
         #categories
-        type=entity.release_type or "article", # XXX: can't be blank
+        type=entity.release_type or "article", # can't be blank
         language=entity.language,
         #journalAbbreviation
         #shortTitle

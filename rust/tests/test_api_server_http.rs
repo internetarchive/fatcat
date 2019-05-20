@@ -863,7 +863,7 @@ fn test_post_release() {
     ); // TODO: "secret paper"
 
     // Bogus non-existant fields
-    /* XXX: doesn't fail
+    /* TODO: doesn't fail
     helpers::check_http_response(
         request::post(
             &format!("http://localhost:9411/v0/editgroup/{}/release", editgroup_id),

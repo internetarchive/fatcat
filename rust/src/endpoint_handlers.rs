@@ -37,7 +37,6 @@ macro_rules! entity_auto_batch_handler {
             let _clr: ChangelogRow = diesel::insert_into(changelog::table)
                 .values((changelog::editgroup_id.eq(edit_context.editgroup_id.to_uuid()),))
                 .get_result(conn)?;
-            // XXX: edits.into_iter().map(|e| e.into_model()).collect()
             self.get_editgroup_handler(conn, editgroup_id)
         }
     }
