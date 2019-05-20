@@ -106,7 +106,7 @@ fn test_check_username() {
 
 pub fn check_pmcid(raw: &str) -> Result<()> {
     lazy_static! {
-        static ref RE: Regex = Regex::new(r"^PMC\d+$").unwrap();
+        static ref RE: Regex = Regex::new(r"^PMC\d+(\.\d+)?$").unwrap();
     }
     if raw.is_ascii() && RE.is_match(raw) {
         Ok(())
@@ -121,9 +121,12 @@ pub fn check_pmcid(raw: &str) -> Result<()> {
 #[test]
 fn test_check_pmcid() {
     assert!(check_pmcid("PMC12345").is_ok());
+    assert!(check_pmcid("PMC12345.1").is_ok());
+    assert!(check_pmcid("PMC12345.96").is_ok());
     assert!(check_pmcid("PMC12345 ").is_err());
     assert!(check_pmcid("PMC").is_err());
-    assert!(check_pmcid("PMC1.2345").is_err());
+    assert!(check_pmcid("PMC.3").is_err());
+    assert!(check_pmcid("PMC1123.").is_err());
 }
 
 pub fn check_pmid(raw: &str) -> Result<()> {
