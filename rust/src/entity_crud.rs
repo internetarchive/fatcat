@@ -346,6 +346,7 @@ macro_rules! generic_db_create {
                     $edit_table::editgroup_id.eq(edit_context.editgroup_id.to_uuid()),
                     $edit_table::rev_id.eq(&rev_id),
                     $edit_table::ident_id.eq(&ident),
+                    $edit_table::extra_json.eq(self.edit_extra.clone()),
                 ))
                 .get_result(conn)?;
             Ok(edit)

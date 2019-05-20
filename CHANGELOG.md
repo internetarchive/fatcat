@@ -16,6 +16,12 @@ See also:
 
 ## [Unreleased]
 
+### Fixed
+
+- `edit_extra` on individual entity create was not being written to database
+
+### Added
+
 - added `retraction` as an allowable `release_type`, for a publication. When
   used, the `release_type` should also be `retraction`.
 
@@ -43,7 +49,7 @@ See also:
 ## [0.2.1] - 2019-04-09
 
 No API or SQL schema changes in this release. Macaroon generation and
-verification way broken; all non-CLI-generated tokens will need to be
+verification was broken; all non-CLI-generated tokens will need to be
 regenerated (eg, log-out, log-in).
 
 ### Fixed
