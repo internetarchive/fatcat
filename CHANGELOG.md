@@ -16,14 +16,52 @@ See also:
 
 ## [Unreleased]
 
+This version includes some backward-incompatible changes.
+
 ### Fixed
 
 - `edit_extra` on individual entity create was not being written to database
 
+### Changed
+
+- `release_status` field (on releases) renamed to `release_stage`
+- moved external identifier fields on release entities into a new sub-namespace
+  called `ext_ids`. Eg, instead of `release.doi`, it's now
+  `release.ext_ids.doi`. This field is always required for release entities, so
+  fields can be accessed directly without a null/option check on the `ext_ids`
+  field itself. This impacts `doi`, `pmid`, `pmcid`, etc.
+- `pmcid` field now accepts versioned identifiers, with a trailing dot and
+  version number, like `PMC1234.2`.
+- many more restrictions on external identifiers at creation time.
+- API endpoints that mutate entities are now prefixed with
+  `/endpoint/{endpoint_id}/...`, which changes the `endpoint_id` parameter from
+  optional to required (in the path). In client libraries, this also changed
+  the order of parameters (`endpoint_id` now comes first). Batch edits now only
+  work in "auto batch" mode, and an editgroup object must be included in the
+  body (not just `extra` and `description` fields as query parameters).
+- several additional editgroup/changelog/history endpoints now expand `editor`
+  in editgroup objects by default.
+- `created` timestamp is included in editgroup objects (when GET) by default.
+- in client libraries, `FileEntityUrls` renamed `FileUrl`, and several similar
+  singlular/plural and `Entity` removed renamings.
+- elasticsearch release schema updated to match API schema changes
+
+### Removed
+
+- Non-auto batch mode no longer implemented.
+
 ### Added
 
+- release contribs may include `given_name` and `surname` fields, like
+  `creator` objects, in addition to existing `raw_name`.
+- add `withdrawn_status`, `withdrawn_year`, and `withdrawn_date` fields to
+  releases
 - added `retraction` as an allowable `release_type`, for a publication. When
-  used, the `release_type` should also be `retraction`.
+  used, the `release_stage` should also be `retraction`.
+- `subtitle` added as a top-level release field, along with `version` and
+  `number`
+- `ark_id` (for ARK identifiers) and `mag_id` (for Microsoft Academic Graph
+  identifiers) added to releases (under `ext_id`)
 
 ## [0.2.2] - 2019-05-08
 
