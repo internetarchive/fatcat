@@ -43,9 +43,11 @@ def release_to_elasticsearch(entity, force_bool=True):
         state = release.state,
         revision = release.revision,
         title = release.title,
+        subtitle = release.subtitle,
         original_title = release.original_title,
         release_type = release.release_type,
-        release_status = release.release_stage,
+        release_stage = release.release_stage,
+        withdrawn_status = release.withdrawn_status,
         language = release.language,
         license = release.license_slug,
         doi = release.ext_ids.doi,
@@ -56,7 +58,8 @@ def release_to_elasticsearch(entity, force_bool=True):
         core_id = release.ext_ids.core,
         arxiv_id = release.ext_ids.arxiv,
         jstor_id = release.ext_ids.jstor,
-        # TODO: mag, ark
+        ark_id = release.ext_ids.ark,
+        mag_id = release.ext_ids.mag,
     )
 
     is_oa = None
