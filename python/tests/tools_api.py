@@ -14,8 +14,5 @@ def test_authenticated_api():
 def test_public_api():
     api = public_api("http://localhost:9411/v0")
     api.get_changelog()
-    # XXX: there is some contamination happening here, and we're getting
-    # authenticated. Maybe the DefaultAPI thing?
-    pytest.skip("public_api() client not isolated from authenticated")
     with pytest.raises(ApiException):
         api.auth_check()
