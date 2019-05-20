@@ -34,31 +34,30 @@ def release_to_csl(entity):
     contribs = []
     for contrib in (entity.contribs or []):
         if contrib.creator:
-            # TODO: should we actually be pulling creator metadata? or just
-            # using release-local raw metadata?
-            family = contrib.creator.surname
-            if not family:
-                if not contrib.raw_name:
-                    raise ValueError("CSL requires some surname (family name)")
-                family = contrib.raw_name.split()[-1]
+            # Default to "local" (publication-specific) metadata; fall back to
+            # creator-level
+            family = contrib.surname or contrib.creator.surname or (contrib.raw_name and contrib.raw_name.split()[-1])
+            if not contrib.raw_name:
+                raise ValueError("CSL requires some surname (family name)")
             c = dict(
-                family=contrib.creator.surname,
-                given=contrib.creator.given_name,
+                family=family,
+                given=contrib.given_name or contrib.creator.given_name,
                 #dropping-particle
                 #non-dropping-particle
                 #suffix
                 #comma-suffix
                 #static-ordering
-                literal=contrib.raw_name, # or display_name?
+                literal=contrib.raw_name or contrib.creator.display_name,
                 #parse-names,
                 role=contrib.role,
             )
         else:
+            family = contrib.surname or (contrib.raw_name and contrib.raw_name.split()[-1])
             if not contrib.raw_name:
                 raise ValueError("CSL requires some surname (family name)")
             c = dict(
-                # XXX: possible inclusion of full name metadata in release_contrib
-                family=contrib.raw_name.split()[-1],
+                family=family,
+                given=contrib.given_name,
                 literal=contrib.raw_name,
                 role=contrib.role,
             )
