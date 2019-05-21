@@ -101,6 +101,8 @@ def test_webcapture_examples(api):
     assert wc3.cdx[1].sha1 == 'a637f1d27d9bcb237310ed29f19c07e1c8cf0aa5'
     assert wc3.archive_urls[1].rel == 'warc'
     assert wc3.releases[0].ident
+    assert wc3.releases[0].abstracts is None
+    assert wc3.releases[0].refs is None
 
 
 def test_bad_webcapture(api):

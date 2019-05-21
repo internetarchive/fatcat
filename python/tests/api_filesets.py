@@ -82,6 +82,8 @@ def test_fileset_examples(api):
     assert fs3.manifest[1].md5 == 'f4de91152c7ab9fdc2a128f962faebff'
     assert fs3.manifest[1].extra['mimetype'] == 'application/gzip'
     assert fs3.releases[0].ident
+    assert fs3.releases[0].abstracts is None
+    assert fs3.releases[0].refs is None
 
 def test_bad_fileset(api):
 

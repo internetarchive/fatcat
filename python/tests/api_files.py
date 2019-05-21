@@ -66,6 +66,8 @@ def test_file_examples(api):
     f1 = api.get_file('aaaaaaaaaaaaamztaaaaaaaaam', expand="releases")
     assert f1.sha256 == "ffc1005680cb620eec4c913437dfabbf311b535cfe16cbaeb2faec1f92afc362"
     assert f1.releases[0].ident
+    assert f1.releases[0].abstracts is None
+    assert f1.releases[0].refs is None
 
     # expansion (back from release)
     r1 = api.get_release(f1.releases[0].ident, expand="files")

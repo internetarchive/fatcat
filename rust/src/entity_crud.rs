@@ -1045,6 +1045,9 @@ impl EntityCrud for FileEntity {
         }
         // Could potentially hit this code path when expanding a redirected entity or bare
         // revision. In either case, `self.release_ids` should already be set.
+        let mut hide_flags = HideFlags::none();
+        hide_flags.abstracts = true;
+        hide_flags.refs = true;
         if expand.releases && self.release_ids.is_some() {
             if let Some(release_ids) = &self.release_ids {
                 self.releases = Some(
@@ -1054,7 +1057,7 @@ impl EntityCrud for FileEntity {
                             Ok(ReleaseEntity::db_get(
                                 conn,
                                 FatcatId::from_str(release_id)?,
-                                HideFlags::none(),
+                                hide_flags,
                             )?)
                         })
                         .collect::<Result<Vec<ReleaseEntity>>>()?,
@@ -1245,6 +1248,9 @@ impl EntityCrud for FilesetEntity {
         }
         // Could potentially hit this code path when expanding a redirected entity or bare
         // revision. In either case, `self.release_ids` should already be set.
+        let mut hide_flags = HideFlags::none();
+        hide_flags.abstracts = true;
+        hide_flags.refs = true;
         if expand.releases && self.release_ids.is_some() {
             if let Some(release_ids) = &self.release_ids {
                 self.releases = Some(
@@ -1254,7 +1260,7 @@ impl EntityCrud for FilesetEntity {
                             Ok(ReleaseEntity::db_get(
                                 conn,
                                 FatcatId::from_str(release_id)?,
-                                HideFlags::none(),
+                                hide_flags,
                             )?)
                         })
                         .collect::<Result<Vec<ReleaseEntity>>>()?,
@@ -1482,6 +1488,9 @@ impl EntityCrud for WebcaptureEntity {
         }
         // Could potentially hit this code path when expanding a redirected entity or bare
         // revision. In either case, `self.release_ids` should already be set.
+        let mut hide_flags = HideFlags::none();
+        hide_flags.abstracts = true;
+        hide_flags.refs = true;
         if expand.releases && self.release_ids.is_some() {
             if let Some(release_ids) = &self.release_ids {
                 self.releases = Some(
@@ -1491,7 +1500,7 @@ impl EntityCrud for WebcaptureEntity {
                             Ok(ReleaseEntity::db_get(
                                 conn,
                                 FatcatId::from_str(release_id)?,
-                                HideFlags::none(),
+                                hide_flags,
                             )?)
                         })
                         .collect::<Result<Vec<ReleaseEntity>>>()?,

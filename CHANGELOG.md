@@ -62,6 +62,9 @@ This version includes some backward-incompatible changes.
   `number`
 - `ark_id` (for ARK identifiers) and `mag_id` (for Microsoft Academic Graph
   identifiers) added to releases (under `ext_id`)
+- allow expanding `releases` for file, fileset, and webcapture entities.
+  Expanded release entities have their abstracts and refs hidden by default
+  (for performance)
 
 ## [0.2.2] - 2019-05-08
 
