@@ -3,7 +3,7 @@ swagger: "2.0"
 info:
   description: "A scalable, versioned, API-oriented catalog of bibliographic entities\
     \ and file metadata"
-  version: "0.2.0"
+  version: "0.3.0"
   title: "fatcat"
 host: "api.fatcat.wiki"
 basePath: "/v0"

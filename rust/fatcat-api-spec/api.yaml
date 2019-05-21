@@ -4,7 +4,7 @@ info:
   title: fatcat
   description: A scalable, versioned, API-oriented catalog of bibliographic entities
     and file metadata
-  version: 0.2.0
+  version: 0.3.0
 schemes: [https]
 basePath: /v0
 host: api.fatcat.wiki
