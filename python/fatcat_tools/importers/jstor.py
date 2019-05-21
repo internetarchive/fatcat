@@ -49,6 +49,21 @@ class JstorImporter(EntityImporter):
         extra = dict()
         extra_jstor = dict()
 
+        release_type = "article-journal"
+        if "[Abstract]" in title:
+            # TODO: strip the "[Abstract]" bit?
+            release_type = "abstract"
+        elif "[Editorial" in title:
+            release_type = "editorial"
+        elif "[Letter" in title:
+            release_type = "letter"
+        elif "[Poem" in title or "[Photograph" in title:
+            release_type = None
+
+        if title.startswith("[") and title.endswith("]"):
+            # strip brackets if that is all that is there (eg, translation or non-english)
+            title = title[1:-1]
+
         # JSTOR journal-id
         journal_ids = [j.string for j in journal_meta.find_all('journal-id')]
         if journal_ids:
@@ -76,8 +91,7 @@ class JstorImporter(EntityImporter):
                 issnl=issnl,
                 publisher=publisher,
                 container_type=self.map_container_type(release_type),
-                name=clean(journal_title, force_xml=True),
-                extra=journal_extra)
+                name=clean(journal_title, force_xml=True))
             ce_edit = self.create_container(ce)
             container_id = ce_edit.ident
             self._issnl_id_map[issnl] = container_id
@@ -154,21 +168,6 @@ class JstorImporter(EntityImporter):
             language = LANG_MAP_MARC.get(language)
             if not language:
                 warnings.warn("MISSING MARC LANG: {}".format(cm.find("meta-value").string))
-
-        release_type = "article-journal"
-        if "[Abstract]" in title:
-            # TODO: strip the "[Abstract]" bit?
-            release_type = "abstract"
-        elif "[Editorial" in title:
-            release_type = "editorial"
-        elif "[Letter" in title:
-            release_type = "letter"
-        elif "[Poem" in title or "[Photograph" in title:
-            release_type = None
-
-        if title.startswith("[") and title.endswith("]"):
-            # strip brackets if that is all that is there (eg, translation or non-english)
-            title = title[1:-1]
 
         # JSTOR issue-id
         if article_meta.find('issue-id'):
