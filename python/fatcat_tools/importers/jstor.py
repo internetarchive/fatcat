@@ -49,6 +49,12 @@ class JstorImporter(EntityImporter):
         extra = dict()
         extra_jstor = dict()
 
+        title = article_meta.find("article-title")
+        if title:
+            title = title.string.strip()
+            if title.endswith('.'):
+                title = title[:-1]
+
         release_type = "article-journal"
         if "[Abstract]" in title:
             # TODO: strip the "[Abstract]" bit?
@@ -103,12 +109,6 @@ class JstorImporter(EntityImporter):
         jstor_id = article_meta.find("article-id", {"pub-id-type": "jstor"})
         if jstor_id:
             jstor_id = jstor_id.string
-
-        title = article_meta.find("article-title")
-        if title:
-            title = title.string.strip()
-            if title.endswith('.'):
-                title = title[:-1]
 
         contribs = []
         cgroup = article_meta.find("contrib-group")
