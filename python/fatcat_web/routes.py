@@ -145,20 +145,13 @@ def file_lookup():
 @app.route('/file/<ident>', methods=['GET'])
 def file_view(ident):
     try:
-        entity = api.get_file(ident)
+        entity = api.get_file(ident, expand="releases")
     except ApiException as ae:
         abort(ae.status)
     if entity.state == "redirect":
         return redirect('/file/{}'.format(entity.redirect))
     elif entity.state == "deleted":
         return render_template('deleted_entity.html', entity=entity, entity_type="file")
-    else:
-        try:
-            entity.releases = []
-            for r in entity.release_ids:
-                entity.releases.append(api.get_release(r))
-        except ApiException as ae:
-            abort(ae.status)
     return render_template('file_view.html', file=entity)
 
 @app.route('/fileset/<ident>/history', methods=['GET'])
@@ -181,7 +174,7 @@ def fileset_lookup():
 @app.route('/fileset/<ident>', methods=['GET'])
 def fileset_view(ident):
     try:
-        entity = api.get_fileset(ident)
+        entity = api.get_fileset(ident, expand="releases")
     except ApiException as ae:
         abort(ae.status)
     if entity.state == "redirect":
@@ -189,12 +182,6 @@ def fileset_view(ident):
     elif entity.state == "deleted":
         return render_template('deleted_entity.html', entity=entity, entity_type="fileset")
     else:
-        try:
-            entity.releases = []
-            for r in entity.release_ids:
-                entity.releases.append(api.get_release(r))
-        except ApiException as ae:
-            abort(ae.status)
         entity.total_size = sum([f.size for f in entity.manifest])
     return render_template('fileset_view.html', fileset=entity)
 
@@ -218,22 +205,15 @@ def webcapture_lookup():
 @app.route('/webcapture/<ident>', methods=['GET'])
 def webcapture_view(ident):
     try:
-        entity = api.get_webcapture(ident)
+        entity = api.get_webcapture(ident, expand="releases")
     except ApiException as ae:
         abort(ae.status)
     if entity.state == "redirect":
         return redirect('/webcapture/{}'.format(entity.redirect))
     elif entity.state == "deleted":
         return render_template('deleted_entity.html', entity=entity, entity_type="webcapture")
-    else:
-        try:
-            entity.releases = []
-            for r in entity.release_ids:
-                entity.releases.append(api.get_release(r))
-        except ApiException as ae:
-            abort(ae.status)
     entity.wayback_suffix = wayback_suffix(entity)
-    print("SUFFIX: {}".format(entity.wayback_suffix))
+    #print("SUFFIX: {}".format(entity.wayback_suffix))
     return render_template('webcapture_view.html', webcapture=entity)
 
 @app.route('/release/lookup', methods=['GET'])
