@@ -56,22 +56,22 @@ def test_jstor_xml_parse(jstor_importer):
     assert r.release_type == "abstract"
     assert r.release_stage == "published"
     assert r.license_slug == None
-    # XXX: assert r.ext_ids.doi == "10.2307/111039"
+    assert r.ext_ids.doi == None
     assert r.ext_ids.jstor == "111039"
     assert r.language == "en"
     assert r.volume == "5"
     assert r.issue == None
     assert r.pages == "831-832"
-    # TODO: None if published jan 1st?
-    assert str(r.release_date) == "1843-01-01"
+    # None because jan 1st
+    assert r.release_date == None
     assert r.release_year == 1843
     # matched by ISSN, so shouldn't be in there?
     #assert extra['container_name'] == "Abstracts of the Papers Communicated to the Royal Society of London"
     assert len(r.contribs) == 1
-    # XXX: extra['jstor'] stuff
+    assert r.extra['jstor']['journal_ids'] == ['abstpapecommroya', 'j100687']
 
     assert r.contribs[0].raw_name == "John Kinnersley Smythies"
     assert r.contribs[0].given_name == "John Kinnersley"
     assert r.contribs[0].surname == "Smythies"
 
-    assert not r.refs
+    assert r.refs == None

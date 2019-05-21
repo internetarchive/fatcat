@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 import fatcat_client
 from .common import EntityImporter, clean, LANG_MAP_MARC
 
-# XXX: more entries
+# TODO: more entries?
 JSTOR_CONTRIB_MAP = {
     'author': 'author',
     'editor': 'editor',
@@ -49,6 +49,11 @@ class JstorImporter(EntityImporter):
         extra = dict()
         extra_jstor = dict()
 
+        # JSTOR journal-id
+        journal_ids = [j.string for j in journal_meta.find_all('journal-id')]
+        if journal_ids:
+            extra_jstor['journal_ids'] = journal_ids
+
         journal_title = journal_meta.find("journal-title").string
         publisher = journal_meta.find("publisher-name").string
         issn = journal_meta.find("issn")
@@ -58,13 +63,24 @@ class JstorImporter(EntityImporter):
                 issn = "{}-{}".format(issn[0:4], issn[4:8])
             else:
                 assert len(issn) == 9
-        # XXX:
+
+        issnl = self.issn2issnl(issn)
         container_id = None
-        container = dict(
-            name=journal_title,
-            publisher=publisher,
-            issn=issn,   # TODO: ISSN-L lookup...
-        )
+        if issnl:
+            container_id = self.lookup_issnl(issnl)
+
+        # create container if it doesn't exist
+        if (container_id is None and self.create_containers and (issnl is not None)
+                and journal_title):
+            ce = fatcat_client.ContainerEntity(
+                issnl=issnl,
+                publisher=publisher,
+                container_type=self.map_container_type(release_type),
+                name=clean(journal_title, force_xml=True),
+                extra=journal_extra)
+            ce_edit = self.create_container(ce)
+            container_id = ce_edit.ident
+            self._issnl_id_map[issnl] = container_id
 
         doi = article_meta.find("article-id", {"pub-id-type": "doi"})
         if doi:
@@ -92,6 +108,9 @@ class JstorImporter(EntityImporter):
                     name = surname.string
                 else:
                     name = None
+                role = JSTOR_CONTRIB_MAP.get(c['contrib-type'])
+                if not role and c['contrib-type']:
+                    sys.stderr.write("NOT IN JSTOR_CONTRIB_MAP: {}".format(c['contrib-type']))
                 contribs.append(fatcat_client.ReleaseContrib(
                     role=JSTOR_CONTRIB_MAP.get(c['contrib-type']),
                     raw_name=clean(name),
@@ -109,6 +128,10 @@ class JstorImporter(EntityImporter):
                     release_year,
                     int(pub_date.month.string),
                     int(pub_date.day.string))
+                if release_date.day == 1 and release_date.month == 1:
+                    # suspect jan 1st dates get set by JSTOR when actual
+                    # date not known (citation needed), so drop them
+                    release_date = None
         
         volume = None
         if article_meta.volume:
@@ -153,9 +176,6 @@ class JstorImporter(EntityImporter):
             if issue_id:
                 extra_jstor['issue_id'] = issue_id
 
-        # JSTOR journal-id
-        # XXX:
-
         # everything in JSTOR is published
         release_stage = "published"
 
@@ -178,7 +198,7 @@ class JstorImporter(EntityImporter):
             #original_title
             release_type=release_type,
             release_stage=release_stage,
-            release_date=release_date.isoformat(),
+            release_date=release_date,
             release_year=release_year,
             ext_ids=fatcat_client.ReleaseExtIds(
                 doi=doi,
@@ -218,10 +238,14 @@ class JstorImporter(EntityImporter):
             if err.status != 404:
                 raise err
 
-        # then try DOI lookup if there is one
-        if not existing and re.ext_ids.doi:
+        # then try DOI lookup if there is one (try JSTOR prefix+jstor_id if
+        # there isn't a DOI set)
+        if not existing:
+            doi = re.ext_ids.doi
+            if not doi:
+                doi = "10.2307/{}".format(re.ext_ids.jstor)
             try:
-                existing = self.api.lookup_release(doi=re.ext_ids.doi)
+                existing = self.api.lookup_release(doi=doi)
             except fatcat_client.rest.ApiException as err:
                 if err.status != 404:
                     raise err
