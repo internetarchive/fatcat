@@ -2026,6 +2026,9 @@ impl EntityCrud for ReleaseEntity {
             if let Some(ref release_stage) = entity.release_stage {
                 check_release_stage(release_stage)?;
             }
+            if let Some(ref withdrawn_status) = entity.withdrawn_status {
+                check_withdrawn_status(withdrawn_status)?;
+            }
             if let Some(ref abstracts) = entity.abstracts {
                 if abstracts.len() > 200 {
                     return Err(FatcatError::BadRequest(
