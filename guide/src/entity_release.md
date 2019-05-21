@@ -24,6 +24,11 @@
   publicly available. Blank if only year is known.
 - `release_year` (integer): year when this release was first made
   publicly available; should match `release_date` if both are known.
+- `withdrawn_status` (string, controlled set):
+- `release_date` (string, ISO date format): when this release was first made
+  publicly available. Blank if only year is known.
+- `release_year` (integer): year when this release was first made
+  publicly available; should match `release_date` if both are known.
 - `ext_ids` (key/value object of string-to-string mappings): external
   identifiers. At least an empty `ext_ids` object is always required for
   release entities, so individual identifiers can be accessed directly.
@@ -36,6 +41,16 @@
   this release can be looked up under. This is a free-form string, and could
   represent the first page, a range of pages, or even prefix pages (like
   "xii-xxx").
+- `version` (string): optionally, describes distinguishes this release version
+  from others. Generally a number, software-style version, or other short/slug
+  string, not a freeform description. Book "edition" descriptions can also go
+  in an `edition` extra field. Often used in conjunction with external
+  identifiers. If you're not certain, don't use this field!
+- `number` (string): an inherent identifier for this release (or work), often
+  part of the title. For example, standards numbers, technical memo numbers,
+  book series number, etc. Not a book `chapter` number however (which can be
+  stored in `extra`). Depending on field or series-specific norms, the number
+  may be stored here, in the title, or in both fields.
 - `publisher` (string): name of the publishing entity. This does not need to be
   populated if the associated `container` entity has the publisher field set,
   though it is acceptable to duplicate, as the publishing entity of a container
@@ -105,6 +120,10 @@
 
 The `ext_ids` object name-spaces external identifiers and makes it easier to
 add new identifiers to the schema in the future.
+
+Many identifier fields must match an internal regex (string syntax constraint)
+to ensure they are properly formatted, though these checks aren't always
+complete or correct in more obscure cases.
 
 - `doi` (string): full DOI number, lower-case. Example: "10.1234/abcde.789".
   See the "External Identifiers" section of style guide for more notes
@@ -241,6 +260,7 @@ All other CSL types are also allowed, though they are mostly out of scope:
 For the purpose of statistics, the following release types are considered
 "papers":
 
+- `article`
 - `article-journal`
 - `chapter`
 - `paper-conference`
@@ -277,6 +297,42 @@ does get a `withdrawn_status` metadata field set.
 
 When blank, indicates status isn't known, and wasn't inferred at creation time.
 Can often be interpreted as `published`, but be careful!
+
+#### `withdrawn_status` Vocabulary
+
+Don't know of an existing controlled vocabulary for things like retractions or
+other reasons for marking papers as removed from publication, so invented my
+own. These labels should be considered experimental and subject to change.
+
+Note that some of these will apply more to pre-print servers or publishing
+accidents, and don't necessarily make sense as a formal change of status for a
+print journal publication.
+
+Any value at all indicates that the release should be considered "no longer
+published by the publisher or primary host", which could mean different things
+in different contexts. As some concrete examples, works are often accidentally
+generated a duplicate DOI; physics papers have been taken down in reponse to
+government order under national security justifications; papers have been
+withdrawn for public health reasons (above and beyond any academic-style
+retraction); entire journals may be found to be predatory and pulled from
+circulation; individual papers may be retracted by authors if a serious mistake
+or error is found; an author's entire publication history may be retracted in
+cases of serious academic misconduct or fraud.
+
+- `withdrawn` is generic: the work is no longer available from the original
+  publisher. There may be no reason, or the reason may not be known yet.
+- `retracted` for when a work is formally retracted, usually accompanied by a
+  retraction notice (a separate release under the same work). Note that the
+  retraction itself should not have a `withdrawn_status`.
+- `concern` for when publishers release an "expression of concern", often
+  indicating that the work is not reliable in some way, but not yet formally
+  retracted. In this case the original work is probably still available, but
+  should be marked as suspect. This is not the same as presence of errata.
+- `safety` for works pulled for public health or human safety concerns.
+- `national-security` for works pulled over national security concerns.
+- `spam` for content that is considered spam (eg, bogus pre-print or repository
+  submissions). Not to be confused with advertisements or product reviews in
+  journals.
 
 #### `contribs.role` Vocabulary
 
