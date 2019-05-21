@@ -18,7 +18,6 @@ import six
 
 from fatcat_client.models.fileset_file import FilesetFile  # noqa: F401,E501
 from fatcat_client.models.fileset_url import FilesetUrl  # noqa: F401,E501
-from fatcat_client.models.release_entity import ReleaseEntity  # noqa: F401,E501
 
 
 class FilesetEntity(object):

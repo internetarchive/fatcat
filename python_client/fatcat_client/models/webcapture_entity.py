@@ -16,7 +16,6 @@ import re  # noqa: F401
 
 import six
 
-from fatcat_client.models.release_entity import ReleaseEntity  # noqa: F401,E501
 from fatcat_client.models.webcapture_cdx_line import WebcaptureCdxLine  # noqa: F401,E501
 from fatcat_client.models.webcapture_url import WebcaptureUrl  # noqa: F401,E501
 

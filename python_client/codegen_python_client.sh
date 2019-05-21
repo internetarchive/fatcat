@@ -63,6 +63,39 @@ patch -p0 << END_PATCH
      Ref: https://github.com/swagger-api/swagger-codegen
 END_PATCH
 
+# fix circular import (release/file/fileset/webcapture)
+patch -p0 << END_PATCH
+--- fatcat_client/models/file_entity.py
++++ fatcat_client/models/file_entity.py
+@@ -17,7 +17,6 @@ import re  # noqa: F401
+ import six
+ 
+ from fatcat_client.models.file_url import FileUrl  # noqa: F401,E501
+-from fatcat_client.models.release_entity import ReleaseEntity  # noqa: F401,E501
+ 
+ 
+ class FileEntity(object):
+--- fatcat_client/models/fileset_entity.py
++++ fatcat_client/models/fileset_entity.py
+@@ -18,7 +18,6 @@ import six
+ 
+ from fatcat_client.models.fileset_file import FilesetFile  # noqa: F401,E501
+ from fatcat_client.models.fileset_url import FilesetUrl  # noqa: F401,E501
+-from fatcat_client.models.release_entity import ReleaseEntity  # noqa: F401,E501
+ 
+ 
+ class FilesetEntity(object):
+--- fatcat_client/models/webcapture_entity.py
++++ fatcat_client/models/webcapture_entity.py
+@@ -16,7 +16,6 @@ import re  # noqa: F401
+ 
+ import six
+ 
+-from fatcat_client.models.release_entity import ReleaseEntity  # noqa: F401,E501
+ from fatcat_client.models.webcapture_cdx_line import WebcaptureCdxLine  # noqa: F401,E501
+ from fatcat_client.models.webcapture_url import WebcaptureUrl  # noqa: F401,E501
+END_PATCH
+
 # these tests are basically no-ops
 mkdir -p tests/codegen
 cp -r $OUTPUT/test/* tests/codegen

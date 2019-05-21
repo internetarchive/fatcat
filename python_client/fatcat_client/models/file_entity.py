@@ -17,7 +17,6 @@ import re  # noqa: F401
 import six
 
 from fatcat_client.models.file_url import FileUrl  # noqa: F401,E501
-from fatcat_client.models.release_entity import ReleaseEntity  # noqa: F401,E501
 
 
 class FileEntity(object):
