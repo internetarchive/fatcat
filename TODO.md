@@ -1,23 +1,6 @@
 
 ## In Progress
 
-x webcapture `size_bytes`/`size (consistency with file and fileset)
-x final decision on `version` field
-    => useful for repositories with multiple versions as incrementing integers
-    => also useful for "unstructuring" some identifiers (arxiv, zenodo DOIs)
-    => but CSL wants to use it (only?) for software versions
-    => what about book editions, or draft revisions?
-    => let's keep, but carefully document scope
-x verifiers for all extid types (including new ark, mag)
-x creation of editgroup via auto_batch needs extra checks
-- test: edit_extra set for each entity type
-- merge new importers branch
-    => fix schema changes
-    => use new schema fields
-    => tests
-- update guide with new schema
-- elasticsearch schema changes (and transforms)
-
 ## Next Up
 
 - update existing 1.5 mil longtail OA PDFs with container/ISSN-L
@@ -28,34 +11,6 @@ x creation of editgroup via auto_batch needs extra checks
 - searching 'N/A' is a bug, because not quoted; auto-quote it?
 - author (contrib) names not getting included in search (unless explicit)
 - fatcat flask lookup ValueError should return 4xx (and message?)
-
-## Next Schema Iteration (0.3.0)
-
-Changes to SQL (and swagger):
-
-X missing SQL indices: `ENTITY_edit.editgroup_id, ENTITY_edit.ident_id`
-X structured names in contribs (given/sur)
-X `release_status` => `release_stage`
-X size on webcapture CDX lines (we fetch for sha256 anyways, so easy to calculate)
-X `ark_id` release identifier
-X `mag_id` (microsoft academic graph) release identifier
-
-X `withdrawn_date`, `withdrawn_state`, and retraction as a release stage
-    => and `withdrawn_year`?
-X subtitle as a string field
-    => but what about translation? `original_subtitle`? just combine them?
-    => combine in elasticsearch 'title' field
-X releases: 'number' (eg, report numbers) and 'version' (for numbered variants) fields
-
-Changes to swagger only:
-
-- refactor entity mutation (CUD) endpoints to be like `/editgroup/{editgroup_id}/release/{ident}`
-    => changes editgroup_id from query param to URL param
-- changelog API endpoint should needs expand=editors option
-    => editors in a bunch of other return types also?
-- include 'created' in editgroup object (already in SQL)
-x FileEntityUrls => FileEntityUrl (and similar)
-? refactor bulk POST to include editgroup plus array of entity objects (instead of just a couple fields as query params)
 
 ## Next Full Release "Touch"
 
@@ -69,6 +24,7 @@ Want to minimize edit counts, so will bundle a bunch of changes
 
 ## Production Public Launch Blockers
 
+- update edit flow
 - view edit revisions in webface
 - audit fatcat metadata for CC-0
 - guide updates for auth
@@ -111,7 +67,7 @@ Want to minimize edit counts, so will bundle a bunch of changes
 - page-one.live.cf.public.springer.com seems to serve up bogus one-pagers; should exclude
 - QA sentry has very little host info; also not URL of request
 - elastic schemas:
-    release: drop revision?; container_id; creator_id
+    release: creator_id
         should `release_year` be of date type, instead of int?
     files: domain list; mimetype; release count; url count; web/publisher/etc;
         size; has_md5/sha256/sha1; in_ia, in_shadow
@@ -130,7 +86,7 @@ Want to minimize edit counts, so will bundle a bunch of changes
 
 - `poster` as a `release_type`
 - "revert editgroup" mechanism (creates new editgroup)
-- can guess some `release_status` of files by looking at wayback date vs.
+- can guess some `release_stage` of files by looking at wayback date vs.
   published date
 - ORCID apparently has 37 mil "work activities" (patents, etc), and only 14 mil
   unique DOIs; could import those other "work activities"? do they have
@@ -138,7 +94,7 @@ Want to minimize edit counts, so will bundle a bunch of changes
 - use https://github.com/codelucas/newspaper to extract fulltext+metadata from HTML crawls
 - `fatcat-auth` tool should support more caveats, both when generating new or mutating existing tokens
 - fast path to skip recursive redirect checks for bulk inserts
-- when getting "wip" entities, require a parameter ("allow_wip"), else get a 404
+- when API GET-ing "wip" entities, require a parameter ("allow_wip"), else get a 404
 - maybe better 'success' return message? eg, "success: true" flag
 - idea: allow users to generate their own editgroup UUIDs, to reduce a round
   trips and "hanging" editgroups (created but never edited)
@@ -169,7 +125,6 @@ Want to minimize edit counts, so will bundle a bunch of changes
     "Full title page with Editorial board (with Elsevier tree)"
     "Advisory Board Editorial Board"
 - better/complete reltypes probably good (eg, list of IRs, academic domain)
-- 'expand' in lookups (derp! for single hit lookups)
 - include crossref-capitalized DOI in extra
 - manifest: multiple URLs per SHA1
 - crossref: relations ("is-preprint-of")
@@ -177,16 +132,12 @@ Want to minimize edit counts, so will bundle a bunch of changes
 - special "alias" DOIs... in crossref metadata?
 
 new importers:
-- pubmed (medline) (filtered)
-    => and/or, use pubmed ID lookups on crossref import
-- arxiv.org
 - DOAJ
 - CORE (filtered)
 - semantic scholar (up to 39 million; includes author de-dupe)
 
 ## Guide / Book / Style
 
-- release_type, release_status, url.rel schemas (enforced in API)
 - more+better terms+policies: https://tosdr.org/index.html
 
 ## Fun Features
@@ -199,7 +150,6 @@ new importers:
     => create edit, redirect user to editgroup submit page
 - python client tool and library in pypi
     => or maybe rust?
-- bibtext (etc) export
 
 ## Metadata Harvesting
 
@@ -207,9 +157,10 @@ new importers:
 
 ## Schema / Entity Fields
 
+- file type/scope/coverage: "fulltext", "abstract", etc
 - elastic transform should only include authors, not editors (?)
-- `retracted`, `translation`, and perhaps `corrected` as flags on releases, instead of release_status?
-    => see notes file on retractions, etc
+- `translation_of` field on releases (or similar/general). `retraction_of` to a
+  specific release? `alias_of`/`duplicate_of`
 - 'part-of' relation for releases (release to release, eg for book chapters) and possibly containers
 - `container_type` for containers (journal, conference, book series, etc)
     => in schema, needs vocabulary and implementation
@@ -222,7 +173,6 @@ new importers:
 
 - include that ISO library to do lang/country name decodes
 - container-name when no `container_id`. eg: 10.1016/b978-0-08-037302-7.50022-7
-- fileset/webcapture webface anything
 
 ## Other / Backburner
 
