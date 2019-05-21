@@ -86,10 +86,16 @@ def release_to_elasticsearch(entity, force_bool=True):
     t['ref_count'] = len(release.refs or [])
     t['contrib_count'] = len(release.contribs or [])
     contrib_names = []
+    creator_ids = []
     for c in (release.contribs or []):
         if c.raw_name:
             contrib_names.append(c.raw_name)
+        elif c.surname:
+            contrib_names.append(c.surname)
+        if c.creator_id:
+            creator_ids.append(c.creator_id)
     t['contrib_names'] = contrib_names
+    t['creator_ids'] = creator_ids
 
     container = release.container
     if container:

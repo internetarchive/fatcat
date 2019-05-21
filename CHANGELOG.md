@@ -65,6 +65,7 @@ This version includes some backward-incompatible changes.
 - allow expanding `releases` for file, fileset, and webcapture entities.
   Expanded release entities have their abstracts and refs hidden by default
   (for performance)
+- `creator_ids` in release elasticsearch schema, for lookups
 
 ## [0.2.2] - 2019-05-08
 
