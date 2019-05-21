@@ -1002,7 +1002,6 @@ impl EntityCrud for FileEntity {
 
     generic_db_get!(file_ident, file_rev);
     generic_db_get_rev!(file_rev);
-    generic_db_expand!();
     generic_db_create!(file_ident, file_edit);
     generic_db_create_batch!(file_ident, file_edit);
     generic_db_update!(file_ident, file_edit);
@@ -1027,6 +1026,7 @@ impl EntityCrud for FileEntity {
             urls: None,
             mimetype: None,
             release_ids: None,
+            releases: None,
             state: Some(ident_row.state().unwrap().shortname()),
             ident: Some(FatcatId::from_uuid(&ident_row.id).to_string()),
             revision: ident_row.rev_id.map(|u| u.to_string()),
@@ -1036,6 +1036,32 @@ impl EntityCrud for FileEntity {
             extra: None,
             edit_extra: None,
         })
+    }
+
+    fn db_expand(&mut self, conn: &DbConn, expand: ExpandFlags) -> Result<()> {
+        // Don't expand deleted entities
+        if self.state == Some("deleted".to_string()) {
+            return Ok(());
+        }
+        // Could potentially hit this code path when expanding a redirected entity or bare
+        // revision. In either case, `self.release_ids` should already be set.
+        if expand.releases && self.release_ids.is_some() {
+            if let Some(release_ids) = &self.release_ids {
+                self.releases = Some(
+                    release_ids
+                        .iter()
+                        .map(|release_id| {
+                            Ok(ReleaseEntity::db_get(
+                                conn,
+                                FatcatId::from_str(release_id)?,
+                                HideFlags::none(),
+                            )?)
+                        })
+                        .collect::<Result<Vec<ReleaseEntity>>>()?,
+                );
+            };
+        }
+        Ok(())
     }
 
     fn db_from_row(
@@ -1078,6 +1104,7 @@ impl EntityCrud for FileEntity {
             urls: Some(urls),
             mimetype: rev_row.mimetype,
             release_ids: Some(release_ids.iter().map(|fcid| fcid.to_string()).collect()),
+            releases: None,
             state,
             ident: ident_id,
             revision: Some(rev_row.id.to_string()),
@@ -1179,7 +1206,6 @@ impl EntityCrud for FilesetEntity {
 
     generic_db_get!(fileset_ident, fileset_rev);
     generic_db_get_rev!(fileset_rev);
-    generic_db_expand!();
     generic_db_create!(fileset_ident, fileset_edit);
     generic_db_create_batch!(fileset_ident, fileset_edit);
     generic_db_update!(fileset_ident, fileset_edit);
@@ -1200,6 +1226,7 @@ impl EntityCrud for FilesetEntity {
             manifest: None,
             urls: None,
             release_ids: None,
+            releases: None,
             state: Some(ident_row.state().unwrap().shortname()),
             ident: Some(FatcatId::from_uuid(&ident_row.id).to_string()),
             revision: ident_row.rev_id.map(|u| u.to_string()),
@@ -1209,6 +1236,32 @@ impl EntityCrud for FilesetEntity {
             extra: None,
             edit_extra: None,
         })
+    }
+
+    fn db_expand(&mut self, conn: &DbConn, expand: ExpandFlags) -> Result<()> {
+        // Don't expand deleted entities
+        if self.state == Some("deleted".to_string()) {
+            return Ok(());
+        }
+        // Could potentially hit this code path when expanding a redirected entity or bare
+        // revision. In either case, `self.release_ids` should already be set.
+        if expand.releases && self.release_ids.is_some() {
+            if let Some(release_ids) = &self.release_ids {
+                self.releases = Some(
+                    release_ids
+                        .iter()
+                        .map(|release_id| {
+                            Ok(ReleaseEntity::db_get(
+                                conn,
+                                FatcatId::from_str(release_id)?,
+                                HideFlags::none(),
+                            )?)
+                        })
+                        .collect::<Result<Vec<ReleaseEntity>>>()?,
+                );
+            };
+        }
+        Ok(())
     }
 
     fn db_from_row(
@@ -1261,6 +1314,7 @@ impl EntityCrud for FilesetEntity {
             manifest: Some(manifest),
             urls: Some(urls),
             release_ids: Some(release_ids.iter().map(|fcid| fcid.to_string()).collect()),
+            releases: None,
             state,
             ident: ident_id,
             revision: Some(rev_row.id.to_string()),
@@ -1387,7 +1441,6 @@ impl EntityCrud for WebcaptureEntity {
 
     generic_db_get!(webcapture_ident, webcapture_rev);
     generic_db_get_rev!(webcapture_rev);
-    generic_db_expand!();
     generic_db_create!(webcapture_ident, webcapture_edit);
     generic_db_create_batch!(webcapture_ident, webcapture_edit);
     generic_db_update!(webcapture_ident, webcapture_edit);
@@ -1410,6 +1463,7 @@ impl EntityCrud for WebcaptureEntity {
             original_url: None,
             timestamp: None,
             release_ids: None,
+            releases: None,
             state: Some(ident_row.state().unwrap().shortname()),
             ident: Some(FatcatId::from_uuid(&ident_row.id).to_string()),
             revision: ident_row.rev_id.map(|u| u.to_string()),
@@ -1419,6 +1473,32 @@ impl EntityCrud for WebcaptureEntity {
             extra: None,
             edit_extra: None,
         })
+    }
+
+    fn db_expand(&mut self, conn: &DbConn, expand: ExpandFlags) -> Result<()> {
+        // Don't expand deleted entities
+        if self.state == Some("deleted".to_string()) {
+            return Ok(());
+        }
+        // Could potentially hit this code path when expanding a redirected entity or bare
+        // revision. In either case, `self.release_ids` should already be set.
+        if expand.releases && self.release_ids.is_some() {
+            if let Some(release_ids) = &self.release_ids {
+                self.releases = Some(
+                    release_ids
+                        .iter()
+                        .map(|release_id| {
+                            Ok(ReleaseEntity::db_get(
+                                conn,
+                                FatcatId::from_str(release_id)?,
+                                HideFlags::none(),
+                            )?)
+                        })
+                        .collect::<Result<Vec<ReleaseEntity>>>()?,
+                );
+            };
+        }
+        Ok(())
     }
 
     fn db_from_row(
@@ -1475,6 +1555,7 @@ impl EntityCrud for WebcaptureEntity {
             original_url: Some(rev_row.original_url),
             timestamp: Some(chrono::DateTime::from_utc(rev_row.timestamp, chrono::Utc)),
             release_ids: Some(release_ids.iter().map(|fcid| fcid.to_string()).collect()),
+            releases: None,
             state,
             ident: ident_id,
             revision: Some(rev_row.id.to_string()),
