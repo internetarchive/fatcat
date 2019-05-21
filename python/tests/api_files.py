@@ -60,16 +60,14 @@ def test_file(api):
 
 def test_file_examples(api):
 
-    api.lookup_file(sha256='ffc1005680cb620eec4c913437dfabbf311b535cfe16cbaeb2faec1f92afc362')
+    f1 = api.lookup_file(sha256='ffc1005680cb620eec4c913437dfabbf311b535cfe16cbaeb2faec1f92afc362')
+    assert f1.releases is None
 
-    f1 = api.get_file('aaaaaaaaaaaaamztaaaaaaaaam')
+    f1 = api.get_file('aaaaaaaaaaaaamztaaaaaaaaam', expand="releases")
     assert f1.sha256 == "ffc1005680cb620eec4c913437dfabbf311b535cfe16cbaeb2faec1f92afc362"
-
-    # TODO: no "get_file_releases" or expand thing yet...
-    #f1r = api.get_file_releases("aaaaaaaaaaaaamztaaaaaaaaam")
-    #assert f1r
+    assert f1.releases[0].ident
 
     # expansion (back from release)
-    #r1 = api.get_release(f1r[0].ident, expand="files")
-    #assert r1.files
-    #assert f1.ident in [f.ident for f in r1.files]
+    r1 = api.get_release(f1.releases[0].ident, expand="files")
+    assert r1.files
+    assert f1.ident in [f.ident for f in r1.files]

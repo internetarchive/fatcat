@@ -74,11 +74,14 @@ def test_fileset(api):
 
 def test_fileset_examples(api):
     fs3 = api.get_fileset('aaaaaaaaaaaaaztgaaaaaaaaam')
+    assert fs3.releases is None
+    fs3 = api.get_fileset('aaaaaaaaaaaaaztgaaaaaaaaam', expand="releases")
 
     assert fs3.urls[0].url == 'http://other-personal-blog.name/dataset/'
     assert fs3.urls[1].rel == 'archive'
     assert fs3.manifest[1].md5 == 'f4de91152c7ab9fdc2a128f962faebff'
     assert fs3.manifest[1].extra['mimetype'] == 'application/gzip'
+    assert fs3.releases[0].ident
 
 def test_bad_fileset(api):
 

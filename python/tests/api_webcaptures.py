@@ -94,10 +94,13 @@ def test_webcapture(api):
 
 def test_webcapture_examples(api):
     wc3 = api.get_webcapture('aaaaaaaaaaaaa53xaaaaaaaaam')
+    assert wc3.releases is None
+    wc3 = api.get_webcapture('aaaaaaaaaaaaa53xaaaaaaaaam', expand="releases")
 
     assert wc3.cdx[0].surt == 'org,asheesh)/'
     assert wc3.cdx[1].sha1 == 'a637f1d27d9bcb237310ed29f19c07e1c8cf0aa5'
     assert wc3.archive_urls[1].rel == 'warc'
+    assert wc3.releases[0].ident
 
 
 def test_bad_webcapture(api):

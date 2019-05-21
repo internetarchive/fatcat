@@ -29,6 +29,12 @@ def test_lookup_hide_extend(api):
     assert r.container.issnl
     assert r.abstracts == []
 
+    f = api.lookup_file(sha256='ffc1005680cb620eec4c913437dfabbf311b535cfe16cbaeb2faec1f92afc362')
+    assert f.releases is None
+
+    f = api.lookup_file(sha256='ffc1005680cb620eec4c913437dfabbf311b535cfe16cbaeb2faec1f92afc362', expand='releases')
+    assert f.releases[0].ident == f.release_ids[0]
+
 def test_unexpected_body(api):
 
     eg = quick_eg(api)
