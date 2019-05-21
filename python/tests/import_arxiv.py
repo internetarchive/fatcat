@@ -69,7 +69,8 @@ def test_arxiv_xml_parse(arxiv_importer):
     # matched by ISSN, so shouldn't be in there?
     #assert extra['container_name'] == "Abstracts of the Papers Communicated to the Royal Society of London"
     assert len(r1.contribs) == 4
-    # XXX: extra['arxiv'] stuff
+    assert r1.extra['arxiv']['categories'] == ['cond-mat.stat-mech', 'physics.bio-ph', 'physics.data-an']
+    assert r1.extra['arxiv']['base_id'] == '1810.09584'
 
     assert r1.contribs[0].raw_name == "Raphael Chetrite"
     assert r1.contribs[0].role == "author"

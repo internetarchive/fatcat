@@ -45,7 +45,6 @@ class ArxivRawImporter(EntityImporter):
     """
     Converts arxiv.org "arXivRaw" OAI-PMH XML records to fatcat release entities
 
-    TODO: this will require a special importer that keeps works together
     TODO: arxiv_id lookup in API (rust) with no version specified should select
           the "most recent" version; can be a simple sort?
     """
@@ -105,6 +104,7 @@ class ArxivRawImporter(EntityImporter):
 
         # don't know!
         release_type = "article"
+        number = None
 
         if metadata.find('journal-ref') and metadata.find('journal-ref').string:
             journal_ref = metadata.find('journal-ref').string.strip()
@@ -112,7 +112,7 @@ class ArxivRawImporter(EntityImporter):
             if "conf." in journal_ref.lower() or "proc." in journal_ref.lower():
                 release_type = "conference-paper"
         if metadata.find('report-no') and metadata.find('report-no').string:
-            extra['number'] = metadata.find('report-no').string.strip()
+            number = metadata.find('report-no').string.strip()
             release_type = "report"
         if metadata.find('acm-class') and metadata.find('acm-class').string:
             extra_arxiv['acm_class'] = metadata.find('acm_class').string.strip()
@@ -161,7 +161,7 @@ class ArxivRawImporter(EntityImporter):
             arxiv_id = base_id + version['version']
             release_date = version.date.string.strip()
             release_date = datetime.datetime.strptime(release_date, "%a, %d %b %Y %H:%M:%S %Z").date()
-            # XXX: source_type?
+            # TODO: source_type?
             versions.append(fatcat_client.ReleaseEntity(
                 work_id=None,
                 title=title,
@@ -174,6 +174,7 @@ class ArxivRawImporter(EntityImporter):
                 ext_ids=fatcat_client.ReleaseExtIds(
                     arxiv=arxiv_id,
                 ),
+                number=number,
                 language=lang,
                 license_slug=license_slug,
                 abstracts=abstracts,
