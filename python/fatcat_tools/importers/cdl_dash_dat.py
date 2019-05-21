@@ -86,8 +86,8 @@ def cdl_dash_release(meta, extra=None):
     contribs = []
     for creator in meta['creator']:
         contribs.append(ReleaseContrib(
-            # TODO: given_name=creator['given'],
-            # TODO: surname=creator['family'],
+            given_name=creator['given'],
+            surname=creator['family'],
             # sorry everybody
             raw_name="{} {}".format(creator['given'], creator['family']),
             raw_affiliation=creator.get('affiliation'),
