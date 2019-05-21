@@ -18,6 +18,7 @@ import six
 
 from fatcat_client.models.fileset_file import FilesetFile  # noqa: F401,E501
 from fatcat_client.models.fileset_url import FilesetUrl  # noqa: F401,E501
+from fatcat_client.models.release_entity import ReleaseEntity  # noqa: F401,E501
 
 
 class FilesetEntity(object):
@@ -34,6 +35,7 @@ class FilesetEntity(object):
                             and the value is json key in definition.
     """
     swagger_types = {
+        'releases': 'list[ReleaseEntity]',
         'release_ids': 'list[str]',
         'urls': 'list[FilesetUrl]',
         'manifest': 'list[FilesetFile]',
@@ -46,6 +48,7 @@ class FilesetEntity(object):
     }
 
     attribute_map = {
+        'releases': 'releases',
         'release_ids': 'release_ids',
         'urls': 'urls',
         'manifest': 'manifest',
@@ -57,9 +60,10 @@ class FilesetEntity(object):
         'edit_extra': 'edit_extra'
     }
 
-    def __init__(self, release_ids=None, urls=None, manifest=None, state=None, ident=None, revision=None, redirect=None, extra=None, edit_extra=None):  # noqa: E501
+    def __init__(self, releases=None, release_ids=None, urls=None, manifest=None, state=None, ident=None, revision=None, redirect=None, extra=None, edit_extra=None):  # noqa: E501
         """FilesetEntity - a model defined in Swagger"""  # noqa: E501
 
+        self._releases = None
         self._release_ids = None
         self._urls = None
         self._manifest = None
@@ -71,6 +75,8 @@ class FilesetEntity(object):
         self._edit_extra = None
         self.discriminator = None
 
+        if releases is not None:
+            self.releases = releases
         if release_ids is not None:
             self.release_ids = release_ids
         if urls is not None:
@@ -89,6 +95,29 @@ class FilesetEntity(object):
             self.extra = extra
         if edit_extra is not None:
             self.edit_extra = edit_extra
+
+    @property
+    def releases(self):
+        """Gets the releases of this FilesetEntity.  # noqa: E501
+
+        Optional; GET-only  # noqa: E501
+
+        :return: The releases of this FilesetEntity.  # noqa: E501
+        :rtype: list[ReleaseEntity]
+        """
+        return self._releases
+
+    @releases.setter
+    def releases(self, releases):
+        """Sets the releases of this FilesetEntity.
+
+        Optional; GET-only  # noqa: E501
+
+        :param releases: The releases of this FilesetEntity.  # noqa: E501
+        :type: list[ReleaseEntity]
+        """
+
+        self._releases = releases
 
     @property
     def release_ids(self):

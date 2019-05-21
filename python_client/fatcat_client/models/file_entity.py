@@ -17,6 +17,7 @@ import re  # noqa: F401
 import six
 
 from fatcat_client.models.file_url import FileUrl  # noqa: F401,E501
+from fatcat_client.models.release_entity import ReleaseEntity  # noqa: F401,E501
 
 
 class FileEntity(object):
@@ -33,6 +34,7 @@ class FileEntity(object):
                             and the value is json key in definition.
     """
     swagger_types = {
+        'releases': 'list[ReleaseEntity]',
         'release_ids': 'list[str]',
         'mimetype': 'str',
         'urls': 'list[FileUrl]',
@@ -49,6 +51,7 @@ class FileEntity(object):
     }
 
     attribute_map = {
+        'releases': 'releases',
         'release_ids': 'release_ids',
         'mimetype': 'mimetype',
         'urls': 'urls',
@@ -64,9 +67,10 @@ class FileEntity(object):
         'state': 'state'
     }
 
-    def __init__(self, release_ids=None, mimetype=None, urls=None, sha256=None, sha1=None, md5=None, size=None, edit_extra=None, extra=None, redirect=None, revision=None, ident=None, state=None):  # noqa: E501
+    def __init__(self, releases=None, release_ids=None, mimetype=None, urls=None, sha256=None, sha1=None, md5=None, size=None, edit_extra=None, extra=None, redirect=None, revision=None, ident=None, state=None):  # noqa: E501
         """FileEntity - a model defined in Swagger"""  # noqa: E501
 
+        self._releases = None
         self._release_ids = None
         self._mimetype = None
         self._urls = None
@@ -82,6 +86,8 @@ class FileEntity(object):
         self._state = None
         self.discriminator = None
 
+        if releases is not None:
+            self.releases = releases
         if release_ids is not None:
             self.release_ids = release_ids
         if mimetype is not None:
@@ -108,6 +114,29 @@ class FileEntity(object):
             self.ident = ident
         if state is not None:
             self.state = state
+
+    @property
+    def releases(self):
+        """Gets the releases of this FileEntity.  # noqa: E501
+
+        Optional; GET-only  # noqa: E501
+
+        :return: The releases of this FileEntity.  # noqa: E501
+        :rtype: list[ReleaseEntity]
+        """
+        return self._releases
+
+    @releases.setter
+    def releases(self, releases):
+        """Sets the releases of this FileEntity.
+
+        Optional; GET-only  # noqa: E501
+
+        :param releases: The releases of this FileEntity.  # noqa: E501
+        :type: list[ReleaseEntity]
+        """
+
+        self._releases = releases
 
     @property
     def release_ids(self):

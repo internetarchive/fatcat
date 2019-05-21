@@ -188,6 +188,11 @@ definitions:
         type: array
         items:
           <<: *FATCATIDENT
+      releases:
+        description: "Optional; GET-only"
+        type: array
+        items:
+          $ref: "#/definitions/release_entity"
   file_url:
     type: object
     required:
@@ -218,6 +223,11 @@ definitions:
         type: array
         items:
           <<: *FATCATIDENT
+      releases:
+        description: "Optional; GET-only"
+        type: array
+        items:
+          $ref: "#/definitions/release_entity"
   fileset_url:
     type: object
     required:
@@ -278,6 +288,11 @@ definitions:
         type: array
         items:
           <<: *FATCATIDENT
+      releases:
+        description: "Optional; GET-only"
+        type: array
+        items:
+          $ref: "#/definitions/release_entity"
   webcapture_cdx_line:
     type: object
     required:
@@ -1382,7 +1397,7 @@ paths:
           in: query
           type: string
           required: false
-          description: "List of sub-entities to expand in response. For files, none accepted (yet)."
+          description: "List of sub-entities to expand in response. For files, `releases` is accepted."
         - name: hide
           in: query
           type: string
@@ -1637,7 +1652,7 @@ paths:
           in: query
           type: string
           required: false
-          description: "List of sub-entities to expand in response. For filesets, none accepted (yet)."
+          description: "List of sub-entities to expand in response. For filesets, `releases` is accepted."
         - name: hide
           in: query
           type: string
@@ -1858,7 +1873,7 @@ paths:
           in: query
           type: string
           required: false
-          description: "List of sub-entities to expand in response. For webcaptures, none accepted (yet)."
+          description: "List of sub-entities to expand in response. For webcaptures, `releases` is accepted."
         - name: hide
           in: query
           type: string

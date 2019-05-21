@@ -5463,7 +5463,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str ident: (required)
-        :param str expand: List of sub-entities to expand in response. For files, none accepted (yet).
+        :param str expand: List of sub-entities to expand in response. For files, `releases` is accepted.
         :param str hide: List of entity fields to elide in response. For files, none accepted (yet).
         :return: FileEntity
                  If the method is called asynchronously,
@@ -5486,7 +5486,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str ident: (required)
-        :param str expand: List of sub-entities to expand in response. For files, none accepted (yet).
+        :param str expand: List of sub-entities to expand in response. For files, `releases` is accepted.
         :param str hide: List of entity fields to elide in response. For files, none accepted (yet).
         :return: FileEntity
                  If the method is called asynchronously,
@@ -5984,7 +5984,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str ident: (required)
-        :param str expand: List of sub-entities to expand in response. For filesets, none accepted (yet).
+        :param str expand: List of sub-entities to expand in response. For filesets, `releases` is accepted.
         :param str hide: List of entity fields to elide in response. For filesets, 'manifest' is accepted.
         :return: FilesetEntity
                  If the method is called asynchronously,
@@ -6007,7 +6007,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str ident: (required)
-        :param str expand: List of sub-entities to expand in response. For filesets, none accepted (yet).
+        :param str expand: List of sub-entities to expand in response. For filesets, `releases` is accepted.
         :param str hide: List of entity fields to elide in response. For filesets, 'manifest' is accepted.
         :return: FilesetEntity
                  If the method is called asynchronously,
@@ -7329,7 +7329,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str ident: (required)
-        :param str expand: List of sub-entities to expand in response. For webcaptures, none accepted (yet).
+        :param str expand: List of sub-entities to expand in response. For webcaptures, `releases` is accepted.
         :param str hide: List of entity fields to elide in response. For webcaptures, 'cdx' is accepted.
         :return: WebcaptureEntity
                  If the method is called asynchronously,
@@ -7352,7 +7352,7 @@ class DefaultApi(object):
 
         :param async bool
         :param str ident: (required)
-        :param str expand: List of sub-entities to expand in response. For webcaptures, none accepted (yet).
+        :param str expand: List of sub-entities to expand in response. For webcaptures, `releases` is accepted.
         :param str hide: List of entity fields to elide in response. For webcaptures, 'cdx' is accepted.
         :return: WebcaptureEntity
                  If the method is called asynchronously,

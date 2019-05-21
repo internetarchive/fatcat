@@ -556,6 +556,11 @@ impl FileAutoBatch {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct FileEntity {
+    /// Optional; GET-only
+    #[serde(rename = "releases")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub releases: Option<Vec<models::ReleaseEntity>>,
+
     #[serde(rename = "release_ids")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub release_ids: Option<Vec<String>>,
@@ -616,6 +621,7 @@ pub struct FileEntity {
 impl FileEntity {
     pub fn new() -> FileEntity {
         FileEntity {
+            releases: None,
             release_ids: None,
             mimetype: None,
             urls: None,
@@ -668,6 +674,11 @@ impl FilesetAutoBatch {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct FilesetEntity {
+    /// Optional; GET-only
+    #[serde(rename = "releases")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub releases: Option<Vec<models::ReleaseEntity>>,
+
     #[serde(rename = "release_ids")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub release_ids: Option<Vec<String>>,
@@ -712,6 +723,7 @@ pub struct FilesetEntity {
 impl FilesetEntity {
     pub fn new() -> FilesetEntity {
         FilesetEntity {
+            releases: None,
             release_ids: None,
             urls: None,
             manifest: None,
@@ -1269,6 +1281,11 @@ impl WebcaptureCdxLine {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct WebcaptureEntity {
+    /// Optional; GET-only
+    #[serde(rename = "releases")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub releases: Option<Vec<models::ReleaseEntity>>,
+
     #[serde(rename = "release_ids")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub release_ids: Option<Vec<String>>,
@@ -1322,6 +1339,7 @@ pub struct WebcaptureEntity {
 impl WebcaptureEntity {
     pub fn new() -> WebcaptureEntity {
         WebcaptureEntity {
+            releases: None,
             release_ids: None,
             timestamp: None,
             original_url: None,
