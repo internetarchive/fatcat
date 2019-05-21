@@ -605,7 +605,6 @@ pub fn check_withdrawn_status(raw: &str) -> Result<()> {
         "safety",
         "national-security",
         "spam",
-
         // potential more-specific statuses
         //"author-misconduct",
         //"author-mistake",
@@ -672,4 +671,3 @@ fn test_check_contrib_role() {
     assert!(check_contrib_role("EDITOR").is_err());
     assert!(check_contrib_role("editor ").is_err());
 }
-
