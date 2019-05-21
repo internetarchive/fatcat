@@ -199,9 +199,15 @@ def test_controlled_vocab(api):
     r1.release_type = "article"
     api.create_release(eg.editgroup_id, r1)
 
-    r2 = ReleaseEntity(title="something elase", release_stage="pre-print", ext_ids=ReleaseExtIds())
+    r2 = ReleaseEntity(title="something else", release_stage="pre-print", ext_ids=ReleaseExtIds())
     with pytest.raises(fatcat_client.rest.ApiException):
         api.create_release(eg.editgroup_id, r2)
     r2.release_stage = "published"
     api.create_release(eg.editgroup_id, r2)
+
+    r3 = ReleaseEntity(title="something else", withdrawn_status="boondogle", ext_ids=ReleaseExtIds())
+    with pytest.raises(fatcat_client.rest.ApiException):
+        api.create_release(eg.editgroup_id, r3)
+    r3.withdrawn_status = "spam"
+    api.create_release(eg.editgroup_id, r3)
 

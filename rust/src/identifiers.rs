@@ -595,6 +595,44 @@ fn test_check_release_stage() {
     assert!(check_release_stage("draft ").is_err());
 }
 
+pub fn check_withdrawn_status(raw: &str) -> Result<()> {
+    let valid_types = vec![
+        // Didn't have a controlled vocab so made one up
+        "withdrawn", // generic
+        "retracted",
+        "concern",
+        "legal",
+        "safety",
+        "national-security",
+        "spam",
+
+        // potential more-specific statuses
+        //"author-misconduct",
+        //"author-mistake",
+        //"publisher-misconduct",
+        //"publisher-mistake",
+        //"unreliable",
+    ];
+    for good in valid_types {
+        if raw == good {
+            return Ok(());
+        }
+    }
+    Err(FatcatError::NotInControlledVocabulary(
+        "withdrawn_status (controlled vocabulary)".to_string(),
+        raw.to_string(),
+    ))?
+}
+
+#[test]
+fn test_check_withdrawn_status() {
+    assert!(check_withdrawn_status("legal").is_ok());
+    assert!(check_withdrawn_status("withdrawn").is_ok());
+    assert!(check_withdrawn_status("boondogle").is_err());
+    assert!(check_withdrawn_status("").is_err());
+    assert!(check_withdrawn_status("editor ").is_err());
+}
+
 pub fn check_contrib_role(raw: &str) -> Result<()> {
     let valid_types = vec![
         // Citation Style Language official role types
@@ -635,5 +673,3 @@ fn test_check_contrib_role() {
     assert!(check_contrib_role("editor ").is_err());
 }
 
-// TODO: make the above checks "more correct"
-// TODO: check ISBN-13
