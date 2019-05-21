@@ -606,7 +606,7 @@ fn test_post_file() {
                     {"url": "http://web.archive.org/2/http://archive.org/asdf.txt", "rel": "webarchive" }
                 ],
                 "mimetype": "application/pdf",
-                "releases": [
+                "release_ids": [
                     "aaaaaaaaaaaaarceaaaaaaaaae",
                     "aaaaaaaaaaaaarceaaaaaaaaai"
                 ],
@@ -674,7 +674,7 @@ fn test_post_fileset() {
                     {"url": "http://archive.org/download/dataset-0123/", "rel": "archive" },
                     {"url": "http://homepage.name/dataset/", "rel": "web" }
                 ],
-                "releases": [
+                "release_ids": [
                     "aaaaaaaaaaaaarceaaaaaaaaae",
                     "aaaaaaaaaaaaarceaaaaaaaaai"
                 ],
@@ -743,7 +743,7 @@ fn test_post_webcapture() {
                     {"url": "http://archive.org/download/dataset-0123/", "rel": "archive" },
                     {"url": "http://homepage.name/dataset/", "rel": "web" }
                 ],
-                "releases": [
+                "release_ids": [
                     "aaaaaaaaaaaaarceaaaaaaaaae",
                     "aaaaaaaaaaaaarceaaaaaaaaai"
                 ],
