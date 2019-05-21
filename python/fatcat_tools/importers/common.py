@@ -263,6 +263,7 @@ class EntityImporter:
         self._orcid_id_map = dict()
         self._orcid_regex = re.compile("^\\d{4}-\\d{4}-\\d{4}-\\d{3}[\\dX]$")
         self._doi_id_map = dict()
+        self._pmid_id_map = dict()
 
     def reset(self):
         self.counts = Counter({'skip': 0, 'insert': 0, 'update': 0, 'exists': 0})
@@ -410,7 +411,9 @@ class EntityImporter:
         return doi.startswith("10.") and doi.count("/") >= 1
 
     def lookup_doi(self, doi):
-        """Caches calls to the doi lookup API endpoint in a local dict"""
+        """Caches calls to the doi lookup API endpoint in a local dict
+
+        For identifier lookups only (not full object fetches)"""
         assert self.is_doi(doi)
         doi = doi.lower()
         if doi in self._doi_id_map:
@@ -423,6 +426,22 @@ class EntityImporter:
             # If anything other than a 404 (not found), something is wrong
             assert ae.status == 404
         self._doi_id_map[doi] = release_id # might be None
+        return release_id
+
+    def lookup_pmid(self, pmid):
+        """Caches calls to the pmid lookup API endpoint in a local dict
+
+        For identifier lookups only (not full object fetches)"""
+        if pmid in self._pmid_id_map:
+            return self._pmid_id_map[pmid]
+        release_id = None
+        try:
+            rv = self.api.lookup_release(pmid=pmid)
+            release_id = rv.ident
+        except ApiException as ae:
+            # If anything other than a 404 (not found), something is wrong
+            assert ae.status == 404
+        self._pmid_id_map[pmid] = release_id # might be None
         return release_id
 
     def is_issnl(self, issnl):

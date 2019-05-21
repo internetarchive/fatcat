@@ -108,14 +108,13 @@ MONTH_ABBR_MAP = {
 class PubmedImporter(EntityImporter):
     """
     Importer for PubMed/MEDLINE XML metadata.
+
+    If lookup_refs is true, will do identifer-based lookups for all references.
     
     TODO: MEDLINE doesn't include PMC/OA license; could include in importer?
-    TODO: clean (ftfy) title, original title, etc
-    XXX: withdrawn
-    XXX: full author names
     """
 
-    def __init__(self, api, issn_map_file, **kwargs):
+    def __init__(self, api, issn_map_file, lookup_refs=False, **kwargs):
 
         eg_desc = kwargs.get('editgroup_description',
             "Automated import of PubMed/MEDLINE XML metadata")
@@ -127,6 +126,7 @@ class PubmedImporter(EntityImporter):
             editgroup_extra=eg_extra,
             **kwargs)
 
+        self.lookup_refs = lookup_refs
         extid_map_file = kwargs.get('extid_map_file')
         self.extid_map_db = None
         if extid_map_file:
@@ -178,8 +178,7 @@ class PubmedImporter(EntityImporter):
 
         pmcid = identifiers.find("ArticleId", IdType="pmc")
         if pmcid:
-            # XXX: strip the version part? or retain?
-            pmcid = pmcid.string.split('.')[0]
+            pmcid = pmcid.string
 
         release_type = None
         pub_types = []
@@ -203,8 +202,12 @@ class PubmedImporter(EntityImporter):
             release_stage = "updated"
         if medline.Article.PublicationTypeList.find(string="Retraction of Publication"):
             release_stage = "retraction"
+
+        withdrawn_status = None
         if medline.Article.PublicationTypeList.find(string="Retracted Publication"):
             withdrawn_status = "retracted"
+        elif medline.find("CommentsCorrections", RefType="ExpressionOfConcernIn"):
+            withdrawn_status = "concern"
 
         pages = medline.find('MedlinePgn')
         if pages:
@@ -219,7 +222,7 @@ class PubmedImporter(EntityImporter):
             if title.startswith('[') and title.endswith(']'):
                 title = title[1:-1]
         else:
-            # TODO: will filter out later
+            # will filter out later
             title = None
 
         original_title = medline.Article.find("VernacularTitle", recurse=False)
@@ -229,11 +232,9 @@ class PubmedImporter(EntityImporter):
                 original_title = original_title[:-1]
 
         # TODO: happening in alpha order, not handling multi-language well.
-        # also need to convert lang codes: https://www.nlm.nih.gov/bsd/language_table.html
         language = medline.Article.Language
         if language:
             language = language.string
-            # TODO: map to two-letter
             if language in ("und", "un"):
                 # "undetermined"
                 language = None
@@ -264,7 +265,9 @@ class PubmedImporter(EntityImporter):
         if issnl:
             container_id = self.lookup_issnl(issnl)
 
-        pub_date = journal.PubDate
+        pub_date = medline.Article.find('ArticleDate')
+        if not pub_date:
+            pub_date = journal.PubDate
         release_date = None
         release_year = None
         if pub_date.Year:
@@ -275,8 +278,6 @@ class PubmedImporter(EntityImporter):
                     MONTH_ABBR_MAP[pub_date.Month.string],
                     int(pub_date.Day.string))
                 release_date = release_date.isoformat()
-        elif pub_date.find("MedlineDate") and False: #XXX more/better date parsing?
-            release_year = int(pub_date.MedlineDate.string.split()[0][:4])
 
         if journal.find("Title"):
             container_name = journal.Title.string
@@ -288,7 +289,7 @@ class PubmedImporter(EntityImporter):
             ce = fatcat_client.ContainerEntity(
                 name=container_name,
                 container_type='journal',
-                #XXX: publisher not included?
+                #NOTE: publisher not included
                 issnl=issnl,
                 extra=(container_extra or None))
             ce_edit = self.create_container(ce)
@@ -305,16 +306,16 @@ class PubmedImporter(EntityImporter):
         ### Abstracts
         # "All abstracts are in English"
         abstracts = []
-        first_abstract = medline.find("AbstractText")
-        if first_abstract and first_abstract.get('NlmCategory'):
-            joined = "\n".join([m.get_text() for m in medline.find_all("AbstractText")])
+        primary_abstract = medline.find("Abstract")
+        if primary_abstract and primary_abstract.AbstractText.get('NlmCategory'):
+            joined = "\n".join([m.get_text() for m in primary_abstract.find_all("AbstractText")])
             abstracts.append(fatcat_client.ReleaseAbstract(
                 content=joined,
                 mimetype="text/plain",
                 lang="en",
             ))
-        else:
-            for abstract in medline.find_all("AbstractText"):
+        elif primary_abstract:
+            for abstract in primary_abstract.find_all("AbstractText"):
                 abstracts.append(fatcat_client.ReleaseAbstract(
                     content=abstract.get_text().strip(),
                     mimetype="text/plain",
@@ -327,6 +328,16 @@ class PubmedImporter(EntityImporter):
                         mimetype="application/mathml+xml",
                         lang="en",
                     ))
+        other_abstracts = medline.find_all("OtherAbstract")
+        for other in other_abstracts:
+            lang = "en"
+            if other.get('Language'):
+                lang = LANG_MAP_MARC.get(other['Language'])
+            abstracts.append(fatcat_client.ReleaseAbstract(
+                content=other.AbstractText.get_text().strip(),
+                mimetype="text/plain",
+                lang=lang,
+            ))
         if not abstracts:
             abstracts = None
 
@@ -334,6 +345,7 @@ class PubmedImporter(EntityImporter):
         contribs = []
         if medline.AuthorList:
             for author in medline.AuthorList.find_all("Author"):
+                creator_id = None
                 given_name = None
                 surname = None
                 raw_name = None
@@ -361,21 +373,24 @@ class PubmedImporter(EntityImporter):
                             orcid[8:12],
                             orcid[12:16],
                         )
-                    # XXX: do lookup by ORCID
-                    #contrib_extra['orcid'] = orcid
-                affiliation = author.find("Affiliation")
+                    creator_id = self.lookup_orcid(orcid)
+                    contrib_extra['orcid'] = orcid
+                affiliations = author.find_all("Affiliation")
                 raw_affiliation = None
-                if affiliation:
-                    raw_affiliation = affiliation.string
+                if affiliations:
+                    raw_affiliation = affiliations[0].string
+                    if len(affiliations) > 1:
+                        contrib_extra['more_affiliations'] = [ra.string for ra in affiliations[1:]]
                 if author.find("EqualContrib"):
                     # TODO: schema for this?
-                    contrib_extra['equal_contrib'] = True
+                    contrib_extra['equal'] = True
                 contribs.append(fatcat_client.ReleaseContrib(
                     raw_name=raw_name,
                     given_name=given_name,
                     surname=surname,
                     role="author",
                     raw_affiliation=raw_affiliation,
+                    creator_id=creator_id,
                     extra=contrib_extra,
                 ))
 
@@ -388,25 +403,33 @@ class PubmedImporter(EntityImporter):
         refs = []
         if pubmed.ReferenceList:
             for ref in pubmed.ReferenceList.find_all('Reference'):
-                ref_obj = dict()
                 ref_extra = dict()
                 ref_pmid = ref.find("ArticleId", IdType="pubmed")
+                ref_doi = ref.find("ArticleId", IdType="doi")
+                ref_release_id = None
                 if ref_pmid:
-                    ref_extra['pmid'] = ref_pmid.string
-                    # TODO: do reference lookups here based on PMID/DOI
+                    ref_pmid = ref_pmid.string.strip()
+                    ref_extra['pmid'] = ref_pmid
+                    if self.lookup_refs:
+                        ref_release_id = self.lookup_pmid(ref_pmid)
+                if ref_doi:
+                    ref_doi = ref_doi.string.lower().strip()
+                    ref_extra['doi'] = ref_doi
+                    if self.lookup_refs:
+                        ref_release_id = self.lookup_doi(ref_doi)
                 ref_raw = ref.Citation
                 if ref_raw:
                     ref_extra['unstructured'] = ref_raw.string
-                if ref_extra:
-                    ref_obj['extra'] = ref_extra
+                if not ref_extra:
+                    ref_extra = None
                 refs.append(fatcat_client.ReleaseRef(
-                    extra=ref_obj.get('extra'),
+                    target_release_id=ref_release_id,
+                    extra=ref_extra,
                 ))
         if not refs:
             refs = None
 
         # extra:
-        #   withdrawn_date
         #   translation_of
         #   subtitle
         #   aliases
@@ -418,14 +441,19 @@ class PubmedImporter(EntityImporter):
         if not extra:
             extra = None
 
+        title = clean(title)
+        if not title:
+            return None
+
         re = fatcat_client.ReleaseEntity(
             work_id=None,
-            title=clean(title),
+            title=title,
             original_title=clean(original_title),
             release_type=release_type,
             release_stage=release_stage,
             release_date=release_date,
             release_year=release_year,
+            withdrawn_status=withdrawn_status,
             ext_ids=fatcat_client.ReleaseExtIds(
                 doi=doi,
                 pmid=pmid,
