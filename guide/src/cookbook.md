@@ -37,7 +37,7 @@
 When bootstrapping a blank catalog, we need to insert 10s or 100s of millions
 of entities as fast as possible.
 
-1. Batch create (POST) a set of entities, with editgroup metadata included as
-   query parameters
-2. If not an adminstrator, or the `autoaccept` flag was not set, the editgroup
-   will need to be submitted and accepted as usual
+1. Batch create (POST) a set of entities, with editgroup metadata included
+   along with list of entities (all of a single type). Entire batch is inserted
+   and the editgroup accepted (requiring admin bits) in a single transaction.
+
