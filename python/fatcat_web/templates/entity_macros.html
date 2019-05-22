@@ -62,6 +62,7 @@
         <b><a href="/release/{{ release.ident }}">{{ release.title }}</a></b>
         <br><small>{{ release.release_stage or "unknown status" }}
             | {{ release.release_type or "unknown type" }}
+            {% if release.version %} | {{ release.version }}{% endif %}
             {% if release.license_slug %} | {{ release.license_slug }}{% endif %}
         </small>
         {% if release.ext_ids.doi %}
