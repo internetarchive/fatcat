@@ -29,7 +29,7 @@
 <table class="ui definition single line fixed compact small unstackable table">
 <tbody>
 {% for (key, value) in extra.items() %}
-  {% if key in ("ia", "crossref", "kbart") and value is mapping and value %}
+  {% if key in ("ia", "crossref", "kbart", "arxiv", "jstor", "pubmed") and value is mapping and value %}
     {% for (inner_key, inner_value) in value.items() %}
       <tr><td class="three wide right aligned"><code>{{ key }}.{{ inner_key }}</code></td>
           <td class="seven wide"><code>{{ inner_value }}</code>
