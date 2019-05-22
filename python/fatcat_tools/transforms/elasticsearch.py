@@ -42,6 +42,7 @@ def release_to_elasticsearch(entity, force_bool=True):
         ident = release.ident,
         state = release.state,
         revision = release.revision,
+        work_id = release.work_id,
         title = release.title,
         subtitle = release.subtitle,
         original_title = release.original_title,
