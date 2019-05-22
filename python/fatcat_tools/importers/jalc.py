@@ -98,7 +98,7 @@ class JalcImporter(EntityImporter):
                 doi = doi.replace('http://doi.org/', '')
             elif doi.startswith('https://doi.org/'):
                 doi = doi.replace('https://doi.org/', '')
-            if not doi.startswith('10.'):
+            if not (doi.startswith('10.') and '/' in doi):
                 sys.stderr.write("bogus JALC DOI: {}\n".format(doi))
                 doi = None
         if not doi:
