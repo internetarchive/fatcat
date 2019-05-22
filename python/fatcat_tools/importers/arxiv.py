@@ -250,7 +250,7 @@ class ArxivRawImporter(EntityImporter):
 
             if v.ext_ids.doi:
                 try:
-                    existing_doi = self.api.lookup_release(arxiv=v.ext_ids.arxiv)
+                    existing_doi = self.api.lookup_release(doi=v.ext_ids.doi)
                 except fatcat_client.rest.ApiException as err:
                     if err.status != 404:
                         raise err
