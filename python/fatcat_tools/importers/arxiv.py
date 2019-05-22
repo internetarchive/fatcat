@@ -1,4 +1,5 @@
 
+import re
 import sys
 import json
 import datetime
@@ -21,12 +22,17 @@ def latex_to_text(raw):
 def parse_arxiv_authors(raw):
     if not raw:
         return []
+    raw = raw.replace('*', '')
+    if '(' in raw:
+        raw = re.sub(r'\(.*\)', '', raw)
     authors = raw.split(', ')
     if authors:
         last = authors[-1].split(" and ")
         if len(last) == 2:
             authors[-1] = last[0]
             authors.append(last[1])
+        if authors[-1].startswith("and "):
+            authors[-1] = authors[-1][4:]
     authors = [latex_to_text(a).strip() for a in authors]
     return authors
 
@@ -42,8 +48,26 @@ def test_parse_arxiv_authors():
         "Izaak Neri",
         "Édgar Roldán",
     ]
+    assert parse_arxiv_authors("Izaak Neri, and \\'Edgar Rold\\'an") == [
+        "Izaak Neri",
+        "Édgar Roldán",
+    ]
+    assert parse_arxiv_authors("Izaak Neri, et al.") == [
+        "Izaak Neri",
+        "et al.",
+    ]
     assert parse_arxiv_authors("Raphael Chetrite Shamik Gupta") == [
         "Raphael Chetrite Shamik Gupta",
+    ]
+
+    assert parse_arxiv_authors("B. P. Lanyon, T. J. Weinhold, N. K. Langford, M. Barbieri, D. F. V.  James*, A. Gilchrist, and A. G. White (University of Queensland, *University of Toronto)") == [
+        "B. P. Lanyon",
+        "T. J. Weinhold",
+        "N. K. Langford",
+        "M. Barbieri",
+        "D. F. V.  James",
+        "A. Gilchrist",
+        "A. G. White",
     ]
 
 
