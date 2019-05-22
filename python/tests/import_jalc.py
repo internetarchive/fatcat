@@ -1,7 +1,7 @@
 
 import json, gzip
 import pytest
-from fatcat_tools.importers import JalcImporter, Bs4XmlFilePusher
+from fatcat_tools.importers import JalcImporter, Bs4XmlFilePusher, Bs4XmlLinesPusher
 from fixtures import api
 from bs4 import BeautifulSoup
 
@@ -43,6 +43,33 @@ def test_jalc_importer(jalc_importer):
     assert counts['skip'] == 0
     assert last_index == jalc_importer.api.get_changelog(limit=1)[0].index
 
+def test_jalc_importer_lines(jalc_importer):
+    last_index = jalc_importer.api.get_changelog(limit=1)[0].index
+    with open('tests/files/jalc_rdf_sample_100.xml', 'r') as f:
+        jalc_importer.bezerk_mode = True
+        counts = Bs4XmlLinesPusher(jalc_importer, f, "<rdf:Description").run()
+    assert counts['insert'] == 93
+    assert counts['exists'] == 0
+    assert counts['skip'] == 0
+
+    # fetch most recent editgroup
+    change = jalc_importer.api.get_changelog_entry(index=last_index+1)
+    eg = change.editgroup
+    assert eg.description
+    assert "jalc" in eg.description.lower()
+    assert eg.extra['git_rev']
+    assert "fatcat_tools.JalcImporter" in eg.extra['agent']
+
+    last_index = jalc_importer.api.get_changelog(limit=1)[0].index
+    with open('tests/files/jalc_rdf_sample_100.xml', 'r') as f:
+        jalc_importer.bezerk_mode = False
+        jalc_importer.reset()
+        counts = Bs4XmlLinesPusher(jalc_importer, f, "<rdf:Description").run()
+    assert counts['insert'] == 0
+    assert counts['exists'] == 93
+    assert counts['skip'] == 0
+    assert last_index == jalc_importer.api.get_changelog(limit=1)[0].index
+
 def test_jalc_xml_parse(jalc_importer):
     with open('tests/files/jalc_lod_sample.xml', 'r') as f:
         soup = BeautifulSoup(f, "xml")
@@ -51,7 +78,7 @@ def test_jalc_xml_parse(jalc_importer):
     print(r.extra)
     assert r.title == "New carbides in the Ni-Ti-Mo-C system"
     assert r.subtitle == None
-    assert r.original_title == "Ｎｉ－Ｔｉ－Ｍｏ－Ｃ系に出現する新炭化物相について"
+    assert r.original_title == "Ni-Ti-Mo-C系に出現する新炭化物相について"
     assert r.publisher == "Japan Society of Powder and Powder Metallurgy"
     assert r.release_type == "article-journal"
     assert r.release_stage == "published"

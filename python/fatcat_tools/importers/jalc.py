@@ -101,28 +101,37 @@ class JalcImporter(EntityImporter):
                 name = eng
                 if not name.find('name'):
                     name = jpn
+                surname = name.find('familyName')
+                if surname:
+                    surname = surname.string
                 contrib = fatcat_client.ReleaseContrib(
                     raw_name=clean(name.find('name').string),
                     given_name=clean(name.find('givenName').string),
-                    surname=clean(name.find('familyName').string),
+                    surname=clean(surname),
                     role='author',
                 )
                 if eng.find('name') and jpn.find('name'):
+                    jpn_surname = jpn.find('familyName')
+                    if jpn_surname:
+                        jpn_surname = jpn_surname.string
                     contrib.extra = {
                         'original_name': {
                             'lang': 'ja',
                             'raw_name': clean(jpn.find('name').string),
                             'given_name': clean(jpn.find('givenName').string),
-                            'surname': clean(jpn.find('familyName').string),
+                            'surname': clean(jpn_surname),
                         }}
                 contribs.append(contrib)
         elif people:
             # TODO: test for this codepath?
             for eng in people:
+                surname = eng.find('familyName')
+                if surname:
+                    surname = surname.string
                 contrib = dict(
                     raw_name=clean(eng.find('name').string),
                     given_name=clean(eng.find('givenName').string),
-                    surname=clean(eng.find('familyName').string),
+                    surname=clean(surname),
                     role='author',
                 )
                 contribs.append(contrib)
@@ -228,10 +237,14 @@ class JalcImporter(EntityImporter):
         # (informally)
         extra['jalc'] = extra_jalc
 
+        title = clean(title)
+        if not title:
+            return None
+
         re = fatcat_client.ReleaseEntity(
             work_id=None,
             title=title,
-            original_title=original_title,
+            original_title=clean(original_title),
             release_type="article-journal",
             release_stage='published',
             release_date=release_date,
