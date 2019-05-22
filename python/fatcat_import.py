@@ -22,6 +22,15 @@ def run_jalc(args):
         extid_map_file=args.extid_map_file)
     Bs4XmlLinesPusher(ji, args.xml_file, "<rdf:Description").run()
 
+def run_arxiv(args):
+    ari = ArxivRawImporter(args.api,
+        edit_batch_size=args.batch_size)
+    if args.kafka_mode:
+        raise NotImplementedError
+        #KafkaBs4XmlPusher(ari, args.kafka_hosts, args.kafka_env, "api-arxiv", "fatcat-import").run()
+    else:
+        Bs4XmlFilePusher(ari, args.xml_file, "record").run()
+
 def run_orcid(args):
     foi = OrcidImporter(args.api,
         edit_batch_size=args.batch_size)
@@ -163,6 +172,18 @@ def main():
     sub_jalc.add_argument('--extid-map-file',
         help="DOI-to-other-identifiers sqlite3 database",
         default=None, type=str)
+
+    sub_arxiv = subparsers.add_parser('arxiv')
+    sub_arxiv.set_defaults(
+        func=run_arxiv,
+        auth_var="FATCAT_AUTH_WORKER_ARXIV",
+    )
+    sub_arxiv.add_argument('xml_file',
+        help="arXivRaw XML file to import from",
+        default=sys.stdin, type=argparse.FileType('r'))
+    sub_arxiv.add_argument('--kafka-mode',
+        action='store_true',
+        help="consume from kafka topic (not stdin)")
 
     sub_orcid = subparsers.add_parser('orcid')
     sub_orcid.set_defaults(

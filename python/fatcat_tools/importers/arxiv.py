@@ -12,6 +12,12 @@ from .crossref import lookup_license_slug
 
 latex2text = LatexNodes2Text()
 
+def latex_to_text(raw):
+    try:
+        return latex2text.latex_to_text(raw).strip()
+    except AttributeError:
+        return raw.strip()
+
 def parse_arxiv_authors(raw):
     if not raw:
         return []
@@ -21,7 +27,7 @@ def parse_arxiv_authors(raw):
         if len(last) == 2:
             authors[-1] = last[0]
             authors.append(last[1])
-    authors = [latex2text.latex_to_text(a).strip() for a in authors]
+    authors = [latex_to_text(a).strip() for a in authors]
     return authors
 
 def test_parse_arxiv_authors():
@@ -67,7 +73,11 @@ class ArxivRawImporter(EntityImporter):
 
     def parse_record(self, record):
 
+        if not record:
+            return None
         metadata = record.arXivRaw
+        if not metadata:
+            return None
         extra = dict()
         extra_arxiv = dict()
 
@@ -76,7 +86,7 @@ class ArxivRawImporter(EntityImporter):
         if metadata.doi and metadata.doi.string:
             doi = metadata.doi.string.lower().strip()
             assert doi.startswith('10.')
-        title = latex2text.latex_to_text(metadata.title.string)
+        title = latex_to_text(metadata.title.string)
         authors = parse_arxiv_authors(metadata.authors.string)
         contribs = [fatcat_client.ReleaseContrib(raw_name=a, role='author') for a in authors]
 
@@ -115,7 +125,7 @@ class ArxivRawImporter(EntityImporter):
             number = metadata.find('report-no').string.strip()
             release_type = "report"
         if metadata.find('acm-class') and metadata.find('acm-class').string:
-            extra_arxiv['acm_class'] = metadata.find('acm_class').string.strip()
+            extra_arxiv['acm_class'] = metadata.find('acm-class').string.strip()
         if metadata.categories and metadata.categories.string:
             extra_arxiv['categories'] = metadata.categories.string.split()
         license_slug = None
@@ -133,7 +143,7 @@ class ArxivRawImporter(EntityImporter):
                 orig = both[1].strip()
             if '$' in abst or '{' in abst:
                 mime = "application/x-latex"
-                abst_plain = latex2text.latex_to_text(abst)
+                abst_plain = latex_to_text(abst)
                 abstracts.append(fatcat_client.ReleaseAbstract(content=abst_plain, mimetype="text/plain", lang="en"))
             else:
                 mime = "text/plain"
@@ -250,9 +260,10 @@ class ArxivRawImporter(EntityImporter):
                         # as a flag to not count below
                         v._updated = True
                     existing = existing_doi
-            
-            v._existing_work_id = existing.work_id
-            any_work_id = existing.work_id
+
+            if existing:
+                v._existing_work_id = existing.work_id
+                any_work_id = existing.work_id
 
         last_edit = None
         for v in versions:
@@ -262,11 +273,11 @@ class ArxivRawImporter(EntityImporter):
                 continue
             if not any_work_id and last_edit:
                 # fetch the last inserted release from this group
-                r = self.api.get_release_rev(last_edit.rev)
+                r = self.api.get_release_revision(last_edit.revision)
                 assert r.work_id
                 any_work_id = r.work_id
             v.work_id = any_work_id
-            last_edit = self.api.insert_release(self.get_editgroup_id(), v)
+            last_edit = self.api.create_release(self.get_editgroup_id(), v)
             self.counts['insert'] += 1
 
         return False
