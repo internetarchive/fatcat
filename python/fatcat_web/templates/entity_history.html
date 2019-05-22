@@ -19,10 +19,21 @@ This table only shows <i>merged</i> edits, not work-in-progress.
              <th>Description
   <tbody>
   {% for entry in history %}
-  <tr><td><a href="/changelog/{{ entry.changelog_entry.index }}">{{ entry.changelog_entry.index }}</a>
+  <tr><td><a href="/changelog/{{ entry.changelog_entry.index }}">#{{ entry.changelog_entry.index }}</a>
           <br>{{ entry.changelog_entry.timestamp.strftime("%Y-%m-%d %H:%M") }}
-      <td><a href="/editgroup/{{ entry.editgroup.editgroup_id }}">{{ entry.editgroup.editgroup_id[:8] }}...</a> by
-          <a href="/editor/{{ entry.editgroup.editor_id }}">editor_id</a>
+      <td>
+        {% if entry.editgroup.editor.is_bot %}
+          <i class="icon bug"></i>
+        {% else %}
+          <i class="icon user"></i>
+        {% endif %}
+        <code><a href="/editor/{{ entry.editgroup.editor_id }}">
+          {{ entry.editgroup.editor.username }}</a>
+        </a></code>
+        <br>
+        <small><code><a href="/editgroup/{{ entry.editgroup.editgroup_id }}">
+          {{ entry.editgroup.editgroup_id }}
+        </a></code></small>
       <td>{% if entry.editgroup.description != None %}{{ entry.editgroup.description }}{% endif %}
   {% endfor %}
 </table>
