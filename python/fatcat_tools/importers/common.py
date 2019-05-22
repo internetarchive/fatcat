@@ -606,6 +606,28 @@ class Bs4XmlFilePusher(RecordPusher):
         return counts
 
 
+class Bs4XmlFileListPusher(RecordPusher):
+
+    def __init__(self, importer, list_file, record_tag, **kwargs):
+        self.importer = importer
+        self.list_file = list_file
+        self.record_tag = record_tag
+
+    def run(self):
+        for xml_path in self.list_file:
+            xml_path = xml_path.strip()
+            if not xml_path or xml_path.startswith("#"):
+                continue
+            with open(xml_path, 'r') as xml_file:
+                soup = BeautifulSoup(xml_file, "xml")
+                for record in soup.find_all(self.record_tag):
+                    self.importer.push_record(record)
+                soup.decompose()
+        counts = self.importer.finish()
+        print(counts)
+        return counts
+
+
 class KafkaJsonPusher(RecordPusher):
 
     def __init__(self, importer, kafka_hosts, kafka_env, topic_suffix, group, **kwargs):

@@ -41,6 +41,12 @@ def run_pubmed(args):
     else:
         Bs4XmlFilePusher(pi, args.xml_file, "PubmedArticle").run()
 
+def run_jstor(args):
+    ji = JstorImporter(args.api,
+        args.issn_map_file,
+        edit_batch_size=args.batch_size)
+    Bs4XmlFileListPusher(ji, args.list_file, "article").run()
+
 def run_orcid(args):
     foi = OrcidImporter(args.api,
         edit_batch_size=args.batch_size)
@@ -209,6 +215,18 @@ def main():
     sub_pubmed.add_argument('--kafka-mode',
         action='store_true',
         help="consume from kafka topic (not stdin)")
+
+    sub_jstor = subparsers.add_parser('jstor')
+    sub_jstor.set_defaults(
+        func=run_jstor,
+        auth_var="FATCAT_AUTH_WORKER_JSTOR",
+    )
+    sub_jstor.add_argument('list_file',
+        help="List of JSTOR XML file paths to import from",
+        default=sys.stdin, type=argparse.FileType('r'))
+    sub_jstor.add_argument('issn_map_file',
+        help="ISSN to ISSN-L mapping file",
+        default=None, type=argparse.FileType('r'))
 
     sub_orcid = subparsers.add_parser('orcid')
     sub_orcid.set_defaults(
