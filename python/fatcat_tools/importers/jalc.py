@@ -157,13 +157,17 @@ class JalcImporter(EntityImporter):
                 given_name = eng.find('givenName')
                 if given_name:
                     given_name = given_name.string
-                contrib = dict(
+                contrib = fatcat_client.ReleaseContrib(
                     raw_name=clean(eng.find('name').string),
                     given_name=clean(given_name),
                     surname=clean(surname),
                     role='author',
                 )
                 contribs.append(contrib)
+
+        for i, contrib in enumerate(contribs):
+            if contrib.raw_name != "et al.":
+                contrib.index = i
 
         release_year = None
         release_date = None

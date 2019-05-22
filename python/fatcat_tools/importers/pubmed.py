@@ -615,6 +615,10 @@ class PubmedImporter(EntityImporter):
 
             if medline.AuthorList['CompleteYN'] == 'N':
                 contribs.append(fatcat_client.ReleaseContrib(raw_name="et al."))
+
+        for i, contrib in enumerate(contribs):
+            if contrib.raw_name != "et al.":
+                contrib.index = i
         if not contribs:
             contribs = None
 

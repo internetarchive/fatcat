@@ -117,7 +117,7 @@ class ArxivRawImporter(EntityImporter):
                 doi = None
         title = latex_to_text(metadata.title.string)
         authors = parse_arxiv_authors(metadata.authors.string)
-        contribs = [fatcat_client.ReleaseContrib(raw_name=a, role='author') for a in authors]
+        contribs = [fatcat_client.ReleaseContrib(index=i, raw_name=a, role='author') for i, a in enumerate(authors)]
 
         lang = "en"     # the vast majority in english
         if metadata.comments and metadata.comments.string:

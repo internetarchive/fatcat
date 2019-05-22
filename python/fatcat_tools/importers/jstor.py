@@ -165,6 +165,10 @@ class JstorImporter(EntityImporter):
                     surname=surname,
                 ))
 
+        for i, contrib in enumerate(contribs):
+            if contrib.raw_name != "et al.":
+                contrib.index = i
+
         release_year = None
         release_date = None
         pub_date = article_meta.find('pub-date')
