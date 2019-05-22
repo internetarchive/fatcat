@@ -380,7 +380,9 @@ class PubmedImporter(EntityImporter):
             doi = doi.string.lower()
             if doi.startswith('doi:'):
                 doi = doi[4:]
-            assert doi.startswith('10.')
+            if not (doi.startswith('10.') and '/' in doi and doi.split('/')[1]):
+                sys.stderr.write("BOGUS DOI: {}\n".format(doi))
+                doi = None
 
         pmcid = identifiers.find("ArticleId", IdType="pmc")
         if pmcid:
