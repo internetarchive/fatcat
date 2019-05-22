@@ -94,7 +94,9 @@ class JalcImporter(EntityImporter):
 
         contribs = []
         people = record.find_all("Person")
-        if people and (len(people) % 2 == 0) and is_cjk(people[1].find('name').string):
+        if (people and (len(people) % 2 == 0)
+                and not is_cjk(people[0].find('name').string)
+                and is_cjk(people[1].find('name').string)):
             # both english and japanese names are usually included for every author
             # TODO: turns out this isn't always the case; see
             # 10.18948/shasetaikai.1990.0_601 as an example with 4 actual
@@ -110,22 +112,28 @@ class JalcImporter(EntityImporter):
                 surname = name.find('familyName')
                 if surname:
                     surname = surname.string
+                given_name = name.find('givenName')
+                if given_name:
+                    given_name = given_name.string
                 contrib = fatcat_client.ReleaseContrib(
                     raw_name=clean(name.find('name').string),
-                    given_name=clean(name.find('givenName').string),
+                    given_name=clean(given_name),
                     surname=clean(surname),
                     role='author',
                 )
                 if eng.find('name') and jpn.find('name'):
-                    jpn_surname = jpn.find('familyName')
-                    if jpn_surname:
-                        jpn_surname = jpn_surname.string
+                    surname = jpn.find('familyName')
+                    if surname:
+                        surname = surname.string
+                    given_name = jpn.find('givenName')
+                    if given_name:
+                        given_name = given_name.string
                     contrib.extra = {
                         'original_name': {
                             'lang': 'ja',
                             'raw_name': clean(jpn.find('name').string),
-                            'given_name': clean(jpn.find('givenName').string),
-                            'surname': clean(jpn_surname),
+                            'given_name': clean(given_name),
+                            'surname': clean(surname),
                         }}
                 contribs.append(contrib)
         elif people:
@@ -134,9 +142,12 @@ class JalcImporter(EntityImporter):
                 surname = eng.find('familyName')
                 if surname:
                     surname = surname.string
+                given_name = eng.find('givenName')
+                if given_name:
+                    given_name = given_name.string
                 contrib = dict(
                     raw_name=clean(eng.find('name').string),
-                    given_name=clean(eng.find('givenName').string),
+                    given_name=clean(given_name),
                     surname=clean(surname),
                     role='author',
                 )
