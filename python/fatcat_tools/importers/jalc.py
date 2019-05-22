@@ -95,7 +95,11 @@ class JalcImporter(EntityImporter):
         contribs = []
         people = record.find_all("Person")
         if people and (len(people) % 2 == 0) and is_cjk(people[1].find('name').string):
-            # both english and japanese names are included for every author
+            # both english and japanese names are usually included for every author
+            # TODO: turns out this isn't always the case; see
+            # 10.18948/shasetaikai.1990.0_601 as an example with 4 actual
+            # authors, but 5 Person entries; all 4 authors in japanese, a
+            # single author in both japanese in english. Ugh!
             for i in range(int(len(people)/2)):
                 eng = people[i*2]
                 jpn = people[i*2 + 1]
@@ -181,16 +185,15 @@ class JalcImporter(EntityImporter):
 
         if record.publicationName:
             pubs = [p.string.strip() for p in record.find_all("publicationName")]
-            pubs = [p for p in pubs if p]
+            pubs = [clean(p) for p in pubs if p]
             assert(pubs)
             if len(pubs) > 1 and pubs[0] == pubs[1]:
                 pubs = [pubs[0]]
-            elif len(pubs) > 1 and is_cjk(pubs[0]):
-                # ordering is not reliable
+            if len(pubs) > 1 and is_cjk(pubs[0]):
+                # eng/jpn ordering is not reliable
                 pubs = [pubs[1], pubs[0]]
             container_name = clean(pubs[0])
             if len(pubs) > 1:
-                orig_container_name = pubs[1]
                 container_extra['original_name'] = clean(pubs[1])
 
         if record.publisher:
@@ -198,12 +201,12 @@ class JalcImporter(EntityImporter):
             pubs = [p for p in pubs if p]
             if len(pubs) > 1 and pubs[0] == pubs[1]:
                 pubs = [pubs[0]]
-            elif len(pubs) > 1 and is_cjk(pubs[0]):
+            if len(pubs) > 1 and is_cjk(pubs[0]):
                 # ordering is not reliable
                 pubs = [pubs[1], pubs[0]]
             publisher = clean(pubs[0])
             if len(pubs) > 1:
-                container_extra['publisher_alt_name'] = pubs[1]
+                container_extra['publisher_aliases'] = pubs[1:]
 
         if (container_id is None and self.create_containers and (issnl is not None)
                 and container_name):
