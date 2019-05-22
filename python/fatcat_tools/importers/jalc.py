@@ -76,6 +76,8 @@ class JalcImporter(EntityImporter):
         extra_jalc = dict()
 
         titles = record.find_all("title")
+        if not titles:
+            return None
         title = titles[0].string.strip()
         original_title = None
         if title.endswith('.'):
