@@ -34,7 +34,8 @@ def run_arxiv(args):
 def run_pubmed(args):
     pi = PubmedImporter(args.api,
         args.issn_map_file,
-        edit_batch_size=args.batch_size)
+        edit_batch_size=args.batch_size,
+        lookup_refs=(not args.no_lookup_refs))
     if args.kafka_mode:
         raise NotImplementedError
         #KafkaBs4XmlPusher(pi, args.kafka_hosts, args.kafka_env, "api-pubmed", "fatcat-import").run()
@@ -167,6 +168,9 @@ def main():
     sub_crossref.add_argument('--extid-map-file',
         help="DOI-to-other-identifiers sqlite3 database",
         default=None, type=str)
+    sub_crossref.add_argument('--no-lookup-refs',
+        action='store_true',
+        help="skip lookup of references (PMID or DOI)")
     sub_crossref.add_argument('--kafka-mode',
         action='store_true',
         help="consume from kafka topic (not stdin)")
@@ -212,6 +216,9 @@ def main():
     sub_pubmed.add_argument('issn_map_file',
         help="ISSN to ISSN-L mapping file",
         default=None, type=argparse.FileType('r'))
+    sub_pubmed.add_argument('--no-lookup-refs',
+        action='store_true',
+        help="skip lookup of references (PMID or DOI)")
     sub_pubmed.add_argument('--kafka-mode',
         action='store_true',
         help="consume from kafka topic (not stdin)")
