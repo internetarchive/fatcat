@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 
 import fatcat_client
 from .common import EntityImporter, clean, LANG_MAP_MARC
+from .crossref import CONTAINER_TYPE_MAP
 
 # TODO: more entries?
 JSTOR_CONTRIB_MAP = {
@@ -14,6 +15,14 @@ JSTOR_CONTRIB_MAP = {
     'editor': 'editor',
     'translator': 'translator',
     'illustrator': 'illustrator',
+}
+
+JSTOR_TYPE_MAP = {
+    "book-review": "review-book",
+    "editorial": "editorial",
+    "misc": "stub",
+    "news": "article",
+    "research-article": "article-journal",
 }
 
 class JstorImporter(EntityImporter):
@@ -38,6 +47,9 @@ class JstorImporter(EntityImporter):
 
         self.read_issn_map_file(issn_map_file)
 
+    def map_container_type(self, crossref_type):
+        return CONTAINER_TYPE_MAP.get(crossref_type)
+
     def want(self, obj):
         return True
 
@@ -49,13 +61,22 @@ class JstorImporter(EntityImporter):
         extra = dict()
         extra_jstor = dict()
 
+        release_type = JSTOR_TYPE_MAP.get(article['article-type'])
         title = article_meta.find("article-title")
-        if title:
+        if title and title.string:
             title = title.string.strip()
-            if title.endswith('.'):
-                title = title[:-1]
+        elif title and not title.string:
+            title = None
 
-        release_type = "article-journal"
+        if not title and release_type.startswith('review') and article_meta.product.source:
+            title = "Review: {}".format(article_meta.product.source.string)
+
+        if not title:
+            return None
+
+        if title.endswith('.'):
+            title = title[:-1]
+
         if "[Abstract]" in title:
             # TODO: strip the "[Abstract]" bit?
             release_type = "abstract"
@@ -108,28 +129,40 @@ class JstorImporter(EntityImporter):
 
         jstor_id = article_meta.find("article-id", {"pub-id-type": "jstor"})
         if jstor_id:
-            jstor_id = jstor_id.string
+            jstor_id = jstor_id.string.strip()
+        if not jstor_id and doi:
+            assert doi.startswith('10.2307/')
+            jstor_id = doi.replace('10.2307/', '')
+        assert jstor_id and int(jstor_id)
 
         contribs = []
         cgroup = article_meta.find("contrib-group")
         if cgroup:
             for c in cgroup.find_all("contrib"):
                 given = c.find("given-names")
+                if given:
+                    given = clean(given.string)
                 surname = c.find("surname")
-                if given and surname:
-                    name = "{} {}".format(given.string, surname.string)
-                elif surname:
-                    name = surname.string
-                else:
-                    name = None
-                role = JSTOR_CONTRIB_MAP.get(c['contrib-type'])
-                if not role and c['contrib-type']:
+                if surname:
+                    surname = clean(surname.string)
+                raw_name = c.find("string-name")
+                if raw_name:
+                    raw_name = clean(raw_name.string)
+
+                if not raw_name:
+                    if given and surname:
+                        raw_name = "{} {}".format(given, surname)
+                    elif surname:
+                        raw_name = surname
+
+                role = JSTOR_CONTRIB_MAP.get(c.get('contrib-type', 'author'))
+                if not role and c.get('contrib-type'):
                     sys.stderr.write("NOT IN JSTOR_CONTRIB_MAP: {}\n".format(c['contrib-type']))
                 contribs.append(fatcat_client.ReleaseContrib(
-                    role=JSTOR_CONTRIB_MAP.get(c['contrib-type']),
-                    raw_name=clean(name),
-                    given_name=clean(given.string),
-                    surname=clean(surname.string),
+                    role=role,
+                    raw_name=raw_name,
+                    given_name=given,
+                    surname=surname,
                 ))
 
         release_year = None
@@ -164,7 +197,7 @@ class JstorImporter(EntityImporter):
         language = None
         cm = article_meta.find("custom-meta")
         if cm.find("meta-name").string == "lang":
-            language = cm.find("meta-value").string
+            language = cm.find("meta-value").string.split()[0]
             language = LANG_MAP_MARC.get(language)
             if not language:
                 warnings.warn("MISSING MARC LANG: {}".format(cm.find("meta-value").string))
