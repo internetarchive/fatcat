@@ -114,7 +114,7 @@ class ArxivRawImporter(EntityImporter):
         base_id = metadata.id.string
         doi = None
         if metadata.doi and metadata.doi.string:
-            doi = metadata.doi.string.lower().strip()
+            doi = metadata.doi.string.lower().split()[0].strip()
             if not (doi.startswith('10.') and '/' in doi):
                 sys.stderr.write("BOGUS DOI: {}\n".format(doi))
                 doi = None
