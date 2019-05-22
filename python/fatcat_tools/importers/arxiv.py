@@ -34,6 +34,7 @@ def parse_arxiv_authors(raw):
         if authors[-1].startswith("and "):
             authors[-1] = authors[-1][4:]
     authors = [latex_to_text(a).strip() for a in authors]
+    authors = [a for a in authors if a]
     return authors
 
 def test_parse_arxiv_authors():
