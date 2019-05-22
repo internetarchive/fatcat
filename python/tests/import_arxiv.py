@@ -54,8 +54,8 @@ def test_arxiv_xml_parse(arxiv_importer):
     assert r1.original_title == None
     assert r1.release_type == "article"
     assert r1.release_stage == "submitted"
-    assert r2.release_stage == "published"
-    assert r1.license_slug == "ARXIV-NED-1.0"
+    assert r2.release_stage == "accepted"
+    assert r1.license_slug == "ARXIV-1.0"
     assert r1.version == "v1"
     assert r2.version == "v2"
     assert r1.ext_ids.arxiv == "1810.09584v1"
