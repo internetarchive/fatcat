@@ -88,7 +88,7 @@ class ArxivRawImporter(EntityImporter):
         doi = None
         if metadata.doi and metadata.doi.string:
             doi = metadata.doi.string.lower().strip()
-            if not (doi.startswith('10.') and '/' in doi:
+            if not (doi.startswith('10.') and '/' in doi):
                 sys.stderr.write("BOGUS DOI: {}\n".format(doi))
                 doi = None
         title = latex_to_text(metadata.title.string)
