@@ -90,7 +90,9 @@ class JalcImporter(EntityImporter):
         doi = None
         if record.doi:
             doi = record.doi.string.lower().strip()
-            assert doi.startswith('10.')
+            if not doi.startswith('10.'):
+                sys.stderr.write("bogus JALC DOI: {}\n".format(doi))
+                doi = None
 
         contribs = []
         people = record.find_all("Person")
