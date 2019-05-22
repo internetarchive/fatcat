@@ -219,7 +219,8 @@ def webcapture_view(ident):
 @app.route('/release/lookup', methods=['GET'])
 def release_lookup():
     extid = None
-    for key in ('doi', 'wikidata_qid', 'pmid', 'pmcid', 'isbn13', 'core', 'ark', 'mag'):
+    for key in ('doi', 'wikidata_qid', 'pmid', 'pmcid', 'isbn13', 'jstor',
+                'arxiv', 'core', 'ark', 'mag'):
         if request.args.get(key):
             extid = key
             break
