@@ -18,6 +18,8 @@ def latex_to_text(raw):
         return latex2text.latex_to_text(raw).strip()
     except AttributeError:
         return raw.strip()
+    except IndexError:
+        return raw.strip()
 
 def parse_arxiv_authors(raw):
     if not raw:
