@@ -124,7 +124,7 @@ class JstorImporter(EntityImporter):
                     name = None
                 role = JSTOR_CONTRIB_MAP.get(c['contrib-type'])
                 if not role and c['contrib-type']:
-                    sys.stderr.write("NOT IN JSTOR_CONTRIB_MAP: {}".format(c['contrib-type']))
+                    sys.stderr.write("NOT IN JSTOR_CONTRIB_MAP: {}\n".format(c['contrib-type']))
                 contribs.append(fatcat_client.ReleaseContrib(
                     role=JSTOR_CONTRIB_MAP.get(c['contrib-type']),
                     raw_name=clean(name),
