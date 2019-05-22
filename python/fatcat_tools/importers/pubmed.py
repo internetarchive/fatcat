@@ -739,9 +739,19 @@ class PubmedImporter(EntityImporter):
             existing.ext_ids.pmcid = existing.ext_ids.pmcid or re.ext_ids.pmcid
             existing.refs = existing.refs or re.refs
             existing.extra['pubmed'] = re.extra['pubmed']
-            self.api.update_release(self.get_editgroup_id(), existing.ident, existing)
-            self.counts['update'] += 1
-            return False
+            try:
+                self.api.update_release(self.get_editgroup_id(), existing.ident, existing)
+                self.counts['update'] += 1
+            except fatcat_client.rest.ApiException as err:
+                # there is a code path where we try to update the same release
+                # twice in a row; if that happens, just skip
+                # NOTE: API behavior might change in the future?
+                if "release_edit_editgroup_id_ident_id_key" in err.body:
+                    self.counts['skip-update-conflict'] += 1
+                else:
+                    raise err
+            finally:
+                return False
 
         return True
 
