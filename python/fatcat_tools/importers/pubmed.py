@@ -378,6 +378,9 @@ class PubmedImporter(EntityImporter):
         doi = identifiers.find("ArticleId", IdType="doi")
         if doi:
             doi = doi.string.lower()
+            if doi.startswith('doi:'):
+                doi = doi[4:]
+            assert doi.startswith('10.')
 
         pmcid = identifiers.find("ArticleId", IdType="pmc")
         if pmcid:
@@ -717,8 +720,10 @@ class PubmedImporter(EntityImporter):
             if existing and existing.ext_ids.pmid and existing.ext_ids.pmid != re.ext_ids.pmid:
                 warnings.warn("PMID/DOI mismatch: release {}, pmid {} != {}".format(
                     existing.ident, existing.ext_ids.pmid, re.ext_ids.pmid))
-                self.counts['exists-pmid-doi-mismatch'] += 1
-                return False
+                self.counts['warn-pmid-doi-mismatch'] += 1
+                # don't clobber DOI, but do group together
+                re.ext_ids.doi = None
+                re.work_id = existing.work_id
 
         if existing and existing.ext_ids.pmid and (existing.refs or not re.refs):
             # TODO: any other reasons to do an update?
