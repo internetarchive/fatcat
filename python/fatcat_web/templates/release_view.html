@@ -360,7 +360,7 @@
   </div>
 {% endif %}
 
-{% if release.number or release.ext_ids.doi or release.ext_ids.pmid or release.ext_ids.pmcid or release.ext_ids.wikidata_qid or release.ext_ids.isbn13 %}
+{% if release.number or release.ext_ids.doi or release.ext_ids.pmid or release.ext_ids.pmcid or release.ext_ids.wikidata_qid or release.ext_ids.isbn13 or release.ext_ids.arxiv or release.ext_ids.jstor or release.ext_ids.ark %}
 <div class="ui segment attached" style="word-wrap: break-word;">
 {% if release.number %}
   <b>Number</b> &nbsp;<code>{{ release.number }}</code><br>
@@ -382,6 +382,9 @@
 {% endif %}
 {% if release.ext_ids.arxiv != None %}
   <b>arXiv</b> &nbsp;<a href="https://arxiv.org/abs/{{ release.ext_ids.arxiv }}"><code>{{ release.ext_ids.arxiv }}</code></a><br>
+{% endif %}
+{% if release.ext_ids.jstor != None %}
+  <b>JSTOR</b> &nbsp;<a href="https://jstor.org/stable/{{ release.ext_ids.jstor}}"><code>{{ release.ext_ids.jstor }}</code></a><br>
 {% endif %}
 {% if release.ext_ids.ark != None %}
   <b>ARK</b> &nbsp;<a href="https://n2t.net/{{ release.ext_ids.ark }}"><code>{{ release.ext_ids.ark }}</code></a><br>
