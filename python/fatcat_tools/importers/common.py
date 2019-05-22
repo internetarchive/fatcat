@@ -86,6 +86,9 @@ LANG_MAP_MARC = {
     'urd': 'ur',
     'vie': 'vi',
     'wel': 'cy',
+
+# additions
+    'gle': 'ga', # "Irish" (Gaelic)
 }
 
 
