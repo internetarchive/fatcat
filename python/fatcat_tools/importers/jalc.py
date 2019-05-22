@@ -174,7 +174,7 @@ class JalcImporter(EntityImporter):
                 release_date = datetime.datetime.strptime(date['completed-date'], DATE_FMT).date()
                 release_year = release_date.year
                 release_date = release_date.isoformat()
-            elif len(date) is 4:
+            elif len(date) is 4 and date.isdigit():
                 release_year = int(date)
 
         pages = None
