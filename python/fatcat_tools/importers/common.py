@@ -89,6 +89,8 @@ LANG_MAP_MARC = {
 
 # additions
     'gle': 'ga', # "Irish" (Gaelic)
+    'jav': 'jv', # Javanese
+    # 'map', for Austronesian languages, has no ISO 639-1 code
 }
 
 
