@@ -583,6 +583,7 @@ class Bs4XmlLinesPusher(RecordPusher):
                 continue
             soup = BeautifulSoup(line, "xml")
             self.importer.push_record(soup)
+            soup.decompose()
         counts = self.importer.finish()
         print(counts)
         return counts
@@ -600,6 +601,7 @@ class Bs4XmlFilePusher(RecordPusher):
         for record in soup.find_all(self.record_tag):
             self.importer.push_record(record)
         counts = self.importer.finish()
+        soup.decompose()
         print(counts)
         return counts
 
