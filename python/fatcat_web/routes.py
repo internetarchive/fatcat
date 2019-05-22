@@ -277,6 +277,10 @@ def release_view(ident):
     # index=None go to end of list)
     authors = [c for c in entity.contribs if c.role in ('author', None)]
     authors = sorted(authors, key=lambda c: (c.index == None and 99999999) or c.index)
+    # hack to show plain text instead of latex abstracts
+    if entity.abstracts:
+        if 'latex' in entity.abstracts[0].mimetype:
+            entity.abstracts.reverse()
     return render_template('release_view.html', release=entity,
         authors=authors, container=entity.container)
 
