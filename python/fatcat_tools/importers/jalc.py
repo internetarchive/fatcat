@@ -207,7 +207,7 @@ class JalcImporter(EntityImporter):
         container_extra = dict()
 
         if record.publicationName:
-            pubs = [p.string.strip() for p in record.find_all("publicationName")]
+            pubs = [p.string.strip() for p in record.find_all("publicationName") if p.string]
             pubs = [clean(p) for p in pubs if p]
             assert(pubs)
             if len(pubs) > 1 and pubs[0] == pubs[1]:
@@ -220,7 +220,7 @@ class JalcImporter(EntityImporter):
                 container_extra['original_name'] = clean(pubs[1])
 
         if record.publisher:
-            pubs = [p.string.strip() for p in record.find_all("publisher")]
+            pubs = [p.string.strip() for p in record.find_all("publisher") if p.string]
             pubs = [p for p in pubs if p]
             if len(pubs) > 1 and pubs[0] == pubs[1]:
                 pubs = [pubs[0]]
