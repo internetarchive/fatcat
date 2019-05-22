@@ -104,6 +104,209 @@ MONTH_ABBR_MAP = {
     "Dec": 12, "12": 12,
 }
 
+# From: https://www.ncbi.nlm.nih.gov/books/NBK7249/
+COUNTRY_NAME_MAP = {
+    "Afghanistan": "af",
+    "Albania": "al",
+    "Algeria": "dz",
+    "Andorra": "ad",
+    "Angola": "ao",
+    "Antigua and Barbuda": "ag",
+    "Argentina": "ar",
+    "Armenia": "am",
+    "Australia": "au",
+    "Austria": "at",
+    "Azerbaijan": "az",
+    "Bahamas": "bs",
+    "Bahrain": "bh",
+    "Bangladesh": "bd",
+    "Barbados": "bb",
+    "Belarus": "by",
+    "Belgium": "be",
+    "Belize": "bz",
+    "Benin": "bj",
+    "Bhutan": "bt",
+    "Bolivia": "bo",
+    "Bosnia and Herzegowina": "ba",
+    "Botswana": "bw",
+    "Brazil": "br",
+    "Brunei Darussalam": "bn",
+    "Bulgaria": "bg",
+    "Burkina Faso": "bf",
+    "Burundi": "bi",
+    "Cambodia": "kh",
+    "Cameroon": "cm",
+    "Canada": "ca",
+    "Cape Verde": "cv",
+    "Central African Republic": "cf",
+    "Chad": "td",
+    "Chile": "cl",
+    "China": "cn",
+    "Colombia": "co",
+    "Comoros": "km",
+    "Congo, Democratic Republic": "cd",
+    "Congo, People’s Republic": "cg",
+    "Costa Rica": "cr",
+    "Cote d'Ivoire": "ci",
+    "Croatia (Local Name: Hrvatska)": "hr",
+    "Cuba": "cu",
+    "Cyprus": "cy",
+    "Czech Republic": "cz",
+    "Denmark": "dk",
+    "Djibouti": "dj",
+    "Dominica": "dm",
+    "Dominican Republic": "do",
+    "East Timor": "tl",
+    "Ecuador": "ec",
+    "El Salvador": "sv",
+    "Equatorial Guinea": "gq",
+    "Eritrea": "er",
+    "Estonia": "ee",
+    "Ethiopia": "et",
+    "Fiji": "fj",
+    "Finland": "fi",
+    "France": "fr",
+    "Gabon": "ga",
+    "Gambia": "gm",
+    "Georgia": "ge",
+    "Germany": "de",
+    "Ghana": "gh",
+    "Greece": "gr",
+    "Greenland": "gl",
+    "Grenada": "gd",
+    "Guatemala": "gt",
+    "Guinea": "gn",
+    "Guinea-Bissau": "gw",
+    "Guyana": "gy",
+    "Haiti": "ht",
+    "Honduras": "hn",
+    "Hong Kong": "hk",
+    "Hungary": "hu",
+    "Iceland": "is",
+    "India": "in",
+    "Indonesia": "id",
+    "Iran": "ir",
+    "Iraq": "iq",
+    "Ireland": "ie",
+    "Israel": "il",
+    "Italy": "it",
+    "Jamaica": "jm",
+    "Japan": "jp",
+    "Jordan": "jo",
+    "Kazakhstan": "kz",
+    "Kenya": "ke",
+    "Kiribati": "ki",
+    "Korea, Democratic People's Republic": "kp",
+    "Korea, Republic": "kr",
+    "Kuwait": "kw",
+    "Kyrgyzstan": "kg",
+    "Laos": "la",
+    "Latvia": "lv",
+    "Lebanon": "lb",
+    "Lesotho": "ls",
+    "Liberia": "lr",
+    "Libya": "ly",
+    "Liechtenstein": "li",
+    "Lithuania": "lt",
+    "Luxembourg": "lu",
+    "Macedonia": "mk",
+    "Madagascar": "mg",
+    "Malawi": "mw",
+    "Malaysia": "my",
+    "Maldives": "mv",
+    "Mali": "ml",
+    "Malta": "mt",
+    "Marshall Islands": "mh",
+    "Mauritania": "mr",
+    "Mauritius": "mu",
+    "Mexico": "mx",
+    "Micronesia": "fm",
+    "Moldova": "md",
+    "Monaco": "mc",
+    "Mongolia": "mn",
+    "Morocco": "ma",
+    "Mozambique": "mz",
+    "Myanmar": "mm",
+    "Namibia": "na",
+    "Nauru": "nr",
+    "Nepal": "np",
+    "Netherlands": "nl",
+    "New Zealand": "nz",
+    "Nicaragua": "ni",
+    "Niger": "ne",
+    "Nigeria": "ng",
+    "Norway": "no",
+    "Oman": "om",
+    "Pakistan": "pk",
+    "Palau": "pw",
+    "Panama": "pa",
+    "Papua New Guinea": "pg",
+    "Paraguay": "py",
+    "Peru": "pe",
+    "Philippines": "ph",
+    "Poland": "pl",
+    "Portugal": "pt",
+    "Puerto Rico": "pr",
+    "Qatar": "qa",
+    "Romania": "ro",
+    "Russian Federation": "ru",
+    "Rwanda": "rw",
+    "Saint Kitts and Nevis": "kn",
+    "Saint Lucia": "lc",
+    "Saint Vincent and the Grenadines": "vc",
+    "Samoa": "ws",
+    "San Marino": "sm",
+    "Sao Tome and Príncipe": "st",
+    "Saudi Arabia": "sa",
+    "Senegal": "sn",
+    "Serbia and Montenegro": "cs",
+    "Seychelles": "sc",
+    "Sierra Leone": "sl",
+    "Singapore": "sg",
+    "Slovakia (Slovak Republic)": "sk",
+    "Slovenia": "si",
+    "Solomon Islands": "sb",
+    "Somalia": "so",
+    "South Africa": "za",
+    "Spain": "es",
+    "Sri Lanka": "lk",
+    "Sudan": "sd",
+    "Suriname": "sr",
+    "Swaziland": "sz",
+    "Sweden": "se",
+    "Switzerland": "ch",
+    "Syrian Arab Republic": "sy",
+    "Taiwan": "tw",
+    "Tajikistan": "tj",
+    "Tanzania": "tz",
+    "Tanzania": "tz",
+    "Thailand": "th",
+    "Togo": "tg",
+    "Tonga": "to",
+    "Trinidad and Tobago": "tt",
+    "Tunisia": "tn",
+    "Turkey": "tr",
+    "Turkmenistan": "tm",
+    "Tuvalu": "tv",
+    "Uganda": "ug",
+    "Ukraine": "ua",
+    "United Arab Emirates": "ae",
+    "United Kingdom": "gb",
+    "United States": "us",
+    "Uruguay": "uy",
+
+    # Additions from running over large files
+    "Bosnia and Herzegovina": "ba",
+    #"International"
+    "China (Republic : 1949- )": "tw", # pretty sure this is tw not cn
+    "Russia (Federation)": "ru",
+    "Scotland": "gb",
+    "England": "gb",
+    "Korea (South)": "kr",
+    "Georgia (Republic)": "ge",
+    "Egypt": "eg",
+}
+
 
 class PubmedImporter(EntityImporter):
     """
@@ -251,7 +454,12 @@ class PubmedImporter(EntityImporter):
         container_extra = dict()
         mji = medline.MedlineJournalInfo
         if mji.find("Country"):
-            container_extra['country_name'] = mji.Country.string
+            country_name = mji.Country.string.strip()
+            country_code = COUNTRY_NAME_MAP.get(country_name)
+            if country_code:
+                container_extra['country'] = country_code
+            elif country_name:
+                container_extra['country_name'] = country_name
         if mji.find("ISSNLinking"):
             issnl = mji.ISSNLinking.string
 
@@ -310,35 +518,43 @@ class PubmedImporter(EntityImporter):
         primary_abstract = medline.find("Abstract")
         if primary_abstract and primary_abstract.AbstractText.get('NlmCategory'):
             joined = "\n".join([m.get_text() for m in primary_abstract.find_all("AbstractText")])
-            abstracts.append(fatcat_client.ReleaseAbstract(
+            abst = fatcat_client.ReleaseAbstract(
                 content=joined,
                 mimetype="text/plain",
                 lang="en",
-            ))
+            )
+            if abst.content:
+                abstracts.append(abst)
         elif primary_abstract:
             for abstract in primary_abstract.find_all("AbstractText"):
-                abstracts.append(fatcat_client.ReleaseAbstract(
+                abst = fatcat_client.ReleaseAbstract(
                     content=abstract.get_text().strip(),
                     mimetype="text/plain",
                     lang="en",
-                ))
+                )
+                if abst.content:
+                    abstracts.append(abst)
                 if abstract.find('math'):
-                    abstracts.append(fatcat_client.ReleaseAbstract(
+                    abst = fatcat_client.ReleaseAbstract(
                         # strip the <AbstractText> tags
                         content=str(abstract)[14:-15],
                         mimetype="application/mathml+xml",
                         lang="en",
-                    ))
+                    )
+                    if abst.content:
+                        abstracts.append(abst)
         other_abstracts = medline.find_all("OtherAbstract")
         for other in other_abstracts:
             lang = "en"
             if other.get('Language'):
                 lang = LANG_MAP_MARC.get(other['Language'])
-            abstracts.append(fatcat_client.ReleaseAbstract(
+            abst = fatcat_client.ReleaseAbstract(
                 content=other.AbstractText.get_text().strip(),
                 mimetype="text/plain",
                 lang=lang,
-            ))
+            )
+            if abst.content:
+                abstracts.append(abst)
         if not abstracts:
             abstracts = None
 
@@ -358,6 +574,8 @@ class PubmedImporter(EntityImporter):
                     raw_name = "{} {}".format(given_name, surname)
                 elif surname:
                     raw_name = surname
+                if not raw_name and author.CollectiveName.string:
+                    raw_name = author.CollectiveName.string
                 contrib_extra = dict()
                 orcid = author.find("Identifier", Source="ORCID")
                 if orcid:

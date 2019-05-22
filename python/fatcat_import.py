@@ -31,6 +31,16 @@ def run_arxiv(args):
     else:
         Bs4XmlFilePusher(ari, args.xml_file, "record").run()
 
+def run_pubmed(args):
+    pi = PubmedImporter(args.api,
+        args.issn_map_file,
+        edit_batch_size=args.batch_size)
+    if args.kafka_mode:
+        raise NotImplementedError
+        #KafkaBs4XmlPusher(pi, args.kafka_hosts, args.kafka_env, "api-pubmed", "fatcat-import").run()
+    else:
+        Bs4XmlFilePusher(pi, args.xml_file, "PubmedArticle").run()
+
 def run_orcid(args):
     foi = OrcidImporter(args.api,
         edit_batch_size=args.batch_size)
@@ -182,6 +192,21 @@ def main():
         help="arXivRaw XML file to import from",
         default=sys.stdin, type=argparse.FileType('r'))
     sub_arxiv.add_argument('--kafka-mode',
+        action='store_true',
+        help="consume from kafka topic (not stdin)")
+
+    sub_pubmed = subparsers.add_parser('pubmed')
+    sub_pubmed.set_defaults(
+        func=run_pubmed,
+        auth_var="FATCAT_AUTH_WORKER_PUBMED",
+    )
+    sub_pubmed.add_argument('xml_file',
+        help="Pubmed XML file to import from",
+        default=sys.stdin, type=argparse.FileType('r'))
+    sub_pubmed.add_argument('issn_map_file',
+        help="ISSN to ISSN-L mapping file",
+        default=None, type=argparse.FileType('r'))
+    sub_pubmed.add_argument('--kafka-mode',
         action='store_true',
         help="consume from kafka topic (not stdin)")
 
