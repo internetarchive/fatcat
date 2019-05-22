@@ -90,10 +90,19 @@ class JalcImporter(EntityImporter):
         doi = None
         if record.doi:
             doi = record.doi.string.lower().strip()
+            if doi.startswith('http://dx.doi.org/'):
+                doi = doi.replace('http://dx.doi.org/', '')
+            elif doi.startswith('https://dx.doi.org/'):
+                doi = doi.replace('https://dx.doi.org/', '')
+            elif doi.startswith('http://doi.org/'):
+                doi = doi.replace('http://doi.org/', '')
+            elif doi.startswith('https://doi.org/'):
+                doi = doi.replace('https://doi.org/', '')
             if not doi.startswith('10.'):
                 sys.stderr.write("bogus JALC DOI: {}\n".format(doi))
                 doi = None
-                return None
+        if not doi:
+            return None
 
         contribs = []
         people = record.find_all("Person")
