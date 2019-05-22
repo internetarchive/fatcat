@@ -22,6 +22,10 @@ def test_rich_elasticsearch_convert(crossref_importer):
         release_year=1234,
         license_slug="CC-BY-NC",
         ext_ids=ReleaseExtIds(),
+        refs=[
+            ReleaseRef(),
+            ReleaseRef(target_release_id="iznnn644szdwva7khyxqzc73bi"),
+        ],
     )
     r.state = 'active'
     r.container = ContainerEntity(
@@ -65,6 +69,8 @@ def test_rich_elasticsearch_convert(crossref_importer):
     assert es['in_dweb'] == True
     assert es['is_oa'] == True
     assert es['is_longtail_oa'] == False
+    assert es['ref_count'] == 2
+    assert es['ref_linked_count'] == 1
 
 def test_elasticsearch_from_json():
     r = entity_from_json(open('./tests/files/math_universe.json', 'r').read(), ReleaseEntity)

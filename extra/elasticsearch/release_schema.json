@@ -59,6 +59,7 @@
             "contrib_names":        { "type": "text", "index": true, "analyzer": "textIcu", "search_analyzer":"textIcuSearch" },
             "creator_ids":          { "type": "keyword" },
             "ref_count":            { "type": "integer" },
+            "ref_linked_count":     { "type": "integer" },
             "file_count":           { "type": "integer" },
             "fileset_count":        { "type": "integer" },
             "webcapture_count":     { "type": "integer" },

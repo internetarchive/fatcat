@@ -84,6 +84,9 @@ def release_to_elasticsearch(entity, force_bool=True):
 
     t['any_abstract'] = len(release.abstracts or []) > 0
     t['ref_count'] = len(release.refs or [])
+    t['ref_linked_count'] = 0
+    if release.refs:
+        t['ref_linked_count'] = len([1 for ref in release.refs if ref.target_release_id])
     t['contrib_count'] = len(release.contribs or [])
     contrib_names = []
     creator_ids = []
