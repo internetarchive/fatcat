@@ -568,6 +568,26 @@ class SqlitePusher(RecordPusher):
         return counts
 
 
+class Bs4XmlLinesPusher(RecordPusher):
+
+    def __init__(self, importer, xml_file, prefix_filter=None, **kwargs):
+        self.importer = importer
+        self.xml_file = xml_file
+        self.prefix_filter = prefix_filter
+
+    def run(self):
+        for line in self.xml_file:
+            if not line:
+                continue
+            if self.prefix_filter and not line.startswith(self.prefix_filter):
+                continue
+            soup = BeautifulSoup(line, "xml")
+            self.importer.push_record(soup)
+        counts = self.importer.finish()
+        print(counts)
+        return counts
+
+
 class Bs4XmlFilePusher(RecordPusher):
 
     def __init__(self, importer, xml_file, record_tag, **kwargs):

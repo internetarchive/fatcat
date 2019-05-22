@@ -16,6 +16,12 @@ def run_crossref(args):
     else:
         JsonLinePusher(fci, args.json_file).run()
 
+def run_jalc(args):
+    ji = JalcImporter(args.api,
+        args.issn_map_file,
+        extid_map_file=args.extid_map_file)
+    Bs4XmlLinesPusher(ji, args.xml_file, "<rdf:Description").run()
+
 def run_orcid(args):
     foi = OrcidImporter(args.api,
         edit_batch_size=args.batch_size)
@@ -142,6 +148,21 @@ def main():
     sub_crossref.add_argument('--bezerk-mode',
         action='store_true',
         help="don't lookup existing DOIs, just insert (clobbers; only for fast bootstrap)")
+
+    sub_jalc = subparsers.add_parser('jalc')
+    sub_jalc.set_defaults(
+        func=run_jalc,
+        auth_var="FATCAT_AUTH_WORKER_JALC",
+    )
+    sub_jalc.add_argument('xml_file',
+        help="Jalc RDF XML file (record-per-line) to import from",
+        default=sys.stdin, type=argparse.FileType('r'))
+    sub_jalc.add_argument('issn_map_file',
+        help="ISSN to ISSN-L mapping file",
+        default=None, type=argparse.FileType('r'))
+    sub_jalc.add_argument('--extid-map-file',
+        help="DOI-to-other-identifiers sqlite3 database",
+        default=None, type=str)
 
     sub_orcid = subparsers.add_parser('orcid')
     sub_orcid.set_defaults(
