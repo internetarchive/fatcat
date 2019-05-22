@@ -122,7 +122,7 @@ class ArxivRawImporter(EntityImporter):
             journal_ref = metadata.find('journal-ref').string.strip()
             extra_arxiv['journal_ref'] = journal_ref
             if "conf." in journal_ref.lower() or "proc." in journal_ref.lower():
-                release_type = "conference-paper"
+                release_type = "paper-conference"
         if metadata.find('report-no') and metadata.find('report-no').string:
             number = metadata.find('report-no').string.strip()
             # at least some people plop extra metadata in here. hrmf!
