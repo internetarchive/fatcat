@@ -34,7 +34,7 @@ class JstorImporter(EntityImporter):
             editgroup_extra=eg_extra,
             **kwargs)
 
-        self.create_containers = kwargs.get('create_containers')
+        self.create_containers = kwargs.get('create_containers', True)
 
         self.read_issn_map_file(issn_map_file)
 

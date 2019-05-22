@@ -136,7 +136,7 @@ class PubmedImporter(EntityImporter):
         else:
             print("Not using external ID map")
 
-        self.create_containers = kwargs.get('create_containers')
+        self.create_containers = kwargs.get('create_containers', True)
         self.read_issn_map_file(issn_map_file)
 
     def lookup_ext_ids(self, pmid):
@@ -294,6 +294,7 @@ class PubmedImporter(EntityImporter):
                 extra=(container_extra or None))
             ce_edit = self.create_container(ce)
             container_id = ce_edit.ident
+            self._issnl_id_map[issnl] = container_id
        
         ji = journal.JournalIssue
         volume = None

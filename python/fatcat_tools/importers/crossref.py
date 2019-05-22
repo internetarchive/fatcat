@@ -120,7 +120,7 @@ class CrossrefImporter(EntityImporter):
             editgroup_extra=eg_extra,
             **kwargs)
 
-        self.create_containers = kwargs.get('create_containers')
+        self.create_containers = kwargs.get('create_containers', True)
         extid_map_file = kwargs.get('extid_map_file')
         self.extid_map_db = None
         if extid_map_file:
@@ -246,6 +246,7 @@ class CrossrefImporter(EntityImporter):
                 name=clean(obj['container-title'][0], force_xml=True))
             ce_edit = self.create_container(ce)
             container_id = ce_edit.ident
+            self._issnl_id_map[issnl] = container_id
 
         # license slug
         license_slug = None

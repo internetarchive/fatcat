@@ -30,7 +30,7 @@ class JalcImporter(EntityImporter):
             editgroup_extra=eg_extra,
             **kwargs)
 
-        self.create_containers = kwargs.get('create_containers')
+        self.create_containers = kwargs.get('create_containers', True)
         extid_map_file = kwargs.get('extid_map_file')
         self.extid_map_db = None
         if extid_map_file:
@@ -217,6 +217,8 @@ class JalcImporter(EntityImporter):
                 extra=(container_extra or None))
             ce_edit = self.create_container(ce)
             container_id = ce_edit.ident
+            # short-cut future imports in same batch
+            self._issnl_id_map[issnl] = container_id
 
         # the vast majority of works are in japanese
         # TODO: any indication when *not* in japanese?
