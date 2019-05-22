@@ -81,6 +81,9 @@ class ArxivRawImporter(EntityImporter):
         extra = dict()
         extra_arxiv = dict()
 
+        # don't know!
+        release_type = "article"
+
         base_id = metadata.id.string
         doi = None
         if metadata.doi and metadata.doi.string:
@@ -112,10 +115,7 @@ class ArxivRawImporter(EntityImporter):
                 lang = 'ru'
             # more languages?
 
-        # don't know!
-        release_type = "article"
         number = None
-
         if metadata.find('journal-ref') and metadata.find('journal-ref').string:
             journal_ref = metadata.find('journal-ref').string.strip()
             extra_arxiv['journal_ref'] = journal_ref
@@ -123,7 +123,12 @@ class ArxivRawImporter(EntityImporter):
                 release_type = "conference-paper"
         if metadata.find('report-no') and metadata.find('report-no').string:
             number = metadata.find('report-no').string.strip()
-            release_type = "report"
+            # at least some people plop extra metadata in here. hrmf!
+            if 'ISSN ' in number or 'ISBN ' in number or len(number.split()) > 2:
+                extra_arxiv['report-no'] = number
+                number = None
+            else:
+                release_type = "report"
         if metadata.find('acm-class') and metadata.find('acm-class').string:
             extra_arxiv['acm_class'] = metadata.find('acm-class').string.strip()
         if metadata.categories and metadata.categories.string:
@@ -177,7 +182,7 @@ class ArxivRawImporter(EntityImporter):
                 title=title,
                 #original_title
                 version=version['version'],
-                release_type="article",
+                release_type=release_type,
                 release_stage='submitted',
                 release_date=release_date.isoformat(),
                 release_year=release_date.year,
@@ -191,13 +196,14 @@ class ArxivRawImporter(EntityImporter):
                 contribs=contribs,
                 extra=extra,
             ))
-        # TODO: assert that versions are actually in order
+        # TODO: assert that versions are actually in order?
         assert versions
 
         # only apply DOI to most recent version (HACK)
         if doi:
             versions[-1].ext_ids.doi = doi
-            versions[-1].release_stage = "published"
+            if len(versions) > 1:
+                versions[-1].release_stage = "accepted"
         return versions
 
     def try_update(self, versions):
@@ -235,6 +241,11 @@ class ArxivRawImporter(EntityImporter):
             except fatcat_client.rest.ApiException as err:
                 if err.status != 404:
                     raise err
+
+            if existing:
+                v._existing_work_id = existing.work_id
+                any_work_id = existing.work_id
+
             if v.ext_ids.doi:
                 try:
                     existing_doi = self.api.lookup_release(arxiv=v.ext_ids.arxiv)
@@ -246,24 +257,20 @@ class ArxivRawImporter(EntityImporter):
                     # great, they match and have idents, nothing to do
                     pass
                 elif existing and existing.ident != existing_doi.ident:
-                    # could be bad, or could be that a new arxiv version was
-                    # created (update?)
-                    # stick with arxiv_id match as existing; don't update anything
+                    # could be that a new arxiv version was created (update?),
+                    # or that VOR has no arxiv version (or catalog is borked or
+                    # something else)
+                    # stick with arxiv_id match as existing, but don't set DOI;
+                    # don't update anything
+                    v.ext_ids.doi = None
                     pass
                 else:
                     assert not existing
-                    if not existing_doi.ext_ids.arxiv_id:
-                        # update the existing DOI-based record with our full arxiv_id
-                        existing_doi.ext_ids.arxiv_id = v.ext_ids.arxiv_id
-                        self.api.update_release(self.get_editgroup_id(), existing_doi.ident, existing_doi)
-                        self.counts['update'] += 1
-                        # as a flag to not count below
-                        v._updated = True
-                    existing = existing_doi
-
-            if existing:
-                v._existing_work_id = existing.work_id
-                any_work_id = existing.work_id
+                    # there's a pre-existing DOI release we should group under,
+                    # but we don't know if we're the version-of-record or what,
+                    # so just group but don't update existing DOI release
+                    v.ext_ids.doi = None
+                    any_work_id = any_work_id or existing_doi.work_id
 
         last_edit = None
         for v in versions:
