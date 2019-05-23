@@ -18,7 +18,7 @@ ALTER TABLE release_rev
 ADD COLUMN number                TEXT CHECK (octet_length(number) >= 1),
 ADD COLUMN version               TEXT CHECK (octet_length(version) >= 1),
 ADD COLUMN subtitle              TEXT CHECK (octet_length(subtitle) >= 1),
-ADD COLUMN withdrawn_status       TEXT,  -- TODO: enum?
+ADD COLUMN withdrawn_status      TEXT,  -- TODO: enum?
 ADD COLUMN withdrawn_date        DATE,
 ADD COLUMN withdrawn_year        BIGINT;
 
@@ -57,16 +57,6 @@ CREATE INDEX IF NOT EXISTS fileset_edit_ident_idx ON fileset_edit(ident_id);
 CREATE INDEX IF NOT EXISTS webcapture_edit_ident_idx ON webcapture_edit(ident_id);
 CREATE INDEX IF NOT EXISTS release_edit_ident_idx ON release_edit(ident_id);
 CREATE INDEX IF NOT EXISTS work_edit_ident_idx ON work_edit(ident_id);
-
--- TODO: not needed?
--- CREATE INDEX IF NOT EXISTS creator_edit_editgroup_idx ON creator_edit(editgroup_id);
--- CREATE INDEX IF NOT EXISTS container_edit_editgroup_idx ON container_edit(editgroup_id);
--- CREATE INDEX IF NOT EXISTS file_edit_editgroup_idx ON file_edit(editgroup_id);
--- CREATE INDEX IF NOT EXISTS fileset_edit_editgroup_idx ON fileset_edit(editgroup_id);
--- CREATE INDEX IF NOT EXISTS webcapture_edit_editgroup_idx ON webcapture_edit(editgroup_id);
--- CREATE INDEX IF NOT EXISTS release_edit_editgroup_idx ON release_edit(editgroup_id);
--- CREATE INDEX IF NOT EXISTS work_edit_editgroup_idx ON work_edit(editgroup_id);
-
 
 -------------------- Update Test Revs --------------------------------------
 
