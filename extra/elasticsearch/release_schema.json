@@ -78,6 +78,7 @@
             "in_ia":                { "type": "boolean" },
             "in_ia_sim":            { "type": "boolean" },
             "in_shadows":           { "type": "boolean" },
+            "is_superceded":        { "type": "boolean" },
 
             "author":         { "type": "alias", "path": "contrib_names" },
             "journal":        { "type": "alias", "path": "container_name" },

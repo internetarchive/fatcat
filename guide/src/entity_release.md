@@ -163,15 +163,13 @@ complete or correct in more obscure cases.
 - `aliases` (array of strings) for additional titles this release might be
   known by
 - `container_name` (string) if not matched to a container entity
-- `subtitle` (string)
 - `group-title` (string) for releases within an collection/group
 - `translation_of` (release identifier) if this release is a translation of
   another (usually under the same work)
-- `withdrawn_date` (string, ISO date format): if this release has been
-  retracted (post-publication) or withdrawn (pre- or post-publication), this is
-  the datetime of that event. Retractions also result in a `retraction` release
-  under the same `work` entity. This is intended to migrate from "extra" to a
-  full release entity field.
+- `superceded` (boolean) if there is another release under the same work that
+  should be referenced/indicated instead. Intended as a temporary hint until
+  proper work-based search is implemented. As an example use, all arxiv release
+  versions except for the most recent get this set.
 
 #### `release_type` Vocabulary
 
