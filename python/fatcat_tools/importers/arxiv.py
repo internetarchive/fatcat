@@ -198,6 +198,7 @@ class ArxivRawImporter(EntityImporter):
         #   group-title
         #   arxiv: comments, categories, etc
         extra_arxiv['base_id'] = base_id
+        extra['superceded'] = True
         extra['arxiv'] = extra_arxiv
 
         versions = []
@@ -223,10 +224,12 @@ class ArxivRawImporter(EntityImporter):
                 license_slug=license_slug,
                 abstracts=abstracts,
                 contribs=contribs,
-                extra=extra,
+                extra=extra.copy(),
             ))
         # TODO: assert that versions are actually in order?
         assert versions
+
+        versions[-1].extra.pop('superceded')
 
         # only apply DOI to most recent version (HACK)
         if doi:

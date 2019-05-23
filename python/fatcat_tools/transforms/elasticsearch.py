@@ -292,6 +292,7 @@ def container_to_elasticsearch(entity, force_bool=True):
     if extra.get('ia'):
         if extra['ia'].get('sim'):
             any_ia_sim = True
+    t['is_superceded'] = bool(extra.get('superceded'))
 
     t['in_doaj'] = bool(in_doaj)
     t['in_road'] = bool(in_road)

@@ -71,6 +71,7 @@ def test_arxiv_xml_parse(arxiv_importer):
     assert len(r1.contribs) == 4
     assert r1.extra['arxiv']['categories'] == ['cond-mat.stat-mech', 'physics.bio-ph', 'physics.data-an']
     assert r1.extra['arxiv']['base_id'] == '1810.09584'
+    assert r1.extra['superceded'] == True
 
     assert r1.contribs[0].raw_name == "Raphael Chetrite"
     assert r1.contribs[0].role == "author"
@@ -92,6 +93,8 @@ def test_arxiv_xml_parse(arxiv_importer):
     assert r1.extra['arxiv']['comments'] == "7 pages, 2 figures"
     assert r1.extra['arxiv']['categories'] == ["cond-mat.stat-mech", "physics.bio-ph", "physics.data-an"]
 
+    assert not r2.extra.get('superceded')
+    r2.extra['superceded'] = True
     assert r1.extra == r2.extra
 
     assert not r1.refs
