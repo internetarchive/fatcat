@@ -1,0 +1,31 @@
+
+Upgrading QA to v0.3
+------------------------
+
+Size before: 288.81G
+
+Took API down at 2019-05-21 12:09
+
+    time diesel migration run
+    Running migration 2019-05-09-051834_v0.3
+
+    real    6m14.481s
+    user    0m0.028s
+    sys     0m0.028s
+
+Disk I/O is furious!
+
+
+fatcat@wbgrp-svc500:/srv/fatcat/src/rust$ time cargo build --release
+   Compiling fatcat-api-spec v0.3.0 (/srv/fatcat/src/rust/fatcat-api-spec)
+   Compiling fatcat v0.3.0 (/srv/fatcat/src/rust)
+    Finished release [optimized] target(s) in 4m 24s
+
+real    4m24.673s
+user    10m22.476s
+sys     0m10.320s
+
+Back up at 12:23. Could have gone a bit faster with parallelism and no
+distractions.
+
+Size after: 289.14G

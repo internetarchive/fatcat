@@ -1,0 +1,13 @@
+
+Starting at 11:16 or so.
+
+Pulled v0.3.0 (f5b955746f2fb62220c3b3dfc134d4d35193f776)
+
+    $ time diesel migration run
+    Running migration 2019-05-09-051834_v0.3
+
+    real    6m17.209s
+    user    0m0.036s
+    sys     0m0.020s
+
+And then rebuilds, and start/restart API and web. Easy!
