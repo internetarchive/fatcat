@@ -377,7 +377,7 @@ class PubmedImporter(EntityImporter):
         pmid = medline.PMID.string.strip()
         doi = identifiers.find("ArticleId", IdType="doi")
         if doi:
-            doi = doi.string.lower()
+            doi = doi.string.lower().strip()
             if doi.startswith('doi:'):
                 doi = doi[4:]
             if not (doi.startswith('10.') and '/' in doi and doi.split('/')[1]):
