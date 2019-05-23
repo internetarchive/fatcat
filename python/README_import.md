@@ -54,6 +54,48 @@ Usually 24 hours or so on fast production machine.
 
     time xzcat /srv/fatcat/datasets/crossref-works.2018-09-05.json.xz | time parallel -j20 --round-robin --pipe ./fatcat_import.py crossref - /srv/fatcat/datasets/20180216.ISSN-to-ISSN-L.txt --extid-map-file /srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3
 
+## JALC
+
+First import a random subset single threaded to create (most) containers. On a
+fast machine, this takes a couple minutes.
+
+    time ./fatcat_import.py jalc /srv/fatcat/datasets/JALC-LOD-20180907.sample10k.rdf /srv/fatcat/datasets/ISSN-to-ISSN-L.txt --extid-map-file /srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3
+
+Then, in parallel:
+
+    zcat /srv/fatcat/datasets/JALC-LOD-20180907.gz | pv -l | time parallel -j20 --round-robin --pipe ./fatcat_import.py jalc - /srv/fatcat/datasets/ISSN-to-ISSN-L.txt --extid-map-file /srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3
+
+## JSTOR
+
+Looks like:
+
+    fd . /data/jstor/metadata/ | time parallel -j20 --round-robin --pipe ./fatcat_import.py jstor - /data/issn/20190129.ISSN-to-ISSN-L.txt
+
+## arXiv
+
+Single file:
+
+    ./fatcat_import.py arxiv /srv/fatcat/datasets/arxiv_raw_oai_snapshot_2019-05-22/2007-12-31-00000001.xml
+
+Bulk (one file per process):
+
+    fd .xml /srv/fatcat/datasets/arxiv_raw_oai_snapshot_2019-05-22/ | parallel -j15 ./fatcat_import.py arxiv {}
+
+## PubMed
+
+Run single:
+
+    time ./fatcat_import.py pubmed /srv/fatcat/datasets/pubmed_medline_baseline_2019/pubmed19n0400.xml /srv/fatcat/datasets/ISSN-to-ISSN-L.txt
+
+    real    13m21.756s
+    user    9m10.720s
+    sys     0m14.100s
+
+Bulk:
+
+    # very memory intensive to parse these big XML files, so need to limit parallelism
+    fd .xml /srv/fatcat/datasets/pubmed_medline_baseline_2019 | time parallel -j3 ./fatcat_import.py pubmed {} /srv/fatcat/datasets/ISSN-to-ISSN-L.txt
+
 ## Matched
 
 These each take 2-4 hours:
