@@ -16,7 +16,12 @@ See also:
 
 ## [Unreleased]
 
-This version includes some backward-incompatible changes.
+Nothing yet!
+
+## [0.3.0] - 2019-05-23
+
+This version includes both a SQL migration and backwards-incompatible API
+changes.
 
 ### Fixed
 
@@ -66,6 +71,8 @@ This version includes some backward-incompatible changes.
   Expanded release entities have their abstracts and refs hidden by default
   (for performance)
 - `creator_ids` in release elasticsearch schema, for lookups
+- new importers: arxiv, pubmed, JALC, and JSTOR. Most still need refactoring
+  and polish
 
 ## [0.2.2] - 2019-05-08
 
