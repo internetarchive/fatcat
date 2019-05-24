@@ -23,6 +23,7 @@ SANE_MAX_URLS = 100
 # These are very close, but maybe not exactly 1-to-1 with 639-2? Some mix of
 # 2/T and 2/B?
 # PubMed/MEDLINE and JSTOR use these MARC codes
+# https://www.loc.gov/marc/languages/language_name.html
 LANG_MAP_MARC = {
     'afr': 'af',
     'alb': 'sq',
@@ -64,7 +65,6 @@ LANG_MAP_MARC = {
     'mal': 'ml',
     'mao': 'mi',
     'may': 'ms',
-#    mul, Multiple languages
     'nor': 'no',
     'per': 'fa',
     'per': 'fa',
@@ -82,7 +82,6 @@ LANG_MAP_MARC = {
     'tha': 'th',
     'tur': 'tr',
     'ukr': 'uk',
-#    und, Undetermined
     'urd': 'ur',
     'vie': 'vi',
     'wel': 'cy',
@@ -90,7 +89,19 @@ LANG_MAP_MARC = {
 # additions
     'gle': 'ga', # "Irish" (Gaelic)
     'jav': 'jv', # Javanese
-    # 'map', for Austronesian languages, has no ISO 639-1 code
+    'welsh': 'cy', # Welsh
+    'oci': 'oc', # Occitan
+
+# Don't have ISO 639-1 codes
+    'grc': 'el', # Ancient Greek; map to modern greek
+    'map': None, # Austronesian (collection)
+    'syr': None, # Syriac, Modern
+    'gem': None, # Old Saxon
+    'non': None, # Old Norse
+    'emg': None, # Eastern Meohang
+    'neg': None, # Negidal
+    'mul': None, # Multiple languages
+    'und': None, # Undetermined
 }
 
 

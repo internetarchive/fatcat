@@ -448,7 +448,7 @@ class PubmedImporter(EntityImporter):
                 language = None
             else:
                 language = LANG_MAP_MARC.get(language)
-                if not language:
+                if not language and not (medline.Article.Language.string in LANG_MAP_MARC):
                     warnings.warn("MISSING MARC LANG: {}".format(medline.Article.Language.string))
 
         ### Journal/Issue Metadata
