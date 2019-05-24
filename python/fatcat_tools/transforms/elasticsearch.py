@@ -151,26 +151,26 @@ def release_to_elasticsearch(entity, force_bool=True):
             # TODO: shadow check goes here
             in_shadows = True
         is_pdf = 'pdf' in (f.mimetype or '')
-        for url in (f.urls or []):
-            if not f.mimetype and 'pdf' in url.lower():
+        for release_url in (f.urls or []):
+            if not f.mimetype and 'pdf' in release_url.url.lower():
                 is_pdf = True
-            if url.url.lower().startswith('http'):
+            if release_url.url.lower().startswith('http'):
                 in_web = True
-            if url.rel in ('dweb', 'p2p', 'ipfs', 'dat', 'torrent'):
+            if release_url.rel in ('dweb', 'p2p', 'ipfs', 'dat', 'torrent'):
                 # not sure what rel will be for this stuff
                 in_dweb = True
             if is_pdf:
-                any_pdf_url = url.url
-            if is_pdf and url.rel in ('webarchive', 'repository') and is_pdf:
+                any_pdf_url = release_url.url
+            if is_pdf and release_url.rel in ('webarchive', 'repository') and is_pdf:
                 is_preserved = True
-                good_pdf_url = url.url
-            if '//www.jstor.org/' in url.url:
+                good_pdf_url = release_url.url
+            if '//www.jstor.org/' in release_url.url:
                 in_jstor = True
-            if '//web.archive.org/' in url.url or '//archive.org/' in url.url:
+            if '//web.archive.org/' in release_url.url or '//archive.org/' in release_url.url:
                 in_ia = True
                 if is_pdf:
-                    best_pdf_url = url.url
-                    ia_pdf_url = url.url
+                    best_pdf_url = release_url.url
+                    ia_pdf_url = release_url.url
     # here is where we bake-in priority; IA-specific
     t['best_pdf_url'] = best_pdf_url or good_pdf_url or any_pdf_url
     t['ia_pdf_url'] = ia_pdf_url
