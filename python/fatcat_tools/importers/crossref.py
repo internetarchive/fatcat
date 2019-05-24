@@ -237,13 +237,18 @@ class CrossrefImporter(EntityImporter):
             container_id = self.lookup_issnl(issnl)
         publisher = clean(obj.get('publisher'))
 
+        container_name = obj.get('container-title')
+        if container_name:
+            container_name = clean(container_name[0], force_xml=True)
+        if not container_name:
+            container_name = None
         if (container_id is None and self.create_containers and (issnl is not None)
-            and obj.get('container-title') and len(obj['container-title']) > 0):
+                and container_name):
             ce = fatcat_client.ContainerEntity(
                 issnl=issnl,
                 publisher=publisher,
                 container_type=self.map_container_type(release_type),
-                name=clean(obj['container-title'][0], force_xml=True))
+                name=container_name)
             ce_edit = self.create_container(ce)
             container_id = ce_edit.ident
             self._issnl_id_map[issnl] = container_id
@@ -277,9 +282,9 @@ class CrossrefImporter(EntityImporter):
             if key and key.startswith(obj['DOI'].upper()):
                 key = key.replace(obj['DOI'].upper() + "-", '')
                 key = key.replace(obj['DOI'].upper(), '')
-            container_name = rm.get('volume-title')
-            if not container_name:
-                container_name = rm.get('journal-title')
+            ref_container_name = rm.get('volume-title')
+            if not ref_container_name:
+                ref_container_name = rm.get('journal-title')
             elif rm.get('journal-title'):
                 ref_extra['journal-title'] = rm['journal-title']
             if rm.get('DOI'):
@@ -301,7 +306,7 @@ class CrossrefImporter(EntityImporter):
                 target_release_id=None,
                 key=key,
                 year=year,
-                container_name=clean(container_name),
+                container_name=clean(ref_container_name),
                 title=clean(rm.get('article-title')),
                 locator=clean(rm.get('first-page')),
                 # TODO: just dump JSON somewhere here?
@@ -321,7 +326,7 @@ class CrossrefImporter(EntityImporter):
         # top-level extra keys
         if not container_id:
             if obj.get('container-title'):
-                extra['container_name'] = clean(obj['container-title'][0])
+                extra['container_name'] = container_name
         for key in ('group-title'):
             val = obj.get(key)
             if val:
