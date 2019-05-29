@@ -9,6 +9,8 @@ import itertools
 import subprocess
 import unicodedata
 from collections import Counter
+import xml.etree.ElementTree as ET
+
 import pykafka
 from bs4 import BeautifulSoup
 
@@ -616,8 +618,55 @@ class Bs4XmlFilePusher(RecordPusher):
         soup = BeautifulSoup(self.xml_file, "xml")
         for record in soup.find_all(self.record_tag):
             self.importer.push_record(record)
+            record.decompose()
         counts = self.importer.finish()
         soup.decompose()
+        print(counts)
+        return counts
+
+
+class Bs4XmlLargeFilePusher(RecordPusher):
+    """
+    This is a variant of Bs4XmlFilePusher which parses large files
+    incrementally, instead of loading the whole thing in RAM first.
+
+    The dominant source of RAM utilization at start-up is the large ISSN/ISSN-L
+    map. This can be confirmed in local development by using the small map in
+    ./tests/files/.
+
+    Current implementation is weird/inefficient in that it re-parses with
+    BeautifulSoup (lxml) every article, but I didn't want to mangle or re-write
+    with a different BS back-end.
+
+    Did at least casual testing and all of: record.decompose(),
+    soup.decompose(), element.clear(), root.clear() helped with memory usage.
+    With all of these, memory growth is very slow and can probably be explained
+    by inner container/release API lookup caches.
+    """
+
+    def __init__(self, importer, xml_file, record_tag, **kwargs):
+        self.importer = importer
+        self.xml_file = xml_file
+        self.record_tag = record_tag
+
+    def run(self):
+        elem_iter = ET.iterparse(self.xml_file, ["start", "end"])
+        i = 0
+        root = None
+        for (event, element) in elem_iter:
+            if not root and event == "start":
+                root = element
+                continue
+            if not (element.tag == self.record_tag and event == "end"):
+                continue
+            soup = BeautifulSoup(ET.tostring(element), "xml")
+            for record in soup.find_all(self.record_tag):
+                self.importer.push_record(record)
+                record.decompose()
+            soup.decompose()
+            element.clear()
+            root.clear()
+        counts = self.importer.finish()
         print(counts)
         return counts
 
@@ -638,6 +687,7 @@ class Bs4XmlFileListPusher(RecordPusher):
                 soup = BeautifulSoup(xml_file, "xml")
                 for record in soup.find_all(self.record_tag):
                     self.importer.push_record(record)
+                    record.decompose()
                 soup.decompose()
         counts = self.importer.finish()
         print(counts)

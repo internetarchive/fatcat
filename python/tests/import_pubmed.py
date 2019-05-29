@@ -1,7 +1,7 @@
 
 import json, gzip
 import pytest
-from fatcat_tools.importers import PubmedImporter, Bs4XmlFilePusher
+from fatcat_tools.importers import PubmedImporter, Bs4XmlLargeFilePusher
 from fixtures import api
 from bs4 import BeautifulSoup
 
@@ -20,7 +20,7 @@ def test_pubmed_importer(pubmed_importer):
     last_index = pubmed_importer.api.get_changelog(limit=1)[0].index
     with open('tests/files/pubmedsample_2019.xml', 'r') as f:
         pubmed_importer.bezerk_mode = True
-        counts = Bs4XmlFilePusher(pubmed_importer, f, "PubmedArticle").run()
+        counts = Bs4XmlLargeFilePusher(pubmed_importer, f, "PubmedArticle").run()
     assert counts['insert'] == 176
     assert counts['exists'] == 0
     assert counts['skip'] == 0
@@ -37,7 +37,7 @@ def test_pubmed_importer(pubmed_importer):
     with open('tests/files/pubmedsample_2019.xml', 'r') as f:
         pubmed_importer.bezerk_mode = False
         pubmed_importer.reset()
-        counts = Bs4XmlFilePusher(pubmed_importer, f, "PubmedArticle").run()
+        counts = Bs4XmlLargeFilePusher(pubmed_importer, f, "PubmedArticle").run()
     assert counts['insert'] == 0
     assert counts['exists'] == 176
     assert counts['skip'] == 0

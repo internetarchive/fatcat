@@ -40,7 +40,7 @@ def run_pubmed(args):
         raise NotImplementedError
         #KafkaBs4XmlPusher(pi, args.kafka_hosts, args.kafka_env, "api-pubmed", "fatcat-import").run()
     else:
-        Bs4XmlFilePusher(pi, args.xml_file, "PubmedArticle").run()
+        Bs4XmlLargeFilePusher(pi, args.xml_file, "PubmedArticle", record_list_tag="PubmedArticleSet").run()
 
 def run_jstor(args):
     ji = JstorImporter(args.api,
