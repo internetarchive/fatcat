@@ -401,8 +401,10 @@ class PubmedImporter(EntityImporter):
             release_type = "retraction"
             retraction_of = medline.find("CommentsCorrections", RefType="RetractionOf")
             if retraction_of:
-                extra_pubmed['retraction_of_raw'] = retraction_of.RefSource.string
-                extra_pubmed['retraction_of_pmid'] = retraction_of.PMID.string
+                if retraction_of.RefSource:
+                    extra_pubmed['retraction_of_raw'] = retraction_of.RefSource.string
+                if retraction_of.PMID:
+                    extra_pubmed['retraction_of_pmid'] = retraction_of.PMID.string
 
         # everything in medline is published
         release_stage = "published"
