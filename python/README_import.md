@@ -79,7 +79,7 @@ Single file:
 
 Bulk (one file per process):
 
-    fd .xml /srv/fatcat/datasets/arxiv_raw_oai_snapshot_2019-05-22/ | parallel -j15 ./fatcat_import.py arxiv {}
+    fd '.xml$' /srv/fatcat/datasets/arxiv_raw_oai_snapshot_2019-05-22/ | parallel -j15 ./fatcat_import.py arxiv {}
 
 ## PubMed
 
@@ -93,8 +93,7 @@ Run single:
 
 Bulk:
 
-    # very memory intensive to parse these big XML files, so need to limit parallelism
-    fd .xml /srv/fatcat/datasets/pubmed_medline_baseline_2019 | time parallel -j3 ./fatcat_import.py pubmed {} /srv/fatcat/datasets/ISSN-to-ISSN-L.txt
+    fd '.xml$' /srv/fatcat/datasets/pubmed_medline_baseline_2019 | time parallel -j16 ./fatcat_import.py pubmed {} /srv/fatcat/datasets/ISSN-to-ISSN-L.txt
 
 ## Matched
 
