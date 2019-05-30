@@ -581,7 +581,7 @@ class PubmedImporter(EntityImporter):
                     raw_name = "{} {}".format(given_name, surname)
                 elif surname:
                     raw_name = surname
-                if not raw_name and author.CollectiveName.string:
+                if not raw_name and author.CollectiveName and author.CollectiveName.string:
                     raw_name = author.CollectiveName.string
                 contrib_extra = dict()
                 orcid = author.find("Identifier", Source="ORCID")
