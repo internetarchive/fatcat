@@ -33,12 +33,12 @@ the others:
 
     gunzip public_profiles_1_2_json.all.json.gz
 
-## ISSN
+## Journal Metadata
 
-From CSV file:
+From JSON file:
 
     # See "start off with" command above
-    time ./fatcat_import.py issn /srv/fatcat/datasets/journal_extra_metadata.csv
+    time ./fatcat_import.py journal-metadata /srv/fatcat/datasets/journal_metadata.json
 
 Usually a couple minutes at most on fast production machine.
 
