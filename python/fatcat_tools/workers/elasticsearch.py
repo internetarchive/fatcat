@@ -43,6 +43,12 @@ class ElasticsearchReleaseWorker(FatcatWorker):
 
         for msg in consumer:
             json_str = msg.value.decode('utf-8')
+            # HACK: work around a bug where container entities got published to
+            # release_v03 topic
+            if self.elasticsearch_document_name == "release":
+                entity_dict = json.loads(json_str)
+                if entity_dict.get('name') and not entity_dict.get('title'):
+                    continue
             entity = entity_from_json(json_str, self.entity_type, api_client=ac)
             #print(entity)
             elasticsearch_endpoint = "{}/{}/{}/{}".format(

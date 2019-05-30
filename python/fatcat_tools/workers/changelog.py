@@ -75,8 +75,8 @@ class EntityUpdatesWorker(FatcatWorker):
     def run(self):
         changelog_topic = self.kafka.topics[self.consume_topic]
         release_topic = self.kafka.topics[self.release_topic]
-        file_topic = self.kafka.topics[self.release_topic]
-        container_topic = self.kafka.topics[self.release_topic]
+        file_topic = self.kafka.topics[self.file_topic]
+        container_topic = self.kafka.topics[self.container_topic]
 
         consumer = changelog_topic.get_balanced_consumer(
             consumer_group=self.consumer_group,
