@@ -110,16 +110,27 @@ class JournalMetadataImporter(EntityImporter):
         except fatcat_client.rest.ApiException as err:
             if err.status != 404:
                 raise err
-            # doesn't exist, need to update
+
+        if not existing:
+            # doesn't exist, create it
             return True
 
-        # eventually we'll want to support "updates", but for now just skip if
-        # entity already exists
-        if existing:
+        # for now, only update KBART, and only if there is new content
+        if not existing.extra:
+            existing.extra = dict()
+        if ce.extra.get('kbart') and (existing.extra.get('kbart') != ce.extra['kbart']):
+            if not existing.extra.get('kbart'):
+                existing.extra['kbart'] = {}
+            existing.extra['kbart'].update(ce.extra['kbart'])
+            self.api.update_container(self.get_editgroup_id(), existing.ident, existing)
+            self.counts['update'] += 1
+            return False
+        else:
             self.counts['exists'] += 1
             return False
 
-        return True
+        # if we got this far, it's a bug
+        raise NotImplementedError
 
     def insert_batch(self, batch):
         self.api.create_container_auto_batch(fatcat_client.ContainerAutoBatch(
