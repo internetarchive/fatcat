@@ -440,7 +440,7 @@ class EntityImporter:
             return self._doi_id_map[doi]
         release_id = None
         try:
-            rv = self.api.lookup_release(doi=doi)
+            rv = self.api.lookup_release(doi=doi, hide="abstracts,refs,contribs")
             release_id = rv.ident
         except ApiException as ae:
             # If anything other than a 404 (not found), something is wrong
@@ -456,7 +456,7 @@ class EntityImporter:
             return self._pmid_id_map[pmid]
         release_id = None
         try:
-            rv = self.api.lookup_release(pmid=pmid)
+            rv = self.api.lookup_release(pmid=pmid, hide="abstracts,refs,contribs")
             release_id = rv.ident
         except ApiException as ae:
             # If anything other than a 404 (not found), something is wrong
