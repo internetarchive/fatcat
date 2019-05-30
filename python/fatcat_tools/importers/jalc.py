@@ -258,9 +258,10 @@ class JalcImporter(EntityImporter):
             if len(pubs) > 1 and is_cjk(pubs[0]):
                 # ordering is not reliable
                 pubs = [pubs[1], pubs[0]]
-            publisher = clean(pubs[0])
-            if len(pubs) > 1:
-                container_extra['publisher_aliases'] = pubs[1:]
+            if pubs:
+                publisher = clean(pubs[0])
+                if len(pubs) > 1:
+                    container_extra['publisher_aliases'] = pubs[1:]
 
         if (container_id is None and self.create_containers and (issnl is not None)
                 and container_name):
