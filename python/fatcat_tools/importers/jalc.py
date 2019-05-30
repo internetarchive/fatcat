@@ -64,8 +64,9 @@ def parse_jalc_persons(raw_persons):
         # all english names, or all japanese names
         return persons
 
-    if len([1 for p in persons if p._lang == 'en']) != len([1 for p in persons if p._lang == 'ja']):
-        print("INTERESTING: {}".format(persons[0]))
+    # for debugging
+    #if len([1 for p in persons if p._lang == 'en']) != len([1 for p in persons if p._lang == 'ja']):
+    #    print("INTERESTING: {}".format(persons[0]))
 
     start_lang = persons[0]._lang
     contribs = []
