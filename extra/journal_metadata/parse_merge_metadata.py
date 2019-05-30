@@ -122,8 +122,6 @@ def test_gaps():
         [[1950, 1954], [1957, 1964], [1966, 1970]]
 
 def merge_spans(old, new):
-    print(old)
-    print(new)
     if not new:
         return old
     if not old:
@@ -557,9 +555,9 @@ class Munger():
                         issnl,
                         row['date_first_issue_online'],
                         row['date_last_issue_online']))
-                    new_spans = [end, start]
+                    new_spans = [[end, start]]
                 else:
-                    new_spans = [start, end]
+                    new_spans = [[start, end]]
                 self.data[issnl]['kbart'][name]['year_spans'] = merge_spans(old_spans, new_spans)
         print(counts)
 
@@ -664,6 +662,9 @@ class Munger():
         print(counts)
 
 if __name__=='__main__':
+    if len(sys.argv) != 2 or sys.argv[1].startswith('-'):
+        print("pass me path for an output JSON lines file")
+        sys.exit(-1)
     munger = Munger()
     munger.run(sys.argv[1])
 
