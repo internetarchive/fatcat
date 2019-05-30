@@ -11,6 +11,90 @@ import fatcat_client
 from .common import EntityImporter, clean, is_cjk, DATE_FMT
 
 
+def parse_jalc_persons(raw_persons):
+    """
+    For the most part, JALC DC names are in either japanese or english. The
+    two common patterns are a list alternating between the two (in which case
+    the names are translations), or all in one language or the other.
+
+    Because dublin core is a projection tossing away a bunch of context, the
+    other cases are hard to disambiguate. There are also some cases with Korean
+    and other languages mixed in. This crude method doesn't handle everything
+    right; it tries to just get the two common patterns correct. Sorry humans!
+
+    Edge cases for this function:
+    - 10.11316/jpsgaiyo.56.1.4.0_757_3 <= all english, some japanese, works
+    - 10.14988/pa.2017.0000013531 <= complex, not japanese/english, mixed
+    - 10.15036/arerugi.62.1407_1 <= one japanese, two english; fails
+    - 10.14988/pa.2017.0000007327 <= ambiguous; translator in jpn/eng
+    """
+
+    persons = []
+
+    # first parse out into language-agnostic dics
+    for raw in raw_persons:
+        name = raw.find('name') or None
+        if name:
+            name = clean(name.string)
+        surname = raw.find('familyName') or None
+        if surname:
+            surname = clean(surname.string)
+        given_name = raw.find('givenName') or None
+        if given_name:
+            given_name = clean(given_name.string)
+        lang = 'en'
+        if is_cjk(name):
+            lang = 'ja'
+        if lang == 'en' and surname and given_name:
+            # english names order is flipped
+            name = "{} {}".format(given_name, surname)
+        rc = fatcat_client.ReleaseContrib(
+            raw_name=name,
+            surname=surname,
+            given_name=given_name,
+            role="author")
+        # add an extra hint field; won't end up in serialized object
+        rc._lang = lang
+        persons.append(rc)
+
+    if not persons:
+        return []
+
+    if all([p._lang == 'en' for p in persons]) or all([p._lang == 'ja' for p in persons]):
+        # all english names, or all japanese names
+        return persons
+
+    if len([1 for p in persons if p._lang == 'en']) != len([1 for p in persons if p._lang == 'ja']):
+        print("INTERESTING: {}".format(persons[0]))
+
+    start_lang = persons[0]._lang
+    contribs = []
+    for p in persons:
+        if p._lang == start_lang:
+            contribs.append(p)
+        else:
+            if p._lang == 'en' and contribs[-1]._lang == 'ja':
+                eng = p
+                jpn = contribs[-1]
+            elif p._lang == 'ja' and contribs[-1]._lang == 'en':
+                eng = contribs[-1]
+                jpn = p
+            else:
+                # give up and just add as another author
+                contribs.append(p)
+                continue
+            eng.extra = {
+                'original_name': {
+                    'lang': jpn._lang,
+                    'raw_name': jpn.raw_name,
+                    'given_name': jpn.given_name,
+                    'surname': jpn.surname,
+                },
+            }
+            contribs[-1] = eng
+    return contribs
+
+
 class JalcImporter(EntityImporter):
     """
     Importer for JALC DOI metadata.
@@ -104,66 +188,8 @@ class JalcImporter(EntityImporter):
         if not doi:
             return None
 
-        contribs = []
         people = record.find_all("Person")
-        if (people and (len(people) % 2 == 0)
-                and not is_cjk(people[0].find('name').string)
-                and is_cjk(people[1].find('name').string)):
-            # both english and japanese names are usually included for every author
-            # TODO: turns out this isn't always the case; see
-            # 10.18948/shasetaikai.1990.0_601 as an example with 4 actual
-            # authors, but 5 Person entries; all 4 authors in japanese, a
-            # single author in both japanese in english. Ugh!
-            for i in range(int(len(people)/2)):
-                eng = people[i*2]
-                jpn = people[i*2 + 1]
-                # there isn't always an english name though? TODO
-                name = eng
-                if not name.find('name'):
-                    name = jpn
-                surname = name.find('familyName')
-                if surname:
-                    surname = surname.string
-                given_name = name.find('givenName')
-                if given_name:
-                    given_name = given_name.string
-                contrib = fatcat_client.ReleaseContrib(
-                    raw_name=clean(name.find('name').string),
-                    given_name=clean(given_name),
-                    surname=clean(surname),
-                    role='author',
-                )
-                if eng.find('name') and jpn.find('name'):
-                    surname = jpn.find('familyName')
-                    if surname:
-                        surname = surname.string
-                    given_name = jpn.find('givenName')
-                    if given_name:
-                        given_name = given_name.string
-                    contrib.extra = {
-                        'original_name': {
-                            'lang': 'ja',
-                            'raw_name': clean(jpn.find('name').string),
-                            'given_name': clean(given_name),
-                            'surname': clean(surname),
-                        }}
-                contribs.append(contrib)
-        elif people:
-            # TODO: test for this codepath?
-            for eng in people:
-                surname = eng.find('familyName')
-                if surname:
-                    surname = surname.string
-                given_name = eng.find('givenName')
-                if given_name:
-                    given_name = given_name.string
-                contrib = fatcat_client.ReleaseContrib(
-                    raw_name=clean(eng.find('name').string),
-                    given_name=clean(given_name),
-                    surname=clean(surname),
-                    role='author',
-                )
-                contribs.append(contrib)
+        contribs = parse_jalc_persons(people)
 
         for i, contrib in enumerate(contribs):
             if contrib.raw_name != "et al.":
