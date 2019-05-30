@@ -129,7 +129,7 @@ def merge_spans(old, new):
     old.extend(new)
     years = set()
     for span in old:
-        for y in range(span[0], span[1]):
+        for y in range(span[0], span[1]+1):
             years.add(y)
     if not years:
         return []
@@ -153,19 +153,23 @@ def merge_spans(old, new):
         spans.append([start, last])
         start = y
         last = y
-        todo = False
+        todo = True
     if todo:
         spans.append([start, last])
     return spans
 
 def test_merge_spans():
-    assert merge_spans([[5, 10]], [10, 20]) == \
+    assert merge_spans([[5, 10]], [[10, 20]]) == \
+        [[5, 20]]
+    assert merge_spans([[5, 9]], [[10, 20]]) == \
+        [[5, 20]]
+    assert merge_spans([[5, 11]], [[10, 20]]) == \
         [[5, 20]]
     assert merge_spans([], []) == \
         []
     assert merge_spans([[9, 11]], []) == \
         [[9,11]]
-    assert merge_spans([[2000, 2000]], [1450, 1900]) == \
+    assert merge_spans([[2000, 2000]], [[1450, 1900]]) == \
         [[1450, 1900], [2000, 2000]]
 
 class Munger():
