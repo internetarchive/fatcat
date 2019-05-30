@@ -4,7 +4,7 @@ import time
 import requests
 from pykafka.common import OffsetType
 
-from fatcat_client import ReleaseEntity, ApiClient
+from fatcat_client import ReleaseEntity, ContainerEntity, ApiClient
 from fatcat_tools import *
 from .worker_common import FatcatWorker
 
@@ -62,10 +62,10 @@ class ElasticsearchContainerWorker(ElasticsearchReleaseWorker):
             elasticsearch_backend="http://localhost:9200", elasticsearch_index="fatcat"):
         super().__init__(kafka_hosts=kafka_hosts,
                          consume_topic=consume_topic,
-                         poll_interval,
-                         offset,
-                         elasticsearch_backend,
-                         elasticsearch_index)
+                         poll_interval=poll_interval,
+                         offset=offset,
+                         elasticsearch_backend=elasticsearch_backend,
+                         elasticsearch_index=elasticsearch_index)
         self.entity_type = ContainerEntity
         self.elasticsearch_document_name = "container"
         self.transform_func = container_to_elasticsearch
