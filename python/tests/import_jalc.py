@@ -93,14 +93,14 @@ def test_jalc_xml_parse(jalc_importer):
     #assert extra['container_name'] == "International Journal of Quantum Chemistry"
     assert len(r.contribs) == 4
 
-    assert r.contribs[0].raw_name == "Hashimoto Yasuhiko"
+    assert r.contribs[0].raw_name == "Yasuhiko Hashimoto"
     assert r.contribs[0].given_name == "Yasuhiko"
     assert r.contribs[0].surname == "Hashimoto"
     assert r.contribs[0].extra['original_name']['raw_name'] == "橋本 雍彦"
     assert r.contribs[0].extra['original_name']['given_name'] == "雍彦"
     assert r.contribs[0].extra['original_name']['surname'] == "橋本"
 
-    assert r.contribs[3].raw_name == "Takahashi Teruo"
+    assert r.contribs[3].raw_name == "Teruo Takahashi"
     assert r.contribs[3].given_name == "Teruo"
     assert r.contribs[3].surname == "Takahashi"
     assert r.contribs[3].extra['original_name']['raw_name'] == "高橋 輝男"
