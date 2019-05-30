@@ -21,8 +21,14 @@ def run_changelog(args):
 def run_entity_updates(args):
     changelog_topic = "fatcat-{}.changelog".format(args.env)
     release_topic = "fatcat-{}.release-updates-v03".format(args.env)
-    worker = EntityUpdatesWorker(args.api, args.kafka_hosts, changelog_topic,
-        release_topic=release_topic)
+    file_topic = "fatcat-{}.file-updates".format(args.env)
+    container_topic = "fatcat-{}.container-updates".format(args.env)
+    worker = EntityUpdatesWorker(args.api, args.kafka_hosts,
+        changelog_topic,
+        release_topic=release_topic,
+        file_topic=file_topic,
+        container_topic=container_topic,
+    )
     worker.run()
 
 def run_elasticsearch_release(args):
