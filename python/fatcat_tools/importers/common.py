@@ -147,7 +147,8 @@ def is_cjk(s):
         return False
     for c in s:
         if c.isalpha():
-            return unicodedata.name(c).startswith("CJK")
+            lang_prefix = unicodedata.name(c).split()[0]
+            return lang_prefix in ('CJK', 'HIRAGANA', 'KATAKANA', 'HANGUL')
     return False
 
 def test_is_cjk():
@@ -159,9 +160,10 @@ def test_is_cjk():
     assert is_cjk('菊') == True
     assert is_cjk('岡, 鹿, 梨, 阜, 埼 with eng after') == True
     assert is_cjk('水道') == True
-    # TODO: assert is_cjk('ひヒ') == True
-    # TODO: assert is_cjk('き゚ゅ') == True
-    # TODO: assert is_cjk('ㄴ, ㄹ, ㅁ, ㅂ, ㅅ') == True
+    assert is_cjk('オウ, イク') == True # kanji
+    assert is_cjk('ひヒ') == True
+    assert is_cjk('き゚ゅ') == True
+    assert is_cjk('ㄴ, ㄹ, ㅁ, ㅂ, ㅅ') == True
 
 DOMAIN_REL_MAP = {
     "archive.org": "archive",
