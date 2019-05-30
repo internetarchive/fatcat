@@ -380,7 +380,7 @@ class PubmedImporter(EntityImporter):
             doi = doi.string.lower().strip()
             if doi.startswith('doi:'):
                 doi = doi[4:]
-            if not (doi.startswith('10.') and '/' in doi and doi.split('/')[1]):
+            if not (doi.startswith('10.') and '/' in doi and doi.split('/')[1]) and len(doi.split()) == 1:
                 sys.stderr.write("BOGUS DOI: {}\n".format(doi))
                 doi = None
 
