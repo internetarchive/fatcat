@@ -38,6 +38,13 @@ def run_elasticsearch_release(args):
         elasticsearch_index=args.elasticsearch_index)
     worker.run()
 
+def run_elasticsearch_container(args):
+    consume_topic = "fatcat-{}.container-updates".format(args.env)
+    worker = ElasticsearchContainerWorker(args.kafka_hosts, consume_topic,
+        elasticsearch_backend=args.elasticsearch_backend,
+        elasticsearch_index=args.elasticsearch_index)
+    worker.run()
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--debug',
@@ -71,6 +78,15 @@ def main():
     sub_elasticsearch_release.add_argument('--elasticsearch-index',
         help="elasticsearch index to push into",
         default="fatcat_release_v03")
+
+    sub_elasticsearch_container = subparsers.add_parser('elasticsearch-container')
+    sub_elasticsearch_container.set_defaults(func=run_elasticsearch_container)
+    sub_elasticsearch_container.add_argument('--elasticsearch-backend',
+        help="elasticsearch backend to connect to",
+        default="http://localhost:9200")
+    sub_elasticsearch_container.add_argument('--elasticsearch-index',
+        help="elasticsearch index to push into",
+        default="fatcat_container")
 
     args = parser.parse_args()
     if not args.__dict__.get("func"):
