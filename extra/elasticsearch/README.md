@@ -60,6 +60,17 @@ Or, in a bulk production live-stream conversion:
     time zcat /srv/fatcat/snapshots/release_export_expanded.json.gz | pv -l | parallel -j20 --linebuffer --round-robin --pipe ./fatcat_transform.py elasticsearch-releases - - | esbulk -verbose -size 20000 -id ident -w 8 -index fatcat_release -type release
     time zcat /srv/fatcat/snapshots/container_export.json.gz | pv -l | ./fatcat_transform.py elasticsearch-containers - - | esbulk -verbose -size 20000 -id ident -w 8 -index fatcat_container -type container
 
+## Index Aliases
+
+To make re-indexing and schema changes easier, we can create versioned (or
+time-stamped) elasticsearch indexes, and then point to them using index
+aliases. The index alias updates are fast and atomic, so we can slowly build up
+a new index and then cut over with no downtime.
+
+    http put :9200/fatcat_release_v03 < release_schema.json
+
+TODO: more docs for actual cut-over
+
 ## Full-Text Querying
 
 A generic full-text "query string" query look like this (replace "blood" with
