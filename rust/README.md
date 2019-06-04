@@ -5,7 +5,7 @@ Rust implementation of fatcat API server. Commands include:
 - `fatcat-auth`: privileged command to manage authentication keys, tokens, and
   accounts. Useful to generate admin accounts, new signing keys, etc.
 - `fatcat-export`: high-speed JSON export tool, which talks directly to the
-  database (instead of going through the API). See `README.export.md`.
+  database (instead of going through the API).
 
 The `fatcat-api-spec` crate is generated from the openapi/swagger spec and
 contains Rust models, response types, and endpoint definitions (but not

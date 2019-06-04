@@ -14,6 +14,32 @@ Or, in production:
     sudo su postgres
     DATABASE_URL=fatcat_prod ./ident_table_snapshot.sh /tmp
 
+## HOWTO: Entity Dumps
+
+First create the entity ident table dumps (above). Note that *most* of the
+metadata will be pinned to the consistent ident dump snapshot transaction
+(based on revision references), but that "expanded" entities will be the most
+recent version, which may have been updated. This mostly impacts expanded
+releases (containers, files).
+
+Dump locally to stdout, eg:
+
+    # local/development
+    cat /tmp/fatcat_ident_releases.tsv | ./target/debug/fatcat-export releases
+
+Or, in production:
+
+    # production, as 'fatcat' user, in /srv/fatcat/src/rust:
+    cat /tmp/fatcat_ident_releases.tsv | ./target/release/fatcat-export release --expand files,filesets,webcaptures,container -j8 | pigz > /srv/fatcat/snapshots/release_export_expanded.json.gz
+    cat /tmp/fatcat_ident_releases.tsv | ./target/release/fatcat-export release -j8 | pigz > /srv/fatcat/snapshots/release_export.json.gz
+    cat /tmp/fatcat_ident_creators.tsv | ./target/release/fatcat-export creator -j8 | pigz > /srv/fatcat/snapshots/creator_export.json.gz
+    cat /tmp/fatcat_ident_containers.tsv | ./target/release/fatcat-export container -j8 | pigz > /srv/fatcat/snapshots/container_export.json.gz
+    cat /tmp/fatcat_ident_files.tsv | ./target/release/fatcat-export file -j8 | pigz > /srv/fatcat/snapshots/file_export.json.gz
+    cat /tmp/fatcat_ident_filesets.tsv | ./target/release/fatcat-export fileset -j8 | pigz > /srv/fatcat/snapshots/fileset_export.json.gz
+    cat /tmp/fatcat_ident_webcaptures.tsv | ./target/release/fatcat-export webcapture -j8 | pigz > /srv/fatcat/snapshots/webcapture_export.json.gz
+
+Then usually move all these files to `/srv/fatcat/snapshots/`.
+
 ## HOWTO: Dump abstracts, release identifiers, file hashes, etc
 
 These are run as regular old commands, and can run across the network in a
@@ -33,7 +59,7 @@ In production:
     sudo -u postgres psql fatcat_prod < dump_file_hashes.sql | egrep -v ^BEGIN$ | egrep -v ^ROLLBACK$ | pv -l | pigz > /srv/fatcat/snapshots/file_hashes.tsv.gz
     sudo -u postgres psql fatcat_prod < dump_release_extid.sql | egrep -v ^BEGIN$ | egrep -v ^ROLLBACK$ | pv -l | pigz > /srv/fatcat/snapshots/release_extid.tsv.gz
 
-## HOWTO: Full ("private") database backup and restore
+## HOWTO: Full ("private") database backup
 
     export DATESLUG="`date +%Y-%m-%d.%H%M%S`"
     time sudo -u postgres pg_dump --verbose --format=tar fatcat_prod | pigz > /srv/fatcat/snapshots/fatcat_full_dbdump_${DATESLUG}.tar.gz
@@ -45,6 +71,8 @@ NOTE: by using the "directory" export (along with `--file`) instead of "tar"
 export, it would be possible to use parallel dumping. However, this would put
 additional load on both the database and underlying disk. Could also cause
 issues with users/permissions.
+
+## HOWTO: Restor full database backup
 
 To restore, CAREFULLY, run:
 

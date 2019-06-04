@@ -74,8 +74,6 @@ sub-entities for each record.
 Only "active" entities are included (not deleted, work-in-progress, or
 redirected entities).
 
-The `./rust/README.export.md` file has more context.
-
 These dumps can be quite large when expanded (over 100 GBytes compressed), but
 do not include history so will not grow as fast as other exports over time. Not
 all entity types are dumped at the moment; if you would like specific dumps get
