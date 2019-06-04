@@ -1,0 +1,284 @@
+
+## JALC importer
+
+    time ./fatcat_import.py jalc /srv/fatcat/datasets/JALC-LOD-20180907.sample10k.rdf /srv/fatcat/datasets/ISSN-to-ISSN-L.txt --extid-map-file /srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3
+    Using external ID map: file:/srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3?mode=ro
+    Loading ISSN map file...
+    Got 2061670 ISSN-L mappings.
+    Counter({'total': 9976, 'insert': 7153, 'exists': 2820, 'inserted.container': 149, 'skip': 3, 'update': 0})
+
+    real    2m21.301s
+    user    1m14.664s
+    sys     0m2.144s
+
+In parallel:
+
+    time zcat /srv/fatcat/datasets/JALC-LOD-20180907.gz | time parallel -j20 --round-robin --pipe ./fatcat_import.py jalc - /srv/fatcat/datasets/ISSN-to-ISSN-L.txt --extid-map-file /srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3
+
+    [...]
+    Traceback (most recent call last):
+      File "./fatcat_import.py", line 294, in <module>
+        main()
+      File "./fatcat_import.py", line 291, in main
+        args.func(args)
+      File "./fatcat_import.py", line 23, in run_jalc
+        Bs4XmlLinesPusher(ji, args.xml_file, "<rdf:Description").run()
+      File "/srv/fatcat/src/python/fatcat_tools/importers/common.py", line 585, in run
+        self.importer.push_record(soup)
+      File "/srv/fatcat/src/python/fatcat_tools/importers/common.py", line 282, in push_record
+        entity = self.parse_record(raw_record)
+      File "/srv/fatcat/src/python/fatcat_tools/importers/jalc.py", line 139, in parse_record
+        given_name=clean(eng.find('givenName').string),
+    AttributeError: 'NoneType' object has no attribute 'string'
+    Using external ID map: file:/srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3?mode=ro
+    Loading ISSN map file...
+    Got 2061670 ISSN-L mappings.
+    Counter({'total': 7483, 'exists': 4476, 'insert': 3006, 'inserted.container': 1, 'skip': 1, 'update': 0})
+    Using external ID map: file:/srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3?mode=ro
+    Loading ISSN map file...
+    Got 2061670 ISSN-L mappings.
+    Counter({'total': 7661, 'insert': 4685, 'exists': 2976, 'inserted.container': 4, 'skip': 0, 'update': 0})
+    Using external ID map: file:/srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3?mode=ro
+    [...]
+
+Update to 1df0cd9cfe96609ff276362d10a5e50b723bbb7b.
+
+Realized I also wasn't using correct creds, so:
+
+    export FATCAT_AUTH_WORKER_JALC=blah
+
+Hit:
+
+    Traceback (most recent call last):
+      File "./fatcat_import.py", line 294, in <module>   
+        main()
+      File "./fatcat_import.py", line 291, in main
+        args.func(args)
+      File "./fatcat_import.py", line 23, in run_jalc
+        Bs4XmlLinesPusher(ji, args.xml_file, "<rdf:Description").run()
+      File "/srv/fatcat/src/python/fatcat_tools/importers/common.py", line 585, in run
+        self.importer.push_record(soup)
+      File "/srv/fatcat/src/python/fatcat_tools/importers/common.py", line 282, in push_record
+        entity = self.parse_record(raw_record)
+      File "/srv/fatcat/src/python/fatcat_tools/importers/jalc.py", line 93, in parse_record
+        assert doi.startswith('10.')
+    AssertionError
+    Using external ID map: file:/srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3?mode=ro
+    Loading ISSN map file...
+    Got 2061670 ISSN-L mappings.
+    Traceback (most recent call last):
+      File "./fatcat_import.py", line 294, in <module>
+        main()
+      File "./fatcat_import.py", line 291, in main
+        args.func(args)
+      File "./fatcat_import.py", line 23, in run_jalc
+        Bs4XmlLinesPusher(ji, args.xml_file, "<rdf:Description").run()
+      File "/srv/fatcat/src/python/fatcat_tools/importers/common.py", line 585, in run
+        self.importer.push_record(soup)
+      File "/srv/fatcat/src/python/fatcat_tools/importers/common.py", line 282, in push_record
+        entity = self.parse_record(raw_record)
+      File "/srv/fatcat/src/python/fatcat_tools/importers/jalc.py", line 93, in parse_record
+        assert doi.startswith('10.')
+    AssertionError
+    Using external ID map: file:/srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3?mode=ro
+    Loading ISSN map file...
+    Got 2061670 ISSN-L mappings.
+    Counter({'total': 7326, 'insert': 3707, 'exists': 3618, 'inserted.container': 4, 'skip': 1, 'update': 0})
+
+Update to a67c8e65f4892899df3368ac7ea3abaee176fb3a. Think that maybe tar/gzip thing isn't good idea, so:
+
+    time cat /srv/fatcat/datasets/JALC-LOD-20180907.rdf | time parallel -j20 --round-robin --pipe ./fatcat_import.py jalc - /srv/fatcat/datasets/ISSN-to-ISSN-L.txt --extid-map-file /srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3
+
+    [...]
+    bogus JALC DOI: http://dx.doi.org/10.5293/ijfms.2014.7.3.086
+    Traceback (most recent call last):
+      File "./fatcat_import.py", line 294, in <module>
+        main()
+      File "./fatcat_import.py", line 291, in main
+        args.func(args)
+      File "./fatcat_import.py", line 23, in run_jalc
+        Bs4XmlLinesPusher(ji, args.xml_file, "<rdf:Description").run()
+      File "/srv/fatcat/src/python/fatcat_tools/importers/common.py", line 585, in run
+        self.importer.push_record(soup)
+      File "/srv/fatcat/src/python/fatcat_tools/importers/common.py", line 282, in push_record
+        entity = self.parse_record(raw_record)
+      File "/srv/fatcat/src/python/fatcat_tools/importers/jalc.py", line 249, in parse_record
+        extids = self.lookup_ext_ids(doi=doi)
+      File "/srv/fatcat/src/python/fatcat_tools/importers/jalc.py", line 49, in lookup_ext_ids
+        [doi.lower()]).fetchone()
+    [...]
+
+and...
+
+    Traceback (most recent call last):
+      File "./fatcat_import.py", line 294, in <module>
+        main()
+      File "./fatcat_import.py", line 291, in main
+        args.func(args)
+      File "./fatcat_import.py", line 23, in run_jalc
+        Bs4XmlLinesPusher(ji, args.xml_file, "<rdf:Description").run()
+      File "/srv/fatcat/src/python/fatcat_tools/importers/common.py", line 585, in run
+        self.importer.push_record(soup)
+      File "/srv/fatcat/src/python/fatcat_tools/importers/common.py", line 282, in push_record
+        entity = self.parse_record(raw_record)
+      File "/srv/fatcat/src/python/fatcat_tools/importers/jalc.py", line 178, in parse_record
+        release_year = int(date)
+    ValueError: invalid literal for int() with base 10: 'null'
+
+Got:
+
+    HTTP response body: {"success":false,"error":"MalformedExternalId","message":"external identifier doesn't match required pattern for a DOI (expected, eg, '10.1234/aksjdfh'): 10.5183"}
+
+TODO: re-write author translation match code, to at least catch the common case of 50/50 matches
+
+## arXiv Importer
+
+Setup creds:
+
+    export export FATCAT_AUTH_WORKER_ARXIV=blah
+
+Single file:
+
+    ./fatcat_import.py arxiv /srv/fatcat/datasets/arxiv_raw_oai_snapshot_2019-05-22/2007-12-31-00000001.xml
+
+Bulk (one file per process):
+
+    fd .xml /srv/fatcat/datasets/arxiv_raw_oai_snapshot_2019-05-22/ | parallel -j15 ./fatcat_import.py arxiv {}
+
+Issues:
+
+    HTTP response body: {"success":false,"error":"MalformedExternalId","message":"external identifier doesn't match required pattern for a DOI (expected, eg, '10.1234/aksjdfh'): 10.5120/13331-0888 10.5120/13331-0888"}
+
+    HTTP response body: {"success":false,"error":"ConstraintViolation","message":"unexpected database error: new row for relation \"release_contrib\" violates check constraint \"release_contrib_raw_name_check\""}
+
+    Traceback (most recent call last):
+      File "./fatcat_import.py", line 358, in <module>
+        main()
+      File "./fatcat_import.py", line 355, in main
+        args.func(args)
+      File "./fatcat_import.py", line 32, in run_arxiv
+        Bs4XmlFilePusher(ari, args.xml_file, "record").run()
+      File "/srv/fatcat/src/python/fatcat_tools/importers/common.py", line 605, in run
+        self.importer.push_record(record)
+      File "/srv/fatcat/src/python/fatcat_tools/importers/common.py", line 285, in push_record
+        entity = self.parse_record(raw_record)
+      File "/srv/fatcat/src/python/fatcat_tools/importers/arxiv.py", line 120, in parse_record
+        authors = parse_arxiv_authors(metadata.authors.string)
+      File "/srv/fatcat/src/python/fatcat_tools/importers/arxiv.py", line 36, in parse_arxiv_authors
+        authors = [latex_to_text(a).strip() for a in authors]
+      File "/srv/fatcat/src/python/fatcat_tools/importers/arxiv.py", line 36, in <listcomp>
+        authors = [latex_to_text(a).strip() for a in authors]
+      File "/srv/fatcat/src/python/fatcat_tools/importers/arxiv.py", line 18, in latex_to_text
+        return latex2text.latex_to_text(raw).strip()
+      File "/srv/fatcat/src/python/.venv/lib/python3.5/site-packages/pylatexenc/latex2text.py", line 762, in latex_to_text
+        return self.nodelist_to_text(latexwalker.LatexWalker(latex, **parse_flags).get_latex_nodes()[0])
+      File "/srv/fatcat/src/python/.venv/lib/python3.5/site-packages/pylatexenc/latexwalker.py", line 1197, in get_latex_nodes
+        r_endnow = do_read(nodelist, p)
+      File "/srv/fatcat/src/python/.venv/lib/python3.5/site-packages/pylatexenc/latexwalker.py", line 1045, in do_read
+        tok = self.get_token(p.pos, brackets_are_chars=brackets_are_chars)
+      File "/srv/fatcat/src/python/.venv/lib/python3.5/site-packages/pylatexenc/latexwalker.py", line 744, in get_token
+        macro = s[pos+1] # next char is necessarily part of macro
+    IndexError: string index out of range
+
+    HTTP response body: {"success":false,"error":"MalformedExternalId","message":"external identifier doesn't match required pattern for a DOI (expected, eg, '10.1234/aksjdfh'): 10.1063/"}
+
+
+## JSTOR
+
+To unzip, use:
+
+    unzip ejc-metadata-and-ocr-and-all-ngrams-part-1.zip 'metadata/*.xml'
+
+May need to do these a handful at a time to prevent inode exhaustion? Looks
+like some 57 million free so probably fine; for JSTOR EJC only a couple
+million.
+
+Setup creds:
+
+    export export FATCAT_AUTH_WORKER_JSTOR=blah
+
+Run single:
+
+    echo /srv/fatcat/datasets/jstor-ejc-bulk-metadata/metadata/journal-article-10.2307_42810429.xml | ./fatcat_import.py jstor - /srv/fatcat/datasets/ISSN-to-ISSN-L.txt
+
+In Bulk:
+
+    fd .xml /srv/fatcat/datasets/jstor-ejc-bulk-metadata/metadata/ | time parallel -j15 --round-robin --pipe ./fatcat_import.py --batch-size 100 jstor - /srv/fatcat/datasets/ISSN-to-ISSN-L.txt
+
+This was the smoothest! Fast too:
+
+    1354.71user 40.82system 5:50.72elapsed 397%CPU (0avgtext+0avgdata 420180maxresident)k
+    1131400inputs+860528outputs (2major+1542545minor)pagefaults 0swaps
+
+TODO:
+MISSING MARC LANG: jav
+MISSING MARC LANG: map
+
+
+## PubMed
+
+Setup creds:
+
+    export export FATCAT_AUTH_WORKER_PUBMED=blah
+
+Run single:
+
+    time ./fatcat_import.py pubmed /srv/fatcat/datasets/pubmed_medline_baseline_2019/pubmed19n0400.xml /srv/fatcat/datasets/ISSN-to-ISSN-L.txt
+
+    real    13m21.756s
+    user    9m10.720s
+    sys     0m14.100s
+
+Bulk:
+
+    # very memory intensive to parse these big XML files, so need to limit parallelism
+    fd .xml /srv/fatcat/datasets/pubmed_medline_baseline_2019 | time parallel -j3 ./fatcat_import.py pubmed {} /srv/fatcat/datasets/ISSN-to-ISSN-L.txt
+
+TODO: rip out external id map stuff for pubmed, and maybe JALC as well. will have separate update bots.
+
+ISSUES:
+
+    HTTP response body: {"success":false,"error":"MalformedExternalId","message":"external identifier doesn't match required pattern for a DOI (expected, eg, '10.1234/aksjdfh'): doi:10.1017/s1461145702002821"}
+
+    [...]
+    /srv/fatcat/src/python/fatcat_tools/importers/pubmed.py:719: UserWarning: PMID/DOI mismatch: release asywbmeegnfthi4t4pzrqaffj4, pmid 12132109 != 12124418
+    existing.ident, existing.ext_ids.pmid, re.ext_ids.pmid))
+    /srv/fatcat/src/python/fatcat_tools/importers/pubmed.py:719: UserWarning: PMID/DOI mismatch: release a5gylyn7pnexblohgex34brum4, pmid 12124588 != 12124587
+    existing.ident, existing.ext_ids.pmid, re.ext_ids.pmid))
+    /srv/fatcat/src/python/fatcat_tools/importers/pubmed.py:719: UserWarning: PMID/DOI mismatch: release jb4q7sqm7nbgxkw37bqyss3sai, pmid 12124590 != 12124589
+    existing.ident, existing.ext_ids.pmid, re.ext_ids.pmid))
+    /srv/fatcat/src/python/fatcat_tools/importers/pubmed.py:719: UserWarning: PMID/DOI mismatch: release 4vsm2bkb2zg5rjo354pnd3sgji, pmid 19810921 != 12124933
+
+    HTTP response body: {"success":false,"error":"ConstraintViolation","message":"unexpected database error: duplicate key value violates unique constraint \"release_edit_editgroup_id_ident_id_key\""}
+
+Performance:
+
+    Counter({'total': 29998, 'exists': 15285, 'insert': 13960, 'update': 753, 'warn-pmid-doi-mismatch': 17, 'skip-update-conflict': 2, 'inserted.container': 1, 'skip': 0})
+    real    17m49.921s
+    user    8m42.648s
+    sys     0m8.492s
+
+    Counter({'total': 30000, 'insert': 16326, 'exists': 12500, 'update': 1174, 'inserted.container': 1, 'skip': 0})
+    real    17m14.827s
+    user    9m33.444s
+    sys     0m8.420s
+
+    HTTP response body: {"success":false,"error":"MalformedExternalId","message":"external identifier doesn't match required pattern for a DOI (expected, eg, '10.1234/aksjdfh'): 10.1109/tcbb.2004.44 "}
+    HTTP response body: {"success":false,"error":"MalformedExternalId","message":"external identifier doesn't match required pattern for a DOI (expected, eg, '10.1234/aksjdfh'): 10.1080/14756360400004532\t"}
+
+TODO:
+
+    HTTP response body: {"success":false,"error":"MalformedExternalId","message":"external identifier doesn't match required pattern for a DOI (expected, eg, '10.1234/aksjdfh'): 10.1126/science. 1134405"}
+
+
+    File "/srv/fatcat/src/python/fatcat_tools/importers/pubmed.py", line 582, in parse_record
+        if not raw_name and author.CollectiveName.string:
+    AttributeError: 'NoneType' object has no attribute 'string'
+
+    File "/srv/fatcat/src/python/fatcat_tools/importers/pubmed.py", line 405, in parse_record
+        extra_pubmed['retraction_of_pmid'] = retraction_of.PMID.string
+    AttributeError: 'NoneType' object has no attribute 'string'
+
+Trying pubmed importer again after iterparse() refactor:
+
+    fd '.xml$' /srv/fatcat/datasets/pubmed_medline_baseline_2019 | shuf | time parallel -j16 ./fatcat_import.py pubmed {} /srv/fatcat/datasets/ISSN-to-ISSN-L.txt

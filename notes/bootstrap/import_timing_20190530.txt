@@ -1,0 +1,149 @@
+
+## JALC
+
+Update to eee39965eee92b5005df0d967be779c2f2bb15f8
+
+    export FATCAT_AUTH_WORKER_JALC=blah
+
+Extracted file instead of piping it through zcat.
+
+Start small; do a random bunch (10k) single-threaded to pre-create containers:
+
+    head -n100 /srv/fatcat/datasets/JALC-LOD-20180907.rdf | ./fatcat_import.py --batch-size 100 jalc - /srv/fatcat/datasets/ISSN-to-ISSN-L.txt --extid-map-file /srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3
+    shuf -n100 /srv/fatcat/datasets/JALC-LOD-20180907.rdf | ./fatcat_import.py --batch-size 100 jalc - /srv/fatcat/datasets/ISSN-to-ISSN-L.txt --extid-map-file /srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3
+    shuf -n10000 /srv/fatcat/datasets/JALC-LOD-20180907.rdf | ./fatcat_import.py --batch-size 100 jalc - /srv/fatcat/datasets/ISSN-to-ISSN-L.txt --extid-map-file /srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3
+    Counter({'total': 9971, 'insert': 7138, 'exists': 2826, 'inserted.container': 144, 'skip': 7, 'update': 0})
+
+Then the command:
+
+    cat /srv/fatcat/datasets/JALC-LOD-20180907.rdf | pv -l | time parallel -j20 --round-robin --pipe ./fatcat_import.py --batch-size 100 jalc - /srv/fatcat/datasets/ISSN-to-ISSN-L.txt --extid-map-file /srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3
+
+Bulk import:
+
+    cat /srv/fatcat/datasets/JALC-LOD-20180907.rdf | pv -l | time parallel -j20 --round-robin --pipe ./fatcat_import.py --batch-size 100 jalc - /srv/fatcat/datasets/ISSN-to-ISSN-L.txt --extid-map-file /srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3
+
+Hit an error:
+
+    Traceback (most recent call last):
+    File "./fatcat_import.py", line 365, in <module>
+        main()
+    File "./fatcat_import.py", line 362, in main
+        args.func(args)
+    File "./fatcat_import.py", line 23, in run_jalc
+        Bs4XmlLinesPusher(ji, args.xml_file, "<rdf:Description").run()
+    File "/srv/fatcat/src/python/fatcat_tools/importers/common.py", line 605, in run
+        self.importer.push_record(soup)
+    File "/srv/fatcat/src/python/fatcat_tools/importers/common.py", line 302, in push_record
+        entity = self.parse_record(raw_record)
+    File "/srv/fatcat/src/python/fatcat_tools/importers/jalc.py", line 261, in parse_record
+        publisher = clean(pubs[0])
+    IndexError: list index out of range
+    [...]
+    Loading ISSN map file...
+    Got 2153874 ISSN-L mappings.
+    Counter({'total': 320733, 'insert': 227567, 'exists': 92651, 'skip': 515, 'inserted.container': 53, 'update': 0})
+    Using external ID map: file:/srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3?mode=ro
+    Loading ISSN map file...
+    Got 2153874 ISSN-L mappings.
+    Counter({'total': 317741, 'insert': 226336, 'exists': 91232, 'skip': 173, 'inserted.container': 64, 'update': 0})
+    Using external ID map: file:/srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3?mode=ro
+    Loading ISSN map file...
+    Got 2153874 ISSN-L mappings.
+    Counter({'total': 318022, 'insert': 230063, 'exists': 87852, 'skip': 107, 'inserted.container': 51, 'update': 0})
+    Using external ID map: file:/srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3?mode=ro
+    Loading ISSN map file...
+    Got 2153874 ISSN-L mappings.
+    Counter({'total': 317404, 'insert': 225893, 'exists': 91363, 'skip': 148, 'inserted.container': 45, 'update': 0})
+    Command exited with non-zero status 1
+    70293.61user 1088.65system 4:06:04elapsed 483%CPU (0avgtext+0avgdata 449340maxresident)k
+    1548632inputs+13813200outputs (248major+3685889minor)pagefaults 0swaps
+
+Re-ran with same command after patching, and success:
+
+    Loading ISSN map file...
+    Got 2153874 ISSN-L mappings.
+    Counter({'total': 321098, 'exists': 319095, 'insert': 1726, 'skip': 277, 'update': 0})
+    Using external ID map: file:/srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3?mode=ro
+    Loading ISSN map file...
+    Got 2153874 ISSN-L mappings.
+    Counter({'total': 317416, 'exists': 315055, 'insert': 1871, 'skip': 490, 'update': 0})
+    Using external ID map: file:/srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3?mode=ro
+    Loading ISSN map file...
+    Got 2153874 ISSN-L mappings.
+    Counter({'total': 315676, 'exists': 313906, 'insert': 1653, 'skip': 117, 'update': 0})
+    Using external ID map: file:/srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3?mode=ro
+    Loading ISSN map file...
+    Got 2153874 ISSN-L mappings.
+    Counter({'total': 308695, 'exists': 306407, 'insert': 1856, 'skip': 432, 'update': 0})
+    Using external ID map: file:/srv/fatcat/datasets/release_ids.ia_munge_20180908.sqlite3?mode=ro
+    Loading ISSN map file...
+    Got 2153874 ISSN-L mappings.
+    Counter({'total': 310210, 'exists': 308280, 'insert': 1782, 'skip': 148, 'update': 0})
+    71531.84user 1225.33system 1:17:04elapsed 1573%CPU (0avgtext+0avgdata 425368maxresident)k
+    1195624inputs+14971088outputs (238major+2895079minor)pagefaults 0swaps
+
+## Journal Metadata Update
+
+Updating with fixed KBART year_spans, for better coverage detection.
+
+    export FATCAT_AUTH_WORKER_JOURNAL_METADATA=...
+
+    ./fatcat_import.py journal-metadata /srv/fatcat/datasets/journal_metadata.2019-02-20.fixed.json
+    Counter({'total': 107793, 'exists': 95921, 'update': 11549, 'insert': 270, 'skip': 53})
+
+## PubMed
+
+    export FATCAT_AUTH_WORKER_PUBMED=...
+
+Start small (and cut off) to ensure getting basics correct:
+
+    ./fatcat_import.py pubmed /srv/fatcat/datasets/pubmed_medline_baseline_2019/pubmed19n0400.xml /srv/fatcat/datasets/ISSN-to-ISSN-L.txt
+
+Kick off the big one:
+
+    fd '.xml$' /srv/fatcat/datasets/pubmed_medline_baseline_2019 | time parallel -j16 ./fatcat_import.py pubmed {} /srv/fatcat/datasets/ISSN-to-ISSN-L.txt
+
+Seemed to hang or something...
+
+    fatcat    1649  0.1  0.1 2335588 56076 pts/2   S    Jun01   5:05 python3 ./fatcat_import.py pubmed /srv/fatcat/datasets/pubmed_medline_baseline_2019/pubmed19n0966.xml /srv/fatcat/datasets/ISSN-to-ISSN-L.txt
+    fatcat    9460  0.2  0.1 2333520 54004 pts/2   S    May31  12:21 python3 ./fatcat_import.py pubmed /srv/fatcat/datasets/pubmed_medline_baseline_2019/pubmed19n0383.xml /srv/fatcat/datasets/ISSN-to-ISSN-L.txt
+
+
+    fatcat_client.rest.ApiException: (400)
+    Reason: Bad Request
+    HTTP response headers: HTTPHeaderDict({'Content-Length': '183', 'X-Clacks-Overhead': 'GNU aaronsw, jpb', 'X-Span-ID': '563f6833-be1e-452e-bcd6-e7c721edf9eb', 'Content-Type': 'application/json', 'Date': 'Sat, 01 Jun 2019 12:31:11 GMT'})
+    HTTP response body: {"success":false,"error":"MalformedExternalId","message":"external identifier doesn't match required pattern for a PubMed Central ID (PMCID) (expected, eg, 'PMC12345'): wst_2018_414"}
+
+And another:
+
+    fatcat_client.rest.ApiException: (400)
+    Reason: Bad Request
+    HTTP response headers: HTTPHeaderDict({'Date': 'Sat, 01 Jun 2019 12:37:01 GMT', 'Content-Type': 'application/json', 'Content-Length': '182', 'X-Span-ID': 'c8cbcffb-d3c5-4ceb-b157-d628dbac613f', 'X-Clacks-Overhead': 'GNU aaronsw, jpb'})
+    HTTP response body: {"success":false,"error":"MalformedExternalId","message":"external identifier doesn't match required pattern for a PubMed Central ID (PMCID) (expected, eg, 'PMC12345'): wh_2018_033"}
+
+And another (jeeze!):
+
+    HTTP response body: {"success":false,"error":"MalformedExternalId","message":"external identifier doesn't match required pattern for a PubMed Central ID (PMCID) (expected, eg, 'PMC12345'): wst_2018_399"}
+
+And another derp:
+
+    Traceback (most recent call last):
+      File "./fatcat_import.py", line 365, in <module>
+        main()
+      File "./fatcat_import.py", line 362, in main
+        args.func(args)
+      File "./fatcat_import.py", line 43, in run_pubmed
+        Bs4XmlLargeFilePusher(pi, args.xml_file, "PubmedArticle", record_list_tag="PubmedArticleSet").run()
+      File "/srv/fatcat/src/python/fatcat_tools/importers/common.py", line 666, in run
+        self.importer.push_record(record)
+      File "/srv/fatcat/src/python/fatcat_tools/importers/common.py", line 302, in push_record
+        entity = self.parse_record(raw_record)
+      File "/srv/fatcat/src/python/fatcat_tools/importers/pubmed.py", line 494, in parse_record
+        int(pub_date.Day.string))
+    ValueError: day is out of range for month
+
+Lesson here is to really get the whole thing to work end-to-end with no
+`parallel` error in QA before trying in prod. Was impatient!
+
+TODO: re-run these with a patch. going to do after dump/snapshot/etc though.
+

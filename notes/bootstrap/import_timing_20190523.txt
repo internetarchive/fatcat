@@ -1,0 +1,62 @@
+
+## JSTOR
+
+Unzipped:
+
+    ls ejc-metadata-and-ocr-and-all-ngrams-part*.zip | parallel unzip {} 'metadata/*.xml'
+
+Setup creds:
+
+    export export FATCAT_AUTH_WORKER_JSTOR=blah
+
+Sample (to create most containers):
+
+    fd .xml /srv/fatcat/datasets/jstor-ejc-bulk-metadata/metadata/ | shuf -n10000 | ./fatcat_import.py jstor --batch-size 100 - /srv/fatcat/datasets/ISSN-to-ISSN-L.txt
+
+All in bulk:
+
+    fd .xml /srv/fatcat/datasets/jstor-ejc-bulk-metadata/metadata/ | time parallel -j15 --round-robin --pipe ./fatcat_import.py --batch-size 100 jstor - /srv/fatcat/datasets/ISSN-to-ISSN-L.txt
+
+    [...]
+    Got 2153874 ISSN-L mappings.
+    Counter({'total': 34829, 'insert': 25226, 'update': 8888, 'exists': 679, 'skip': 36})
+    /srv/fatcat/src/python/fatcat_tools/importers/jstor.py:207: UserWarning: MISSING MARC LANG: grc
+    warnings.warn("MISSING MARC LANG: {}".format(cm.find("meta-value").string))
+    /srv/fatcat/src/python/fatcat_tools/importers/jstor.py:207: UserWarning: MISSING MARC LANG: map
+    warnings.warn("MISSING MARC LANG: {}".format(cm.find("meta-value").string))
+    Loading ISSN map file...
+    Got 2153874 ISSN-L mappings.
+    Counter({'total': 41339, 'insert': 21549, 'exists': 12118, 'update': 7625, 'skip': 47})
+    /srv/fatcat/src/python/fatcat_tools/importers/jstor.py:207: UserWarning: MISSING MARC LANG: grc
+    warnings.warn("MISSING MARC LANG: {}".format(cm.find("meta-value").string))
+    Loading ISSN map file...
+    Got 2153874 ISSN-L mappings.
+    Counter({'total': 46438, 'insert': 25270, 'exists': 12204, 'update': 8899, 'skip': 65})
+    /srv/fatcat/src/python/fatcat_tools/importers/jstor.py:207: UserWarning: MISSING MARC LANG: syr
+    warnings.warn("MISSING MARC LANG: {}".format(cm.find("meta-value").string))
+    /srv/fatcat/src/python/fatcat_tools/importers/jstor.py:207: UserWarning: MISSING MARC LANG: oci
+    warnings.warn("MISSING MARC LANG: {}".format(cm.find("meta-value").string))
+    /srv/fatcat/src/python/fatcat_tools/importers/jstor.py:207: UserWarning: MISSING MARC LANG: grc
+    warnings.warn("MISSING MARC LANG: {}".format(cm.find("meta-value").string))
+    Loading ISSN map file...
+    Got 2153874 ISSN-L mappings.
+    Counter({'total': 46438, 'insert': 25434, 'exists': 12197, 'update': 8757, 'skip': 50})
+    /srv/fatcat/src/python/fatcat_tools/importers/jstor.py:207: UserWarning: MISSING MARC LANG: syr
+    warnings.warn("MISSING MARC LANG: {}".format(cm.find("meta-value").string))
+    /srv/fatcat/src/python/fatcat_tools/importers/jstor.py:207: UserWarning: MISSING MARC LANG: welsh
+    warnings.warn("MISSING MARC LANG: {}".format(cm.find("meta-value").string))
+    6184.17user 163.41system 21:12.96elapsed 498%CPU (0avgtext+0avgdata 434764maxresident)k
+    5320528inputs+3466408outputs (38major+2224857minor)pagefaults 0swaps
+
+TODO:
+    MISSING MARC LANG: syr (and gem, grc, non, emg, neg, map, welsh, oci)
+
+## arXiv
+
+Single file:
+
+    ./fatcat_import.py --batch-size 100 arxiv /srv/fatcat/datasets/arxiv_raw_oai_snapshot_2019-05-22/2007-12-31-00000001.xml
+
+Bulk (one file per process):
+
+    fd .xml /srv/fatcat/datasets/arxiv_raw_oai_snapshot_2019-05-22/ | parallel -j15 ./fatcat_import.py --batch-size 100 arxiv {}
