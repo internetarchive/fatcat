@@ -386,7 +386,10 @@ class PubmedImporter(EntityImporter):
 
         pmcid = identifiers.find("ArticleId", IdType="pmc")
         if pmcid:
-            pmcid = pmcid.string
+            pmcid = pmcid.string.strip().upper()
+            # got a bunch of weird ones like "wst_2018_399" in the 2019 baseline
+            if not pmcid.startswith("PMC"):
+                pmcid = None
 
         release_type = None
         pub_types = []
@@ -488,11 +491,15 @@ class PubmedImporter(EntityImporter):
         if pub_date.Year:
             release_year = int(pub_date.Year.string)
             if pub_date.find("Day") and pub_date.find("Month"):
-                release_date = datetime.date(
-                    release_year,
-                    MONTH_ABBR_MAP[pub_date.Month.string],
-                    int(pub_date.Day.string))
-                release_date = release_date.isoformat()
+                try:
+                    release_date = datetime.date(
+                        release_year,
+                        MONTH_ABBR_MAP[pub_date.Month.string],
+                        int(pub_date.Day.string))
+                    release_date = release_date.isoformat()
+                except ValueError as ve:
+                    sys.stderr.write("bad date, skipping: {}\n".format(ve))
+                    release_date = None
 
         if journal.find("Title"):
             container_name = journal.Title.string
