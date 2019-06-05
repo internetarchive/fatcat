@@ -96,3 +96,21 @@
 </tbody>
 </table>
 {%- endmacro %}
+
+{% macro lookup_form(entity_type, key, example, lookup_key, lookup_value, lookup_error) -%}
+<form class="ui form" role="search" action="/{{ entity_type }}/lookup" method="get">
+  <div class="ui form">
+    <div class="field {% if key == lookup_key %}{% if lookup_error == 400 %}error{% elif lookup_error == 404 %}warning{% endif %}{% endif %}">
+      {% if key == lookup_key and lookup_error == 400 %}
+        <div class="ui pointing below red label">
+          Not correct syntax. Expected, eg, {{ example }}
+        </div>
+      {% endif %}
+      <div class="ui action input big fluid">
+        <input type="text" placeholder="{% if example %}eg, {{ example }}{% endif %}" name="{{ key }}" value="{% if key == lookup_key %}{{ lookup_value }}{% endif %}" aria-label="{{ key }} lookup">
+        <button class="ui button">Go!</button>
+      </div>
+    </div>
+  </div>
+</form>
+{%- endmacro %}

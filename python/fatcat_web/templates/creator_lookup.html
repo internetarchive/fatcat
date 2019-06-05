@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% import "entity_macros.html" as entity_macros %}
+
+{% block body %}
+
+<h1>Lookup Creator by Identifier</h1>
+
+{% if lookup_error == 400 %}
+<div class="ui error message">
+<div class="header">400: Syntax Error</div>
+<b>{{ lookup_key }}:{{ lookup_value }}</code></b> doesn't look right to us. See
+below for details.
+</div>
+{% elif lookup_error == 404 %}
+<div class="ui error message">
+<div class="header">404: Not Found</div>
+Couldn't find a creator with that identifier (<b><code>{{ lookup_key }}:{{
+lookup_value }}</code></b>). If you think it should be in the catalog, you could
+search for an existing record missing that identifier, or create a new creator
+entity. 
+{% if lookup_key == "orcid" %}
+<p>You can check if it is a registered ORCiD:
+<b><a href="https://orcid.org/{{ lookup_value }}">https://orcid.org/{{ lookup_value }}</a></b>
+{% elif lookup_key == "wikidata_qid" %}
+<p>You can check if it is a real Wikidata entity by visiting:
+<b><a href="https://www.wikidata.org/wiki/{{ lookup_value }}/">https://www.wikidata.org/wiki/{{ lookup_value }}/</a></b>
+{% endif %}
+</div>
+{% endif %}
+
+<div class="ui top attached segment">
+
+<h2>ORCID</h2>
+<p><a href="https://en.wikipedia.org/wiki/ORCID">Open Researcher and
+Contributor ID</a> is used to unambiguously refer to a research author. They
+are free to register.
+{{ entity_macros.lookup_form("creator", "orcid", "0000-0002-1825-0097", lookup_key, lookup_value, lookup_error) }}
+<i>&nbsp; Must include the dashes</i>
+
+</div>
+<div class="ui attached bottom segment">
+
+<h2>Wikidata QID</h2>
+<p><a href="https://en.wikipedia.org/wiki/Wikidata#Items">Wikidata</a> is the
+structured, machine-readable database that complements Wikipedia. Entities,
+which can include bibliographic entities like books and papers, are identified
+by a "QID". Fatcat also links releases (papers, books) and container (journal)
+entities to Wikidata by QID. Anybody can edit Wikidata and create QIDs.
+{{ entity_macros.lookup_form("creator", "wikidata_qid", "Q94324", lookup_key, lookup_value, lookup_error) }}
+<i>&nbsp; Include the "Q" prefix.</i>
+
+</div>
+
+{% endblock %}

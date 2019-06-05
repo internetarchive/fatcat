@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% import "entity_macros.html" as entity_macros %}
+
+{% block body %}
+
+<h1>Lookup File by Hash</h1>
+
+{% if lookup_error == 400 %}
+<div class="ui error message">
+<div class="header">400: Syntax Error</div>
+<b>{{ lookup_key }}:{{ lookup_value }}</code></b> doesn't look right to us. See
+below for details.
+</div>
+{% elif lookup_error == 404 %}
+<div class="ui error message">
+<div class="header">404: Not Found</div>
+Couldn't find a file with that hash (<b><code>{{ lookup_key }}:{{
+lookup_value }}</code></b>). If you think it should be in the catalog, you could
+search for an existing record missing that hash, or create a new file
+entity. 
+</div>
+{% endif %}
+
+<div class="ui top attached segment">
+
+<h2>SHA-1, SHA-256, MD5</h2>
+<p><a href="https://en.wikipedia.org/wiki/SHA-1">SHA-1</a> and
+<a href="https://en.wikipedia.org/wiki/SHA-2">SHA-256</a> are popular
+cryptographic message digests. They can be used to detect accidental
+corruption, intentional modification, and can be used as unique identifiers for
+a file. The chance of there existing multiple files with the same hash is
+effectively zero due to random chance; the chance of somebody having
+intentionally created files with the same hash depends on the strength of the
+hash function.
+
+<p><b>SHA-256</b> is considered "strong" today and used in new software.
+{{ entity_macros.lookup_form("file", "sha256", "cd65a99c0d95f3208f4ea28bc73f641a6901a22dfb882d14d5c208821b56c09c", lookup_key, lookup_value, lookup_error) }}
+<i>&nbsp; Lower-case hexideximal, 64 characters</i>
+<br><br>
+
+<p><b>SHA-1</b> has shown weaknesses, but is used widely in data archiving software.
+{{ entity_macros.lookup_form("file", "sha1", "79ed4e54acdd521ca5f7b52a2964c9c116c3e3bf", lookup_key, lookup_value, lookup_error) }}
+<i>&nbsp; Lower-case hexideximal, 40 characters</i>
+<br><br>
+
+<p><b><a href="https://en.wikipedia.org/wiki/MD5">MD5</a></b> is an older but still
+commonly used checksum. It was originally designed in 1992 to be
+cryptographically secure, but is no longer considered secure in that context.
+It is still perfectly adequate for detecting accidental file corruption.
+{{ entity_macros.lookup_form("file", "md5", "eebc51dd5684ec7fd07f7ac0c30e7a78", lookup_key, lookup_value, lookup_error) }}
+<i>&nbsp; Lower-case hexideximal, 32 characters</i>
+
+</div>
+
+{% endblock %}

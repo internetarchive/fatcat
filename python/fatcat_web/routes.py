@@ -39,13 +39,32 @@ def container_lookup():
     for key in ('issnl', 'wikidata_qid'):
         if request.args.get(key):
             extid = key
-            break
+            extid_value = request.args.get(extid)
+            if extid_value:
+                extid_value = extid_value.strip()
+                break
     if extid is None:
-        abort(400)
+        return render_template('container_lookup.html')
     try:
         resp = api.lookup_container(**{extid: request.args.get(extid)})
+    except ValueError:
+        return make_response(
+            render_template('container_lookup.html',
+                lookup_key=extid,
+                lookup_value=extid_value,
+                lookup_error=400),
+            400)
     except ApiException as ae:
-        abort(ae.status)
+        if ae.status == 404 or ae.status == 400:
+            return make_response(
+                render_template('container_lookup.html',
+                    lookup_key=extid,
+                    lookup_value=extid_value,
+                    lookup_error=ae.status),
+                ae.status)
+        else:
+            app.log.info(ae)
+            abort(ae.status)
     return redirect('/container/{}'.format(resp.ident))
 
 @app.route('/container/<ident>', methods=['GET'])
@@ -92,13 +111,32 @@ def creator_lookup():
     for key in ('orcid', 'wikidata_qid'):
         if request.args.get(key):
             extid = key
-            break
+            extid_value = request.args.get(extid)
+            if extid_value:
+                extid_value = extid_value.strip()
+                break
     if extid is None:
-        abort(400)
+        return render_template('creator_lookup.html')
     try:
-        resp = api.lookup_creator(**{extid: request.args.get(extid)})
+        resp = api.lookup_creator(**{extid: extid_value})
+    except ValueError:
+        return make_response(
+            render_template('creator_lookup.html',
+                lookup_key=extid,
+                lookup_value=extid_value,
+                lookup_error=400),
+            400)
     except ApiException as ae:
-        abort(ae.status)
+        if ae.status == 404 or ae.status == 400:
+            return make_response(
+                render_template('creator_lookup.html',
+                    lookup_key=extid,
+                    lookup_value=extid_value,
+                    lookup_error=ae.status),
+                ae.status)
+        else:
+            app.log.info(ae)
+            abort(ae.status)
     return redirect('/creator/{}'.format(resp.ident))
 
 @app.route('/creator/<ident>', methods=['GET'])
@@ -133,13 +171,32 @@ def file_lookup():
     for key in ('md5', 'sha1', 'sha256'):
         if request.args.get(key):
             extid = key
-            break
+            extid_value = request.args.get(extid)
+            if extid_value:
+                extid_value = extid_value.strip()
+                break
     if extid is None:
-        abort(400)
+        return render_template('file_lookup.html')
     try:
         resp = api.lookup_file(**{extid: request.args.get(extid)})
+    except ValueError:
+        return make_response(
+            render_template('file_lookup.html',
+                lookup_key=extid,
+                lookup_value=extid_value,
+                lookup_error=400),
+            400)
     except ApiException as ae:
-        abort(ae.status)
+        if ae.status == 404 or ae.status == 400:
+            return make_response(
+                render_template('file_lookup.html',
+                    lookup_key=extid,
+                    lookup_value=extid_value,
+                    lookup_error=ae.status),
+                ae.status)
+        else:
+            app.log.info(ae)
+            abort(ae.status)
     return redirect('/file/{}'.format(resp.ident))
 
 @app.route('/file/<ident>', methods=['GET'])
@@ -231,6 +288,13 @@ def release_lookup():
         return render_template('release_lookup.html')
     try:
         resp = api.lookup_release(**{extid: extid_value})
+    except ValueError:
+        return make_response(
+            render_template('release_lookup.html',
+                lookup_key=extid,
+                lookup_value=extid_value,
+                lookup_error=400),
+            400)
     except ApiException as ae:
         if ae.status == 404 or ae.status == 400:
             return make_response(
