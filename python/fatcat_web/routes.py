@@ -1,8 +1,8 @@
 
 import os
 import json
-from flask import Flask, render_template, send_from_directory, request, \
-    url_for, abort, g, redirect, jsonify, session, flash, Response
+from flask import Flask, render_template, make_response, send_from_directory, \
+    request, url_for, abort, g, redirect, jsonify, session, flash, Response
 from flask_login import login_required
 from flask_wtf.csrf import CSRFError
 
@@ -223,14 +223,25 @@ def release_lookup():
                 'arxiv', 'core', 'ark', 'mag'):
         if request.args.get(key):
             extid = key
-            break
+            extid_value = request.args.get(extid)
+            if extid_value:
+                extid_value = extid_value.strip()
+                break
     if extid is None:
-        abort(400)
+        return render_template('release_lookup.html')
     try:
-        resp = api.lookup_release(**{extid: request.args.get(extid)})
+        resp = api.lookup_release(**{extid: extid_value})
     except ApiException as ae:
-        app.log.info(ae)
-        abort(ae.status)
+        if ae.status == 404 or ae.status == 400:
+            return make_response(
+                render_template('release_lookup.html',
+                    lookup_key=extid,
+                    lookup_value=extid_value,
+                    lookup_error=ae.status),
+                ae.status)
+        else:
+            app.log.info(ae)
+            abort(ae.status)
     return redirect('/release/{}'.format(resp.ident))
 
 @app.route('/release/<ident>/history', methods=['GET'])

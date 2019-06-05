@@ -80,7 +80,7 @@ def test_lookups(app):
     assert rv.status_code == 404
 
     rv = app.get('/release/lookup')
-    assert rv.status_code == 400
+    assert rv.status_code == 200
     rv = app.get('/release/lookup?doi=10.123/abc')
     assert rv.status_code == 302
     rv = app.get('/release/lookup?doi=10.123%2Fabc')
