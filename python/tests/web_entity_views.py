@@ -53,21 +53,21 @@ def test_entity_basics(app):
 def test_lookups(app):
 
     rv = app.get('/container/lookup')
-    assert rv.status_code == 400
+    assert rv.status_code == 200
     rv = app.get('/container/lookup?issnl=9999-9999')
     assert rv.status_code == 404
     rv = app.get('/container/lookup?issnl=1234-5678')
     assert rv.status_code == 302
 
     rv = app.get('/creator/lookup')
-    assert rv.status_code == 400
+    assert rv.status_code == 200
     rv = app.get('/creator/lookup?orcid=0000-0003-2088-7465')
     assert rv.status_code == 302
     rv = app.get('/creator/lookup?orcid=0000-0003-2088-0000')
     assert rv.status_code == 404
 
     rv = app.get('/file/lookup')
-    assert rv.status_code == 400
+    assert rv.status_code == 200
     rv = app.get('/file/lookup?sha1=7d97e98f8af710c7e7fe703abc8f639e0ee507c4')
     assert rv.status_code == 302
     rv = app.get('/file/lookup?sha1=7d97e98f8af710c7e7f00000000000000ee507c4')
