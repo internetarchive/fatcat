@@ -23,10 +23,21 @@ entity.
 <b><a href="https://doi.org/{{ lookup_value }}">https://doi.org/{{ lookup_value }}</a></b>
 {% elif lookup_key == "pmcid" %}
 <p>You can check if it is a real PMCID by visiting:
-<b><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/{{ lookup_value }}/">https://www.ncbi.nlm.nih.gov/pmc/articles/{{ lookup_value }}/</a></b>
+<b><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/{{ lookup_value }}">https://www.ncbi.nlm.nih.gov/pmc/articles/{{ lookup_value }}</a></b>
+{% elif lookup_key == "pmid" %}
+<p>You can check if it is a real PMID by visiting:
+<b><a href="https://www.ncbi.nlm.nih.gov/pubmed/{{ lookup_value }}">https://www.ncbi.nlm.nih.gov/pubmed/{{ lookup_value }}</a></b>
+{% elif lookup_key == "arxiv" %}
+<p>Note that Fatcat can only look up complete, versioned arxiv identifiers. If
+you don't know the version, you can append "v1" to get the first version.
+<p>You can check if it is a real arXiv pre-print by visiting:
+<b><a href="https://arxiv.org/abs/{{ lookup_value }}">https://arxiv.org/abs/{{ lookup_value }}</a></b>
+{% elif lookup_key == "jstor" %}
+<p>You can check if it is a real JSTOR work by visiting:
+<b><a href="https://www.jstor.org/stable/{{ lookup_value }}">https://www.jstor.org/stable/{{ lookup_value }}</a></b>
 {% elif lookup_key == "wikidata_qid" %}
 <p>You can check if it is a real Wikidata entity by visiting:
-<b><a href="https://www.wikidata.org/wiki/{{ lookup_value }}/">https://www.wikidata.org/wiki/{{ lookup_value }}/</a></b>
+<b><a href="https://www.wikidata.org/wiki/{{ lookup_value }}">https://www.wikidata.org/wiki/{{ lookup_value }}</a></b>
 {% endif %}
 </div>
 {% endif %}
@@ -83,8 +94,8 @@ to Wikidata by QID. Anybody can edit Wikidata and create QIDs.
 <p><a href="https://en.wikipedia.org/wiki/Archival_Resource_Key">Archival
 Resource Keys</a> are no-cost, distributed identifiers based on URLs. Mostly
 used by archival systems (as opposed to publishers or repositories).
-{{ entity_macros.lookup_form("release", "ark", "ark:2349/sddd92", lookup_key, lookup_value, lookup_error) }}
-<i>&nbsp; Only the identifier part (starting with "ark:"), not the full URL.</i>
+{{ entity_macros.lookup_form("release", "ark", "ark:/2349/sddd92", lookup_key, lookup_value, lookup_error) }}
+<i>&nbsp; Only the identifier part (starting with "ark:/"), not the full URL.</i>
 
 </div>
 <div class="ui attached segment">

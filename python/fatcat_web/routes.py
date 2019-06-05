@@ -46,7 +46,7 @@ def container_lookup():
     if extid is None:
         return render_template('container_lookup.html')
     try:
-        resp = api.lookup_container(**{extid: request.args.get(extid)})
+        resp = api.lookup_container(**{extid: extid_value})
     except ValueError:
         return make_response(
             render_template('container_lookup.html',
@@ -178,7 +178,7 @@ def file_lookup():
     if extid is None:
         return render_template('file_lookup.html')
     try:
-        resp = api.lookup_file(**{extid: request.args.get(extid)})
+        resp = api.lookup_file(**{extid: extid_value})
     except ValueError:
         return make_response(
             render_template('file_lookup.html',

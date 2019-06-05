@@ -18,7 +18,7 @@ Couldn't find a container with that identifier (<b><code>{{ lookup_key }}:{{
 lookup_value }}</code></b>). If you think it should be in the catalog, you could
 search for an existing record missing that identifier, or create a new container
 entity. 
-{% if lookup_key == "doi" %}
+{% if lookup_key == "issnl" %}
 <p>You can check if it is a registered ISSN-L by visiting:
 <b><a href="https://portal.issn.org/{{ lookup_value
 }}">https://portal.issn.org/{{ lookup_value }}</a></b>. If this is a valid
@@ -26,7 +26,7 @@ electronic or print ISSN, but not the ISSN-L for the container, you need to use
 the indicated "linking" ISSN.
 {% elif lookup_key == "wikidata_qid" %}
 <p>You can check if it is a real Wikidata entity by visiting:
-<b><a href="https://www.wikidata.org/wiki/{{ lookup_value }}/">https://www.wikidata.org/wiki/{{ lookup_value }}/</a></b>
+<b><a href="https://www.wikidata.org/wiki/{{ lookup_value }}">https://www.wikidata.org/wiki/{{ lookup_value }}</a></b>
 {% endif %}
 </div>
 {% endif %}
@@ -43,7 +43,7 @@ to the "print" ISSN number for a journal. Fatcat uses ISSN-L as the primary
 identifier for journals to reduce confusion and potential for duplication. The
 ISSN organization publicly publishes a mapping between linking and
 print/electronic ISSNs.
-{{ entity_macros.lookup_form("issnl", "1234-567X", lookup_key, lookup_value, lookup_error) }}
+{{ entity_macros.lookup_form("container", "issnl", "1234-567X", lookup_key, lookup_value, lookup_error) }}
 <i>&nbsp; Must include the dash</i>
 
 </div>
@@ -55,7 +55,7 @@ structured, machine-readable database that complements Wikipedia. Entities,
 which can include bibliographic entities like books and papers, are identified
 by a "QID". Fatcat also links container (journal) and creator (author) entities
 to Wikidata by QID. Anybody can edit Wikidata and create QIDs.
-{{ entity_macros.lookup_form("wikidata_qid", "Q94324", lookup_key, lookup_value, lookup_error) }}
+{{ entity_macros.lookup_form("container", "wikidata_qid", "Q94324", lookup_key, lookup_value, lookup_error) }}
 <i>&nbsp; Include the "Q" prefix.</i>
 
 </div>
