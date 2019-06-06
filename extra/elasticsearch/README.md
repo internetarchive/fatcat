@@ -69,7 +69,22 @@ a new index and then cut over with no downtime.
 
     http put :9200/fatcat_release_v03 < release_schema.json
 
-TODO: more docs for actual cut-over
+To replace a "real" index with an alias pointer, do two actions (not truely
+zero-downtime, but pretty fast):
+
+    http delete :9200/fatcat_release
+    http put :9200/fatcat_release_v03/_alias/fatcat_release
+
+To do an atomic swap from one alias to a new one ("zero downtime"):
+
+    http post :9200/_aliases << EOF
+        {
+            "actions": [
+                { "remove": { "index": "fatcat_release_v03", "alias": "fatcat_release" }},
+                { "add":    { "index": "fatcat_release_v04", "alias": "fatcat_release" }}
+            ]
+        }
+    EOF
 
 ## Full-Text Querying
 
