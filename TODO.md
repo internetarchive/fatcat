@@ -4,9 +4,22 @@
 ## Next Up
 
 - update existing 1.5 mil longtail OA PDFs with container/ISSN-L
+- use collapsing fields in default release search
+    => start using elasticsearch-py
+- lookup landing pages
+- cleanup 'None' file links
+- update editing flow
+    => implement and use "in progress" views
+    => allow re-editing of in-progress edits
+- generic query endpoint; tries to find identifiers (including fatcat
+  identifiers) and lookup, else does release search
 
 ## Bugs
 
+- identifier and hash duplication
+    => couple dozen SHA-1
+    => couple thousand DOI
+    => 400k PMID (!)
 - did, somehow, end up with web.archive.org/web/None/ URLs (should remove)
 - searching 'N/A' is a bug, because not quoted; auto-quote it?
 - author (contrib) names not getting included in search (unless explicit)
