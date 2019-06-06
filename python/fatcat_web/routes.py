@@ -285,6 +285,18 @@ def webcapture_editgroup_view(editgroup_id, ident):
 def release_view(ident):
     return generic_entity_view('release', ident, 'release_view.html')
 
+@app.route('/release/<ident>/files', methods=['GET'])
+def release_view_files(ident):
+    return generic_entity_view('release', ident, 'release_files.html')
+
+@app.route('/release/<ident>/references', methods=['GET'])
+def release_view_references(ident):
+    return generic_entity_view('release', ident, 'release_references.html')
+
+@app.route('/release/<ident>/metadata', methods=['GET'])
+def release_view_metadata(ident):
+    return generic_entity_view('release', ident, 'entity_metadata.html')
+
 @app.route('/release/rev/<revision_id>', methods=['GET'])
 def release_revision_view(revision_id):
     entity = generic_get_entity_revision('release', revision_id)

@@ -1,13 +1,8 @@
-{% extends "base.html" %}
-{% block body %}
+{% set entity_view = "history" %}
+{% set entity_type = "release" %}
+{% extends "entity_base.html" %}
 
-<h1 class="ui header">{% if page_title != None %}{{ page_title }}{% endif %}
-<div class="sub header">
-  <a href="/{{entity_type}}/{{entity.ident}}">
-    <code>{{ entity_type }} {{ entity.ident }}</code>
-  </a>
-</div>
-</h1>
+{% block entity_main %}
 
 <h3 class="ui header">Edit History</h3>
 

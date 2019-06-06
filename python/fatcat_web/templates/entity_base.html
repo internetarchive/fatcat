@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% macro entity_tab(name, text, url_suffix) %}
+<a href ="/{{ entity_type }}/{{ entity.ident }}{{ url_suffix }}" class="{% if entity_view == name %}active{% endif %} item">{{ text }}</a>
+{% endmacro %}
+
+{% block fullmain %}
+<div class="ui vertical stripe segment" style="background-color: #EEE; padding-top: 5em; padding-bottom: 0px; border-bottom: 0px;">
+  <div class="ui container">
+    <div class="ui centered grid">
+      <div class="fourteen wide column" style="padding-bottom: 0px;">
+        <h1 class="ui header">
+          {% if entity_type == "release" %}
+            <span itemprop="headline"><span itemprop="name">{{ entity.title }}</span></span>
+            {% if entity.subtitle %}
+              <br><span style="font-size: smaller; font-weight: normal;">{{ entity.subtitle }}</span>
+            {% endif %}
+          {% endif %}
+          <span class="sub header">
+            <code>{{ entity_type }}_{{ entity.ident }}</code>
+          </span>
+        </h1>
+        {% if entity_type == "release" %}
+          <p style="font-size: larger;">
+          {% if authors and authors != [] %} by
+            {% for contrib in authors[:12] %}
+              {% if contrib.creator_id %}
+                <b><a href="/creator/{{contrib.creator_id}}">{{ contrib.raw_name }}</a></b>{% if not loop.last %}, {% endif %}
+              {% else %}
+                {% if contrib.raw_name != None %}{{ contrib.raw_name }}{% else %}<i>Unknown</i>{% endif %}{% if not loop.last %}, {% endif %}
+              {% endif %}
+            {% endfor %}
+            {% if authors|count > 12 %} <b>(+{{ authors|length - 12 }} others)</b>
+            {% endif %}
+            <br>
+          {% endif %}
+        {% endif %}
+        <div class="ui container">
+          <div class="ui small tabular compact menu">
+            {{ entity_tab("overview", "Overview", "") }}
+            {% if entity_type == "release" %}
+              {{ entity_tab("files", "Files", "/files") }}
+              {{ entity_tab("references", "References", "/references") }}
+            {% endif %}
+            {{ entity_tab("metadata", "Metadata", "/metadata") }}
+          </div>
+          <div class="ui small tabular compact menu floated right">
+            {{ entity_tab("edit", "Edit", "/edit") }}
+            {{ entity_tab("history", "History", "/history") }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ui container" style="padding-top: 3em;">
+  <div class="ui centered grid">
+    <div class="fourteen wide column" style="padding-bottom: 0px;">
+    {% block entity_main %}{% endblock %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block postscript %}
+<script>
+  $('.ui.accordion').accordion();
+</script>
+{% endblock %}
