@@ -1,16 +1,22 @@
 {% extends "base.html" %}
-{% block body %}
+{% block fullmain %}
 
-<h1>Journal/Conference Search</h1>
-<form class="" role="search" action="/container/search" method="get">
-  <div class="ui form">
-    <div class="ui action input huge fluid">
-      <input type="text" placeholder="Query..." name="q" value="{% if query %}{{ query }}{% endif %}" aria-label="search container metadata">
-      <button class="ui button">Search</button>
-    </div>
+<div class="ui vertical stripe segment" style="background-color: #EEE; padding-top: 4.5em;">
+  <div class="ui container text">
+    <h1>Journal/Conference Search</h1>
+    <form class="" role="search" action="/container/search" method="get">
+      <div class="ui form">
+        <div class="ui action input huge fluid">
+          <input type="text" placeholder="Query..." name="q" value="{% if query %}{{ query }}{% endif %}" aria-label="search container metadata">
+          <button class="ui button">Search</button>
+        </div>
+        <br>Can also lookup by <b><a href="/container/lookup">identifier</a></b> or search <b><a href="/release/search?q={{ query or "" }}">releases</a></b>.
+      </div>
+    </form>
   </div>
-</form>
+</div>
 
+<div class="ui container text">
 <br clear="all" />
 
 {% if found %}
@@ -26,7 +32,7 @@
     <h5 style="margin-top: 4px; margin-bottom: 4px; font-size: 1em;">{{ entity.publisher }}</h5>
   {% endif %}
   {% if entity.issnl %}
-    <a href="https://portal.issn.org/resource/ISSN/{{entity.issnl }}" style="color: green;">ISSN {{ entity.issnl }}</a>
+    <a href="https://portal.issn.org/resource/ISSN/{{entity.issnl }}" style="color: green;">issn:{{ entity.issnl }}</a>
   {% endif %}
   {% if entity.container_type %}
   &nbsp;{{ entity.container_type }}
@@ -38,11 +44,17 @@
   <i>Showing top {{ found.count_returned }} out of {{ found.count_found }} results for: <code>{{ found.query.q }}</code></i>
 {% endif %}
 {% else %}
-<div class="featurette-inner text-center" style="padding-top: 15%;">
-  <h3>No results found!</h3>
-  <i>Query was: <code>{{ found.query.q }}</code></i>
-  <br/>
-  <p>Try:</p>
+
+Raw query was: <i>{{ found.query.q }}</i>
+
+<div class="ui centered stackable grid" style="padding-top: 15%;">
+  <div class="row">
+    <div class="four wide column">
+      <img src="https://ia800105.us.archive.org/20/items/OA-JOURNAL-TESTCRAWL-TWO-2018/papers.gif">
+    </div>
+    <div class="six wide column">
+  <h2>No results found!</h2>
+  <p>You could try elsewhere:</p>
   <ul>
     <li>Search <a href="https://scholar.google.com/scholar?q={{ found.query.q | urlencode }}">Google Scholar</a></li>
   </ul>
@@ -50,4 +62,5 @@
 {% endif %}
 {% endif %}
 
+</div>
 {% endblock %}
