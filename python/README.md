@@ -51,6 +51,7 @@ build and start this daemon automatically.
 
 To run the python tests (with `fatcatd` running locally on port 9411):
 
+    sudo apt install libsnappy-dev
     pipenv install --dev
     pipenv run pytest
 
