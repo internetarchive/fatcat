@@ -21,7 +21,6 @@
 </div>
 
 <div class="ui container text">
-
 <br clear="all" />
 
 {% if found %}
@@ -105,11 +104,17 @@
   <i>Showing top {{ found.count_returned }} out of {{ found.count_found }} results for: <code>{{ found.query.q }}</code></i>
 {% endif %}
 {% else %}
-<div class="featurette-inner text-center" style="padding-top: 15%;">
-  <h3>No results found!</h3>
-  <i>Query was: <code>{{ found.query.q }}</code></i>
-  <br/>
-  <p>Try:</p>
+
+Raw query was: <i>{{ found.query.q }}</i>
+
+<div class="ui centered stackable grid" style="padding-top: 15%;">
+  <div class="row">
+    <div class="four wide column">
+      <img src="https://ia800105.us.archive.org/20/items/OA-JOURNAL-TESTCRAWL-TWO-2018/papers.gif">
+    </div>
+    <div class="six wide column">
+  <h2>No results found!</h2>
+  <p>You could try elsewhere:</p>
   <ul>
     <li>Search <a href="https://dissem.in/search?q={{ found.query.q | urlencode }}">dissem.in</a></li>
     <li>Search <a href="https://www.base-search.net/Search/Results?lookfor={{ found.query.q | urlencode }}">BASE</a></li>
