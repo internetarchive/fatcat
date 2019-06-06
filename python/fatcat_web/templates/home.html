@@ -4,43 +4,118 @@
   <link rel="canonical" href="https://{{ config.FATCAT_DOMAIN }}/">
 {% endblock %}
 
-{% block body %}
+{% block fullmain %}
+<!--
 <div class="ui container text" itemscope itemtype="https://schema.org/WebSite">
 <meta itemprop="url" content="https://{{ config.FATCAT_DOMAIN }}/"/>
+-->
 
-<!-- <h1 class="ui header centered" style="font-size: 2.5rem;">Fatcat: The Universal Research Catalog</h1><br> -->
-
-<img class="ui fluid bordered image" src="/static/fatcat.jpg" title="CC0 photo of an oversized feline" alt="">
-
-<br>
-<h2 class="ui header centered">Cataloging of millions of research publications</h2>
-<form class="" action="/release/search" method="get" role="search" aria-label="papers" itemprop="potentialAction" itemscope itemtype="https://schema.org/SearchAction">
-  <meta itemprop="target" content="https://{{ config.FATCAT_DOMAIN }}/release/search?q={q}"/>
-  <div class="ui form">
-    <div class="ui action input huge fluid">
-      <input type="text" placeholder="Query..." name="q" aria-label="search release metadata" required itemprop="query-input">
-      <button class="ui button">Search</button>
-    </div>
+<div class ="ui vertical inverted masthead center aligned segment" style="padding-top: 10em; height: 32em;">
+  <div class="ui container">
+    <h1 class="ui header inverted huge centered">Perpetual Access to Millions of Open Research Publications From Around The World</h1>
+    <br>
+    <form class="" action="/release/search" method="get" role="search" aria-label="papers" itemprop="potentialAction" itemscope itemtype="https://schema.org/SearchAction">
+      <meta itemprop="target" content="https://{{ config.FATCAT_DOMAIN }}/release/search?q={q}"/>
+      <div class="ui form">
+        <div class="ui action input huge fluid">
+          <input type="text" placeholder="Query..." name="q" aria-label="search release metadata" required itemprop="query-input">
+          <button class="ui green button">Search</button>
+        </div>
+      </div>
+    </form>
   </div>
-</form>
-
-<br>
-<div class="ui warning message">
-  <div class="header">Project Status: Beta</div>
-  <ul class="list">
-    <li>Edits are manually reviewed (not automatically accepted)
-    <li>API schemas and client libraries not guaranteed to be backwards-compatible
-  </ul>
 </div>
 
-<p>Fatcat is a versioned, user-editable catalog of research publications: journal
-articles, conference proceedings, pre-prints, etc. Features include archival
-file-level metadata (verified digests and long-term copies, in addition to
-URLs), a <a href="https://api.{{ config.FATCAT_DOMAIN }}">documented API</a>, and work/release
-indexing (aka, linking together of pre-prints and final copies).
-&nbsp;<a href="/about">Read more...</a>
+<div class="ui vertical stripe segment">
+  <div class="ui centered grid">
+    <div class="row">
+      <div class="three wide center aligned column">
+        <h4>81,115,372<br>Papers</h4>
+      </div>
+      <div class="three wide center aligned column">
+        <h4>16,071,778<br>Preserved</h4>
+      </div>
+      <div class="three wide center aligned column">
+        <h4>108,801<br>Journals</h4>
+      </div>
+    </div>
+  </div>
+</div>
 
-<br><br>
+<div class="ui vertical stripe segment" style="padding-top: 2em; padding-bottom: 2em;">
+  <div class="ui container">
+  <div class="ui centered grid">
+    <div class="row">
+      <div class="three wide column">
+        <!-- TODO: don't let it scale down -->
+        <img src="https://ia800105.us.archive.org/20/items/OA-JOURNAL-TESTCRAWL-TWO-2018/papers.gif">
+      </div>
+      <!-- TODO: larger font size -->
+      <div class="nine wide column" style="font-size: 1.1rem;">
+        <p><b>Fatcat is a versioned, user-editable catalog of research
+        publications including journal articles, conference proceedings, and
+        datasets</b>
+        <p>Features include archival
+        file-level metadata (verified digests and long-term copies, in addition to
+        URLs), a <b><a href="https://api.{{ config.FATCAT_DOMAIN }}">documented API</a></b>, and work/release
+        indexing (aka, linking together of pre-prints and final copies).
+        &nbsp;<a href="/about">Read more...</a>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<div class="ui vertical stripe segment" style="padding-top: 2em; padding-bottom: 2em; background-color: #F5F5F5;">
+  <div class="ui container">
+  <div class="ui centered grid">
+    <div class="row">
+      <!-- TODO: larger font size -->
+      <div class="nine wide column" style="font-size: 1.1rem;">
+        <p>The fatcat servcie is developed and hosted at <b><a
+        href="https://archive.org">The Internet Archive</a></b>, a US
+        non-profit dedicated to providing Universal Access to All Knowledge.
+        Donations are welcomed!
+        <p>Funding comes the <b>The Andrew Mellon Foundation</b>, to improve
+        preservation and access to "long-tail" open access works on the public
+        web which could otherwise be lost.
+      </div>
+      <div class="three wide column">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Internet_Archive_logo_and_wordmark.svg/250px-Internet_Archive_logo_and_wordmark.svg.png">
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<div class="ui vertical stripe segment" style="background-color: #fffaf3; color: #573a08;">
+  <div class="ui container">
+  <div class="ui centered grid">
+    <div class="row">
+      <div class="nine wide column" style="font-size: 1.1rem;">
+        <h5>Project Status: Beta</h5>
+        <ul class="list">
+            <li>Edits are manually reviewed (not automatically accepted)
+            <li>API schemas and client libraries not guaranteed to be backwards-compatible
+        </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<div class="ui container">
+  <div class="ui centered grid">
+    <div class="row">
+      <div class="twelve wide column">
+
+<br>
+<h2 class="ui header centered">Explore Works In The Catalog So Far
+<span class="sub header">... and help us find what is missing!</span>
+</h2>
+
+<br>
 
 <table class="ui single line unstackable table">
 <thead>
@@ -161,5 +236,10 @@ indexing (aka, linking together of pre-prints and final copies).
     <td>
 </table>
 
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
 {% endblock %}

@@ -76,6 +76,7 @@
   </div>
 </header>
 
+{% block fullmain %}
 <!-- 4em top margin is "enough" -->
 <main class="ui main container" style="margin-top: 6em; margin-bottom: 2em;" {% block main_extra_attr %}{% endblock %}>
 {% with messages = get_flashed_messages() %}
@@ -97,6 +98,7 @@
   </div>
 {% endblock %}
 </main>
+{% endblock %}
 
 
 <footer class="ui inverted vertical footer segment" style="margin-top: 2em; padding-top: 2em; padding-bottom:2em; position: absolute; bottom: 0px; width: 100%;">
