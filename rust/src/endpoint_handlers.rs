@@ -596,8 +596,8 @@ impl Server {
         let (editor_row, created): (EditorRow, bool) = match existing.first() {
             Some((editor, _)) => (editor.clone(), false),
             None => {
-                let username = format!("{}-{}", params.preferred_username, params.provider)
-                    .truncate(24);
+                let mut username = format!("{}-{}", params.preferred_username, params.provider);
+                username.truncate(24);
                 let editor = Editor {
                     editor_id: None,
                     username: username,
