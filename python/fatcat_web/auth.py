@@ -62,6 +62,7 @@ def handle_oauth(remote, token, user_info):
         else:
             preferred_username = user_info['sub']
 
+        preferred_username = preferred_username.replace('.', '')
         params = fatcat_client.AuthOidc(remote.name, user_info['sub'], iss, preferred_username)
         # this call requires admin privs
         (resp, http_status, http_headers) = priv_api.auth_oidc_with_http_info(params)
