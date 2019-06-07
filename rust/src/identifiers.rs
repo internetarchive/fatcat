@@ -70,7 +70,7 @@ pub fn uuid2fcid(id: &Uuid) -> String {
 
 pub fn check_username(raw: &str) -> Result<()> {
     lazy_static! {
-        static ref RE: Regex = Regex::new(r"^[A-Za-z][A-Za-z0-9._-]{2,32}$").unwrap();
+        static ref RE: Regex = Regex::new(r"^[A-Za-z][A-Za-z0-9._-]{2,24}$").unwrap();
     }
     if raw.is_ascii() && RE.is_match(raw) {
         Ok(())
@@ -92,8 +92,6 @@ fn test_check_username() {
     assert!(check_username("g_____").is_ok());
     assert!(check_username("bnewbold2-archive").is_ok());
     assert!(check_username("bnewbold2-internetarchive").is_ok());
-    assert!(check_username("bnewboldtestperiods-archive").is_ok());
-    assert!(check_username("DisabledCommunity.Org-archive").is_ok());
 
     assert!(check_username("").is_err());
     assert!(check_username("_").is_err());
