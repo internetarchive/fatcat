@@ -198,6 +198,10 @@ def generic_entity_view(entity_type, ident, view_template):
     elif entity.state == "deleted":
         return render_template('deleted_entity.html', entity_type=entity_type, entity=entity)
 
+    metadata = entity.to_dict()
+    metadata.pop('extra')
+    entity._metadata = metadata
+
     return render_template(view_template, entity=entity, editgroup_id=None)
 
 def generic_editgroup_entity_view(editgroup_id, entity_type, ident, view_template):
@@ -285,9 +289,9 @@ def webcapture_editgroup_view(editgroup_id, ident):
 def release_view(ident):
     return generic_entity_view('release', ident, 'release_view.html')
 
-@app.route('/release/<ident>/files', methods=['GET'])
-def release_view_files(ident):
-    return generic_entity_view('release', ident, 'release_files.html')
+@app.route('/release/<ident>/contribs', methods=['GET'])
+def release_view_contribs(ident):
+    return generic_entity_view('release', ident, 'release_contribs.html')
 
 @app.route('/release/<ident>/references', methods=['GET'])
 def release_view_references(ident):

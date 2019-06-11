@@ -55,7 +55,7 @@
           </code>
   {% else %}
     <tr><td class="three wide right aligned"><code>{{ key }}</code></td>
-        <td class="seven wide"><code>{{ value }}</code>
+        <td class="seven wide"><code>{% if value != None %}{{ value }}{% endif %}</code>
   {% endif %}
 {% endfor %}
 </tbody>

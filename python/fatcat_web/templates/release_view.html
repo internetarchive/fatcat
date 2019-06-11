@@ -104,7 +104,6 @@
 </div>
 
 <div class="ui stackable mobile reversed grid centered">
-<div class="one wide column"></div>
 <div class="ten wide column" style="font-size: 16px;">
 
 {% if release.abstracts != [] %}
@@ -180,34 +179,85 @@
 </div>
 </div>
 
-{% if release.contribs|length > 0 %}
-<div class="ui accordion">
-<div class="title">
-  <i class="dropdown icon"></i>All Contributors ({{ release.contribs|length }})
-</div><div class="content">
-<table class="ui basic compact table">
-<tbody>
-{% for contrib in release.contribs %}
-  <tr><td class="collapsing">{% if contrib.index or contrib.index == 0 %} {{ contrib.index + 1 }}{% endif %}
-      <td><span itemprop="author">
-      {% if contrib.creator_id %}
-        <a href="/creator/{{contrib.creator_id}}">{{ contrib.raw_name or 'unknown' }}</a> 
-      {% else %}
-        {{ contrib.raw_name or '' }}
-      {% endif %}
-      {% if contrib.surname %}
-        <code>&nbsp;
-          ({{ contrib.surname }}{% if contrib.given_name %}, {{ contrib.given_name }}{% endif %})
-        </code>
-      {% endif %}
-      </span><br><i>{{ contrib.role or 'unknown' }}</i>
-{% endfor %}
-</tbody>
+<h3>Known Files and URLs</h3>
+{% if entity.files != [] %}
+<table class="ui compact fixed table">
+<!--
+  <thead>
+    <tr><th>SHA-1
+        <th>Size (bytes)
+        <th>File Type
+        <th>Links
+  </thead>
+-->
+  <tbody>
+  {% for file in entity.files %}
+  <tr><td>{% if file.mimetype != None %}{{ file.mimetype }}&nbsp;&nbsp;{% endif %}
+          {% if file.size != None %}{{ file.size|filesizeformat }}{% endif %}
+      <br><small><code><a href="/file/{{ file.ident }}">
+            {% if file.sha1 != None %}sha1:{{ file.sha1[:20] + "..." }}
+            {% elif file.sha256!= None %}sha256:{{ file.md5[:20] + "..." }}
+            {% elif file.md5 != None %}md5:{{ file.md5[:20] + "..." }}
+            {% endif %}
+        </a></code></small>
+      <td class="single line">
+        {% for url in file.urls[:5] %}
+          <a href="{{ url.url }}">{{ url.url.split('/')[2] }}</a> ({{ url.rel }})<br>
+        {% endfor %}
+        {% if file.urls|length > 5 %}
+          <a href="/file/{{ file.ident }}">+ {{ file.urls|length - 5 }} more URLs</a>
+        {% endif %}
+  {% endfor %}
+  </tbody>
 </table>
-</div>
-</div>
 {% else %}
-<p>No known contributors (authors, translators, etc).
+<p>There are no known files associated with this release (you could try
+<a href="/work/{{ release.work_id }}">other releases for this work?</a>).
+{% endif %}
+
+
+{% if entity.filesets != [] %}
+<h3>File Sets</h3>
+<table class="ui compact fixed table">
+  <tbody>
+  {% for fileset in entity.filesets %}
+  <tr><td>{{ fileset.manifest|count }} files &nbsp;{{ fileset.total_size|filesizeformat }}
+      <br><small><code><a href="/fileset/{{ fileset.ident }}">fileset:{{ fileset.ident }}</a></code></small>
+      <td class="single line">
+        {% for url in fileset.urls[:5] %}
+          {% if url.rel == "dweb" %}
+            <a href="{{ url.url }}">{{ url.url }}</a> ({{ url.rel }})<br>
+          {% else %}
+            <a href="{{ url.url }}">{{ url.url.split('/')[2] }}</a> ({{ url.rel }})<br>
+          {% endif %}
+        {% endfor %}
+        {% if fileset.urls|length > 5 %}
+          + {{ file.urls|length - 5 }} more URLs
+        {% endif %}
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+
+{% if entity.webcaptures != [] %}
+<h3>Web Captures</h3>
+<table class="ui single line compact fixed table">
+  <tbody>
+  {% for webcapture in entity.webcaptures %}
+  <tr><td><b><a href="{{ webcapture.original_url }}">{{ webcapture.original_url }}</a></b>
+      <br>{{ webcapture.timestamp.strftime("%Y-%m-%d %H:%M:%S") }} | {{ webcapture.cdx|count }} resources
+      <br><small><code><a href="/webcapture/{{ webcapture.ident }}">webcapture:{{ webcapture.ident }}</a></code></small>
+      <td class="single line">
+        {% for url in webcapture.archive_urls[:5] %}
+          <a href="{{ url.url }}{% if url.rel == "wayback" %}{{ webcapture.wayback_suffix }}{% endif %}">{{ url.url.split('/')[2] }}</a> ({{ url.rel }})<br>
+        {% endfor %}
+        {% if webcapture.urls|length > 5 %}
+          + {{ file.urls|length - 5 }} more URLs
+        {% endif %}
+  {% endfor %}
+  </tbody>
+</table>
 {% endif %}
 
 <h3>Known Files and URLs</h3>
@@ -293,7 +343,7 @@
 
 
 </div>
-<div class="five wide column">
+<div class="six wide column">
 
 {% if entity.files != [] and entity.files[0].urls != [] %}
 <a href="{{ entity.files[0].urls[0].url }}" class="ui top attached fluid huge green button"><i class="file pdf outline icon"></i>Download Full Text</a>

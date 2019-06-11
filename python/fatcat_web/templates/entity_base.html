@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
-{% macro entity_tab(name, text, url_suffix) %}
-<a href ="/{{ entity_type }}/{{ entity.ident }}{{ url_suffix }}" class="{% if entity_view == name %}active{% endif %} item">{{ text }}</a>
+{% macro entity_tab(name, text, url_suffix, count=None) %}
+<a href ="/{{ entity_type }}/{{ entity.ident }}{{ url_suffix }}" class="{% if entity_view == name %}active{% endif %} item" style="padding: 0em 1.2em;">{{ text }}{% if count != None %} ({{ count }}){% endif %}</a>
 {% endmacro %}
 
 {% block fullmain %}
 <div class="ui vertical stripe segment" style="background-color: #EEE; padding-top: 5em; padding-bottom: 0px; border-bottom: 0px;">
   <div class="ui container">
     <div class="ui centered grid">
-      <div class="fourteen wide column" style="padding-bottom: 0px;">
+      <div class="fifteen wide large screen sixteen wide column" style="padding-bottom: 0px;">
         <h1 class="ui header">
           {% if entity_type == "release" %}
             <span itemprop="headline"><span itemprop="name">{{ entity.title }}</span></span>
@@ -39,8 +39,8 @@
           <div class="ui small tabular compact menu">
             {{ entity_tab("overview", "Overview", "") }}
             {% if entity_type == "release" %}
-              {{ entity_tab("files", "Files", "/files") }}
-              {{ entity_tab("references", "References", "/references") }}
+              {{ entity_tab("contribs", "Authors", "/contribs", authors|count ) }}
+              {{ entity_tab("references", "References", "/references", entity.refs|count) }}
             {% endif %}
             {{ entity_tab("metadata", "Metadata", "/metadata") }}
           </div>
@@ -56,7 +56,7 @@
 
 <div class="ui container" style="padding-top: 3em;">
   <div class="ui centered grid">
-    <div class="fourteen wide column" style="padding-bottom: 0px;">
+    <div class="fifteen wide large screen sixteen wide column" style="padding-bottom: 0px;">
     {% block entity_main %}{% endblock %}
     </div>
   </div>
