@@ -74,8 +74,8 @@
     <span class="ui red label small">unknown</span>
   {% endif %}
   {% if paper.container_name %}
-    {% if paper.container_issnl %}
-      <a href="/container/lookup?issnl={{ paper.container_issnl}}" style="color: black;">{{ paper.container_name }}</a>
+    {% if paper.container_id %}
+      <a href="/container/{{ paper.container_id }}" style="color: black;">{{ paper.container_name }}</a>
     {% else %}
       {{ paper.container_name }}
     {% endif %}
