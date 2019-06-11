@@ -10,7 +10,7 @@
 <meta itemprop="url" content="https://{{ config.FATCAT_DOMAIN }}/"/>
 -->
 
-<div class ="ui vertical inverted masthead center aligned segment" style="padding-top: 10em; height: 32em;">
+<div class ="ui vertical inverted masthead center aligned segment" style="padding-top: 12em; padding-bottom: 10em;">
   <div class="ui text container">
     <h1 class="ui header inverted huge centered">Perpetual Access to Millions of Open Research Publications From Around The World</h1>
     <br>
@@ -30,13 +30,19 @@
   <div class="ui centered grid">
     <div class="row">
       <div class="four wide mobile three wide center aligned column">
-        <h4>81,115,372<br>Papers</h4>
+        <a href="/stats" style="color: black;">
+          <h4>81,115,372<br>Papers</h4>
+        </a>
       </div>
       <div class="four wide mobile three wide center aligned column">
-        <h4>16,071,778<br>Fulltext</h4>
+        <a href="/stats" style="color: black;">
+          <h4>16,071,778<br>Fulltext</h4>
+        </a>
       </div>
       <div class="four wide mobile three wide center aligned column">
-        <h4>108,801<br>Journals</h4>
+        <a href="/stats" style="color: black;">
+          <h4>108,801<br>Journals</h4>
+        </a>
       </div>
     </div>
   </div>
@@ -48,10 +54,10 @@
     <div class="row">
       <div class="four wide column">
         <!-- TODO: don't let it scale down -->
-        <img src="https://ia800105.us.archive.org/20/items/OA-JOURNAL-TESTCRAWL-TWO-2018/papers.gif">
+        <img src="https://ia800105.us.archive.org/20/items/OA-JOURNAL-TESTCRAWL-TWO-2018/papers.gif" width="130px">
       </div>
       <!-- TODO: larger font size -->
-      <div class="ten wide column" style="font-size: 1.1rem;">
+      <div class="twelve wide column" style="font-size: 1.1rem;">
         <p><b>Fatcat is a versioned, user-editable catalog of research
         publications including journal articles, conference proceedings, and
         datasets</b>
@@ -71,7 +77,7 @@
   <div class="ui centered grid">
     <div class="row">
       <!-- TODO: larger font size -->
-      <div class="ten wide column" style="font-size: 1.1rem;">
+      <div class="twelve wide column" style="font-size: 1.1rem;">
         <p>The fatcat servcie is developed and hosted at <b><a
         href="https://archive.org">The Internet Archive</a></b>, a US
         non-profit dedicated to providing Universal Access to All Knowledge.
@@ -81,7 +87,7 @@
         web which could otherwise be lost.
       </div>
       <div class="four wide column">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Internet_Archive_logo_and_wordmark.svg/250px-Internet_Archive_logo_and_wordmark.svg.png">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Internet_Archive_logo_and_wordmark.svg/250px-Internet_Archive_logo_and_wordmark.svg.png" width="140px">
       </div>
     </div>
   </div>
@@ -92,13 +98,10 @@
   <div class="ui text container">
   <div class="ui centered grid">
     <div class="row">
-      <div class="twelve wide column" style="font-size: 1.1rem;">
-        <h5>Project Status: Beta</h5>
-        <ul class="list">
-            <li>Edits are manually reviewed (not automatically accepted)
-            <li>API schemas and client libraries not guaranteed to be backwards-compatible
-        </ul>
-        </div>
+      <div class="fourteen wide column" style="font-size: 1.1rem;">
+        <b>Project Status: Beta</b>
+        &nbsp;
+        API schema is not stable, and all edits must be manually reviewed.
       </div>
     </div>
   </div>
@@ -106,9 +109,6 @@
 </div>
 
 <div class="ui container">
-  <div class="ui centered grid">
-    <div class="row">
-      <div class="twelve wide column">
 
 <br>
 <h2 class="ui header centered">Explore Works In The Catalog So Far
@@ -117,7 +117,8 @@
 
 <br>
 
-<table class="ui single line unstackable table">
+<center>
+<table class="ui single line unstackable table centered" style="max-width: 750px;">
 <thead>
 <tr><th>Entity Type
     <th>Actions
@@ -235,11 +236,8 @@
 {% endif %}
     <td>
 </table>
+</center>
 
-        </div>
-      </div>
-    </div>
-  </div>
 </div>
 
 {% endblock %}
