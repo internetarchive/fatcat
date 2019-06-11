@@ -9,6 +9,7 @@ from flask_wtf.csrf import CSRFError
 from fatcat_client import Editgroup, EditgroupAnnotation
 from fatcat_client.rest import ApiException
 from fatcat_tools.transforms import *
+from fatcat_tools.normal import *
 from fatcat_web import app, api, auth_api, priv_api, mwoauth
 from fatcat_web.auth import handle_token_login, handle_logout, load_user, handle_ia_xauth, handle_wmoauth
 from fatcat_web.cors import crossdomain
@@ -496,6 +497,31 @@ def reviewable_view():
 
 ### Search ##################################################################
 
+@app.route('/search', methods=['GET', 'POST'])
+def generic_search():
+    if not 'q' in request.args.keys():
+        return redirect('/release/search')
+    query = request.args.get('q').strip()
+
+    if len(query.split()) != 1:
+        # multi-term? must be a real search
+        return redirect(url_for('release_search', q=query))
+
+    if clean_doi(query):
+        return redirect(url_for('release_lookup', doi=clean_doi(query)))
+    if clean_pmcid(query):
+        return redirect(url_for('release_lookup', pmcid=clean_pmcid(query)))
+    if clean_sha1(query):
+        return redirect(url_for('file_lookup', sha1=clean_sha1(query)))
+    if clean_issn(query):
+        return redirect(url_for('container_lookup', issnl=clean_issn(query)))
+    if clean_isbn13(query):
+        return redirect(url_for('release_lookup', isbn13=clean_isbn13(query)))
+    if clean_orcid(query):
+        return redirect(url_for('creator_lookup', orcid=clean_orcid(query)))
+
+    return redirect(url_for('release_search', q=query))
+
 @app.route('/release/search', methods=['GET', 'POST'])
 def release_search():
 
@@ -733,10 +759,6 @@ def page_about():
 @app.route('/rfc', methods=['GET'])
 def page_rfc():
     return render_template('rfc.html')
-
-@app.route('/search', methods=['GET'])
-def page_search_redirect():
-    return redirect("/release/search")
 
 @app.route('/robots.txt', methods=['GET'])
 def robots():

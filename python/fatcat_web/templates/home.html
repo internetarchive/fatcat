@@ -14,11 +14,11 @@
   <div class="ui text container">
     <h1 class="ui header inverted huge centered">Perpetual Access to Millions of Open Research Publications From Around The World</h1>
     <br>
-    <form class="" action="/release/search" method="get" role="search" aria-label="papers" itemprop="potentialAction" itemscope itemtype="https://schema.org/SearchAction">
-      <meta itemprop="target" content="https://{{ config.FATCAT_DOMAIN }}/release/search?q={q}"/>
+    <form class="" action="/search" method="get" role="search" aria-label="papers" itemprop="potentialAction" itemscope itemtype="https://schema.org/SearchAction">
+      <meta itemprop="target" content="https://{{ config.FATCAT_DOMAIN }}/search?q={q}"/>
       <div class="ui form">
         <div class="ui action input huge fluid">
-          <input type="text" placeholder="Query..." name="q" aria-label="search release metadata" required itemprop="query-input">
+          <input type="text" placeholder="Query..." name="q" aria-label="search metadata" required itemprop="query-input">
           <button class="ui green button">Search</button>
         </div>
       </div>
