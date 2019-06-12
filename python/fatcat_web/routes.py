@@ -16,7 +16,7 @@ from fatcat_web.search import *
 from fatcat_web.hacks import strip_extlink_xml, wayback_suffix
 
 
-### Views ###################################################################
+### Generic Entity Views ####################################################
 
 @app.route('/container/<ident>/history', methods=['GET'])
 def container_history(ident):
@@ -26,17 +26,93 @@ def container_history(ident):
     except ApiException as ae:
         app.log.info(ae)
         abort(ae.status)
-    #print(history)
     return render_template('entity_history.html',
         page_title=entity.name,
         entity_type="container",
         entity=entity,
         history=history)
 
-@app.route('/container/lookup', methods=['GET'])
-def container_lookup():
+@app.route('/creator/<ident>/history', methods=['GET'])
+def creator_history(ident):
+    try:
+        entity = api.get_creator(ident)
+        history = api.get_creator_history(ident)
+    except ApiException as ae:
+        abort(ae.status)
+    return render_template('entity_history.html',
+        page_title=entity.display_name,
+        entity_type="creator",
+        entity=entity,
+        history=history)
+
+@app.route('/file/<ident>/history', methods=['GET'])
+def file_history(ident):
+    try:
+        entity = api.get_file(ident)
+        history = api.get_file_history(ident)
+    except ApiException as ae:
+        abort(ae.status)
+    return render_template('entity_history.html',
+        page_title=None,
+        entity_type="file",
+        entity=entity,
+        history=history)
+
+@app.route('/fileset/<ident>/history', methods=['GET'])
+def fileset_history(ident):
+    try:
+        entity = api.get_fileset(ident)
+        history = api.get_fileset_history(ident)
+    except ApiException as ae:
+        abort(ae.status)
+    return render_template('entity_history.html',
+        page_title=None,
+        entity_type="fileset",
+        entity=entity,
+        history=history)
+
+@app.route('/webcapture/<ident>/history', methods=['GET'])
+def webcapture_history(ident):
+    try:
+        entity = api.get_webcapture(ident)
+        history = api.get_webcapture_history(ident)
+    except ApiException as ae:
+        abort(ae.status)
+    return render_template('entity_history.html',
+        page_title=None,
+        entity_type="webcapture",
+        entity=entity,
+        history=history)
+
+@app.route('/release/<ident>/history', methods=['GET'])
+def release_history(ident):
+    try:
+        entity = api.get_release(ident)
+        history = api.get_release_history(ident)
+    except ApiException as ae:
+        abort(ae.status)
+    return render_template('entity_history.html',
+        page_title=entity.title,
+        entity_type="release",
+        entity=entity,
+        history=history)
+
+@app.route('/work/<ident>/history', methods=['GET'])
+def work_history(ident):
+    try:
+        entity = api.get_work(ident)
+        history = api.get_work_history(ident)
+    except ApiException as ae:
+        abort(ae.status)
+    return render_template('entity_history.html',
+        page_title=None,
+        entity_type="work",
+        entity=entity,
+        history=history)
+
+def generic_lookup_view(entity_type, lookup_template, extid_types, lookup_lambda):
     extid = None
-    for key in ('issnl', 'wikidata_qid'):
+    for key in extid_types:
         if request.args.get(key):
             extid = key
             extid_value = request.args.get(extid)
@@ -44,12 +120,12 @@ def container_lookup():
                 extid_value = extid_value.strip()
                 break
     if extid is None:
-        return render_template('container_lookup.html')
+        return render_template(lookup_template)
     try:
-        resp = api.lookup_container(**{extid: extid_value})
+        resp = lookup_lambda({extid: extid_value})
     except ValueError:
         return make_response(
-            render_template('container_lookup.html',
+            render_template(lookup_template,
                 lookup_key=extid,
                 lookup_value=extid_value,
                 lookup_error=400),
@@ -57,7 +133,7 @@ def container_lookup():
     except ApiException as ae:
         if ae.status == 404 or ae.status == 400:
             return make_response(
-                render_template('container_lookup.html',
+                render_template(lookup_template,
                     lookup_key=extid,
                     lookup_value=extid_value,
                     lookup_error=ae.status),
@@ -65,7 +141,54 @@ def container_lookup():
         else:
             app.log.info(ae)
             abort(ae.status)
-    return redirect('/container/{}'.format(resp.ident))
+    return redirect('/{}/{}'.format(entity_type, resp.ident))
+
+@app.route('/container/lookup', methods=['GET'])
+def container_lookup():
+    return generic_lookup_view(
+        'container',
+        'container_lookup.html',
+        ('issnl', 'wikidata_qid'),
+        lambda p: api.lookup_container(**p))
+
+@app.route('/creator/lookup', methods=['GET'])
+def creator_lookup():
+    return generic_lookup_view(
+        'creator',
+        'creator_lookup.html',
+        ('orcid', 'wikidata_qid'),
+        lambda p: api.lookup_creator(**p))
+
+@app.route('/file/lookup', methods=['GET'])
+def file_lookup():
+    return generic_lookup_view(
+        'file',
+        'file_lookup.html',
+        ('md5', 'sha1', 'sha256'),
+        lambda p: api.lookup_file(**p))
+
+@app.route('/fileset/lookup', methods=['GET'])
+def fileset_lookup():
+    abort(404)
+
+@app.route('/webcapture/lookup', methods=['GET'])
+def webcapture_lookup():
+    abort(404)
+
+@app.route('/release/lookup', methods=['GET'])
+def release_lookup():
+    return generic_lookup_view(
+        'release',
+        'release_lookup.html',
+        ('doi', 'wikidata_qid', 'pmid', 'pmcid', 'isbn13', 'jstor', 'arxiv',
+         'core', 'ark', 'mag'),
+        lambda p: api.lookup_release(**p))
+
+@app.route('/work/lookup', methods=['GET'])
+def work_lookup():
+    abort(404)
+
+### Entity Views ############################################################
 
 @app.route('/container/<ident>', methods=['GET'])
 def container_view(ident):
@@ -92,53 +215,6 @@ def container_view(ident):
     return render_template('container_view.html',
         container=entity, container_stats=stats)
 
-@app.route('/creator/<ident>/history', methods=['GET'])
-def creator_history(ident):
-    try:
-        entity = api.get_creator(ident)
-        history = api.get_creator_history(ident)
-    except ApiException as ae:
-        abort(ae.status)
-    return render_template('entity_history.html',
-        page_title=entity.display_name,
-        entity_type="creator",
-        entity=entity,
-        history=history)
-
-@app.route('/creator/lookup', methods=['GET'])
-def creator_lookup():
-    extid = None
-    for key in ('orcid', 'wikidata_qid'):
-        if request.args.get(key):
-            extid = key
-            extid_value = request.args.get(extid)
-            if extid_value:
-                extid_value = extid_value.strip()
-                break
-    if extid is None:
-        return render_template('creator_lookup.html')
-    try:
-        resp = api.lookup_creator(**{extid: extid_value})
-    except ValueError:
-        return make_response(
-            render_template('creator_lookup.html',
-                lookup_key=extid,
-                lookup_value=extid_value,
-                lookup_error=400),
-            400)
-    except ApiException as ae:
-        if ae.status == 404 or ae.status == 400:
-            return make_response(
-                render_template('creator_lookup.html',
-                    lookup_key=extid,
-                    lookup_value=extid_value,
-                    lookup_error=ae.status),
-                ae.status)
-        else:
-            app.log.info(ae)
-            abort(ae.status)
-    return redirect('/creator/{}'.format(resp.ident))
-
 @app.route('/creator/<ident>', methods=['GET'])
 def creator_view(ident):
     try:
@@ -152,53 +228,6 @@ def creator_view(ident):
         return render_template('deleted_entity.html', entity=entity, entity_type="creator")
     return render_template('creator_view.html', creator=entity, releases=releases)
 
-@app.route('/file/<ident>/history', methods=['GET'])
-def file_history(ident):
-    try:
-        entity = api.get_file(ident)
-        history = api.get_file_history(ident)
-    except ApiException as ae:
-        abort(ae.status)
-    return render_template('entity_history.html',
-        page_title=None,
-        entity_type="file",
-        entity=entity,
-        history=history)
-
-@app.route('/file/lookup', methods=['GET'])
-def file_lookup():
-    extid = None
-    for key in ('md5', 'sha1', 'sha256'):
-        if request.args.get(key):
-            extid = key
-            extid_value = request.args.get(extid)
-            if extid_value:
-                extid_value = extid_value.strip()
-                break
-    if extid is None:
-        return render_template('file_lookup.html')
-    try:
-        resp = api.lookup_file(**{extid: extid_value})
-    except ValueError:
-        return make_response(
-            render_template('file_lookup.html',
-                lookup_key=extid,
-                lookup_value=extid_value,
-                lookup_error=400),
-            400)
-    except ApiException as ae:
-        if ae.status == 404 or ae.status == 400:
-            return make_response(
-                render_template('file_lookup.html',
-                    lookup_key=extid,
-                    lookup_value=extid_value,
-                    lookup_error=ae.status),
-                ae.status)
-        else:
-            app.log.info(ae)
-            abort(ae.status)
-    return redirect('/file/{}'.format(resp.ident))
-
 @app.route('/file/<ident>', methods=['GET'])
 def file_view(ident):
     try:
@@ -210,23 +239,6 @@ def file_view(ident):
     elif entity.state == "deleted":
         return render_template('deleted_entity.html', entity=entity, entity_type="file")
     return render_template('file_view.html', file=entity)
-
-@app.route('/fileset/<ident>/history', methods=['GET'])
-def fileset_history(ident):
-    try:
-        entity = api.get_fileset(ident)
-        history = api.get_fileset_history(ident)
-    except ApiException as ae:
-        abort(ae.status)
-    return render_template('entity_history.html',
-        page_title=None,
-        entity_type="fileset",
-        entity=entity,
-        history=history)
-
-@app.route('/fileset/lookup', methods=['GET'])
-def fileset_lookup():
-    abort(404)
 
 @app.route('/fileset/<ident>', methods=['GET'])
 def fileset_view(ident):
@@ -242,23 +254,6 @@ def fileset_view(ident):
         entity.total_size = sum([f.size for f in entity.manifest])
     return render_template('fileset_view.html', fileset=entity)
 
-@app.route('/webcapture/<ident>/history', methods=['GET'])
-def webcapture_history(ident):
-    try:
-        entity = api.get_webcapture(ident)
-        history = api.get_webcapture_history(ident)
-    except ApiException as ae:
-        abort(ae.status)
-    return render_template('entity_history.html',
-        page_title=None,
-        entity_type="webcapture",
-        entity=entity,
-        history=history)
-
-@app.route('/webcapture/lookup', methods=['GET'])
-def webcapture_lookup():
-    abort(404)
-
 @app.route('/webcapture/<ident>', methods=['GET'])
 def webcapture_view(ident):
     try:
@@ -272,54 +267,6 @@ def webcapture_view(ident):
     entity.wayback_suffix = wayback_suffix(entity)
     #print("SUFFIX: {}".format(entity.wayback_suffix))
     return render_template('webcapture_view.html', webcapture=entity)
-
-@app.route('/release/lookup', methods=['GET'])
-def release_lookup():
-    extid = None
-    for key in ('doi', 'wikidata_qid', 'pmid', 'pmcid', 'isbn13', 'jstor',
-                'arxiv', 'core', 'ark', 'mag'):
-        if request.args.get(key):
-            extid = key
-            extid_value = request.args.get(extid)
-            if extid_value:
-                extid_value = extid_value.strip()
-                break
-    if extid is None:
-        return render_template('release_lookup.html')
-    try:
-        resp = api.lookup_release(**{extid: extid_value})
-    except ValueError:
-        return make_response(
-            render_template('release_lookup.html',
-                lookup_key=extid,
-                lookup_value=extid_value,
-                lookup_error=400),
-            400)
-    except ApiException as ae:
-        if ae.status == 404 or ae.status == 400:
-            return make_response(
-                render_template('release_lookup.html',
-                    lookup_key=extid,
-                    lookup_value=extid_value,
-                    lookup_error=ae.status),
-                ae.status)
-        else:
-            app.log.info(ae)
-            abort(ae.status)
-    return redirect('/release/{}'.format(resp.ident))
-
-@app.route('/release/<ident>/history', methods=['GET'])
-def release_history(ident):
-    try:
-        entity = api.get_release(ident)
-        history = api.get_release_history(ident)
-    except ApiException as ae:
-        abort(ae.status)
-    return render_template('entity_history.html',
-        page_title=entity.title,
-        entity_type="release",
-        entity=entity,
-        history=history)
 
 @app.route('/release/<ident>', methods=['GET'])
 def release_view(ident):
@@ -359,19 +306,6 @@ def release_view(ident):
     return render_template('release_view.html', release=entity,
         authors=authors, container=entity.container)
 
-@app.route('/work/<ident>/history', methods=['GET'])
-def work_history(ident):
-    try:
-        entity = api.get_work(ident)
-        history = api.get_work_history(ident)
-    except ApiException as ae:
-        abort(ae.status)
-    return render_template('entity_history.html',
-        page_title=None,
-        entity_type="work",
-        entity=entity,
-        history=history)
-
 @app.route('/work/<ident>', methods=['GET'])
 def work_view(ident):
     try:
@@ -385,9 +319,7 @@ def work_view(ident):
         return render_template('deleted_entity.html', entity=entity, entity_type="work")
     return render_template('work_view.html', work=entity, releases=releases)
 
-@app.route('/work/lookup', methods=['GET'])
-def work_lookup():
-    abort(404)
+### Views ###################################################################
 
 @app.route('/editgroup/<ident>', methods=['GET'])
 def editgroup_view(ident):
