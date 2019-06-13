@@ -403,9 +403,6 @@ def editgroup_accept(ident):
     except ApiException as ae:
         app.log.info(ae)
         abort(ae.status)
-    # clear active_editgroup_id cookie; this doesn't cover all cases
-    if eg.editgroup_id == session.get('active_editgroup_id'):
-        session.pop('active_editgroup_id')
     return redirect('/editgroup/{}'.format(ident))
 
 @app.route('/editgroup/<ident>/unsubmit', methods=['POST'])

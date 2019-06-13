@@ -43,7 +43,6 @@ def form_editgroup_get_or_create(api, edit_form):
             app.log.warning(ae)
             abort(ae.status)
         # set this session editgroup_id
-        session['active_editgroup_id'] = eg.editgroup_id
         flash('Started new editgroup <a href="/editgroup/{}">{}</a>' \
             .format(eg.editgroup_id, eg.editgroup_id))
     return eg
@@ -168,11 +167,14 @@ def generic_entity_edit(editgroup_id, entity_type, existing_ident, edit_template
             else:
                 raise NotImplementedError
 
-        if not editgroup_id:
-            form.editgroup_id.data = session.get('active_editgroup_id', None)
-
     editor_editgroups = api.get_editor_editgroups(session['editor']['editor_id'], limit=20)
     potential_editgroups = [e for e in editor_editgroups if e.changelog_index == None and e.submitted == None]
+
+    if not form.is_submitted():
+        # default to most recent not submitted, fallback to "create new"
+        form.editgroup_id.data = ""
+        if potential_editgroups:
+            form.editgroup_id.data = potential_editgroups[0].editgroup_id
 
     return render_template(edit_template, form=form,
         existing_ident=existing_ident, editgroup=editgroup,
@@ -260,8 +262,6 @@ def file_create():
             status = 400
             app.log.info("form errors (did not validate): {}".format(form.errors))
     else:
-        editgroup_id = session.get('active_editgroup_id', None)
-        form.editgroup_id.data = editgroup_id
         form.urls.append_entry()
         form.release_ids.append_entry()
     return render_template('file_create.html', form=form), status
@@ -299,8 +299,6 @@ def file_edit(ident):
             app.log.info("form errors (did not validate): {}".format(form.errors))
     else: # not submitted
         form = FileEntityForm.from_entity(entity)
-        editgroup_id = session.get('active_editgroup_id', None)
-        form.editgroup_id.data = editgroup_id
     return render_template('file_edit.html', form=form, entity=entity), status
 
 @app.route('/fileset/<ident>/edit', methods=['GET'])
@@ -354,8 +352,6 @@ def release_create():
             app.log.info("form errors (did not validate): {}".format(form.errors))
     else: # not submitted
         form.contribs.append_entry()
-        editgroup_id = session.get('active_editgroup_id', None)
-        form.editgroup_id.data = editgroup_id
     return render_template('release_create.html', form=form), status
 
 @app.route('/release/<ident>/edit', methods=['GET', 'POST'])
@@ -391,8 +387,6 @@ def release_edit(ident):
             app.log.info("form errors (did not validate): {}".format(form.errors))
     else: # not submitted
         form = ReleaseEntityForm.from_entity(entity)
-        editgroup_id = session.get('active_editgroup_id', None)
-        form.editgroup_id.data = editgroup_id
     return render_template('release_edit.html', form=form, entity=entity), status
 
 @app.route('/work/create', methods=['GET'])
