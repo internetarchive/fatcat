@@ -1,4 +1,4 @@
-{% set entity = release %}
+{% set release = entity %}
 {% set entity_view = "overview" %}
 {% import "entity_macros.html" as entity_macros %}
 {% extends "entity_base.html" %}
@@ -20,7 +20,7 @@
       <meta name="DC.description" content="{{ release.abstracts[0].content }}">
       <meta name="twitter:description" content="{{ release.abstracts[0].content }}">
     {% endif %}
-    {% for author in authors %}
+    {% for author in release._authors %}
       <meta name="DC.creator" content="{{ author.raw_name }}">
       <meta name="citation_author" content="{{ author.raw_name }}">
     {% endfor %}
@@ -75,33 +75,7 @@
 
 {% block main_extra_attr %}itemscope itemtype="http://schema.org/ScholarlyArticle" itemid="#release"{% endblock %}
 
-{% block fullbody %}
-
-<div class="ui stackable mobile reversed grid centered">
-<div class="one wide column"></div>
-<div class="fifteen wide column">
-  <h1 class="ui header">
-    <span itemprop="headline"><span itemprop="name">{{ release.title }}</span></span>
-    {% if release.subtitle %}
-      <br><span style="font-size: smaller; font-weight: normal;">{{ release.subtitle }}</span>
-    {% endif %}
-    <span class="sub header">
-      <code>release {{ release.ident }}</code>
-    </span>
-  </h1>
-  <p style="font-size: larger;">
-  {% if authors != [] %} by {% endif %}
-  {% for contrib in authors[:12] %}
-    {% if contrib.creator_id %}
-      <b><a href="/creator/{{contrib.creator_id}}">{{ contrib.raw_name }}</a></b>{% if not loop.last %}, {% endif %}
-    {% else %}
-      {% if contrib.raw_name != None %}{{ contrib.raw_name }}{% else %}<i>Unknown</i>{% endif %}{% if not loop.last %}, {% endif %}
-    {% endif %}
-  {% endfor %}
-  {% if authors|count > 12 %} <b>(+{{ authors|length - 12 }} others)</b>
-  {% endif %}
-</div>
-</div>
+{% block entity_main %}
 
 <div class="ui stackable mobile reversed grid centered">
 <div class="column" style="font-size: 16px; flex: 1;">
@@ -115,10 +89,10 @@
 <div class="ui accordion">
 <div class="title" itemprop="isPartOf" itemscope itemtype="http://schema.org/Periodical" itemid="#container">
   {% if release.release_stage == 'published' %}
-    <i class="dropdown icon"></i>Published in <a href="/container/{{ container.ident }}"><span itemprop="name">{{ container.name }}</span></a>
+    <i class="dropdown icon"></i>Published in <a href="/container/{{ release.container.ident }}"><span itemprop="name">{{ release.container.name }}</span></a>
   {% else %}
     <i class="dropdown icon"></i>Released as a <i>{{ release.release_type }}</i>
-    {% if container %} in <a href="/container/{{ container.ident }}"><span itemprop="name">{{ container.name }}</span></a> {% endif %}
+    {% if release.container %} in <a href="/container/{{ release.container.ident }}"><span itemprop="name">{{ release.container.name }}</span></a> {% endif %}
   {% endif %}
   {% if release.publisher %}
     by <span itemprop="publisher">{{ release.publisher }}</span>
@@ -134,9 +108,9 @@
       <tr><td class="right aligned">Version</td>
           <td class="">{{ release.version }}
     {% endif %}
-    {% if container != None and container.issnl != None %}
+    {% if release.container != None and release.container.issnl != None %}
       <tr><td class="right aligned">ISSN-L</td>
-          <td class="" itemprop="issn">{{ container.issnl }}
+          <td class="" itemprop="issn">{{ release.container.issnl }}
     {% endif %}
     {% if release.volume != None %}
       <tr itemprop="isPartOf" itemscope itemtype="http://schema.org/PublicationVolume">
@@ -160,9 +134,9 @@
       <tr><td class="right aligned">Release Year</td>
           <td class="">{{ release.release_year }}
     {% endif %}
-    {% if container != None and container.container_type != None %}
+    {% if release.container != None and release.container.container_type != None %}
       <tr><td class="right aligned">Container Type</td>
-          <td class="">{{ container.container_type }}
+          <td class="">{{ release.container.container_type }}
     {% endif %}
     {% if release.publisher != None %}
       <tr><td class="right aligned">Publisher</td>
@@ -179,6 +153,7 @@
 </div>
 </div>
 
+{% if entity.state == 'active' %}
 <h3>Known Files and URLs</h3>
 {% if entity.files != [] %}
 <table class="ui compact fixed table">
@@ -214,14 +189,15 @@
 <p>There are no known files associated with this release (you could try
 <a href="/work/{{ release.work_id }}">other releases for this work?</a>).
 {% endif %}
+{% endif %}
 
-
+{% if entity.state == 'active' %}
 {% if entity.filesets != [] %}
 <h3>File Sets</h3>
 <table class="ui compact fixed table">
   <tbody>
   {% for fileset in entity.filesets %}
-  <tr><td>{{ fileset.manifest|count }} files &nbsp;{{ fileset.total_size|filesizeformat }}
+  <tr><td>{{ fileset.manifest|count }} files &nbsp;{{ fileset._total_size|filesizeformat }}
       <br><small><code><a href="/fileset/{{ fileset.ident }}">fileset:{{ fileset.ident }}</a></code></small>
       <td class="single line">
         {% for url in fileset.urls[:5] %}
@@ -238,8 +214,9 @@
   </tbody>
 </table>
 {% endif %}
+{% endif %}
 
-
+{% if entity.state == 'active' %}
 {% if entity.webcaptures != [] %}
 <h3>Web Captures</h3>
 <table class="ui single line compact fixed table">
@@ -250,7 +227,7 @@
       <br><small><code><a href="/webcapture/{{ webcapture.ident }}">webcapture:{{ webcapture.ident }}</a></code></small>
       <td class="single line">
         {% for url in webcapture.archive_urls[:5] %}
-          <a href="{{ url.url }}{% if url.rel == "wayback" %}{{ webcapture.wayback_suffix }}{% endif %}">{{ url.url.split('/')[2] }}</a> ({{ url.rel }})<br>
+          <a href="{{ url.url }}{% if url.rel == "wayback" %}{{ webcapture._wayback_suffix }}{% endif %}">{{ url.url.split('/')[2] }}</a> ({{ url.rel }})<br>
         {% endfor %}
         {% if webcapture.urls|length > 5 %}
           + {{ file.urls|length - 5 }} more URLs
@@ -259,96 +236,16 @@
   </tbody>
 </table>
 {% endif %}
-
-<h3>Known Files and URLs</h3>
-{% if entity.files != [] %}
-<table class="ui compact fixed table">
-<!--
-  <thead>
-    <tr><th>SHA-1
-        <th>Size (bytes)
-        <th>File Type
-        <th>Links
-  </thead>
--->
-  <tbody>
-  {% for file in entity.files %}
-  <tr><td>{% if file.mimetype != None %}{{ file.mimetype }}&nbsp;&nbsp;{% endif %}
-          {% if file.size != None %}{{ file.size|filesizeformat }}{% endif %}
-      <br><small><code><a href="/file/{{ file.ident }}">
-            {% if file.sha1 != None %}sha1:{{ file.sha1[:20] + "..." }}
-            {% elif file.sha256!= None %}sha256:{{ file.md5[:20] + "..." }}
-            {% elif file.md5 != None %}md5:{{ file.md5[:20] + "..." }}
-            {% endif %}
-        </a></code></small>
-      <td class="single line">
-        {% for url in file.urls[:5] %}
-          <a href="{{ url.url }}">{{ url.url.split('/')[2] }}</a> ({{ url.rel }})<br>
-        {% endfor %}
-        {% if file.urls|length > 5 %}
-          <a href="/file/{{ file.ident }}">+ {{ file.urls|length - 5 }} more URLs</a>
-        {% endif %}
-  {% endfor %}
-  </tbody>
-</table>
-{% else %}
-<p>There are no known files associated with this release (you could try
-<a href="/work/{{ release.work_id }}">other releases for this work?</a>).
-{% endif %}
-
-
-{% if entity.filesets != [] %}
-<h3>File Sets</h3>
-<table class="ui compact fixed table">
-  <tbody>
-  {% for fileset in entity.filesets %}
-  <tr><td>{{ fileset.manifest|count }} files &nbsp;{{ fileset.total_size|filesizeformat }}
-      <br><small><code><a href="/fileset/{{ fileset.ident }}">fileset:{{ fileset.ident }}</a></code></small>
-      <td class="single line">
-        {% for url in fileset.urls[:5] %}
-          {% if url.rel == "dweb" %}
-            <a href="{{ url.url }}">{{ url.url }}</a> ({{ url.rel }})<br>
-          {% else %}
-            <a href="{{ url.url }}">{{ url.url.split('/')[2] }}</a> ({{ url.rel }})<br>
-          {% endif %}
-        {% endfor %}
-        {% if fileset.urls|length > 5 %}
-          + {{ file.urls|length - 5 }} more URLs
-        {% endif %}
-  {% endfor %}
-  </tbody>
-</table>
-{% endif %}
-
-
-{% if entity.webcaptures != [] %}
-<h3>Web Captures</h3>
-<table class="ui single line compact fixed table">
-  <tbody>
-  {% for webcapture in entity.webcaptures %}
-  <tr><td><b><a href="{{ webcapture.original_url }}">{{ webcapture.original_url }}</a></b>
-      <br>{{ webcapture.timestamp.strftime("%Y-%m-%d %H:%M:%S") }} | {{ webcapture.cdx|count }} resources
-      <br><small><code><a href="/webcapture/{{ webcapture.ident }}">webcapture:{{ webcapture.ident }}</a></code></small>
-      <td class="single line">
-        {% for url in webcapture.archive_urls[:5] %}
-          <a href="{{ url.url }}{% if url.rel == "wayback" %}{{ webcapture.wayback_suffix }}{% endif %}">{{ url.url.split('/')[2] }}</a> ({{ url.rel }})<br>
-        {% endfor %}
-        {% if webcapture.urls|length > 5 %}
-          + {{ file.urls|length - 5 }} more URLs
-        {% endif %}
-  {% endfor %}
-  </tbody>
-</table>
 {% endif %}
 
 
 </div>
 <div class="column" style="flex: 0 0 24em;">
 
-{% if entity.files != [] and entity.files[0].urls != [] %}
+{% if entity.state == 'active' and entity.files != [] and entity.files[0].urls != [] %}
 <a href="{{ entity.files[0].urls[0].url }}" class="ui top attached fluid huge green button"><i class="file pdf outline icon"></i>Download Full Text</a>
-{% elif entity.webcaptures != [] and entity.webcaptures[0].archive_urls != [] and entity.webcaptures[0].archive_urls[0].rel == "wayback" %}
-<a href="{{ entity.webcaptures[0].archive_urls[0].url }}{{ entity.webcaptures[0].wayback_suffix }}" class="ui top attached fluid huge green button"><i class="file archive outline icon"></i>View Web Archive</a>
+{% elif entity.state == 'active' and entity.webcaptures != [] and entity.webcaptures[0].archive_urls != [] and entity.webcaptures[0].archive_urls[0].rel == "wayback" %}
+<a href="{{ entity.webcaptures[0].archive_urls[0].url }}{{ entity.webcaptures[0]._wayback_suffix }}" class="ui top attached fluid huge green button"><i class="file archive outline icon"></i>View Web Archive</a>
 {% else %}
 <span class="ui top attached fluid huge grey button"><i class="file cross icon"></i>No Full Text Available</span>
 {% endif %}
@@ -411,36 +308,36 @@
 </div>
 {% endif %}
 
-{% if container != None and container.es %}
+{% if release.container != None and release.container._es %}
 <div class="ui segment attached">
 <b>Container Metadata</b><br>
-{% if container.es.is_oa == True %}
+{% if release.container._es.is_oa == True %}
 <i class="icon unlock orange"></i>Open Access Publication<br>
-{% elif container.es.is_oa == False  %}
+{% elif release.container._es.is_oa == False  %}
 <i class="icon lock black"></i>Not Open Access<br>
 {% else %}
 <i class="icon question grey"></i>Unknown OA Status<br>
 {% endif %}
-{% if (container.es != None) %}
-  {% if container.es.in_doaj == True %}
-    <i class="icon check green"></i> In <a href="https://doaj.org/toc/{{ container.issnl }}">DOAJ</a><br>
-  {% elif container.es.in_doaj == False %}
+{% if (release.container._es != None) %}
+  {% if release.container._es.in_doaj == True %}
+    <i class="icon check green"></i> In <a href="https://doaj.org/toc/{{ release.container.issnl }}">DOAJ</a><br>
+  {% elif release.container._es.in_doaj == False %}
     <i class="icon times grey"></i> Not in <a href="https://doaj.org">DOAJ</a><br>
   {% endif %}
-  {% if container.es.in_road == True %}
-    <i class="icon check green"></i> In <a href="http://road.issn.org/issn/{{ container.issnl }}">ISSN ROAD</a><br>
-  {% elif container.es.in_road == False %}
+  {% if release.container._es.in_road == True %}
+    <i class="icon check green"></i> In <a href="http://road.issn.org/issn/{{ release.container.issnl }}">ISSN ROAD</a><br>
+  {% elif release.container._es.in_road == False %}
     <i class="icon times grey"></i> Not in <a href="https://road.issn.org">ISSN ROAD</a><br>
   {% endif %}
-  {% if container.es.in_kbart == True %}
-    <i class="icon check green"></i> In <a href="https://thekeepers.org/purl/issn/{{ container.issnl }}">Keepers Registery</a><br>
-  {% elif container.es.in_kbart == False %} <i class="icon times grey"></i> Not in <a href="https://thekeepers.org/journals?query={{ container.issnl }}">Keepers Registry</a><br>
+  {% if release.container._es.in_kbart == True %}
+    <i class="icon check green"></i> In <a href="https://thekeepers.org/purl/issn/{{ release.container.issnl }}">Keepers Registery</a><br>
+  {% elif release.container._es.in_kbart == False %} <i class="icon times grey"></i> Not in <a href="https://thekeepers.org/journals?query={{ release.container.issnl }}">Keepers Registry</a><br>
   {% endif %}
 {% endif %}
-{% if container.issnl != None %}
-  <i class="icon linkify"></i>ISSN-L: &nbsp;<code>{{ container.issnl }}</code><br>
+{% if release.container.issnl != None %}
+  <i class="icon linkify"></i>ISSN-L: &nbsp;<code>{{ release.container.issnl }}</code><br>
 {% endif %}
-  <a href="/container/{{ container.ident }}" title="container {{ container.ident }}"><i class="icon share"></i>Fatcat Entry</a>
+  <a href="/container/{{ release.container.ident }}" title="container {{ release.container.ident }}"><i class="icon share"></i>Fatcat Entry</a>
 </div>
 {% endif %}
 
@@ -467,8 +364,8 @@
 <div class="ui segment attached accordion">
   <div class="title" style="padding: 0px;"><i class="dropdown icon"></i><b>Lookup Links</b></div>
   <div class="content">
-  {% if container != None and container.issnl != None %}
-    <a href="http://www.sherpa.ac.uk/romeo/issn/{{ container.issnl }}/">SHERPA/RoMEO</a> (journal policies)<br/>
+  {% if release.container != None and release.container.issnl != None %}
+    <a href="http://www.sherpa.ac.uk/romeo/issn/{{ release.container.issnl }}/">SHERPA/RoMEO</a> (journal policies)<br/>
   {% endif %}
   {% if release != None and release.ext_ids.doi != None %}
     <a href="https://oadoi.org/{{ release.ext_ids.doi }}">oaDOI/unpaywall</a><br/>
@@ -489,7 +386,7 @@
 </div>
 </div>
 
-{{ entity_macros.fatcat_bits(entity, "release", "container,files,filesets,webcaptures") }}
+{{ entity_macros.fatcat_bits(entity, "release", "container,files,filesets,webcaptures", editgroup) }}
 
 </div>
 </div>

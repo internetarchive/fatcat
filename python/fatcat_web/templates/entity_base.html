@@ -22,15 +22,15 @@
         </h1>
         {% if entity_type == "release" %}
           <p style="font-size: larger;">
-          {% if authors and authors != [] %} by
-            {% for contrib in authors[:12] %}
+          {% if entity._authors and entity._authors != [] %} by
+            {% for contrib in entity._authors[:12] %}
               {% if contrib.creator_id %}
                 <b><a href="/creator/{{contrib.creator_id}}">{{ contrib.raw_name }}</a></b>{% if not loop.last %}, {% endif %}
               {% else %}
                 {% if contrib.raw_name != None %}{{ contrib.raw_name }}{% else %}<i>Unknown</i>{% endif %}{% if not loop.last %}, {% endif %}
               {% endif %}
             {% endfor %}
-            {% if authors|count > 12 %} <b>(+{{ authors|length - 12 }} others)</b>
+            {% if entity._authors|count > 12 %} <b>(+{{ entity._authors|length - 12 }} others)</b>
             {% endif %}
             <br>
           {% endif %}
@@ -39,7 +39,7 @@
           <div class="ui small tabular compact menu">
             {{ entity_tab("overview", "Overview", "") }}
             {% if entity_type == "release" %}
-              {{ entity_tab("contribs", "Authors", "/contribs", authors|count ) }}
+              {{ entity_tab("contribs", "Authors", "/contribs", entity._authors|count ) }}
               {{ entity_tab("references", "References", "/references", entity.refs|count) }}
             {% endif %}
             {{ entity_tab("metadata", "Metadata", "/metadata") }}

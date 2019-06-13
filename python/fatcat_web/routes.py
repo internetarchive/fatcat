@@ -203,7 +203,7 @@ def generic_entity_view(entity_type, ident, view_template):
     metadata.pop('extra')
     entity._metadata = metadata
 
-    return render_template(view_template, entity=entity, editgroup_id=None)
+    return render_template(view_template, entity_type=entity_type, entity=entity, editgroup_id=None)
 
 def generic_editgroup_entity_view(editgroup_id, entity_type, ident, view_template):
     try:
@@ -217,7 +217,7 @@ def generic_editgroup_entity_view(editgroup_id, entity_type, ident, view_templat
         return render_template('deleted_entity.html', entity=entity,
             entity_type=entity_type, editgroup=editgroup)
 
-    return render_template(view_template, entity=entity, editgroup=editgroup)
+    return render_template(view_template, entity_type=entity_type, entity=entity, editgroup=editgroup)
 
 
 @app.route('/container/<ident>', methods=['GET'])
