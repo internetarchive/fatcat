@@ -1,7 +1,18 @@
 
-{% macro fatcat_bits(entity, entity_type, expand="") -%}
+{% macro fatcat_bits(entity, entity_type, expand="", editgroup=None) -%}
 
-{% if entity.state == "wip" %}
+{% if entity.state == None and editgroup.editgroup_id %}
+<div class="ui segment pink inverted attached">
+  <b>Edit In Progress</b>
+  <p>You are viewing this entity as of a specific editgroup (which may or may not have been merged yet):
+  <b><a href="/editgroup/{{ editgroup.editgroup_id }}">{{ editgroup.editgroup_id }}</a></b>
+</div>
+{% elif entity.state == None and entity.ident == None %}
+<div class="ui segment pink inverted attached">
+  <b>Revision</b>
+  <p>You are viewing a specific revision of an entity.
+</div>
+{% elif entity.state == "wip" %}
 <div class="ui segment pink inverted attached">
   <b>Work In Progress</b>
   <p>This entity has not been "accepted" into the official database yet.
@@ -19,7 +30,7 @@
 </div>
 
 <div class="two ui buttons bottom attached">
-  <a href="/{{ entity_type }}/{{ entity.ident }}/edit" class="ui blue button">Edit Metadata</a>
+  <a href="{% if editgroup %}/editgroup/{{ editgroup.editgroup_id }}{% endif %}/{{ entity_type }}/{{ entity.ident }}/edit" class="ui blue button">Edit Metadata</a>
   <a href="/{{ entity_type }}/{{ entity.ident }}/history" class="ui button">View History</a>
 </div>
 {%- endmacro %}

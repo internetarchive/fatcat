@@ -13,6 +13,7 @@ from fatcat_web.auth import handle_token_login, handle_logout, load_user, handle
 from fatcat_web.cors import crossdomain
 from fatcat_web.search import *
 from fatcat_web.forms import *
+from fatcat_web.entity_helpers import *
 
 
 ### Helper Methods ##########################################################
@@ -49,80 +50,177 @@ def form_editgroup_get_or_create(api, edit_form):
 
 ### Views ###################################################################
 
-@app.route('/container/create', methods=['GET', 'POST'])
-@login_required
-def container_create():
-    form = ContainerEntityForm()
+def generic_entity_edit(entity_type, edit_template, existing_ident, editgroup_id):
+    """
+
+    existing (entity)
+
+    Create: existing blank, ident blank, editgroup optional
+    Update: ident set
+
+    Need to handle:
+    - editgroup not set (need to create one)
+    - creating entity from form
+    - updating an existing ident
+    - updating an existing editgroup/ident
+
+    Views:
+    - /container/create
+    - /container/<ident>/edit
+    - /editgroup/<editgroup_id>/container/<ident>/edit
+
+    Helpers:
+    - get_editgroup_revision(editgroup, entity_type, ident) -> None or entity
+    
+    TODO: prev_rev interlock
+    """
+
+    # fetch editgroup (if set) or 404
+    editgroup = None
+    if editgroup_id:
+        try:
+            editgroup = api.get_editgroup(editgroup_id)
+        except ApiException as ae:
+            abort(ae.status)
+
+    # fetch entity (if set) or 404
+    existing = None
+    existing_edit = None
+    if editgroup and existing_ident:
+        existing, existing_edit = generic_get_editgroup_entity(editgroup, entity_type, existing_ident)
+    elif existing_ident:
+        existing = generic_get_entity(entity_type, existing_ident)
+
+    # parse form (if submitted)
     status = 200
+    if entity_type == 'container':
+        form = ContainerEntityForm()
+    else:
+        raise NotImplementedError
+
     if form.is_submitted():
         if form.validate_on_submit():
             # API on behalf of user
             user_api = auth_api(session['api_token'])
-            eg = form_editgroup_get_or_create(user_api, form)
-            if eg:
-                # no merge or anything hard to do; just create the entity
-                entity = form.to_entity()
-                try:
-                    edit = user_api.create_container(eg.editgroup_id, entity)
-                except ApiException as ae:
-                    app.log.warning(ae)
-                    abort(ae.status)
-                # redirect to new entity
-                return redirect('/container/{}'.format(edit.ident))
+            if not editgroup:
+                editgroup = form_editgroup_get_or_create(user_api, form)
+
+            if editgroup:
+                # check that editgroup is edit-able
+                if editgroup.changelog_index != None:
+                    flash("Editgroup already merged")
+                    abort(400)
+
+                if not existing_ident: # it's a create
+                    entity = form.to_entity()
+                    try:
+                        if entity_type == 'container':
+                            edit = user_api.create_container(editgroup.editgroup_id, entity)
+                        else:
+                            raise NotImplementedError
+                    except ApiException as ae:
+                        app.log.warning(ae)
+                        abort(ae.status)
+                    return redirect('/editgroup/{}/{}/{}'.format(editgroup.editgroup_id, entity_type, edit.ident))
+                else: # it's an update
+                    # all the tricky logic is in the update method
+                    form.update_entity(existing)
+                    # do we need to try to delete the current in-progress edit first?
+                    # TODO: some danger of wiping database state here is
+                    # "updated edit" causes, eg, a 4xx error. Better to allow
+                    # this in the API itself. For now, form validation *should*
+                    # catch most errors, and if not editor can hit back and try
+                    # again. This means, need to allow failure of deletion.
+                    if existing_edit:
+                        # need to clear revision on object or this becomes just
+                        # a "update pointer" edit
+                        existing.revision = None
+                        try:
+                            if entity_type == 'container':
+                                user_api.delete_container_edit(editgroup.editgroup_id, existing_edit.edit_id)
+                            else:
+                                raise NotImplementedError
+                        except ApiException as ae:
+                            if ae.status == 404:
+                                pass
+                            else:
+                                abort(ae.status)
+                    try:
+                        if entity_type == 'container':
+                            edit = user_api.update_container(editgroup.editgroup_id, existing.ident, existing)
+                        else:
+                            raise NotImplementedError
+                    except ApiException as ae:
+                        app.log.warning(ae)
+                        abort(ae.status)
+                    return redirect('/editgroup/{}/{}/{}'.format(editgroup.editgroup_id, entity_type, edit.ident))
             else:
                 status = 400
         elif form.errors:
             status = 400
             app.log.info("form errors (did not validate): {}".format(form.errors))
-    else:
-        editgroup_id = session.get('active_editgroup_id', None)
-        form.editgroup_id.data = editgroup_id
-    return render_template('container_create.html', form=form), status
+
+    else: # form is not submitted
+        if existing:
+            if entity_type == 'container':
+                form = ContainerEntityForm.from_entity(existing)
+            else:
+                raise NotImplementedError
+
+        if not editgroup_id:
+            form.editgroup_id.data = session.get('active_editgroup_id', None)
+
+    return render_template(edit_template, form=form,
+        existing_ident=existing_ident, editgroup=editgroup), status
+
+def generic_edit_delete(entity_type, editgroup_id, edit_id):
+    # fetch editgroup (if set) or 404
+    editgroup = None
+    if editgroup_id:
+        try:
+            editgroup = api.get_editgroup(editgroup_id)
+        except ApiException as ae:
+            abort(ae.status)
+
+    # API on behalf of user
+    user_api = auth_api(session['api_token'])
+    
+    # do the deletion
+    try:
+        if entity_type == 'container':
+            user_api.delete_container_edit(editgroup.editgroup_id, edit_id)
+        else:
+            raise NotImplementedError
+    except ApiException as ae:
+        if ae.status == 404:
+            pass
+        else:
+            abort(ae.status)
+    return redirect("/editgroup/{}".format(editgroup_id))
+
+
+@app.route('/container/create', methods=['GET', 'POST'])
+@login_required
+def container_create():
+    return generic_entity_edit('container', 'container_create.html', None, None)
 
 @app.route('/container/<ident>/edit', methods=['GET', 'POST'])
 @login_required
 def container_edit(ident):
-    # TODO: prev_rev interlock
-    try:
-        entity = api.get_container(ident)
-    except ApiException as ae:
-        abort(ae.status)
-    status = 200
-    form = ContainerEntityForm()
-    if form.is_submitted():
-        if form.validate_on_submit():
-            # API on behalf of user
-            user_api = auth_api(session['api_token'])
-            eg = form_editgroup_get_or_create(user_api, form)
-            if eg:
-                # all the tricky logic is in the update method
-                form.update_entity(entity)
-                try:
-                    edit = user_api.update_container(eg.editgroup_id, entity.ident, entity)
-                except ApiException as ae:
-                    app.log.warning(ae)
-                    abort(ae.status)
-                # redirect to entity revision
-                # TODO: container_rev_view
-                return redirect('/container/{}'.format(edit.ident))
-            else:
-                status = 400
-        elif form.errors:
-            status = 400
-            app.log.info("form errors (did not validate): {}".format(form.errors))
-    else:
-        form = ContainerEntityForm.from_entity(entity)
-    if not form.is_submitted():
-        editgroup_id = session.get('active_editgroup_id', None)
-        form.editgroup_id.data = editgroup_id
-    return render_template('container_edit.html', form=form, entity=entity), status
+    return generic_entity_edit('container', 'container_edit.html', ident, None)
+
+@app.route('/editgroup/<editgroup_id>/container/<ident>/edit', methods=['GET', 'POST'])
+@login_required
+def container_editgroup_edit(editgroup_id, ident):
+    return generic_entity_edit('container', 'container_edit.html', ident, editgroup_id)
+
+@app.route('/editgroup/<editgroup_id>/container/edit/<edit_id>/delete', methods=['POST', 'DELETE'])
+@login_required
+def container_edit_delete(editgroup_id, edit_id):
+    return generic_edit_delete('container', editgroup_id, edit_id)
 
 @app.route('/creator/<ident>/edit', methods=['GET'])
 def creator_edit(ident):
-    try:
-        entity = api.get_creator(ident)
-    except ApiException as ae:
-        abort(ae.status)
     return render_template('entity_edit.html'), 404
 
 @app.route('/creator/create', methods=['GET'])

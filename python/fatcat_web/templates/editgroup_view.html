@@ -3,7 +3,7 @@
 
 {% block body %}
 
-{% macro edit_list(edits, entity_type, entity_name) -%}
+{% macro edit_list(auth_to, editgroup, edits, entity_type, entity_name) -%}
 <div class="{% if edits %}active{% endif %} title">
   <h3><i class="dropdown icon"></i>{{ entity_name }} Edits ({{ edits|count }})</h3>
 </div><div class="{% if edits %}active{% endif %} content" style="padding-bottom: 0.5em;">
@@ -21,6 +21,14 @@
             created
           {% else %}
             updated
+          {% endif %}
+          <a href="/editgroup/{{ editgroup.editgroup_id }}/{{ entity_type }}/{{ edit.ident }}">[view edit]</a>
+          {% if auth_to.edit and not editgroup.changelog_index and not editgroup.submitted %}
+            <a href="/editgroup/{{ editgroup.editgroup_id }}/{{ entity_type }}/{{ edit.ident }}/edit" style="color: green;">[re-edit]</a>
+            <form id="submit_edit_delete" method="POST" action="/editgroup/{{ editgroup.editgroup_id }}/{{ entity_type }}/edit/{{ edit.edit_id }}/delete" style="display:inline;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <input type="submit" value="[delete-edit]" style="background:none; color: red; border: none; padding:9;font-weight:bold;cursor:pointer;"></input>
+            </form>
           {% endif %}
         </div>
         {% if edit.revision %}
@@ -99,13 +107,13 @@ reviewable bundle.
 <br><br clear="all">
 
 <div class="ui styled fluid accordion">
-  {{ edit_list(editgroup.edits.releases, "release", "Release") }}
-  {{ edit_list(editgroup.edits.works, "work", "Work") }}
-  {{ edit_list(editgroup.edits.containers, "container", "Container") }}
-  {{ edit_list(editgroup.edits.creators, "creator", "Creator") }}
-  {{ edit_list(editgroup.edits.files, "file", "File") }}
-  {{ edit_list(editgroup.edits.filesets, "fileset", "File Set") }}
-  {{ edit_list(editgroup.edits.webcaptures, "webcapture", "Web Capture") }}
+  {{ edit_list(auth_to, editgroup, editgroup.edits.releases, "release", "Release") }}
+  {{ edit_list(auth_to, editgroup, editgroup.edits.works, "work", "Work") }}
+  {{ edit_list(auth_to, editgroup, editgroup.edits.containers, "container", "Container") }}
+  {{ edit_list(auth_to, editgroup, editgroup.edits.creators, "creator", "Creator") }}
+  {{ edit_list(auth_to, editgroup, editgroup.edits.files, "file", "File") }}
+  {{ edit_list(auth_to, editgroup, editgroup.edits.filesets, "fileset", "File Set") }}
+  {{ edit_list(auth_to, editgroup, editgroup.edits.webcaptures, "webcapture", "Web Capture") }}
 </div>
 
 <br>

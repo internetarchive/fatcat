@@ -14,6 +14,7 @@ from fatcat_web.auth import handle_token_login, handle_logout, load_user, handle
 from fatcat_web.cors import crossdomain
 from fatcat_web.search import *
 from fatcat_web.hacks import strip_extlink_xml, wayback_suffix
+from fatcat_web.entity_helpers import *
 
 
 ### Generic Entity Views ####################################################
@@ -192,10 +193,7 @@ def work_lookup():
 
 @app.route('/container/<ident>', methods=['GET'])
 def container_view(ident):
-    try:
-        entity = api.get_container(ident)
-    except ApiException as ae:
-        abort(ae.status)
+    entity = generic_get_entity('container', ident)
 
     if entity.issnl:
         try:
@@ -213,7 +211,23 @@ def container_view(ident):
     if entity.state == "active":
         entity.es = container_to_elasticsearch(entity, force_bool=False)
     return render_template('container_view.html',
-        container=entity, container_stats=stats)
+        container=entity, editgroup_id=None, container_stats=stats)
+
+@app.route('/container/rev/<revision_id>', methods=['GET'])
+def container_revision_view(ident):
+    entity = generic_get_entity_revision('container', revision_id)
+    return render_template('container_view.html', container=entity, editgroup=None)
+
+@app.route('/editgroup/<editgroup_id>/container/<ident>', methods=['GET'])
+def container_editgroup_view(editgroup_id, ident):
+    try:
+        editgroup = api.get_editgroup(editgroup_id)
+    except ApiException as ae:
+        abort(ae.status)
+    entity, edit = generic_get_editgroup_entity(editgroup, 'container', ident)
+    if entity.state == "deleted":
+        return render_template('deleted_entity.html', entity=entity, entity_type="container", editgroup=editgroup)
+    return render_template('container_view.html', container=entity, editgroup=editgroup)
 
 @app.route('/creator/<ident>', methods=['GET'])
 def creator_view(ident):
@@ -333,6 +347,7 @@ def editgroup_view(ident):
     auth_to = dict(
         submit=False,
         accept=False,
+        edit=False,
         annotate=False,
     )
     if session.get('editor'):
@@ -340,6 +355,7 @@ def editgroup_view(ident):
         auth_to['annotate'] = True
         if user.is_admin or user.editor_id == eg.editor_id:
             auth_to['submit'] = True
+            auth_to['edit'] = True
         if user.is_admin:
             auth_to['accept'] = True
     return render_template('editgroup_view.html', editgroup=eg,

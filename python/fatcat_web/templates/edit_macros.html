@@ -35,13 +35,13 @@
 </div>
 {%- endmacro %}
 
-{% macro editgroup_dropdown(form) -%}
+{% macro editgroup_dropdown(form, editgroup=None) -%}
   <div class="ui accordion">
-    <div class="{% if not editgroup_id %}active{% endif %} title">
+    <div class="{% if not editgroup %}active{% endif %} title">
       <h3><i class="dropdown icon"></i>Editgroup Meta</h3>
     </div>
-    <div class="{% if not editgroup_id %}active{% endif %} content">
-      {% if editgroup_id %}
+    <div class="{% if not editgroup %}active{% endif %} content">
+      {% if editgroup %}
         <p>You have an editgroup in progress, and this edit will be included by
         default. You can override this below.
       {% else %}

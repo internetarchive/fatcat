@@ -6,12 +6,12 @@
 <div class="ui segment">
 <h1 class="ui header">Edit Container Entity</h1>
 
-<form class="ui form" id="edit_container_form" method="POST" action="/container/{{ entity.ident }}/edit">
+<form class="ui form" id="edit_container_form" method="POST" action="{% if editgroup %}/editgroup/{{ editgroup.editgroup_id }}{% endif %}/container/{{ existing_ident }}/edit">
 {% endblock %}
   {{ form.hidden_tag() }}
 
   <br>
-  {{ edit_macros.editgroup_dropdown(form) }}
+  {{ edit_macros.editgroup_dropdown(form, editgroup) }}
 
   <h3 class="ui dividing header">The Basics</h3>
   <br>
