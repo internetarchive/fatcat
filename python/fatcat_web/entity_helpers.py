@@ -17,6 +17,16 @@ def generic_get_entity(entity_type, ident):
     except ApiException as ae:
         abort(ae.status)
 
+def generic_get_entity_revision(entity_type, revision_id):
+    try:
+        if entity_type == 'container':
+            entity = api.get_container_revision(revision_id)
+            return entity
+        else:
+            raise NotImplementedError
+    except ApiException as ae:
+        abort(ae.status)
+
 def generic_get_editgroup_entity(editgroup, entity_type, ident):
     if entity_type == 'container':
         edits = editgroup.edits.containers

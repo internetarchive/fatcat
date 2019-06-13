@@ -214,7 +214,7 @@ def container_view(ident):
         container=entity, editgroup_id=None, container_stats=stats)
 
 @app.route('/container/rev/<revision_id>', methods=['GET'])
-def container_revision_view(ident):
+def container_revision_view(revision_id):
     entity = generic_get_entity_revision('container', revision_id)
     return render_template('container_view.html', container=entity, editgroup=None)
 
