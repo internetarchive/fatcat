@@ -10,8 +10,8 @@
 {% endblock %}
   {{ form.hidden_tag() }}
 
-  <br>
-  {{ edit_macros.editgroup_dropdown(form, editgroup) }}
+  <h3 class="ui dividing header">Editgroup</h3>
+  {{ edit_macros.editgroup_dropdown(form, editgroup, potential_editgroups) }}
 
   <h3 class="ui dividing header">The Basics</h3>
   <br>
@@ -71,6 +71,7 @@
 $(document).ready(function() {
 
   $('.ui.accordion').accordion();
+  $('.ui.dropdown') .dropdown();
 
   var fixup_url_numbering = function(group_item) {
     items = Array.from(group_item.querySelectorAll(".list-group-item"))

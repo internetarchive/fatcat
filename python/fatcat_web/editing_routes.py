@@ -50,7 +50,7 @@ def form_editgroup_get_or_create(api, edit_form):
 
 ### Views ###################################################################
 
-def generic_entity_edit(entity_type, edit_template, existing_ident, editgroup_id):
+def generic_entity_edit(editgroup_id, entity_type, existing_ident, edit_template):
     """
 
     existing (entity)
@@ -83,6 +83,11 @@ def generic_entity_edit(entity_type, edit_template, existing_ident, editgroup_id
         except ApiException as ae:
             abort(ae.status)
 
+        # check that editgroup is edit-able
+        if editgroup.changelog_index != None:
+            flash("Editgroup already merged")
+            abort(400)
+
     # fetch entity (if set) or 404
     existing = None
     existing_edit = None
@@ -106,10 +111,6 @@ def generic_entity_edit(entity_type, edit_template, existing_ident, editgroup_id
                 editgroup = form_editgroup_get_or_create(user_api, form)
 
             if editgroup:
-                # check that editgroup is edit-able
-                if editgroup.changelog_index != None:
-                    flash("Editgroup already merged")
-                    abort(400)
 
                 if not existing_ident: # it's a create
                     entity = form.to_entity()
@@ -170,10 +171,14 @@ def generic_entity_edit(entity_type, edit_template, existing_ident, editgroup_id
         if not editgroup_id:
             form.editgroup_id.data = session.get('active_editgroup_id', None)
 
-    return render_template(edit_template, form=form,
-        existing_ident=existing_ident, editgroup=editgroup), status
+    editor_editgroups = api.get_editor_editgroups(session['editor']['editor_id'], limit=20)
+    potential_editgroups = [e for e in editor_editgroups if e.changelog_index == None and e.submitted == None]
 
-def generic_edit_delete(entity_type, editgroup_id, edit_id):
+    return render_template(edit_template, form=form,
+        existing_ident=existing_ident, editgroup=editgroup,
+        potential_editgroups=potential_editgroups), status
+
+def generic_edit_delete(editgroup_id, entity_type, edit_id):
     # fetch editgroup (if set) or 404
     editgroup = None
     if editgroup_id:
@@ -181,6 +186,11 @@ def generic_edit_delete(entity_type, editgroup_id, edit_id):
             editgroup = api.get_editgroup(editgroup_id)
         except ApiException as ae:
             abort(ae.status)
+
+        # check that editgroup is edit-able
+        if editgroup.changelog_index != None:
+            flash("Editgroup already merged")
+            abort(400)
 
     # API on behalf of user
     user_api = auth_api(session['api_token'])
@@ -192,32 +202,29 @@ def generic_edit_delete(entity_type, editgroup_id, edit_id):
         else:
             raise NotImplementedError
     except ApiException as ae:
-        if ae.status == 404:
-            pass
-        else:
-            abort(ae.status)
+        abort(ae.status)
     return redirect("/editgroup/{}".format(editgroup_id))
 
 
 @app.route('/container/create', methods=['GET', 'POST'])
 @login_required
 def container_create():
-    return generic_entity_edit('container', 'container_create.html', None, None)
+    return generic_entity_edit(None, 'container', None, 'container_create.html')
 
 @app.route('/container/<ident>/edit', methods=['GET', 'POST'])
 @login_required
 def container_edit(ident):
-    return generic_entity_edit('container', 'container_edit.html', ident, None)
+    return generic_entity_edit(None, 'container', ident, 'container_edit.html')
 
 @app.route('/editgroup/<editgroup_id>/container/<ident>/edit', methods=['GET', 'POST'])
 @login_required
 def container_editgroup_edit(editgroup_id, ident):
-    return generic_entity_edit('container', 'container_edit.html', ident, editgroup_id)
+    return generic_entity_edit(editgroup_id, 'container', ident, 'container_edit.html')
 
-@app.route('/editgroup/<editgroup_id>/container/edit/<edit_id>/delete', methods=['POST', 'DELETE'])
+@app.route('/editgroup/<editgroup_id>/container/edit/<edit_id>/delete', methods=['POST'])
 @login_required
 def container_edit_delete(editgroup_id, edit_id):
-    return generic_edit_delete('container', editgroup_id, edit_id)
+    return generic_edit_delete(editgroup_id, 'container', edit_id)
 
 @app.route('/creator/<ident>/edit', methods=['GET'])
 def creator_edit(ident):

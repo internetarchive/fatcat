@@ -35,22 +35,38 @@
 </div>
 {%- endmacro %}
 
-{% macro editgroup_dropdown(form, editgroup=None) -%}
-  <div class="ui accordion">
-    <div class="{% if not editgroup %}active{% endif %} title">
-      <h3><i class="dropdown icon"></i>Editgroup Meta</h3>
-    </div>
-    <div class="{% if not editgroup %}active{% endif %} content">
-      {% if editgroup %}
-        <p>You have an editgroup in progress, and this edit will be included by
-        default. You can override this below.
-      {% else %}
-        <p>No existing editgroup is in progress (or at least, not is selected).
-        An existing ID can be pasted in, or if you leave that blank but give a
-        description, a new editgroup will be created for this edit.
-      {% endif %}
-      {{ form_field_inline(form.editgroup_id) }}
+{% macro editgroup_dropdown(form, editgroup=None, potential_editgroups=None) -%}
+  {% if editgroup %}
+    <p>You are updating an existing un-merged editgroup: <a href="/editgroup/{{ editgroup.editgroup_id}}">{{ editgroup.editgroup_id }}</a>.
+    <p><b>Description:</b> {{ editgroup.description }}
+  {% else %}
+    {% if not potential_editgroups %}
+      <p>You have no un-submitted editgroups in progress; a new one will be
+      created. You can add a description for the whole group of edits:
       {{ form_field_inline(form.editgroup_description) }}
-    </div>
-  </div>
+    {% else %}
+      <p>Select an in-progress editgroup for this change to be part of (or start a new one):
+
+        <div class="ui fluid selection dropdown">
+          <input type="hidden" id="editgroup_id" name="editgroup_id" value="{{ form.editgroup_id.data }}">
+          <i class="dropdown icon"></i>
+          <div class="default text">Select Editgroup</div>
+          <div class="menu">
+            {% for peg in potential_editgroups %}
+              <div class="item" data-value="{{ peg.editgroup_id }}">
+                  <div class="right floated">{{ peg.created }}</div>
+                  <code><b>editgroup_{{ peg.editgroup_id }}</b></code>
+                  {% if peg.description %}
+                    <br>{{ peg.description[:200] }}
+                  {% endif %}
+              </div>
+            {% endfor %}
+            <div class="item" data-value=""><b>Start New Editgroup</b></div>
+          </div>
+        </div>
+
+      <p>If starting a new editgroup, you can add a description for the whole group:
+      {{ form_field_inline(form.editgroup_description) }}
+    {% endif %}
+  {% endif %}
 {%- endmacro %}
