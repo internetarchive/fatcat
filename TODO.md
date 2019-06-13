@@ -6,13 +6,24 @@
 - update existing 1.5 mil longtail OA PDFs with container/ISSN-L
 - use collapsing fields in default release search
     => start using elasticsearch-py
-- lookup landing pages
 - cleanup 'None' file links
 - update editing flow
-    => implement and use "in progress" views
-    => allow re-editing of in-progress edits
+    x  after edit, redirect to ident under editgroup ("in progress")
+        /editgroup/<editgroup_id>/release/<ident>
+    x  "edit edit"
+        /editgroup/<editgroup_id>/release/<ident>/edit
+    x  "delete edit"
+    ?  "delete entity" (later, along with merge)
+    x  improve editgroup selection/management
+        => "current edits" drop-down
+        => skip the cookie
+    x  for all entity types
+    => merge master
+    => rebase/finish/merge UI changes
+    => edit flow polish (messages, etc)
 - generic query endpoint; tries to find identifiers (including fatcat
   identifiers) and lookup, else does release search
+  new homepage: numbers link to /stats
 
 ## Bugs
 
