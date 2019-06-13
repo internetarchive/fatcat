@@ -32,7 +32,7 @@
           {% endif %}
         </div>
         {% if edit.revision %}
-          Revision: <small><code>{{ edit.revision }}</code></small>
+          Revision: <small><code><a href="/{{ entity_type }}/rev/{{ edit.revision }}">{{ edit.revision }}</a></code></small>
         {% endif %}
         {% if edit.extra %}
           <b>Extra Metadata (raw JSON)</b>

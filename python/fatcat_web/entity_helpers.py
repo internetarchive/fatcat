@@ -32,6 +32,7 @@ def generic_get_editgroup_entity(editgroup, entity_type, ident):
         edits = editgroup.edits.containers
     else:
         raise NotImplementedError
+    revision_id = None
     for e in edits:
         if e.ident == ident:
             revision_id = e.revision
