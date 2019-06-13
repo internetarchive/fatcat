@@ -6,12 +6,12 @@
 <div class="ui segment">
 <h1 class="ui header">Edit Release Entity</h1>
 
-<form class="ui form" id="edit_release_form" method="POST" action="/release/{{ entity.ident }}/edit">
+<form class="ui form" id="edit_release_form" method="POST" action="{% if editgroup %}/editgroup/{{ editgroup.editgroup_id }}{% endif %}/release/{{ existing_ident }}/edit">
 {% endblock %}
   {{ form.hidden_tag() }}
 
-  <br>
-  {{ edit_macros.editgroup_dropdown(form) }}
+  <h3 class="ui dividing header">Editgroup Metadata</h3>
+  {{ edit_macros.editgroup_dropdown(form, editgroup, potential_editgroups) }}
 
   <br>
   <h3 class="ui dividing header">The Basics</h3>
@@ -134,7 +134,7 @@ $(document).ready(function() {
   // form focusing (eg, for required fields) :(
   //$('#release_type').dropdown();
   //$('#release_stage').dropdown();
-  $('.ui.accordion').accordion();
+  $('.ui.dropdown') .dropdown();
 
   var fixup_contrib_numbering = function(group_item) {
     items = Array.from(group_item.querySelectorAll(".list-group-item"))

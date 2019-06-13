@@ -13,7 +13,6 @@ from fatcat_web import app, api, auth_api, priv_api, mwoauth
 from fatcat_web.auth import handle_token_login, handle_logout, load_user, handle_ia_xauth, handle_wmoauth
 from fatcat_web.cors import crossdomain
 from fatcat_web.search import *
-from fatcat_web.hacks import strip_extlink_xml, wayback_suffix
 from fatcat_web.entity_helpers import *
 
 
@@ -189,149 +188,125 @@ def release_lookup():
 def work_lookup():
     abort(404)
 
-### Entity Views ############################################################
+### More Generic Entity Views ###############################################
 
-@app.route('/container/<ident>', methods=['GET'])
-def container_view(ident):
-    entity = generic_get_entity('container', ident)
-
-    if entity.issnl:
-        try:
-            stats = get_elastic_container_stats(entity.issnl)
-        except Exception as e:
-            stats = None
-            app.log.error(e)
-    else:
-        stats = None
+def generic_entity_view(entity_type, ident, view_template):
+    entity = generic_get_entity(entity_type, ident)
 
     if entity.state == "redirect":
-        return redirect('/container/{}'.format(entity.redirect))
-    if entity.state == "deleted":
-        return render_template('deleted_entity.html', entity=entity, entity_type="container")
-    if entity.state == "active":
-        entity.es = container_to_elasticsearch(entity, force_bool=False)
-    return render_template('container_view.html',
-        container=entity, editgroup_id=None, container_stats=stats)
+        return redirect('/{}/{}'.format(entity_type, entity.redirect))
+    elif entity.state == "deleted":
+        return render_template('deleted_entity.html', entity_type=entity_type, entity=entity)
 
-@app.route('/container/rev/<revision_id>', methods=['GET'])
-def container_revision_view(revision_id):
-    entity = generic_get_entity_revision('container', revision_id)
-    return render_template('container_view.html', container=entity, editgroup=None)
+    return render_template(view_template, entity=entity, editgroup_id=None)
 
-@app.route('/editgroup/<editgroup_id>/container/<ident>', methods=['GET'])
-def container_editgroup_view(editgroup_id, ident):
+def generic_editgroup_entity_view(editgroup_id, entity_type, ident, view_template):
     try:
         editgroup = api.get_editgroup(editgroup_id)
     except ApiException as ae:
         abort(ae.status)
-    entity, edit = generic_get_editgroup_entity(editgroup, 'container', ident)
+
+    entity, edit = generic_get_editgroup_entity(editgroup, entity_type, ident)
+
     if entity.state == "deleted":
-        return render_template('deleted_entity.html', entity=entity, entity_type="container", editgroup=editgroup)
-    return render_template('container_view.html', container=entity, editgroup=editgroup)
+        return render_template('deleted_entity.html', entity=entity,
+            entity_type=entity_type, editgroup=editgroup)
+
+    return render_template(view_template, entity=entity, editgroup=editgroup)
+
+
+@app.route('/container/<ident>', methods=['GET'])
+def container_view(ident):
+    return generic_entity_view('container', ident, 'container_view.html')
+
+@app.route('/container/rev/<revision_id>', methods=['GET'])
+def container_revision_view(revision_id):
+    entity = generic_get_entity_revision('container', revision_id)
+    return render_template('container_view.html', entity=entity, editgroup=None)
+
+@app.route('/editgroup/<editgroup_id>/container/<ident>', methods=['GET'])
+def container_editgroup_view(editgroup_id, ident):
+    return generic_editgroup_entity_view(editgroup_id, 'container', ident, 'container_view.html')
+
 
 @app.route('/creator/<ident>', methods=['GET'])
 def creator_view(ident):
-    try:
-        entity = api.get_creator(ident)
-        releases = api.get_creator_releases(ident)
-    except ApiException as ae:
-        abort(ae.status)
-    if entity.state == "redirect":
-        return redirect('/creator/{}'.format(entity.redirect))
-    if entity.state == "deleted":
-        return render_template('deleted_entity.html', entity=entity, entity_type="creator")
-    return render_template('creator_view.html', creator=entity, releases=releases)
+    return generic_entity_view('creator', ident, 'creator_view.html')
+
+@app.route('/creator/rev/<revision_id>', methods=['GET'])
+def creator_revision_view(revision_id):
+    entity = generic_get_entity_revision('creator', revision_id)
+    return render_template('creator_view.html', creator=entity, editgroup=None)
+
+@app.route('/editgroup/<editgroup_id>/creator/<ident>', methods=['GET'])
+def creator_editgroup_view(editgroup_id, ident):
+    return generic_editgroup_entity_view(editgroup_id, 'creator', ident, 'creator_view.html')
 
 @app.route('/file/<ident>', methods=['GET'])
 def file_view(ident):
-    try:
-        entity = api.get_file(ident, expand="releases")
-    except ApiException as ae:
-        abort(ae.status)
-    if entity.state == "redirect":
-        return redirect('/file/{}'.format(entity.redirect))
-    elif entity.state == "deleted":
-        return render_template('deleted_entity.html', entity=entity, entity_type="file")
-    return render_template('file_view.html', file=entity)
+    return generic_entity_view('file', ident, 'file_view.html')
+
+@app.route('/file/rev/<revision_id>', methods=['GET'])
+def file_revision_view(revision_id):
+    entity = generic_get_entity_revision('file', revision_id)
+    return render_template('file_view.html', entity=entity, editgroup=None)
+
+@app.route('/editgroup/<editgroup_id>/file/<ident>', methods=['GET'])
+def file_editgroup_view(editgroup_id, ident):
+    return generic_editgroup_entity_view(editgroup_id, 'file', ident, 'file_view.html')
 
 @app.route('/fileset/<ident>', methods=['GET'])
 def fileset_view(ident):
-    try:
-        entity = api.get_fileset(ident, expand="releases")
-    except ApiException as ae:
-        abort(ae.status)
-    if entity.state == "redirect":
-        return redirect('/fileset/{}'.format(entity.redirect))
-    elif entity.state == "deleted":
-        return render_template('deleted_entity.html', entity=entity, entity_type="fileset")
-    else:
-        entity.total_size = sum([f.size for f in entity.manifest])
-    return render_template('fileset_view.html', fileset=entity)
+    return generic_entity_view('fileset', ident, 'fileset_view.html')
+
+@app.route('/fileset/rev/<revision_id>', methods=['GET'])
+def fileset_revision_view(revision_id):
+    entity = generic_get_entity_revision('fileset', revision_id)
+    return render_template('fileset_view.html', entity=entity, editgroup=None)
+
+@app.route('/editgroup/<editgroup_id>/fileset/<ident>', methods=['GET'])
+def fileset_editgroup_view(editgroup_id, ident):
+    return generic_editgroup_entity_view(editgroup_id, 'fileset', ident, 'fileset_view.html')
 
 @app.route('/webcapture/<ident>', methods=['GET'])
 def webcapture_view(ident):
-    try:
-        entity = api.get_webcapture(ident, expand="releases")
-    except ApiException as ae:
-        abort(ae.status)
-    if entity.state == "redirect":
-        return redirect('/webcapture/{}'.format(entity.redirect))
-    elif entity.state == "deleted":
-        return render_template('deleted_entity.html', entity=entity, entity_type="webcapture")
-    entity.wayback_suffix = wayback_suffix(entity)
-    #print("SUFFIX: {}".format(entity.wayback_suffix))
-    return render_template('webcapture_view.html', webcapture=entity)
+    return generic_entity_view('webcapture', ident, 'webcapture_view.html')
+
+@app.route('/webcapture/rev/<revision_id>', methods=['GET'])
+def webcapture_revision_view(revision_id):
+    entity = generic_get_entity_revision('webcapture', revision_id)
+    return render_template('webcapture_view.html', entity=entity, editgroup=None)
+
+@app.route('/editgroup/<editgroup_id>/webcapture/<ident>', methods=['GET'])
+def webcapture_editgroup_view(editgroup_id, ident):
+    return generic_editgroup_entity_view(editgroup_id, 'webcapture', ident, 'webcapture_view.html')
 
 @app.route('/release/<ident>', methods=['GET'])
 def release_view(ident):
-    try:
-        entity = api.get_release(ident, expand="container,files,filesets,webcaptures")
-    except ApiException as ae:
-        abort(ae.status)
-    if entity.state == "redirect":
-        return redirect('/release/{}'.format(entity.redirect))
-    if entity.state == "deleted":
-        return render_template('deleted_entity.html', entity=entity, entity_type="release")
-    if entity.container and entity.container.state == "active":
-        entity.container.es = container_to_elasticsearch(entity.container, force_bool=False)
-    if entity.state == "active":
-        entity.es = release_to_elasticsearch(entity, force_bool=False)
-    for fs in entity.filesets:
-        fs.total_size = sum([f.size for f in fs.manifest])
-    for wc in entity.webcaptures:
-        wc.wayback_suffix = wayback_suffix(wc)
-    for ref in entity.refs:
-        # this is a UI hack to get rid of XML crud in unstructured refs like:
-        # LOCKSS (2014) Available: <ext-link
-        # xmlns:xlink="http://www.w3.org/1999/xlink" ext-link-type="uri"
-        # xlink:href="http://lockss.org/"
-        # xlink:type="simple">http://lockss.org/</ext-link>. Accessed: 2014
-        # November 1.
-        if ref.extra and ref.extra.get('unstructured'):
-            ref.extra['unstructured'] = strip_extlink_xml(ref.extra['unstructured'])
-    # author list to display; ensure it's sorted by index (any othors with
-    # index=None go to end of list)
-    authors = [c for c in entity.contribs if c.role in ('author', None)]
-    authors = sorted(authors, key=lambda c: (c.index == None and 99999999) or c.index)
-    # hack to show plain text instead of latex abstracts
-    if entity.abstracts:
-        if 'latex' in entity.abstracts[0].mimetype:
-            entity.abstracts.reverse()
-    return render_template('release_view.html', release=entity,
-        authors=authors, container=entity.container)
+    return generic_entity_view('release', ident, 'release_view.html')
+
+@app.route('/release/rev/<revision_id>', methods=['GET'])
+def release_revision_view(revision_id):
+    entity = generic_get_entity_revision('release', revision_id)
+    return render_template('release_view.html', entity=entity, editgroup=None)
+
+@app.route('/editgroup/<editgroup_id>/release/<ident>', methods=['GET'])
+def release_editgroup_view(editgroup_id, ident):
+    return generic_editgroup_entity_view(editgroup_id, 'release', ident, 'release_view.html')
 
 @app.route('/work/<ident>', methods=['GET'])
 def work_view(ident):
-    try:
-        entity = api.get_work(ident)
-        releases = api.get_work_releases(ident)
-    except ApiException as ae:
-        abort(ae.status)
-    if entity.state == "redirect":
-        return redirect('/work/{}'.format(entity.redirect))
-    if entity.state == "deleted":
-        return render_template('deleted_entity.html', entity=entity, entity_type="work")
-    return render_template('work_view.html', work=entity, releases=releases)
+    return generic_entity_view('work', ident, 'work_view.html')
+
+@app.route('/work/rev/<revision_id>', methods=['GET'])
+def work_revision_view(revision_id):
+    entity = generic_get_entity_revision('work', revision_id)
+    return render_template('work_view.html', entity=entity, editgroup=None)
+
+@app.route('/editgroup/<editgroup_id>/work/<ident>', methods=['GET'])
+def work_editgroup_view(editgroup_id, ident):
+    return generic_editgroup_entity_view(editgroup_id, 'work', ident, 'work_view.html')
+
 
 ### Views ###################################################################
 

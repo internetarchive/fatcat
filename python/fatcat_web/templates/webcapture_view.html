@@ -1,4 +1,4 @@
-{% set entity = webcapture %}
+{% set webcapture = entity %}
 {% import "entity_macros.html" as entity_macros %}
 {% extends "base.html" %}
 
@@ -36,7 +36,7 @@
 <br>
 <h3>Archive URLs</h3>
 {% if webcapture.archive_urls != None %}
-  {{ entity_macros.url_list(webcapture.archive_urls, webcapture.wayback_suffix) }}
+  {{ entity_macros.url_list(webcapture.archive_urls, webcapture._wayback_suffix) }}
 {% else %}
 No known public archive for this webcapture.
 {% endif %}
@@ -78,7 +78,7 @@ This web capture is empty (contains no resources).
 </div>
 {% endif %}
 
-{{ entity_macros.fatcat_bits(entity, "webcapture", "") }}
+{{ entity_macros.fatcat_bits(entity, "webcapture", "", editgroup) }}
 
 </div>
 </div>

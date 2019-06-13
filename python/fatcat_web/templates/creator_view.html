@@ -1,4 +1,4 @@
-{% set entity = creator %}
+{% set creator = entity %}
 {% import "entity_macros.html" as entity_macros %}
 {% extends "base.html" %}
 
@@ -38,9 +38,9 @@
 
 <br>
 <h3>Releases</h3>
-{% if releases != [] %}
+{% if creator._releases != [] %}
   <p>This creator has contributed to:
-  {{ entity_macros.release_list(releases) }}
+  {{ entity_macros.release_list(creator._releases) }}
 {% else %}
 This creator has not contributed to any releases.
 {% endif %}
@@ -68,7 +68,7 @@ This creator has not contributed to any releases.
 <br><a href="https://scholar.google.com/scholar?q={{ creator.display_name|urlencode }}">Google Scholar</a>
 </div>
 
-{{ entity_macros.fatcat_bits(entity, "creator", "") }}
+{{ entity_macros.fatcat_bits(entity, "creator", "", editgroup) }}
 
 </div>
 </div>

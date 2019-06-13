@@ -1,4 +1,4 @@
-{% set entity = container %}
+{% set container = entity %}
 {% import "entity_macros.html" as entity_macros %}
 {% extends "base.html" %}
 
@@ -50,9 +50,9 @@
 <div class="five wide column">
 <div class="ui segment top attached">
 
-{% if container.es and container.es.is_oa == True %}
+{% if container._es and container._es.is_oa == True %}
 <i class="icon unlock huge orange"></i><b>Open Access Publisher</b>
-{% elif container.es and container.es.is_oa == False  %}
+{% elif container._es and container._es.is_oa == False  %}
 <i class="icon lock huge black"></i><b>Not Open Access</b>
 {% else %}
 <i class="icon question huge grey"></i><b>Unknown OA Status</b>
@@ -77,37 +77,37 @@
   </div><div class="ui segment attached">
 {% endif %}
 
-{% if container_stats %}
+{% if container._stats %}
 <b>Release Counts</b><br>
-  {{ "{:,}".format(container_stats.total) }} total
-  {% if container_stats.total >= 1 %}
-    <br>{{ "{:,}".format(container_stats.is_preserved) }}
-    (<b>{{ "{:.1f}".format(container_stats.is_preserved/container_stats.total*100) }}%</b>) 
+  {{ "{:,}".format(container._stats.total) }} total
+  {% if container._stats.total >= 1 %}
+    <br>{{ "{:,}".format(container._stats.is_preserved) }}
+    (<b>{{ "{:.1f}".format(container._stats.is_preserved/container._stats.total*100) }}%</b>) 
     preserved or archived
-    <br>{{ "{:,}".format(container_stats.in_web) }}
-    (<b>{{ "{:.1f}".format(container_stats.in_web/container_stats.total*100) }}%</b>) 
+    <br>{{ "{:,}".format(container._stats.in_web) }}
+    (<b>{{ "{:.1f}".format(container._stats.in_web/container._stats.total*100) }}%</b>) 
     fulltext available to read
   {% endif %}
 </div><div class="ui segment attached">
 {% endif %}
 
-{% if (container.es and container.es != None) %}
+{% if (container._es and container._es != None) %}
 <b>Directory Listings</b><br>
-  {% if container.es.in_doaj == True %}
+  {% if container._es.in_doaj == True %}
     <i class="icon check green"></i> In <a href="https://doaj.org/toc/{{ container.issnl }}">DOAJ</a><br>
-  {% elif container.es.in_doaj == False %}
+  {% elif container._es.in_doaj == False %}
     <i class="icon times grey"></i> Not in <a href="https://doaj.org">DOAJ</a><br>
   {% endif %}
 
-  {% if container.es.in_road == True %}
+  {% if container._es.in_road == True %}
     <i class="icon check green"></i> In <a href="http://road.issn.org/issn/{{ container.issnl }}">ISSN ROAD</a><br>
-  {% elif container.es.in_road == False %}
+  {% elif container._es.in_road == False %}
     <i class="icon times grey"></i> Not in <a href="https://road.issn.org">ISSN ROAD</a><br>
   {% endif %}
 
-  {% if container.es.in_kbart == True %}
+  {% if container._es.in_kbart == True %}
     <i class="icon check green"></i> In <a href="https://thekeepers.org/purl/issn/{{ container.issnl }}">Keepers Registery</a><br>
-  {% elif container.es.in_kbart == False %}
+  {% elif container._es.in_kbart == False %}
     <i class="icon times grey"></i> Not in <a href="https://thekeepers.org/journals?query={{ container.issnl }}">Keepers Registry</a><br>
   {% endif %}
 

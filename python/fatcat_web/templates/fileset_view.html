@@ -1,4 +1,4 @@
-{% set entity = fileset %}
+{% set fileset = entity %}
 {% import "entity_macros.html" as entity_macros %}
 {% extends "base.html" %}
 
@@ -64,13 +64,13 @@ No known public URL, mirror, or archive for this File Set.
 </div>
 <div class="five wide column">
 
-{% if fileset.total_size != None %}
+{% if fileset._total_size != None %}
 <div class="ui segment attached">
-  <p><b>Total Size</b> &nbsp;{{ fileset.total_size|filesizeformat }}
+  <p><b>Total Size</b> &nbsp;{{ fileset._total_size|filesizeformat }}
 </div>
 {% endif %}
 
-{{ entity_macros.fatcat_bits(entity, "fileset", "") }}
+{{ entity_macros.fatcat_bits(entity, "fileset", "", editgroup) }}
 
 </div>
 </div>

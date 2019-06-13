@@ -1,4 +1,4 @@
-{% set entity = work %}
+{% set work = entity %}
 {% import "entity_macros.html" as entity_macros %}
 {% extends "base.html" %}
 
@@ -22,8 +22,8 @@
 {% endif %}
 
 <h3>Releases</h3>
-{% if releases != [] %}
-  {{ entity_macros.release_list(releases) }}
+{% if work._releases != [] and work._releases != None %}
+  {{ entity_macros.release_list(work._releases) }}
 {% else %}
 <p>There are no known releases associated with this work.
 {% endif %}
@@ -42,7 +42,7 @@ reference the same underlying "work".
 
 <div class="five wide column">
 
-{{ entity_macros.fatcat_bits(entity, "work", "") }}
+{{ entity_macros.fatcat_bits(entity, "work", "", editgroup) }}
 
 </div>
 </div>

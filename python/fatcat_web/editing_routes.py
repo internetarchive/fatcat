@@ -47,8 +47,6 @@ def form_editgroup_get_or_create(api, edit_form):
             .format(eg.editgroup_id, eg.editgroup_id))
     return eg
 
-### Views ###################################################################
-
 def generic_entity_edit(editgroup_id, entity_type, existing_ident, edit_template):
     """
 
@@ -99,6 +97,10 @@ def generic_entity_edit(editgroup_id, entity_type, existing_ident, edit_template
     status = 200
     if entity_type == 'container':
         form = ContainerEntityForm()
+    elif entity_type == 'file':
+        form = FileEntityForm()
+    elif entity_type == 'release':
+        form = ReleaseEntityForm()
     else:
         raise NotImplementedError
 
@@ -116,6 +118,10 @@ def generic_entity_edit(editgroup_id, entity_type, existing_ident, edit_template
                     try:
                         if entity_type == 'container':
                             edit = user_api.create_container(editgroup.editgroup_id, entity)
+                        elif entity_type == 'file':
+                            edit = user_api.create_file(editgroup.editgroup_id, entity)
+                        elif entity_type == 'release':
+                            edit = user_api.create_release(editgroup.editgroup_id, entity)
                         else:
                             raise NotImplementedError
                     except ApiException as ae:
@@ -138,6 +144,10 @@ def generic_entity_edit(editgroup_id, entity_type, existing_ident, edit_template
                         try:
                             if entity_type == 'container':
                                 user_api.delete_container_edit(editgroup.editgroup_id, existing_edit.edit_id)
+                            elif entity_type == 'file':
+                                user_api.delete_file_edit(editgroup.editgroup_id, existing_edit.edit_id)
+                            elif entity_type == 'release':
+                                user_api.delete_release_edit(editgroup.editgroup_id, existing_edit.edit_id)
                             else:
                                 raise NotImplementedError
                         except ApiException as ae:
@@ -148,6 +158,10 @@ def generic_entity_edit(editgroup_id, entity_type, existing_ident, edit_template
                     try:
                         if entity_type == 'container':
                             edit = user_api.update_container(editgroup.editgroup_id, existing.ident, existing)
+                        elif entity_type == 'file':
+                            edit = user_api.update_file(editgroup.editgroup_id, existing.ident, existing)
+                        elif entity_type == 'release':
+                            edit = user_api.update_release(editgroup.editgroup_id, existing.ident, existing)
                         else:
                             raise NotImplementedError
                     except ApiException as ae:
@@ -164,6 +178,10 @@ def generic_entity_edit(editgroup_id, entity_type, existing_ident, edit_template
         if existing:
             if entity_type == 'container':
                 form = ContainerEntityForm.from_entity(existing)
+            elif entity_type == 'file':
+                form = FileEntityForm.from_entity(existing)
+            elif entity_type == 'release':
+                form = ReleaseEntityForm.from_entity(existing)
             else:
                 raise NotImplementedError
 
@@ -201,6 +219,10 @@ def generic_edit_delete(editgroup_id, entity_type, edit_id):
     try:
         if entity_type == 'container':
             user_api.delete_container_edit(editgroup.editgroup_id, edit_id)
+        elif entity_type == 'file':
+            user_api.delete_file_edit(editgroup.editgroup_id, edit_id)
+        elif entity_type == 'release':
+            user_api.delete_release_edit(editgroup.editgroup_id, edit_id)
         else:
             raise NotImplementedError
     except ApiException as ae:
@@ -208,9 +230,11 @@ def generic_edit_delete(editgroup_id, entity_type, edit_id):
     return redirect("/editgroup/{}".format(editgroup_id))
 
 
+### Views ###################################################################
+
 @app.route('/container/create', methods=['GET', 'POST'])
 @login_required
-def container_create():
+def container_create_view():
     return generic_entity_edit(None, 'container', None, 'container_create.html')
 
 @app.route('/container/<ident>/edit', methods=['GET', 'POST'])
@@ -228,175 +252,110 @@ def container_editgroup_edit(editgroup_id, ident):
 def container_edit_delete(editgroup_id, edit_id):
     return generic_edit_delete(editgroup_id, 'container', edit_id)
 
-@app.route('/creator/<ident>/edit', methods=['GET'])
-def creator_edit(ident):
-    return render_template('entity_edit.html'), 404
+@app.route('/file/create', methods=['GET', 'POST'])
+@login_required
+def file_create_view():
+    return generic_entity_edit(None, 'file', None, 'file_create.html')
+
+@app.route('/file/<ident>/edit', methods=['GET', 'POST'])
+@login_required
+def file_edit(ident):
+    return generic_entity_edit(None, 'file', ident, 'file_edit.html')
+
+@app.route('/editgroup/<editgroup_id>/file/<ident>/edit', methods=['GET', 'POST'])
+@login_required
+def file_editgroup_edit(editgroup_id, ident):
+    return generic_entity_edit(editgroup_id, 'file', ident, 'file_edit.html')
+
+@app.route('/editgroup/<editgroup_id>/file/edit/<edit_id>/delete', methods=['POST'])
+@login_required
+def file_edit_delete(editgroup_id, edit_id):
+    return generic_edit_delete(editgroup_id, 'file', edit_id)
+
+@app.route('/release/create', methods=['GET', 'POST'])
+@login_required
+def release_create_view():
+    return generic_entity_edit(None, 'release', None, 'release_create.html')
+
+@app.route('/release/<ident>/edit', methods=['GET', 'POST'])
+@login_required
+def release_edit(ident):
+    return generic_entity_edit(None, 'release', ident, 'release_edit.html')
+
+@app.route('/editgroup/<editgroup_id>/release/<ident>/edit', methods=['GET', 'POST'])
+@login_required
+def release_editgroup_edit(editgroup_id, ident):
+    return generic_entity_edit(editgroup_id, 'release', ident, 'release_edit.html')
+
+@app.route('/editgroup/<editgroup_id>/release/edit/<edit_id>/delete', methods=['POST'])
+@login_required
+def release_edit_delete(editgroup_id, edit_id):
+    return generic_edit_delete(editgroup_id, 'release', edit_id)
+
+
+### Not-Implemented Views ###################################################
 
 @app.route('/creator/create', methods=['GET'])
 def creator_create_view():
     return abort(404)
 
-@app.route('/file/create', methods=['GET', 'POST'])
-@login_required
-def file_create():
-    form = FileEntityForm()
-    status = 200
-    if form.is_submitted():
-        if form.validate_on_submit():
-            # API on behalf of user
-            user_api = auth_api(session['api_token'])
-            eg = form_editgroup_get_or_create(user_api, form)
-            if eg:
-                # no merge or anything hard to do; just create the entity
-                entity = form.to_entity()
-                try:
-                    edit = user_api.create_file(eg.editgroup_id, entity)
-                except ApiException as ae:
-                    app.log.warning(ae)
-                    abort(ae.status)
-                # redirect to new entity
-                return redirect('/file/{}'.format(edit.ident))
-            else:
-                status = 400
-        elif form.errors:
-            status = 400
-            app.log.info("form errors (did not validate): {}".format(form.errors))
-    else:
-        form.urls.append_entry()
-        form.release_ids.append_entry()
-    return render_template('file_create.html', form=form), status
-
-@app.route('/file/<ident>/edit', methods=['GET', 'POST'])
-@login_required
-def file_edit(ident):
-    # TODO: prev_rev interlock
-    try:
-        entity = api.get_file(ident)
-    except ApiException as ae:
-        abort(ae.status)
-    status = 200
-    form = FileEntityForm()
-    if form.is_submitted():
-        if form.validate_on_submit():
-            # API on behalf of user
-            user_api = auth_api(session['api_token'])
-            eg = form_editgroup_get_or_create(user_api, form)
-            if eg:
-                # all the tricky logic is in the update method
-                form.update_entity(entity)
-                try:
-                    edit = user_api.update_file(eg.editgroup_id, entity.ident, entity)
-                except ApiException as ae:
-                    app.log.warning(ae)
-                    abort(ae.status)
-                # redirect to entity revision
-                # TODO: file_rev_view
-                return redirect('/file/{}'.format(edit.ident))
-            else:
-                status = 400
-        elif form.errors:
-            status = 400
-            app.log.info("form errors (did not validate): {}".format(form.errors))
-    else: # not submitted
-        form = FileEntityForm.from_entity(entity)
-    return render_template('file_edit.html', form=form, entity=entity), status
-
-@app.route('/fileset/<ident>/edit', methods=['GET'])
-def fileset_edit(ident):
-    try:
-        entity = api.get_fileset(ident)
-    except ApiException as ae:
-        abort(ae.status)
+@app.route('/creator/<ident>/edit', methods=['GET'])
+def creator_edit(ident):
     return render_template('entity_edit.html'), 404
+
+@app.route('/editgroup/<editgroup_id>/creator/<ident>/edit', methods=['GET', 'POST'])
+def creator_editgroup_edit(editgroup_id, ident):
+    return abort(404)
+
+@app.route('/editgroup/<editgroup_id>/creator/edit/<edit_id>/delete', methods=['POST'])
+def creator_edit_delete(editgroup_id, edit_id):
+    return abort(404)
 
 @app.route('/fileset/create', methods=['GET'])
 def fileset_create_view():
     return abort(404)
 
-@app.route('/webcapture/<ident>/edit', methods=['GET'])
-def webcapture_edit(ident):
-    try:
-        entity = api.get_webcapture(ident)
-    except ApiException as ae:
-        abort(ae.status)
+@app.route('/fileset/<ident>/edit', methods=['GET'])
+def fileset_edit(ident):
     return render_template('entity_edit.html'), 404
+
+@app.route('/editgroup/<editgroup_id>/fileset/<ident>/edit', methods=['GET', 'POST'])
+def fileset_editgroup_edit(editgroup_id, ident):
+    return abort(404)
+
+@app.route('/editgroup/<editgroup_id>/fileset/edit/<edit_id>/delete', methods=['POST'])
+def fileset_edit_delete(editgroup_id, edit_id):
+    return abort(404)
 
 @app.route('/webcapture/create', methods=['GET'])
 def webcapture_create_view():
     return abort(404)
 
-@app.route('/release/create', methods=['GET', 'POST'])
-@login_required
-def release_create():
-    form = ReleaseEntityForm()
-    status = 200
-    if form.is_submitted():
-        if form.validate_on_submit():
-            # API on behalf of user
-            user_api = auth_api(session['api_token'])
-            eg = form_editgroup_get_or_create(user_api, form)
-            if eg:
-                # no merge or anything hard to do; just create the entity
-                entity = form.to_entity()
-                try:
-                    edit = user_api.create_release(eg.editgroup_id, entity)
-                except ApiException as ae:
-                    app.log.warning(ae)
-                    abort(ae.status)
-                # redirect to new release
-                return redirect('/release/{}'.format(edit.ident))
-            else:
-                status = 400
-        elif form.errors:
-            status = 400
-            app.log.info("form errors (did not validate): {}".format(form.errors))
-    else: # not submitted
-        form.contribs.append_entry()
-    return render_template('release_create.html', form=form), status
+@app.route('/webcapture/<ident>/edit', methods=['GET'])
+def webcapture_edit(ident):
+    return render_template('entity_edit.html'), 404
 
-@app.route('/release/<ident>/edit', methods=['GET', 'POST'])
-@login_required
-def release_edit(ident):
-    # TODO: prev_rev interlock
-    try:
-        entity = api.get_release(ident)
-    except ApiException as ae:
-        abort(ae.status)
-    status = 200
-    form = ReleaseEntityForm()
-    if form.is_submitted():
-        if form.validate_on_submit():
-            # API on behalf of user
-            user_api = auth_api(session['api_token'])
-            eg = form_editgroup_get_or_create(user_api, form)
-            if eg:
-                # all the tricky logic is in the update method
-                form.update_entity(entity)
-                try:
-                    edit = user_api.update_release(eg.editgroup_id, entity.ident, entity)
-                except ApiException as ae:
-                    app.log.warning(ae)
-                    abort(ae.status)
-                # redirect to entity revision
-                # TODO: release_rev_view
-                return redirect('/release/{}'.format(edit.ident))
-            else:
-                status = 400
-        elif form.errors:
-            status = 400
-            app.log.info("form errors (did not validate): {}".format(form.errors))
-    else: # not submitted
-        form = ReleaseEntityForm.from_entity(entity)
-    return render_template('release_edit.html', form=form, entity=entity), status
+@app.route('/editgroup/<editgroup_id>/webcapture/<ident>/edit', methods=['GET', 'POST'])
+def webcapture_editgroup_edit(editgroup_id, ident):
+    return abort(404)
+
+@app.route('/editgroup/<editgroup_id>/webcapture/edit/<edit_id>/delete', methods=['POST'])
+def webcapture_edit_delete(editgroup_id, edit_id):
+    return abort(404)
 
 @app.route('/work/create', methods=['GET'])
 def work_create_view():
     return abort(404)
 
 @app.route('/work/<ident>/edit', methods=['GET'])
-def work_edit_view(ident):
-    try:
-        entity = api.get_work(ident)
-    except ApiException as ae:
-        abort(ae.status)
+def work_edit(ident):
     return render_template('entity_edit.html'), 404
+
+@app.route('/editgroup/<editgroup_id>/work/<ident>/edit', methods=['GET', 'POST'])
+def work_editgroup_edit(editgroup_id, ident):
+    return abort(404)
+
+@app.route('/editgroup/<editgroup_id>/work/edit/<edit_id>/delete', methods=['POST'])
+def work_edit_delete(editgroup_id, edit_id):
+    return abort(404)
+

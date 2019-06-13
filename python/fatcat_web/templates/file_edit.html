@@ -6,12 +6,12 @@
 <div class="ui segment">
 <h1 class="ui header">Edit File Entity</h1>
 
-<form class="ui form" id="edit_file_form" method="POST" action="/file/{{ entity.ident }}/edit">
+<form class="ui form" id="edit_file_form" method="POST" action="{% if editgroup %}/editgroup/{{ editgroup.editgroup_id }}{% endif %}/file/{{ existing_ident }}/edit">
 {% endblock %}
   {{ form.hidden_tag() }}
 
-  <br>
-  {{ edit_macros.editgroup_dropdown(form) }}
+  <h3 class="ui dividing header">Editgroup Metadata</h3>
+  {{ edit_macros.editgroup_dropdown(form, editgroup, potential_editgroups) }}
 
   <br>
   <h3 class="ui dividing header">File Metadata</h3>
@@ -103,7 +103,7 @@
 <!-- Form code -->
 $(document).ready(function() {
 
-  $('.ui.accordion').accordion();
+  $('.ui.dropdown') .dropdown();
 
   var fixup_url_numbering = function(group_item) {
     items = Array.from(group_item.querySelectorAll(".list-group-item"))

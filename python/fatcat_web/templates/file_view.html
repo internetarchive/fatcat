@@ -1,4 +1,4 @@
-{% set entity = file %}
+{% set file = entity %}
 {% import "entity_macros.html" as entity_macros %}
 {% extends "base.html" %}
 
@@ -75,7 +75,7 @@ No known public URL, mirror, or archive for this file.
 </div>
 {% endif %}
 
-{{ entity_macros.fatcat_bits(entity, "file", "") }}
+{{ entity_macros.fatcat_bits(entity, "file", "", editgroup) }}
 
 </div>
 </div>
