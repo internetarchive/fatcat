@@ -102,6 +102,12 @@ def test_web_container(app):
     assert rv.status_code == 302
     rv = app.get('/container/create')
     assert rv.status_code == 302
+    rv = app.get('/container/rev/00000000-0000-0000-1111-fff000000002')
+    assert rv.status_code == 200
+    rv = app.get('/editgroup/aaaaaaaaaaaabo53aaaaaaaaaq/container/aaaaaaaaaaaaaeiraaaaaaaaai')
+    assert rv.status_code == 200
+    rv = app.get('/editgroup/aaaaaaaaaaaabo53aaaaaaaaaq/container/aaaaaaaaaaaaaeiraaaaaaaaai/edit')
+    assert rv.status_code == 302
 
 
 def test_web_container_login(full_app, app_admin):
