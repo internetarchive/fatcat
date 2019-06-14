@@ -68,7 +68,7 @@
           </div>
           {% if entity.ident %}
             <div class="ui small tabular compact menu floated right">
-              {% if not editgroup or not (editgroup.changelog_index or editgroup.submitted ) %}
+              {% if (not editgroup and entity.state != 'wip') or not (editgroup.changelog_index or editgroup.submitted ) %}
                 {{ entity_tab("edit", "Edit", "/edit") }}
               {% endif %}
               {% if not editgroup %}

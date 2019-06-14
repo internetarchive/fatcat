@@ -408,11 +408,6 @@ macro_rules! generic_db_update {
         fn db_update(&self, conn: &DbConn, edit_context: &EditContext, ident: FatcatId) -> Result<Self::EditRow> {
             let current: Self::IdentRow = $ident_table::table.find(ident.to_uuid()).first(conn)?;
             let no_redirect: Option<Uuid> = None;
-            // TODO: is this actually true? or should we allow updates in the same editgroup?
-            if current.is_live != true {
-                return Err(FatcatError::InvalidEntityStateTransform(
-                    "can't update an entity that doesn't exist yet".to_string()).into());
-            }
             // Don't set prev_rev if current status is redirect
             let prev_rev = match current.redirect_id {
                 Some(_) => None,
@@ -503,7 +498,7 @@ macro_rules! generic_db_delete {
             let current: Self::IdentRow = $ident_table::table.find(ident.to_uuid()).first(conn)?;
             if current.is_live != true {
                 return Err(FatcatError::InvalidEntityStateTransform(
-                    "can't update an entity that doesn't exist yet; delete edit object instead"
+                    "can't delete an entity that doesn't exist yet; delete edit object instead"
                         .to_string(),
                 )
                 .into());
