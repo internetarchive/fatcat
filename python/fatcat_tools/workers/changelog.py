@@ -83,7 +83,7 @@ class EntityUpdatesWorker(FatcatWorker):
             managed=True,
             auto_offset_reset=OffsetType.LATEST,
             reset_offset_on_start=False,
-            fetch_message_max_bytes=4000000, # up to ~4MBytes
+            fetch_message_max_bytes=10000000, # up to ~10 MBytes
             auto_commit_enable=True,
             auto_commit_interval_ms=30000, # 30 seconds
             compacted_topic=True,

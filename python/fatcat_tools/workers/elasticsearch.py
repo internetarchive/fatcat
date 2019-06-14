@@ -35,7 +35,7 @@ class ElasticsearchReleaseWorker(FatcatWorker):
         consumer = consume_topic.get_balanced_consumer(
             consumer_group=self.consumer_group,
             managed=True,
-            fetch_message_max_bytes=4000000, # up to ~4MBytes
+            fetch_message_max_bytes=10000000, # up to ~10 MBytes
             auto_commit_enable=True,
             auto_commit_interval_ms=30000, # 30 seconds
             compacted_topic=True,
