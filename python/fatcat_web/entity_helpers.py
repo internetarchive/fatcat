@@ -100,7 +100,7 @@ def generic_get_entity(entity_type, ident):
         elif entity_type == 'release':
             return enrich_release_entity(api.get_release(ident, expand="container,files,filesets,webcaptures"))
         elif entity_type == 'work':
-            return api.get_work(ident)
+            return enrich_work_entity(api.get_work(ident))
         else:
             raise NotImplementedError
     except ApiException as ae:

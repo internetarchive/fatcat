@@ -28,7 +28,6 @@ def container_history(ident):
         app.log.info(ae)
         abort(ae.status)
     return render_template('entity_history.html',
-        page_title=entity.name,
         entity_type="container",
         entity=entity,
         history=history)
@@ -41,7 +40,6 @@ def creator_history(ident):
     except ApiException as ae:
         abort(ae.status)
     return render_template('entity_history.html',
-        page_title=entity.display_name,
         entity_type="creator",
         entity=entity,
         history=history)
@@ -54,7 +52,6 @@ def file_history(ident):
     except ApiException as ae:
         abort(ae.status)
     return render_template('entity_history.html',
-        page_title=None,
         entity_type="file",
         entity=entity,
         history=history)
@@ -67,7 +64,6 @@ def fileset_history(ident):
     except ApiException as ae:
         abort(ae.status)
     return render_template('entity_history.html',
-        page_title=None,
         entity_type="fileset",
         entity=entity,
         history=history)
@@ -80,7 +76,6 @@ def webcapture_history(ident):
     except ApiException as ae:
         abort(ae.status)
     return render_template('entity_history.html',
-        page_title=None,
         entity_type="webcapture",
         entity=entity,
         history=history)
@@ -93,7 +88,6 @@ def release_history(ident):
     except ApiException as ae:
         abort(ae.status)
     return render_template('entity_history.html',
-        page_title=entity.title,
         entity_type="release",
         entity=entity,
         history=history)
@@ -106,7 +100,6 @@ def work_history(ident):
     except ApiException as ae:
         abort(ae.status)
     return render_template('entity_history.html',
-        page_title=None,
         entity_type="work",
         entity=entity,
         history=history)
@@ -205,6 +198,15 @@ def generic_entity_view(entity_type, ident, view_template):
 
     return render_template(view_template, entity_type=entity_type, entity=entity, editgroup_id=None)
 
+def generic_entity_revision_view(entity_type, revision_id, view_template):
+    entity = generic_get_entity_revision(entity_type, revision_id)
+
+    metadata = entity.to_dict()
+    metadata.pop('extra')
+    entity._metadata = metadata
+
+    return render_template(view_template, entity_type=entity_type, entity=entity, editgroup_id=None)
+
 def generic_editgroup_entity_view(editgroup_id, entity_type, ident, view_template):
     try:
         editgroup = api.get_editgroup(editgroup_id)
@@ -224,67 +226,134 @@ def generic_editgroup_entity_view(editgroup_id, entity_type, ident, view_templat
 def container_view(ident):
     return generic_entity_view('container', ident, 'container_view.html')
 
+@app.route('/container/<ident>/metadata', methods=['GET'])
+def container_view_metadata(ident):
+    return generic_entity_view('container', ident, 'entity_view_metadata.html')
+
 @app.route('/container/rev/<revision_id>', methods=['GET'])
 def container_revision_view(revision_id):
-    entity = generic_get_entity_revision('container', revision_id)
-    return render_template('container_view.html', entity=entity, editgroup=None)
+    return generic_entity_revision_view('container', revision_id, 'container_view.html')
+
+@app.route('/container/rev/<revision_id>/metadata', methods=['GET'])
+def container_revision_view_metadata(revision_id):
+    return generic_entity_revision_view('container', revision_id, 'entity_view_metadata.html')
 
 @app.route('/editgroup/<editgroup_id>/container/<ident>', methods=['GET'])
 def container_editgroup_view(editgroup_id, ident):
     return generic_editgroup_entity_view(editgroup_id, 'container', ident, 'container_view.html')
+
+@app.route('/editgroup/<editgroup_id>/container/<ident>/metadata', methods=['GET'])
+def container_editgroup_view_metadata(editgroup_id, ident):
+    return generic_editgroup_entity_view(editgroup_id, 'container', ident, 'entity_view_metadata.html')
 
 
 @app.route('/creator/<ident>', methods=['GET'])
 def creator_view(ident):
     return generic_entity_view('creator', ident, 'creator_view.html')
 
+@app.route('/creator/<ident>/metadata', methods=['GET'])
+def creator_view_metadata(ident):
+    return generic_entity_view('creator', ident, 'entity_view_metadata.html')
+
 @app.route('/creator/rev/<revision_id>', methods=['GET'])
 def creator_revision_view(revision_id):
     entity = generic_get_entity_revision('creator', revision_id)
-    return render_template('creator_view.html', creator=entity, editgroup=None)
+    return render_template('creator_view.html', entity_type='creator', entity=entity, editgroup=None)
+
+@app.route('/creator/rev/<revision_id>/metadata', methods=['GET'])
+def creator_revision_view_metadata(revision_id):
+    entity = generic_get_entity_revision('creator', revision_id)
+    return render_template('entity_view_metadata.html', entity_type='creator', entity=entity, editgroup=None)
 
 @app.route('/editgroup/<editgroup_id>/creator/<ident>', methods=['GET'])
 def creator_editgroup_view(editgroup_id, ident):
     return generic_editgroup_entity_view(editgroup_id, 'creator', ident, 'creator_view.html')
 
+@app.route('/editgroup/<editgroup_id>/creator/<ident>/metadata', methods=['GET'])
+def creator_editgroup_view_metadata(editgroup_id, ident):
+    return generic_editgroup_entity_view(editgroup_id, 'creator', ident, 'entity_view_metadata.html')
+
+
 @app.route('/file/<ident>', methods=['GET'])
 def file_view(ident):
     return generic_entity_view('file', ident, 'file_view.html')
 
+@app.route('/file/<ident>/metadata', methods=['GET'])
+def file_view_metadata(ident):
+    return generic_entity_view('file', ident, 'entity_view_metadata.html')
+
 @app.route('/file/rev/<revision_id>', methods=['GET'])
 def file_revision_view(revision_id):
     entity = generic_get_entity_revision('file', revision_id)
-    return render_template('file_view.html', entity=entity, editgroup=None)
+    return render_template('file_view.html', entity_type='file', entity=entity, editgroup=None)
+
+@app.route('/file/rev/<revision_id>/metadata', methods=['GET'])
+def file_revision_view_metadata(revision_id):
+    entity = generic_get_entity_revision('file', revision_id)
+    return render_template('entity_view_metadata.html', entity_type='file', entity=entity, editgroup=None)
 
 @app.route('/editgroup/<editgroup_id>/file/<ident>', methods=['GET'])
 def file_editgroup_view(editgroup_id, ident):
     return generic_editgroup_entity_view(editgroup_id, 'file', ident, 'file_view.html')
 
+@app.route('/editgroup/<editgroup_id>/file/<ident>/metadata', methods=['GET'])
+def file_editgroup_view_metadata(editgroup_id, ident):
+    return generic_editgroup_entity_view(editgroup_id, 'file', ident, 'entity_view_metadata.html')
+
+
 @app.route('/fileset/<ident>', methods=['GET'])
 def fileset_view(ident):
     return generic_entity_view('fileset', ident, 'fileset_view.html')
 
+@app.route('/fileset/<ident>/metadata', methods=['GET'])
+def fileset_view_metadata(ident):
+    return generic_entity_view('fileset', ident, 'entity_view_metadata.html')
+
 @app.route('/fileset/rev/<revision_id>', methods=['GET'])
 def fileset_revision_view(revision_id):
     entity = generic_get_entity_revision('fileset', revision_id)
-    return render_template('fileset_view.html', entity=entity, editgroup=None)
+    return render_template('fileset_view.html', entity_type='fileset', entity=entity, editgroup=None)
+
+@app.route('/fileset/rev/<revision_id>/metadata', methods=['GET'])
+def fileset_revision_view_metadata(revision_id):
+    entity = generic_get_entity_revision('fileset', revision_id)
+    return render_template('entity_view_metadata.html', entity_type='fileset', entity=entity, editgroup=None)
 
 @app.route('/editgroup/<editgroup_id>/fileset/<ident>', methods=['GET'])
 def fileset_editgroup_view(editgroup_id, ident):
     return generic_editgroup_entity_view(editgroup_id, 'fileset', ident, 'fileset_view.html')
 
+@app.route('/editgroup/<editgroup_id>/fileset/<ident>/metadata', methods=['GET'])
+def fileset_editgroup_view_metadata(editgroup_id, ident):
+    return generic_editgroup_entity_view(editgroup_id, 'fileset', ident, 'entity_view_metadata.html')
+
+
 @app.route('/webcapture/<ident>', methods=['GET'])
 def webcapture_view(ident):
     return generic_entity_view('webcapture', ident, 'webcapture_view.html')
 
+@app.route('/webcapture/<ident>/metadata', methods=['GET'])
+def webcapture_view_metadata(ident):
+    return generic_entity_view('webcapture', ident, 'entity_view_metadata.html')
+
 @app.route('/webcapture/rev/<revision_id>', methods=['GET'])
 def webcapture_revision_view(revision_id):
     entity = generic_get_entity_revision('webcapture', revision_id)
-    return render_template('webcapture_view.html', entity=entity, editgroup=None)
+    return render_template('webcapture_view.html', entity_type='webcapture', entity=entity, editgroup=None)
+
+@app.route('/webcapture/rev/<revision_id>/metadata', methods=['GET'])
+def webcapture_revision_view_metadata(revision_id):
+    entity = generic_get_entity_revision('webcapture', revision_id)
+    return render_template('entity_view_metadata.html', entity_type='webcapture', entity=entity, editgroup=None)
 
 @app.route('/editgroup/<editgroup_id>/webcapture/<ident>', methods=['GET'])
 def webcapture_editgroup_view(editgroup_id, ident):
     return generic_editgroup_entity_view(editgroup_id, 'webcapture', ident, 'webcapture_view.html')
+
+@app.route('/editgroup/<editgroup_id>/webcapture/<ident>/metadata', methods=['GET'])
+def webcapture_editgroup_view_metadata(editgroup_id, ident):
+    return generic_editgroup_entity_view(editgroup_id, 'webcapture', ident, 'entity_view_metadata.html')
+
 
 @app.route('/release/<ident>', methods=['GET'])
 def release_view(ident):
@@ -292,37 +361,78 @@ def release_view(ident):
 
 @app.route('/release/<ident>/contribs', methods=['GET'])
 def release_view_contribs(ident):
-    return generic_entity_view('release', ident, 'release_contribs.html')
+    return generic_entity_view('release', ident, 'release_view_contribs.html')
 
 @app.route('/release/<ident>/references', methods=['GET'])
 def release_view_references(ident):
-    return generic_entity_view('release', ident, 'release_references.html')
+    return generic_entity_view('release', ident, 'release_view_references.html')
 
 @app.route('/release/<ident>/metadata', methods=['GET'])
 def release_view_metadata(ident):
-    return generic_entity_view('release', ident, 'entity_metadata.html')
+    return generic_entity_view('release', ident, 'entity_view_metadata.html')
 
 @app.route('/release/rev/<revision_id>', methods=['GET'])
 def release_revision_view(revision_id):
     entity = generic_get_entity_revision('release', revision_id)
-    return render_template('release_view.html', entity=entity, editgroup=None)
+    return render_template('release_view.html', entity_type='release', entity=entity, editgroup=None)
+
+@app.route('/release/rev/<revision_id>/contribs', methods=['GET'])
+def release_revision_view_contribs(revision_id):
+    entity = generic_get_entity_revision('release', revision_id)
+    return render_template('release_view_contribs.html', entity_type='release', entity=entity, editgroup=None)
+
+@app.route('/release/rev/<revision_id>/references', methods=['GET'])
+def release_revision_view_references(revision_id):
+    entity = generic_get_entity_revision('release', revision_id)
+    return render_template('release_view_references.html', entity_type='release', entity=entity, editgroup=None)
+
+@app.route('/release/rev/<revision_id>/metadata', methods=['GET'])
+def release_revision_view_metadata(revision_id):
+    entity = generic_get_entity_revision('release', revision_id)
+    return render_template('entity_view_metadata.html', entity_type='release', entity=entity, editgroup=None)
 
 @app.route('/editgroup/<editgroup_id>/release/<ident>', methods=['GET'])
 def release_editgroup_view(editgroup_id, ident):
     return generic_editgroup_entity_view(editgroup_id, 'release', ident, 'release_view.html')
 
+@app.route('/editgroup/<editgroup_id>/release/<ident>/contribs', methods=['GET'])
+def release_editgroup_view_contribs(editgroup_id, ident):
+    return generic_editgroup_entity_view(editgroup_id, 'release', ident, 'release_view_contribs.html')
+
+@app.route('/editgroup/<editgroup_id>/release/<ident>/references', methods=['GET'])
+def release_editgroup_view_references(editgroup_id, ident):
+    return generic_editgroup_entity_view(editgroup_id, 'release', ident, 'release_view_references.html')
+
+@app.route('/editgroup/<editgroup_id>/release/<ident>/metadata', methods=['GET'])
+def release_editgroup_view_metadata(editgroup_id, ident):
+    return generic_editgroup_entity_view(editgroup_id, 'release', ident, 'entity_view_metadata.html')
+
+
 @app.route('/work/<ident>', methods=['GET'])
 def work_view(ident):
     return generic_entity_view('work', ident, 'work_view.html')
 
+@app.route('/work/<ident>/metadata', methods=['GET'])
+def work_view_metadata(ident):
+    return generic_entity_view('work', ident, 'entity_view_metadata.html')
+
 @app.route('/work/rev/<revision_id>', methods=['GET'])
 def work_revision_view(revision_id):
     entity = generic_get_entity_revision('work', revision_id)
-    return render_template('work_view.html', entity=entity, editgroup=None)
+    return render_template('work_view.html', entity_type='release', entity=entity, editgroup=None)
+
+@app.route('/work/rev/<revision_id>/metadata', methods=['GET'])
+def work_revision_view_metadata(revision_id):
+    entity = generic_get_entity_revision('work', revision_id)
+    return render_template('entity_view_metadata.html', entity_type='work', entity=entity, editgroup=None)
 
 @app.route('/editgroup/<editgroup_id>/work/<ident>', methods=['GET'])
 def work_editgroup_view(editgroup_id, ident):
     return generic_editgroup_entity_view(editgroup_id, 'work', ident, 'work_view.html')
+
+@app.route('/editgroup/<editgroup_id>/work/<ident>/metadata', methods=['GET'])
+def work_editgroup_view_metadata(editgroup_id, ident):
+    return generic_editgroup_entity_view(editgroup_id, 'work', ident, 'entity_view_metadata.html')
 
 
 ### Views ###################################################################

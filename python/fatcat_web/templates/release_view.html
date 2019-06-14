@@ -246,7 +246,7 @@
 <a href="{{ entity.files[0].urls[0].url }}" class="ui top attached fluid huge green button"><i class="file pdf outline icon"></i>Download Full Text</a>
 {% elif entity.state == 'active' and entity.webcaptures != [] and entity.webcaptures[0].archive_urls != [] and entity.webcaptures[0].archive_urls[0].rel == "wayback" %}
 <a href="{{ entity.webcaptures[0].archive_urls[0].url }}{{ entity.webcaptures[0]._wayback_suffix }}" class="ui top attached fluid huge green button"><i class="file archive outline icon"></i>View Web Archive</a>
-{% else %}
+{% elif entity.state == 'active' %}
 <span class="ui top attached fluid huge grey button"><i class="file cross icon"></i>No Full Text Available</span>
 {% endif %}
 
@@ -390,6 +390,7 @@
 
 </div>
 </div>
+
 {% endblock %}
 
 {% block postscript %}

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% macro entity_tab(name, text, url_suffix, count=None) %}
-<a href ="/{{ entity_type }}/{{ entity.ident }}{{ url_suffix }}" class="{% if entity_view == name %}active{% endif %} item" style="padding: 0em 1.2em;">{{ text }}{% if count != None %} ({{ count }}){% endif %}</a>
+<a href ="{% if editgroup %}/editgroup/{{ editgroup.editgroup_id }}{% endif %}/{{ entity_type }}/{% if entity.ident %}{{ entity.ident }}{% elif entity.revision %}rev/{{ entity.revision }}{% endif %}{{ url_suffix }}" class="{% if entity_view == name %}active{% endif %} item" style="padding: 0em 1.2em;">{{ text }}{% if count != None %} ({{ count }}){% endif %}</a>
 {% endmacro %}
 
 {% block fullmain %}
@@ -10,14 +10,35 @@
     <div class="ui centered grid">
       <div class="fifteen wide large screen sixteen wide column" style="padding-bottom: 0px;">
         <h1 class="ui header">
-          {% if entity_type == "release" %}
+          {% if entity_type == "container" %}
+            {{ entity.name }}
+          {% elif entity_type == "creator" %}
+            {{ entity.display_name }}
+          {% elif entity_type == "file" %}
+          {% elif entity_type == "fileset" %}
+          {% elif entity_type == "webcapture" %}
+            {% if entity.original_url %}
+              <a href="{{ entity.original_url }}" style="color: black;"><code>{{ entity.original_url }}</code></a>
+            {% endif %}
+          {% elif entity_type == "release" %}
             <span itemprop="headline"><span itemprop="name">{{ entity.title }}</span></span>
             {% if entity.subtitle %}
               <br><span style="font-size: smaller; font-weight: normal;">{{ entity.subtitle }}</span>
             {% endif %}
           {% endif %}
           <span class="sub header">
-            <code>{{ entity_type }}_{{ entity.ident }}</code>
+            <code>
+              {% if entity.ident %}
+                {{ entity_type }}_{{ entity.ident }}
+              {% elif entity.revision %}
+                {{ entity_type }}_rev_{{ entity.revision }}
+              {% endif %}
+              {% if editgroup %}
+                <a href="/editgroup/{{ editgroup.editgroup_id }}" style="color: purple;">
+                  [as of editgroup_{{ editgroup.editgroup_id }}]
+                </a>
+              {% endif %}
+            </code>
           </span>
         </h1>
         {% if entity_type == "release" %}
@@ -44,10 +65,16 @@
             {% endif %}
             {{ entity_tab("metadata", "Metadata", "/metadata") }}
           </div>
-          <div class="ui small tabular compact menu floated right">
-            {{ entity_tab("edit", "Edit", "/edit") }}
-            {{ entity_tab("history", "History", "/history") }}
-          </div>
+          {% if entity.ident %}
+            <div class="ui small tabular compact menu floated right">
+              {% if not editgroup or not (editgroup.changelog_index or editgroup.submitted ) %}
+                {{ entity_tab("edit", "Edit", "/edit") }}
+              {% endif %}
+              {% if not editgroup %}
+                {{ entity_tab("history", "History", "/history") }}
+              {% endif %}
+            </div>
+          {% endif %}
         </div>
       </div>
     </div>

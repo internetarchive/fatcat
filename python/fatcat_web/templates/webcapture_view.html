@@ -1,29 +1,12 @@
 {% set webcapture = entity %}
+{% set entity_view = "overview" %}
 {% import "entity_macros.html" as entity_macros %}
-{% extends "base.html" %}
+{% extends "entity_base.html" %}
 
-{% block fullbody %}
-
-<div class="ui stackable mobile reversed grid centered">
-<div class="one wide column"></div>
-<div class="fifteen wide column">
-  <h1 class="ui header">
-  {% if webcapture.original_url %}
-    <a href="{{ webcapture.original_url }}" style="color: black;"><code>{{ webcapture.original_url }}</code></a>
-  {% endif %}
-  <span class="sub header"><code>webcapture {{ webcapture.ident }}</code></span></h1>
-</div>
-</div>
+{% block entity_main %}
 
 <div class="ui stackable mobile reversed grid centered">
-<div class="one wide column"></div>
-<div class="ten wide column" style="font-size: 16px;">
-
-
-{% if entity.extra %}
-  <h3>Extra Metadata (raw JSON)</h3>
-  {{ entity_macros.extra_metadata(entity.extra) }}
-{% endif %}
+<div class="column" style="font-size: 16px; flex: 1;">
 
 <h3>Releases</h3>
 {% if entity.releases != [] %}
@@ -70,7 +53,7 @@ This web capture is empty (contains no resources).
 {% endif %}
 
 </div>
-<div class="five wide column">
+<div class="column" style="flex: 0 0 24em;">
 
 {% if webcapture.timestamp != None %}
 <div class="ui segment attached">
@@ -82,6 +65,5 @@ This web capture is empty (contains no resources).
 
 </div>
 </div>
-
 
 {% endblock %}

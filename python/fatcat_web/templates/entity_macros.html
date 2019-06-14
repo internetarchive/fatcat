@@ -1,16 +1,24 @@
 
 {% macro fatcat_bits(entity, entity_type, expand="", editgroup=None) -%}
 
-{% if entity.state == None and editgroup.editgroup_id %}
-<div class="ui segment pink inverted attached">
-  <b>Edit In Progress</b>
-  <p>You are viewing this entity as of a specific editgroup (which may or may not have been merged yet):
-  <b><a href="/editgroup/{{ editgroup.editgroup_id }}">{{ editgroup.editgroup_id }}</a></b>
-</div>
+{% if entity.state == None and editgroup %}
+  <div class="ui segment pink inverted attached">
+  {% if editgroup.changelog_index %}
+    <b>Accepted Edit Version</b>
+    <p>This is the version of the entity as of a specific merged editgroup:
+  {% elif editgroup.submitted %}
+    <b>Submitted Edit Version</b>
+    <p>This is a version of the entity that has been submitted for approval as part of an editgroup:
+  {% else %}
+    <b>Edit In Progress</b>
+    <p>This is a version of the entity that has not yet been submitted for approval, part of an editgroup:
+  {% endif %}
+  <b><a href="/editgroup/{{ editgroup.editgroup_id }}" style="color: white; font-weight: bold;">{{ editgroup.editgroup_id }}</a></b>
+  </div>
 {% elif entity.state == None and entity.ident == None %}
 <div class="ui segment pink inverted attached">
   <b>Revision</b>
-  <p>You are viewing a specific revision of an entity.
+  <p>This is a specific, static metadata record, not necessarily linked to any current entity in the catalog.
 </div>
 {% elif entity.state == "wip" %}
 <div class="ui segment pink inverted attached">
@@ -21,10 +29,13 @@
 
 <div class="ui segment attached">
   <b>Fatcat Bits</b>
-  <p>State is "{{ entity.state }}".
+  <p>
+  {% if entity.state %}
+    State is "{{ entity.state }}".
+  {% endif %}
   {% if entity.state != "deleted" %}
     Revision:
-    <br><small><code>{{ entity.revision }}</code></small>
+    <br><small><code><a href="/{{ entity_type }}/rev/{{ entity.revision }}">{{ entity.revision }}</a></code></small>
   {% endif %}
   <br><a href="{% if config.FATCAT_DOMAIN == 'dev.fatcat.wiki' %}http://localhost:9411{% else %}https://api.{{ config.FATCAT_DOMAIN }}{% endif %}/v0/{{ entity_type }}/{{ entity.ident }}{% if expand %}?expand={{ expand}}{% endif %}">As JSON object via API</a>
 </div>

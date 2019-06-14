@@ -1,20 +1,12 @@
 {% set container = entity %}
+{% set entity_view = "overview" %}
 {% import "entity_macros.html" as entity_macros %}
-{% extends "base.html" %}
+{% extends "entity_base.html" %}
 
-{% block fullbody %}
-
-<div class="ui stackable mobile reversed grid centered">
-<div class="one wide column"></div>
-<div class="fifteen wide column">
-  <h1 class="ui header">{{ container.name }}
-  <span class="sub header"><code>container {{ container.ident }}</code></span></h1>
-</div>
-</div>
+{% block entity_main %}
 
 <div class="ui stackable mobile reversed grid centered">
-<div class="one wide column"></div>
-<div class="ten wide column" style="font-size: 16px;">
+<div class="column" style="font-size: 16px; flex: 1;">
 
 {% if (container.extra != None) and (container.extra['urls'] != None) and (container.extra['urls']|length > 0) %}
   <div style="text-overflow: ellipsis; overflow: hidden; width: 100%;">
@@ -39,15 +31,8 @@
 </form>
 {% endif %}
 
-
-{% if entity.extra %}
-  <h3>Extra Metadata (raw JSON)</h3>
-  {{ entity_macros.extra_metadata(entity.extra) }}
-{% endif %}
-
-
 </div>
-<div class="five wide column">
+<div class="column" style="flex: 0 0 24em;">
 <div class="ui segment top attached">
 
 {% if container._es and container._es.is_oa == True %}

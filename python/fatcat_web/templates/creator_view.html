@@ -1,20 +1,12 @@
 {% set creator = entity %}
+{% set entity_view = "overview" %}
 {% import "entity_macros.html" as entity_macros %}
-{% extends "base.html" %}
+{% extends "entity_base.html" %}
 
-{% block fullbody %}
-
-<div class="ui stackable mobile reversed grid centered">
-<div class="one wide column"></div>
-<div class="fifteen wide column">
-  <h1 class="ui header">{{ creator.display_name }}
-  <span class="sub header"><code>creator {{ creator.ident }}</code></span></h1>
-</div>
-</div>
+{% block entity_main %}
 
 <div class="ui stackable mobile reversed grid centered">
-<div class="one wide column"></div>
-<div class="ten wide column" style="font-size: 16px;">
+<div class="column" style="font-size: 16px; flex: 1;">
 
 {% if creator.given_name or creator.surname %}
   <table class="ui definition single line fixed compact small unstackable table">
@@ -31,11 +23,6 @@
   </table>
 {% endif %}
 
-{% if entity.extra != None %}
-  <h3>Extra Metadata (raw JSON)</h3>
-  {{ entity_macros.extra_metadata(entity.extra) }}
-{% endif %}
-
 <br>
 <h3>Releases</h3>
 {% if creator._releases != [] %}
@@ -46,7 +33,7 @@ This creator has not contributed to any releases.
 {% endif %}
 
 </div>
-<div class="five wide column">
+<div class="column" style="flex: 0 0 24em;">
 <div class="ui segment top attached">
 
 {% if creator.orcid or creator.wikidata_qid %}
