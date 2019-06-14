@@ -56,7 +56,7 @@
     <div class="row">
       <div class="four wide column">
         <!-- TODO: don't let it scale down -->
-        <img src="/static/paper_man_confused.gif" width="130px">
+        <img src="/static/paper_man_confused.gif" width="130" alt="confused paper man">
       </div>
       <div class="twelve wide column" style="font-size: 1.2rem;">
         <p><b>Fatcat is a versioned, user-editable catalog of research
@@ -78,7 +78,7 @@
   <div class="ui centered grid">
     <div class="row">
       <div class="twelve wide column" style="font-size: 1.2rem;">
-        <p>The fatcat servcie is developed and hosted at <b><a
+        <p>The fatcat service is developed and hosted at <b><a
         href="https://archive.org">The Internet Archive</a></b>, a US
         non-profit dedicated to providing Universal Access to All Knowledge.
         Donations are welcomed!
@@ -87,7 +87,7 @@
         web which could otherwise be lost.
       </div>
       <div class="four wide column">
-        <img src="/static/ia_logo_text.png" width="140px">
+        <img src="/static/ia_logo_text.png" width="140" alt="IA logo">
       </div>
     </div>
   </div>
@@ -108,7 +108,7 @@
   </div>
 </div>
 
-<div class="ui container">
+<div class="ui center aligned container">
 
 <br>
 <h2 class="ui header centered">Explore Works In The Catalog So Far
@@ -117,8 +117,7 @@
 
 <br>
 
-<center>
-<table class="ui single line unstackable table centered" style="max-width: 800px; font-size: 1.1rem;">
+<table class="ui single line unstackable table centered" style="max-width: 800px; font-size: 1.1rem; margin-right: auto; margin-left: auto;">
 <thead>
 <tr><th>Entity Type
     <th>Actions
@@ -137,12 +136,12 @@
         <br><a href="/release/aaaaaaaaaaaaarceaaaaaaaaai">Dummy</a>
         <br><a href="/release/aaaaaaaaaaaaarceaaaaaaaaam">Realistic</a>
 {% endif %}
-    <td><form class="" action="/release/lookup" method="get" role="search">
+    <td class="center aligned"><form class="" action="/release/lookup" method="get" role="search">
           <div class="ui icon input">
             <i class="search icon"></i>
             <input type="text" placeholder="DOI" name="doi" aria-label="lookup paper by DOI">
           </div>
-        <br><center><a href="/release/lookup">Other Identifiers</a></center>
+        <br><a href="/release/lookup">Other Identifiers</a>
         </form>
 <tr><td><b>Container</b>
         <br>journal or serial
@@ -155,12 +154,12 @@
         <br><a href="/container/aaaaaaaaaaaaaeiraaaaaaaaai">Dummy</a>
         <br><a href="/container/aaaaaaaaaaaaaeiraaaaaaaaam">Realistic</a>
 {% endif %}
-    <td><form class="" action="/container/lookup" method="get" role="search">
+    <td class="center aligned"><form class="" action="/container/lookup" method="get" role="search">
           <div class="ui icon input">
             <i class="search icon"></i>
             <input type="text" placeholder="ISSN-L" name="issnl" aria-label="lookup journal by ISSN-L">
           </div>
-        <br><a href="/container/lookup"><center>Other Identifiers</a></center>
+        <br><a href="/container/lookup">Other Identifiers</a>
         </form>
 
 <tr><td><b>Creator</b>
@@ -174,12 +173,12 @@
         <br><a href="/creator/aaaaaaaaaaaaaircaaaaaaaaai">Dummy</a>
         <br><a href="/creator/aaaaaaaaaaaaaircaaaaaaaaam">Realistic</a>
 {% endif %}
-    <td><form class="" action="/creator/lookup" method="get" role="search">
+    <td class="center aligned"><form class="" action="/creator/lookup" method="get" role="search">
           <div class="ui icon input">
             <i class="search icon"></i>
             <input type="text" placeholder="ORCID" name="orcid" aria-label="lookup author by ORCID">
           </div>
-        <br><a href="/creator/lookup"><center>Other Identifiers</a></center>
+        <br><a href="/creator/lookup">Other Identifiers</a>
         </form>
 <tr><td><b>File</b>
         <br>specific digital blobs (immutable)
@@ -191,12 +190,12 @@
         <br><a href="/file/aaaaaaaaaaaaamztaaaaaaaaai">Dummy</a>
         <br><a href="/file/aaaaaaaaaaaaamztaaaaaaaaam">Realistic</a>
 {% endif %}
-    <td><form class="" action="/file/lookup" method="get" role="search">
+    <td class="center aligned"><form class="" action="/file/lookup" method="get" role="search">
           <div class="ui icon input">
             <i class="search icon"></i>
             <input type="text" placeholder="SHA-1" name="sha1" aria-label="lookup file by SHA1">
           </div>
-        <br><a href="/file/lookup"><center>Other Hashes</a></center>
+        <br><a href="/file/lookup">Other Hashes</a>
         </form>
 <tr><td><b>File Set</b>
         <br>datasets, suplementary materials
@@ -236,7 +235,6 @@
 {% endif %}
     <td>
 </table>
-</center>
 
 </div>
 

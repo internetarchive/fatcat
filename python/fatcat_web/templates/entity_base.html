@@ -5,6 +5,7 @@
 {% endmacro %}
 
 {% block fullmain %}
+<main {% block main_extra_attr %}{% endblock %}>
 <div class="ui vertical stripe segment" style="background-color: #EEE; padding-top: 5em; padding-bottom: 0px; border-bottom: 0px;">
   <div class="ui container">
     <div class="ui centered grid">
@@ -88,6 +89,7 @@
     </div>
   </div>
 </div>
+</main>
 {% endblock %}
 
 {% block postscript %}

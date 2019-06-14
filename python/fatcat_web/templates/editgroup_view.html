@@ -75,7 +75,7 @@
 {% endif %}
 
 <h1 class="ui header">Editgroup
-<div class="sub header"><code>editgroup {{ editgroup.editgroup_id }}</code></div></h1>
+<span class="sub header"><code>editgroup {{ editgroup.editgroup_id }}</code></span></h1>
 {% endblock %}
 
 <p><b>What is an editgroup?</b>
@@ -103,7 +103,7 @@ reviewable bundle.
   <h4>Extra Metadata (raw JSON)</h4>
   {{ entity_macros.extra_metadata(editgroup.extra) }}
 {% endif %}
-<br><br clear="all">
+<br><br style="clear: both;">
 
 <div class="ui styled fluid accordion">
   {{ edit_list(auth_to, editgroup, editgroup.edits.releases, "release", "Release") }}
