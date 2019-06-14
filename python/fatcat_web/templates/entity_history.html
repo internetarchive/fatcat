@@ -26,8 +26,11 @@ This table only shows <i>merged</i> edits, not work-in-progress.
         </a></code>
         <br>
         <small><code><a href="/editgroup/{{ entry.editgroup.editgroup_id }}">
-          {{ entry.editgroup.editgroup_id }}
+          editgroup_{{ entry.editgroup.editgroup_id }}
         </a></code></small>
+        <a href="/editgroup/{{ entry.editgroup.editgroup_id }}/{{ entity_type }}/{{ entry.edit.ident }}">
+          [view]
+        </a>
       <td>{% if entry.editgroup.description != None %}{{ entry.editgroup.description }}{% endif %}
   {% endfor %}
 </table>
