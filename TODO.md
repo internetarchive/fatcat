@@ -1,29 +1,14 @@
 
 ## In Progress
 
+
 ## Next Up
 
+- more/better identifier normalization in normalize.py
+    => then use this code in importers
 - update existing 1.5 mil longtail OA PDFs with container/ISSN-L
 - use collapsing fields in default release search
     => start using elasticsearch-py
-- cleanup 'None' file links
-- update editing flow
-    x  after edit, redirect to ident under editgroup ("in progress")
-        /editgroup/<editgroup_id>/release/<ident>
-    x  "edit edit"
-        /editgroup/<editgroup_id>/release/<ident>/edit
-    x  "delete edit"
-    ?  "delete entity" (later, along with merge)
-    x  improve editgroup selection/management
-        => "current edits" drop-down
-        => skip the cookie
-    x  for all entity types
-    => merge master
-    => rebase/finish/merge UI changes
-    => edit flow polish (messages, etc)
-- generic query endpoint; tries to find identifiers (including fatcat
-  identifiers) and lookup, else does release search
-  new homepage: numbers link to /stats
 
 ## Bugs
 
@@ -34,7 +19,6 @@
 - did, somehow, end up with web.archive.org/web/None/ URLs (should remove)
 - searching 'N/A' is a bug, because not quoted; auto-quote it?
 - author (contrib) names not getting included in search (unless explicit)
-- fatcat flask lookup ValueError should return 4xx (and message?)
 
 ## Next Full Release "Touch"
 
@@ -48,8 +32,6 @@ Want to minimize edit counts, so will bundle a bunch of changes
 
 ## Production Public Launch Blockers
 
-- update edit flow
-- view edit revisions in webface
 - audit fatcat metadata for CC-0
 - guide updates for auth
 - privacy policy, and link from: create account, create edit
@@ -62,6 +44,8 @@ Want to minimize edit counts, so will bundle a bunch of changes
 
 ## Unsorted
 
+- "delete entity" and "merge entity" webface flows
+- update editor, editgroup, changelog views?
 - ability to "edit edits" (update in-progress edits)
 - review bots:
     - tests
