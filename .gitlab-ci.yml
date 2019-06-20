@@ -4,6 +4,7 @@ unified_test:
   variables:
     LC_ALL: "C.UTF-8"
     LANG: "C.UTF-8"
+    PIPENV_VENV_IN_PROJECT: "true"
     POSTGRES_DB: "fatcat_test"
     POSTGRES_USER: "fatcat_user"
     POSTGRES_PASSWORD: "fatcat_pw"
@@ -36,8 +37,8 @@ unified_test:
     - pipenv run pylint -E fatcat*.py fatcat_tools fatcat_web tests/*.py
 
 rust_build_release:
-  only:
-    - tags  # doesn't build for most commits; only tagged
+  stage: build
+  when: manual
   image: "rust:1.32-stretch"
   variables:
     LC_ALL: "C.UTF-8"
@@ -48,15 +49,30 @@ rust_build_release:
   script:
     - rustc --version && cargo --version
     - cd rust
-    - cargo build --release
-    - cargo doc
+    - ./build_tarball.sh
   artifacts:
     paths:
-    - rust/target/release/fatcat*
-    - rust/target/doc/fatcat*
-    - rust/target/doc/*.css
-    - rust/target/doc/*.js
-    - rust/target/doc/*.woff
-    - rust/target/doc/*.svg
+    - rust/fatcat-rust.tar.gz
     expire_in: 1 year
 
+python_build_release:
+  stage: build
+  when: manual
+  image: "rust:1.32-stretch"
+  variables:
+    LC_ALL: "C.UTF-8"
+    LANG: "C.UTF-8"
+    PIPENV_VENV_IN_PROJECT: "true"
+  before_script:
+    - apt update -qy
+    - apt install -y python3-dev python3-pip python3-wheel python3-requests python3-six python3-pytest libsnappy-dev libsodium-dev
+    - pip3 install pipenv
+  script:
+    - python3 --version
+    - pipenv --version
+    - cd python
+    - ./build_tarball.sh
+  artifacts:
+    paths:
+    - python/fatcat-python.tar.gz
+    expire_in: 1 year
