@@ -4,6 +4,8 @@ import json
 import sqlite3
 import itertools
 import fatcat_client
+
+from fatcat_tools.normal import *
 from .common import EntityImporter, clean, make_rel_url, SANE_MAX_RELEASES, SANE_MAX_URLS
 
 
@@ -53,6 +55,10 @@ class MatchedImporter(EntityImporter):
         # lookup dois
         re_list = set()
         for doi in dois:
+            doi = clean_doi(doi)
+            if not doi:
+                self.counts['skip-bad-doi'] += 1
+                return None
             try:
                 re = self.api.lookup_release(doi=doi)
             except fatcat_client.rest.ApiException as err:
@@ -64,12 +70,28 @@ class MatchedImporter(EntityImporter):
                 pass
             else:
                 re_list.add(re.ident)
+
+        # look up other external ids
+        for extid_type in ('arxiv', 'pmid', 'pmcid', 'jstor', 'wikidata_qid', 'core', 'isbn13', 'ark'):
+            extid = obj.get(extid_type)
+            if extid:
+                try:
+                    re = self.api.lookup_release(**{extid_type: extid})
+                except fatcat_client.rest.ApiException as err:
+                    if err.status != 404:
+                        raise err
+                    re = None
+                if re is None:
+                    pass
+                else:
+                    re_list.add(re.ident)
+
         release_ids = list(re_list)
         if len(release_ids) == 0:
-            self.counts['skip-no-doi'] += 1
+            self.counts['skip-no-releases'] += 1
             return None
         if len(release_ids) > SANE_MAX_RELEASES:
-            self.counts['skip-too-many-dois'] += 1
+            self.counts['skip-too-many-releases'] += 1
             return None
 
         # parse URLs and CDX
@@ -142,11 +164,12 @@ class MatchedImporter(EntityImporter):
             return None
         existing.release_ids = list(set(fe.release_ids + existing.release_ids))
         if len(existing.release_ids) > SANE_MAX_RELEASES:
-            self.counts['skip-update-too-many-url'] += 1
+            self.counts['skip-update-too-many-releases'] += 1
             return None
         existing.mimetype = existing.mimetype or fe.mimetype
         existing.size = existing.size or fe.size
         existing.md5 = existing.md5 or fe.md5
+        existing.sha1 = existing.sha1 or fe.sha1
         existing.sha256 = existing.sha256 or fe.sha256
         self.api.update_file(self.get_editgroup_id(), existing.ident, existing)
         self.counts['update'] += 1

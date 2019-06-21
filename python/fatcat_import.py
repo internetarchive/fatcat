@@ -62,6 +62,7 @@ def run_matched(args):
     fmi = MatchedImporter(args.api,
         edit_batch_size=args.batch_size,
         editgroup_description=args.editgroup_description_override,
+        default_link_rel=args.default_link_rel,
         default_mimetype=args.default_mimetype)
     JsonLinePusher(fmi, args.json_file).run()
 
@@ -267,6 +268,9 @@ def main():
     sub_matched.add_argument('--bezerk-mode',
         action='store_true',
         help="don't lookup existing files, just insert (clobbers; only for fast bootstrap)")
+    sub_matched.add_argument('--default-link-rel',
+        default="web",
+        help="default URL rel for matches (eg, 'publisher', 'web')")
 
     sub_arabesque_match = subparsers.add_parser('arabesque')
     sub_arabesque_match.set_defaults(
