@@ -11,7 +11,6 @@ variables:
   LANG: "C.UTF-8"
   PIPENV_VENV_IN_PROJECT: "true"
   CARGO_HOME: ".cargo_cache"
-  PATH: "$PATH:$CARGO_HOME/bin"
 
 image: "rust:1.32-stretch"
 
@@ -25,6 +24,7 @@ unified_test:
   services:
     - "postgres:11"
   before_script:
+    - export PATH="$PATH:$CARGO_HOME/bin"
     - apt update -qy
     - apt install -y python3-dev python3-pip python3-wheel python3-requests python3-six python3-pytest libsnappy-dev libsodium-dev
     - cargo install diesel_cli --version 1.3.1
@@ -52,6 +52,7 @@ rust_build_release:
   stage: build
   when: manual
   before_script:
+    - export PATH="$PATH:$CARGO_HOME/bin"
     - apt update -qy
     - apt install -y python3-dev python3-pip python3-wheel python3-requests python3-six python3-pytest libsnappy-dev libsodium-dev
   script:
