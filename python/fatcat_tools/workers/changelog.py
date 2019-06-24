@@ -128,7 +128,7 @@ class EntityUpdatesWorker(FatcatWorker):
                 # update release when a file changes
                 # TODO: fetch old revision as well, and only update
                 # releases for which list changed
-                release_ids.extend(e['release_ids'])
+                release_ids.extend(file_entity['release_ids'])
                 file_dict = self.api.api_client.sanitize_for_serialization(file_entity)
                 file_producer.produce(
                     message=json.dumps(file_dict).encode('utf-8'),
