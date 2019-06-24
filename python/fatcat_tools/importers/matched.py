@@ -156,9 +156,17 @@ class MatchedImporter(EntityImporter):
             self.counts['exists'] += 1
             return False
 
+        # minimum viable "existing" URL cleanup to fix dupes and broken links:
+        # remove 'None' wayback URLs, and set archive.org rel 'archive'
+        existing.urls = [u for u in existing.urls if not ('://web.archive.org/web/None/' in u.url)]
+        for u in existing.urls:
+            if u.rel == 'repository' and '://archive.org/download/' in u.url:
+                u.rel == 'archive'
+
         # merge the existing into this one and update
         existing.urls = list(set([(u.rel, u.url) for u in fe.urls + existing.urls]))
         existing.urls = [fatcat_client.FileUrl(rel=rel, url=url) for (rel, url) in existing.urls]
+
         if len(existing.urls) > SANE_MAX_URLS:
             self.counts['skip-update-too-many-url'] += 1
             return None
