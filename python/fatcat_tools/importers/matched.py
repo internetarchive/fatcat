@@ -96,7 +96,7 @@ class MatchedImporter(EntityImporter):
 
         # parse URLs and CDX
         urls = set()
-        for url in obj.get('url', []):
+        for url in obj.get('urls', []):
             url = make_rel_url(url, default_link_rel=self.default_link_rel)
             if url != None:
                 urls.add(url)
