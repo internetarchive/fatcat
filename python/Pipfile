@@ -19,7 +19,7 @@ pylint = "*"
 pg-view = "*"
 
 [packages]
-fatcat_client = { path = "./../python_client", editable = true }
+fatcat_client = { path = "./../python_client" }
 python-dotenv = "*"
 Flask = ">=1"
 flask-uuid = "*"
