@@ -156,6 +156,12 @@ class MatchedImporter(EntityImporter):
             self.counts['exists'] += 1
             return False
 
+        # check for edit conflicts
+        if existing.ident in [e.ident for e in self._edits_inflight]:
+            self.counts['skip-update-inflight'] += 1
+            return False
+
+
         # minimum viable "existing" URL cleanup to fix dupes and broken links:
         # remove 'None' wayback URLs, and set archive.org rel 'archive'
         existing.urls = [u for u in existing.urls if not ('://web.archive.org/web/None/' in u.url)]
@@ -191,7 +197,8 @@ class MatchedImporter(EntityImporter):
         existing.md5 = existing.md5 or fe.md5
         existing.sha1 = existing.sha1 or fe.sha1
         existing.sha256 = existing.sha256 or fe.sha256
-        self.api.update_file(self.get_editgroup_id(), existing.ident, existing)
+        edit = self.api.update_file(self.get_editgroup_id(), existing.ident, existing)
+        self._edits_inflight.append(edit)
         self.counts['update'] += 1
         return False
 
