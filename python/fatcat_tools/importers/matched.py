@@ -159,7 +159,7 @@ class MatchedImporter(EntityImporter):
         # minimum viable "existing" URL cleanup to fix dupes and broken links:
         # remove 'None' wayback URLs, and set archive.org rel 'archive'
         existing.urls = [u for u in existing.urls if not ('://web.archive.org/web/None/' in u.url)]
-        for i in len(existing.urls):
+        for i in range(len(existing.urls)):
             u = existing.urls[i]
             if u.rel == 'repository' and '://archive.org/download/' in u.url:
                 existing.urls[i].rel == 'archive'
