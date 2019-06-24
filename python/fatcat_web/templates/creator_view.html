@@ -25,7 +25,7 @@
 
 <br>
 <h3>Releases</h3>
-{% if creator._releases != [] %}
+{% if creator._releases != [] and creator._releases != None %}
   <p>This creator has contributed to:
   {{ entity_macros.release_list(creator._releases) }}
 {% else %}
