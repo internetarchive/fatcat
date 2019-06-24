@@ -150,8 +150,8 @@ class MatchedImporter(EntityImporter):
         if not existing:
             return True
 
-        fe.release_ids = list(set(fe.release_ids + existing.release_ids))
-        if set(fe.release_ids) == set(existing.release_ids) and len(existing.urls) > 0:
+        combined_release_ids = list(set(fe.release_ids + existing.release_ids))
+        if set(combined_release_ids) == set(existing.release_ids) and len(existing.urls) > 0:
             # no new release matches *and* there are already existing URLs
             self.counts['exists'] += 1
             return False
@@ -162,7 +162,18 @@ class MatchedImporter(EntityImporter):
         for i in range(len(existing.urls)):
             u = existing.urls[i]
             if u.rel == 'repository' and '://archive.org/download/' in u.url:
-                existing.urls[i].rel == 'archive'
+                existing.urls[i].rel = 'archive'
+
+        # special case: if importing *new* from archive.org arxiv collections,
+        # blow away any existing release_id mappings; this is a direct arxiv_id
+        # map. This *should* be safe to run in all matched imports.
+        is_arxiv = False
+        for u in fe.urls:
+            if 'archive.org/download/arxiv' in u.url.lower():
+                is_arxiv = True
+                break
+        if is_arxiv and fe.release_ids:
+            existing.release_ids = fe.release_ids
 
         # merge the existing into this one and update
         existing.urls = list(set([(u.rel, u.url) for u in fe.urls + existing.urls]))
