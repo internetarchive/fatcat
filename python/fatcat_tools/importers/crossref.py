@@ -196,7 +196,7 @@ class CrossrefImporter(EntityImporter):
                     raw_name = am['family']
                 else:
                     # TODO: can end up empty
-                    raw_name = am.get('given')
+                    raw_name = am.get('name') or am.get('given')
                 extra = dict()
                 if ctype == "author":
                     index = i
