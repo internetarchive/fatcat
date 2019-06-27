@@ -15,7 +15,38 @@ See also:
 - https://archive.org/details/OA-JOURNAL-TESTCRAWL-TWO-2018-extra
 = https://archive.org/download/ia_longtail_dumpgrobidmetainsertable_2018-09-23/2018-09-23-0405.30-dumpgrobidmetainsertable.longtail_join.filtered.tsv.gz
 
+QA notes:
 
+- everything on revistas.uv.mx linked to 2395-9495, which is only one journal
+  on that domain. blacklist 'revistas' in the domain?
+- afjg3yjdjbf2dad47t5jq7nlbe => 2305-7254 ok match but not perfect (wrong year
+  of conference). probably better than nothing. 
+- elib.mi.sanu.ac.rs has several journals on domain. container_name was correct.
+- revistavirtual.ucn.edu.co has 2x journals
+- lpchkxkp5jecdgrab33fxodd7y bad match
+- k36web33jvf25by64gop4yil7q an IR, not a journal (ok)
+- hvxercwasjhotpewb5xfadyyle good match, though only an abstract (in URL). full
+  articles get DOIs
+- release_epkiok6y3zhsnp3no2lkljznza not a paper; journal match batch (cato, wtf)
+- release_b3jolh25mbg4djrqotgosyeike jfr.unibo.it good
+- release_bzr35evb4bdd3mxex6gxn6dcyy conf.ostis.net good?
+- uzspace.uzulu.ac.za IR, not a container
+- release_5lt36yy3vre2nnig46toy67kdi wrong, multiple journals
+- release_54hmv5gvtjghjk7rpcbp2pn2ky good
+- release_6h7doxfaxnao3jm7f6jkfdpdwm good
+- release_6pio5hz6bvawfnodhkvmfk4jei correct but stub
+- release_7oobqygqczapbgdvvgbxfyvqli correct
+- release_tsljmbevpzfpxiezzv7puwbilq good
+
+general notes:
+- GROBID works pretty well. references look pretty good, should match. there is
+  a non-trivial fraction of non-journal content, but it isn't too bad
+- this "single-journal domain" premise doesn't work
+- could probably do a subset based on "is the journal name in the domain name",
+  or "is domain acronym of journal name"
+- surprising number of IRs with ISSNs in here
+- might have better luck blacklisting out latin american TLDs, which tend to
+  host many journals?
 """
 
 import os, sys, argparse
@@ -101,16 +132,23 @@ class LongtailIssnlSingleDomainFixup(EntityImporter):
         url = cdx_dict['url']
         domain = url.split('/')[2].lower()
 
+        if not domain:
+            self.counts['skip-domain-blank'] += 1
+            return None
+
         # domain in scope?
         issnl = self._domain_issnl_map.get(domain)
         if not issnl:
             self.counts['skip-domain-scope'] += 1
             return None
+        if 'revistas' in domain.lower().split('.'):
+            self.counts['skip-domain-revistas'] += 1
+            return None
 
         # lookup file
         #print(sha1)
         try:
-            file_entity = self.api.lookup_file(sha1=sha1)
+            file_entity = self.api.lookup_file(sha1=sha1, expand="releases")
         except fatcat_client.rest.ApiException as err:
             if err.status == 404:
                 self.counts['skip-file-not-found'] += 1
@@ -136,11 +174,14 @@ class LongtailIssnlSingleDomainFixup(EntityImporter):
             return None
 
         # fetch releases
-        releases = self.api.get_file_releases(file_entity.ident)
-        releases = [r for r in releases if (r.extra.get('longtail-oa') == True and r.container_id == None)]
+        releases = [r for r in file_entity.releases if (r.extra.get('longtail_oa') == True and r.container_id == None)]
         if not releases:
+            #print(file_entity.releases)
             self.counts['skip-no-releases'] += 1
             return None
+
+        # fetch full release objects (need abstract, etc, for updating)
+        releases = [self.api.get_release(r.ident) for r in releases]
 
         # set container_id
         for r in releases:
@@ -149,7 +190,7 @@ class LongtailIssnlSingleDomainFixup(EntityImporter):
 
     def try_update(self, re_list):
         for re in re_list:
-            self.api.update_release(re.ident, re, editgroup_id=self.get_editgroup_id())
+            self.api.update_release(self.get_editgroup_id(), re.ident, re)
             self.counts['update'] += 1
         return False
 
