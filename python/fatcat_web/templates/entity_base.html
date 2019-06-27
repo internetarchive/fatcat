@@ -57,7 +57,9 @@
             <br>
           {% endif %}
         {% endif %}
-        <div class="ui container" style="min-width: 40em;">
+        <!-- these nested div make tabs scrollable on mobile -->
+        <div class="ui container" style="min-width: 100%; overflow-x: auto;">
+        <div style="min-width: 40em;">
           <div class="ui small tabular compact menu">
             {{ entity_tab("overview", "Overview", "") }}
             {% if entity_type == "release" %}
@@ -76,6 +78,7 @@
               {% endif %}
             </div>
           {% endif %}
+        </div>
         </div>
       </div>
     </div>
