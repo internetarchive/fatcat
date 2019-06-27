@@ -7,7 +7,7 @@ quickly. There are no tests.
 
 Example invocation:
 
-    zcat 2018-09-23-0405.30-dumpgrobidmetainsertable.longtail_join.filtered.tsv.gz | ./fixup_longtail_issnl_unique.py /srv/fatcat/datasets/single_domain_issnl.tsv -
+    zcat /srv/fatcat/datasets/2018-09-23-0405.30-dumpgrobidmetainsertable.longtail_join.filtered.tsv.gz | ./fixup_longtail_issnl_unique.py /srv/fatcat/datasets/single_domain_issnl.tsv -
 
 See also:
 - bnewbold/scratch:mellon/201904_longtail_issn.md
@@ -108,7 +108,7 @@ class LongtailIssnlSingleDomainFixup(EntityImporter):
             return None
 
         # lookup file
-        print(sha1)
+        #print(sha1)
         try:
             file_entity = self.api.lookup_file(sha1=sha1)
         except fatcat_client.rest.ApiException as err:
@@ -119,8 +119,7 @@ class LongtailIssnlSingleDomainFixup(EntityImporter):
                 raise err
 
         # container ident
-        # TODO: memoize these issnl/container lookups
-        container_id = self.lookup_container(issnl)
+        container_id = self.lookup_issnl(issnl)
         if not container_id:
             self.counts['skip-container-not-found'] += 1
             return None
