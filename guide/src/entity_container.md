@@ -25,9 +25,9 @@
 #### `extra` Fields
 
 - `abbrev` (string): a commonly used abbreviation for the publication, as used
-  in citations, following the [ISO 4]() standard. Eg, "Journal of Polymer
+  in citations, following the [ISO 4][] standard. Eg, "Journal of Polymer
   Science Part A" -> "J. Polym. Sci. A"
-- `coden` (string): an external identifier, the [CODEN code](). 6 characters,
+- `coden` (string): an external identifier, the [CODEN code][]. 6 characters,
   all upper-case.
 - `issnp` (string): Print ISSN
 - `issne` (string): Electronic ISSN

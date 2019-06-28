@@ -26,7 +26,7 @@ See [Policies](./policies.md) for licensing details, and
 [Sources](./sources.md) for attribution of the foundational metadata corpuses
 we build on top of.
 
-Fatcat is currently used internally at the [Internet Archive](), but interested
+Fatcat is currently used internally at the [Internet Archive][], but interested
 folks are welcome to contribute to it's design and development, and we hope to
 ultimately crowd-source corrections and additional to bibliographic metadata,
 and receive direct automated feeds of new content.

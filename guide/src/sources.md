@@ -3,7 +3,7 @@
 The core metadata bootstrap sources, by entity type, are:
 
 - `releases`: Crossref metadata, with DOIs as the primary identifier, and
-  PubMed (central), Wikidata, and [CORE]() identifiers cross-referenced
+  PubMed (central), Wikidata, and [CORE][] identifiers cross-referenced
 - `containers`: munged metadata from the DOAJ, ROAD, and Norwegian journal
   list, with ISSN-Ls as the primary identifier. ISSN provides an "ISSN to
   ISSN-L" mapping to normalize electronic and print ISSN numbers.

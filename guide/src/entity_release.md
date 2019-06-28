@@ -144,7 +144,7 @@ complete or correct in more obscure cases.
   should *always* be stored will be needed.
 - `core` (string): external identifier for the [CORE] open access
   aggregator. These identifiers are integers, but stored in string format.
-- `arxiv` (string) external identifier to a (version-specific) [arxiv.org]()
+- `arxiv` (string) external identifier to a (version-specific) [arxiv.org][]
   work. For releases, must always include the `vN` suffix (eg, `v3`).
 - `jstor` (string) external identifier for works in JSTOR.
 - `ark` (string) ARK identifer

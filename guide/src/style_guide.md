@@ -20,7 +20,7 @@ documentation (such as DOI `10.5555/12345678`) are allowed (and the entity
 should be tagged as a fake or example). Non-registered "identifier-like
 strings", which are semantically valid but not registered, should not exist in
 Fatcat metadata in an identifier column. Invalid identifier strings can be
-stored in "extra" metadata. Crossref has [blogged]() about this distinction.
+stored in "extra" metadata. Crossref has [blogged][] about this distinction.
 
 [blogged]: https://www.crossref.org/blog/doi-like-strings-and-fake-dois/
 
@@ -33,7 +33,7 @@ bots.
 DOIs should *always* be stored and transferred in lower-case form. Note that
 there are almost no other constraints on DOIs (and handles in general): they
 may have multiple forward slashes, whitespace, of arbitrary length, etc.
-Crossref has a [number of examples]() of such "valid" but frustratingly
+Crossref has a [number of examples][] of such "valid" but frustratingly
 formatted strings.
 
 [number of examples]: https://www.crossref.org/blog/dois-unambiguously-and-persistently-identify-published-trustworthy-citable-online-scholarly-literature-right/
