@@ -7,13 +7,14 @@ from fixtures import *
 from fatcat_web.forms import ReleaseEntityForm, FileEntityForm, ContainerEntityForm
 
 DUMMY_DEMO_ENTITIES = {
-    'container': 'aaaaaaaaaaaaaeiraaaaaaaaai',
-    'creator': 'aaaaaaaaaaaaaircaaaaaaaaai',
-    'file': 'aaaaaaaaaaaaamztaaaaaaaaai',
-    'fileset': 'aaaaaaaaaaaaaztgaaaaaaaaai',
-    'webcapture': 'aaaaaaaaaaaaa53xaaaaaaaaai',
-    'release': 'aaaaaaaaaaaaarceaaaaaaaaai',
-    'work': 'aaaaaaaaaaaaavkvaaaaaaaaai',
+    'container': ('aaaaaaaaaaaaaeiraaaaaaaaai', '00000000-0000-0000-1111-fff000000002'),
+    # note inconsistency here (q not i)
+    'creator': ('aaaaaaaaaaaaaircaaaaaaaaaq', '00000000-0000-0000-2222-fff000000002'),
+    'file': ('aaaaaaaaaaaaamztaaaaaaaaai', '00000000-0000-0000-3333-fff000000002'),
+    'fileset': ('aaaaaaaaaaaaaztgaaaaaaaaai', '00000000-0000-0000-6666-fff000000002'),
+    'webcapture': ('aaaaaaaaaaaaa53xaaaaaaaaai', '00000000-0000-0000-7777-fff000000002'),
+    'release': ('aaaaaaaaaaaaarceaaaaaaaaai', '00000000-0000-0000-4444-fff000000002'),
+    'work': ('aaaaaaaaaaaaavkvaaaaaaaaai', '00000000-0000-0000-5555-fff000000002'),
 }
 
 REALISTIC_DEMO_ENTITIES = {
@@ -29,11 +30,22 @@ REALISTIC_DEMO_ENTITIES = {
 
 def test_entity_basics(app):
 
-    for entity_type, ident in DUMMY_DEMO_ENTITIES.items():
+    for entity_type, (ident, revision) in DUMMY_DEMO_ENTITIES.items():
         # good requests
         rv = app.get('/{}/{}'.format(entity_type, ident))
         assert rv.status_code == 200
         rv = app.get('/{}/{}/history'.format(entity_type, ident))
+        assert rv.status_code == 200
+        rv = app.get('/{}/{}/metadata'.format(entity_type, ident))
+        assert rv.status_code == 200
+        rv = app.get('/{}/rev/{}'.format(entity_type, revision))
+        assert rv.status_code == 200
+        rv = app.get('/{}/rev/{}/metadata'.format(entity_type, revision))
+        assert rv.status_code == 200
+        print('/editgroup/aaaaaaaaaaaabo53aaaaaaaaaq/{}/{}'.format(entity_type, ident))
+        rv = app.get('/editgroup/aaaaaaaaaaaabo53aaaaaaaaaq/{}/{}'.format(entity_type, ident))
+        assert rv.status_code == 200
+        rv = app.get('/editgroup/aaaaaaaaaaaabo53aaaaaaaaaq/{}/{}/metadata'.format(entity_type, ident))
         assert rv.status_code == 200
 
         # bad requests
@@ -98,13 +110,19 @@ def test_web_container(app):
 
     rv = app.get('/container/aaaaaaaaaaaaaeiraaaaaaaaai')
     assert rv.status_code == 200
+    rv = app.get('/container/aaaaaaaaaaaaaeiraaaaaaaaai/metadata')
+    assert rv.status_code == 200
     rv = app.get('/container/aaaaaaaaaaaaaeiraaaaaaaaai/edit')
     assert rv.status_code == 302
     rv = app.get('/container/create')
     assert rv.status_code == 302
     rv = app.get('/container/rev/00000000-0000-0000-1111-fff000000002')
     assert rv.status_code == 200
+    rv = app.get('/container/rev/00000000-0000-0000-1111-fff000000002/metadata')
+    assert rv.status_code == 200
     rv = app.get('/editgroup/aaaaaaaaaaaabo53aaaaaaaaaq/container/aaaaaaaaaaaaaeiraaaaaaaaai')
+    assert rv.status_code == 200
+    rv = app.get('/editgroup/aaaaaaaaaaaabo53aaaaaaaaaq/container/aaaaaaaaaaaaaeiraaaaaaaaai/metadata')
     assert rv.status_code == 200
     rv = app.get('/editgroup/aaaaaaaaaaaabo53aaaaaaaaaq/container/aaaaaaaaaaaaaeiraaaaaaaaai/edit')
     assert rv.status_code == 302
@@ -227,6 +245,26 @@ def test_web_release(app):
     # not logged in
 
     rv = app.get('/release/aaaaaaaaaaaaarceaaaaaaaaai')
+    assert rv.status_code == 200
+    rv = app.get('/release/aaaaaaaaaaaaarceaaaaaaaaai/contribs')
+    assert rv.status_code == 200
+    rv = app.get('/release/aaaaaaaaaaaaarceaaaaaaaaai/references')
+    assert rv.status_code == 200
+    rv = app.get('/release/aaaaaaaaaaaaarceaaaaaaaaai/metadata')
+    assert rv.status_code == 200
+    rv = app.get('/release/rev/00000000-0000-0000-4444-fff000000002/contribs')
+    assert rv.status_code == 200
+    rv = app.get('/release/rev/00000000-0000-0000-4444-fff000000002/references')
+    assert rv.status_code == 200
+    rv = app.get('/release/rev/00000000-0000-0000-4444-fff000000002/metadata')
+    assert rv.status_code == 200
+    rv = app.get('/editgroup/aaaaaaaaaaaabo53aaaaaaaaaq/release/aaaaaaaaaaaaarceaaaaaaaaai')
+    assert rv.status_code == 200
+    rv = app.get('/editgroup/aaaaaaaaaaaabo53aaaaaaaaaq/release/aaaaaaaaaaaaarceaaaaaaaaai/contribs')
+    assert rv.status_code == 200
+    rv = app.get('/editgroup/aaaaaaaaaaaabo53aaaaaaaaaq/release/aaaaaaaaaaaaarceaaaaaaaaai/references')
+    assert rv.status_code == 200
+    rv = app.get('/editgroup/aaaaaaaaaaaabo53aaaaaaaaaq/release/aaaaaaaaaaaaarceaaaaaaaaai/metadata')
     assert rv.status_code == 200
 
     rv = app.get('/release/aaaaaaaaaaaaarceaaaaaaaaai/edit')
