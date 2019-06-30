@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% import "entity_macros.html" as entity_macros %}
 
+{% block title %}Editgroup{% endblock %}
+
 {% block body %}
 
 {% macro edit_list(auth_to, editgroup, edits, entity_type, entity_name) -%}

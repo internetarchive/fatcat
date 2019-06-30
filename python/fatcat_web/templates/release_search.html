@@ -1,4 +1,13 @@
 {% extends "base.html" %}
+
+{% block title %}
+{% if query %}
+  Search: {{ query }}
+{% else %}
+  Release Search
+{% endif %}
+{% endblock %}
+
 {% block fullmain %}
 
 <div class="ui vertical stripe segment" style="background-color: #EEE; padding-top: 4.5em;">
@@ -14,7 +23,7 @@
           <input type="checkbox" name="fulltext_only" value="true" {% if fulltext_only %}checked{% endif %}>
           <label>Fulltext Available Only</label>
         </div>
-        <br>Can also lookup by <b><a href="/release/lookup">identifier</a></b> or search <b><a href="/container/search?q={{ query or "" }}">containers</a></b>.
+        <br>Can also lookup by <b><a href="/release/lookup">identifier</a></b> or search for <b><a href="/container/search?q={{ query or "" }}">containers</a></b> (eg, journals).
       </div>
     </form>
   </div>

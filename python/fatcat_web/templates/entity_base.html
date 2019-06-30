@@ -1,5 +1,18 @@
 {% extends "base.html" %}
 
+{# TODO: more specific titles #}
+{% block title %}
+{% if entity_type == "container" and entity.name %}
+  {{ entity.name }}
+{% elif entity_type == "creator" and entity.display_name %}
+  {{ entity.display_name }}
+{% elif entity_type == "release" and entity.title %}
+  {{ entity.title }}
+{% else %}
+  {{ entity_type }}_{{ entity.ident or entity.revision }}
+{% endif %}
+{% endblock %}
+
 {% macro entity_tab(name, text, url_suffix, count=None) %}
 <a href ="{% if editgroup %}/editgroup/{{ editgroup.editgroup_id }}{% endif %}/{{ entity_type }}/{% if entity.ident %}{{ entity.ident }}{% elif entity.revision %}rev/{{ entity.revision }}{% endif %}{{ url_suffix }}" class="{% if entity_view == name %}active{% endif %} item" style="padding: 0em 1.2em;">{{ text }}{% if count != None %} ({{ count }}){% endif %}</a>
 {% endmacro %}
