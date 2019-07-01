@@ -77,10 +77,13 @@
       <span class="ui grey basic label small">{{ paper.release_type }}</span>
     {% endif %}
   {% endif %}
+  {% if paper.withdrawn_status %}
+    <span class="ui red label small">{{ paper.withdrawn_status }}</span>
+  {% endif %}
   {% if paper.release_stage and paper.release_stage != "published" %}
-    <span class="ui pink label small">{{ paper.release_stage }}</span>
+    <span class="ui pink basic label small">{{ paper.release_stage }}</span>
   {% elif not paper.release_stage %}
-    <span class="ui red label small">unknown</span>
+    <span class="ui red basic label small">unknown</span>
   {% endif %}
   {% if paper.container_name %}
     {% if paper.container_id %}

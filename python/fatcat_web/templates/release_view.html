@@ -253,13 +253,20 @@
 {% if release.release_type or release.release_stage or release.release_year %}
   <div class="ui segment attached">
   <b>Type</b> &nbsp;<code>{{ release.release_type or 'unknown' }}</code><br>
-  <b>Stage</b> &nbsp; <code>{{ release.release_stage or 'unknown' }}</code><br>
+  <b>Stage</b> &nbsp; <code>{{ release.release_stage or 'unknown' }}
+    {% if release.withdrawn_status %}
+      <strong style="color: red;">[{{ release.withdrawn_status }}]</strong>
+    {% endif %}
+  </code><br>
   {% if release.release_date %}
     <meta itemprop="datePublished" content="{{ release.release_date }}">
     <b>Date</b> &nbsp; {{ release.release_date }}<br>
   {% elif release.release_year %}
     <meta itemprop="datePublished" content="{{ release.release_year }}">
     <b>Year</b> &nbsp; {{ release.release_year }}<br>
+  {% endif %}
+  {% if release.withdrawn_date %}
+    <b>Withdrawn</b> &nbsp; {{ release.withdrawn_date }}<br>
   {% endif %}
   {% if release.version %}
     <b>Version</b> &nbsp; <code>{{ release.version }}</code><br>
