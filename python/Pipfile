@@ -49,4 +49,4 @@ pylatexenc = "*"
 # (Xenial), currently the default on Internet Archive production VMs, as well
 # as Debian stable (stretch). Will probably bump to 3.6 in early 2019 when
 # updating both of these environments.
-python_version = "3.5"
+python_version = "3.6"
