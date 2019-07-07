@@ -23,7 +23,7 @@ artifacts) over physical items, the primary bibliographic entity types are:
   more `releases`. Machine-verifiable metadata includes file hashes, size, and
   detected file format. Verified URLs link to locations on the open web where
   this file can be found or has been archived. Has relationships:
-    - multiple `release` entieis that this file is a complete manifestation of
+    - multiple `release` entities that this file is a complete manifestation of
       (almost always a single release)
 - `fileset`: a list of muliple concrete files, together forming complete
   `release` manifestation. Primarily intended for datasets and supplementary
