@@ -18,9 +18,10 @@ Commands:
     index_doaj
     index_road
     index_crossref
-    index_szczepanski
-    index_jurn
+    index_entrez
     index_norwegian
+    index_szczepanski
+    index_ezb
 
     fatcat_load
     fatcat_stats
@@ -28,13 +29,17 @@ Commands:
     export_urls
     update_url_status
 
-TODO:
+Future commands:
 
-    index_ezb
+    index_jurn
     index_wikidata
     index_datacite
     preserve_kbart --keeper SLUG
     preserve_sim
+
+TODO:
+- index -> directory
+- log out index issues (duplicate ISSN-L, etc)
 
 """
 
@@ -70,6 +75,8 @@ PORTICO_FILE = 'data/Portico_Holding_KBart.txt'
 JSTOR_FILE = 'data/jstor_all-archive-titles.txt'
 SIM_FILE = 'data/MASTER TITLE_METADATA_LIST_20171019.converted.csv'
 IA_CRAWL_FILE = 'data/journal_homepage_results.partial.tsv'
+SZCZEPANSKI_FILE = 'data/Jan-Szczepanski-Open-Access-Journals-2018_0.fixed.json'
+EZB_FILE = 'data/ezb_sample.json'
 
 
 ################### Utilities
@@ -132,11 +139,14 @@ def parse_country(s):
             country = pycountry.countries.get(name=s)
     except KeyError:
         return None
-    return country.alpha_2.lower()
+    if country:
+        return country.alpha_2.lower()
+    else:
+        return None
 
 def parse_mimetypes(val):
     # XXX: multiple mimetypes?
-    if not (val and issnl):
+    if not val:
         return
     mimetype = None
     if '/' in val:
@@ -333,7 +343,8 @@ class ChoculaDatabase():
         if issnp:
             extra['issnp'] = issnp
 
-        publisher = unquote(ftfy.fix_text(publisher))
+        if publisher:
+            publisher = unquote(ftfy.fix_text(publisher))
         if publisher:
             extra['publisher'] = publisher
 
@@ -342,8 +353,14 @@ class ChoculaDatabase():
         else:
             extra = None
 
-        self.c.execute("INSERT INTO journal_index VALUES (?,?,?,?,?,?)",
-            (issnl, index_slug, identifier, name, None, extra))
+        try:
+            self.c.execute("INSERT INTO journal_index VALUES (?,?,?,?,?,?)",
+                (issnl, index_slug, identifier, name, None, extra))
+            status = 'inserted'
+        except sqlite3.IntegrityError as ie:
+            if str(ie).startswith("UNIQUE"):
+                return None, "duplicate-issnl"
+            raise ie
 
         return issnl, status
 
@@ -355,12 +372,12 @@ class ChoculaDatabase():
         url.replace('Http://', 'http://')
 
         url = str(urlcanon.semantic_precise(url))
-        surt = surt.surt(url)
+        url_surt = surt.surt(url)
         tld = tldextract.extract(url)
         domain = '.'.join(tld[:])
 
         self.c.execute("INSERT OR REPLACE INTO homepage (issnl, surt, url, host, domain, suffix) VALUES (?,?,?,?,?,?)",
-            (issnl, surt, url, tld.domain, tld.registered_domain, tld.suffix))
+            (issnl, url_surt, url, tld.domain, tld.registered_domain, tld.suffix))
 
     def index_entrez(self, args):
         path = args.input_file or ENTREZ_FILE
@@ -385,6 +402,7 @@ class ChoculaDatabase():
             )
             counts[status] += 1
         self.c.close()
+        self.db.commit()
         print(counts)
 
     def index_road(self, args):
@@ -417,6 +435,7 @@ class ChoculaDatabase():
             if row['URL2']:
                 self.add_url(issnl, row['URL2'])
         self.c.close()
+        self.db.commit()
         print(counts)
 
     def index_doaj(self, args):
@@ -436,7 +455,6 @@ class ChoculaDatabase():
             if row['DOAJ Seal']:
                 extra['seal'] = {"no": False, "yes": True}[row['DOAJ Seal'].lower()]
             if row['Country of publisher']:
-                print(row['Country of publisher'])
                 extra['country'] = parse_country(row['Country of publisher'])
             row['lang'] = parse_lang(row['Full text language'])
             # TODO: work_level: bool (are work-level publications deposited with DOAJ?)
@@ -452,7 +470,7 @@ class ChoculaDatabase():
             # TODO: Permanent article identifiers
             default_license = row['Journal license']
             if default_license and default_license.startswith('CC'):
-                extra[issnl]['default_license'] = default_license.replace('CC ', 'CC-').strip()
+                extra['default_license'] = default_license.replace('CC ', 'CC-').strip()
 
             issnl, status = self.add_issn(
                 'doaj',
@@ -468,6 +486,7 @@ class ChoculaDatabase():
 
             # TODO: Subjects
         self.c.close()
+        self.db.commit()
         print(counts)
 
     def index_sherpa_romeo(self, args):
@@ -510,6 +529,7 @@ class ChoculaDatabase():
             if not issnl:
                 continue
         self.c.close()
+        self.db.commit()
         print(counts)
 
     def index_norwegian(self, args):
@@ -530,10 +550,19 @@ class ChoculaDatabase():
             if not (issnp or issne):
                 counts['no-issn'] += 1
                 continue
+            extra = dict(as_of=NORWEGIAN_DATE)
+            extra['level'] = int(row['Present Level (2018)'])
+            if row['Original title'] != row['International title']:
+                extra['original_name'] = row['Original title']
+            if row['Country of publication']:
+                extra['country'] = parse_country(row['Country of publication'])
+            if row['Language']:
+                extra['lang'] = parse_lang(row['Language'])
             issnl, status = self.add_issn(
                 'norwegian',
                 issnp=issnp,
                 issne=issne,
+                identifier=row['NSD tidsskrift_id'],
                 name=row['International title'],
                 publisher=row['Publisher'],
                 extra=extra,
@@ -541,21 +570,88 @@ class ChoculaDatabase():
             counts[status] += 1
             if not issnl:
                 continue
-            d = self.data[issnl]
-            norwegian = dict(as_of=NORWEGIAN_DATE)
-            norwegian['level'] = int(row['Present Level (2018)'])
-            norwegian['id'] = int(row['NSD tidsskrift_id'])
-
-            if row['Original title'] != row['International title'] and not 'original_name' in d:
-                self.data[issnl]['original_name'] = row['Original title']
-            if row['Country of publication']:
-                self.add_country(issnl, row['Country of publication'])
-            if row['Language']:
-                self.add_lang(issnl, row['Language'])
             if row['URL']:
                 self.add_url(issnl, row['URL'])
-            self.data[issnl]['norwegian'] = norwegian
         self.c.close()
+        self.db.commit()
+        print(counts)
+
+    def index_szczepanski(self, args):
+        path = args.input_file or SZCZEPANSKI_FILE
+        print("##### Loading Szczepanski...")
+        # JSON
+        json_file = open(path, 'r')
+        counts = Counter()
+        self.c = self.db.cursor()
+        for row in json_file:
+            if not row:
+                continue
+            row = json.loads(row)
+            if not (row.get('issne') or row.get('issnp') or row.get('issn')):
+                #print(row)
+                counts['no-issn'] += 1
+                continue
+            extra = dict()
+            if row.get('extra'):
+                extra['notes'] = row.get('extra')
+            for k in ('other_titles', 'year_spans', 'ed'):
+                if row.get(k):
+                    extra[k] = row[k]
+            issnl, status = self.add_issn(
+                'szczepanski',
+                issne=row.get('issne'),
+                issnp=row.get('issnp'),
+                raw_issn=row.get('issn'),
+                name=row['title'],
+                publisher=row.get('ed'),
+                extra=extra,
+            )
+            counts[status] += 1
+            if not issnl:
+                continue
+            for url in row.get('urls', []):
+                self.add_url(issnl, url['url'])
+        self.c.close()
+        self.db.commit()
+        print(counts)
+
+    def index_ezb(self, args):
+        path = args.input_file or EZB_FILE
+        print("##### Loading EZB...")
+        # JSON
+        json_file = open(path, 'r')
+        counts = Counter()
+        self.c = self.db.cursor()
+        for row in json_file:
+            if not row:
+                continue
+            row = json.loads(row)
+            if not (row.get('issne') or row.get('issnp')):
+                #print(row)
+                counts['no-issn'] += 1
+                continue
+            extra = dict()
+            for k in ('ezb_color', 'subjects', 'keywords', 'zdb_id',
+                      'first_volume', 'first_issue', 'first_year',
+                      'appearance', 'costs'):
+                if row.get(k):
+                    extra[k] = row[k]
+            issnl, status = self.add_issn(
+                'ezb',
+                issne=row.get('issne'),
+                issnp=row.get('issnp'),
+                identifier=row['ezb_id'],
+                name=row['title'],
+                publisher=row.get('publisher'),
+                extra=extra,
+            )
+            counts[status] += 1
+            if not issnl:
+                continue
+            if row.get('url'):
+                self.add_url(issnl, row['url'])
+        self.c.close()
+        self.db.commit()
         print(counts)
 
     def index_kbart(self, name, path):
@@ -601,6 +697,7 @@ class ChoculaDatabase():
                     new_spans = [[start, end]]
                 self.data[issnl]['kbart'][name]['year_spans'] = merge_spans(old_spans, new_spans)
         self.c.close()
+        self.db.commit()
         print(counts)
 
     def index_crossref(self, args):
@@ -615,27 +712,26 @@ class ChoculaDatabase():
                 row['pissn'] = row['pissn'][:4] + '-' + row['pissn'][4:]
             if row['eissn'] and len(row['eissn']) == 8:
                 row['eissn'] = row['eissn'][:4] + '-' + row['eissn'][4:]
-            if not (row['pissn'] or row['eissn']):
+            if row['additionalIssns'] and len(row['additionalIssns']) == 8:
+                row['additionalIssns'] = row['additionalIssns'][:4] + '-' + row['additionalIssns'][4:]
+            if not (row['pissn'] or row['eissn'] or row['additionalIssns']):
+                print(row)
                 counts['no-issn'] += 1
                 continue
+            extra = dict()
             issnl, status = self.add_issn(
                 'crossref',
                 issnp=row['pissn'],
                 issne=row['eissn'],
+                raw_issn=row['additionalIssns'],
+                identifier=row.get('doi'),
                 name=row['JournalTitle'],
                 publisher=row['Publisher'],
                 extra=extra,
             )
             counts[status] += 1
-            if not issnl:
-                continue
-            d = self.data[issnl]
-            crossref = dict()
-            if row['doi']:
-                crossref['doi'] = row['doi']
-            crossref['any'] = True
-            self.data[issnl]['crossref'] = crossref
         self.c.close()
+        self.db.commit()
         print(counts)
 
     def index_sim(self, args):
@@ -688,6 +784,7 @@ class ChoculaDatabase():
                     sim.pop(k)
             self.data[issnl]['sim'] = sim
         self.c.close()
+        self.db.commit()
         print(counts)
 
     def load_homepage_crawl(self, path):
@@ -713,6 +810,7 @@ class ChoculaDatabase():
                 ia['homepage_url'] = row['first_url']
             self.data[issnl]['ia'] = ia
         self.c.close()
+        self.db.commit()
         print(counts)
 
     def everything(self, args):
@@ -768,19 +866,22 @@ def main():
     sub = subparsers.add_parser('summarize')
     sub.set_defaults(func='summarize')
 
+    # TODO: 'jurn'
+    for ind in ('doaj', 'road', 'crossref', 'entrez', 'norwegian', 'szczepanski', 'ezb'):
+        sub = subparsers.add_parser('index_{}'.format(ind))
+        sub.set_defaults(func='index_{}'.format(ind))
 
-    #index_doaj
-    #index_road
-    #index_crossref
-    #index_szczepanski
-    #index_jurn
-    #index_norwegian
+    sub = subparsers.add_parser('fatcat_load')
+    sub.set_defaults(func='fatcat_load')
 
-    #fatcat_load
-    #fatcat_stats
+    sub = subparsers.add_parser('fatcat_stats')
+    sub.set_defaults(func='fatcat_stats')
 
-    #export_urls
-    #update_url_status
+    sub = subparsers.add_parser('export_urls')
+    sub.set_defaults(func='export_urls')
+
+    sub = subparsers.add_parser('update_url_status')
+    sub.set_defaults(func='update_url_status')
 
     args = parser.parse_args()
     if not args.__dict__.get("func"):
@@ -788,7 +889,7 @@ def main():
         sys.exit(-1)
 
     cdb = ChoculaDatabase(args.db_file)
-    if args.func not in ('init_db', 'summarize'):
+    if args.func.startswith('index_'):
         cdb.read_issn_map_file(ISSNL_FILE)
     func = getattr(cdb, args.func)
     func(args)
