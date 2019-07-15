@@ -40,3 +40,5 @@ wget -c https://archive.org/download/norwegian_register_journals/2018-03-02%20No
 
 #wget -c https://archive.org/download/szczepanski-oa-journal-list-2018/Jan-Szczepanski-Open-Access-Journals-2018_0.docx
 #wget -c https://archive.org/download/szczepanski-oa-journal-list-2018/Jan-Szczepanski-Open-Access-Journals-2018_0.converted.csv
+
+wget -c https://archive.org/download/szczepanski-oa-journal-list-2018/Jan-Szczepanski-Open-Access-Journals-2018_0.fixed.json
