@@ -4,7 +4,7 @@ from fatcat_client.rest import ApiException
 from fatcat_tools.transforms import *
 from fatcat_web import app, api
 from fatcat_web.search import get_elastic_container_stats
-from fatcat_web.hacks import strip_extlink_xml, wayback_suffix
+from fatcat_web.hacks import strip_extlink_xml, wayback_suffix, get_camp_pdf_path
 
 def enrich_container_entity(entity):
     if entity.state in ('redirect', 'deleted'):
@@ -75,6 +75,10 @@ def enrich_release_entity(entity):
     if entity.abstracts:
         if 'latex' in entity.abstracts[0].mimetype:
             entity.abstracts.reverse()
+    if entity.files:
+        camp_pdf_path = get_camp_pdf_path(entity)
+        if camp_pdf_path:
+            entity.camp_pdf_url = app.config['CAMP_PDF_URI'] + camp_pdf_path
     return entity
 
 def enrich_work_entity(entity):

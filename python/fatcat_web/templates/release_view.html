@@ -250,6 +250,10 @@
 <span class="ui top attached fluid huge grey button"><i class="file cross icon"></i>No Full Text Available</span>
 {% endif %}
 
+{% if entity.camp_pdf_url %}
+  <a href="{{ entity.camp_pdf_url }}" class="ui top attached fluid huge yellow button"><i class="tree icon"></i>Local Copy</a>
+{% endif %}
+
 {% if release.release_type or release.release_stage or release.release_year %}
   <div class="ui segment attached">
   <b>Type</b> &nbsp;<code>{{ release.release_type or 'unknown' }}</code><br>

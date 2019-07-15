@@ -65,6 +65,8 @@ class Config(object):
         SESSION_COOKIE_SAMESITE = 'Lax'
         PERMANENT_SESSION_LIFETIME = 2678400 # 31 days, in seconds
 
+    CAMP_PDF_URI = os.environ.get("CAMP_PDF_URI", default='http://localhost')
+
     try:
         GIT_RELEASE = raven.fetch_git_sha('..')
     except Exception as e:
