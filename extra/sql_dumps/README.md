@@ -72,7 +72,7 @@ export, it would be possible to use parallel dumping. However, this would put
 additional load on both the database and underlying disk. Could also cause
 issues with users/permissions.
 
-## HOWTO: Restor full database backup
+## HOWTO: Restore full database backup
 
 To restore, CAREFULLY, run:
 
