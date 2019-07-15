@@ -15,6 +15,7 @@ from fatcat_web.auth import handle_token_login, handle_logout, load_user, handle
 from fatcat_web.cors import crossdomain
 from fatcat_web.search import *
 from fatcat_web.entity_helpers import *
+from fatcat_web.hacks import get_camp_pdf_path
 
 
 ### Generic Entity Views ####################################################
@@ -702,6 +703,16 @@ def release_bibtex(ident):
     csl = release_to_csl(entity)
     bibtex = citeproc_csl(csl, 'bibtex')
     return Response(bibtex, mimetype="text/plain")
+
+@app.route('/release/<ident>/camp_pdf', methods=['GET'])
+def release_camp_pdf(ident):
+    release = generic_get_entity('release', ident)
+    camp_pdf_url = get_camp_pdf_path(release)
+    if camp_pdf_url:
+        return redirect(app.config['CAMP_PDF_URI'] + camp_pdf_url, 301)
+    else:
+        flash("Release doesn't have any file here at the camp? Sorry!")
+        abort(404)
 
 @app.route('/release/<ident>/citeproc', methods=['GET'])
 def release_citeproc(ident):
