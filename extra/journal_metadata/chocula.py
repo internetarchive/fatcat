@@ -23,14 +23,15 @@ Commands:
     index_szczepanski
     index_ezb
 
-    fatcat_load
-    fatcat_stats
+    load_fatcat
+    load_fatcat_stats
 
     export_urls
     update_url_status
 
 Future commands:
 
+    fatcat_edits
     index_jurn
     index_wikidata
     index_datacite
@@ -38,9 +39,22 @@ Future commands:
     preserve_sim
 
 TODO:
+- KBART imports (with JSON, so only a single row per slug)
+- check that all fields actually getting imported reasonably
+- imprint/publisher distinction (publisher is big group)
+- summary table should be superset of fatcat table
+- add timestamp columns to enable updates?
+- "GOLD" importer (for scopus/WoS)
+- fatcat export (filters for changes to make, writes out as JSON)
+- homepage crawl/status script
+- update_url_status (needs re-write)
 - index -> directory
 - log out index issues (duplicate ISSN-L, etc)
-
+- validate against GOLD OA list
+- decide what to do with JURN... match? create missing fatcat?
+x load_fatcat
+x fatcat_stats (also add timestamp column)
+x export_url
 """
 
 import sys, csv, json
@@ -76,7 +90,9 @@ JSTOR_FILE = 'data/jstor_all-archive-titles.txt'
 SIM_FILE = 'data/MASTER TITLE_METADATA_LIST_20171019.converted.csv'
 IA_CRAWL_FILE = 'data/journal_homepage_results.partial.tsv'
 SZCZEPANSKI_FILE = 'data/Jan-Szczepanski-Open-Access-Journals-2018_0.fixed.json'
-EZB_FILE = 'data/ezb_sample.json'
+EZB_FILE = 'data/ezb_metadata.json'
+FATCAT_CONTAINER_FILE = 'data/container_export.json'
+FATCAT_STATS_FILE = 'data/container_stats.json'
 
 
 ################### Utilities
@@ -249,36 +265,6 @@ def test_merge_spans():
 ################### Main Class
 
 class ChoculaDatabase():
-    """
-    Top-level fields we'd like to fill in if possible:
-
-        issnp: string
-        issne: string
-        first_year: year (integer)
-        last_year: if publishing has stopped
-        languages: array of ISO codes; first is the "primary" language
-        country: ISO shortcode of country published from
-        urls: homepage links
-        abbrev: string
-        default_license: slug
-        original_name: native name (if name is translated)
-        platform: hosting platform: OJS, wordpress, scielo, etc
-        mimetypes: array of strings (eg, 'application/pdf', 'text/html')
-        aliases: array of "also known as"
-
-    Lower priority (TODO/later):
-        coden: string
-        oclc_id: string (lookup?)
-        lccn_id: string (lookup?)
-        dblb_id: string
-        region: TODO: continent/world-region
-        discipline: TODO: highest-level subject; "life science", "humanities", etc
-        field: TODO: narrower description of field
-        subjects: TODO?
-
-    TODO: so many missing ISSN/ISSN-L
-    TODO: abbrev
-    """
 
     def __init__(self, db_file):
         self._issn_issnl_map = dict()
@@ -715,7 +701,7 @@ class ChoculaDatabase():
             if row['additionalIssns'] and len(row['additionalIssns']) == 8:
                 row['additionalIssns'] = row['additionalIssns'][:4] + '-' + row['additionalIssns'][4:]
             if not (row['pissn'] or row['eissn'] or row['additionalIssns']):
-                print(row)
+                #print(row)
                 counts['no-issn'] += 1
                 continue
             extra = dict()
@@ -787,7 +773,8 @@ class ChoculaDatabase():
         self.db.commit()
         print(counts)
 
-    def load_homepage_crawl(self, path):
+    def update_url_status(self, args):
+        path = args.input_file or IA_CRAWL_FILE
         print("##### Loading IA Homepage Crawl Results...")
         reader = csv.DictReader(open(path), delimiter='\t',
             fieldnames=("ISSN", "first_url", "first_status", "last_status", "last_url")
@@ -795,36 +782,166 @@ class ChoculaDatabase():
         counts = Counter()
         self.c = self.db.cursor()
         for row in reader:
-            issnl, status = self.add_issn(
-                raw_issn=row['ISSN'],
-            )
-            counts[status] += 1
-            if not issnl:
+            counts['total'] += 1
+            url = row['first_url']
+            assert(url)
+            self.c.execute("UPDATE homepage SET status_code=?, terminal_url=?, terminal_status_code=? WHERE url=?",
+                (row['first_status'], row['last_url'], row['last_status'], url))
+            counts['updated'] += 1
+        self.c.close()
+        self.db.commit()
+        print(counts)
+
+    def load_fatcat(self, args):
+        path = args.input_file or FATCAT_CONTAINER_FILE
+        print("##### Loading Fatcat Container Entities...")
+        # JSON
+        json_file = open(path, 'r')
+        counts = Counter()
+        self.c = self.db.cursor()
+        for row in json_file:
+            if not row:
                 continue
-            d = self.data[issnl]
-            ia = d.get('ia', dict())
-            ia['homepage_status'] = int(row['last_status'])
-            if ia['homepage_status'] == 200:
-                ia['homepage_url'] = row['last_url']
+            row = json.loads(row)
+            if row['state'] != 'active':
+                continue
+            counts['total'] += 1
+            extra = row.get('extra', dict())
+            issne = extra.get('issne')
+            issnp = extra.get('issnp')
+            country = extra.get('country')
+            languages = extra.get('languages', [])
+            lang = None
+            if languages:
+                lang = languages[0]
+            try:
+                self.c.execute("INSERT OR REPLACE INTO fatcat_container (issnl, ident, revision, issne, issnp, wikidata_qid, name, container_type, publisher, country, lang) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                    (row['issnl'], row['ident'], row['revision'], issne, issnp,
+                     row.get('wikidata_qid'), row['name'],
+                     row.get('container_type'), extra.get('publisher'), country,
+                     lang))
+            except sqlite3.IntegrityError as ie:
+                if str(ie).startswith("UNIQUE"):
+                    return None, "duplicate-issnl"
+                raise ie
+            counts['inserted'] += 1
+            if row.get('issnl'):
+                urls = extra.get('urls', [])
+                for url in urls:
+                    self.add_url(row['issnl'], url)
+        self.c.close()
+        self.db.commit()
+        print(counts)
+
+    def load_fatcat_stats(self, args):
+        path = args.input_file or FATCAT_STATS_FILE
+        print("##### Loading Fatcat Container Stats...")
+        # JSON
+        json_file = open(path, 'r')
+        counts = Counter()
+        self.c = self.db.cursor()
+        for row in json_file:
+            if not row:
+                continue
+            row = json.loads(row)
+            total = int(row['total'])
+            if total > 0:
+                ia_frac = float(row['in_web'])/total
+                preserved_frac = float(row['is_preserved'])/total
             else:
-                ia['homepage_url'] = row['first_url']
-            self.data[issnl]['ia'] = ia
+                ia_frac = None
+                preserved_frac = None
+            self.c.execute("UPDATE fatcat_container SET release_count = ?, ia_count = ?, ia_frac = ?, preserved_count = ?, preserved_frac = ? WHERE issnl = ?",
+                (total, row['in_web'], ia_frac, row['is_preserved'], preserved_frac, row['issnl']))
+            counts['updated'] += 1
+        self.c.close()
+        self.db.commit()
+        print(counts)
+
+    def export_urls(self, args):
+        self.c = self.db.cursor()
+        self.db.row_factory = sqlite3.Row
+        cur = self.db.execute("SELECT issnl, url FROM homepage;")
+        for hrow in cur:
+            assert(hrow['url'])
+            assert(len(hrow['url'].split()) == 1)
+            print('\t'.join((hrow['issnl'], hrow['url'])))
+
+    def summarize(self, args):
+        print("##### Summarizing Everything...")
+        counts = Counter()
+        self.c = self.db.cursor()
+        self.db.row_factory = sqlite3.Row
+        index_issnls = list(self.c.execute('SELECT DISTINCT issnl FROM journal_index'))
+        fatcat_issnls = list(self.c.execute('SELECT DISTINCT issnl FROM fatcat_container'))
+        all_issnls = set([i[0] for i in index_issnls + fatcat_issnls])
+        print("{} total ISSN-Ls".format(len(all_issnls)))
+        for issnl in list(all_issnls):
+            #print(issnl)
+            counts['total'] += 1
+
+            out = dict()
+
+            fatcat_row = list(self.db.execute("SELECT * FROM fatcat_container WHERE issnl = ?;", [issnl]))
+            if fatcat_row:
+                frow = fatcat_row[0]
+                out['fatcat_ident'] = frow['ident']
+                for k in ('name', 'publisher', 'issne', 'issnp', 'lang', 'country'):
+                    if not out.get(k) and frow[k]:
+                        out[k] = frow[k]
+                any_preservation = bool(frow['preserved_count'])
+                any_ia = bool(frow['ia_count'])
+
+            cur = self.db.execute("SELECT * FROM journal_index WHERE issnl = ?;", [issnl])
+            for irow in cur:
+                if irow['slug'] in ('crossref',):
+                    out['has_dois'] = True
+                if irow['slug'] in ('doaj','road','szczepanski'):
+                    out['is_oa'] = True
+                # TODO: or if sz color is green
+                # TODO: define longtail, based on publisher_type?
+                for k in ('name',):
+                    if not out.get(k) and irow[k]:
+                        out[k] = irow[k]
+                if irow['extra']:
+                    extra = json.loads(irow['extra'])
+                    for k in ('country', 'lang', 'issne', 'issnp', 'publisher'):
+                        if not out.get(k) and extra.get(k):
+                            out[k] = extra[k]
+
+            cur = self.db.execute("SELECT * FROM homepage WHERE issnl = ?;", [issnl])
+            for hrow in cur:
+                if hrow['terminal_status_code'] == 200:
+                    out['any_live_homepage'] = True
+
+            self.c.execute("INSERT OR REPLACE INTO journal_summary (issnl, issne, issnp, fatcat_ident, name, publisher, country, lang, is_oa, is_longtail, has_dois, any_live_homepage, any_preservation, any_ia) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                (issnl, out.get('issne'), out.get('issnp'),
+                 out.get('fatcat_ident'), out.get('name'),
+                 out.get('publisher'), out.get('country'), out.get('lang'),
+                 out.get('is_oa'), out.get('is_longtail'), out.get('has_dois', False),
+                 out.get('any_live_homepage', False), out.get('any_preservation', False),
+                 out.get('any_ia')))
         self.c.close()
         self.db.commit()
         print(counts)
 
     def everything(self, args):
+        self.init_db(args)
         self.index_doaj(args)
         self.index_norwegian(args)
         self.index_crossref(args)
         self.index_sherpa_romeo(args)
         self.index_road(args)
         self.index_entrez(args)
+        self.index_ezb(args)
+        self.load_fatcat(args)
+        self.load_fatcat_stats(args)
+        self.update_url_status(args)
         #self.load_kbart('lockss', LOCKSS_FILE)
         #self.load_kbart('clockss', CLOCKSS_FILE)
         #self.load_kbart('portico', PORTICO_FILE)
         #self.load_kbart('jstor', JSTOR_FILE)
-        self.index_sim(args)
+        #self.index_sim(args)
         #self.load_homepage_crawl(IA_CRAWL_FILE)
         self.summarize(args)
         print("### Done with everything!")
@@ -840,9 +957,6 @@ class ChoculaDatabase():
         with open('chocula_schema.sql', 'r') as fschema:
             self.db.executescript(fschema.read())
         print("Done!")
-
-    def summarize(self, args):
-        pass
 
 def main():
     parser = argparse.ArgumentParser()
@@ -871,11 +985,11 @@ def main():
         sub = subparsers.add_parser('index_{}'.format(ind))
         sub.set_defaults(func='index_{}'.format(ind))
 
-    sub = subparsers.add_parser('fatcat_load')
-    sub.set_defaults(func='fatcat_load')
+    sub = subparsers.add_parser('load_fatcat')
+    sub.set_defaults(func='load_fatcat')
 
-    sub = subparsers.add_parser('fatcat_stats')
-    sub.set_defaults(func='fatcat_stats')
+    sub = subparsers.add_parser('load_fatcat_stats')
+    sub.set_defaults(func='load_fatcat_stats')
 
     sub = subparsers.add_parser('export_urls')
     sub.set_defaults(func='export_urls')
@@ -889,7 +1003,7 @@ def main():
         sys.exit(-1)
 
     cdb = ChoculaDatabase(args.db_file)
-    if args.func.startswith('index_'):
+    if args.func.startswith('index_') or args.func in ('everything',):
         cdb.read_issn_map_file(ISSNL_FILE)
     func = getattr(cdb, args.func)
     func(args)

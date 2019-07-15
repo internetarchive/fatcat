@@ -4,9 +4,11 @@ CREATE TABLE IF NOT EXISTS journal_summary
     (issnl TEXT NOT NULL PRIMARY KEY,
      issne TEXT,
      issnp TEXT,
+     fatcat_ident TEXT,
+     name TEXT,
+     publisher TEXT,
      country TEXT,
      lang TEXT,
-     langs TEXT,
      publisher_type TEXT,
      is_active BOOLEAN,
      is_oa BOOLEAN default false,
@@ -34,6 +36,9 @@ CREATE TABLE IF NOT EXISTS fatcat_container
     (issnl TEXT NOT NULL PRIMARY KEY,
      ident TEXT NOT NULL,
      revision TEXT NOT NULL,
+     issne TEXT,
+     issnp TEXT,
+     wikidata_qid TEXT,
      name TEXT,
      container_type TEXT,
      publisher TEXT,
@@ -41,9 +46,11 @@ CREATE TABLE IF NOT EXISTS fatcat_container
      lang TEXT,
      release_count INTEGER,
      ia_count INTEGER,
-     ia_frac float,
+     ia_frac FLOAT,
      kbart_count INTEGER,
-     kbart_frac float
+     kbart_frac FLOAT,
+     preserved_count INTEGER,
+     preserved_frac FLOAT
     );
 
 CREATE TABLE IF NOT EXISTS homepage
@@ -63,7 +70,8 @@ CREATE TABLE IF NOT EXISTS homepage
      blocked BOOLEAN,
      UNIQUE(issnl, surt)
     );
-
+CREATE INDEX IF NOT EXISTS homepage_url_idx ON homepage(url);
+    
 CREATE TABLE IF NOT EXISTS fulltext_pattern
     (id INTEGER PRIMARY KEY,
      issnl TEXT NOT NULL,
