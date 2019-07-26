@@ -270,10 +270,12 @@ def parse_url(url):
     url = str(urlcanon.semantic_precise(url))
     url_surt = surt.surt(url)
     tld = tldextract.extract(url)
-    domain = '.'.join(tld[:])
+    host = '.'.join(tld)
+    if host.startswith('.'):
+        host = host[1:]
     return dict(url=url,
                 url_surt=url_surt,
-                host='.'.join(tld),
+                host=host,
                 registered_domain=tld.registered_domain,
                 suffix=tld.suffix)
 
@@ -282,6 +284,9 @@ def test_parse_url():
     assert parse_url("http://thing.core.ac.uk")['registered_domain'] == 'core.ac.uk'
     assert parse_url("http://thing.core.ac.uk")['host'] == 'thing.core.ac.uk'
     assert parse_url("http://thing.core.ac.uk")['suffix'] == 'ac.uk'
+
+    assert parse_url("google.com")['suffix'] == 'com'
+    assert parse_url("google.com")['host'] == 'google.com'
 
     assert parse_url("mailto:bnewbold@bogus.com") == None
     assert parse_url("thing.com")['url'] == 'http://thing.com/'
@@ -385,7 +390,7 @@ class ChoculaDatabase():
 
         self.c.execute("INSERT OR REPLACE INTO homepage (issnl, surt, url, host, domain, suffix) VALUES (?,?,?,?,?,?)",
             (issnl, meta['url_surt'], meta['url'], meta['host'],
-             meta['registered_domain'], meta['suffix'].suffix))
+             meta['registered_domain'], meta['suffix']))
 
     def index_entrez(self, args):
         path = args.input_file or ENTREZ_FILE
