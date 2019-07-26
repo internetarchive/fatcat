@@ -262,6 +262,47 @@ def test_merge_spans():
         [[1450, 1900], [2000, 2000]]
 
 
+def parse_url(url):
+    """
+    Parses/cleans URLs.
+
+    Returns a dict with:
+        
+        url: str, cleaned/normalized URL
+        url_surt: str, "sortable url" (a web-archiving format)
+        host: str, full hostname
+        registered_domain: "primary domain", eg "google.com" or "thing.co.uk"
+        suffix: str, eg "com" or "co.uk"
+
+    Returns None if url is really bad (not a URL).
+    """
+    if not url or 'mailto:' in url.lower() or url in ('http://n/a', 'http://N/A'):
+        return None
+    if url.startswith('www.'):
+        url = "http://" + url
+    url.replace('Http://', 'http://')
+
+    url = str(urlcanon.semantic_precise(url))
+    url_surt = surt.surt(url)
+    tld = tldextract.extract(url)
+    domain = '.'.join(tld[:])
+    return dict(url=url,
+                url_surt=url_surt,
+                host='.'.join(tld),
+                registered_domain=tld.registered_domain,
+                suffix=tld.suffix)
+
+def test_parse_url():
+    
+    assert parse_url("http://thing.core.ac.uk")['registered_domain'] == 'core.ac.uk'
+    assert parse_url("http://thing.core.ac.uk")['host'] == 'thing.core.ac.uk'
+    assert parse_url("http://thing.core.ac.uk")['suffix'] == 'ac.uk'
+
+    assert parse_url("mailto:bnewbold@bogus.com") == None
+    assert parse_url("thing.com")['url'] == 'http://thing.com/'
+    assert parse_url("Http://thing.com///")['url'] == 'http://thing.com/'
+
+
 ################### Main Class
 
 class ChoculaDatabase():
@@ -351,19 +392,15 @@ class ChoculaDatabase():
         return issnl, status
 
     def add_url(self, issnl, url):
-        if not (url and issnl) or 'mailto:' in url.lower() or url in ('http://n/a', 'http://N/A'):
+        if not (issnl and url):
             return
-        if url.startswith('www.'):
-            url = "http://" + url
-        url.replace('Http://', 'http://')
-
-        url = str(urlcanon.semantic_precise(url))
-        url_surt = surt.surt(url)
-        tld = tldextract.extract(url)
-        domain = '.'.join(tld[:])
+        meta = parse_url(url)
+        if not meta:
+            return
 
         self.c.execute("INSERT OR REPLACE INTO homepage (issnl, surt, url, host, domain, suffix) VALUES (?,?,?,?,?,?)",
-            (issnl, url_surt, url, tld.domain, tld.registered_domain, tld.suffix))
+            (issnl, meta['url_surt'], meta['url'], meta['host'],
+             meta['registered_domain'], meta['suffix'].suffix))
 
     def index_entrez(self, args):
         path = args.input_file or ENTREZ_FILE
