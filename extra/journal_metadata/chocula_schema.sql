@@ -1,6 +1,6 @@
 
 
-CREATE TABLE IF NOT EXISTS journal_summary
+CREATE TABLE IF NOT EXISTS journal
     (issnl TEXT NOT NULL PRIMARY KEY,
      issne TEXT,
      issnp TEXT,
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS journal_summary
      any_ia BOOLEAN
     );
 
-CREATE TABLE IF NOT EXISTS journal_index
+CREATE TABLE IF NOT EXISTS directory
     (issnl TEXT NOT NULL,
      slug TEXT NOT NULL,
      identifier TEXT,

@@ -371,7 +371,7 @@ class ChoculaDatabase():
             extra = None
 
         try:
-            self.c.execute("INSERT INTO journal_index VALUES (?,?,?,?,?,?)",
+            self.c.execute("INSERT INTO directory VALUES (?,?,?,?,?,?)",
                 (issnl, index_slug, identifier, name, None, extra))
             status = 'inserted'
         except sqlite3.IntegrityError as ie:
@@ -671,7 +671,7 @@ class ChoculaDatabase():
         path = args.input_file or GOLD_OA_FILE
         print("##### Loading GOLD OA...")
         # "ISSN","ISSN_L","ISSN_IN_DOAJ","ISSN_IN_ROAD","ISSN_IN_PMC","ISSN_IN_OAPC","ISSN_IN_WOS","ISSN_IN_SCOPUS","JOURNAL_IN_DOAJ","JOURNAL_IN_ROAD","JOURNAL_IN_PMC","JOURNAL_IN_OAPC","JOURNAL_IN_WOS","JOURNAL_IN_SCOPUS","TITLE","TITLE_SOURCE"
-        reader = csv.DictReader(open(path))
+        reader = csv.DictReader(open(path, encoding="ISO-8859-1"))
         counts = Counter()
         self.c = self.db.cursor()
         for row in reader:
@@ -683,11 +683,18 @@ class ChoculaDatabase():
                 extra['in_' + ind.lower()] = bool(int(row['JOURNAL_IN_' + ind]))
             issnl, status = self.add_issn(
                 'gold_oa',
-                issne=row['ISSN_L'],
+                raw_issn=row['ISSN_L'],
                 name=row['TITLE'],
                 extra=extra,
             )
             counts[status] += 1
+            # also add for other non-direct indices
+            for ind in ('OAPC', 'WOS', 'SCOPUS'):
+                issnl, status = self.add_issn(
+                    ind.lower(),
+                    raw_issn=row['ISSN_L'],
+                    name=row['TITLE'],
+                )
         self.c.close()
         self.db.commit()
         print(counts)
@@ -928,7 +935,7 @@ class ChoculaDatabase():
         counts = Counter()
         self.c = self.db.cursor()
         self.db.row_factory = sqlite3.Row
-        index_issnls = list(self.c.execute('SELECT DISTINCT issnl FROM journal_index'))
+        index_issnls = list(self.c.execute('SELECT DISTINCT issnl FROM directory'))
         fatcat_issnls = list(self.c.execute('SELECT DISTINCT issnl FROM fatcat_container'))
         all_issnls = set([i[0] for i in index_issnls + fatcat_issnls])
         print("{} total ISSN-Ls".format(len(all_issnls)))
@@ -948,7 +955,7 @@ class ChoculaDatabase():
                 any_preservation = bool(frow['preserved_count'])
                 any_ia = bool(frow['ia_count'])
 
-            cur = self.db.execute("SELECT * FROM journal_index WHERE issnl = ?;", [issnl])
+            cur = self.db.execute("SELECT * FROM directory WHERE issnl = ?;", [issnl])
             for irow in cur:
                 if irow['slug'] in ('crossref',):
                     out['has_dois'] = True
@@ -970,7 +977,7 @@ class ChoculaDatabase():
                 if hrow['terminal_status_code'] == 200:
                     out['any_live_homepage'] = True
 
-            self.c.execute("INSERT OR REPLACE INTO journal_summary (issnl, issne, issnp, fatcat_ident, name, publisher, country, lang, is_oa, is_longtail, has_dois, any_live_homepage, any_preservation, any_ia) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            self.c.execute("INSERT OR REPLACE INTO journal (issnl, issne, issnp, fatcat_ident, name, publisher, country, lang, is_oa, is_longtail, has_dois, any_live_homepage, any_preservation, any_ia) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 (issnl, out.get('issne'), out.get('issnp'),
                  out.get('fatcat_ident'), out.get('name'),
                  out.get('publisher'), out.get('country'), out.get('lang'),
@@ -990,6 +997,7 @@ class ChoculaDatabase():
         self.index_road(args)
         self.index_entrez(args)
         self.index_ezb(args)
+        self.index_gold_oa(args)
         self.load_fatcat(args)
         self.load_fatcat_stats(args)
         self.update_url_status(args)
@@ -1037,7 +1045,7 @@ def main():
     sub.set_defaults(func='summarize')
 
     # TODO: 'jurn'
-    for ind in ('doaj', 'road', 'crossref', 'entrez', 'norwegian', 'szczepanski', 'ezb'):
+    for ind in ('doaj', 'road', 'crossref', 'entrez', 'norwegian', 'szczepanski', 'ezb', 'gold_oa'):
         sub = subparsers.add_parser('index_{}'.format(ind))
         sub.set_defaults(func='index_{}'.format(ind))
 
