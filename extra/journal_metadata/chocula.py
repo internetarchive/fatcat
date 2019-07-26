@@ -38,23 +38,7 @@ Future commands:
     preserve_kbart --keeper SLUG
     preserve_sim
 
-TODO:
-- KBART imports (with JSON, so only a single row per slug)
-- check that all fields actually getting imported reasonably
-- imprint/publisher distinction (publisher is big group)
-- summary table should be superset of fatcat table
-- add timestamp columns to enable updates?
-- "GOLD" importer (for scopus/WoS)
-- fatcat export (filters for changes to make, writes out as JSON)
-- homepage crawl/status script
-- update_url_status (needs re-write)
-- index -> directory
-- log out index issues (duplicate ISSN-L, etc)
-- validate against GOLD OA list
-- decide what to do with JURN... match? create missing fatcat?
-x load_fatcat
-x fatcat_stats (also add timestamp column)
-x export_url
+See TODO.md for more work-in-progress
 """
 
 import sys, csv, json
@@ -91,6 +75,7 @@ SIM_FILE = 'data/MASTER TITLE_METADATA_LIST_20171019.converted.csv'
 IA_CRAWL_FILE = 'data/journal_homepage_results.partial.tsv'
 SZCZEPANSKI_FILE = 'data/Jan-Szczepanski-Open-Access-Journals-2018_0.fixed.json'
 EZB_FILE = 'data/ezb_metadata.json'
+GOLD_OA_FILE = 'data/ISSN_Gold-OA_3.0.csv'
 FATCAT_CONTAINER_FILE = 'data/container_export.json'
 FATCAT_STATS_FILE = 'data/container_stats.json'
 
@@ -677,36 +662,66 @@ class ChoculaDatabase():
         self.db.commit()
         print(counts)
 
-    def index_kbart(self, name, path):
-        print("##### Loading KBART file for {}...".format(name))
+    def index_gold_oa(self, args):
+        path = args.input_file or GOLD_OA_FILE
+        print("##### Loading GOLD OA...")
+        # "ISSN","ISSN_L","ISSN_IN_DOAJ","ISSN_IN_ROAD","ISSN_IN_PMC","ISSN_IN_OAPC","ISSN_IN_WOS","ISSN_IN_SCOPUS","JOURNAL_IN_DOAJ","JOURNAL_IN_ROAD","JOURNAL_IN_PMC","JOURNAL_IN_OAPC","JOURNAL_IN_WOS","JOURNAL_IN_SCOPUS","TITLE","TITLE_SOURCE"
+        reader = csv.DictReader(open(path))
+        counts = Counter()
+        self.c = self.db.cursor()
+        for row in reader:
+            if not (row.get('ISSN_L') and row.get('TITLE')):
+                counts['skipped'] += 1
+                continue
+            extra = dict()
+            for ind in ('DOAJ', 'ROAD', 'PMC', 'OAPC', 'WOS', 'SCOPUS'):
+                extra['in_' + ind.lower()] = bool(int(row['JOURNAL_IN_' + ind]))
+            issnl, status = self.add_issn(
+                'gold_oa',
+                issne=row['ISSN_L'],
+                name=row['TITLE'],
+                extra=extra,
+            )
+            counts[status] += 1
+        self.c.close()
+        self.db.commit()
+        print(counts)
+
+    def parse_kbart(self, name, path):
+        """
+        Transforms a KBART file into a dict of dicts; but basically a list of
+        JSON objects, one per journal. KBART files can have multiple rows per
+        journal (eg, different year spans), which is why this pass is needed.
+        """
+        print("##### Parsing KBART file for {}...".format(name))
         #publication_title      print_identifier        online_identifier       date_first_issue_online num_first_vol_online    num_first_issue_online  date_last_issue_online  num_last_vol_online     num_last_issue_online   title_url       first_author    title_id        embargo_info    coverage_depth  coverage_notes  publisher_name
+        kbart_dict = dict()
         raw_file = open(path, 'rb').read().decode(errors='replace')
         fixed_file = ftfy.fix_text(raw_file)
         reader = csv.DictReader(fixed_file.split('\n'), delimiter='\t')
         counts = Counter()
-        self.c = self.db.cursor()
         for row in reader:
             if not row['print_identifier'] and not row['online_identifier']:
                 counts['no-issn'] += 1
                 continue
-            issnl, status = self.add_issn(
+            issnl, status = self.lookup_issnl(
                 issnp=row['print_identifier'],
                 issne=row['online_identifier'],
-                name=row['publication_title'],
-                publisher=row['publisher_name'],
-                extra=extra,
             )
             counts[status] += 1
             if not issnl:
                 continue
-            d = self.data[issnl]
-            if not 'kbart' in d:
-                self.data[issnl]['kbart'] = dict()
-                d = self.data[issnl]
-            if not name in d['kbart']:
-                self.data[issnl]['kbart'][name] = dict()
-            old_spans = self.data[issnl]['kbart'].get(name, dict()).get('year_spans', [])
-            kbart = dict()
+
+            info = dict(
+                title=row['publication_title'] or None,
+                publisher=row['publisher_name'] or None,
+                url=row['title_url'] or None,
+                embargo_info=row['embargo_info'] or None,
+            )
+
+            d = kbart_dict.get(issnl, info)
+
+            old_spans = d.get('year_spans', [])
             if row['date_first_issue_online'] and row['date_last_issue_online']:
                 start = int(row['date_first_issue_online'][:4])
                 end = int(row['date_last_issue_online'][:4])
@@ -718,10 +733,9 @@ class ChoculaDatabase():
                     new_spans = [[end, start]]
                 else:
                     new_spans = [[start, end]]
-                self.data[issnl]['kbart'][name]['year_spans'] = merge_spans(old_spans, new_spans)
-        self.c.close()
-        self.db.commit()
+                d['year_spans'] = merge_spans(old_spans, new_spans)
         print(counts)
+        return kbart_dict
 
     def index_crossref(self, args):
         path = args.input_file or CROSSREF_FILE
@@ -974,11 +988,11 @@ class ChoculaDatabase():
         self.load_fatcat(args)
         self.load_fatcat_stats(args)
         self.update_url_status(args)
-        #self.load_kbart('lockss', LOCKSS_FILE)
-        #self.load_kbart('clockss', CLOCKSS_FILE)
-        #self.load_kbart('portico', PORTICO_FILE)
-        #self.load_kbart('jstor', JSTOR_FILE)
-        #self.index_sim(args)
+        #self.preserve_kbart('lockss', LOCKSS_FILE)
+        #self.preserve_kbart('clockss', CLOCKSS_FILE)
+        #self.preserve_kbart('portico', PORTICO_FILE)
+        #self.preserve_kbart('jstor', JSTOR_FILE)
+        #self.preserve_sim(args)
         #self.load_homepage_crawl(IA_CRAWL_FILE)
         self.summarize(args)
         print("### Done with everything!")
