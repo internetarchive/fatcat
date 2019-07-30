@@ -105,6 +105,95 @@ MIMETYPE_MAP = {
     'XML': 'application/xml',
 }
 
+BIG5_PUBLISHERS = [
+    'Elsevier',
+    'Informa UK (Taylor & Francis)',
+    'Springer-Verlag',
+    'SAGE Publications',
+    'Wiley (Blackwell Publishing)',
+    'Wiley (John Wiley & Sons)',
+    'Springer (Biomed Central Ltd.)',
+    'Springer Nature',
+]
+COMMERCIAL_PUBLISHERS = [
+    'Peter Lang International Academic Publishers',
+    'Walter de Gruyter GmbH',
+    'Oldenbourg Wissenschaftsverlag',
+    'Georg Thieme Verlag KG', # not springer
+    'Emerald (MCB UP )',
+    'Medknow Publications',
+    'Inderscience Enterprises Ltd',
+    'Bentham Science',
+    'Ovid Technologies (Wolters Kluwer)  - Lippincott Williams & Wilkins',
+    'Scientific Research Publishing, Inc',
+    'MDPI AG',
+    'S. Karger AG',
+    'Pleiades Publishing',
+    'Science Publishing Group',
+    'IGI Global',
+    'The Economist Intelligence Unit',
+    'Maney Publishing',
+    'Diva Enterprises Private Limited',
+    'World Scientific',
+    'Mary Ann Liebert',
+    'Trans Tech Publications',
+]
+OA_PUBLISHERS = [
+    'Hindawi Limited',
+    'OMICS Publishing Group',
+    'De Gruyter Open Sp. z o.o.',
+    'OpenEdition',
+    'Hindawi (International Scholarly Research Network)',
+    'Public Library of Science',
+    'Frontiers Media SA',
+    'eLife Sciences Publications, Ltd',
+    'MDPI AG',
+    'Hindawi (International Scholarly Research Network)',
+    'Dove Medical Press',
+    'Open Access Text',
+]
+SOCIETY_PUBLISHERS = [
+    'Institute of Electrical and Electronics Engineers',
+    'Institution of Electrical Engineers',
+    'Association for Computing Machinery',
+    'American Psychological Association',
+    'IOS Press',
+    'IOP Publishing',
+    'American Chemical Society',
+    'Royal Society of Chemistry (RSC)',
+    'American Geophysical Union',
+    'American College of Physicians',
+    'New England Journal of Medicine',
+    'BMJ',
+    'RCN Publishing',
+    'International Union of Crystallography',
+    'Portland Press',
+    'ASME International',
+]
+UNI_PRESS_PUBLISHERS = [
+    'Cambridge University Press',
+    'Oxford University Press',
+    'The University of Chicago Press',
+    'MIT Press',
+]
+ARCHIVE_PUBLISHERS = [
+    'JSTOR',
+    'Portico',
+]
+REPOSITORY_PUBLISHERS = [
+    'PERSEE Program',
+    'Social Science Electronic Publishing',
+    'CAIRN',
+    'CSIRO Publishing',
+]
+OTHER_PUBLISHERS = [
+    'African Journals Online',
+    'Smithsonian Institution Biodiversity Heritage Library',
+    'Canadian Science Publishing',
+    'Philosophy Documentation Center',
+    'Project MUSE',
+]
+
 def unquote(s):
     if s.startswith('"'):
         s = s[1:]
@@ -879,10 +968,18 @@ class ChoculaDatabase():
                 lang = languages[0]
             try:
                 self.c.execute("INSERT OR REPLACE INTO fatcat_container (issnl, ident, revision, issne, issnp, wikidata_qid, name, container_type, publisher, country, lang) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
-                    (row['issnl'], row['ident'], row['revision'], issne, issnp,
-                     row.get('wikidata_qid'), row['name'],
-                     row.get('container_type'), extra.get('publisher'), country,
-                     lang))
+                    (row['issnl'],
+                     row['ident'],
+                     row['revision'],
+                     issne,
+                     issnp,
+                     row.get('wikidata_qid'),
+                     row['name'],
+                     row.get('container_type'),
+                     extra.get('publisher'),
+                     country,
+                     lang,
+                    ))
             except sqlite3.IntegrityError as ie:
                 if str(ie).startswith("UNIQUE"):
                     return None, "duplicate-issnl"
@@ -945,24 +1042,22 @@ class ChoculaDatabase():
 
             out = dict()
 
+            # check if ISSN-L is good. this is here because of fatcat import
+            out['bad_issnl'] = not (self.issn2issnl(issnl) == issnl)
+
             fatcat_row = list(self.db.execute("SELECT * FROM fatcat_container WHERE issnl = ?;", [issnl]))
             if fatcat_row:
                 frow = fatcat_row[0]
                 out['fatcat_ident'] = frow['ident']
-                for k in ('name', 'publisher', 'issne', 'issnp', 'lang', 'country'):
+                for k in ('name', 'publisher', 'issne', 'issnp', 'lang', 'country', 'release_count', 'ia_count', 'ia_frac', 'kbart_count', 'kbart_frac', 'preserved_count', 'preserved_frac'):
                     if not out.get(k) and frow[k]:
                         out[k] = frow[k]
-                any_preservation = bool(frow['preserved_count'])
-                any_ia = bool(frow['ia_count'])
 
             cur = self.db.execute("SELECT * FROM directory WHERE issnl = ?;", [issnl])
             for irow in cur:
                 if irow['slug'] in ('crossref',):
                     out['has_dois'] = True
-                if irow['slug'] in ('doaj','road','szczepanski'):
-                    out['is_oa'] = True
-                # TODO: or if sz color is green
-                # TODO: define longtail, based on publisher_type?
+                # TODO: other DOI registrars (japan, datacite)
                 for k in ('name',):
                     if not out.get(k) and irow[k]:
                         out[k] = irow[k]
@@ -971,19 +1066,68 @@ class ChoculaDatabase():
                     for k in ('country', 'lang', 'issne', 'issnp', 'publisher'):
                         if not out.get(k) and extra.get(k):
                             out[k] = extra[k]
+                if irow['slug'] in ('doaj','road','szczepanski', 'gold_oa'):
+                    # TODO: or if sherma/romeo color is green
+                    out['is_oa'] = True
 
             cur = self.db.execute("SELECT * FROM homepage WHERE issnl = ?;", [issnl])
             for hrow in cur:
-                if hrow['terminal_status_code'] == 200:
+                out['any_homepage'] = True
+                if hrow['terminal_status_code'] == 200 and hrow['host'] != 'web.archive.org':
                     out['any_live_homepage'] = True
 
-            self.c.execute("INSERT OR REPLACE INTO journal (issnl, issne, issnp, fatcat_ident, name, publisher, country, lang, is_oa, is_longtail, has_dois, any_live_homepage, any_preservation, any_ia) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-                (issnl, out.get('issne'), out.get('issnp'),
-                 out.get('fatcat_ident'), out.get('name'),
-                 out.get('publisher'), out.get('country'), out.get('lang'),
-                 out.get('is_oa'), out.get('is_longtail'), out.get('has_dois', False),
-                 out.get('any_live_homepage', False), out.get('any_preservation', False),
-                 out.get('any_ia')))
+            # define publisher types
+            publisher = out.get('publisher')
+            pl = out.get('publisher', '').lower().strip()
+            if publisher in BIG5_PUBLISHERS or 'elsevier' in pl or 'springer' in pl or 'wiley' in pl:
+                out['publisher_type'] = 'big5'
+            elif publisher in OA_PUBLISHERS:
+                out['publisher_type'] = 'oa'
+            elif publisher in COMMERCIAL_PUBLISHERS or 'wolters kluwer' in pl or 'wolters-kluwer' in pl:
+                out['publisher_type'] = 'commercial'
+            elif publisher in ARCHIVE_PUBLISHERS:
+                out['publisher_type'] = 'archive'
+            elif publisher in REPOSITORY_PUBLISHERS:
+                out['publisher_type'] = 'repository'
+            elif publisher in OTHER_PUBLISHERS:
+                out['publisher_type'] = 'other'
+            elif publisher in SOCIETY_PUBLISHERS or 'society' in pl or 'association' in pl or 'academy of ' in pl or 'institute of' in pl:
+                out['publisher_type'] = 'society'
+            elif publisher in UNI_PRESS_PUBLISHERS or 'university ' in pl:
+                out['publisher_type'] = 'unipress'
+            elif 'scielo' in pl:
+                out['publisher_type'] = 'scielo'
+            elif out.get('is_oa') and (not out.get('has_dois') or out.get('lang') not in (None, 'en', 'de', 'fr', 'ja') or out.get('country') not in (None, 'us', 'gb', 'nl', 'cn', 'jp', 'de')):
+                # current definition of longtail
+                out['publisher_type'] = 'longtail'
+                out['is_longtail'] = True
+
+            self.c.execute("INSERT OR REPLACE INTO journal (issnl, issne, issnp, fatcat_ident, name, publisher, country, lang, is_oa, is_longtail, is_active, publisher_type, has_dois, any_homepage, any_live_homepage, bad_issnl, release_count, ia_count, ia_frac, kbart_count, kbart_frac, preserved_count, preserved_frac) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                (issnl,
+                 out.get('issne'),
+                 out.get('issnp'),
+                 out.get('fatcat_ident'),
+                 out.get('name'),
+                 out.get('publisher'),
+                 out.get('country'),
+                 out.get('lang'),
+                 out.get('is_oa', False),
+                 out.get('is_longtail', False),
+                 out.get('is_active'),
+                 out.get('publisher_type'),
+                 out.get('has_dois', False),
+                 out.get('any_homepage', False),
+                 out.get('any_live_homepage', False),
+                 out.get('bad_issnl', False),
+
+                 out.get('release_count'),
+                 out.get('ia_count'),
+                 out.get('ia_frac'),
+                 out.get('kbart_count'),
+                 out.get('kbart_frac'),
+                 out.get('preserved_count'),
+                 out.get('preserved_frac'),
+                ))
         self.c.close()
         self.db.commit()
         print(counts)
@@ -1067,7 +1211,7 @@ def main():
         sys.exit(-1)
 
     cdb = ChoculaDatabase(args.db_file)
-    if args.func.startswith('index_') or args.func in ('everything',):
+    if args.func.startswith('index_') or args.func in ('everything','summarize',):
         cdb.read_issn_map_file(ISSNL_FILE)
     func = getattr(cdb, args.func)
     func(args)
