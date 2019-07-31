@@ -809,7 +809,7 @@ class ChoculaDatabase():
             extra = dict()
             extra['start_year'] = row.get('start_year')
             issnl, status = self.add_issn(
-                'gold_oa',
+                'wikidata',
                 raw_issn=row['issn'],
                 name=row['title'],
                 identifier=wikidata_qid,
@@ -1151,10 +1151,11 @@ class ChoculaDatabase():
                 out['publisher_type'] = 'longtail'
                 out['is_longtail'] = True
 
-            self.c.execute("INSERT OR REPLACE INTO journal (issnl, issne, issnp, fatcat_ident, name, publisher, country, lang, is_oa, is_longtail, is_active, publisher_type, has_dois, any_homepage, any_live_homepage, known_issnl, valid_issnl, release_count, ia_count, ia_frac, kbart_count, kbart_frac, preserved_count, preserved_frac) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            self.c.execute("INSERT OR REPLACE INTO journal (issnl, issne, issnp, wikidata_qid, fatcat_ident, name, publisher, country, lang, is_oa, is_longtail, is_active, publisher_type, has_dois, any_homepage, any_live_homepage, known_issnl, valid_issnl, release_count, ia_count, ia_frac, kbart_count, kbart_frac, preserved_count, preserved_frac) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 (issnl,
                  out.get('issne'),
                  out.get('issnp'),
+                 out.get('wikidata_qid'),
                  out.get('fatcat_ident'),
                  out.get('name'),
                  out.get('publisher'),
