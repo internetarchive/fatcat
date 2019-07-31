@@ -14,6 +14,7 @@ Commands:
     everything
     init_db
     summarize
+    export
 
     index_doaj
     index_road
@@ -1206,6 +1207,19 @@ class ChoculaDatabase():
         self.summarize(args)
         print("### Done with everything!")
 
+    def export(self, args):
+        def dict_factory(cursor, row):
+            d = {}
+            for idx, col in enumerate(cursor.description):
+                d[col[0]] = row[idx]
+            return d
+        counts = Counter()
+        self.db.row_factory = dict_factory
+        self.c = self.db.cursor()
+        for row in self.c.execute('SELECT * FROM journal'):
+            print(json.dumps(row))
+            counts['total'] += 1
+
     def init_db(self, args):
         print("### Creating Database...")
         self.db.executescript("""
@@ -1239,6 +1253,9 @@ def main():
 
     sub = subparsers.add_parser('summarize')
     sub.set_defaults(func='summarize')
+
+    sub = subparsers.add_parser('export')
+    sub.set_defaults(func='export')
 
     # TODO: 'jurn'
     for ind in ('doaj', 'road', 'crossref', 'entrez', 'norwegian', 'szczepanski', 'ezb', 'gold_oa', 'wikidata', 'openapc'):
