@@ -783,7 +783,7 @@ class ChoculaDatabase():
             )
             counts[status] += 1
             # also add for other non-direct indices
-            for ind in ('OAPC', 'WOS', 'SCOPUS'):
+            for ind in ('WOS', 'SCOPUS'):
                 issnl, status = self.add_issn(
                     ind.lower(),
                     raw_issn=row['ISSN_L'],
@@ -822,6 +822,36 @@ class ChoculaDatabase():
                 continue
             if row.get('websiteurl'):
                 self.add_url(issnl, row['websiteurl'])
+        self.c.close()
+        self.db.commit()
+        print(counts)
+
+    def index_openapc(self, args):
+        path = args.input_file or OPENAPC_FILE
+        print("##### Loading OpenAPC...")
+        # "institution","period","euro","doi","is_hybrid","publisher","journal_full_title","issn","issn_print","issn_electronic","issn_l","license_ref","indexed_in_crossref","pmid","pmcid","ut","url","doaj"
+        reader = csv.DictReader(open(path))
+        counts = Counter()
+        self.c = self.db.cursor()
+        for row in reader:
+            if not row.get('issn'):
+                counts['skipped'] += 1
+                continue
+            extra = dict(is_hybrid=bool(row['is_hybrid']))
+            issnl, status = self.add_issn(
+                'openapc',
+                issne=row['issn_electronic'],
+                issnp=row['issn_print'],
+                raw_issn=row['issn_l'] or row['issn'],
+                name=row['journal_full_title'],
+                publisher=row['publisher'],
+                extra=extra,
+            )
+            counts[status] += 1
+            if not issnl:
+                continue
+            if row.get('url'):
+                self.add_url(issnl, row['url'])
         self.c.close()
         self.db.commit()
         print(counts)
