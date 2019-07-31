@@ -1,0 +1,35 @@
+# this query fetches basic metadata for about 45k journal from wikidata
+# run at: https://query.wikidata.org/
+#
+# NOTE: the publisher label somtimes falls through to a QID or "t"-prefixed
+# number if the publisher name isn't actually known
+
+# would rather have direct QID instead of URL, but this seems to slow things down too much (query times out)
+#SELECT (REPLACE(STR(?item),".*Q","Q") AS ?wikidata_qid) (SAMPLE(?issn) AS ?issn) (SAMPLE(?title) AS ?title) (SAMPLE(?publisherLabel) AS ?publisher_name) (SAMPLE(?websiteurl) AS ?websiteurl) (str(YEAR(SAMPLE(?inception))) AS ?start_year)
+
+SELECT ?item (SAMPLE(?issn) AS ?issn) (SAMPLE(?title) AS ?title) (SAMPLE(?publisherLabel) AS ?publisher_name) (SAMPLE(?websiteurl) AS ?websiteurl) (str(YEAR(SAMPLE(?inception))) AS ?start_year)
+WHERE
+{
+  # any instance of...
+  { ?item wdt:P31 wd:Q5633421 }         # "scientific journal"
+  UNION { ?item wdt:P31 wd:Q773668 }    # "open access journal"
+  UNION { ?item wdt:P31 wd:Q737498 }    # "academic journal"
+  UNION { ?item wdt:P31 wd:Q49850 }     # "journal"
+  UNION { ?item wdt:P31 wd:Q51135530 }  # "humanities journal"
+
+  # must have an ISSN
+  ?item wdt:P1476 ?title
+   
+  # may have title, website, publisher, inception date
+  OPTIONAL{?item wdt:P236 ?issn}
+  OPTIONAL{?item wdt:P856 ?websiteurl}
+  OPTIONAL{?item wdt:P123 ?publisher}
+  OPTIONAL{?item wdt:P571 ?inception}
+
+  # "label service" to turn publisher entity into name
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en,pt,es,de,fr,ja".
+                           ?publisher rdfs:label ?publisherLabel. }
+} GROUP BY ?item
+
+# could include all known ISSNs instead of just one with:
+#   (GROUP_CONCAT(DISTINCT ?issn; SEPARATOR=";") AS ?issns)
