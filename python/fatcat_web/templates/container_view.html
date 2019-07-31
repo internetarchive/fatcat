@@ -66,9 +66,12 @@
 <b>Release Counts</b><br>
   {{ "{:,}".format(container._stats.total) }} total
   {% if container._stats.total >= 1 %}
+    <br>{{ "{:,}".format(container._stats.in_kbart ) }}
+    (<b>{{ "{:.1f}".format(container._stats.in_kbart/container._stats.total*100) }}%</b>) 
+    preserved (dark)
     <br>{{ "{:,}".format(container._stats.is_preserved) }}
     (<b>{{ "{:.1f}".format(container._stats.is_preserved/container._stats.total*100) }}%</b>) 
-    preserved or archived
+    preserved or available
     <br>{{ "{:,}".format(container._stats.in_web) }}
     (<b>{{ "{:.1f}".format(container._stats.in_web/container._stats.total*100) }}%</b>) 
     fulltext available to read

@@ -99,6 +99,7 @@ def test_container_stats(app):
         'aggregations': {
             'container_stats': {'buckets': {
               'is_preserved': {'doc_count': 461939},
+              'in_kbart': {'doc_count': 461939},
               'in_web': {'doc_count': 2797}}}},
         'hits': {'total': 461939, 'hits': [], 'max_score': 0.0},
         '_shards': {'successful': 5, 'total': 5, 'skipped': 0, 'failed': 0},

@@ -218,6 +218,7 @@ def get_elastic_container_stats(issnl):
         },
         "aggs": { "container_stats": { "filters": { "filters": {
                 "in_web": { "term": { "in_web": "true" } },
+                "in_kbart": { "term": { "in_kbart": "true" } },
                 "is_preserved": { "term": { "is_preserved": "true" } },
         }}}}
     }
