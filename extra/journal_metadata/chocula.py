@@ -56,13 +56,13 @@ import pycountry
 
 ################### File Config
 
-ISSNL_FILE = 'data/20190220.ISSN-to-ISSN-L.txt'
+ISSNL_FILE = 'data/20190730.ISSN-to-ISSN-L.txt'
 
 ENTREZ_FILE = 'data/entrez-journals.csv'
 ROAD_FILE = 'data/road-2018-01-24.tsv'
 ROAD_DATE = '2018-01-24'
-DOAJ_FILE = 'data/doaj_20190124.csv'
-DOAJ_DATE = '2019-01-24'
+DOAJ_FILE = 'data/journalcsv__doaj_20190731_0130_utf8.csv'
+DOAJ_DATE = '2019-07-31'
 CROSSREF_FILE = 'data/doi_titles_file_2019-01-24.csv'
 SHERPA_ROMEO_JOURNAL_FILE = 'data/romeo-journals.csv'
 SHERPA_ROMEO_POLICY_FILE = 'data/romeo-policies.csv'

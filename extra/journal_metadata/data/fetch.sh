@@ -9,7 +9,7 @@ wget -c https://archive.org/download/road-issn-2018/road-2018-01-24.tsv
 wget -c https://archive.org/download/doaj_bulk_metadata_2019/doaj_20190124.csv
 
 #wget -c https://archive.org/download/issn_issnl_mappings/20190129.ISSN-to-ISSN-L.txt
-wget -c https://archive.org/download/issn_issnl_mappings/20190220.ISSN-to-ISSN-L.txt
+wget -c https://archive.org/download/issn_issnl_mappings/20190730.ISSN-to-ISSN-L.txt
 
 wget -c https://archive.org/download/crossref_doi_titles/doi_titles_file_2019-01-24.csv
 
@@ -38,7 +38,10 @@ wget -c https://archive.org/download/norwegian_register_journals/2018-03-02%20No
 #wget -c https://archive.org/download/open_academic_graph_2019/mag_venues.zip
 #unzip mag_venues.zip
 
-#wget -c https://archive.org/download/szczepanski-oa-journal-list-2018/Jan-Szczepanski-Open-Access-Journals-2018_0.docx
-#wget -c https://archive.org/download/szczepanski-oa-journal-list-2018/Jan-Szczepanski-Open-Access-Journals-2018_0.converted.csv
-
 wget -c https://archive.org/download/szczepanski-oa-journal-list-2018/Jan-Szczepanski-Open-Access-Journals-2018_0.fixed.json
+
+wget -c https://archive.org/download/ezb_snapshot_2019-07-11/ezb_metadata.json
+wget -c https://archive.org/download/ISSN-GOLD-OA-3/ISSN_Gold-OA_3.0.csv
+wget -c https://archive.org/download/openapc-dataset/apc_de.2019-07-30.csv
+wget -c https://archive.org/download/wikidata-journal-metadata/wikidata_journals_sparql.2019-07-30.tsv
+
