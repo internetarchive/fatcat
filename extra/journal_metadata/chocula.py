@@ -22,6 +22,8 @@ Commands:
     index_norwegian
     index_szczepanski
     index_ezb
+    index_wikidata
+    index_openapc
 
     load_fatcat
     load_fatcat_stats
@@ -33,7 +35,6 @@ Future commands:
 
     fatcat_edits
     index_jurn
-    index_wikidata
     index_datacite
     preserve_kbart --keeper SLUG
     preserve_sim
@@ -76,6 +77,8 @@ IA_CRAWL_FILE = 'data/journal_homepage_results.partial.tsv'
 SZCZEPANSKI_FILE = 'data/Jan-Szczepanski-Open-Access-Journals-2018_0.fixed.json'
 EZB_FILE = 'data/ezb_metadata.json'
 GOLD_OA_FILE = 'data/ISSN_Gold-OA_3.0.csv'
+WIKIDATA_SPARQL_FILE = 'data/wikidata_journals_sparql.2019-07-30.tsv'
+OPENAPC_FILE = 'data/apc_de.2019-07-30.csv'
 FATCAT_CONTAINER_FILE = 'data/container_export.json'
 FATCAT_STATS_FILE = 'data/container_stats.json'
 
@@ -460,8 +463,8 @@ class ChoculaDatabase():
             extra = None
 
         try:
-            self.c.execute("INSERT INTO directory VALUES (?,?,?,?,?,?)",
-                (issnl, index_slug, identifier, name, None, extra))
+            self.c.execute("INSERT INTO directory VALUES (?,?,?,?,?)",
+                (issnl, index_slug, identifier, name, extra))
             status = 'inserted'
         except sqlite3.IntegrityError as ie:
             if str(ie).startswith("UNIQUE"):
@@ -788,6 +791,39 @@ class ChoculaDatabase():
         self.db.commit()
         print(counts)
 
+    def index_wikidata(self, args):
+        path = args.input_file or WIKIDATA_SPARQL_FILE
+        print("##### Loading Wikidata...")
+        reader = csv.DictReader(open(path), delimiter='\t')
+        counts = Counter()
+        self.c = self.db.cursor()
+        for row in reader:
+            if not (row.get('issn') and row.get('title')):
+                counts['skipped'] += 1
+                continue
+            publisher = row['publisher_name']
+            if (publisher.startswith('Q') and publisher[1].isdigit()) or publisher.startswith('t1') or not publisher:
+                publisher = None
+            wikidata_qid = row['item'].strip().split('/')[-1]
+            extra = dict()
+            extra['start_year'] = row.get('start_year')
+            issnl, status = self.add_issn(
+                'gold_oa',
+                raw_issn=row['issn'],
+                name=row['title'],
+                identifier=wikidata_qid,
+                publisher=publisher,
+                extra=extra,
+            )
+            counts[status] += 1
+            if not issnl:
+                continue
+            if row.get('websiteurl'):
+                self.add_url(issnl, row['websiteurl'])
+        self.c.close()
+        self.db.commit()
+        print(counts)
+
     def parse_kbart(self, name, path):
         """
         Transforms a KBART file into a dict of dicts; but basically a list of
@@ -1044,6 +1080,8 @@ class ChoculaDatabase():
 
             # check if ISSN-L is good. this is here because of fatcat import
             out['bad_issnl'] = not (self.issn2issnl(issnl) == issnl)
+            if out['bad_issnl']:
+                counts['bad-issnl'] += 1
 
             fatcat_row = list(self.db.execute("SELECT * FROM fatcat_container WHERE issnl = ?;", [issnl]))
             if fatcat_row:
@@ -1075,6 +1113,11 @@ class ChoculaDatabase():
                 out['any_homepage'] = True
                 if hrow['terminal_status_code'] == 200 and hrow['host'] != 'web.archive.org':
                     out['any_live_homepage'] = True
+
+            if out.get('wikidata_qid'):
+                assert out['wikidata_qid'].startswith('Q')
+                assert out['wikidata_qid'][1].isdigit()
+                assert out['wikidata_qid'][-1].isdigit()
 
             # define publisher types
             publisher = out.get('publisher')
@@ -1142,6 +1185,7 @@ class ChoculaDatabase():
         self.index_entrez(args)
         self.index_ezb(args)
         self.index_gold_oa(args)
+        self.index_wikidata(args)
         self.load_fatcat(args)
         self.load_fatcat_stats(args)
         self.update_url_status(args)
@@ -1189,7 +1233,7 @@ def main():
     sub.set_defaults(func='summarize')
 
     # TODO: 'jurn'
-    for ind in ('doaj', 'road', 'crossref', 'entrez', 'norwegian', 'szczepanski', 'ezb', 'gold_oa'):
+    for ind in ('doaj', 'road', 'crossref', 'entrez', 'norwegian', 'szczepanski', 'ezb', 'gold_oa', 'wikidata', 'openapc'):
         sub = subparsers.add_parser('index_{}'.format(ind))
         sub.set_defaults(func='index_{}'.format(ind))
 
