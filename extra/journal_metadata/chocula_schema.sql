@@ -28,7 +28,9 @@ CREATE TABLE IF NOT EXISTS journal
      has_dois BOOLEAN,
      any_homepage BOOLEAN,
      any_live_homepage BOOLEAN,
-     bad_issnl BOOLEAN
+     any_gwb_homepage BOOLEAN,
+     known_issnl BOOLEAN,
+     valid_issnl BOOLEAN
     );
 
 CREATE TABLE IF NOT EXISTS directory
@@ -41,9 +43,9 @@ CREATE TABLE IF NOT EXISTS directory
     );
 
 CREATE TABLE IF NOT EXISTS fatcat_container
-    (issnl TEXT NOT NULL PRIMARY KEY,
-     ident TEXT NOT NULL,
+    (ident TEXT NOT NULL PRIMARY KEY,
      revision TEXT NOT NULL,
+     issnl TEXT,
      issne TEXT,
      issnp TEXT,
      wikidata_qid TEXT,
@@ -60,6 +62,7 @@ CREATE TABLE IF NOT EXISTS fatcat_container
      preserved_count INTEGER,
      preserved_frac FLOAT
     );
+CREATE INDEX IF NOT EXISTS fatcat_container_issnl_idx ON fatcat_container(issnl);
 
 CREATE TABLE IF NOT EXISTS homepage
     (id INTEGER PRIMARY KEY,

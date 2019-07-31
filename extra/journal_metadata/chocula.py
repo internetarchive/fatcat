@@ -52,6 +52,7 @@ import urlcanon
 import surt
 import tldextract
 import pycountry
+import stdnum.issn
 
 
 ################### File Config
@@ -396,7 +397,7 @@ class ChoculaDatabase():
         self.c = None
 
     def read_issn_map_file(self, issn_map_path):
-        print("##### Loading ISSN map file...")
+        print("##### Loading ISSN-L map file...")
         with open(issn_map_path, 'r') as issn_map_file:
             self._issn_issnl_map = dict()
             for line in issn_map_file:
@@ -433,7 +434,7 @@ class ChoculaDatabase():
             if issnl:
                 break
         if not issnl:
-            return None, 'no-issnl'
+            return None, 'unknown-issnl'
             #print((raw_issn, issne, issnp))
             # UGH.
             #issnl = issne or issnp or raw_issn
@@ -1004,7 +1005,7 @@ class ChoculaDatabase():
                 lang = languages[0]
             try:
                 self.c.execute("INSERT OR REPLACE INTO fatcat_container (issnl, ident, revision, issne, issnp, wikidata_qid, name, container_type, publisher, country, lang) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
-                    (row['issnl'],
+                    (row.get('issnl'),
                      row['ident'],
                      row['revision'],
                      issne,
@@ -1069,7 +1070,7 @@ class ChoculaDatabase():
         self.c = self.db.cursor()
         self.db.row_factory = sqlite3.Row
         index_issnls = list(self.c.execute('SELECT DISTINCT issnl FROM directory'))
-        fatcat_issnls = list(self.c.execute('SELECT DISTINCT issnl FROM fatcat_container'))
+        fatcat_issnls = list(self.c.execute('SELECT DISTINCT issnl FROM fatcat_container WHERE issnl IS NOT null'))
         all_issnls = set([i[0] for i in index_issnls + fatcat_issnls])
         print("{} total ISSN-Ls".format(len(all_issnls)))
         for issnl in list(all_issnls):
@@ -1079,16 +1080,19 @@ class ChoculaDatabase():
             out = dict()
 
             # check if ISSN-L is good. this is here because of fatcat import
-            out['bad_issnl'] = not (self.issn2issnl(issnl) == issnl)
-            if out['bad_issnl']:
-                counts['bad-issnl'] += 1
+            out['known_issnl'] = (self.issn2issnl(issnl) == issnl)
+            if not out['known_issnl']:
+                counts['unknown-issnl'] += 1
+            out['valid_issnl'] = stdnum.issn.is_valid(issnl)
+            if not out['valid_issnl']:
+                counts['invalid-issnl'] += 1
 
             fatcat_row = list(self.db.execute("SELECT * FROM fatcat_container WHERE issnl = ?;", [issnl]))
             if fatcat_row:
                 frow = fatcat_row[0]
                 out['fatcat_ident'] = frow['ident']
-                for k in ('name', 'publisher', 'issne', 'issnp', 'lang', 'country', 'release_count', 'ia_count', 'ia_frac', 'kbart_count', 'kbart_frac', 'preserved_count', 'preserved_frac'):
-                    if not out.get(k) and frow[k]:
+                for k in ('name', 'publisher', 'issne', 'issnp', 'wikidata_qid', 'lang', 'country', 'release_count', 'ia_count', 'ia_frac', 'kbart_count', 'kbart_frac', 'preserved_count', 'preserved_frac'):
+                    if not out.get(k) and frow[k] != None:
                         out[k] = frow[k]
 
             cur = self.db.execute("SELECT * FROM directory WHERE issnl = ?;", [issnl])
@@ -1145,7 +1149,7 @@ class ChoculaDatabase():
                 out['publisher_type'] = 'longtail'
                 out['is_longtail'] = True
 
-            self.c.execute("INSERT OR REPLACE INTO journal (issnl, issne, issnp, fatcat_ident, name, publisher, country, lang, is_oa, is_longtail, is_active, publisher_type, has_dois, any_homepage, any_live_homepage, bad_issnl, release_count, ia_count, ia_frac, kbart_count, kbart_frac, preserved_count, preserved_frac) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            self.c.execute("INSERT OR REPLACE INTO journal (issnl, issne, issnp, fatcat_ident, name, publisher, country, lang, is_oa, is_longtail, is_active, publisher_type, has_dois, any_homepage, any_live_homepage, known_issnl, valid_issnl, release_count, ia_count, ia_frac, kbart_count, kbart_frac, preserved_count, preserved_frac) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 (issnl,
                  out.get('issne'),
                  out.get('issnp'),
@@ -1161,7 +1165,8 @@ class ChoculaDatabase():
                  out.get('has_dois', False),
                  out.get('any_homepage', False),
                  out.get('any_live_homepage', False),
-                 out.get('bad_issnl', False),
+                 out.get('known_issnl'),
+                 out.get('valid_issnl'),
 
                  out.get('release_count'),
                  out.get('ia_count'),
