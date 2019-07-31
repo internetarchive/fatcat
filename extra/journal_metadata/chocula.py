@@ -75,7 +75,7 @@ CLOCKSS_FILE = 'data/kbart_CLOCKSS.txt'
 PORTICO_FILE = 'data/Portico_Holding_KBart.txt'
 JSTOR_FILE = 'data/jstor_all-archive-titles.txt'
 SIM_FILE = 'data/MASTER TITLE_METADATA_LIST_20171019.converted.csv'
-IA_CRAWL_FILE = 'data/journal_homepage_results.partial.tsv'
+IA_CRAWL_FILE = 'data/url_status.partial.json'
 SZCZEPANSKI_FILE = 'data/Jan-Szczepanski-Open-Access-Journals-2018_0.fixed.json'
 EZB_FILE = 'data/ezb_metadata.json'
 GOLD_OA_FILE = 'data/ISSN_Gold-OA_3.0.csv'
@@ -355,23 +355,26 @@ def parse_url(url):
 
     Returns None if url is really bad (not a URL).
     """
-    if not url or 'mailto:' in url.lower() or url in ('http://n/a', 'http://N/A'):
+    if not url or 'mailto:' in url.lower() or url.lower() in ('http://n/a', 'http://na/', 'http://na'):
         return None
     if url.startswith('www.'):
         url = "http://" + url
     url.replace('Http://', 'http://')
 
     url = str(urlcanon.semantic_precise(url))
+    if url == 'http://na/':
+        # sort of redundant with above, but some only match after canonicalization
+        return None
     url_surt = surt.surt(url)
     tld = tldextract.extract(url)
     host = '.'.join(tld)
     if host.startswith('.'):
         host = host[1:]
     return dict(url=url,
-                url_surt=url_surt,
-                host=host,
-                registered_domain=tld.registered_domain,
-                suffix=tld.suffix)
+                url_surt=url_surt or None,
+                host=host or None,
+                registered_domain=tld.registered_domain or None,
+                suffix=tld.suffix or None)
 
 def test_parse_url():
     
@@ -483,8 +486,13 @@ class ChoculaDatabase():
             return
 
         self.c.execute("INSERT OR REPLACE INTO homepage (issnl, surt, url, host, domain, suffix) VALUES (?,?,?,?,?,?)",
-            (issnl, meta['url_surt'], meta['url'], meta['host'],
-             meta['registered_domain'], meta['suffix']))
+            (issnl,
+             meta['url_surt'],
+             meta['url'],
+             meta['host'],
+             meta['registered_domain'],
+             meta['suffix']
+            ))
 
     def index_entrez(self, args):
         path = args.input_file or ENTREZ_FILE
@@ -994,17 +1002,26 @@ class ChoculaDatabase():
     def update_url_status(self, args):
         path = args.input_file or IA_CRAWL_FILE
         print("##### Loading IA Homepage Crawl Results...")
-        reader = csv.DictReader(open(path), delimiter='\t',
-            fieldnames=("ISSN", "first_url", "first_status", "last_status", "last_url")
-        )
         counts = Counter()
         self.c = self.db.cursor()
-        for row in reader:
+        for row in open(path, 'r'):
+            if not row.strip():
+                continue
+            row = json.loads(row)
             counts['total'] += 1
-            url = row['first_url']
+            url = row['url']
             assert(url)
-            self.c.execute("UPDATE homepage SET status_code=?, terminal_url=?, terminal_status_code=? WHERE url=?",
-                (row['first_status'], row['last_url'], row['last_status'], url))
+            self.c.execute("UPDATE homepage SET status_code=?, crawl_error=?, terminal_url=?, terminal_status_code=?, platform_software=?, issnl_in_body=?, blocked=?, gwb_url_success_dt=?, gwb_terminal_url_success_dt=? WHERE url=?",
+                (row['status_code'],
+                 row.get('crawl_error'),
+                 row.get('terminal_url'),
+                 row.get('terminal_status_code'),
+                 row.get('platform_software'),
+                 row.get('issnl_in_body'),
+                 row.get('blocked'),
+                 row.get('gwb_url_success_dt'),
+                 row.get('gwb_terminal_url_success_dt'),
+                 url))
             counts['updated'] += 1
         self.c.close()
         self.db.commit()
@@ -1152,6 +1169,8 @@ class ChoculaDatabase():
                 out['any_homepage'] = True
                 if hrow['terminal_status_code'] == 200 and hrow['host'] != 'web.archive.org':
                     out['any_live_homepage'] = True
+                if hrow['gwb_url_success_dt'] or hrow['gwb_terminal_url_success_dt']:
+                    out['any_gwb_homepage'] = True
 
             if out.get('wikidata_qid'):
                 assert out['wikidata_qid'].startswith('Q')
@@ -1184,7 +1203,7 @@ class ChoculaDatabase():
                 out['publisher_type'] = 'longtail'
                 out['is_longtail'] = True
 
-            self.c.execute("INSERT OR REPLACE INTO journal (issnl, issne, issnp, wikidata_qid, fatcat_ident, name, publisher, country, lang, is_oa, sherpa_color, is_longtail, is_active, publisher_type, has_dois, any_homepage, any_live_homepage, known_issnl, valid_issnl, release_count, ia_count, ia_frac, kbart_count, kbart_frac, preserved_count, preserved_frac) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            self.c.execute("INSERT OR REPLACE INTO journal (issnl, issne, issnp, wikidata_qid, fatcat_ident, name, publisher, country, lang, is_oa, sherpa_color, is_longtail, is_active, publisher_type, has_dois, any_homepage, any_live_homepage, any_gwb_homepage, known_issnl, valid_issnl, release_count, ia_count, ia_frac, kbart_count, kbart_frac, preserved_count, preserved_frac) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 (issnl,
                  out.get('issne'),
                  out.get('issnp'),
@@ -1202,6 +1221,7 @@ class ChoculaDatabase():
                  out.get('has_dois', False),
                  out.get('any_homepage', False),
                  out.get('any_live_homepage', False),
+                 out.get('any_gwb_homepage', False),
                  out.get('known_issnl'),
                  out.get('valid_issnl'),
 
@@ -1231,13 +1251,12 @@ class ChoculaDatabase():
         self.index_wikidata(args)
         self.load_fatcat(args)
         self.load_fatcat_stats(args)
-        self.update_url_status(args)
         #self.preserve_kbart('lockss', LOCKSS_FILE)
         #self.preserve_kbart('clockss', CLOCKSS_FILE)
         #self.preserve_kbart('portico', PORTICO_FILE)
         #self.preserve_kbart('jstor', JSTOR_FILE)
         #self.preserve_sim(args)
-        #self.load_homepage_crawl(IA_CRAWL_FILE)
+        self.update_url_status(args)
         self.summarize(args)
         print("### Done with everything!")
 
@@ -1295,6 +1314,9 @@ def main():
     for ind in ('doaj', 'road', 'crossref', 'entrez', 'norwegian', 'szczepanski', 'ezb', 'gold_oa', 'wikidata', 'openapc'):
         sub = subparsers.add_parser('index_{}'.format(ind))
         sub.set_defaults(func='index_{}'.format(ind))
+
+    sub = subparsers.add_parser('preserve_sim')
+    sub.set_defaults(func='preserve_sim')
 
     sub = subparsers.add_parser('load_fatcat')
     sub.set_defaults(func='load_fatcat')
