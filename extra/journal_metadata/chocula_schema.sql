@@ -1,10 +1,10 @@
 
-
 CREATE TABLE IF NOT EXISTS journal
     (issnl TEXT NOT NULL PRIMARY KEY,
      issne TEXT,
      issnp TEXT,
      fatcat_ident TEXT,
+     wikidata_qid TEXT,
      name TEXT,
      publisher TEXT,
      country TEXT,

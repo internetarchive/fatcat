@@ -1100,6 +1100,8 @@ class ChoculaDatabase():
                 if irow['slug'] in ('crossref',):
                     out['has_dois'] = True
                 # TODO: other DOI registrars (japan, datacite)
+                if irow['slug'] == 'wikidata':
+                    out['wikidata_qid'] = irow['identifier']
                 for k in ('name',):
                     if not out.get(k) and irow[k]:
                         out[k] = irow[k]
