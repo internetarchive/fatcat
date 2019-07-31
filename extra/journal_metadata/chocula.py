@@ -549,6 +549,7 @@ class ChoculaDatabase():
         path = args.input_file or DOAJ_FILE
         print("##### Loading DOAJ...")
         #Journal title,Journal URL,Alternative title,Journal ISSN (print version),Journal EISSN (online version),Publisher,Society or institution,"Platform, host or aggregator",Country of publisher,Journal article processing charges (APCs),APC information URL,APC amount,Currency,Journal article submission fee,Submission fee URL,Submission fee amount,Submission fee currency,Number of articles publish in the last calendar year,Number of articles information URL,Journal waiver policy (for developing country authors etc),Waiver policy information URL,Digital archiving policy or program(s),Archiving: national library,Archiving: other,Archiving infomation URL,Journal full-text crawl permission,Permanent article identifiers,Journal provides download statistics,Download statistics information URL,First calendar year journal provided online Open Access content,Full text formats,Keywords,Full text language,URL for the Editorial Board page,Review process,Review process information URL,URL for journal's aims & scope,URL for journal's instructions for authors,Journal plagiarism screening policy,Plagiarism information URL,Average number of weeks between submission and publication,URL for journal's Open Access statement,Machine-readable CC licensing information embedded or displayed in articles,URL to an example page with embedded licensing information,Journal license,License attributes,URL for license terms,Does this journal allow unrestricted reuse in compliance with BOAI?,Deposit policy directory,Author holds copyright without restrictions,Copyright information URL,Author holds publishing rights without restrictions,Publishing rights information URL,DOAJ Seal,Tick: Accepted after March 2014,Added on Date,Subjects
+        # TODO: Subjects, Permanent article identifiers, work_level stuff
         reader = csv.DictReader(open(path))
         counts = Counter()
         self.c = self.db.cursor()
@@ -564,7 +565,6 @@ class ChoculaDatabase():
             if row['Country of publisher']:
                 extra['country'] = parse_country(row['Country of publisher'])
             row['lang'] = parse_lang(row['Full text language'])
-            # TODO: work_level: bool (are work-level publications deposited with DOAJ?)
 
             if row['Digital archiving policy or program(s)']:
                 extra['archive'] = [a.strip() for a in row['Digital archiving policy or program(s)'].split(',') if a.strip()]
@@ -574,7 +574,6 @@ class ChoculaDatabase():
             crawl_permission = row['Journal full-text crawl permission']
             if crawl_permission:
                 extra['crawl-permission'] = dict(Yes=True, No=False)[crawl_permission]
-            # TODO: Permanent article identifiers
             default_license = row['Journal license']
             if default_license and default_license.startswith('CC'):
                 extra['default_license'] = default_license.replace('CC ', 'CC-').strip()
@@ -591,7 +590,6 @@ class ChoculaDatabase():
                 self.add_url(issnl, row['Journal URL'])
             counts[status] += 1
 
-            # TODO: Subjects
         self.c.close()
         self.db.commit()
         print(counts)
@@ -1142,8 +1140,12 @@ class ChoculaDatabase():
                         if not out.get(k) and extra.get(k):
                             out[k] = extra[k]
                 if irow['slug'] in ('doaj','road','szczepanski', 'gold_oa'):
-                    # TODO: or if sherma/romeo color is green
                     out['is_oa'] = True
+                if irow['slug'] == 'sherpa_romeo':
+                    extra = json.loads(irow['extra'])
+                    out['sherpa_color'] = extra['color']
+                    if extra['color'] == 'green':
+                        out['is_oa'] = True
 
             cur = self.db.execute("SELECT * FROM homepage WHERE issnl = ?;", [issnl])
             for hrow in cur:
@@ -1182,7 +1184,7 @@ class ChoculaDatabase():
                 out['publisher_type'] = 'longtail'
                 out['is_longtail'] = True
 
-            self.c.execute("INSERT OR REPLACE INTO journal (issnl, issne, issnp, wikidata_qid, fatcat_ident, name, publisher, country, lang, is_oa, is_longtail, is_active, publisher_type, has_dois, any_homepage, any_live_homepage, known_issnl, valid_issnl, release_count, ia_count, ia_frac, kbart_count, kbart_frac, preserved_count, preserved_frac) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            self.c.execute("INSERT OR REPLACE INTO journal (issnl, issne, issnp, wikidata_qid, fatcat_ident, name, publisher, country, lang, is_oa, sherpa_color, is_longtail, is_active, publisher_type, has_dois, any_homepage, any_live_homepage, known_issnl, valid_issnl, release_count, ia_count, ia_frac, kbart_count, kbart_frac, preserved_count, preserved_frac) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 (issnl,
                  out.get('issne'),
                  out.get('issnp'),
@@ -1193,6 +1195,7 @@ class ChoculaDatabase():
                  out.get('country'),
                  out.get('lang'),
                  out.get('is_oa', False),
+                 out.get('sherpa_color'),
                  out.get('is_longtail', False),
                  out.get('is_active'),
                  out.get('publisher_type'),
@@ -1224,6 +1227,7 @@ class ChoculaDatabase():
         self.index_entrez(args)
         self.index_ezb(args)
         self.index_gold_oa(args)
+        self.index_openapc(args)
         self.index_wikidata(args)
         self.load_fatcat(args)
         self.load_fatcat_stats(args)

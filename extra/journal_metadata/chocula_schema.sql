@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS journal
      is_active BOOLEAN,
      is_oa BOOLEAN default false,
      is_longtail BOOLEAN default false,
+     sherpa_color TEXT,
      --vor_pdf BOOLEAN,
      --vor_html BOOLEAN,
      --vor_jats BOOLEAN,

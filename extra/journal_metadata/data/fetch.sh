@@ -6,7 +6,8 @@ set -eu
 #unzip -n road-2018-01-24-export-issn.zip
 wget -c https://archive.org/download/road-issn-2018/road-2018-01-24.tsv
 
-wget -c https://archive.org/download/doaj_bulk_metadata_2019/doaj_20190124.csv
+#wget -c https://archive.org/download/doaj_bulk_metadata_2019/doaj_20190124.csv
+wget -c https://archive.org/download/doaj_bulk_metadata_2019/journalcsv__doaj_20190731_0130_utf8.csv
 
 #wget -c https://archive.org/download/issn_issnl_mappings/20190129.ISSN-to-ISSN-L.txt
 wget -c https://archive.org/download/issn_issnl_mappings/20190730.ISSN-to-ISSN-L.txt
