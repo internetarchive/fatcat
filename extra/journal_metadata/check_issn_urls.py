@@ -2,10 +2,12 @@
 """
 Check journal homepage status (live web and wayback)
 
-
 Takes a tsv filepath or lines on stdin and dumps to stdout. The stdin thing means you can:
 
-    parallel -j100 --bar --pipepart -a urls_to_crawl.tsv ./check_issn_urls.py > url_status.json
+    # be sure to randomize order if you are going to use high parallelism so no
+    # individual domain gets swamped. also remember this hits CDX API multiple
+    # times.
+    parallel -j10 --bar --pipepart -a urls_to_crawl.shuf.tsv ./check_issn_urls.py > url_status.json
 
 Input columns (no header):
 
@@ -31,6 +33,7 @@ HTTP status will be -1 if domain does not even resolve.
 import os
 import sys
 import json
+import time
 import requests
 
 
@@ -79,12 +82,20 @@ def sniff_blocked(resp):
 def check_gwb(url, match_type='exact'):
     if '//web.archive.org/' in url:
         return None
-    resp = requests.get('https://web.archive.org/cdx/search/cdx', params={
-        'url': url,
-        'matchType': match_type,
-        'limit': -1,
-        'filter': 'statuscode:200'
-    })
+    # crude/bad retry loop to work around CDX API throttling
+    for i in range(5):
+        resp = requests.get('https://web.archive.org/cdx/search/cdx', params={
+            'url': url,
+            'matchType': match_type,
+            'limit': -1,
+            'filter': 'statuscode:200'
+        })
+        if resp.status_code == 200:
+            break
+        time.sleep(5)
+    if not resp.status_code == 200:
+        sys.stderr.write("CDX ERR {}: {}".format(resp.status_code, url))
+        return 'error'
     line = resp.text.strip().split('\n')[0]
     if line:
         dt = line.split()[1]
@@ -117,6 +128,10 @@ def check_url(issnl, url):
         return info
     except requests.exceptions.ChunkedEncodingError:
         info['error'] = 'ChunkedEncodingError'
+        info['terminal_status_code'] = info['status_code'] = -1
+        return info
+    except requests.exceptions.ContentDecodingError:
+        info['error'] = 'ContentDecodingError'
         info['terminal_status_code'] = info['status_code'] = -1
         return info
 

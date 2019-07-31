@@ -74,13 +74,14 @@ CREATE TABLE IF NOT EXISTS homepage
      domain TEXT NOT NULL,
      suffix TEXT NOT NULL,
      status_code INTEGER,
+     crawl_error TEXT,
      terminal_url TEXT,
      terminal_status_code INTEGER,
      platform_software TEXT,
-     scope TEXT,
-     has_issn BOOLEAN,
+     issnl_in_body BOOLEAN,
      blocked BOOLEAN,
-     latest_gwb_success TEXT,
+     gwb_url_success_dt TEXT,
+     gwb_terminal_url_success_dt TEXT,
      UNIQUE(issnl, surt)
     );
 CREATE INDEX IF NOT EXISTS homepage_url_idx ON homepage(url);
