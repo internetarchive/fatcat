@@ -72,6 +72,8 @@ class ElasticsearchContainerWorker(ElasticsearchReleaseWorker):
                          offset=offset,
                          elasticsearch_backend=elasticsearch_backend,
                          elasticsearch_index=elasticsearch_index)
+        # previous group got corrupted (by pykafka library?)
+        self.consumer_group = "elasticsearch-updates2"
         self.entity_type = ContainerEntity
         self.elasticsearch_document_name = "container"
         self.transform_func = container_to_elasticsearch
