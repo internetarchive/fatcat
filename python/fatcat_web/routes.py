@@ -687,7 +687,25 @@ def stats_json():
 @crossdomain(origin='*',headers=['access-control-allow-origin','Content-Type'])
 def container_issnl_stats(issnl):
     try:
-        stats = get_elastic_container_stats(issnl)
+        container = api.lookup_container(issnl=issnl)
+    except Exception as ae:
+        abort(ae.status)
+    try:
+        stats = get_elastic_container_stats(container.ident, issnl=container.issnl)
+    except Exception as ae:
+        app.log.error(ae)
+        abort(503)
+    return jsonify(stats)
+
+@app.route('/container/<ident>/stats.json', methods=['GET', 'OPTIONS'])
+@crossdomain(origin='*',headers=['access-control-allow-origin','Content-Type'])
+def container_ident_stats(ident):
+    try:
+        container = api.get_container(ident)
+    except Exception as ae:
+        abort(ae.status)
+    try:
+        stats = get_elastic_container_stats(container.ident, issnl=container.issnl)
     except Exception as ae:
         app.log.error(ae)
         abort(503)

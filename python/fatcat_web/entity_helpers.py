@@ -14,7 +14,7 @@ def enrich_container_entity(entity):
     entity._stats = None
     if entity.issnl:
         try:
-            entity._stats = get_elastic_container_stats(entity.issnl)
+            entity._stats = get_elastic_container_stats(entity.ident, issnl=entity.issnl)
         except Exception as e:
             app.log.error(e)
             pass

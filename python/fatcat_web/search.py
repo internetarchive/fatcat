@@ -201,11 +201,11 @@ def get_elastic_entity_stats():
 
     return stats
 
-def get_elastic_container_stats(issnl):
+def get_elastic_container_stats(ident, issnl=None):
     """
-    TODO: container_id, not issnl
-
     Returns dict:
+        ident
+        issnl (optional)
         total
         in_web
         preserved
@@ -214,7 +214,7 @@ def get_elastic_container_stats(issnl):
     query = {
         "size": 0,
         "query": {
-            "term": { "container_issnl": issnl }
+            "term": { "container_ident": ident }
         },
         "aggs": { "container_stats": { "filters": { "filters": {
                 "in_web": { "term": { "in_web": "true" } },
@@ -232,6 +232,7 @@ def get_elastic_container_stats(issnl):
     resp = resp.json()
     buckets = resp['aggregations']['container_stats']['buckets']
     stats = {
+        'ident': ident,
         'issnl': issnl,
         'total': resp['hits']['total'],
         'in_web': buckets['in_web']['doc_count'],
