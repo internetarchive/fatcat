@@ -208,6 +208,7 @@ def get_elastic_container_stats(ident, issnl=None):
         issnl (optional)
         total
         in_web
+        in_kbart
         preserved
     """
 
@@ -236,6 +237,7 @@ def get_elastic_container_stats(ident, issnl=None):
         'issnl': issnl,
         'total': resp['hits']['total'],
         'in_web': buckets['in_web']['doc_count'],
+        'in_kbart': buckets['in_kbart']['doc_count'],
         'is_preserved': buckets['is_preserved']['doc_count'],
     }
 
