@@ -215,7 +215,7 @@ def get_elastic_container_stats(ident, issnl=None):
     query = {
         "size": 0,
         "query": {
-            "term": { "container_ident": ident }
+            "term": { "container_id": ident }
         },
         "aggs": { "container_stats": { "filters": { "filters": {
                 "in_web": { "term": { "in_web": "true" } },
