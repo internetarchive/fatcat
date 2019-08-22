@@ -686,9 +686,12 @@ def stats_json():
 @app.route('/container/issnl/<issnl>/stats.json', methods=['GET', 'OPTIONS'])
 @crossdomain(origin='*',headers=['access-control-allow-origin','Content-Type'])
 def container_issnl_stats(issnl):
+    if not (len(issnl) == 9 and issnl[4] == '-'):
+        flash("Not a valid ISSN-L: {}".format(issnl))
+        abort(400)
     try:
         container = api.lookup_container(issnl=issnl)
-    except Exception as ae:
+    except ApiException as ae:
         abort(ae.status)
     try:
         stats = get_elastic_container_stats(container.ident, issnl=container.issnl)
@@ -702,7 +705,7 @@ def container_issnl_stats(issnl):
 def container_ident_stats(ident):
     try:
         container = api.get_container(ident)
-    except Exception as ae:
+    except ApiException as ae:
         abort(ae.status)
     try:
         stats = get_elastic_container_stats(container.ident, issnl=container.issnl)
