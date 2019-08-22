@@ -81,6 +81,7 @@ def fetch_wbm(url):
     return resp.content
 
 def lookup_cdx(embed_url, verify_hashes=True, cdx_output=None):
+    sys.stderr.write(embed_url + "\n")
     assert embed_url.startswith('/web/')
     embed_url = embed_url.split('/')
     timestamp = embed_url[2]
@@ -125,22 +126,44 @@ def lookup_cdx(embed_url, verify_hashes=True, cdx_output=None):
     else:
         return None
 
+def wayback_url_to_relative(url):
+    """
+    Wayback URLs can be relative or absolute in rewritten documents. This
+    function converts any form of rewritten URL to a relative (to
+    web.archive.org) one, or returns None if it isn't a rewritten URL at all.
+    """
+    if url.startswith('https://web.archive.org/'):
+        url = url[23:]
+    elif url.startswith('http://web.archive.org/'):
+        url = url[22:]
+
+    if url.startswith('/web/'):
+        return url
+    else:
+        return None
+
 def extract_embeds(soup):
 
     embeds = set()
 
     # <link href="">
     for tag in soup.find_all('link', href=True):
-        if tag['href'].startswith('/web/'):
-            embeds.add(tag['href'])
+        if tag['rel'] not in ('stylesheet',):
+            continue
+        url = wayback_url_to_relative(tag['href'])
+        if url:
+            embeds.add(url)
     # <img src="">
     for tag in soup.find_all('img', src=True):
-        if tag['src'].startswith('/web/'):
-            embeds.add(tag['src'])
+        url = wayback_url_to_relative(tag['src'])
+        if url:
+            embeds.add(url)
+
     # <script src="">
     for tag in soup.find_all('script', src=True):
-        if tag['src'].startswith('/web/'):
-            embeds.add(tag['src'])
+        url = wayback_url_to_relative(tag['src'])
+        if url:
+            embeds.add(url)
 
     return list(embeds)
 
