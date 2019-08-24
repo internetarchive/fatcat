@@ -37,7 +37,21 @@
     Revision:
     <br><small><code><a href="/{{ entity_type }}/rev/{{ entity.revision }}">{{ entity.revision }}</a></code></small>
   {% endif %}
-  <br><a href="{% if config.FATCAT_DOMAIN == 'dev.fatcat.wiki' %}http://localhost:9411{% else %}https://api.{{ config.FATCAT_DOMAIN }}{% endif %}/v0/{{ entity_type }}/{{ entity.ident }}{% if expand %}?expand={{ expand}}{% endif %}">As JSON object via API</a>
+  <br><a href="
+  {%- if config.FATCAT_DOMAIN == 'dev.fatcat.wiki' -%}
+    http://localhost:9411
+  {%- else -%}
+    https://api.{{ config.FATCAT_DOMAIN }}
+  {%- endif -%}
+  /v0/{{ entity_type }}
+  {%- if entity.ident -%}
+    /{{ entity.ident }}
+  {%- elif entity.revision -%}
+    /rev/{{ entity.revision }}
+  {% endif %}
+  {% if expand %}?expand={{ expand}}{% endif %}">
+  As JSON object via API
+  </a>
 </div>
 
 <div class="two ui buttons bottom attached">
