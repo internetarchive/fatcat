@@ -19,7 +19,24 @@
 <br>
 <h3>Archive URLs</h3>
 {% if webcapture.archive_urls != None %}
-  {{ entity_macros.url_list(webcapture.archive_urls, webcapture._wayback_suffix) }}
+  <table class="ui very basic compact single line fixed table">
+  <tbody>
+  {% for url in webcapture.archive_urls %}
+    <tr><td class="two wide right aligned">{{ url.rel }}
+        <td class="eight wide"><small><code>
+        {% if url.rel == "wayback" %}
+          <a href="{{ url.url }}{{ webcapture._wayback_suffix }}">
+            <b>{{ url.url }}</b>{{ webcapture._wayback_suffix }}
+          </a>
+        {% else %}
+          <a href="{{ url.url }}">
+            <b>{{ url.url }}</b>
+          </a>
+        {% endif %}
+        </a></code></small>
+    {% endfor %}
+  </tbody>
+  </table>
 {% else %}
 No known public archive for this webcapture.
 {% endif %}
@@ -32,7 +49,7 @@ No known public archive for this webcapture.
     <div class="item">
       <div class="content">
         <div class="header">
-          <code><a href="{{ row.url }}">{{ row.url}}</a></code>
+          <code><a href="{{ row.url }}" style="color: black;">{{ row.url}}</a></code>
         </div>
         <div style="margin-left: 1em;">
           {{ row.timestamp.strftime("%Y-%m-%d %H:%M:%S") }}
@@ -54,6 +71,10 @@ This web capture is empty (contains no resources).
 
 </div>
 <div class="column" style="flex: 0 0 24em;">
+
+{% if webcapture.state == 'active' and webcapture.archive_urls != [] and webcapture.archive_urls[0].rel == "wayback" %}
+<a href="{{ webcapture.archive_urls[0].url }}{{ webcapture._wayback_suffix }}" class="ui top attached fluid huge green button"><i class="file archive outline icon"></i>View Web Archive</a>
+{% endif %}
 
 {% if webcapture.timestamp != None %}
 <div class="ui segment attached">

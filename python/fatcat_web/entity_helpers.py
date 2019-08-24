@@ -42,7 +42,7 @@ def enrich_fileset_entity(entity):
 def enrich_webcapture_entity(entity):
     if entity.state in ('redirect', 'deleted'):
         return entity
-    entity.wayback_suffix = wayback_suffix(entity)
+    entity._wayback_suffix = wayback_suffix(entity)
     return entity
 
 def enrich_release_entity(entity):
