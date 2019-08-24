@@ -58,6 +58,11 @@ def run_journal_metadata(args):
         edit_batch_size=args.batch_size)
     JsonLinePusher(fii, args.json_file).run()
 
+def run_chocula(args):
+    fii = ChoculaImporter(args.api,
+        edit_batch_size=args.batch_size)
+    JsonLinePusher(fii, args.json_file).run()
+
 def run_matched(args):
     fmi = MatchedImporter(args.api,
         edit_batch_size=args.batch_size,
@@ -252,6 +257,15 @@ def main():
     )
     sub_journal_metadata.add_argument('json_file',
         help="Journal JSON metadata file to import from (or stdin)",
+        default=sys.stdin, type=argparse.FileType('r'))
+
+    sub_chocula = subparsers.add_parser('chocula')
+    sub_chocula.set_defaults(
+        func=run_chocula,
+        auth_var="FATCAT_AUTH_WORKER_JOURNAL_METADATA",
+    )
+    sub_chocula.add_argument('json_file',
+        help="chocula JSON entities file (or stdin)",
         default=sys.stdin, type=argparse.FileType('r'))
 
     sub_matched = subparsers.add_parser('matched')
