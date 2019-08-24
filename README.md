@@ -1,11 +1,12 @@
 
-      __       _            _   
-     / _| __ _| |_ ___ __ _| |_ 
-    | |_ / _` | __/ __/ _` | __|
-    |  _| (_| | || (_| (_| | |_ 
-    |_|  \__,_|\__\___\__,_|\__|
+              __       _            _   
+             / _| __ _| |_ ___ __ _| |_ 
+            | |_ / _` | __/ __/ _` | __|
+            |  _| (_| | || (_| (_| | |_ 
+            |_|  \__,_|\__\___\__,_|\__|
 
-                                        ... catalog all the things!
+       perpetual access to the scholarly record
+
 
 [![pipeline status](https://gitlab.com/bnewbold/fatcat/badges/master/pipeline.svg)](https://gitlab.com/bnewbold/fatcat/commits/master)
 [![coverage report](https://gitlab.com/bnewbold/fatcat/badges/master/coverage.svg)](https://gitlab.com/bnewbold/fatcat/commits/master)
