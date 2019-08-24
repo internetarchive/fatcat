@@ -222,7 +222,7 @@
 <table class="ui single line compact fixed table">
   <tbody>
   {% for webcapture in entity.webcaptures %}
-  <tr><td><b><a href="{{ webcapture.original_url }}">{{ webcapture.original_url }}</a></b>
+  <tr><td><b><a href="{{ webcapture.original_url }}" style="color: black;">{{ webcapture.original_url }}</a></b>
       <br>{{ webcapture.timestamp.strftime("%Y-%m-%d %H:%M:%S") }} | {{ webcapture.cdx|count }} resources
       <br><small><code><a href="/webcapture/{{ webcapture.ident }}">webcapture:{{ webcapture.ident }}</a></code></small>
       <td class="single line">
@@ -243,7 +243,7 @@
 <div class="column" style="flex: 0 0 24em;">
 
 {% if entity.state == 'active' and entity.files != [] and entity.files[0].urls != [] %}
-<a href="{{ entity.files[0].urls[0].url }}" class="ui top attached fluid huge green button"><i class="file pdf outline icon"></i>Download Full Text</a>
+<a href="{{ entity.files[0].urls[0].url }}" class="ui top attached fluid huge green button"><i class="file pdf outline icon"></i>Read Full Text</a>
 {% elif entity.state == 'active' and entity.webcaptures != [] and entity.webcaptures[0].archive_urls != [] and entity.webcaptures[0].archive_urls[0].rel == "wayback" %}
 <a href="{{ entity.webcaptures[0].archive_urls[0].url }}{{ entity.webcaptures[0]._wayback_suffix }}" class="ui top attached fluid huge green button"><i class="file archive outline icon"></i>View Web Archive</a>
 {% elif entity.state == 'active' %}
