@@ -101,7 +101,7 @@ impl iron::Error for AuthError {
     fn description(&self) -> &str {
         &self.msg
     }
-    fn cause(&self) -> Option<&iron::Error> {
+    fn cause(&self) -> Option<&dyn iron::Error> {
         None
     }
 }

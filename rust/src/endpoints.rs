@@ -83,7 +83,7 @@ macro_rules! wrap_entity_handlers {
             expand: Option<String>,
             hide: Option<String>,
             _context: &Context,
-        ) -> Box<Future<Item = $get_resp, Error = ApiError> + Send> {
+        ) -> Box<dyn Future<Item = $get_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             // No transaction for GET
             let ret = match (|| {
@@ -114,7 +114,7 @@ macro_rules! wrap_entity_handlers {
             editgroup_id: String,
             entity: models::$model,
             context: &Context,
-        ) -> Box<Future<Item = $post_resp, Error = ApiError> + Send> {
+        ) -> Box<dyn Future<Item = $post_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             let ret = match conn.transaction(|| {
                 let editgroup_id = FatcatId::from_str(&editgroup_id)?;
@@ -138,7 +138,7 @@ macro_rules! wrap_entity_handlers {
             &self,
             auto_batch: $auto_batch_type,
             context: &Context,
-        ) -> Box<Future<Item = $post_auto_batch_resp, Error = ApiError> + Send> {
+        ) -> Box<dyn Future<Item = $post_auto_batch_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             let ret = match conn.transaction(|| {
                 let auth_context = self.auth_confectionary.require_auth(&conn, &context.auth_data, Some(stringify!($post_auto_batch_fn)))?;
@@ -180,7 +180,7 @@ macro_rules! wrap_entity_handlers {
             ident: String,
             entity: models::$model,
             context: &Context,
-        ) -> Box<Future<Item = $update_resp, Error = ApiError> + Send> {
+        ) -> Box<dyn Future<Item = $update_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             let ret = match conn.transaction(|| {
                 let editgroup_id = FatcatId::from_str(&editgroup_id)?;
@@ -206,7 +206,7 @@ macro_rules! wrap_entity_handlers {
             editgroup_id: String,
             ident: String,
             context: &Context,
-        ) -> Box<Future<Item = $delete_resp, Error = ApiError> + Send> {
+        ) -> Box<dyn Future<Item = $delete_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             let ret = match conn.transaction(|| {
                 let editgroup_id = FatcatId::from_str(&editgroup_id)?;
@@ -232,7 +232,7 @@ macro_rules! wrap_entity_handlers {
             ident: String,
             limit: Option<i64>,
             _context: &Context,
-        ) -> Box<Future<Item = $get_history_resp, Error = ApiError> + Send> {
+        ) -> Box<dyn Future<Item = $get_history_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             // No transaction for GET?
             let ret = match (|| {
@@ -252,7 +252,7 @@ macro_rules! wrap_entity_handlers {
             expand: Option<String>,
             hide: Option<String>,
             _context: &Context,
-        ) -> Box<Future<Item = $get_rev_resp, Error = ApiError> + Send> {
+        ) -> Box<dyn Future<Item = $get_rev_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             // No transaction for GET?
             let ret = match (|| {
@@ -282,7 +282,7 @@ macro_rules! wrap_entity_handlers {
             &self,
             edit_id: String,
             _context: &Context,
-        ) -> Box<Future<Item = $get_edit_resp, Error = ApiError> + Send> {
+        ) -> Box<dyn Future<Item = $get_edit_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             // No transaction for GET?
             let ret = match (|| {
@@ -301,7 +301,7 @@ macro_rules! wrap_entity_handlers {
             editgroup_id: String,
             edit_id: String,
             context: &Context,
-        ) -> Box<Future<Item = $delete_edit_resp, Error = ApiError> + Send> {
+        ) -> Box<dyn Future<Item = $delete_edit_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             let ret = match conn.transaction(|| {
                 let editgroup_id = FatcatId::from_str(&editgroup_id)?;
@@ -333,7 +333,7 @@ macro_rules! wrap_entity_handlers {
             &self,
             ident: String,
             _context: &Context,
-        ) -> Box<Future<Item = $get_redirects_resp, Error = ApiError> + Send> {
+        ) -> Box<dyn Future<Item = $get_redirects_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             // No transaction for GET?
             let ret = match (|| {
@@ -360,7 +360,7 @@ macro_rules! wrap_lookup_handler {
             expand: Option<String>,
             hide: Option<String>,
             _context: &Context,
-        ) -> Box<Future<Item = $get_resp, Error = ApiError> + Send> {
+        ) -> Box<dyn Future<Item = $get_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             let expand_flags = match expand {
                 None => ExpandFlags::none(),
@@ -387,7 +387,7 @@ macro_rules! wrap_fcid_handler {
             &self,
             id: String,
             _context: &Context,
-        ) -> Box<Future<Item = $get_resp, Error = ApiError> + Send> {
+        ) -> Box<dyn Future<Item = $get_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             // No transaction for GET
             let ret = match (|| {
@@ -410,7 +410,7 @@ macro_rules! wrap_fcid_hide_handler {
             id: String,
             hide: Option<String>,
             _context: &Context,
-        ) -> Box<Future<Item = $get_resp, Error = ApiError> + Send> {
+        ) -> Box<dyn Future<Item = $get_resp, Error = ApiError> + Send> {
             let conn = self.db_pool.get().expect("db_pool error");
             // No transaction for GET
             let ret = match (|| {
@@ -656,7 +656,7 @@ impl Api for Server {
         expand: Option<String>,
         hide: Option<String>,
         _context: &Context,
-    ) -> Box<Future<Item = LookupFileResponse, Error = ApiError> + Send> {
+    ) -> Box<dyn Future<Item = LookupFileResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
         let expand_flags = match expand {
             None => ExpandFlags::none(),
@@ -692,7 +692,7 @@ impl Api for Server {
         expand: Option<String>,
         hide: Option<String>,
         _context: &Context,
-    ) -> Box<Future<Item = LookupReleaseResponse, Error = ApiError> + Send> {
+    ) -> Box<dyn Future<Item = LookupReleaseResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
         let expand_flags = match expand {
             None => ExpandFlags::none(),
@@ -735,7 +735,7 @@ impl Api for Server {
         editor_id: String,
         editor: models::Editor,
         context: &Context,
-    ) -> Box<Future<Item = UpdateEditorResponse, Error = ApiError> + Send> {
+    ) -> Box<dyn Future<Item = UpdateEditorResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
         let ret = match conn
             .transaction(|| {
@@ -780,7 +780,7 @@ impl Api for Server {
         before: Option<chrono::DateTime<chrono::Utc>>,
         since: Option<chrono::DateTime<chrono::Utc>>,
         _context: &Context,
-    ) -> Box<Future<Item = GetEditorEditgroupsResponse, Error = ApiError> + Send> {
+    ) -> Box<dyn Future<Item = GetEditorEditgroupsResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
         let ret = match conn
             .transaction(|| {
@@ -809,7 +809,7 @@ impl Api for Server {
         before: Option<chrono::DateTime<chrono::Utc>>,
         since: Option<chrono::DateTime<chrono::Utc>>,
         _context: &Context,
-    ) -> Box<Future<Item = GetEditorAnnotationsResponse, Error = ApiError> + Send> {
+    ) -> Box<dyn Future<Item = GetEditorAnnotationsResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
         let ret = match conn
             .transaction(|| {
@@ -832,7 +832,7 @@ impl Api for Server {
         &self,
         editgroup_id: String,
         context: &Context,
-    ) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send> {
+    ) -> Box<dyn Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
         let ret = match conn
             .transaction(|| {
@@ -865,7 +865,7 @@ impl Api for Server {
         &self,
         editgroup_id: String,
         _context: &Context,
-    ) -> Box<Future<Item = GetEditgroupResponse, Error = ApiError> + Send> {
+    ) -> Box<dyn Future<Item = GetEditgroupResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
         let ret = match conn
             .transaction(|| {
@@ -885,7 +885,7 @@ impl Api for Server {
         editgroup_id: String,
         expand: Option<String>,
         _context: &Context,
-    ) -> Box<Future<Item = GetEditgroupAnnotationsResponse, Error = ApiError> + Send> {
+    ) -> Box<dyn Future<Item = GetEditgroupAnnotationsResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
         let ret = match conn
             .transaction(|| {
@@ -924,7 +924,7 @@ impl Api for Server {
         before: Option<chrono::DateTime<chrono::Utc>>,
         since: Option<chrono::DateTime<chrono::Utc>>,
         _context: &Context,
-    ) -> Box<Future<Item = GetEditgroupsReviewableResponse, Error = ApiError> + Send> {
+    ) -> Box<dyn Future<Item = GetEditgroupsReviewableResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
         let ret = match conn
             .transaction(|| {
@@ -954,7 +954,7 @@ impl Api for Server {
         &self,
         entity: models::Editgroup,
         context: &Context,
-    ) -> Box<Future<Item = CreateEditgroupResponse, Error = ApiError> + Send> {
+    ) -> Box<dyn Future<Item = CreateEditgroupResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
         let ret = match conn.transaction(|| {
             let auth_context = self.auth_confectionary.require_auth(
@@ -1008,7 +1008,7 @@ impl Api for Server {
         editgroup: models::Editgroup,
         submit: Option<bool>,
         context: &Context,
-    ) -> Box<Future<Item = UpdateEditgroupResponse, Error = ApiError> + Send> {
+    ) -> Box<dyn Future<Item = UpdateEditgroupResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
         let ret = match conn
             .transaction(|| {
@@ -1048,7 +1048,7 @@ impl Api for Server {
         editgroup_id: String,
         annotation: models::EditgroupAnnotation,
         context: &Context,
-    ) -> Box<Future<Item = CreateEditgroupAnnotationResponse, Error = ApiError> + Send> {
+    ) -> Box<dyn Future<Item = CreateEditgroupAnnotationResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
         let ret = match conn.transaction(|| {
             let auth_context = self.auth_confectionary.require_auth(
@@ -1089,7 +1089,7 @@ impl Api for Server {
         &self,
         limit: Option<i64>,
         _context: &Context,
-    ) -> Box<Future<Item = GetChangelogResponse, Error = ApiError> + Send> {
+    ) -> Box<dyn Future<Item = GetChangelogResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
         // No transaction for GET
         let ret = match self
@@ -1113,7 +1113,7 @@ impl Api for Server {
         &self,
         id: i64,
         _context: &Context,
-    ) -> Box<Future<Item = GetChangelogEntryResponse, Error = ApiError> + Send> {
+    ) -> Box<dyn Future<Item = GetChangelogEntryResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
         // No transaction for GET
         let ret = match self
@@ -1130,7 +1130,7 @@ impl Api for Server {
         &self,
         params: models::AuthOidc,
         context: &Context,
-    ) -> Box<Future<Item = AuthOidcResponse, Error = ApiError> + Send> {
+    ) -> Box<dyn Future<Item = AuthOidcResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
         let ret = match conn
             .transaction(|| {
@@ -1178,7 +1178,7 @@ impl Api for Server {
         &self,
         role: Option<String>,
         context: &Context,
-    ) -> Box<Future<Item = AuthCheckResponse, Error = ApiError> + Send> {
+    ) -> Box<dyn Future<Item = AuthCheckResponse, Error = ApiError> + Send> {
         let conn = self.db_pool.get().expect("db_pool error");
         let ret = match conn
             .transaction(|| {
