@@ -16,7 +16,7 @@ See also:
 
 ## [Unreleased]
 
-Nothing yet!
+- updated rust (cargo) dependencies; depend on rust 1.34+ (Debian buster)
 
 ## [0.3.0] - 2019-05-23
 
