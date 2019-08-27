@@ -9,6 +9,11 @@ this file should probably get merged into the guide at some point.
 
 This file should not turn in to a TODO list!
 
+## 2019-08
+
+Merged/fixed roughly 100 container entities with invalid ISSN-L numbers (eg,
+invalid ISSN checksum).
+
 ## 2019-04
 
 Imported files (matched to releases by DOI) from Semantic Scholar
