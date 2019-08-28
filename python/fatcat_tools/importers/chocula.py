@@ -50,7 +50,8 @@ class ChoculaImporter(EntityImporter):
             name = "Proceedings of the " + name.split(',')[0]
 
         extra = dict()
-        for k in ('urls', 'webarchive_urls', 'issne', 'issnp', 'country', 'sherpa_romeo'):
+        for k in ('urls', 'webarchive_urls', 'issne', 'issnp', 'country',
+                  'sherpa_romeo', 'ezb', 'szczepanski', 'languages'):
             if row['extra'].get(k):
                 extra[k] = row['extra'][k]
 
@@ -117,6 +118,11 @@ class ChoculaImporter(EntityImporter):
                       'sherpa_romeo', 'ezb', 'szczepanski'):
                 if ce.extra.get(k):
                     existing.extra[k] = ce.extra[k]
+            if ce.extra.get('languages'):
+                if not existing.extra.get('languages'):
+                    existing.extra['languages'] = ce.extra['languages']
+                elif not ce.extra['languages'][0] in existing.extra['languages']:
+                    existing.extra['languages'].append(ce.extra['languages'][0])
 
             self.api.update_container(self.get_editgroup_id(), existing.ident, existing)
             self.counts['update'] += 1
