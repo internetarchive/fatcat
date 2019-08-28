@@ -20,6 +20,7 @@ from .arxiv import ArxivRawImporter
 from .pubmed import PubmedImporter
 from .grobid_metadata import GrobidMetadataImporter
 from .journal_metadata import JournalMetadataImporter
+from .chocula import ChoculaImporter
 from .matched import MatchedImporter
 from .orcid import OrcidImporter
 from .arabesque import ArabesqueMatchImporter, ARABESQUE_MATCH_WHERE_CLAUSE
