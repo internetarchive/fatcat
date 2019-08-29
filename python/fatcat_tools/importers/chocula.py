@@ -51,7 +51,7 @@ class ChoculaImporter(EntityImporter):
 
         extra = dict()
         for k in ('urls', 'webarchive_urls', 'issne', 'issnp', 'country',
-                  'sherpa_romeo', 'ezb', 'szczepanski', 'languages'):
+                  'sherpa_romeo', 'ezb', 'szczepanski', 'doaj', 'languages'):
             if row['extra'].get(k):
                 extra[k] = row['extra'][k]
 
@@ -115,7 +115,7 @@ class ChoculaImporter(EntityImporter):
             existing.publisher = ce.publisher
             existing.container_type = existing.container_type or ce.container_type
             for k in ('urls', 'webarchive_urls', 'issne', 'issnp', 'country',
-                      'sherpa_romeo', 'ezb', 'szczepanski'):
+                      'sherpa_romeo', 'ezb', 'szczepanski', 'doaj'):
                 if ce.extra.get(k):
                     existing.extra[k] = ce.extra[k]
             if ce.extra.get('languages'):
