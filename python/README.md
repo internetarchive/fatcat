@@ -9,6 +9,17 @@ Most of this code is an "application" which is tightly interwoven and intended
 to be run from this directory, but the client library is distributed on
 pypi.org.
 
+## Dependencies
+
+This project uses `pipenv` to manage dependencies, and requires Python 3.5. 
+You can can install `pipenv` with `pip` (or `pip3`). If you also install
+`pyenv`, `pipenv` will automatically install Python 3.5 for you. You may want
+to set the `PIPENV_VENV_IN_PROJECT` environment variable on your development
+machine (see pipenv docs for details).
+
+NOTE: ensure you are using at least pipenv version `2018.11.26`. Earlier
+versions had a bug which caused problems with our local path dependency.
+
 ## API Client Library
 
 The auto-generated python client library for the fatcat API lives under
@@ -21,15 +32,6 @@ locally):
     ./codegen_python_client.sh
 
 ## Web Interface
-
-This project uses `pipenv` to manage dependencies, and assumes Python 3.5
-(which pipenv may install if you are running a different local version; see
-notes in Pipfile). You can can install `pipenv` with `pip`. You may want to set
-the `PIPENV_VENV_IN_PROJECT` environment variable on your development machine
-(see pipenv docs for details).
-
-NOTE: ensure you are using at least pipenv version `2018.11.26`. Earlier
-versions had a bug which caused problems with our local path dependency.
 
 To just run the web interface (which will try to connect to a back-end API
 server on the same machine by default), use:
