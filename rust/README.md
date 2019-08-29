@@ -20,9 +20,10 @@ do development work:
 
 - rust stable, 2018 edition, 1.34+ (eg, via "rustup", includes cargo tool)
 - diesel (`cargo install diesel_cli`)
-- postgres (compatible with 9.6+; run 11.x in production)
+- postgres (compatible with 9.6+; we run 11.x in production)
 - postgres libs (debian/ubuntu: `libsqlite3-dev libpq-dev`)
 - libsodium library and development headers (debian/ubuntu: `libsodium-dev`)
+- OpenSSL 1.0 (not compatible with 1.1; see "OpenSSL 1.0" section below)
 
 We need to create a new `fatcat` postgres user and database to run tests and
 develop with. On debian/ubuntu, a UNIX account named `postgres` is
@@ -58,6 +59,22 @@ Note that most "integration" level tests are written in python and run by
 `pytest`; see `../python/README.md`.
 
 See `HACKING` for some more advanced tips and commands.
+
+### OpenSSL 1.0
+
+Ubuntu bionic (18.04) and later ship with OpenSSL 1.1, you can install OpenSSL
+1.0 with:
+
+    # note that libssl1.0-dev conflicts with libssl-dev
+    sudo apt install openssl1.0 libssl1.0-dev
+
+And then build with:
+
+    cargo clean
+    OPENSSL_LIB_DIR="/usr/lib/x86_64-linux-gnu" OPENSSL_INCLUDE_DIR="/usr/include/openssl" cargo build --release
+
+There is a [github tracking issue](https://github.com/internetarchive/fatcat/issues/42)
+for this dependency problem.
 
 ## Configuration
 
