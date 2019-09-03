@@ -46,8 +46,13 @@ class ChoculaImporter(EntityImporter):
             # Name is required (by schema)
             return None
 
+        name = name.strip()
+
         if name.endswith(',  Proceedings of the'):
             name = "Proceedings of the " + name.split(',')[0]
+
+        if name.endswith('.'):
+            name = name[:-1]
 
         extra = dict()
         for k in ('urls', 'webarchive_urls', 'issne', 'issnp', 'country',
@@ -106,8 +111,13 @@ class ChoculaImporter(EntityImporter):
         do_update = False
         if not existing.extra:
             existing.extra = dict()
-        if ce.extra.get('urls') and set(ce.extra.get('urls', [])) != set(existing.extra.get('urls', [])):
+        if set(ce.extra.get('urls', [])) != set(existing.extra.get('urls', [])):
             do_update = True
+        if set(ce.extra.get('webarchive_urls', [])) != set(existing.extra.get('webarchive_urls', [])):
+            do_update = True
+        for k in ('ezb', 'szczepanski', 'doaj'):
+            if ce.extra.get(k) and not existing.extra.get(k):
+                do_update = True
         if ce.publisher and not existing.publisher:
             do_update = True
         if ce.wikidata_qid and not existing.wikidata_qid:
@@ -117,8 +127,16 @@ class ChoculaImporter(EntityImporter):
             existing.wikidata_qid = ce.wikidata_qid
             existing.publisher = ce.publisher
             existing.container_type = existing.container_type or ce.container_type
-            for k in ('urls', 'webarchive_urls', 'issne', 'issnp', 'country',
-                      'sherpa_romeo', 'ezb', 'szczepanski', 'doaj'):
+            for k in ('urls', 'webarchive_urls'):
+                # update, or clobber/remove any existing values. often
+                # want/need to remove dead URLs
+                if ce.extra.get(k):
+                    existing.extra[k] = ce.extra.get(k, [])
+                elif k in existing.extra.keys():
+                    existing.extra.pop(k)
+            for k in ('issne', 'issnp', 'country', 'sherpa_romeo', 'ezb',
+                      'szczepanski', 'doaj'):
+                # update, but don't remove any existing value
                 if ce.extra.get(k):
                     existing.extra[k] = ce.extra[k]
             if ce.extra.get('languages'):
