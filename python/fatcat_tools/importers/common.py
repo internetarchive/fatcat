@@ -286,7 +286,7 @@ class EntityImporter:
         self._pmid_id_map = dict()
 
     def reset(self):
-        self.counts = Counter({'skip': 0, 'insert': 0, 'update': 0, 'exists': 0})
+        self.counts = Counter({'total': 0, 'skip': 0, 'insert': 0, 'update': 0, 'exists': 0})
         self._edit_count = 0
         self._editgroup_id = None
         self._entity_queue = []
@@ -296,6 +296,7 @@ class EntityImporter:
         """
         Returns nothing.
         """
+        self.counts['total'] += 1
         if (not raw_record) or (not self.want(raw_record)):
             self.counts['skip'] += 1
             return
@@ -326,9 +327,6 @@ class EntityImporter:
             self.counts['insert'] += len(self._entity_queue)
             self._entity_queue =  []
 
-        self.counts['total'] = 0
-        for key in ('skip', 'insert', 'update', 'exists'):
-            self.counts['total'] += self.counts[key]
         return self.counts
 
     def get_editgroup_id(self, edits=1):
