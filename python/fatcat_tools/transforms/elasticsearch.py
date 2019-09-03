@@ -285,10 +285,10 @@ def container_to_elasticsearch(entity, force_bool=True):
         if extra['road'].get('as_of'):
             in_road = True
     if extra.get('ezb'):
-        if c_extra['ezb'].get('color') == 'green':
+        if extra['ezb'].get('color') == 'green':
             is_oa = True
     if extra.get('szczepanski'):
-        if c_extra['szczepanski'].get('as_of'):
+        if extra['szczepanski'].get('as_of'):
             is_oa = True
     if extra.get('default_license'):
         if extra['default_license'].startswith('CC-'):
