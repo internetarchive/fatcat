@@ -12,6 +12,11 @@
   <div style="text-overflow: ellipsis; overflow: hidden; width: 100%;">
     <a href="{{ container.extra['urls'][0] }}"><code>{{ container.extra['urls'][0] }}</code></a>
   </div>
+{% elif (container.extra != None) and (container.extra['webarchive_urls'] != None) and (container.extra['webarchive_urls']|length > 0) %}
+{# fallback to a webarchive URL if no valid/live homepage URL #}
+  <div style="text-overflow: ellipsis; overflow: hidden; width: 100%;">
+    <a href="{{ container.extra['webarchive_urls'][0] }}"><code>{{ container.extra['webarchive_urls'][0] }}</code></a>
+  </div>
 {% endif %}
 <p>
 {% if container.publisher != None %}

@@ -70,7 +70,7 @@
       <tr><td class="three wide right aligned"><code>{{ key }}.{{ inner_key }}</code></td>
           <td class="seven wide"><code>{{ inner_value }}</code>
     {% endfor %}
-  {% elif key in ("urls") and value and value is iterable and value is not string and value[0] is string %}
+  {% elif key in ("urls", "webarchive_urls") and value and value is iterable and value is not string and value[0] is string %}
     <tr><td class="three wide right aligned"><code>{{ key }}</code></td>
         <td class="seven wide">
           <code>
