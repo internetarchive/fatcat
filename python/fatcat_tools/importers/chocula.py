@@ -80,9 +80,11 @@ class ChoculaImporter(EntityImporter):
             except fatcat_client.rest.ApiException as err:
                 if err.status != 404:
                     raise err
+                self.counts['exists'] += 1
                 self.counts['exists-not-found'] += 1
                 return False
             if existing.state != 'active':
+                self.counts['exists'] += 1
                 self.counts['exists-inactive'] += 1
                 return False
 
@@ -94,6 +96,7 @@ class ChoculaImporter(EntityImporter):
                 if err.status != 404:
                     raise err
             if existing:
+                self.counts['exists'] += 1
                 self.counts['exists-by-issnl'] += 1
                 return False
             # doesn't exist, always create
@@ -103,7 +106,7 @@ class ChoculaImporter(EntityImporter):
         do_update = False
         if not existing.extra:
             existing.extra = dict()
-        if set(ce.extra.get('urls', [])) != set(existing.extra.get('urls', [])):
+        if ce.extra.get('urls') and set(ce.extra.get('urls', [])) != set(existing.extra.get('urls', [])):
             do_update = True
         if ce.publisher and not existing.publisher:
             do_update = True
@@ -128,7 +131,8 @@ class ChoculaImporter(EntityImporter):
             self.counts['update'] += 1
             return False
         else:
-            self.counts['skip-update'] += 1
+            self.counts['exists'] += 1
+            self.counts['exists-skip-update'] += 1
             return False
 
         # if we got this far, it's a bug
