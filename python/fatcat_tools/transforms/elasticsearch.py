@@ -105,6 +105,8 @@ def release_to_elasticsearch(entity, force_bool=True):
     if container:
         t['publisher'] = container.publisher
         t['container_name'] = container.name
+        # this is container.ident, not release.container_id, because there may
+        # be a redirect involved
         t['container_id'] = container.ident
         t['container_issnl'] = container.issnl
         t['container_type'] = container.container_type
