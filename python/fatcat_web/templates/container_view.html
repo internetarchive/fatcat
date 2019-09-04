@@ -33,6 +33,12 @@
     </div>
   </div>
 </form>
+
+{% if container._random_releases %}
+<h3>Example Publications</h3>
+{% for random_release in container._random_releases %}
+  {{ entity_macros.release_search_result_row(random_release) }}
+{% endfor %}
 {% endif %}
 
 </div>

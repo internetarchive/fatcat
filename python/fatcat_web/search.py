@@ -6,6 +6,7 @@ the formal API)
 TODO: ELASTICSEARCH_*_INDEX should probably be factored out and just hard-coded
 """
 
+import datetime
 import requests
 from flask import abort, flash
 from fatcat_web import app
@@ -242,3 +243,45 @@ def get_elastic_container_stats(ident, issnl=None):
     }
 
     return stats
+
+def get_elastic_container_random_releases(ident, limit=5):
+    """
+    Returns a list of releases from the container.
+    """
+
+    assert limit > 0 and limit <= 100
+
+    query = {
+        "size": int(limit),
+        "sort": [
+            { "in_web": {"order": "desc"} },
+            { "release_date": {"order": "desc"} },
+        ],
+        "query": {
+            "bool": {
+                "must": [
+                    { "term": { "container_id": ident } },
+                    { "range": { "release_year": { "lte": datetime.datetime.today().year } } },
+                ],
+            },
+        },
+    }
+    resp = requests.get(
+        "{}/fatcat_release/_search".format(app.config['ELASTICSEARCH_BACKEND']),
+        json=query,
+        params=dict(request_cache="true"))
+    # TODO: abort()
+    #print(resp.json())
+    resp.raise_for_status()
+    resp = resp.json()
+    print(resp)
+    hits = [h['_source'] for h in resp['hits']['hits']]
+    for h in hits:
+        # Handle surrogate strings that elasticsearch returns sometimes,
+        # probably due to mangled data processing in some pipeline.
+        # "Crimes against Unicode"; production workaround
+        for key in h:
+            if type(h[key]) is str:
+                h[key] = h[key].encode('utf8', 'ignore').decode('utf8')
+
+    return hits
