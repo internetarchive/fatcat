@@ -15,10 +15,14 @@
 
   <h3 class="ui dividing header">The Basics</h3>
   <br>
-  {{ edit_macros.form_field_inline(form.container_type, "required") }}
+  {{ edit_macros.form_field_inline(form.container_type) }}
   {{ edit_macros.form_field_inline(form.name, "required") }}
+  {{ edit_macros.form_field_inline(form.original_name) }}
   {{ edit_macros.form_field_inline(form.publisher) }}
+  {{ edit_macros.form_field_inline(form.country) }}
   {{ edit_macros.form_field_inline(form.issnl) }}
+  {{ edit_macros.form_field_inline(form.issne) }}
+  {{ edit_macros.form_field_inline(form.issnp) }}
   {{ edit_macros.form_field_inline(form.wikidata_qid) }}
 
   <br>

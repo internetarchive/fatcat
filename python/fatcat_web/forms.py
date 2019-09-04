@@ -180,12 +180,18 @@ class ReleaseEntityForm(EntityEditForm):
 
 container_type_options = (
     ('journal', 'Journal'),
-    ('proceedings', 'Conference Proceedings'),
+    ('proceedings', 'Proceedings'),
+    ('book-series', 'Book Series'),
     ('blog', 'Blog'),
+    ('magazine', 'Magazine'),
+    ('trade', 'Trade Magazine'),
+    ('test', 'Test / Dummy'),
+    ('', 'Unknown / Blank'),
 )
 
 CONTAINER_SIMPLE_ATTRS = ['name', 'container_type', 'publisher', 'issnl',
     'wikidata_qid']
+CONTAINER_EXTRA_ATTRS = ['issne', 'issnp', 'original_name', 'country']
 
 class ContainerEntityForm(EntityEditForm):
     name = StringField('Name/Title',
@@ -195,7 +201,11 @@ class ContainerEntityForm(EntityEditForm):
         choices=container_type_options,
         default='')
     publisher = StringField("Publisher")
-    issnl = StringField("ISSN-L")
+    issnl = StringField("ISSN-L (linking)")
+    issne = StringField("ISSN (electronic)")
+    issnp = StringField("ISSN (print)")
+    original_name = StringField("Original Name (native language)")
+    country = StringField("Country of Publication (ISO code)")
     wikidata_qid = StringField('Wikidata QID')
     urls = FieldList(
         StringField("Container URLs",
@@ -211,9 +221,14 @@ class ContainerEntityForm(EntityEditForm):
         for simple_attr in CONTAINER_SIMPLE_ATTRS:
             a = getattr(cef, simple_attr)
             a.data = getattr(ce, simple_attr)
-        if ce.extra and ce.extra.get('urls'):
-            for url in ce.extra['urls']:
-                cef.urls.append_entry(url)
+        if ce.extra:
+            for k in CONTAINER_EXTRA_ATTRS:
+                if ce.extra.get(k):
+                    a = getattr(cef, k)
+                    a.data = ce.extra[k]
+            if ce.extra.get('urls'):
+                for url in ce.extra['urls']:
+                    cef.urls.append_entry(url)
         return cef
 
     def to_entity(self):
@@ -235,23 +250,31 @@ class ContainerEntityForm(EntityEditForm):
             if a == '':
                 a = None
             setattr(ce, simple_attr, a)
+        if not ce.extra:
+            ce.extra = dict()
+        for extra_attr in CONTAINER_EXTRA_ATTRS:
+            a = getattr(self, extra_attr).data
+            if a and a != '':
+                ce.extra[extra_attr] = a
         extra_urls = []
         for url in self.urls:
             extra_urls.append(url.data)
         if extra_urls:
-            if not ce.extra:
-                ce.extra = dict()
             ce.extra['urls'] = extra_urls
         if self.edit_description.data:
             ce.edit_extra = dict(description=self.edit_description.data)
+        if not ce.extra:
+            ce.extra = None
 
 url_rel_options = [
     ('web', 'Public Web'),
     ('webarchive', 'Web Archive'),
     ('repository', 'Repository'),
-    ('social', 'Academic Social Network'),
+    ('archive', 'Preservation Archive'),
+    ('academicsocial', 'Academic Social Network'),
     ('publisher', 'Publisher'),
     ('dweb', 'Decentralized Web'),
+    ('aggregator', 'Aggregator'),
 ]
 
 FILE_SIMPLE_ATTRS = ['size', 'md5', 'sha1', 'sha256', 'mimetype']
