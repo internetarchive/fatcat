@@ -632,6 +632,10 @@ def release_search():
     if issnl and query:
         query += ' container_issnl:"{}"'.format(issnl)
 
+    container_id = request.args.get('container_id')
+    if container_id and query:
+        query += ' container_id:"{}"'.format(container_id)
+
     if 'q' in request.args.keys():
         # always do files for HTML
         found = do_release_search(query, fulltext_only=fulltext_only)

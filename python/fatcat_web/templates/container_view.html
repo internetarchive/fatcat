@@ -23,13 +23,12 @@
   Published by {{ container.publisher }}
 {% endif %}
 
-{% if container.issnl %}
 <h3>Search Releases from this Container</h3>
 <form class="" role="search" action="/release/search" method="get">
   <div class="ui form">
     <div class="ui action input large fluid">
       <input type="text" placeholder="Search Articles..." name="q" aria-label="search release metadata">
-      <input type="hidden" name="container_issnl" value="{{ container.issnl }}">
+      <input type="hidden" name="container_id" value="{{ container.ident }}">
       <button class="ui button">Search</button>
     </div>
   </div>
