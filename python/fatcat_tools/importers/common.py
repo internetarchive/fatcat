@@ -212,8 +212,8 @@ DOMAIN_REL_MAP = {
     "www.pnas.org": "publisher",
     "www.tandfonline.com": "publisher",
 
-    "www.researchgate.net": "social",
-    "academia.edu": "social",
+    "www.researchgate.net": "academicsocial",
+    "academia.edu": "academicsocial",
 
     "wayback.archive-it.org": "webarchive",
     "web.archive.org": "webarchive",
