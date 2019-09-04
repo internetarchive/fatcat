@@ -1,4 +1,3 @@
-
 # This file is *not* used as part of bundling or distributing the python client
 # library (fatcat_client). It *is* shared by the web interface (flask app),
 # workers, and import scripts.
@@ -19,7 +18,7 @@ pylint = "*"
 pg-view = "*"
 
 [packages]
-fatcat_client = { path = "./../python_client" }
+fatcat_client = {path = "./../python_client"}
 python-dotenv = "*"
 Flask = ">=1"
 flask-uuid = "*"
@@ -29,9 +28,9 @@ flask-wtf = "*"
 Flask-Misaka = "*"
 flask-mwoauth = "*"
 WTForms = "*"
-loginpass = { git = 'https://github.com/authlib/loginpass.git', ref = 'ed9e527502bd19be6793f88ed71ca0e1764e9034' }
+loginpass = {ref = 'ed9e527502bd19be6793f88ed71ca0e1764e9034',git = 'https://github.com/authlib/loginpass.git'}
 requests = ">=2"
-raven = { extras = ['flask'], version = "*" }
+raven = {extras = ['flask'],version = "*"}
 pykafka = ">=2"
 python-dateutil = "*"
 sickle = "*"
@@ -43,6 +42,7 @@ citeproc-py-styles = "*"
 bs4 = "*"
 python-magic = "*"
 pylatexenc = "*"
+pygal = "*"
 
 [requires]
 # Python 3.5 is the bundled (system) version of python for Ubuntu 16.04
