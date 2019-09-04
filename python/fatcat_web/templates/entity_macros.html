@@ -221,3 +221,16 @@
   {% endif %}
 </div>
 {% endmacro %}
+
+{% macro progress_color(frac) -%}
+{% if frac >= 1 %}
+green
+{% elif frac > 0.95 %}
+olive
+{% elif frac < 0.5 %}
+red
+{% else %}
+yellow
+{% endif %}
+{%- endmacro %}
+

@@ -15,6 +15,7 @@ from fatcat_web.auth import handle_token_login, handle_logout, load_user, handle
 from fatcat_web.cors import crossdomain
 from fatcat_web.search import *
 from fatcat_web.entity_helpers import *
+from fatcat_web.graphics import *
 
 
 ### Generic Entity Views ####################################################
@@ -736,6 +737,20 @@ def container_ident_ia_coverage_years_json(ident):
         abort(503)
     histogram = [dict(year=h[0], in_ia=h[1], count=h[2]) for h in histogram]
     return jsonify({'container_id': ident, "histogram": histogram})
+
+@app.route('/container/<ident>/ia_coverage_years.svg', methods=['GET', 'OPTIONS'])
+@crossdomain(origin='*',headers=['access-control-allow-origin','Content-Type'])
+def container_ident_ia_coverage_years_svg(ident):
+    try:
+        container = api.get_container(ident)
+    except ApiException as ae:
+        abort(ae.status)
+    try:
+        histogram = get_elastic_container_histogram(container.ident)
+    except Exception as ae:
+        app.log.error(ae)
+        abort(503)
+    return ia_coverage_histogram(histogram).render_response()
 
 @app.route('/release/<ident>.bib', methods=['GET'])
 def release_bibtex(ident):

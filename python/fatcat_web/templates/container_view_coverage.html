@@ -6,10 +6,65 @@
 
 {% block entity_main %}
 
-<h3>Preservation Coverage By Year</h3>
+<div class="ui centered grid">
+  <div class="row">
+    <div class="twelve wide column">
+      <div class="ui large horizontal statistic">
+        <div class="value">{{ "{:,}".format(container._stats.total) }}</div>
+        <div class="label" style="text-transform: none;">Known Releases</div>
+      </div>
+      {% if container._stats.total >= 1 %}
 
-<img src="/container/{{ container.ident }}/ia_coverage_years.svg">
-<br><a href="/container/{{ container.ident }}/ia_coverage_years.json">Download as JSON</a>
+        {% set frac_kbart = container._stats.in_kbart/container._stats.total %}
+        {% set frac_preserved = container._stats.is_preserved/container._stats.total %}
+        {% set frac_web = container._stats.in_web/container._stats.total %}
+
+        <div class="ui large {{ entity_macros.progress_color(frac_web) }} progress" style="margin-bottom: 0.1em;">
+          <div class="bar" style="width: {{ (frac_web*100)|int }}%;">
+            <div class="progress">{{ (frac_web*100)|int }}%</div>
+          </div>
+          <div class="label">
+            {{ "{:,}".format(container._stats.in_web) }} preserved and available (bright)
+          </div>
+        </div>
+
+        <br>
+        <div class="ui large {{ entity_macros.progress_color(frac_preserved) }} progress" style="margin-bottom: 0.1em;">
+          <div class="bar" style="width: {{ (frac_preserved*100)|int }}%;">
+            <div class="progress">{{ (frac_preserved*100)|int }}%</div>
+          </div>
+          <div class="label">
+            {{ "{:,}".format(container._stats.is_preserved) }} preserved at all (bright or dark)
+          </div>
+        </div>
+
+        <br>
+        <div class="ui large {{ entity_macros.progress_color(frac_kbart) }} progress" style="margin-bottom: 0.1em; margin-top: 1em;">
+          <div class="bar" style="width: {{ (frac_kbart*100)|int }}%;">
+            <div class="progress">{{ (frac_kbart*100)|int }}%</div>
+          </div>
+          <div class="label">
+            {{ "{:,}".format(container._stats.in_kbart ) }} preserved by Keeper (dark)
+          </div>
+        </div>
+
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% if container._stats.total >= 1 %}
+  <br>
+  <h2>Perpetual Access Coverage by Year</h2>
+
+  <figure style="margin: 0 0 0 0;">
+    <embed type="image/svg+xml" src="/container/{{ container.ident }}/ia_coverage_years.svg" />
+  </figure>
+
+  <div style="float: right;">
+    <a href="/container/{{ container.ident }}/ia_coverage_years.json">Download as JSON</a>
+  </div>
+{% endif %}
 
 {% endblock %}
 

@@ -3,18 +3,6 @@
 {% import "entity_macros.html" as entity_macros %}
 {% extends "entity_base.html" %}
 
-{% macro progress_color(frac) -%}
-{% if frac >= 1 %}
-green
-{% elif frac > 0.95 %}
-olive
-{% elif frac < 0.5 %}
-red
-{% else %}
-yellow
-{% endif %}
-{%- endmacro %}
-
 {% block entity_main %}
 
 <div class="ui stackable mobile reversed grid centered">
@@ -69,7 +57,7 @@ yellow
 {% if container._stats %}
 <div class="ui segment attached">
   <div style="text-align: center;">
-    <div class="ui small center statistic">
+    <div class="ui small statistic">
       <div class="value">{{ "{:,}".format(container._stats.total) }}</div>
       <div class="label" style="text-transform: none;">Known Releases</div>
     </div>
@@ -80,26 +68,26 @@ yellow
     {% set frac_preserved = container._stats.is_preserved/container._stats.total %}
     {% set frac_web = container._stats.in_web/container._stats.total %}
 
-    <div class="ui {{ progress_color(frac_kbart) }} progress" style="margin-bottom: 0.1em;">
-      <div class="bar" style="width: {{ "{:.1f}".format(frac_kbart*100) }}%;">
-        <div class="progress">{{ "{:.1f}".format(frac_kbart*100) }}%</div>
+    <div class="ui {{ entity_macros.progress_color(frac_web) }} progress" style="margin-bottom: 0.1em;">
+      <div class="bar" style="width: {{ (frac_web*100)|int }}%;">
+        <div class="progress">{{ (frac_web*100)|int }}%</div>
       </div>
     </div>
-    {{ "{:,}".format(container._stats.in_kbart ) }} preserved (dark)
+    {{ "{:,}".format(container._stats.in_web) }} preserved and available (bright)
 
-    <div class="ui {{ progress_color(frac_preserved) }} progress" style="margin-bottom: 0.1em;">
-      <div class="bar" style="width: {{ "{:.1f}".format(frac_preserved*100) }}%;">
-        <div class="progress">{{ "{:.1f}".format(frac_preserved*100) }}%</div>
+    <div class="ui {{ entity_macros.progress_color(frac_preserved) }} progress" style="margin-bottom: 0.1em;">
+      <div class="bar" style="width: {{ (frac_preserved*100)|int }}%;">
+        <div class="progress">{{ (frac_preserved*100)|int }}%</div>
       </div>
     </div>
-    {{ "{:,}".format(container._stats.is_preserved) }} preserved or available
+    {{ "{:,}".format(container._stats.is_preserved) }} preserved at all (bright or dark)
 
-    <div class="ui {{ progress_color(frac_web) }} progress" style="margin-bottom: 0.1em; margin-top: 1em;">
-      <div class="bar" style="width: {{ "{:.1f}".format(frac_web*100) }}%;">
-        <div class="progress">{{ "{:.1f}".format(frac_web*100) }}%</div>
+    <div class="ui {{ entity_macros.progress_color(frac_kbart) }} progress" style="margin-bottom: 0.1em; margin-top: 1em;">
+      <div class="bar" style="width: {{ (frac_kbart*100)|int }}%;">
+        <div class="progress">{{ (frac_kbart*100)|int }}%</div>
       </div>
     </div>
-    {{ "{:,}".format(container._stats.in_web) }} fulltext available to read
+    {{ "{:,}".format(container._stats.in_kbart ) }} preserved by Keeper (dark)
 
   {% endif %}
 </div>

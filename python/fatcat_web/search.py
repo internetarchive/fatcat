@@ -213,6 +213,11 @@ def get_elastic_container_stats(ident, issnl=None):
         preserved
     """
 
+    # XXX:
+    ident = "iznnn644szdwva7khyxqzc73bi"
+    ident = "lx7svdzmc5dl3ay4zncjjrql7i"
+    ident = "sn27gkxlkbhuzeexoqyapc756a"
+
     query = {
         "size": 0,
         "query": {
@@ -296,6 +301,11 @@ def get_elastic_container_histogram(ident):
         (year, in_ia, count)
     """
 
+    # XXX:
+    ident = "iznnn644szdwva7khyxqzc73bi"
+    ident = "lx7svdzmc5dl3ay4zncjjrql7i"
+    ident = "sn27gkxlkbhuzeexoqyapc756a"
+
     query = {
         "aggs": {
             "year_in_ia": {
@@ -346,7 +356,7 @@ def get_elastic_container_histogram(ident):
     resp.raise_for_status()
     # TODO: abort()
     resp = resp.json()
-    print(resp)
+    #print(resp)
     vals = [(h['key']['year'], h['key']['in_ia'], h['doc_count'])
             for h in resp['aggregations']['year_in_ia']['buckets']]
     vals = sorted(vals)
