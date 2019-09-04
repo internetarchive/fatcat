@@ -1,0 +1,15 @@
+{% set container = entity %}
+{% set entity_view = "coverage" %}
+{% set entity_type = "container" %}
+{% import "entity_macros.html" as entity_macros %}
+{% extends "entity_base.html" %}
+
+{% block entity_main %}
+
+<h3>Preservation Coverage By Year</h3>
+
+<img src="/container/{{ container.ident }}/ia_coverage_years.svg">
+<br><a href="/container/{{ container.ident }}/ia_coverage_years.json">Download as JSON</a>
+
+{% endblock %}
+

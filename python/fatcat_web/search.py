@@ -274,7 +274,7 @@ def get_elastic_container_random_releases(ident, limit=5):
     #print(resp.json())
     resp.raise_for_status()
     resp = resp.json()
-    print(resp)
+    #print(resp)
     hits = [h['_source'] for h in resp['hits']['hits']]
     for h in hits:
         # Handle surrogate strings that elasticsearch returns sometimes,
@@ -285,3 +285,69 @@ def get_elastic_container_random_releases(ident, limit=5):
                 h[key] = h[key].encode('utf8', 'ignore').decode('utf8')
 
     return hits
+
+def get_elastic_container_histogram(ident):
+    """
+    Fetches a stacked histogram of 
+
+    Filters to the past 500 years (at most), or about 1000 vaules.
+
+    Returns a list of tuples:
+        (year, in_ia, count)
+    """
+
+    query = {
+        "aggs": {
+            "year_in_ia": {
+                "composite": {
+                    "size": 1000,
+                    "sources": [
+                        {"year": {
+                            "histogram": {
+                                "field": "release_year",
+                                "interval": 1,
+                        }}},
+                        {"in_ia": {
+                            "terms": {
+                                "field": "in_ia",
+                        }}},
+                    ],
+                },
+            },
+        },
+        "size": 0,
+        "query": {
+            "bool": {
+                "must": [{
+                    "range": {
+                        "release_year": {
+                            "gte": datetime.datetime.today().year - 499,
+                            "lte": datetime.datetime.today().year,
+                        }
+                    }
+                }],
+                "filter": [{
+                    "bool": {
+                        "should": [{
+                            "match": {
+                                "container_id": ident
+                            }
+                        }],
+                        "minimum_should_match": 1,
+                    },
+                }],
+            }
+        }
+    }
+    resp = requests.get(
+        "{}/fatcat_release/_search".format(app.config['ELASTICSEARCH_BACKEND']),
+        json=query,
+        params=dict(request_cache="true"))
+    resp.raise_for_status()
+    # TODO: abort()
+    resp = resp.json()
+    print(resp)
+    vals = [(h['key']['year'], h['key']['in_ia'], h['doc_count'])
+            for h in resp['aggregations']['year_in_ia']['buckets']]
+    vals = sorted(vals)
+    return vals

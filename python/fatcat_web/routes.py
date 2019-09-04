@@ -230,6 +230,10 @@ def generic_editgroup_entity_view(editgroup_id, entity_type, ident, view_templat
 def container_view(ident):
     return generic_entity_view('container', ident, 'container_view.html')
 
+@app.route('/container/<ident>/coverage', methods=['GET'])
+def container_view_coverage(ident):
+    return generic_entity_view('container', ident, 'container_view_coverage.html')
+
 @app.route('/container/<ident>/metadata', methods=['GET'])
 def container_view_metadata(ident):
     return generic_entity_view('container', ident, 'entity_view_metadata.html')
@@ -717,6 +721,21 @@ def container_ident_stats(ident):
         app.log.error(ae)
         abort(503)
     return jsonify(stats)
+
+@app.route('/container/<ident>/ia_coverage_years.json', methods=['GET', 'OPTIONS'])
+@crossdomain(origin='*',headers=['access-control-allow-origin','Content-Type'])
+def container_ident_ia_coverage_years_json(ident):
+    try:
+        container = api.get_container(ident)
+    except ApiException as ae:
+        abort(ae.status)
+    try:
+        histogram = get_elastic_container_histogram(container.ident)
+    except Exception as ae:
+        app.log.error(ae)
+        abort(503)
+    histogram = [dict(year=h[0], in_ia=h[1], count=h[2]) for h in histogram]
+    return jsonify({'container_id': ident, "histogram": histogram})
 
 @app.route('/release/<ident>.bib', methods=['GET'])
 def release_bibtex(ident):
