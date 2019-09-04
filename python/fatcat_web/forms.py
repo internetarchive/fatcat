@@ -12,7 +12,7 @@ from fatcat_client import ContainerEntity, CreatorEntity, FileEntity, \
     ReleaseEntity, ReleaseContrib, FileUrl, ReleaseExtIds
 
 release_type_options = [
-    ('', 'Unknown'),
+    ('', 'Unknown (blank)'),
     ('article-journal', 'Journal Article'),
     ('paper-conference', 'Conference Proceeding'),
     ('article', 'Article (non-journal)'),
@@ -22,7 +22,7 @@ release_type_options = [
     ('stub', 'Invalid/Stub'),
 ]
 release_stage_options = [
-    ('', 'Unknown'),
+    ('', 'Unknown (blank)'),
     ('draft', 'Draft'),
     ('submitted', 'Submitted'),
     ('accepted', 'Accepted'),
@@ -179,6 +179,7 @@ class ReleaseEntityForm(EntityEditForm):
             re.edit_extra = dict(description=self.edit_description.data)
 
 container_type_options = (
+    ('', 'Unknown (blank)'),
     ('journal', 'Journal'),
     ('proceedings', 'Proceedings'),
     ('book-series', 'Book Series'),
@@ -186,7 +187,6 @@ container_type_options = (
     ('magazine', 'Magazine'),
     ('trade', 'Trade Magazine'),
     ('test', 'Test / Dummy'),
-    ('', 'Unknown / Blank'),
 )
 
 CONTAINER_SIMPLE_ATTRS = ['name', 'container_type', 'publisher', 'issnl',
