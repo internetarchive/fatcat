@@ -213,11 +213,6 @@ def get_elastic_container_stats(ident, issnl=None):
         preserved
     """
 
-    # XXX:
-    ident = "iznnn644szdwva7khyxqzc73bi"
-    ident = "lx7svdzmc5dl3ay4zncjjrql7i"
-    ident = "sn27gkxlkbhuzeexoqyapc756a"
-
     query = {
         "size": 0,
         "query": {
@@ -300,11 +295,6 @@ def get_elastic_container_histogram(ident):
     Returns a list of tuples:
         (year, in_ia, count)
     """
-
-    # XXX:
-    ident = "iznnn644szdwva7khyxqzc73bi"
-    ident = "lx7svdzmc5dl3ay4zncjjrql7i"
-    ident = "sn27gkxlkbhuzeexoqyapc756a"
 
     query = {
         "aggs": {
