@@ -22,3 +22,16 @@
   many articles), and that a release will often have multiple files (differing
   only by watermarks, or different digitizations of the same printed work, or
   variant MIME/media types of the same published work).
+
+#### URL `rel` Vocabulary
+
+- `web`: generic public web sites; for `http/https` URLs, this should be the default
+- `webarchive`: full URL to a resource in a long-term web archive
+- `repository`: direct URL to a resource stored in a repository (eg, an
+  institutional or field-specific research data repository)
+- `academicsocial`: academic social networks (such as academia.edu or ResearchGate)
+- `publisher`: resources hosted on publisher's website
+- `aggregator`: fulltext aggregator or search engine, like CORE or Semantic
+  Scholar
+- `dweb`: content hosted on distributed/decentralized web protocols, such as
+  `dat://` or `ipfs://` URLs

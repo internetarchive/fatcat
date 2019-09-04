@@ -82,3 +82,14 @@ array of length two (meaning everything between the two numbers (inclusive) is
 preserved).
 
 [CODEN]: https://en.wikipedia.org/wiki/CODEN
+
+#### `container_type` Vocabulary
+
+- `journal`
+- `proceedings`
+- `book-series`
+- `blog`
+- `magazine`
+- `trade`
+- `test`
+
