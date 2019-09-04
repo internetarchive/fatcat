@@ -3,6 +3,18 @@
 {% import "entity_macros.html" as entity_macros %}
 {% extends "entity_base.html" %}
 
+{% macro progress_color(frac) -%}
+{% if frac >= 1 %}
+green
+{% elif frac > 0.95 %}
+olive
+{% elif frac < 0.5 %}
+red
+{% else %}
+yellow
+{% endif %}
+{%- endmacro %}
+
 {% block entity_main %}
 
 <div class="ui stackable mobile reversed grid centered">
@@ -43,53 +55,77 @@
 
 </div>
 <div class="column" style="flex: 0 0 24em;">
+
 <div class="ui segment top attached">
-
-{% if container._es and container._es.is_oa == True %}
-<i class="icon unlock huge orange"></i><b>Open Access Publisher</b>
-{% elif container._es and container._es.is_oa == False  %}
-<i class="icon lock huge black"></i><b>Not Open Access</b>
-{% else %}
-<i class="icon question huge grey"></i><b>Unknown OA Status</b>
-{% endif %}
-</div><div class="ui segment attached">
-
-{% if container.issnl != None or container.wikidata_qid != None %}
-{% if container.issnl != None %}
-  <b>ISSN-L<sup><a href="https://en.wikipedia.org/wiki/International_Standard_Serial_Number#Linking_ISSN">?</a></sup></b> 
-  &nbsp;<code>{{ container.issnl }}</code>
-  {% if container.extra != None and container.extra.ISSNp != None and (container.extra.ISSNp|length > 0) %}
-    <br><i class="icon paperclip"></i>Print: &nbsp;<code>{{ container.extra.ISSNp }}</code>
+  {% if container._es and container._es.is_oa == True %}
+  <i class="icon unlock huge orange"></i><b>Open Access Publisher</b>
+  {% elif container._es and container._es.is_oa == False  %}
+  <i class="icon lock huge black"></i><b>Not Open Access</b>
+  {% else %}
+  <i class="icon question huge grey"></i><b>Unknown OA Status</b>
   {% endif %}
-  {% if container.extra != None and container.extra.ISSNe != None and (container.extra.ISSNe|length > 0) %}
-    <br><i class="icon plug"></i>Electronic: &nbsp;<code>{{ container.extra.ISSNe }}</code>
-  {% endif %}
-  <br>
-{% endif %}
-{% if container.wikidata_qid != None %}
-  <b>Wikidata</b> &nbsp;<a href="https://wikidata.org/wiki/{{ container.wikidata_qid }}"><code>{{ container.wikidata_qid }}</code></a>
-{% endif %}
-  </div><div class="ui segment attached">
-{% endif %}
+</div>
 
 {% if container._stats %}
-<b>Release Counts</b><br>
-  {{ "{:,}".format(container._stats.total) }} total
+<div class="ui segment attached">
+  <div style="text-align: center;">
+    <div class="ui small center statistic">
+      <div class="value">{{ "{:,}".format(container._stats.total) }}</div>
+      <div class="label" style="text-transform: none;">Known Releases</div>
+    </div>
+  </div>
   {% if container._stats.total >= 1 %}
-    <br>{{ "{:,}".format(container._stats.in_kbart ) }}
-    (<b>{{ "{:.1f}".format(container._stats.in_kbart/container._stats.total*100) }}%</b>) 
-    preserved (dark)
-    <br>{{ "{:,}".format(container._stats.is_preserved) }}
-    (<b>{{ "{:.1f}".format(container._stats.is_preserved/container._stats.total*100) }}%</b>) 
-    preserved or available
-    <br>{{ "{:,}".format(container._stats.in_web) }}
-    (<b>{{ "{:.1f}".format(container._stats.in_web/container._stats.total*100) }}%</b>) 
-    fulltext available to read
+
+    {% set frac_kbart = container._stats.in_kbart/container._stats.total %}
+    {% set frac_preserved = container._stats.is_preserved/container._stats.total %}
+    {% set frac_web = container._stats.in_web/container._stats.total %}
+
+    <div class="ui {{ progress_color(frac_kbart) }} progress" style="margin-bottom: 0.1em;">
+      <div class="bar" style="width: {{ "{:.1f}".format(frac_kbart*100) }}%;">
+        <div class="progress">{{ "{:.1f}".format(frac_kbart*100) }}%</div>
+      </div>
+    </div>
+    {{ "{:,}".format(container._stats.in_kbart ) }} preserved (dark)
+
+    <div class="ui {{ progress_color(frac_preserved) }} progress" style="margin-bottom: 0.1em;">
+      <div class="bar" style="width: {{ "{:.1f}".format(frac_preserved*100) }}%;">
+        <div class="progress">{{ "{:.1f}".format(frac_preserved*100) }}%</div>
+      </div>
+    </div>
+    {{ "{:,}".format(container._stats.is_preserved) }} preserved or available
+
+    <div class="ui {{ progress_color(frac_web) }} progress" style="margin-bottom: 0.1em; margin-top: 1em;">
+      <div class="bar" style="width: {{ "{:.1f}".format(frac_web*100) }}%;">
+        <div class="progress">{{ "{:.1f}".format(frac_web*100) }}%</div>
+      </div>
+    </div>
+    {{ "{:,}".format(container._stats.in_web) }} fulltext available to read
+
   {% endif %}
-</div><div class="ui segment attached">
+</div>
+{% endif %}
+
+{% if container.issnl != None or container.wikidata_qid != None %}
+<div class="ui segment attached">
+  {% if container.issnl != None %}
+    <b>ISSN-L<sup><a href="https://en.wikipedia.org/wiki/International_Standard_Serial_Number#Linking_ISSN">?</a></sup></b> 
+    &nbsp;<code>{{ container.issnl }}</code>
+  {% endif %}
+  {% if container.extra != None and container.extra.issnp != None and (container.extra.issnp|length > 0) %}
+    <br><i class="icon paperclip"></i>Print: &nbsp;<code>{{ container.extra.issnp }}</code>
+  {% endif %}
+  {% if container.extra != None and container.extra.issne != None and (container.extra.issne|length > 0) %}
+    <br><i class="icon plug"></i>Electronic: &nbsp;<code>{{ container.extra.issne }}</code>
+  {% endif %}
+  <br>
+  {% if container.wikidata_qid != None %}
+    <b>Wikidata</b> &nbsp;<a href="https://wikidata.org/wiki/{{ container.wikidata_qid }}"><code>{{ container.wikidata_qid }}</code></a>
+  {% endif %}
+</div>
 {% endif %}
 
 {% if (container._es and container._es != None) %}
+<div class="ui segment attached">
 <b>Directory Listings</b><br>
   {% if container._es.in_doaj == True %}
     <i class="icon check green"></i> In <a href="https://doaj.org/toc/{{ container.issnl }}">DOAJ</a><br>
@@ -112,14 +148,21 @@
   {% if container.extra and container.extra.sherpa_romeo and container.extra.sherpa_romeo.color %}
     SHERPA/RoMEO color: <code>{{ container.extra.sherpa_romeo.color }}</code>
   {% endif %}
-</div><div class="ui segment attached">
+</div>
 {% endif %}
 
-<b>Lookup Links</b>
-<br><a href="http://www.sherpa.ac.uk/romeo/issn/{{ container.issnl }}/">SHERPA/RoMEO</a> (access policies)
-{% if not container.wikidata_qid %}
-  <br><a href="https://www.wikidata.org/w/index.php?search={{ container.name|urlencode }}">wikidata.org</a>
-{% endif %}
+<div class="ui segment attached accordion">
+  <div class="title" style="padding: 0px;"><i class="dropdown icon"></i><b>Lookup Links</b></div>
+  <div class="content">
+    {% if container.issnl %}
+      <a href="https://portal.issn.org/resource/issn/{{ container.issnl }}">ISSN Portal</a><br>
+      <a href="https://thekeepers.org/purl/issn/{{ container.issnl }}">The Keepers Registry</a> (preservation)<br>
+      <a href="http://www.sherpa.ac.uk/romeo/issn/{{ container.issnl }}/">SHERPA/RoMEO</a> (access policies)<br>
+    {% endif %}
+    {% if not container.wikidata_qid %}
+      <br><a href="https://www.wikidata.org/w/index.php?search={{ container.name|urlencode }}">wikidata.org</a>
+    {% endif %}
+  </div>
 </div>
 
 {{ entity_macros.fatcat_bits(entity, "container", "", editgroup) }}
