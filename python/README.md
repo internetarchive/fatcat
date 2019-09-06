@@ -55,6 +55,7 @@ To run the python tests (with `fatcatd` running locally on port 9411):
 
     sudo apt install libsnappy-dev
     pipenv install --dev
+    cp example.env .env  # unless you already have a local env config
     pipenv run pytest
 
 To calculate code coverage (of python code):
