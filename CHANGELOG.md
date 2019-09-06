@@ -16,7 +16,20 @@ See also:
 
 ## [Unreleased]
 
+Many small web interface improvements, bug fixes, and importer additions are
+not explicitly noted below.
+
+### Changed
+
+- renamed python client library `fatcat-openapi-client` and rust api-spec
+  library `fatcat-openapi`
 - updated rust (cargo) dependencies; depend on rust 1.34+ (Debian buster)
+- entity view page design and backend code structure completely refactored
+
+### Added
+
+- container "coverage" page, showing elasticsearch-generated chart of IA
+  release archival coverage
 
 ## [0.3.0] - 2019-05-23
 
