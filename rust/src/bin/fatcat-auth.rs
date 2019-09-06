@@ -6,7 +6,7 @@ use fatcat::editing_crud::EditorCrud;
 use fatcat::errors::Result;
 use fatcat::identifiers::FatcatId;
 use fatcat::{auth, server};
-use fatcat_api_spec::models::Editor;
+use fatcat_openapi::models::Editor;
 use std::process;
 use std::str::FromStr;
 

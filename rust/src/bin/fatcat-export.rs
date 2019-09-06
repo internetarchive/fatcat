@@ -16,7 +16,7 @@ use fatcat::entity_crud::*;
 use fatcat::errors::Result;
 use fatcat::identifiers::FatcatId;
 use fatcat::server::{self, DbConn};
-use fatcat_api_spec::models::*;
+use fatcat_openapi::models::*;
 use std::str::FromStr;
 use uuid::Uuid;
 

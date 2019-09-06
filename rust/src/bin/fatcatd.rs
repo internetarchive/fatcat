@@ -104,7 +104,7 @@ fn main() -> Result<()> {
             .keys()
             .collect::<Vec<&String>>(),
     );
-    let mut router = fatcat_api_spec::router(server);
+    let mut router = fatcat_openapi::router(server);
 
     router.get("/", root_handler, "root-redirect");
     router.get("/swagger-ui", swaggerui_handler, "swagger-ui-html");
@@ -140,7 +140,7 @@ fn main() -> Result<()> {
     let mut chain = Chain::new(LoggerMiddleware::new(router, logger, formatter));
 
     // authentication
-    chain.link_before(fatcat_api_spec::server::ExtractAuthData);
+    chain.link_before(fatcat_openapi::server::ExtractAuthData);
     chain.link_before(fatcat::auth::MacaroonAuthMiddleware::new());
 
     chain.link_after(XClacksOverheadMiddleware);
