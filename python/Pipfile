@@ -1,5 +1,5 @@
 # This file is *not* used as part of bundling or distributing the python client
-# library (fatcat_client). It *is* shared by the web interface (flask app),
+# library (fatcat-openapi-client). It *is* shared by the web interface (flask app),
 # workers, and import scripts.
 
 [[source]]
@@ -18,7 +18,7 @@ pylint = "*"
 pg-view = "*"
 
 [packages]
-fatcat_client = {path = "./../python_client"}
+fatcat-openapi-client = {path = "./../python_openapi_client"}
 python-dotenv = "*"
 Flask = ">=1"
 flask-uuid = "*"

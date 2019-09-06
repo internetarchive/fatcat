@@ -2,7 +2,7 @@
 # cp ../extra/demo_entities/delete_builtins.py .
 # pipenv run python3 delete_builtins.py
 
-import fatcat_client
+import fatcat_openapi_client
 from fatcat_tools import *
 import os
 
@@ -10,7 +10,7 @@ token = os.environ['FATCAT_API_AUTH_TOKEN']
 assert token
 api = authenticated_api('http://localhost:9411/v0', token)
 
-eg = api.create_editgroup(fatcat_client.Editgroup(
+eg = api.create_editgroup(fatcat_openapi_client.Editgroup(
     description="Clear out built-in database example entities"))
 
 container_ids = (

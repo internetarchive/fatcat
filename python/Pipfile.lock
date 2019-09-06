@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "dd219787aa7a52cc030aab7b256663b538e61c7420fe06fb73c7d0b3173eae6e"
+            "sha256": "ea087a8b88fbbcb81a0b97279273fcdf0d6e759a2971d4e576cca4593594eb97"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -107,8 +107,8 @@
             ],
             "version": "==7.0"
         },
-        "fatcat-client": {
-            "path": "./../python_client"
+        "fatcat-openapi-client": {
+            "path": "./../python_openapi_client"
         },
         "flask": {
             "hashes": [

@@ -3,7 +3,7 @@
 
 This directory contains python code for the fatcat project: a web interface
 (`fatcat_web`) and a series of utilities and worker processes (`fatcat_tools`).
-These depend on the API client library (`fatcat_client`, see below).
+These depend on the API client library (`fatcat_openapi_client`, see below).
 
 Most of this code is an "application" which is tightly interwoven and intended
 to be run from this directory, but the client library is distributed on
@@ -23,7 +23,7 @@ versions had a bug which caused problems with our local path dependency.
 ## API Client Library
 
 The auto-generated python client library for the fatcat API lives under
-`../fatcat_client`. It includes entity model objects and functions to call all
+`../fatcat_openapi_client`. It includes entity model objects and functions to call all
 API endpoints; see the `README.md` for details.
 
 To re-generate swagger-codegen python client library (requires docker installed

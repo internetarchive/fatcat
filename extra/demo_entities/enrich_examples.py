@@ -7,18 +7,18 @@ Ugh, it needs to be copied to ../../python (with ./files/) to actually run. Derp
 
 import os
 import datetime
-import fatcat_client
-from fatcat_client.rest import ApiException
-from fatcat_client import *
+import fatcat_openapi_client
+from fatcat_openapi_client.rest import ApiException
+from fatcat_openapi_client import *
 from fatcat_tools import *
 
 import datetime
 
 # setup env
 #admin_id = "aaaaaaaaaaaabkvkaaaaaaaaae"
-#local_conf = fatcat_client.Configuration()
+#local_conf = fatcat_openapi_client.Configuration()
 #local_conf.host = 'http://localhost:9411/v0'
-#local_api = fatcat_client.DefaultApi(fatcat_client.ApiClient(local_conf))
+#local_api = fatcat_openapi_client.DefaultApi(fatcat_openapi_client.ApiClient(local_conf))
 #api = local_api
 api = authenticated_api(
     'http://localhost:9411/v0',

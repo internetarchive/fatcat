@@ -38,7 +38,7 @@ unified_test:
     - cargo build
     - cargo test -- --test-threads 1
     - cargo run --bin fatcatd &
-    - cd ../python_client
+    - cd ../python_openapi_client
     - pytest-3
     - cd ../python
     - cp example.env .env

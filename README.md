@@ -41,7 +41,7 @@ See `./python/README.md` and `./rust/README.md` for details on building,
 running, and testing these components.
 
 The python client library, which is automatically generated from the API
-schema, lives under `./python_client/`.
+schema, lives under `./python_openapi_client/`.
 
 ## Status
 

@@ -54,7 +54,7 @@ import json
 import sqlite3
 import itertools
 
-import fatcat_client
+import fatcat_openapi_client
 from fatcat_tools import authenticated_api
 from fatcat_tools.importers.common import EntityImporter, clean, LinePusher
 from fatcat_tools.importers.arabesque import b32_hex
@@ -149,7 +149,7 @@ class LongtailIssnlSingleDomainFixup(EntityImporter):
         #print(sha1)
         try:
             file_entity = self.api.lookup_file(sha1=sha1, expand="releases")
-        except fatcat_client.rest.ApiException as err:
+        except fatcat_openapi_client.rest.ApiException as err:
             if err.status == 404:
                 self.counts['skip-file-not-found'] += 1
                 return None
