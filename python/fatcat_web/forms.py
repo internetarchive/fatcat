@@ -180,7 +180,7 @@ class ReleaseEntityForm(EntityEditForm):
 
 container_type_options = (
     ('', 'Unknown (blank)'),
-    ('journal', 'Journal'),
+    ('journal', 'Scholarly Journal'),
     ('proceedings', 'Proceedings'),
     ('book-series', 'Book Series'),
     ('blog', 'Blog'),
