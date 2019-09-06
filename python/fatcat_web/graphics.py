@@ -30,7 +30,7 @@ def ia_coverage_histogram(rows):
     chart.x_title = "Year"
     #chart.y_title = "Releases"
     chart.x_labels = [str(y['year']) for y in years]
-    chart.add('Available', [y['available'] for y in years])
+    chart.add('via Fatcat', [y['available'] for y in years])
     chart.add('Missing', [y['missing'] for y in years])
     return chart
 
