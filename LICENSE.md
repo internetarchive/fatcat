@@ -9,7 +9,7 @@ The python 'fatcat_openapi_client' API client library (under the
 ./python/fatcat_openapi_client/ directory), which is auto-generated from a
 swagger/openapi schema specification, is released to the public domain.
 
-The rust 'fatcat-api-spec' API library (under the ./rust/fatcat-api-spec/
+The rust 'fatcat-openapi' API library (under the ./rust/fatcat-openapi/
 directory), which is auto-generated from the swagger/openapi schema
 specification, is released to the public domain.
 

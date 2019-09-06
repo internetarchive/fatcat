@@ -7,7 +7,7 @@ Rust implementation of fatcat API server. Commands include:
 - `fatcat-export`: high-speed JSON export tool, which talks directly to the
   database (instead of going through the API).
 
-The `fatcat-api-spec` crate is generated from the openapi/swagger spec and
+The `fatcat-openapi` crate is generated from the openapi/swagger spec and
 contains Rust models, response types, and endpoint definitions (but not
 implementations).
 

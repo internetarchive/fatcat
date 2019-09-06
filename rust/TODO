@@ -10,7 +10,7 @@ huge compile times:
 - duplicated libs: 3 syn, 4 uuid, 3 crossbeam (etc), 2 hyper, 2 iron (wait,
   what?), 3x serde, 4x rand, 2x error-chain
     => rg '^name =' Cargo.lock  | uniq -cd | sort -n
-- try: removing deps from fatcat-api-spec
+- try: removing deps from fatcat-openapi
 - uuid: could now switch to v0.7; needs code changes
 - tweak crossbeam-channel version (used in fatcat-export)
 
