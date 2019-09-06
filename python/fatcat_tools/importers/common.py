@@ -5,7 +5,6 @@ import csv
 import json
 import ftfy
 import sqlite3
-import itertools
 import subprocess
 import unicodedata
 from collections import Counter
@@ -276,7 +275,7 @@ class EntityImporter:
         self.bezerk_mode = kwargs.get('bezerk_mode', False)
         self.edit_batch_size = kwargs.get('edit_batch_size', 100)
         self.editgroup_description = kwargs.get('editgroup_description')
-        self.editgroup_extra = kwargs.get('editgroup_extra')
+        self.editgroup_extra = eg_extra
         self.reset()
 
         self._issnl_id_map = dict()
