@@ -89,28 +89,38 @@
 <div class="ui accordion">
 <div class="title" itemprop="isPartOf" itemscope itemtype="http://schema.org/Periodical" itemid="#container">
   {% if release.release_stage == 'published' %}
-    <i class="dropdown icon"></i>Published in <a href="/container/{{ release.container.ident }}"><span itemprop="name">{{ release.container.name }}</span></a>
+    <i class="dropdown icon"></i>Published
+    {% if release.container.ident %}
+      in <a href="/container/{{ release.container.ident }}"><span itemprop="name">{{ release.container.name }}</span></a>
+    {% elif release.extra and release.extra.container_name %}
+      in <span itemprop="name">{{ release.extra.container_name }}</span>
+    {% endif %}
   {% else %}
-    <i class="dropdown icon"></i>Released as a <i>{{ release.release_type }}</i>
-    {% if release.container %} in <a href="/container/{{ release.container.ident }}"><span itemprop="name">{{ release.container.name }}</span></a> {% endif %}
+    <i class="dropdown icon"></i>Released
+    {% if release.release_type %}
+      as a <i>{{ release.release_type }}</i>
+    {% endif %}
+    {% if release.container %}
+      in <a href="/container/{{ release.container.ident }}"><span itemprop="name">{{ release.container.name }}</span></a>
+    {% endif %}
   {% endif %}
   {% if release.publisher %}
     by <span itemprop="publisher">{{ release.publisher }}</span>
   {% endif %}
 </div><div class="content" itemscope itemtype="http://schema.org/Periodical" itemid="#container">
-  <table class="ui definition single line fixed compact small collapsing unstackable table">
+  <table class="ui definition single line fixed compact small collapsing unstackable table" style="width: 100%;">
   <tbody>
     {% if release.number != None %}
-      <tr><td class="right aligned">Number</td>
-          <td class="">{{ release.number }}
+      <tr><td class="three wide right aligned">Number</td>
+          <td class="seven wide">{{ release.number }}
     {% endif %}
     {% if release.version != None %}
-      <tr><td class="right aligned">Version</td>
-          <td class="">{{ release.version }}
+      <tr><td class="three wide right aligned">Version</td>
+          <td class="seven wide">{{ release.version }}
     {% endif %}
     {% if release.container != None and release.container.issnl != None %}
-      <tr><td class="right aligned">ISSN-L</td>
-          <td class="" itemprop="issn">{{ release.container.issnl }}
+      <tr><td class="three wide right aligned">ISSN-L</td>
+          <td class="seven wide" itemprop="issn">{{ release.container.issnl }}
     {% endif %}
     {% if release.volume != None %}
       <tr itemprop="isPartOf" itemscope itemtype="http://schema.org/PublicationVolume">
@@ -131,16 +141,16 @@
       <tr><td class="right aligned">Release Date</td>
           <td class="">{{ release.release_date }}
     {% elif release.release_year != None %}
-      <tr><td class="right aligned">Release Year</td>
-          <td class="">{{ release.release_year }}
+      <tr><td class="three wide right aligned">Release Year</td>
+          <td class="seven wide">{{ release.release_year }}
     {% endif %}
     {% if release.container != None and release.container.container_type != None %}
       <tr><td class="right aligned">Container Type</td>
           <td class="">{{ release.container.container_type }}
     {% endif %}
     {% if release.publisher != None %}
-      <tr><td class="right aligned">Publisher</td>
-          <td class="">{{ release.publisher }}
+      <tr><td class="three wide right aligned">Publisher</td>
+          <td class="seven wide">{{ release.publisher }}
     {% endif %}
     {% if release.language != None %}
       <tr><td class="right aligned">Primary Language</td>
