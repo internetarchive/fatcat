@@ -5,7 +5,7 @@ use fatcat::editing::{accept_editgroup, make_edit_context};
 use fatcat::entity_crud::{EntityCrud, HideFlags};
 use fatcat::identifiers::FatcatId;
 use fatcat::server;
-use fatcat_api_spec::models::*;
+use fatcat_openapi::models::*;
 use std::str::FromStr;
 use uuid::Uuid;
 

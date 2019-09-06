@@ -15,7 +15,7 @@
 
 pub use failure::Error;
 use failure::Fail;
-use fatcat_api_spec::models;
+use fatcat_openapi::models;
 use std::result;
 
 /// A type alias for handling errors throughout this crate

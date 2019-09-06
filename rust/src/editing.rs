@@ -11,7 +11,7 @@ use crate::identifiers::FatcatId;
 use crate::server::DbConn;
 use diesel;
 use diesel::prelude::*;
-use fatcat_api_spec::models::*;
+use fatcat_openapi::models::*;
 
 pub struct EditContext {
     pub editor_id: FatcatId,

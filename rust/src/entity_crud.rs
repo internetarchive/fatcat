@@ -14,7 +14,7 @@ use crate::identifiers::*;
 use crate::server::DbConn;
 use diesel::prelude::*;
 use diesel::{self, insert_into};
-use fatcat_api_spec::models::*;
+use fatcat_openapi::models::*;
 use sha1::Sha1;
 use std::marker::Sized;
 use std::str::FromStr;

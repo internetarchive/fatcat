@@ -2,7 +2,7 @@ use fatcat::auth::MacaroonAuthMiddleware;
 use fatcat::editing_crud::EditgroupCrud;
 use fatcat::identifiers::FatcatId;
 use fatcat::server;
-use fatcat_api_spec::models::Editgroup;
+use fatcat_openapi::models::Editgroup;
 use iron::headers::{Authorization, Bearer, ContentType};
 use iron::mime::Mime;
 use iron::{status, Chain, Headers};
@@ -28,9 +28,9 @@ pub fn setup_http() -> (
         .create_token(admin_id, None)
         .unwrap();
 
-    let router = fatcat_api_spec::router(server);
+    let router = fatcat_openapi::router(server);
     let mut chain = Chain::new(router);
-    chain.link_before(fatcat_api_spec::server::ExtractAuthData);
+    chain.link_before(fatcat_openapi::server::ExtractAuthData);
     chain.link_before(MacaroonAuthMiddleware::new());
     let mut headers = Headers::new();
     let mime: Mime = "application/json".parse().unwrap();

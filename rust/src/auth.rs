@@ -18,7 +18,7 @@ use crate::server::*;
 use chrono::prelude::*;
 use diesel;
 use diesel::prelude::*;
-use fatcat_api_spec::models::{Editgroup, Editor};
+use fatcat_openapi::models::{Editgroup, Editor};
 use std::collections::HashMap;
 use std::env;
 use std::str::FromStr;

@@ -14,8 +14,8 @@ use crate::errors::*;
 use crate::identifiers::*;
 use crate::server::*;
 use diesel::prelude::*;
-use fatcat_api_spec::models;
-use fatcat_api_spec::models::*;
+use fatcat_openapi::models;
+use fatcat_openapi::models::*;
 
 macro_rules! entity_auto_batch_handler {
     ($post_auto_batch_handler:ident, $model:ident) => {

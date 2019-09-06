@@ -17,9 +17,9 @@ use crate::identifiers::FatcatId;
 use crate::server::*;
 use cadence::prelude::*;
 use diesel::Connection;
-use fatcat_api_spec::models;
-use fatcat_api_spec::models::*;
-use fatcat_api_spec::*;
+use fatcat_openapi::models;
+use fatcat_openapi::models::*;
+use fatcat_openapi::*;
 use futures::{self, Future};
 use sentry::integrations::failure::capture_fail;
 use std::cmp;
@@ -62,7 +62,7 @@ macro_rules! generic_err_responses {
 }
 
 /// Helper for generating wrappers (which return "Box::new(futures::done(Ok(BLAH)))" like the
-/// codegen fatcat-api-spec code wants) that call through to actual helpers (which have simple
+/// codegen fatcat-openapi code wants) that call through to actual helpers (which have simple
 /// Result<> return types)
 macro_rules! wrap_entity_handlers {
     // Would much rather just have entity ident, then generate the other fields from that, but Rust

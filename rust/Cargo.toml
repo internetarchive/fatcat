@@ -7,10 +7,10 @@ description = "A scalable, versioned, API-oriented catalog for bibliographic ent
 license = "AGPL 3.0"
 
 [workspace]
-members = ["fatcat-api-spec"]
+members = ["fatcat-openapi"]
 
 [dependencies]
-fatcat-api-spec = {version = "*", path = "fatcat-api-spec", features = ["server"] }
+fatcat-openapi = {version = "*", path = "fatcat-openapi", features = ["server"] }
 diesel = { version = "1.3", features = ["postgres", "uuid", "serde_json", "chrono", "r2d2"] }
 diesel_migrations = "1.3"
 dotenv = "0.9.0"

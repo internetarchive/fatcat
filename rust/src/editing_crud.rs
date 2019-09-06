@@ -5,7 +5,7 @@ use crate::errors::*;
 use crate::identifiers::{self, FatcatId};
 use crate::server::DbConn;
 use diesel::prelude::*;
-use fatcat_api_spec::models::*;
+use fatcat_openapi::models::*;
 use std::str::FromStr;
 use uuid::Uuid;
 
