@@ -7,7 +7,7 @@ import itertools
 import subprocess
 from bs4 import BeautifulSoup
 
-import fatcat_client
+import fatcat_openapi_client
 from .common import EntityImporter, clean, is_cjk, DATE_FMT
 
 
@@ -48,7 +48,7 @@ def parse_jalc_persons(raw_persons):
         if lang == 'en' and surname and given_name:
             # english names order is flipped
             name = "{} {}".format(given_name, surname)
-        rc = fatcat_client.ReleaseContrib(
+        rc = fatcat_openapi_client.ReleaseContrib(
             raw_name=name,
             surname=surname,
             given_name=given_name,
@@ -269,7 +269,7 @@ class JalcImporter(EntityImporter):
             # extra: issnp, issne, original_name, languages, country
             container_extra['country'] = 'jp'
             container_extra['languages'] = ['ja']
-            ce = fatcat_client.ContainerEntity(
+            ce = fatcat_openapi_client.ContainerEntity(
                 name=container_name,
                 container_type='journal',
                 publisher=publisher,
@@ -303,7 +303,7 @@ class JalcImporter(EntityImporter):
         if not title:
             return None
 
-        re = fatcat_client.ReleaseEntity(
+        re = fatcat_openapi_client.ReleaseEntity(
             work_id=None,
             title=title,
             original_title=clean(original_title),
@@ -311,7 +311,7 @@ class JalcImporter(EntityImporter):
             release_stage='published',
             release_date=release_date,
             release_year=release_year,
-            ext_ids=fatcat_client.ReleaseExtIds(
+            ext_ids=fatcat_openapi_client.ReleaseExtIds(
                 doi=doi,
                 pmid=extids['pmid'],
                 pmcid=extids['pmcid'],
@@ -338,7 +338,7 @@ class JalcImporter(EntityImporter):
         existing = None
         try:
             existing = self.api.lookup_release(doi=re.ext_ids.doi)
-        except fatcat_client.rest.ApiException as err:
+        except fatcat_openapi_client.rest.ApiException as err:
             if err.status != 404:
                 raise err
             # doesn't exist, need to insert
@@ -353,8 +353,8 @@ class JalcImporter(EntityImporter):
         return True
 
     def insert_batch(self, batch):
-        self.api.create_release_auto_batch(fatcat_client.ReleaseAutoBatch(
-            editgroup=fatcat_client.Editgroup(
+        self.api.create_release_auto_batch(fatcat_openapi_client.ReleaseAutoBatch(
+            editgroup=fatcat_openapi_client.Editgroup(
                 description=self.editgroup_description,
                 extra=self.editgroup_extra),
             entity_list=batch))

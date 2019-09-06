@@ -2,7 +2,7 @@
 import sys
 import json
 import itertools
-import fatcat_client
+import fatcat_openapi_client
 from .common import EntityImporter, clean
 
 
@@ -66,7 +66,7 @@ class ChoculaImporter(EntityImporter):
         elif 'journal ' in name.lower():
             container_type = 'journal'
 
-        ce = fatcat_client.ContainerEntity(
+        ce = fatcat_openapi_client.ContainerEntity(
             issnl=row['issnl'],
             ident=row['ident'],
             name=name,
@@ -82,7 +82,7 @@ class ChoculaImporter(EntityImporter):
         if ce.ident:
             try:
                 existing = self.api.get_container(ce.ident)
-            except fatcat_client.rest.ApiException as err:
+            except fatcat_openapi_client.rest.ApiException as err:
                 if err.status != 404:
                     raise err
                 self.counts['exists'] += 1
@@ -97,7 +97,7 @@ class ChoculaImporter(EntityImporter):
             # check if existing by ISSN-L
             try:
                 existing = self.api.lookup_container(issnl=ce.issnl)
-            except fatcat_client.rest.ApiException as err:
+            except fatcat_openapi_client.rest.ApiException as err:
                 if err.status != 404:
                     raise err
             if existing:
@@ -157,8 +157,8 @@ class ChoculaImporter(EntityImporter):
         raise NotImplementedError
 
     def insert_batch(self, batch):
-        self.api.create_container_auto_batch(fatcat_client.ContainerAutoBatch(
-            editgroup=fatcat_client.Editgroup(
+        self.api.create_container_auto_batch(fatcat_openapi_client.ContainerAutoBatch(
+            editgroup=fatcat_openapi_client.Editgroup(
                 description=self.editgroup_description,
                 extra=self.editgroup_extra),
             entity_list=batch))

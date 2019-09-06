@@ -1,6 +1,6 @@
 
 from flask import abort
-from fatcat_client.rest import ApiException
+from fatcat_openapi_client.rest import ApiException
 from fatcat_tools.transforms import *
 from fatcat_web import app, api
 from fatcat_web.search import get_elastic_container_stats, get_elastic_container_random_releases

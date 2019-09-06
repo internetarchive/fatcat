@@ -5,8 +5,8 @@ import datetime
 import subprocess
 from collections import Counter
 
-import fatcat_client
-from fatcat_client.rest import ApiException
+import fatcat_openapi_client
+from fatcat_openapi_client.rest import ApiException
 
 """
 checks should return:
@@ -146,7 +146,7 @@ class ReviewBot:
             "checks": [check.name for check in self.checks],
             "result_counts": dict(result_counts),
         })
-        annotation = fatcat_client.EditgroupAnnotation(
+        annotation = fatcat_openapi_client.EditgroupAnnotation(
             comment_markdown=comment,
             editgroup_id=editgroup.editgroup_id,
             extra=extra,

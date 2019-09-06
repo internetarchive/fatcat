@@ -5,7 +5,7 @@ import datetime
 import warnings
 from bs4 import BeautifulSoup
 
-import fatcat_client
+import fatcat_openapi_client
 from .common import EntityImporter, clean, LANG_MAP_MARC
 from .crossref import CONTAINER_TYPE_MAP
 
@@ -114,7 +114,7 @@ class JstorImporter(EntityImporter):
         # create container if it doesn't exist
         if (container_id is None and self.create_containers and (issnl is not None)
                 and journal_title):
-            ce = fatcat_client.ContainerEntity(
+            ce = fatcat_openapi_client.ContainerEntity(
                 issnl=issnl,
                 publisher=publisher,
                 container_type=self.map_container_type(release_type),
@@ -158,7 +158,7 @@ class JstorImporter(EntityImporter):
                 role = JSTOR_CONTRIB_MAP.get(c.get('contrib-type', 'author'))
                 if not role and c.get('contrib-type'):
                     sys.stderr.write("NOT IN JSTOR_CONTRIB_MAP: {}\n".format(c['contrib-type']))
-                contribs.append(fatcat_client.ReleaseContrib(
+                contribs.append(fatcat_openapi_client.ReleaseContrib(
                     role=role,
                     raw_name=raw_name,
                     given_name=given,
@@ -228,7 +228,7 @@ class JstorImporter(EntityImporter):
         if not extra:
             extra = None
 
-        re = fatcat_client.ReleaseEntity(
+        re = fatcat_openapi_client.ReleaseEntity(
             #work_id
             title=title,
             #original_title
@@ -236,7 +236,7 @@ class JstorImporter(EntityImporter):
             release_stage=release_stage,
             release_date=release_date,
             release_year=release_year,
-            ext_ids=fatcat_client.ReleaseExtIds(
+            ext_ids=fatcat_openapi_client.ReleaseExtIds(
                 doi=doi,
                 jstor=jstor_id,
             ),
@@ -270,7 +270,7 @@ class JstorImporter(EntityImporter):
         existing = None
         try:
             existing = self.api.lookup_release(jstor=re.ext_ids.jstor)
-        except fatcat_client.rest.ApiException as err:
+        except fatcat_openapi_client.rest.ApiException as err:
             if err.status != 404:
                 raise err
 
@@ -282,7 +282,7 @@ class JstorImporter(EntityImporter):
                 doi = "10.2307/{}".format(re.ext_ids.jstor)
             try:
                 existing = self.api.lookup_release(doi=doi)
-            except fatcat_client.rest.ApiException as err:
+            except fatcat_openapi_client.rest.ApiException as err:
                 if err.status != 404:
                     raise err
 
@@ -309,8 +309,8 @@ class JstorImporter(EntityImporter):
         return True
 
     def insert_batch(self, batch):
-        self.api.create_release_auto_batch(fatcat_client.ReleaseAutoBatch(
-            editgroup=fatcat_client.Editgroup(
+        self.api.create_release_auto_batch(fatcat_openapi_client.ReleaseAutoBatch(
+            editgroup=fatcat_openapi_client.Editgroup(
                 description=self.editgroup_description,
                 extra=self.editgroup_extra),
             entity_list=batch))

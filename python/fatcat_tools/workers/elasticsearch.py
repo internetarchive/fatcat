@@ -4,7 +4,7 @@ import time
 import requests
 from pykafka.common import OffsetType
 
-from fatcat_client import ReleaseEntity, ContainerEntity, ApiClient
+from fatcat_openapi_client import ReleaseEntity, ContainerEntity, ApiClient
 from fatcat_tools import *
 from .worker_common import FatcatWorker
 

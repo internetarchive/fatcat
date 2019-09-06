@@ -2,7 +2,7 @@
 import sys
 import json
 import itertools
-import fatcat_client
+import fatcat_openapi_client
 from .common import EntityImporter, clean
 
 def value_or_none(e):
@@ -64,7 +64,7 @@ class OrcidImporter(EntityImporter):
         if not display:
             # must have *some* name
             return None
-        ce = fatcat_client.CreatorEntity(
+        ce = fatcat_openapi_client.CreatorEntity(
             orcid=orcid,
             given_name=clean(given),
             surname=clean(sur),
@@ -76,7 +76,7 @@ class OrcidImporter(EntityImporter):
         existing = None
         try:
             existing = self.api.lookup_creator(orcid=raw_record.orcid)
-        except fatcat_client.rest.ApiException as err:
+        except fatcat_openapi_client.rest.ApiException as err:
             if err.status != 404:
                 raise err
 
@@ -89,8 +89,8 @@ class OrcidImporter(EntityImporter):
         return True
 
     def insert_batch(self, batch):
-        self.api.create_creator_auto_batch(fatcat_client.CreatorAutoBatch(
-            editgroup=fatcat_client.Editgroup(
+        self.api.create_creator_auto_batch(fatcat_openapi_client.CreatorAutoBatch(
+            editgroup=fatcat_openapi_client.Editgroup(
                 description=self.editgroup_description,
                 extra=self.editgroup_extra),
             entity_list=batch))

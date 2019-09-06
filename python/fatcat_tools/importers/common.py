@@ -13,8 +13,8 @@ import xml.etree.ElementTree as ET
 import pykafka
 from bs4 import BeautifulSoup
 
-import fatcat_client
-from fatcat_client.rest import ApiException
+import fatcat_openapi_client
+from fatcat_openapi_client.rest import ApiException
 
 
 DATE_FMT = "%Y-%m-%d"
@@ -337,7 +337,7 @@ class EntityImporter:
 
         if not self._editgroup_id:
             eg = self.api.create_editgroup(
-                fatcat_client.Editgroup(
+                fatcat_openapi_client.Editgroup(
                     description=self.editgroup_description,
                     extra=self.editgroup_extra))
             self._editgroup_id = eg.editgroup_id

@@ -1,7 +1,7 @@
 
 import json
 import pytest
-from fatcat_client.rest import ApiException
+from fatcat_openapi_client.rest import ApiException
 from fixtures import *
 
 from fatcat_web.forms import ReleaseEntityForm, FileEntityForm, ContainerEntityForm

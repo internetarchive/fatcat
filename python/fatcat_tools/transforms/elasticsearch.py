@@ -1,7 +1,7 @@
 
 
 import collections
-from fatcat_client import ApiClient
+from fatcat_openapi_client import ApiClient
 
 
 def check_kbart(year, archive):

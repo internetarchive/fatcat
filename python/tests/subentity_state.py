@@ -3,8 +3,8 @@ import json
 import pytest
 from copy import copy
 
-from fatcat_client import *
-from fatcat_client.rest import ApiException
+from fatcat_openapi_client import *
+from fatcat_openapi_client.rest import ApiException
 from fixtures import *
 
 """

@@ -10,7 +10,7 @@ from flask_mwoauth import MWOAuth
 from authlib.flask.client import OAuth
 from loginpass import create_flask_blueprint, Gitlab, GitHub, ORCiD
 from raven.contrib.flask import Sentry
-import fatcat_client
+import fatcat_openapi_client
 
 from fatcat_web.web_config import Config
 
@@ -39,20 +39,20 @@ oauth = OAuth(app)
 # Grabs sentry config from SENTRY_DSN environment variable
 sentry = Sentry(app)
 
-conf = fatcat_client.Configuration()
+conf = fatcat_openapi_client.Configuration()
 conf.host = Config.FATCAT_API_HOST
-api = fatcat_client.DefaultApi(fatcat_client.ApiClient(conf))
+api = fatcat_openapi_client.DefaultApi(fatcat_openapi_client.ApiClient(conf))
 
 # remove most jinja2 template whitespace
 app.jinja_env.trim_blocks = True
 app.jinja_env.lstrip_blocks = True
 
 def auth_api(token):
-    conf = fatcat_client.Configuration()
+    conf = fatcat_openapi_client.Configuration()
     conf.api_key["Authorization"] = token
     conf.api_key_prefix["Authorization"] = "Bearer"
     conf.host = Config.FATCAT_API_HOST
-    return fatcat_client.DefaultApi(fatcat_client.ApiClient(conf))
+    return fatcat_openapi_client.DefaultApi(fatcat_openapi_client.ApiClient(conf))
 
 if Config.FATCAT_API_AUTH_TOKEN:
     print("Found and using privileged token (eg, for account signup)")

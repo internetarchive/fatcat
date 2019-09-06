@@ -5,7 +5,7 @@ import sqlite3
 import datetime
 import itertools
 import subprocess
-import fatcat_client
+import fatcat_openapi_client
 from .common import EntityImporter, clean
 
 
@@ -215,7 +215,7 @@ class CrossrefImporter(EntityImporter):
                     extra = None
                 assert ctype in ("author", "editor", "translator")
                 raw_name = clean(raw_name)
-                contribs.append(fatcat_client.ReleaseContrib(
+                contribs.append(fatcat_openapi_client.ReleaseContrib(
                     creator_id=creator_id,
                     index=index,
                     raw_name=raw_name,
@@ -244,7 +244,7 @@ class CrossrefImporter(EntityImporter):
             container_name = None
         if (container_id is None and self.create_containers and (issnl is not None)
                 and container_name):
-            ce = fatcat_client.ContainerEntity(
+            ce = fatcat_openapi_client.ContainerEntity(
                 issnl=issnl,
                 publisher=publisher,
                 container_type=self.map_container_type(release_type),
@@ -300,7 +300,7 @@ class CrossrefImporter(EntityImporter):
                     ref_extra[k] = clean(rm[k])
             if not ref_extra:
                 ref_extra = None
-            refs.append(fatcat_client.ReleaseRef(
+            refs.append(fatcat_openapi_client.ReleaseRef(
                 index=i,
                 # doing lookups would be a second import pass
                 target_release_id=None,
@@ -316,7 +316,7 @@ class CrossrefImporter(EntityImporter):
         abstracts = []
         abstract = clean(obj.get('abstract'))
         if abstract and len(abstract) > 10:
-            abstracts.append(fatcat_client.ReleaseAbstract(
+            abstracts.append(fatcat_openapi_client.ReleaseAbstract(
                 mimetype="application/xml+jats",
                 content=abstract))
 
@@ -420,7 +420,7 @@ class CrossrefImporter(EntityImporter):
         if not extra:
             extra = None
 
-        re = fatcat_client.ReleaseEntity(
+        re = fatcat_openapi_client.ReleaseEntity(
             work_id=None,
             container_id=container_id,
             title=title,
@@ -431,7 +431,7 @@ class CrossrefImporter(EntityImporter):
             release_date=release_date,
             release_year=release_year,
             publisher=publisher,
-            ext_ids=fatcat_client.ReleaseExtIds(
+            ext_ids=fatcat_openapi_client.ReleaseExtIds(
                 doi=obj['DOI'].lower(),
                 pmid=extids['pmid'],
                 pmcid=extids['pmcid'],
@@ -459,7 +459,7 @@ class CrossrefImporter(EntityImporter):
         existing = None
         try:
             existing = self.api.lookup_release(doi=re.ext_ids.doi)
-        except fatcat_client.rest.ApiException as err:
+        except fatcat_openapi_client.rest.ApiException as err:
             if err.status != 404:
                 raise err
             # doesn't exist, need to update
@@ -474,8 +474,8 @@ class CrossrefImporter(EntityImporter):
         return True
 
     def insert_batch(self, batch):
-        self.api.create_release_auto_batch(fatcat_client.ReleaseAutoBatch(
-            editgroup=fatcat_client.Editgroup(
+        self.api.create_release_auto_batch(fatcat_openapi_client.ReleaseAutoBatch(
+            editgroup=fatcat_openapi_client.Editgroup(
                 description=self.editgroup_description,
                 extra=self.editgroup_extra),
             entity_list=batch))

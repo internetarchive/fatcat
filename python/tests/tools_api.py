@@ -1,7 +1,7 @@
 
 import pytest
-from fatcat_client import EditgroupAnnotation
-from fatcat_client.rest import ApiException
+from fatcat_openapi_client import EditgroupAnnotation
+from fatcat_openapi_client.rest import ApiException
 
 from fatcat_tools import public_api, authenticated_api
 

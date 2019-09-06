@@ -4,8 +4,8 @@ import pytest
 import datetime
 from copy import copy
 
-from fatcat_client import *
-from fatcat_client.rest import ApiException
+from fatcat_openapi_client import *
+from fatcat_openapi_client.rest import ApiException
 from fixtures import *
 
 
@@ -151,14 +151,14 @@ def test_release_examples(api):
     # failed lookup exception type
     try:
         api.lookup_release(pmid='5432100')
-    except fatcat_client.rest.ApiException as ae:
+    except fatcat_openapi_client.rest.ApiException as ae:
         assert ae.status == 404
         assert "DatabaseRowNotFound" in ae.body
 
     # failed lookup formatting
     try:
         api.lookup_release(doi='blah')
-    except fatcat_client.rest.ApiException as ae:
+    except fatcat_openapi_client.rest.ApiException as ae:
         assert ae.status == 400
         assert "MalformedExternalId" in ae.body
 
@@ -182,10 +182,10 @@ def test_empty_fields(api):
         ext_ids=ReleaseExtIds())
     r1edit = api.create_release(eg.editgroup_id, r1)
 
-    with pytest.raises(fatcat_client.rest.ApiException):
+    with pytest.raises(fatcat_openapi_client.rest.ApiException):
         r2 = ReleaseEntity(title="", ext_ids=ReleaseExtIds())
         api.create_release(eg.editgroup_id, r2)
-    with pytest.raises(fatcat_client.rest.ApiException):
+    with pytest.raises(fatcat_openapi_client.rest.ApiException):
         r2 = ReleaseEntity(title="something", contribs=[ReleaseContrib(raw_name="")], ext_ids=ReleaseExtIds())
         api.create_release(eg.editgroup_id, r2)
 
@@ -194,19 +194,19 @@ def test_controlled_vocab(api):
     eg = quick_eg(api)
 
     r1 = ReleaseEntity(title="something", release_type="journal-thingie", ext_ids=ReleaseExtIds())
-    with pytest.raises(fatcat_client.rest.ApiException):
+    with pytest.raises(fatcat_openapi_client.rest.ApiException):
         api.create_release(eg.editgroup_id, r1)
     r1.release_type = "article"
     api.create_release(eg.editgroup_id, r1)
 
     r2 = ReleaseEntity(title="something else", release_stage="pre-print", ext_ids=ReleaseExtIds())
-    with pytest.raises(fatcat_client.rest.ApiException):
+    with pytest.raises(fatcat_openapi_client.rest.ApiException):
         api.create_release(eg.editgroup_id, r2)
     r2.release_stage = "published"
     api.create_release(eg.editgroup_id, r2)
 
     r3 = ReleaseEntity(title="something else", withdrawn_status="boondogle", ext_ids=ReleaseExtIds())
-    with pytest.raises(fatcat_client.rest.ApiException):
+    with pytest.raises(fatcat_openapi_client.rest.ApiException):
         api.create_release(eg.editgroup_id, r3)
     r3.withdrawn_status = "spam"
     api.create_release(eg.editgroup_id, r3)

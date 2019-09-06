@@ -3,7 +3,7 @@ import sys
 import json
 import sqlite3
 import itertools
-import fatcat_client
+import fatcat_openapi_client
 
 from fatcat_tools.normal import *
 from .common import EntityImporter, clean, make_rel_url, SANE_MAX_RELEASES, SANE_MAX_URLS
@@ -61,7 +61,7 @@ class MatchedImporter(EntityImporter):
                 return None
             try:
                 re = self.api.lookup_release(doi=doi)
-            except fatcat_client.rest.ApiException as err:
+            except fatcat_openapi_client.rest.ApiException as err:
                 if err.status != 404:
                     raise err
                 re = None
@@ -77,7 +77,7 @@ class MatchedImporter(EntityImporter):
             if extid:
                 try:
                     re = self.api.lookup_release(**{extid_type: extid})
-                except fatcat_client.rest.ApiException as err:
+                except fatcat_openapi_client.rest.ApiException as err:
                     if err.status != 404:
                         raise err
                     re = None
@@ -110,7 +110,7 @@ class MatchedImporter(EntityImporter):
             url = make_rel_url(original, default_link_rel=self.default_link_rel)
             if url != None:
                 urls.add(url)
-        urls = [fatcat_client.FileUrl(rel=rel, url=url) for (rel, url) in urls]
+        urls = [fatcat_openapi_client.FileUrl(rel=rel, url=url) for (rel, url) in urls]
         if len(urls) == 0:
             self.counts['skip-no-urls'] += 1
             return None
@@ -127,7 +127,7 @@ class MatchedImporter(EntityImporter):
             if urls[0].url.endswith('.pdf'):
                 mimetype = 'application/pdf'
 
-        fe = fatcat_client.FileEntity(
+        fe = fatcat_openapi_client.FileEntity(
             md5=obj.get('md5'),
             sha1=obj['sha1'],
             sha256=obj.get('sha256'),
@@ -143,7 +143,7 @@ class MatchedImporter(EntityImporter):
         existing = None
         try:
             existing = self.api.lookup_file(sha1=fe.sha1)
-        except fatcat_client.rest.ApiException as err:
+        except fatcat_openapi_client.rest.ApiException as err:
             if err.status != 404:
                 raise err
 
@@ -183,7 +183,7 @@ class MatchedImporter(EntityImporter):
 
         # merge the existing into this one and update
         existing.urls = list(set([(u.rel, u.url) for u in fe.urls + existing.urls]))
-        existing.urls = [fatcat_client.FileUrl(rel=rel, url=url) for (rel, url) in existing.urls]
+        existing.urls = [fatcat_openapi_client.FileUrl(rel=rel, url=url) for (rel, url) in existing.urls]
 
         if len(existing.urls) > SANE_MAX_URLS:
             self.counts['skip-update-too-many-url'] += 1
@@ -203,8 +203,8 @@ class MatchedImporter(EntityImporter):
         return False
 
     def insert_batch(self, batch):
-        self.api.create_file_auto_batch(fatcat_client.FileAutoBatch(
-            editgroup=fatcat_client.Editgroup(
+        self.api.create_file_auto_batch(fatcat_openapi_client.FileAutoBatch(
+            editgroup=fatcat_openapi_client.Editgroup(
                 description=self.editgroup_description,
                 extra=self.editgroup_extra),
             entity_list=batch))

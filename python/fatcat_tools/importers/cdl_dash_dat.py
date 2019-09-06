@@ -9,8 +9,8 @@ import hashlib
 import mimetypes
 import subprocess
 
-import fatcat_client
-from fatcat_client import *
+import fatcat_openapi_client
+from fatcat_openapi_client import *
 from .common import clean
 from .crossref import lookup_license_slug
 
@@ -176,7 +176,7 @@ def auto_cdl_dash_dat(api, dat_path, release_id=None, editgroup_id=None):
         try:
             r = api.lookup_release(doi=release.ext_ids.doi)
             release_id = r.ident
-        except fatcat_client.rest.ApiException:
+        except fatcat_openapi_client.rest.ApiException:
             pass
     if not release_id:
         edit = api.create_release(eg.editgroup_id, release)

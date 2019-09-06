@@ -6,9 +6,9 @@ import signal
 import pytest
 from dotenv import load_dotenv
 import fatcat_web
-import fatcat_client
+import fatcat_openapi_client
 
-from fatcat_client import *
+from fatcat_openapi_client import *
 from fatcat_tools import authenticated_api
 
 @pytest.fixture
@@ -85,6 +85,6 @@ def test_get_changelog_entry(api):
 ## Helpers ##################################################################
 
 def quick_eg(api_inst):
-    eg = api_inst.create_editgroup(fatcat_client.Editgroup())
+    eg = api_inst.create_editgroup(fatcat_openapi_client.Editgroup())
     return eg
 

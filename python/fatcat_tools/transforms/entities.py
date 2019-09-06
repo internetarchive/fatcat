@@ -1,7 +1,7 @@
 
 
 import collections
-from fatcat_client import ApiClient
+from fatcat_openapi_client import ApiClient
 
 def entity_to_dict(entity, api_client=None):
     """

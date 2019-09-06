@@ -4,8 +4,8 @@ import pytest
 import datetime
 from copy import copy
 
-from fatcat_client import *
-from fatcat_client.rest import ApiException
+from fatcat_openapi_client import *
+from fatcat_openapi_client.rest import ApiException
 from fixtures import *
 
 
@@ -52,9 +52,9 @@ def test_editgroup_submit(api):
     assert eg3.submitted
     assert eg3.changelog_index
 
-    with pytest.raises(fatcat_client.rest.ApiException):
+    with pytest.raises(fatcat_openapi_client.rest.ApiException):
         api.update_editgroup(eg.editgroup_id, eg3, submit=True)
-    with pytest.raises(fatcat_client.rest.ApiException):
+    with pytest.raises(fatcat_openapi_client.rest.ApiException):
         eg3.description = "something"
         api.update_editgroup(eg.editgroup_id, eg3)
 

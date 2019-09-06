@@ -7,7 +7,7 @@ import warnings
 from bs4 import BeautifulSoup
 from bs4.element import NavigableString
 
-import fatcat_client
+import fatcat_openapi_client
 from .common import EntityImporter, clean, LANG_MAP_MARC
 
 # from: https://www.ncbi.nlm.nih.gov/books/NBK3827/table/pubmedhelp.T.publication_types/?report=objectonly
@@ -508,7 +508,7 @@ class PubmedImporter(EntityImporter):
                 and container_name):
             # name, type, publisher, issnl
             # extra: issnp, issne, original_name, languages, country
-            ce = fatcat_client.ContainerEntity(
+            ce = fatcat_openapi_client.ContainerEntity(
                 name=container_name,
                 container_type='journal',
                 #NOTE: publisher not included
@@ -532,7 +532,7 @@ class PubmedImporter(EntityImporter):
         primary_abstract = medline.find("Abstract")
         if primary_abstract and primary_abstract.AbstractText.get('NlmCategory'):
             joined = "\n".join([m.get_text() for m in primary_abstract.find_all("AbstractText")])
-            abst = fatcat_client.ReleaseAbstract(
+            abst = fatcat_openapi_client.ReleaseAbstract(
                 content=joined,
                 mimetype="text/plain",
                 lang="en",
@@ -541,7 +541,7 @@ class PubmedImporter(EntityImporter):
                 abstracts.append(abst)
         elif primary_abstract:
             for abstract in primary_abstract.find_all("AbstractText"):
-                abst = fatcat_client.ReleaseAbstract(
+                abst = fatcat_openapi_client.ReleaseAbstract(
                     content=abstract.get_text().strip(),
                     mimetype="text/plain",
                     lang="en",
@@ -549,7 +549,7 @@ class PubmedImporter(EntityImporter):
                 if abst.content:
                     abstracts.append(abst)
                 if abstract.find('math'):
-                    abst = fatcat_client.ReleaseAbstract(
+                    abst = fatcat_openapi_client.ReleaseAbstract(
                         # strip the <AbstractText> tags
                         content=str(abstract)[14:-15],
                         mimetype="application/mathml+xml",
@@ -562,7 +562,7 @@ class PubmedImporter(EntityImporter):
             lang = "en"
             if other.get('Language'):
                 lang = LANG_MAP_MARC.get(other['Language'])
-            abst = fatcat_client.ReleaseAbstract(
+            abst = fatcat_openapi_client.ReleaseAbstract(
                 content=other.AbstractText.get_text().strip(),
                 mimetype="text/plain",
                 lang=lang,
@@ -617,7 +617,7 @@ class PubmedImporter(EntityImporter):
                 if author.find("EqualContrib"):
                     # TODO: schema for this?
                     contrib_extra['equal'] = True
-                contribs.append(fatcat_client.ReleaseContrib(
+                contribs.append(fatcat_openapi_client.ReleaseContrib(
                     raw_name=raw_name,
                     given_name=given_name,
                     surname=surname,
@@ -628,7 +628,7 @@ class PubmedImporter(EntityImporter):
                 ))
 
             if medline.AuthorList['CompleteYN'] == 'N':
-                contribs.append(fatcat_client.ReleaseContrib(raw_name="et al."))
+                contribs.append(fatcat_openapi_client.ReleaseContrib(raw_name="et al."))
 
         for i, contrib in enumerate(contribs):
             if contrib.raw_name != "et al.":
@@ -659,7 +659,7 @@ class PubmedImporter(EntityImporter):
                     ref_extra['unstructured'] = ref_raw.string
                 if not ref_extra:
                     ref_extra = None
-                refs.append(fatcat_client.ReleaseRef(
+                refs.append(fatcat_openapi_client.ReleaseRef(
                     target_release_id=ref_release_id,
                     extra=ref_extra,
                 ))
@@ -682,7 +682,7 @@ class PubmedImporter(EntityImporter):
         if not title:
             return None
 
-        re = fatcat_client.ReleaseEntity(
+        re = fatcat_openapi_client.ReleaseEntity(
             work_id=None,
             title=title,
             original_title=clean(original_title),
@@ -691,7 +691,7 @@ class PubmedImporter(EntityImporter):
             release_date=release_date,
             release_year=release_year,
             withdrawn_status=withdrawn_status,
-            ext_ids=fatcat_client.ReleaseExtIds(
+            ext_ids=fatcat_openapi_client.ReleaseExtIds(
                 doi=doi,
                 pmid=pmid,
                 pmcid=pmcid,
@@ -717,7 +717,7 @@ class PubmedImporter(EntityImporter):
         existing = None
         try:
             existing = self.api.lookup_release(pmid=re.ext_ids.pmid)
-        except fatcat_client.rest.ApiException as err:
+        except fatcat_openapi_client.rest.ApiException as err:
             if err.status != 404:
                 raise err
 
@@ -725,7 +725,7 @@ class PubmedImporter(EntityImporter):
         if not existing and re.ext_ids.doi:
             try:
                 existing = self.api.lookup_release(doi=re.ext_ids.doi)
-            except fatcat_client.rest.ApiException as err:
+            except fatcat_openapi_client.rest.ApiException as err:
                 if err.status != 404:
                     raise err
             if existing and existing.ext_ids.pmid and existing.ext_ids.pmid != re.ext_ids.pmid:
@@ -751,7 +751,7 @@ class PubmedImporter(EntityImporter):
             try:
                 self.api.update_release(self.get_editgroup_id(), existing.ident, existing)
                 self.counts['update'] += 1
-            except fatcat_client.rest.ApiException as err:
+            except fatcat_openapi_client.rest.ApiException as err:
                 # there is a code path where we try to update the same release
                 # twice in a row; if that happens, just skip
                 # NOTE: API behavior might change in the future?
@@ -765,8 +765,8 @@ class PubmedImporter(EntityImporter):
         return True
 
     def insert_batch(self, batch):
-        self.api.create_release_auto_batch(fatcat_client.ReleaseAutoBatch(
-            editgroup=fatcat_client.Editgroup(
+        self.api.create_release_auto_batch(fatcat_openapi_client.ReleaseAutoBatch(
+            editgroup=fatcat_openapi_client.Editgroup(
                 description=self.editgroup_description,
                 extra=self.editgroup_extra),
             entity_list=batch))

@@ -4,8 +4,8 @@ import pytest
 import datetime
 from copy import copy
 
-from fatcat_client import *
-from fatcat_client.rest import ApiException
+from fatcat_openapi_client import *
+from fatcat_openapi_client.rest import ApiException
 from fixtures import *
 
 
@@ -155,7 +155,7 @@ def test_bad_webcapture(api):
 
     api.create_webcapture(eg.editgroup_id, good)
     for b in bad_list:
-        with pytest.raises(fatcat_client.rest.ApiException):
+        with pytest.raises(fatcat_openapi_client.rest.ApiException):
             api.create_webcapture(eg.editgroup_id, b)
 
     with pytest.raises(ValueError):

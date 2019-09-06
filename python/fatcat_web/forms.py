@@ -8,7 +8,7 @@ from flask_wtf import FlaskForm
 from wtforms import SelectField, DateField, StringField, IntegerField, \
     HiddenField, FormField, FieldList, validators
 
-from fatcat_client import ContainerEntity, CreatorEntity, FileEntity, \
+from fatcat_openapi_client import ContainerEntity, CreatorEntity, FileEntity, \
     ReleaseEntity, ReleaseContrib, FileUrl, ReleaseExtIds
 
 release_type_options = [

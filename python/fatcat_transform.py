@@ -13,9 +13,9 @@ from citeproc import formatter
 from citeproc.source.json import CiteProcJSON
 from citeproc_styles import get_style_filepath
 
-import fatcat_client
-from fatcat_client.rest import ApiException
-from fatcat_client import ReleaseEntity, ContainerEntity, ChangelogEntry
+import fatcat_openapi_client
+from fatcat_openapi_client.rest import ApiException
+from fatcat_openapi_client import ReleaseEntity, ContainerEntity, ChangelogEntry
 from fatcat_tools import uuid2fcid, entity_from_json, entity_to_dict, \
     release_to_elasticsearch, container_to_elasticsearch, \
     changelog_to_elasticsearch, public_api, release_to_csl, citeproc_csl

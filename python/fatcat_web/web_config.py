@@ -72,7 +72,7 @@ class Config(object):
         GIT_RELEASE = None
 
     SENTRY_CONFIG = {
-        #'include_paths': ['fatcat_web', 'fatcat_client', 'fatcat_tools'],
+        #'include_paths': ['fatcat_web', 'fatcat_openapi_client', 'fatcat_tools'],
         'enable-threads': True, # for uWSGI
         'release': GIT_RELEASE,
         'tags': {

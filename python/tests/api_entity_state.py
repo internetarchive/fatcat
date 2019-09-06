@@ -1,8 +1,8 @@
 
 import pytest
 
-from fatcat_client import *
-from fatcat_client.rest import ApiException
+from fatcat_openapi_client import *
+from fatcat_openapi_client.rest import ApiException
 from fixtures import *
 
 
@@ -70,7 +70,7 @@ def test_redirect_entity(api):
     # get by orcid
     res = api.lookup_creator(orcid=o1)
     assert res.ident == c1.ident
-    with pytest.raises(fatcat_client.rest.ApiException):
+    with pytest.raises(fatcat_openapi_client.rest.ApiException):
         res = api.lookup_creator(orcid=o2)
 
     # update first; check that get on second updates
@@ -163,14 +163,14 @@ def test_delete_entity(api):
     # delete
     eg = quick_eg(api)
     api.delete_creator(eg.editgroup_id, c1.ident)
-    with pytest.raises(fatcat_client.rest.ApiException):
+    with pytest.raises(fatcat_openapi_client.rest.ApiException):
         # can't re-delete in same editgroup
         api.delete_creator(eg.editgroup_id, c1.ident)
     api.accept_editgroup(eg.editgroup_id)
     res = api.get_creator(c1.ident)
     assert res.state == "deleted"
     assert res.display_name is None
-    with pytest.raises(fatcat_client.rest.ApiException):
+    with pytest.raises(fatcat_openapi_client.rest.ApiException):
         res = api.lookup_creator(orcid=c1.orcid)
 
     # re-delete
@@ -180,7 +180,7 @@ def test_delete_entity(api):
         api.delete_creator(eg.editgroup_id, c1.ident)
         #api.accept_editgroup(eg.editgroup_id)
         assert False
-    except fatcat_client.rest.ApiException as e:
+    except fatcat_openapi_client.rest.ApiException as e:
         assert 400 <= e.status < 500 # error is 4xx
 
     # undelete
@@ -250,11 +250,11 @@ def test_recursive_redirects_entity(api):
     c2_redirect = CreatorEntity(redirect=c1.ident)
     eg = quick_eg(api)
     api.update_creator(eg.editgroup_id, c2.ident, c2_redirect)
-    with pytest.raises(fatcat_client.rest.ApiException):
+    with pytest.raises(fatcat_openapi_client.rest.ApiException):
         api.accept_editgroup(eg.editgroup_id)
     res = api.get_creator(c2.ident)
     assert res.display_name == "test two"
-    with pytest.raises(fatcat_client.rest.ApiException):
+    with pytest.raises(fatcat_openapi_client.rest.ApiException):
         res = api.lookup_creator(orcid=o3)
     res = api.lookup_creator(orcid=o2)
     assert res.ident == c2.ident
@@ -263,7 +263,7 @@ def test_recursive_redirects_entity(api):
     c1_redirect = CreatorEntity(redirect=c3.ident)
     eg = quick_eg(api)
     api.update_creator(eg.editgroup_id, c1.ident, c1_redirect)
-    with pytest.raises(fatcat_client.rest.ApiException):
+    with pytest.raises(fatcat_openapi_client.rest.ApiException):
         api.accept_editgroup(eg.editgroup_id)
     res = api.get_creator(c1.ident)
     assert res.display_name == "test one"
@@ -291,7 +291,7 @@ def test_recursive_redirects_entity(api):
     res = api.get_creator(c3.ident)
     assert res.state == "redirect"
     assert res.display_name is None
-    with pytest.raises(fatcat_client.rest.ApiException):
+    with pytest.raises(fatcat_openapi_client.rest.ApiException):
         res = api.lookup_creator(orcid=o2)
 
     # undelete second; check that third updated
@@ -329,7 +329,7 @@ def test_recursive_redirects_entity(api):
     res = api.get_creator(c3.ident)
     assert res.state == "redirect"
     assert res.display_name is None
-    with pytest.raises(fatcat_client.rest.ApiException):
+    with pytest.raises(fatcat_openapi_client.rest.ApiException):
         res = api.lookup_creator(orcid=o2)
     eg = quick_eg(api)
     api.delete_creator(eg.editgroup_id, c3.ident)
@@ -358,7 +358,7 @@ def test_self_redirect(api):
     # redirect first to itself; should error on PUT
     c1_redirect = CreatorEntity(redirect=c1.ident)
     eg = quick_eg(api)
-    with pytest.raises(fatcat_client.rest.ApiException):
+    with pytest.raises(fatcat_openapi_client.rest.ApiException):
         merge_edit = api.update_creator(eg.editgroup_id, c1.ident, c1_redirect)
 
 
@@ -382,7 +382,7 @@ def test_wip_redirect(api):
     try:
         api.update_creator(eg.editgroup_id, c1.ident, c1_redirect)
         assert False
-    except fatcat_client.rest.ApiException as e:
+    except fatcat_openapi_client.rest.ApiException as e:
         assert 400 <= e.status < 500
         assert "WIP" in e.body
 
@@ -401,7 +401,7 @@ def test_create_redirect(api):
     try:
         api.create_creator(eg.editgroup_id, c2)
         assert False
-    except fatcat_client.rest.ApiException as e:
+    except fatcat_openapi_client.rest.ApiException as e:
         assert 400 <= e.status < 500
         assert "redirect" in e.body
 
@@ -415,7 +415,7 @@ def test_create_redirect(api):
     try:
         api.create_release(eg.editgroup_id, r2)
         assert False
-    except fatcat_client.rest.ApiException as e:
+    except fatcat_openapi_client.rest.ApiException as e:
         assert 400 <= e.status < 500
         assert "redirect" in e.body
 
@@ -428,7 +428,7 @@ def test_required_entity_fields(api):
         c1 = CreatorEntity()
         api.create_creator(eg.editgroup_id, c1)
         assert False
-    except fatcat_client.rest.ApiException as e:
+    except fatcat_openapi_client.rest.ApiException as e:
         assert 400 <= e.status < 500
         assert "display_name" in e.body
 
@@ -437,7 +437,7 @@ def test_required_entity_fields(api):
         c1 = ContainerEntity()
         api.create_container(eg.editgroup_id, c1)
         assert False
-    except fatcat_client.rest.ApiException as e:
+    except fatcat_openapi_client.rest.ApiException as e:
         assert 400 <= e.status < 500
         assert "name" in e.body
 
@@ -446,7 +446,7 @@ def test_required_entity_fields(api):
         c1 = ReleaseEntity(ext_ids=ReleaseExtIds())
         api.create_release(eg.editgroup_id, c1)
         assert False
-    except fatcat_client.rest.ApiException as e:
+    except fatcat_openapi_client.rest.ApiException as e:
         assert 400 <= e.status < 500
         assert "title" in e.body
 
@@ -465,6 +465,6 @@ def test_revert_current_status(api):
     try:
         api.update_creator(eg.editgroup_id, c1.ident, c1_revert)
         assert False
-    except fatcat_client.rest.ApiException as e:
+    except fatcat_openapi_client.rest.ApiException as e:
         assert 400 <= e.status < 500
         assert "current" in e.body

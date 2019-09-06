@@ -8,7 +8,7 @@ from citeproc import formatter
 from citeproc.source.json import CiteProcJSON
 from citeproc_styles import get_style_filepath
 
-from fatcat_client import ApiClient
+from fatcat_openapi_client import ApiClient
 
 
 def contribs_by_role(contribs, role):

@@ -8,8 +8,8 @@ from itertools import islice
 from pykafka import KafkaClient
 from pykafka.common import OffsetType
 
-import fatcat_client
-from fatcat_client.rest import ApiException
+import fatcat_openapi_client
+from fatcat_openapi_client.rest import ApiException
 
 
 def most_recent_message(topic):

@@ -4,7 +4,7 @@ import sys
 import json
 import base64
 import datetime
-import fatcat_client
+import fatcat_openapi_client
 from .common import EntityImporter, clean, make_rel_url
 
 MAX_ABSTRACT_BYTES=4096
@@ -56,7 +56,7 @@ class GrobidMetadataImporter(EntityImporter):
         existing = None
         try:
             existing = self.api.lookup_file(sha1=fe.sha1)
-        except fatcat_client.rest.ApiException as err:
+        except fatcat_openapi_client.rest.ApiException as err:
             if err.status != 404:
                 raise err
 
@@ -82,7 +82,7 @@ class GrobidMetadataImporter(EntityImporter):
 
         abstract = obj.get('abstract')
         if abstract and len(abstract) < MAX_ABSTRACT_BYTES and len(abstract) > 10:
-            abobj = fatcat_client.ReleaseAbstract(
+            abobj = fatcat_openapi_client.ReleaseAbstract(
                 mimetype="text/plain",
                 content=clean(obj.get('abstract')))
             abstracts = [abobj]
@@ -91,7 +91,7 @@ class GrobidMetadataImporter(EntityImporter):
 
         contribs = []
         for i, a in enumerate(obj.get('authors', [])):
-            contribs.append(fatcat_client.ReleaseContrib(
+            contribs.append(fatcat_openapi_client.ReleaseContrib(
                 index=i,
                 raw_name=clean(a['name']),
                 given_name=clean(a.get('given_name')),
@@ -116,7 +116,7 @@ class GrobidMetadataImporter(EntityImporter):
 
             if not cite_extra:
                 cite_extra = None
-            refs.append(fatcat_client.ReleaseRef(
+            refs.append(fatcat_openapi_client.ReleaseRef(
                 key=clean(raw.get('id')),
                 year=year,
                 title=clean(raw['title']),
@@ -147,7 +147,7 @@ class GrobidMetadataImporter(EntityImporter):
         if not title or len(title) < 2:
             return None
 
-        re = fatcat_client.ReleaseEntity(
+        re = fatcat_openapi_client.ReleaseEntity(
             title=title,
             release_type="article-journal",
             release_date=release_date,
@@ -158,7 +158,7 @@ class GrobidMetadataImporter(EntityImporter):
             volume=clean(obj['journal'].get('volume')),
             issue=clean(obj['journal'].get('issue')),
             abstracts=abstracts,
-            ext_ids=fatcat_client.ReleaseExtIds(),
+            ext_ids=fatcat_openapi_client.ReleaseExtIds(),
             extra=extra)
         return re
 
@@ -166,7 +166,7 @@ class GrobidMetadataImporter(EntityImporter):
 
         sha1 = base64.b16encode(base64.b32decode(sha1_key.replace('sha1:', ''))).decode('ascii').lower()
 
-        fe = fatcat_client.FileEntity(
+        fe = fatcat_openapi_client.FileEntity(
             sha1=sha1,
             size=int(file_size),
             mimetype=mimetype,
@@ -181,10 +181,10 @@ class GrobidMetadataImporter(EntityImporter):
             cdx['dt'],
             original)
         fe.urls.append(
-            fatcat_client.FileUrl(url=wayback, rel="webarchive"))
+            fatcat_openapi_client.FileUrl(url=wayback, rel="webarchive"))
         original_url = make_rel_url(original, default_link_rel=self.default_link_rel)
         if original_url is not None:
-            fe.urls.append(fatcat_client.FileUrl(rel=original_url[0], url=original_url[1]))
+            fe.urls.append(fatcat_openapi_client.FileUrl(rel=original_url[0], url=original_url[1]))
 
         return fe
 
@@ -193,8 +193,8 @@ class GrobidMetadataImporter(EntityImporter):
         return True
 
     def insert_batch(self, batch):
-        self.api.create_file_auto_batch(fatcat_client.FileAutoBatch(
-            editgroup=fatcat_client.Editgroup(
+        self.api.create_file_auto_batch(fatcat_openapi_client.FileAutoBatch(
+            editgroup=fatcat_openapi_client.Editgroup(
                 description=self.editgroup_description,
                 extra=self.editgroup_extra),
             entity_list=batch))

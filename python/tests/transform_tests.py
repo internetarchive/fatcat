@@ -2,7 +2,7 @@
 import json
 import pytest
 from fatcat_tools import *
-from fatcat_client import *
+from fatcat_openapi_client import *
 from fixtures import api
 from import_journal_metadata import journal_metadata_importer
 

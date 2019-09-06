@@ -4,7 +4,7 @@ import json
 import base64
 import sqlite3
 import itertools
-import fatcat_client
+import fatcat_openapi_client
 from .common import EntityImporter, clean, make_rel_url, SANE_MAX_RELEASES, SANE_MAX_URLS
 
 
@@ -105,7 +105,7 @@ class ArabesqueMatchImporter(EntityImporter):
         # lookup extid
         try:
             re = self.api.lookup_release(**{self.extid_type: extid})
-        except fatcat_client.rest.ApiException as err:
+        except fatcat_openapi_client.rest.ApiException as err:
             if err.status == 404:
                 # bail on 404 (release not in DB)
                 self.counts['skip-extid-not-found'] += 1
@@ -128,13 +128,13 @@ class ArabesqueMatchImporter(EntityImporter):
             row['final_url'])
         urls = [url, ("webarchive", wayback)]
 
-        urls = [fatcat_client.FileUrl(rel=rel, url=url) for (rel, url) in urls]
+        urls = [fatcat_openapi_client.FileUrl(rel=rel, url=url) for (rel, url) in urls]
 
         if len(urls) > SANE_MAX_URLS:
             self.counts['skip-too-many-url'] += 1
             return None
 
-        fe = fatcat_client.FileEntity(
+        fe = fatcat_openapi_client.FileEntity(
             sha1=b32_hex(row['final_sha1']),
             mimetype=row['final_mimetype'] or self.default_mimetype,
             release_ids=[re.ident],
@@ -147,7 +147,7 @@ class ArabesqueMatchImporter(EntityImporter):
         existing = None
         try:
             existing = self.api.lookup_file(sha1=fe.sha1)
-        except fatcat_client.rest.ApiException as err:
+        except fatcat_openapi_client.rest.ApiException as err:
             if err.status != 404:
                 raise err
 
@@ -177,7 +177,7 @@ class ArabesqueMatchImporter(EntityImporter):
 
         # merge the existing into this one and update
         existing.urls = list(set([(u.rel, u.url) for u in fe.urls + existing.urls]))
-        existing.urls = [fatcat_client.FileUrl(rel=rel, url=url) for (rel, url) in existing.urls]
+        existing.urls = [fatcat_openapi_client.FileUrl(rel=rel, url=url) for (rel, url) in existing.urls]
         if len(existing.urls) > SANE_MAX_URLS:
             self.counts['skip-update-too-many-url'] += 1
             return None
@@ -192,8 +192,8 @@ class ArabesqueMatchImporter(EntityImporter):
         return False
 
     def insert_batch(self, batch):
-        self.api.create_file_auto_batch(fatcat_client.FileAutoBatch(
-            editgroup=fatcat_client.Editgroup(
+        self.api.create_file_auto_batch(fatcat_openapi_client.FileAutoBatch(
+            editgroup=fatcat_openapi_client.Editgroup(
                 description=self.editgroup_description,
                 extra=self.editgroup_extra),
             entity_list=batch))

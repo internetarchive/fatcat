@@ -3,8 +3,8 @@ import json
 import pytest
 from copy import copy
 
-from fatcat_client import *
-from fatcat_client.rest import ApiException
+from fatcat_openapi_client import *
+from fatcat_openapi_client.rest import ApiException
 from fixtures import *
 
 
@@ -23,7 +23,7 @@ def test_multiple_edits_same_group(api):
     c3 = CreatorEntity(display_name="right")
     edit = api.update_creator(eg.editgroup_id, c1.ident, c2)
     # should fail with existing
-    with pytest.raises(fatcat_client.rest.ApiException):
+    with pytest.raises(fatcat_openapi_client.rest.ApiException):
         api.update_creator(eg.editgroup_id, c1.ident, c3)
     # ... but succeed after deleting
     api.delete_creator_edit(edit.editgroup_id, edit.edit_id)
@@ -54,7 +54,7 @@ def test_edit_after_accept(api):
     try:
         api.create_creator(eg.editgroup_id, c2)
         assert False
-    except fatcat_client.rest.ApiException as e:
+    except fatcat_openapi_client.rest.ApiException as e:
         assert 400 <= e.status < 500
         # TODO: need better message
         #assert "accepted" in e.body
@@ -116,7 +116,7 @@ def test_delete_accepted_edit(api):
     try:
         api.delete_creator_edit(edit.editgroup_id, edit.edit_id)
         assert False
-    except fatcat_client.rest.ApiException as e:
+    except fatcat_openapi_client.rest.ApiException as e:
         assert 400 <= e.status < 500
         assert "accepted" in e.body
 

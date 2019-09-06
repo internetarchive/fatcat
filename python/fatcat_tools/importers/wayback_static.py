@@ -16,7 +16,7 @@ import argparse
 import subprocess
 from bs4 import BeautifulSoup
 
-from fatcat_client import *
+from fatcat_openapi_client import *
 
 CDX_API_BASE = "https://web.archive.org/cdx/search/cdx"
 GWB_URL_BASE = "https://web.archive.org/web"

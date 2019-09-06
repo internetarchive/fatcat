@@ -1,7 +1,7 @@
 
 import os, sys
-import fatcat_client
-from fatcat_client.rest import ApiException
+import fatcat_openapi_client
+from fatcat_openapi_client.rest import ApiException
 
 
 def public_api(host_uri):
@@ -10,9 +10,9 @@ def public_api(host_uri):
     if the API isn't going to be used, so it's important that it doesn't try to
     actually connect to the API host or something.
     """
-    conf = fatcat_client.Configuration()
+    conf = fatcat_openapi_client.Configuration()
     conf.host = host_uri
-    return fatcat_client.DefaultApi(fatcat_client.ApiClient(conf))
+    return fatcat_openapi_client.DefaultApi(fatcat_openapi_client.ApiClient(conf))
 
 def authenticated_api(host_uri, token=None):
     """
@@ -20,7 +20,7 @@ def authenticated_api(host_uri, token=None):
     is needed, so it does try to connect and verify credentials.
     """
 
-    conf = fatcat_client.Configuration()
+    conf = fatcat_openapi_client.Configuration()
     conf.host = host_uri
     if not token:
         token = os.environ['FATCAT_API_AUTH_TOKEN']
@@ -31,7 +31,7 @@ def authenticated_api(host_uri, token=None):
 
     conf.api_key["Authorization"] = token
     conf.api_key_prefix["Authorization"] = "Bearer"
-    api = fatcat_client.DefaultApi(fatcat_client.ApiClient(conf))
+    api = fatcat_openapi_client.DefaultApi(fatcat_openapi_client.ApiClient(conf))
 
     # verify up front that auth is working
     api.auth_check()

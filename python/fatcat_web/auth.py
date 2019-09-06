@@ -6,7 +6,7 @@ from flask import Flask, render_template, send_from_directory, request, \
     url_for, abort, g, redirect, jsonify, session, flash
 from flask_login import logout_user, login_user, UserMixin
 from fatcat_web import login_manager, app, api, priv_api, Config
-import fatcat_client
+import fatcat_openapi_client
 
 def handle_logout():
     logout_user()
@@ -62,7 +62,7 @@ def handle_oauth(remote, token, user_info):
         else:
             preferred_username = user_info['sub']
 
-        params = fatcat_client.AuthOidc(remote.name, user_info['sub'], iss, preferred_username)
+        params = fatcat_openapi_client.AuthOidc(remote.name, user_info['sub'], iss, preferred_username)
         # this call requires admin privs
         (resp, http_status, http_headers) = priv_api.auth_oidc_with_http_info(params)
         editor = resp.editor

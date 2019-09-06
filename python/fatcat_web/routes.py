@@ -6,8 +6,8 @@ from flask import Flask, render_template, make_response, send_from_directory, \
 from flask_login import login_required
 from flask_wtf.csrf import CSRFError
 
-from fatcat_client import Editgroup, EditgroupAnnotation
-from fatcat_client.rest import ApiException
+from fatcat_openapi_client import Editgroup, EditgroupAnnotation
+from fatcat_openapi_client.rest import ApiException
 from fatcat_tools.transforms import *
 from fatcat_tools.normal import *
 from fatcat_web import app, api, auth_api, priv_api, mwoauth

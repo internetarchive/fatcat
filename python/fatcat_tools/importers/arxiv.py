@@ -6,7 +6,7 @@ import datetime
 from bs4 import BeautifulSoup
 from pylatexenc.latex2text import LatexNodes2Text
 
-import fatcat_client
+import fatcat_openapi_client
 from .common import EntityImporter, clean
 from .crossref import lookup_license_slug
 
@@ -120,7 +120,7 @@ class ArxivRawImporter(EntityImporter):
                 doi = None
         title = latex_to_text(metadata.title.string)
         authors = parse_arxiv_authors(metadata.authors.string)
-        contribs = [fatcat_client.ReleaseContrib(index=i, raw_name=a, role='author') for i, a in enumerate(authors)]
+        contribs = [fatcat_openapi_client.ReleaseContrib(index=i, raw_name=a, role='author') for i, a in enumerate(authors)]
 
         lang = "en"     # the vast majority in english
         if metadata.comments and metadata.comments.string:
@@ -178,12 +178,12 @@ class ArxivRawImporter(EntityImporter):
             if '$' in abst or '{' in abst:
                 mime = "application/x-latex"
                 abst_plain = latex_to_text(abst)
-                abstracts.append(fatcat_client.ReleaseAbstract(content=abst_plain, mimetype="text/plain", lang="en"))
+                abstracts.append(fatcat_openapi_client.ReleaseAbstract(content=abst_plain, mimetype="text/plain", lang="en"))
             else:
                 mime = "text/plain"
-            abstracts.append(fatcat_client.ReleaseAbstract(content=abst, mimetype=mime, lang="en"))
+            abstracts.append(fatcat_openapi_client.ReleaseAbstract(content=abst, mimetype=mime, lang="en"))
             if orig:
-                abstracts.append(fatcat_client.ReleaseAbstract(content=orig, mimetype=mime))
+                abstracts.append(fatcat_openapi_client.ReleaseAbstract(content=orig, mimetype=mime))
                 # indicates that fulltext probably isn't english either
                 if lang == 'en':
                     lang = None
@@ -207,7 +207,7 @@ class ArxivRawImporter(EntityImporter):
             release_date = version.date.string.strip()
             release_date = datetime.datetime.strptime(release_date, "%a, %d %b %Y %H:%M:%S %Z").date()
             # TODO: source_type?
-            versions.append(fatcat_client.ReleaseEntity(
+            versions.append(fatcat_openapi_client.ReleaseEntity(
                 work_id=None,
                 title=title,
                 #original_title
@@ -216,7 +216,7 @@ class ArxivRawImporter(EntityImporter):
                 release_stage='submitted',
                 release_date=release_date.isoformat(),
                 release_year=release_date.year,
-                ext_ids=fatcat_client.ReleaseExtIds(
+                ext_ids=fatcat_openapi_client.ReleaseExtIds(
                     arxiv=arxiv_id,
                 ),
                 number=number,
@@ -270,7 +270,7 @@ class ArxivRawImporter(EntityImporter):
             existing_doi = None
             try:
                 existing = self.api.lookup_release(arxiv=v.ext_ids.arxiv)
-            except fatcat_client.rest.ApiException as err:
+            except fatcat_openapi_client.rest.ApiException as err:
                 if err.status != 404:
                     raise err
 
@@ -281,7 +281,7 @@ class ArxivRawImporter(EntityImporter):
             if v.ext_ids.doi:
                 try:
                     existing_doi = self.api.lookup_release(doi=v.ext_ids.doi)
-                except fatcat_client.rest.ApiException as err:
+                except fatcat_openapi_client.rest.ApiException as err:
                     if err.status != 404:
                         raise err
             if existing_doi:
@@ -325,8 +325,8 @@ class ArxivRawImporter(EntityImporter):
         # there is no batch/bezerk mode for arxiv importer, except for testing
         if self._test_override:
             for batch in batch_batch:
-                self.api.create_release_auto_batch(fatcat_client.ReleaseAutoBatch(
-                    editgroup=fatcat_client.Editgroup(
+                self.api.create_release_auto_batch(fatcat_openapi_client.ReleaseAutoBatch(
+                    editgroup=fatcat_openapi_client.Editgroup(
                         description=self.editgroup_description,
                         extra=self.editgroup_extra),
                     entity_list=batch))
