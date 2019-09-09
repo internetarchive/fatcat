@@ -114,7 +114,7 @@ Uploads should can be `--no-derive` to save cluster time.
 Metadata should be set as:
 
 - item name: `fatcat_bulk_exports_YYYY-MM-DD` or `fatcat_sqldump_public_YYYY-MM-DD` (or sometimes `fatcat_sqldump_full`)
-- collection: `ia_biblio_metadata`
+- collection: `fatcat_snapshots_and_exports`
 - creator: `Internet Archive Web Group`
 - date: that the dump started (UTC)
 - title: "Fatcat Bulk Metadata Exports (YYYY-MM-DD)" or "Fatcat Public Database Snapshot (YYYY-MM-DD)"

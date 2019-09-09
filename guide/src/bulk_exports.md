@@ -9,7 +9,7 @@ interested in:
 - entity exports
 
 All exports and dumps get uploaded to the Internet Archive under the
-[bibliographic metadata](https://archive.org/details/ia_biblio_metadata)
+["Fatcat Database Snapshots and Bulk Metadata Exports"](https://archive.org/details/fatcat_snapshots_and_exports?&sort=publicdate)
 collection.
 
 ## Complete Database Dumps
