@@ -255,52 +255,59 @@ x-tagGroups:
 # don't want these to be rust types (at least for now)
 x-fatcat-ident: &FATCATIDENT
   type: string
-  example: "q3nouwy3nnbsvo3h5klxsx4a7y"
   pattern: "[a-zA-Z2-7]{26}"
   minLength: 26
   maxLength: 26
   description: "base32-encoded unique identifier"
+x-fatcat-ident-example: &FATCATIDENTEXAMPLE
+  example: "q3nouwy3nnbsvo3h5klxsx4a7y"
 x-fatcat-uuid: &FATCATUUID
   type: string
-  example: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
   pattern: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
   minLength: 36
   maxLength: 36
   description: "UUID (lower-case, dash-separated, hex-encoded 128-bit)"
+x-fatcat-uuid-example: &FATCATUUIDEXAMPLE
+  example: "86daea5b-1b6b-432a-bb67-ea97795f80fe"
 x-issn: &FATCATISSN
   type: string
-  example: "1234-5678"
   pattern: "\\d{4}-\\d{3}[0-9X]"
   minLength: 9
   maxLength: 9
+x-issn-example: &FATCATISSNEXAMPLE
+  example: "1234-5678"
 x-orcid: &FATCATORCID
   type: string
-  example: "0000-0002-1825-0097"
   pattern: "\\d{4}-\\d{4}-\\d{4}-\\d{3}[\\dX]"
   minLength: 19
   maxLength: 19
   description: "ORCiD (https://orcid.org) identifier"
+x-orcid-example: &FATCATORCIDEXAMPLE
+  example: "0000-0002-1825-0097"
 x-md5: &FATCATMD5
   type: string
-  example: "1b39813549077b2347c0f370c3864b40"
   pattern: "[a-f0-9]{32}"
   minLength: 32
   maxLength: 32
   description: "MD5 hash of data, in hex encoding"
+x-md5-example: &FATCATMD5EXAMPLE
+  example: "1b39813549077b2347c0f370c3864b40"
 x-sha1: &FATCATSHA1
   type: string
-  example: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
   pattern: "[a-f0-9]{40}"
   minLength: 40
   maxLength: 40
   description: "SHA-1 hash of data, in hex encoding"
+x-sha1-example: &FATCATSHA1EXAMPLE
+  example: "e9dd75237c94b209dc3ccd52722de6931a310ba3"
 x-sha256: &FATCATSHA256
   type: string
-  example: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
   pattern: "[a-f0-9]{64}"
   minLength: 64
   maxLength: 64
   description: "SHA-256 hash of data, in hex encoding"
+x-sha256-example: &FATCATSHA256EXAMPLE
+  example: "cb1c378f464d5935ddaa8de28446d82638396c61f042295d7fb85e3cccc9e452"
 
 # Common properties across entities
 x-entity-props: &ENTITYPROPS
@@ -310,10 +317,13 @@ x-entity-props: &ENTITYPROPS
     example: "active"
   ident:
     <<: *FATCATIDENT
+    <<: *FATCATIDENTEXAMPLE
   revision:
     <<: *FATCATUUID
+    <<: *FATCATUUIDEXAMPLE
   redirect:
     <<: *FATCATIDENT
+    <<: *FATCATIDENTEXAMPLE
   extra:
     type: object
     description: |
@@ -378,6 +388,7 @@ definitions:
       issnl:
         description: "Linking ISSN number (ISSN-L). Should be valid and registered with issn.org"
         <<: *FATCATISSN
+        <<: *FATCATISSNEXAMPLE
       wikidata_qid:
         type: string
         example: "Q42812"
@@ -404,6 +415,7 @@ definitions:
           and culture specific.
       orcid:
         <<: *FATCATORCID
+        <<: *FATCATORCIDEXAMPLE
       wikidata_qid:
         type: string
         example: "Q42812"
@@ -419,10 +431,13 @@ definitions:
         description: "Size of file in bytes. Non-zero."
       md5:
         <<: *FATCATMD5
+        <<: *FATCATMD5EXAMPLE
       sha1:
         <<: *FATCATSHA1
+        <<: *FATCATSHA1EXAMPLE
       sha256:
         <<: *FATCATSHA256
+        <<: *FATCATSHA256EXAMPLE
       urls:
         type: array
         items:
@@ -434,6 +449,7 @@ definitions:
         type: array
         items:
           <<: *FATCATIDENT
+          <<: *FATCATIDENTEXAMPLE
         description: |
           Set of identifier of release entities this file represents a full
           manifestation of. Usually a single release, but some files contain
@@ -482,6 +498,7 @@ definitions:
         type: array
         items:
           <<: *FATCATIDENT
+          <<: *FATCATIDENTEXAMPLE
         description: |
           Set of identifier of release entities this fileset represents a full
           manifestation of. Usually a single release.
@@ -527,10 +544,13 @@ definitions:
         description: "File size in bytes"
       md5:
         <<: *FATCATMD5
+        <<: *FATCATMD5EXAMPLE
       sha1:
         <<: *FATCATSHA1
+        <<: *FATCATSHA1EXAMPLE
       sha256:
         <<: *FATCATSHA256
+        <<: *FATCATSHA256EXAMPLE
       extra:
         type: object
         additionalProperties: {}
@@ -567,6 +587,7 @@ definitions:
         type: array
         items:
           <<: *FATCATIDENT
+          <<: *FATCATIDENTEXAMPLE
         description: |
           Set of identifier of release entities this fileset represents a full
           manifestation of. Usually a single release.
@@ -625,8 +646,10 @@ definitions:
         description: "Resource (file) size in bytes"
       sha1:
         <<: *FATCATSHA1
+        <<: *FATCATSHA1EXAMPLE
       sha256:
         <<: *FATCATSHA256
+        <<: *FATCATSHA256EXAMPLE
   webcapture_url:
     type: object
     required:
@@ -878,6 +901,7 @@ definitions:
     properties:
       sha1:
         <<: *FATCATSHA1
+        <<: *FATCATSHA1EXAMPLE
       content:
         type: string
         example: "<jats:p>Some abstract thing goes here</jats:p>"
@@ -921,29 +945,35 @@ definitions:
     properties:
       edit_id:
           <<: *FATCATUUID
+          <<: *FATCATUUIDEXAMPLE
           description: |
             Unique UUID for this specific edit object.
       ident:
           <<: *FATCATIDENT
+          <<: *FATCATIDENTEXAMPLE
           description: |
             Fatcat identifier of the entity this edit is mutating.
       revision:
           <<: *FATCATUUID
+          <<: *FATCATUUIDEXAMPLE
           description: |
             Entity revision that this edit will set the entity to. May be
             `null` in the case of deletions.
       prev_revision:
           <<: *FATCATUUID
+          <<: *FATCATUUIDEXAMPLE
           description: |
             Revision of entity just before this edit. May be used in the future
             to prevent edit race conditions.
       redirect_ident:
           <<: *FATCATIDENT
+          <<: *FATCATIDENTEXAMPLE
           description: |
             When an edit is to merge entities (redirect one to another), this
             is the entity fatcat identifier for the target entity.
       editgroup_id:
           <<: *FATCATIDENT
+          <<: *FATCATIDENTEXAMPLE
           description: |
             Editgroup identifier that this edit is part of.
       extra:
@@ -956,6 +986,7 @@ definitions:
     properties:
       editor_id:
         <<: *FATCATIDENT
+        <<: *FATCATIDENTEXAMPLE
         description: |
           Fatcat identifier for the editor. Can not be changed.
       username:
@@ -987,10 +1018,12 @@ definitions:
     properties:
       editgroup_id:
         <<: *FATCATIDENT
+        <<: *FATCATIDENTEXAMPLE
         description: |
           Fatcat identifier for this editgroup. Assigned on creation.
       editor_id:
         <<: *FATCATIDENT
+        <<: *FATCATIDENTEXAMPLE
         description: |
           Fatcat identifer of editor that created this editgroup.
       editor:
@@ -1075,13 +1108,16 @@ definitions:
     properties:
       annotation_id:
         <<: *FATCATUUID
+        <<: *FATCATUUIDEXAMPLE
       editgroup_id:
         <<: *FATCATIDENT
+        <<: *FATCATIDENTEXAMPLE
         description: |
           Editgroup that this annotation applies to. Set automatically in
           creations based on URL parameter.
       editor_id:
         <<: *FATCATIDENT
+        <<: *FATCATIDENTEXAMPLE
         description: |
           Defaults to editor created the annotation via POST request.
       editor:
@@ -1138,6 +1174,7 @@ definitions:
           with `key`.
       target_release_id:
         <<: *FATCATIDENT
+        <<: *FATCATIDENTEXAMPLE
         description: |
           Optional, fatcat identifier of release entity that this reference is
           citing.
@@ -1189,6 +1226,7 @@ definitions:
           Authors should come first; this encodes the order of attriubtion.
       creator_id:
         <<: *FATCATIDENT
+        <<: *FATCATIDENTEXAMPLE
         description: |
           If known, indicates the creator entity this contribution was made by.
       creator:
@@ -1629,8 +1667,8 @@ paths:
           <<: *FATCATISSN
         - name: wikidata_qid
           in: query
+          type: string
           required: false
-          example: "Q42812"
         - name: expand
           in: query
           type: string
@@ -1921,8 +1959,8 @@ paths:
           <<: *FATCATORCID
         - name: wikidata_qid
           in: query
+          type: string
           required: false
-          example: "Q42812"
         - name: expand
           in: query
           type: string
