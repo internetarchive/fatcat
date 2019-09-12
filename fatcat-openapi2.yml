@@ -2,7 +2,8 @@
 swagger: "2.0"
 info:
   title: fatcat
-
+  version: 0.3.0
+  summary: "A scalable, versioned, API-oriented catalog of bibliographic entities and file metadata"
   description: |
 
     ## Introduction
@@ -71,7 +72,6 @@ info:
 
     <!-- ReDoc-Inject: <security-definitions> -->
 
-  version: 0.3.0
   termsOfService: "https://guide.fatcat.wiki/policies.html"
   contact:
     name: "Internet Archive Web Group"
@@ -127,111 +127,111 @@ securityDefinitions:
 tags: # TAGLINE
  - name: containers # TAGLINE
    x-displayName: "Containers" # TAGLINE
-   description: |
-     **Container** entities represent publication venues like journals,
-     conference proceedings, book series, or blogs. They group publications
-     ("releases").
+   description: |  # TAGLINE
+     **Container** entities represent publication venues like journals,  # TAGLINE
+     conference proceedings, book series, or blogs. They group publications  # TAGLINE
+     ("releases").  # TAGLINE
 
-     See the "Catalog Style Guide" section of the guide for details and
-     semantics of what should be included in specific entity fields.
-     Specifically, the
-     [Container Entity Reference](https://guide.fatcat.wiki/entity_container.html).
+     See the "Catalog Style Guide" section of the guide for details and  # TAGLINE
+     semantics of what should be included in specific entity fields.  # TAGLINE
+     Specifically, the  # TAGLINE
+     [Container Entity Reference](https://guide.fatcat.wiki/entity_container.html).  # TAGLINE
  - name: creators # TAGLINE
    x-displayName: "Creators" # TAGLINE
-   description: |
-     **Creator** entities represent individuals (or organizations, or other
-     agents) who contribute to the creation of specific releases
-     (publications).
+   description: |  # TAGLINE
+     **Creator** entities represent individuals (or organizations, or other  # TAGLINE
+     agents) who contribute to the creation of specific releases  # TAGLINE
+     (publications).  # TAGLINE
 
-     See the "Catalog Style Guide" section of the guide for details and
-     semantics of what should be included in specific entity fields.
-     Specifically, the
-     [Creator Entity Reference](https://guide.fatcat.wiki/entity_creator.html).
+     See the "Catalog Style Guide" section of the guide for details and  # TAGLINE
+     semantics of what should be included in specific entity fields.  # TAGLINE
+     Specifically, the  # TAGLINE
+     [Creator Entity Reference](https://guide.fatcat.wiki/entity_creator.html).  # TAGLINE
  - name: files # TAGLINE
    x-displayName: "Files" # TAGLINE
-   description: |
-     **File** entities represent unique digital files which are full
-     manifestations of specific releases (publications), such as fulltext PDF
-     files, JATS XML documents, or video files. File entities also include a
-     set of locations where they can be found on the public web.
+   description: |  # TAGLINE
+     **File** entities represent unique digital files which are full  # TAGLINE
+     manifestations of specific releases (publications), such as fulltext PDF  # TAGLINE
+     files, JATS XML documents, or video files. File entities also include a  # TAGLINE
+     set of locations where they can be found on the public web.  # TAGLINE
 
-     See the "Catalog Style Guide" section of the guide for details and
-     semantics of what should be included in specific entity fields.
-     Specifically, the
-     [File Entity Reference](https://guide.fatcat.wiki/entity_file.html).
+     See the "Catalog Style Guide" section of the guide for details and  # TAGLINE
+     semantics of what should be included in specific entity fields.  # TAGLINE
+     Specifically, the  # TAGLINE
+     [File Entity Reference](https://guide.fatcat.wiki/entity_file.html).  # TAGLINE
  - name: filesets # TAGLINE
    x-displayName: "Filesets" # TAGLINE
-   description: |
-     **Fileset** entities represent sets of digital files, as well as locations
-     where they can be found on the public web. Filesets most commonly
-     represent datasets consisting of serveral data and metadata files.
+   description: |  # TAGLINE
+     **Fileset** entities represent sets of digital files, as well as locations  # TAGLINE
+     where they can be found on the public web. Filesets most commonly  # TAGLINE
+     represent datasets consisting of serveral data and metadata files.  # TAGLINE
 
-     See the "Catalog Style Guide" section of the guide for details and
-     semantics of what should be included in specific entity fields.
-     Specifically, the
-     [Fileset Entity Reference](https://guide.fatcat.wiki/entity_fileset.html).
+     See the "Catalog Style Guide" section of the guide for details and  # TAGLINE
+     semantics of what should be included in specific entity fields.  # TAGLINE
+     Specifically, the  # TAGLINE
+     [Fileset Entity Reference](https://guide.fatcat.wiki/entity_fileset.html).  # TAGLINE
  - name: webcaptures # TAGLINE
    x-displayName: "Webcaptures" # TAGLINE
-   description: |
-     **Web Capture** entities represent archival snapshots of web pages (or
-     other web resources), which are usually complete manifestations of a
-     specific release entity. Web Captures also include a set of locations
-     (wayback replay instances or WARC files) where the capture can be found.
+   description: |  # TAGLINE
+     **Web Capture** entities represent archival snapshots of web pages (or  # TAGLINE
+     other web resources), which are usually complete manifestations of a  # TAGLINE
+     specific release entity. Web Captures also include a set of locations  # TAGLINE
+     (wayback replay instances or WARC files) where the capture can be found.  # TAGLINE
 
-     See the "Catalog Style Guide" section of the guide for details and
-     semantics of what should be included in specific entity fields.
-     Specifically, the
-     [Web Capture Entity Reference](https://guide.fatcat.wiki/entity_webcapture.html).
+     See the "Catalog Style Guide" section of the guide for details and  # TAGLINE
+     semantics of what should be included in specific entity fields.  # TAGLINE
+     Specifically, the  # TAGLINE
+     [Web Capture Entity Reference](https://guide.fatcat.wiki/entity_webcapture.html).  # TAGLINE
  - name: releases # TAGLINE
    x-displayName: "Releases" # TAGLINE
-   description: |
-     **Release** entities represent specific published versions of a research
-     work, such as a pre-print, a journal article, a book (or chapter), or a
-     scholarly blog post. Releases are always grouped together under Works;
-     they may be published in a specific Container; they may have known
-     Creators; and there may exist known File/Fileset/WebCapture digital copies
-     of the release.
+   description: |  # TAGLINE
+     **Release** entities represent specific published versions of a research  # TAGLINE
+     work, such as a pre-print, a journal article, a book (or chapter), or a  # TAGLINE
+     scholarly blog post. Releases are always grouped together under Works;  # TAGLINE
+     they may be published in a specific Container; they may have known  # TAGLINE
+     Creators; and there may exist known File/Fileset/WebCapture digital copies  # TAGLINE
+     of the release.  # TAGLINE
 
-     See the "Catalog Style Guide" section of the guide for details and
-     semantics of what should be included in specific entity fields.
-     Specifically, the
-     [Release Entity Reference](https://guide.fatcat.wiki/entity_release.html).
+     See the "Catalog Style Guide" section of the guide for details and  # TAGLINE
+     semantics of what should be included in specific entity fields.  # TAGLINE
+     Specifically, the  # TAGLINE
+     [Release Entity Reference](https://guide.fatcat.wiki/entity_release.html).  # TAGLINE
  - name: works # TAGLINE
    x-displayName: "Works" # TAGLINE
-   description: |
-     **Work** entities group several Release entities which are different
-     versions of the same abstract piece of research. For example, three
-     release entities representing the pre-print, published article, and
-     retraction stages of the same journal paper would be grouped under a
-     single work.
+   description: |  # TAGLINE
+     **Work** entities group several Release entities which are different  # TAGLINE
+     versions of the same abstract piece of research. For example, three  # TAGLINE
+     release entities representing the pre-print, published article, and  # TAGLINE
+     retraction stages of the same journal paper would be grouped under a  # TAGLINE
+     single work.  # TAGLINE
 
-     See the "Catalog Style Guide" section of the guide for details and
-     semantics of what should be included in specific entity fields.
-     Specifically, the
-     [Work Entity Reference](https://guide.fatcat.wiki/entity_work.html).
+     See the "Catalog Style Guide" section of the guide for details and  # TAGLINE
+     semantics of what should be included in specific entity fields.  # TAGLINE
+     Specifically, the  # TAGLINE
+     [Work Entity Reference](https://guide.fatcat.wiki/entity_work.html).  # TAGLINE
  - name: editgroups # TAGLINE
    x-displayName: "Editgroups" # TAGLINE
-   description: |
-     **Editgroups** are sets of changes, each to individual entities in the
-     catalog. Every edit must be part of an editgroup which is reviewed and
-     accepted (merged) as a whole.
+   description: |  # TAGLINE
+     **Editgroups** are sets of changes, each to individual entities in the  # TAGLINE
+     catalog. Every edit must be part of an editgroup which is reviewed and  # TAGLINE
+     accepted (merged) as a whole.  # TAGLINE
  - name: editors # TAGLINE
    x-displayName: "Editors" # TAGLINE
-   description: |
-     **Editors** are human user accounts and bots that make changes to the
-     Fatcat catalog.
+   description: |  # TAGLINE
+     **Editors** are human user accounts and bots that make changes to the  # TAGLINE
+     Fatcat catalog.  # TAGLINE
 
-     The API allows fetching (and updating) metadata about individual editors,
-     as well as fetching editor's annotation and edit history.
+     The API allows fetching (and updating) metadata about individual editors,  # TAGLINE
+     as well as fetching editor's annotation and edit history.  # TAGLINE
  - name: changelog # TAGLINE
    x-displayName: "Changelog" # TAGLINE
-   description: |
-     The **Changelog** is the ordered feed of editgroups which have been
-     accepted into the catalog.
+   description: |  # TAGLINE
+     The **Changelog** is the ordered feed of editgroups which have been  # TAGLINE
+     accepted into the catalog.  # TAGLINE
  - name: auth # TAGLINE
    x-displayName: "Auth Methods" # TAGLINE
-   description: |
-     Helper methods and internal APIs for editor authentication.
+   description: |  # TAGLINE
+     Helper methods and internal APIs for editor authentication.  # TAGLINE
 
 x-tagGroups:
  - name: Entities
