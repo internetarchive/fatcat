@@ -53,7 +53,7 @@ records from their history.
 
 ## Documentation Licensing
 
-This guide ("Fatcat: The Guide") is licensed under the Creative Commons
+This guide ("The Fatcat Guide") is licensed under the Creative Commons
 Attribution license.
 
 ## Software Licensing
