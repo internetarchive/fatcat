@@ -36,6 +36,8 @@ unified_test:
     - cp example.env .env
     - diesel database reset && diesel migration run
     - cargo build
+    - df -h
+    - df -i
     - cargo test -- --test-threads 1
     - cargo run --bin fatcatd &
     - cd ../python_openapi_client
@@ -43,6 +45,8 @@ unified_test:
     - cd ../python
     - cp example.env .env
     - pipenv install --dev --deploy
+    - df -h
+    - df -i
     - pipenv run pytest --cov
     - pipenv run ./tests/cli.sh
     # Just errors
