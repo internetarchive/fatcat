@@ -15,6 +15,7 @@ def crossref_importer_existing(api):
     with open('tests/files/ISSN-to-ISSN-L.snip.txt', 'r') as issn_file:
         yield CrossrefImporter(api, issn_file, extid_map_file='tests/files/example_map.sqlite3', bezerk_mode=False)
 
+@pytest.mark.skip(reason="slow/huge crossref import is a corner-case and slows tests significantly")
 def test_crossref_importer_huge(crossref_importer):
     last_index = crossref_importer.api.get_changelog(limit=1)[0].index
     with gzip.open('tests/files/huge_crossref_doi.json.gz', 'rt') as f:
