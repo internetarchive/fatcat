@@ -107,13 +107,22 @@ fn main() -> Result<()> {
     let mut router = fatcat_openapi::router(server);
 
     router.get("/", root_handler, "root-redirect");
+    router.get("/redoc", redoc_handler, "redoc-html");
     router.get("/swagger-ui", swaggerui_handler, "swagger-ui-html");
     router.get("/v0/openapi2.yml", yaml_handler, "openapi2-spec-yaml");
 
     fn root_handler(_: &mut Request) -> IronResult<Response> {
         Ok(Response::with((
             status::Found,
-            RedirectRaw("/swagger-ui".to_string()),
+            RedirectRaw("/redoc".to_string()),
+        )))
+    }
+    fn redoc_handler(_: &mut Request) -> IronResult<Response> {
+        let html_type = "text/html".parse::<iron::mime::Mime>().unwrap();
+        Ok(Response::with((
+            html_type,
+            status::Ok,
+            include_str!("../../redoc/index.html"),
         )))
     }
     fn swaggerui_handler(_: &mut Request) -> IronResult<Response> {
