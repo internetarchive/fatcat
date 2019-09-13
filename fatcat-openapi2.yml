@@ -3,16 +3,16 @@ swagger: "2.0"
 info:
   title: fatcat
   version: 0.3.0
-  summary: "A scalable, versioned, API-oriented catalog of bibliographic entities and file metadata"
   description: |
-
-    ## Introduction
-
     Fatcat is a scalable, versioned, API-oriented catalog of bibliographic
     entities and file metadata.
 
+    <!-- STARTLONGDESCRIPTION -->
     These API reference documents, along with client software libraries, are
     generated automatically from an OpenAPI 2.0 ("Swagger") definition file.
+
+    ## Introduction
+
 
     A higher-level introduction to the API, as well as a description of the
     fatcat data model, are available in ["The Fatcat Guide"](https://guide.fatcat.wiki/).
@@ -71,11 +71,12 @@ info:
     passes them through to the API to authenticate editor actions.
 
     <!-- ReDoc-Inject: <security-definitions> -->
+    <!-- ENDLONGDESCRIPTION -->
 
   termsOfService: "https://guide.fatcat.wiki/policies.html"
   contact:
     name: "Internet Archive Web Group"
-    email: "webgroup@archive.org"
+    email: "webservices@archive.org"
     url: "https://fatcat.wiki"
   x-logo:
     url: "https://fatcat.wiki/static/paper_man_confused.gif"
