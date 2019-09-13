@@ -30,6 +30,30 @@ use fatcat::{
 pub struct Server;
 
 impl Api for Server {
+    fn auth_check(&self, role: Option<String>, context: &Context) -> Box<Future<Item = AuthCheckResponse, Error = ApiError> + Send> {
+        let context = context.clone();
+        println!("auth_check({:?}) - X-Span-ID: {:?}", role, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        Box::new(futures::failed("Generic failure".into()))
+    }
+
+    fn auth_oidc(&self, oidc_params: models::AuthOidc, context: &Context) -> Box<Future<Item = AuthOidcResponse, Error = ApiError> + Send> {
+        let context = context.clone();
+        println!("auth_oidc({:?}) - X-Span-ID: {:?}", oidc_params, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        Box::new(futures::failed("Generic failure".into()))
+    }
+
+    fn get_changelog(&self, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetChangelogResponse, Error = ApiError> + Send> {
+        let context = context.clone();
+        println!("get_changelog({:?}) - X-Span-ID: {:?}", limit, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        Box::new(futures::failed("Generic failure".into()))
+    }
+
+    fn get_changelog_entry(&self, index: i64, context: &Context) -> Box<Future<Item = GetChangelogEntryResponse, Error = ApiError> + Send> {
+        let context = context.clone();
+        println!("get_changelog_entry({}) - X-Span-ID: {:?}", index, context.x_span_id.unwrap_or(String::from("<none>")).clone());
+        Box::new(futures::failed("Generic failure".into()))
+    }
+
     fn create_container(&self, editgroup_id: String, entity: models::ContainerEntity, context: &Context) -> Box<Future<Item = CreateContainerResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
@@ -285,87 +309,6 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn auth_check(&self, role: Option<String>, context: &Context) -> Box<Future<Item = AuthCheckResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!("auth_check({:?}) - X-Span-ID: {:?}", role, context.x_span_id.unwrap_or(String::from("<none>")).clone());
-        Box::new(futures::failed("Generic failure".into()))
-    }
-
-    fn auth_oidc(&self, oidc_params: models::AuthOidc, context: &Context) -> Box<Future<Item = AuthOidcResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!("auth_oidc({:?}) - X-Span-ID: {:?}", oidc_params, context.x_span_id.unwrap_or(String::from("<none>")).clone());
-        Box::new(futures::failed("Generic failure".into()))
-    }
-
-    fn get_editgroups_reviewable(
-        &self,
-        expand: Option<String>,
-        limit: Option<i64>,
-        before: Option<chrono::DateTime<chrono::Utc>>,
-        since: Option<chrono::DateTime<chrono::Utc>>,
-        context: &Context,
-    ) -> Box<Future<Item = GetEditgroupsReviewableResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!(
-            "get_editgroups_reviewable({:?}, {:?}, {:?}, {:?}) - X-Span-ID: {:?}",
-            expand,
-            limit,
-            before,
-            since,
-            context.x_span_id.unwrap_or(String::from("<none>")).clone()
-        );
-        Box::new(futures::failed("Generic failure".into()))
-    }
-
-    fn get_editor(&self, editor_id: String, context: &Context) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!("get_editor(\"{}\") - X-Span-ID: {:?}", editor_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
-        Box::new(futures::failed("Generic failure".into()))
-    }
-
-    fn get_editor_editgroups(
-        &self,
-        editor_id: String,
-        limit: Option<i64>,
-        before: Option<chrono::DateTime<chrono::Utc>>,
-        since: Option<chrono::DateTime<chrono::Utc>>,
-        context: &Context,
-    ) -> Box<Future<Item = GetEditorEditgroupsResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!(
-            "get_editor_editgroups(\"{}\", {:?}, {:?}, {:?}) - X-Span-ID: {:?}",
-            editor_id,
-            limit,
-            before,
-            since,
-            context.x_span_id.unwrap_or(String::from("<none>")).clone()
-        );
-        Box::new(futures::failed("Generic failure".into()))
-    }
-
-    fn update_editgroup(&self, editgroup_id: String, editgroup: models::Editgroup, submit: Option<bool>, context: &Context) -> Box<Future<Item = UpdateEditgroupResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!(
-            "update_editgroup(\"{}\", {:?}, {:?}) - X-Span-ID: {:?}",
-            editgroup_id,
-            editgroup,
-            submit,
-            context.x_span_id.unwrap_or(String::from("<none>")).clone()
-        );
-        Box::new(futures::failed("Generic failure".into()))
-    }
-
-    fn update_editor(&self, editor_id: String, editor: models::Editor, context: &Context) -> Box<Future<Item = UpdateEditorResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!(
-            "update_editor(\"{}\", {:?}) - X-Span-ID: {:?}",
-            editor_id,
-            editor,
-            context.x_span_id.unwrap_or(String::from("<none>")).clone()
-        );
-        Box::new(futures::failed("Generic failure".into()))
-    }
-
     fn accept_editgroup(&self, editgroup_id: String, context: &Context) -> Box<Future<Item = AcceptEditgroupResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!("accept_editgroup(\"{}\") - X-Span-ID: {:?}", editgroup_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
@@ -394,18 +337,6 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn get_changelog(&self, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetChangelogResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!("get_changelog({:?}) - X-Span-ID: {:?}", limit, context.x_span_id.unwrap_or(String::from("<none>")).clone());
-        Box::new(futures::failed("Generic failure".into()))
-    }
-
-    fn get_changelog_entry(&self, index: i64, context: &Context) -> Box<Future<Item = GetChangelogEntryResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!("get_changelog_entry({}) - X-Span-ID: {:?}", index, context.x_span_id.unwrap_or(String::from("<none>")).clone());
-        Box::new(futures::failed("Generic failure".into()))
-    }
-
     fn get_editgroup(&self, editgroup_id: String, context: &Context) -> Box<Future<Item = GetEditgroupResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!("get_editgroup(\"{}\") - X-Span-ID: {:?}", editgroup_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
@@ -420,6 +351,44 @@ impl Api for Server {
             expand,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
         );
+        Box::new(futures::failed("Generic failure".into()))
+    }
+
+    fn get_editgroups_reviewable(
+        &self,
+        expand: Option<String>,
+        limit: Option<i64>,
+        before: Option<chrono::DateTime<chrono::Utc>>,
+        since: Option<chrono::DateTime<chrono::Utc>>,
+        context: &Context,
+    ) -> Box<Future<Item = GetEditgroupsReviewableResponse, Error = ApiError> + Send> {
+        let context = context.clone();
+        println!(
+            "get_editgroups_reviewable({:?}, {:?}, {:?}, {:?}) - X-Span-ID: {:?}",
+            expand,
+            limit,
+            before,
+            since,
+            context.x_span_id.unwrap_or(String::from("<none>")).clone()
+        );
+        Box::new(futures::failed("Generic failure".into()))
+    }
+
+    fn update_editgroup(&self, editgroup_id: String, editgroup: models::Editgroup, submit: Option<bool>, context: &Context) -> Box<Future<Item = UpdateEditgroupResponse, Error = ApiError> + Send> {
+        let context = context.clone();
+        println!(
+            "update_editgroup(\"{}\", {:?}, {:?}) - X-Span-ID: {:?}",
+            editgroup_id,
+            editgroup,
+            submit,
+            context.x_span_id.unwrap_or(String::from("<none>")).clone()
+        );
+        Box::new(futures::failed("Generic failure".into()))
+    }
+
+    fn get_editor(&self, editor_id: String, context: &Context) -> Box<Future<Item = GetEditorResponse, Error = ApiError> + Send> {
+        let context = context.clone();
+        println!("get_editor(\"{}\") - X-Span-ID: {:?}", editor_id, context.x_span_id.unwrap_or(String::from("<none>")).clone());
         Box::new(futures::failed("Generic failure".into()))
     }
 
@@ -438,6 +407,37 @@ impl Api for Server {
             limit,
             before,
             since,
+            context.x_span_id.unwrap_or(String::from("<none>")).clone()
+        );
+        Box::new(futures::failed("Generic failure".into()))
+    }
+
+    fn get_editor_editgroups(
+        &self,
+        editor_id: String,
+        limit: Option<i64>,
+        before: Option<chrono::DateTime<chrono::Utc>>,
+        since: Option<chrono::DateTime<chrono::Utc>>,
+        context: &Context,
+    ) -> Box<Future<Item = GetEditorEditgroupsResponse, Error = ApiError> + Send> {
+        let context = context.clone();
+        println!(
+            "get_editor_editgroups(\"{}\", {:?}, {:?}, {:?}) - X-Span-ID: {:?}",
+            editor_id,
+            limit,
+            before,
+            since,
+            context.x_span_id.unwrap_or(String::from("<none>")).clone()
+        );
+        Box::new(futures::failed("Generic failure".into()))
+    }
+
+    fn update_editor(&self, editor_id: String, editor: models::Editor, context: &Context) -> Box<Future<Item = UpdateEditorResponse, Error = ApiError> + Send> {
+        let context = context.clone();
+        println!(
+            "update_editor(\"{}\", {:?}) - X-Span-ID: {:?}",
+            editor_id,
+            editor,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
         );
         Box::new(futures::failed("Generic failure".into()))
@@ -690,17 +690,6 @@ impl Api for Server {
         Box::new(futures::failed("Generic failure".into()))
     }
 
-    fn create_work(&self, editgroup_id: String, entity: models::WorkEntity, context: &Context) -> Box<Future<Item = CreateWorkResponse, Error = ApiError> + Send> {
-        let context = context.clone();
-        println!(
-            "create_work(\"{}\", {:?}) - X-Span-ID: {:?}",
-            editgroup_id,
-            entity,
-            context.x_span_id.unwrap_or(String::from("<none>")).clone()
-        );
-        Box::new(futures::failed("Generic failure".into()))
-    }
-
     fn delete_release(&self, editgroup_id: String, ident: String, context: &Context) -> Box<Future<Item = DeleteReleaseResponse, Error = ApiError> + Send> {
         let context = context.clone();
         println!(
@@ -947,6 +936,17 @@ impl Api for Server {
             "update_webcapture(\"{}\", \"{}\", {:?}) - X-Span-ID: {:?}",
             editgroup_id,
             ident,
+            entity,
+            context.x_span_id.unwrap_or(String::from("<none>")).clone()
+        );
+        Box::new(futures::failed("Generic failure".into()))
+    }
+
+    fn create_work(&self, editgroup_id: String, entity: models::WorkEntity, context: &Context) -> Box<Future<Item = CreateWorkResponse, Error = ApiError> + Send> {
+        let context = context.clone();
+        println!(
+            "create_work(\"{}\", {:?}) - X-Span-ID: {:?}",
+            editgroup_id,
             entity,
             context.x_span_id.unwrap_or(String::from("<none>")).clone()
         );

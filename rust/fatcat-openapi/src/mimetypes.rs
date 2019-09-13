@@ -4,6 +4,82 @@ pub mod responses {
     use hyper::mime::*;
 
     // The macro is called per-operation to beat the recursion limit
+    /// Create Mime objects for the response content types for AuthCheck
+    lazy_static! {
+        pub static ref AUTH_CHECK_SUCCESS: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthCheck
+    lazy_static! {
+        pub static ref AUTH_CHECK_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthCheck
+    lazy_static! {
+        pub static ref AUTH_CHECK_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthCheck
+    lazy_static! {
+        pub static ref AUTH_CHECK_FORBIDDEN: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthCheck
+    lazy_static! {
+        pub static ref AUTH_CHECK_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthOidc
+    lazy_static! {
+        pub static ref AUTH_OIDC_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthOidc
+    lazy_static! {
+        pub static ref AUTH_OIDC_CREATED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthOidc
+    lazy_static! {
+        pub static ref AUTH_OIDC_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthOidc
+    lazy_static! {
+        pub static ref AUTH_OIDC_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthOidc
+    lazy_static! {
+        pub static ref AUTH_OIDC_FORBIDDEN: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthOidc
+    lazy_static! {
+        pub static ref AUTH_OIDC_CONFLICT: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for AuthOidc
+    lazy_static! {
+        pub static ref AUTH_OIDC_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetChangelog
+    lazy_static! {
+        pub static ref GET_CHANGELOG_SUCCESS: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetChangelog
+    lazy_static! {
+        pub static ref GET_CHANGELOG_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetChangelog
+    lazy_static! {
+        pub static ref GET_CHANGELOG_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetChangelogEntry
+    lazy_static! {
+        pub static ref GET_CHANGELOG_ENTRY_FOUND_CHANGELOG_ENTRY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetChangelogEntry
+    lazy_static! {
+        pub static ref GET_CHANGELOG_ENTRY_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetChangelogEntry
+    lazy_static! {
+        pub static ref GET_CHANGELOG_ENTRY_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetChangelogEntry
+    lazy_static! {
+        pub static ref GET_CHANGELOG_ENTRY_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
     /// Create Mime objects for the response content types for CreateContainer
     lazy_static! {
         pub static ref CREATE_CONTAINER_CREATED_ENTITY: Mime = mime!(Application / Json);
@@ -452,150 +528,6 @@ pub mod responses {
     lazy_static! {
         pub static ref UPDATE_CREATOR_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for AuthCheck
-    lazy_static! {
-        pub static ref AUTH_CHECK_SUCCESS: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for AuthCheck
-    lazy_static! {
-        pub static ref AUTH_CHECK_BAD_REQUEST: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for AuthCheck
-    lazy_static! {
-        pub static ref AUTH_CHECK_NOT_AUTHORIZED: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for AuthCheck
-    lazy_static! {
-        pub static ref AUTH_CHECK_FORBIDDEN: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for AuthCheck
-    lazy_static! {
-        pub static ref AUTH_CHECK_GENERIC_ERROR: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for AuthOidc
-    lazy_static! {
-        pub static ref AUTH_OIDC_FOUND: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for AuthOidc
-    lazy_static! {
-        pub static ref AUTH_OIDC_CREATED: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for AuthOidc
-    lazy_static! {
-        pub static ref AUTH_OIDC_BAD_REQUEST: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for AuthOidc
-    lazy_static! {
-        pub static ref AUTH_OIDC_NOT_AUTHORIZED: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for AuthOidc
-    lazy_static! {
-        pub static ref AUTH_OIDC_FORBIDDEN: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for AuthOidc
-    lazy_static! {
-        pub static ref AUTH_OIDC_CONFLICT: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for AuthOidc
-    lazy_static! {
-        pub static ref AUTH_OIDC_GENERIC_ERROR: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for GetEditgroupsReviewable
-    lazy_static! {
-        pub static ref GET_EDITGROUPS_REVIEWABLE_FOUND: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for GetEditgroupsReviewable
-    lazy_static! {
-        pub static ref GET_EDITGROUPS_REVIEWABLE_BAD_REQUEST: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for GetEditgroupsReviewable
-    lazy_static! {
-        pub static ref GET_EDITGROUPS_REVIEWABLE_NOT_FOUND: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for GetEditgroupsReviewable
-    lazy_static! {
-        pub static ref GET_EDITGROUPS_REVIEWABLE_GENERIC_ERROR: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for GetEditor
-    lazy_static! {
-        pub static ref GET_EDITOR_FOUND: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for GetEditor
-    lazy_static! {
-        pub static ref GET_EDITOR_BAD_REQUEST: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for GetEditor
-    lazy_static! {
-        pub static ref GET_EDITOR_NOT_FOUND: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for GetEditor
-    lazy_static! {
-        pub static ref GET_EDITOR_GENERIC_ERROR: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for GetEditorEditgroups
-    lazy_static! {
-        pub static ref GET_EDITOR_EDITGROUPS_FOUND: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for GetEditorEditgroups
-    lazy_static! {
-        pub static ref GET_EDITOR_EDITGROUPS_BAD_REQUEST: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for GetEditorEditgroups
-    lazy_static! {
-        pub static ref GET_EDITOR_EDITGROUPS_NOT_FOUND: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for GetEditorEditgroups
-    lazy_static! {
-        pub static ref GET_EDITOR_EDITGROUPS_GENERIC_ERROR: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for UpdateEditgroup
-    lazy_static! {
-        pub static ref UPDATE_EDITGROUP_UPDATED_EDITGROUP: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for UpdateEditgroup
-    lazy_static! {
-        pub static ref UPDATE_EDITGROUP_BAD_REQUEST: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for UpdateEditgroup
-    lazy_static! {
-        pub static ref UPDATE_EDITGROUP_NOT_AUTHORIZED: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for UpdateEditgroup
-    lazy_static! {
-        pub static ref UPDATE_EDITGROUP_FORBIDDEN: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for UpdateEditgroup
-    lazy_static! {
-        pub static ref UPDATE_EDITGROUP_NOT_FOUND: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for UpdateEditgroup
-    lazy_static! {
-        pub static ref UPDATE_EDITGROUP_GENERIC_ERROR: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for UpdateEditor
-    lazy_static! {
-        pub static ref UPDATE_EDITOR_UPDATED_EDITOR: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for UpdateEditor
-    lazy_static! {
-        pub static ref UPDATE_EDITOR_BAD_REQUEST: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for UpdateEditor
-    lazy_static! {
-        pub static ref UPDATE_EDITOR_NOT_AUTHORIZED: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for UpdateEditor
-    lazy_static! {
-        pub static ref UPDATE_EDITOR_FORBIDDEN: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for UpdateEditor
-    lazy_static! {
-        pub static ref UPDATE_EDITOR_NOT_FOUND: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for UpdateEditor
-    lazy_static! {
-        pub static ref UPDATE_EDITOR_GENERIC_ERROR: Mime = mime!(Application / Json);
-    }
     /// Create Mime objects for the response content types for AcceptEditgroup
     lazy_static! {
         pub static ref ACCEPT_EDITGROUP_MERGED_SUCCESSFULLY: Mime = mime!(Application / Json);
@@ -672,34 +604,6 @@ pub mod responses {
     lazy_static! {
         pub static ref CREATE_EDITGROUP_ANNOTATION_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for GetChangelog
-    lazy_static! {
-        pub static ref GET_CHANGELOG_SUCCESS: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for GetChangelog
-    lazy_static! {
-        pub static ref GET_CHANGELOG_BAD_REQUEST: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for GetChangelog
-    lazy_static! {
-        pub static ref GET_CHANGELOG_GENERIC_ERROR: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for GetChangelogEntry
-    lazy_static! {
-        pub static ref GET_CHANGELOG_ENTRY_FOUND_CHANGELOG_ENTRY: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for GetChangelogEntry
-    lazy_static! {
-        pub static ref GET_CHANGELOG_ENTRY_BAD_REQUEST: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for GetChangelogEntry
-    lazy_static! {
-        pub static ref GET_CHANGELOG_ENTRY_NOT_FOUND: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for GetChangelogEntry
-    lazy_static! {
-        pub static ref GET_CHANGELOG_ENTRY_GENERIC_ERROR: Mime = mime!(Application / Json);
-    }
     /// Create Mime objects for the response content types for GetEditgroup
     lazy_static! {
         pub static ref GET_EDITGROUP_FOUND: Mime = mime!(Application / Json);
@@ -740,6 +644,62 @@ pub mod responses {
     lazy_static! {
         pub static ref GET_EDITGROUP_ANNOTATIONS_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
+    /// Create Mime objects for the response content types for GetEditgroupsReviewable
+    lazy_static! {
+        pub static ref GET_EDITGROUPS_REVIEWABLE_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetEditgroupsReviewable
+    lazy_static! {
+        pub static ref GET_EDITGROUPS_REVIEWABLE_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetEditgroupsReviewable
+    lazy_static! {
+        pub static ref GET_EDITGROUPS_REVIEWABLE_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetEditgroupsReviewable
+    lazy_static! {
+        pub static ref GET_EDITGROUPS_REVIEWABLE_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateEditgroup
+    lazy_static! {
+        pub static ref UPDATE_EDITGROUP_UPDATED_EDITGROUP: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateEditgroup
+    lazy_static! {
+        pub static ref UPDATE_EDITGROUP_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateEditgroup
+    lazy_static! {
+        pub static ref UPDATE_EDITGROUP_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateEditgroup
+    lazy_static! {
+        pub static ref UPDATE_EDITGROUP_FORBIDDEN: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateEditgroup
+    lazy_static! {
+        pub static ref UPDATE_EDITGROUP_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateEditgroup
+    lazy_static! {
+        pub static ref UPDATE_EDITGROUP_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetEditor
+    lazy_static! {
+        pub static ref GET_EDITOR_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetEditor
+    lazy_static! {
+        pub static ref GET_EDITOR_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetEditor
+    lazy_static! {
+        pub static ref GET_EDITOR_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetEditor
+    lazy_static! {
+        pub static ref GET_EDITOR_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
     /// Create Mime objects for the response content types for GetEditorAnnotations
     lazy_static! {
         pub static ref GET_EDITOR_ANNOTATIONS_SUCCESS: Mime = mime!(Application / Json);
@@ -763,6 +723,46 @@ pub mod responses {
     /// Create Mime objects for the response content types for GetEditorAnnotations
     lazy_static! {
         pub static ref GET_EDITOR_ANNOTATIONS_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetEditorEditgroups
+    lazy_static! {
+        pub static ref GET_EDITOR_EDITGROUPS_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetEditorEditgroups
+    lazy_static! {
+        pub static ref GET_EDITOR_EDITGROUPS_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetEditorEditgroups
+    lazy_static! {
+        pub static ref GET_EDITOR_EDITGROUPS_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for GetEditorEditgroups
+    lazy_static! {
+        pub static ref GET_EDITOR_EDITGROUPS_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateEditor
+    lazy_static! {
+        pub static ref UPDATE_EDITOR_UPDATED_EDITOR: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateEditor
+    lazy_static! {
+        pub static ref UPDATE_EDITOR_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateEditor
+    lazy_static! {
+        pub static ref UPDATE_EDITOR_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateEditor
+    lazy_static! {
+        pub static ref UPDATE_EDITOR_FORBIDDEN: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateEditor
+    lazy_static! {
+        pub static ref UPDATE_EDITOR_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for UpdateEditor
+    lazy_static! {
+        pub static ref UPDATE_EDITOR_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the response content types for CreateFile
     lazy_static! {
@@ -1228,30 +1228,6 @@ pub mod responses {
     lazy_static! {
         pub static ref CREATE_RELEASE_AUTO_BATCH_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the response content types for CreateWork
-    lazy_static! {
-        pub static ref CREATE_WORK_CREATED_ENTITY: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for CreateWork
-    lazy_static! {
-        pub static ref CREATE_WORK_BAD_REQUEST: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for CreateWork
-    lazy_static! {
-        pub static ref CREATE_WORK_NOT_AUTHORIZED: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for CreateWork
-    lazy_static! {
-        pub static ref CREATE_WORK_FORBIDDEN: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for CreateWork
-    lazy_static! {
-        pub static ref CREATE_WORK_NOT_FOUND: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the response content types for CreateWork
-    lazy_static! {
-        pub static ref CREATE_WORK_GENERIC_ERROR: Mime = mime!(Application / Json);
-    }
     /// Create Mime objects for the response content types for DeleteRelease
     lazy_static! {
         pub static ref DELETE_RELEASE_DELETED_ENTITY: Mime = mime!(Application / Json);
@@ -1668,6 +1644,30 @@ pub mod responses {
     lazy_static! {
         pub static ref UPDATE_WEBCAPTURE_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
+    /// Create Mime objects for the response content types for CreateWork
+    lazy_static! {
+        pub static ref CREATE_WORK_CREATED_ENTITY: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateWork
+    lazy_static! {
+        pub static ref CREATE_WORK_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateWork
+    lazy_static! {
+        pub static ref CREATE_WORK_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateWork
+    lazy_static! {
+        pub static ref CREATE_WORK_FORBIDDEN: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateWork
+    lazy_static! {
+        pub static ref CREATE_WORK_NOT_FOUND: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateWork
+    lazy_static! {
+        pub static ref CREATE_WORK_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
     /// Create Mime objects for the response content types for CreateWorkAutoBatch
     lazy_static! {
         pub static ref CREATE_WORK_AUTO_BATCH_CREATED_EDITGROUP: Mime = mime!(Application / Json);
@@ -1865,6 +1865,10 @@ pub mod responses {
 
 pub mod requests {
     use hyper::mime::*;
+    /// Create Mime objects for the request content types for AuthOidc
+    lazy_static! {
+        pub static ref AUTH_OIDC: Mime = mime!(Application / Json);
+    }
     /// Create Mime objects for the request content types for CreateContainer
     lazy_static! {
         pub static ref CREATE_CONTAINER: Mime = mime!(Application / Json);
@@ -1889,9 +1893,13 @@ pub mod requests {
     lazy_static! {
         pub static ref UPDATE_CREATOR: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the request content types for AuthOidc
+    /// Create Mime objects for the request content types for CreateEditgroup
     lazy_static! {
-        pub static ref AUTH_OIDC: Mime = mime!(Application / Json);
+        pub static ref CREATE_EDITGROUP: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the request content types for CreateEditgroupAnnotation
+    lazy_static! {
+        pub static ref CREATE_EDITGROUP_ANNOTATION: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the request content types for UpdateEditgroup
     lazy_static! {
@@ -1900,14 +1908,6 @@ pub mod requests {
     /// Create Mime objects for the request content types for UpdateEditor
     lazy_static! {
         pub static ref UPDATE_EDITOR: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the request content types for CreateEditgroup
-    lazy_static! {
-        pub static ref CREATE_EDITGROUP: Mime = mime!(Application / Json);
-    }
-    /// Create Mime objects for the request content types for CreateEditgroupAnnotation
-    lazy_static! {
-        pub static ref CREATE_EDITGROUP_ANNOTATION: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the request content types for CreateFile
     lazy_static! {
@@ -1941,10 +1941,6 @@ pub mod requests {
     lazy_static! {
         pub static ref CREATE_RELEASE_AUTO_BATCH: Mime = mime!(Application / Json);
     }
-    /// Create Mime objects for the request content types for CreateWork
-    lazy_static! {
-        pub static ref CREATE_WORK: Mime = mime!(Application / Json);
-    }
     /// Create Mime objects for the request content types for UpdateRelease
     lazy_static! {
         pub static ref UPDATE_RELEASE: Mime = mime!(Application / Json);
@@ -1960,6 +1956,10 @@ pub mod requests {
     /// Create Mime objects for the request content types for UpdateWebcapture
     lazy_static! {
         pub static ref UPDATE_WEBCAPTURE: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the request content types for CreateWork
+    lazy_static! {
+        pub static ref CREATE_WORK: Mime = mime!(Application / Json);
     }
     /// Create Mime objects for the request content types for CreateWorkAutoBatch
     lazy_static! {
