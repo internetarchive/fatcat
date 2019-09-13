@@ -2,4 +2,4 @@
 source =
     fatcat_tools
     fatcat_web
-    ../python_openapi_client/fatcat_openapi_client
+    .venv/lib/python3.5/site-packages/fatcat_openapi_client
