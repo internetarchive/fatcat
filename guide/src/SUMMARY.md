@@ -23,6 +23,8 @@
     - [Cookbook](./cookbook.md)
 - [Software Contributions](./sw_contribute.md)
 - [Policies](./policies.md)
+    - [Code of Conduct](./code_of_conduct.md)
+    - [Privacy](./privacy_policy.md)
 
 [Bibliography](./bibliography.md)
 

@@ -1,6 +1,6 @@
-# Welcome, Welcome, Welcome!
+# Welcome!
 
-This guide you are reading contains:
+The guide you are reading contains:
 
 - a **[high-level introduction](./overview.md)** to the Fatcat catalog and
   software
