@@ -1,10 +1,12 @@
 
-cache:
-  key: "${CI_COMMIT_REF_SLUG}"
-  paths:
-    - python/.venv/
-    - rust/target/
-    - rust/.cargo_cache/
+# Rust caching causing bloat and using too much disk space in public gitlab.com
+# CI process
+#cache:
+#  key: "${CI_COMMIT_REF_SLUG}"
+#  paths:
+#    - python/.venv/
+#    - rust/target/
+#    - rust/.cargo_cache/
 
 variables:
   LC_ALL: "C.UTF-8"
