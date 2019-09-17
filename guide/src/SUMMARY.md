@@ -2,6 +2,8 @@
 
 [Welcome!](./welcome.md)
 
+[Editing Quickstart](./editing_quickstart.md)
+
 - [Fatcat Overview](./overview.md)
     - [Goals and Related Projects](./goals.md)
     - [Data Model](./data_model.md)
