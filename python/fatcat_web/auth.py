@@ -126,7 +126,7 @@ def handle_ia_xauth(email, password):
     FakeOAuthRemote = namedtuple('FakeOAuthRemote', ['name', 'OAUTH_CONFIG'])
     remote = FakeOAuthRemote(name='archive', OAUTH_CONFIG={'api_base_url': Config.IA_XAUTH_URI})
     oauth_info = {
-        'preferred_username': ia_info['screenname'],
+        'preferred_username': ia_info['itemname'],
         'iss': Config.IA_XAUTH_URI,
         'sub': ia_info['itemname'],
     }
