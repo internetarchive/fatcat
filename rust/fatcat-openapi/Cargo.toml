@@ -6,7 +6,7 @@ authors = ["Bryan Newbold <bnewbold@archive.org>"]
 description = "Fatcat is an editable bibliographic database. This OpenAPI code-generated crate container HTTP API models, endpoints, and other auto-generated types useful for both client and server implementations of the catalog API."
 homepage = "https://fatcat.wiki"
 repository = "https://github.com/internetarchive/fatcat"
-license = "CC-0"
+license = "CC0-1.0"
 
 [features]
 default = ["client", "server"]

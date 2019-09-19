@@ -6,7 +6,7 @@ authors = ["Bryan Newbold <bnewbold@archive.org>"]
 description = "A scalable, versioned, API-oriented catalog for bibliographic entities and file metadata"
 homepage = "https://fatcat.wiki"
 repository = "https://github.com/internetarchive/fatcat"
-license = "AGPL 3.0"
+license = "AGPL-3.0-or-later"
 
 [workspace]
 members = ["fatcat-openapi"]
