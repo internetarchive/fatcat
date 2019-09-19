@@ -1,7 +1,6 @@
 #![allow(missing_docs, unused_variables, trivial_casts)]
 
-extern crate clap;
-extern crate fatcat;
+use fatcat_openapi;
 #[allow(unused_extern_crates)]
 extern crate futures;
 #[allow(unused_extern_crates)]
@@ -11,7 +10,7 @@ extern crate uuid;
 
 use clap::{App, Arg};
 #[allow(unused_imports)]
-use fatcat::{
+use fatcat_openapi::{
     AcceptEditgroupResponse, ApiError, ApiNoContext, AuthCheckResponse, AuthOidcResponse, ContextWrapperExt, CreateAuthTokenResponse, CreateContainerAutoBatchResponse, CreateContainerResponse,
     CreateCreatorAutoBatchResponse, CreateCreatorResponse, CreateEditgroupAnnotationResponse, CreateEditgroupResponse, CreateFileAutoBatchResponse, CreateFileResponse, CreateFilesetAutoBatchResponse,
     CreateFilesetResponse, CreateReleaseAutoBatchResponse, CreateReleaseResponse, CreateWebcaptureAutoBatchResponse, CreateWebcaptureResponse, CreateWorkAutoBatchResponse, CreateWorkResponse,
@@ -123,14 +122,14 @@ fn main() {
     );
     let client = if is_https {
         // Using Simple HTTPS
-        fatcat::Client::try_new_https(&base_url, "examples/ca.pem").expect("Failed to create HTTPS client")
+        fatcat_openapi::Client::try_new_https(&base_url, "examples/ca.pem").expect("Failed to create HTTPS client")
     } else {
         // Using HTTP
-        fatcat::Client::try_new_http(&base_url).expect("Failed to create HTTP client")
+        fatcat_openapi::Client::try_new_http(&base_url).expect("Failed to create HTTP client")
     };
 
     // Using a non-default `Context` is not required; this is just an example!
-    let client = client.with_context(fatcat::Context::new_with_span_id(self::uuid::Uuid::new_v4().to_string()));
+    let client = client.with_context(fatcat_openapi::Context::new_with_span_id(self::uuid::Uuid::new_v4().to_string()));
 
     match matches.value_of("operation") {
         Some("AuthCheck") => {

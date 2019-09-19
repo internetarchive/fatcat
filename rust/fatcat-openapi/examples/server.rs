@@ -4,17 +4,13 @@
 
 // Imports required by this file.
 // extern crate <name of this crate>;
-extern crate clap;
-extern crate fatcat;
-extern crate hyper_openssl;
-extern crate iron;
-extern crate swagger;
+use fatcat_openapi;
 
 // Imports required by server library.
-// extern crate fatcat;
+// extern crate fatcat_openapi;
 // extern crate swagger;
-extern crate chrono;
-extern crate futures;
+use chrono;
+use futures;
 #[macro_use]
 extern crate error_chain;
 
@@ -24,7 +20,6 @@ use hyper_openssl::openssl::ssl::{SslAcceptorBuilder, SslMethod};
 use hyper_openssl::openssl::x509::X509_FILETYPE_PEM;
 use hyper_openssl::OpensslServer;
 use iron::{Chain, Iron};
-use swagger::auth::AllowAllMiddleware;
 
 mod server_lib;
 
@@ -46,13 +41,13 @@ fn main() {
     let matches = App::new("server").arg(Arg::with_name("https").long("https").help("Whether to use HTTPS or not")).get_matches();
 
     let server = server_lib::server().unwrap();
-    let router = fatcat::router(server);
+    let router = fatcat_openapi::router(server);
 
     let mut chain = Chain::new(router);
-    chain.link_before(fatcat::server::ExtractAuthData);
+    chain.link_before(fatcat_openapi::server::ExtractAuthData);
     // add authentication middlewares into the chain here
     // for the purpose of this example, pretend we have authenticated a user
-    chain.link_before(AllowAllMiddleware::new("cosmo"));
+    //chain.link_before(AllowAllMiddleware::new("cosmo"));
 
     if matches.is_present("https") {
         // Using Simple HTTPS

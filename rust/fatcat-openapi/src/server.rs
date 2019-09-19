@@ -12,12 +12,12 @@ use self::iron::url::percent_encoding::percent_decode;
 use self::iron::{modifiers, status, BeforeMiddleware};
 use self::router::Router;
 use self::urlencoded::UrlEncodedQuery;
+use crate::mimetypes;
 use futures::future;
 use futures::Future;
 use futures::{stream, Stream};
 use hyper;
 use hyper::header::{ContentType, Headers};
-use mimetypes;
 
 use serde_json;
 
@@ -35,8 +35,8 @@ use swagger::auth::{AuthData, Scopes};
 use swagger::{ApiError, Context, XSpanId};
 
 #[allow(unused_imports)]
-use models;
-use {
+use crate::models;
+use crate::{
     AcceptEditgroupResponse, Api, AuthCheckResponse, AuthOidcResponse, CreateAuthTokenResponse, CreateContainerAutoBatchResponse, CreateContainerResponse, CreateCreatorAutoBatchResponse,
     CreateCreatorResponse, CreateEditgroupAnnotationResponse, CreateEditgroupResponse, CreateFileAutoBatchResponse, CreateFileResponse, CreateFilesetAutoBatchResponse, CreateFilesetResponse,
     CreateReleaseAutoBatchResponse, CreateReleaseResponse, CreateWebcaptureAutoBatchResponse, CreateWebcaptureResponse, CreateWorkAutoBatchResponse, CreateWorkResponse, DeleteContainerEditResponse,

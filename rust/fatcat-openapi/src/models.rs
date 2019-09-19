@@ -5,7 +5,7 @@ extern crate uuid;
 
 use serde::ser::Serializer;
 
-use models;
+use crate::models;
 use std::collections::HashMap;
 use swagger;
 
