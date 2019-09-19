@@ -8,6 +8,12 @@
 
 <form class="ui form" id="edit_release_form" method="POST" action="{% if editgroup %}/editgroup/{{ editgroup.editgroup_id }}{% endif %}/release/{{ existing_ident }}/edit">
 {% endblock %}
+
+  <p>See <a href="https://guide.fatcat.wiki/entity_release.html">the catalog
+  style guide</a> for schema notes, and <a
+  href="https://guide.fatcat.wiki/editing_quickstart.html">the editing
+  tutorial</a> if this is your first time making an edit.
+
   {{ form.hidden_tag() }}
 
   <h3 class="ui dividing header">Editgroup Metadata</h3>

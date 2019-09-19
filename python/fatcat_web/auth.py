@@ -71,8 +71,9 @@ def handle_oauth(remote, token, user_info):
         if http_status == 201:
             flash("Welcome to Fatcat! An account has been created for you with a temporary username; you may wish to change it under account settings")
             flash("You must use the same mechanism ({}) to login in the future".format(remote.name))
+            flash("Check out 'The Guide' (linked above) for an editing quickstart tutorial")
         else:
-            flash("Welcome back!")
+            flash("Welcome back {}!".format(editor.username))
 
         # write token and username to session
         session.permanent = True
