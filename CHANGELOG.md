@@ -28,6 +28,12 @@ not explicitly noted below.
 - updated rust (cargo) dependencies; depend on rust 1.34+ (Debian buster)
 - entity view page design and backend code structure completely refactored
 
+### Fixed
+
+- compilation of `fatcat-openapi` rust crate (including examples) now actually
+  works using 2018 edition. Many lint warnings were patched, making rust
+  compilation cleaner with recent compiler versions.
+
 ### Added
 
 - container "coverage" page, showing elasticsearch-generated chart of IA
