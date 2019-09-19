@@ -16,6 +16,8 @@ See also:
 
 ## [Unreleased]
 
+## [0.3.1] - 2019-09-18
+
 Many small web interface improvements, bug fixes, and importer additions are
 not explicitly noted below.
 
@@ -30,6 +32,11 @@ not explicitly noted below.
 
 - container "coverage" page, showing elasticsearch-generated chart of IA
   release archival coverage
+- `create_auth_token` API endpoint, for generation of API tokens via web
+  interface
+- API token generation in web interface
+- quick web interface search (front page and top bar) now detects additional
+  identifiers, such as ISBN-13, SHA-1, and arxiv
 
 ## [0.3.0] - 2019-05-23
 
