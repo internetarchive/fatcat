@@ -618,10 +618,14 @@ def generic_search():
         return redirect(url_for('release_lookup', pmcid=clean_pmcid(query)))
     if clean_sha1(query):
         return redirect(url_for('file_lookup', sha1=clean_sha1(query)))
+    if clean_sha256(query):
+        return redirect(url_for('file_lookup', sha256=clean_sha256(query)))
     if clean_issn(query):
         return redirect(url_for('container_lookup', issnl=clean_issn(query)))
     if clean_isbn13(query):
         return redirect(url_for('release_lookup', isbn13=clean_isbn13(query)))
+    if clean_arxiv_id(query):
+        return redirect(url_for('release_lookup', arxiv=clean_arxiv_id(query)))
     if clean_orcid(query):
         return redirect(url_for('creator_lookup', orcid=clean_orcid(query)))
 
