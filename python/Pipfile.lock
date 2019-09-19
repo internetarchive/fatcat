@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "ea087a8b88fbbcb81a0b97279273fcdf0d6e759a2971d4e576cca4593594eb97"
+            "sha256": "b3d17cd8c87abdbb852248ec8eef83b5992df46234e7a89e7bd29a6c4d693909"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -106,6 +106,38 @@
                 "sha256:5b94b49521f6456670fdb30cd82a4eca9412788a93fa6dd6df72c94d5a8ff2d7"
             ],
             "version": "==7.0"
+        },
+        "confluent-kafka": {
+            "hashes": [
+                "sha256:13d0146850c046b9e3dabbcb60bd7c4f02c7d4754b693266ee5bb0884faea2c7",
+                "sha256:1505de9c652f9b841ba600f35e6a7f4cae2e239e9b8255212433756d17c1aeed",
+                "sha256:1832373eee96b0ef246c773ec2613c382bf4577f0d42e2ce688e8d35ca373e69",
+                "sha256:3001d09e5efa357eb9f3166ef54703166d7b662eb55841b760a346313ca717ee",
+                "sha256:31b934aa821e4d6aff06dd260b14c03ca58a532bb160032acff573e2de0a4467",
+                "sha256:359d776fb0381147e4c9981676d3907f9dbd12733597a6fec455e5a516728ae2",
+                "sha256:472f63ee352a1464ff40325cc3a86aae2685716985bb2c9cad7e574f4203d664",
+                "sha256:53ec15b8b76109489c77c0fe3d2f5ff71398cef2db74053c4818f6667a14471d",
+                "sha256:6299420c462b274095d4624cf246dc90e49d6d3c1acd8b7222d39eb407476301",
+                "sha256:8a497aee87d01891090c9c59ee760387bc41c718a358dadc926a6cae36dfa4fa",
+                "sha256:8bd48e88b2d9ba42b58e8c5c1a266a4a7945757d1ae1c2bad3c0fbdf7b52c5e5",
+                "sha256:92684d50215c111025ebb40c813f695fd9df69f763f04e9b25fc4fd67e5c0d06",
+                "sha256:957417782592136c91c81d7161be8c6fc334f65d229a672d18c4cc85a0a09532",
+                "sha256:a41eda5c84e153e0ec8d854c064ebe242a8a6993f9069f6ae83dfd5f9dda1ac6",
+                "sha256:b4e5b7f5f597d4a40e0148e1fe509ab800231542ce7e8765265e8c251e6e3983",
+                "sha256:c41d12f4e1deb54e1fa6e40260d95aa7b1c1ebfa4bbddb8a03f06fde3611da71",
+                "sha256:c8b75e6e803e1a4346d12f212ead3871f86cf21e4d6b5028e8701f8e9c8f105b",
+                "sha256:c8dee478a46a9352224fce1d12756cff6cf50e2684121a118141c7908ae9ed3e",
+                "sha256:d072825c0f9dec85ebc5eaa887c324914cb3631c884b35fc3c173663d4222a3a",
+                "sha256:d328d11edfe049cbdd6bf0792bcff9a9afce26c25124f198fe0ea1f910b529b3",
+                "sha256:d52708474daec030399cf45a6bff55b13d631cdba6cc6546da351f675a901d44",
+                "sha256:dd02a60145961957ad293aed30a435de2069024aec134575bea937e50df211b3",
+                "sha256:eb900ef15b340a87185412b906cbef2450ab68907b84988a6af7fc8e1b017b6c",
+                "sha256:fa5d985e30fbcbccaf8b9b1e52137abfbbe0f913fc1baddb96b9476824013411",
+                "sha256:fb8ba7ddf85c80eb4d2e3c2f1b362793b9f5c78950bc1e93f60423241071fd9b",
+                "sha256:ff80ceca738f52d9058d146b7b063092a88281362606e6c917af2a9e60087a3d"
+            ],
+            "index": "pypi",
+            "version": "==1.1.0"
         },
         "fatcat-openapi-client": {
             "path": "./../python_openapi_client"
