@@ -1,6 +1,7 @@
 [package]
 name = "fatcat-openapi"
 version = "0.3.1"
+edition = "2018"
 authors = ["Bryan Newbold <bnewbold@archive.org>"]
 description = "Fatcat is an editable bibliographic database. This OpenAPI code-generated crate container HTTP API models, endpoints, and other auto-generated types useful for both client and server implementations of the catalog API."
 homepage = "https://fatcat.wiki"
