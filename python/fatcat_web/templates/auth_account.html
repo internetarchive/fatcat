@@ -26,11 +26,24 @@
 </form>
 </div>
 
+<div class="ui segment">
+<h3 class="ui header">Create API Token</h3>
+<form class="" role="change_username" action="/auth/create_token" method="post">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+  <div class="ui form">
+    <button class="ui green button" style="float: right;">Create Token</button>
+    <div class="field" style="width: 20em; clear: unset;">
+      <input type="text" name="duration_seconds" id="duration_seconds" aria-label="token valid duration (seconds)" placeholder="default 31 days">
+      <label for="duration_seconds">Token Validity Duration (seconds; optional)</label>
+    </div>
+  </div>
+</form>
+</div>
+
 <br>
 <p>In the future, you will be able to...
 <ul>
   <li>Create and manage bot accounts
-  <li>Generate API tokens
 </ul>
 
 {% endblock %}

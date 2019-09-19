@@ -839,6 +839,39 @@ def change_username():
     flash("Username updated successfully")
     return redirect('/auth/account')
 
+@app.route('/auth/create_token', methods=['POST'])
+@login_required
+def create_auth_token():
+    if not app.testing:
+        app.csrf.protect()
+
+    duration_seconds = request.form.get('duration_seconds', None)
+    if duration_seconds != None:
+        try:
+            duration_seconds = int(duration_seconds)
+            assert duration_seconds >= 1
+        except:
+            flash("duration_seconds must be a positive non-zero integer")
+            abort(400)
+
+    # check user's auth. api_token and editor_id are signed together in session
+    # cookie, so if api_token is valid editor_id is assumed to match. If that
+    # wasn't true, users could manipulate session cookies and create tokens for
+    # any user
+    user_api = auth_api(session['api_token'])
+    resp = user_api.auth_check()
+    assert(resp.success)
+
+    # generate token using *superuser* privs
+    editor_id = session['editor']['editor_id']
+    try:
+        resp = priv_api.create_auth_token(editor_id,
+            duration_seconds=duration_seconds)
+    except ApiException as ae:
+        app.log.info(ae)
+        abort(ae.status)
+    return render_template('auth_token.html', auth_token=resp.token)
+
 @app.route('/auth/logout')
 def logout():
     handle_logout()

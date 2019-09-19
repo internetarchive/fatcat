@@ -54,3 +54,11 @@ def test_basic_auth_views(app):
 
     rv = app.get('/auth/logout')
     assert rv.status_code == 200
+
+def test_auth_token(app_admin):
+
+    rv = app_admin.get('/auth/account', follow_redirects=False)
+    assert rv.status_code == 200
+
+    rv = app_admin.post('/auth/create_token', follow_redirects=False)
+    assert rv.status_code == 200

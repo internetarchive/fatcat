@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block body %}
+<h1>Create API Token</h1>
+
+
+{% if current_user.is_authenticated %}
+
+  <p>An API auth token has been created. This token gives full access to your editor account, so you should take care to keep it private.
+
+  <p>Copy from box:
+  <div class="ui input" style="width: 100%;">
+    <input value="{{ auth_token }}" style="width: 100%;"></input>
+  </div>
+
+  <br>
+  <br>
+
+  <p>As wrapped text (beware whitespace):
+  <div class="ui segment" style="overflow-wrap: break-word;">
+    <code>{{ auth_token }}</code>
+  </div>
+
+{% else %}
+  <div class="ui negative message">
+    <div class="header">Something Went Wrong</div>
+    <p>Horribly wrong! You should log-out (if possible) and log back in.
+  </div>
+{% endif %}
+
+{% endblock %}
