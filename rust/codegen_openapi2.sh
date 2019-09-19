@@ -1,8 +1,26 @@
 #!/bin/sh
 
+echo "Running cargo-swagger..."
 cargo swagger ../fatcat-openapi2.yml fatcat-openapi --docker-tag=v2.3.1
 sudo chown `whoami`:`whoami` -R fatcat-openapi
 git checkout fatcat-openapi/Cargo.toml
+
+echo "Patching..."
+
+# Hacks to fix crate naming
+sed -i 's/fatcat::/fatcat_openapi::/g' fatcat-openapi/examples/client.rs fatcat-openapi/examples/server.rs fatcat-openapi/examples/server_lib/server.rs
+sed -i 's/extern crate fatcat;/extern crate fatcat_openapi;/g' fatcat-openapi/examples/client.rs fatcat-openapi/examples/server.rs fatcat-openapi/examples/server_lib/server.rs
+
+# Squash many warnings ("error: unused doc comment")
+sed -i 's/\/\/\/ Create Mime objects/\/\/ Create Mime objects/g' fatcat-openapi/src/mimetypes.rs
+
+# 2019 edition crate imports
+sed -i 's/use models;/use crate::models;/g' fatcat-openapi/src/client.rs fatcat-openapi/src/server.rs fatcat-openapi/src/models.rs
+sed -i 's/use mimetypes;/use crate::mimetypes;/g' fatcat-openapi/src/client.rs fatcat-openapi/src/server.rs
+sed -i 's/use {/use crate::{/g' fatcat-openapi/src/client.rs fatcat-openapi/src/server.rs
+
+# weird broken auth example
+sed -i 's/chain.link_before(AllowAllMiddleware/\/\/chain.link_before(AllowAllMiddleware/g' fatcat-openapi/examples/server.rs
 
 # Hack to handle "extra" JSON fields
 sed -i 's/Object/serde_json::Value/g' fatcat-openapi/src/models.rs
@@ -27,4 +45,10 @@ sed -i 's/.and_then(|x| x.parse::<i64>().ok());$/.and_then(|x| Some(x.parse::<i6
 sed -i 's/.and_then(|x| x.parse::<bool>().ok());$/.and_then(|x| Some(x.to_lowercase().parse::<bool>())).map_or_else(|| Ok(None), |x| x.map(|v| Some(v))).map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected boolean)".to_string())))?;/g' fatcat-openapi/src/server.rs
 sed -i 's/.and_then(|x| x.parse::<chrono::DateTime<chrono::Utc>>().ok());$/.and_then(|x| Some(x.parse::<chrono::DateTime<chrono::Utc>>())).map_or_else(|| Ok(None), |x| x.map(|v| Some(v))).map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected UTC datetime in ISO\/RFC format)".to_string())))?;/g' fatcat-openapi/src/server.rs
 
+cd fatcat-openapi
+
+echo "Running cargo-fix (slow)..."
+cargo fix --allow-dirty
+
+echo "Running cargo-fmt..."
 cargo fmt
