@@ -45,6 +45,10 @@ sed -i 's/.and_then(|x| x.parse::<i64>().ok());$/.and_then(|x| Some(x.parse::<i6
 sed -i 's/.and_then(|x| x.parse::<bool>().ok());$/.and_then(|x| Some(x.to_lowercase().parse::<bool>())).map_or_else(|| Ok(None), |x| x.map(|v| Some(v))).map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected boolean)".to_string())))?;/g' fatcat-openapi/src/server.rs
 sed -i 's/.and_then(|x| x.parse::<chrono::DateTime<chrono::Utc>>().ok());$/.and_then(|x| Some(x.parse::<chrono::DateTime<chrono::Utc>>())).map_or_else(|| Ok(None), |x| x.map(|v| Some(v))).map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected UTC datetime in ISO\/RFC format)".to_string())))?;/g' fatcat-openapi/src/server.rs
 
+# unnecessary duplicate copies of API spec
+rm fatcat-openapi/api.yaml
+rm -rf fatcat-openapi/api/
+
 cd fatcat-openapi
 
 echo "Running cargo-fix (slow)..."
