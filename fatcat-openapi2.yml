@@ -1392,6 +1392,14 @@ definitions:
       token:
         type: string
         example: "AgEPZGV2LmZhdGNhdC53aWtpAhYyMDE5MDEwMS1kZXYtZHVtbXkta2V5AAImZWRpdG9yX2lkID0gYWFhYWFhYWFhYWFhYmt2a2FhYWFhYWFhYWkAAht0aW1lID4gMjAxOS0wMS0wOVQwMDo1Nzo1MloAAAYgnroNha1hSftChtxHGTnLEmM/pY8MeQS/jBSV0UNvXug="
+  auth_token_result:
+    type: object
+    required:
+      - token
+    properties:
+      token:
+        type: string
+        example: "AgEPZGV2LmZhdGNhdC53aWtpAhYyMDE5MDEwMS1kZXYtZHVtbXkta2V5AAImZWRpdG9yX2lkID0gYWFhYWFhYWFhYWFhYmt2a2FhYWFhYWFhYWkAAht0aW1lID4gMjAxOS0wMS0wOVQwMDo1Nzo1MloAAAYgnroNha1hSftChtxHGTnLEmM/pY8MeQS/jBSV0UNvXug="
 
 x-auth-responses: &AUTHRESPONSES
   401:
@@ -4024,4 +4032,43 @@ paths:
           schema:
             $ref: "#/definitions/error_response"
         <<: *AUTHRESPONSES
+  /auth/token/{editor_id}:
+    parameters:
+      - name: editor_id
+        in: path
+        type: string
+        required: true
+    post:
+      operationId: "create_auth_token"
+      tags: # TAGLINE
+        - auth  # TAGLINE
+      description: |
+        Generate a new auth token for a given editor (internal method).
 
+        This method is used by the web interface to generate API tokens for
+        users. It can not be called by editors (human or bot) to generate new
+        tokens for themselves, at least at this time.
+      security:
+        # required admin privs
+        - Bearer: []
+      parameters:
+        - name: duration_seconds
+          in: query
+          type: integer
+          example: 86400
+          required: false
+          description: "How long API token should be valid for (in seconds)"
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: "#/definitions/auth_token_result"
+        400:
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/error_response"
+        500:
+          description: Generic Error
+          schema:
+            $ref: "#/definitions/error_response"
+        <<: *AUTHRESPONSES
