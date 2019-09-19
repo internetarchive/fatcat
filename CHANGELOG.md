@@ -16,6 +16,10 @@ See also:
 
 ## [Unreleased]
 
+## Changed
+
+- Switch from swagger-codegen to openapi-generator for python client generation
+
 ## [0.3.1] - 2019-09-18
 
 Many small web interface improvements, bug fixes, and importer additions are
