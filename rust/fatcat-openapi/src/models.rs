@@ -55,6 +55,18 @@ impl AuthOidcResult {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct AuthTokenResult {
+    #[serde(rename = "token")]
+    pub token: String,
+}
+
+impl AuthTokenResult {
+    pub fn new(token: String) -> AuthTokenResult {
+        AuthTokenResult { token: token }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ChangelogEntry {
     /// Monotonically increasing sequence number of this changelog entry.
     #[serde(rename = "index")]

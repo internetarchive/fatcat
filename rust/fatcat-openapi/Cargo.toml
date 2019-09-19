@@ -1,6 +1,6 @@
 [package]
 name = "fatcat-openapi"
-version = "0.3.0"
+version = "0.3.1"
 authors = ["Bryan Newbold <bnewbold@archive.org>"]
 description = "HTTP API models, endpoints, and other auto-generated types"
 license = "CC-0"

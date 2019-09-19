@@ -52,6 +52,26 @@ pub mod responses {
     lazy_static! {
         pub static ref AUTH_OIDC_GENERIC_ERROR: Mime = mime!(Application / Json);
     }
+    /// Create Mime objects for the response content types for CreateAuthToken
+    lazy_static! {
+        pub static ref CREATE_AUTH_TOKEN_SUCCESS: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateAuthToken
+    lazy_static! {
+        pub static ref CREATE_AUTH_TOKEN_BAD_REQUEST: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateAuthToken
+    lazy_static! {
+        pub static ref CREATE_AUTH_TOKEN_NOT_AUTHORIZED: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateAuthToken
+    lazy_static! {
+        pub static ref CREATE_AUTH_TOKEN_FORBIDDEN: Mime = mime!(Application / Json);
+    }
+    /// Create Mime objects for the response content types for CreateAuthToken
+    lazy_static! {
+        pub static ref CREATE_AUTH_TOKEN_GENERIC_ERROR: Mime = mime!(Application / Json);
+    }
     /// Create Mime objects for the response content types for GetChangelog
     lazy_static! {
         pub static ref GET_CHANGELOG_SUCCESS: Mime = mime!(Application / Json);

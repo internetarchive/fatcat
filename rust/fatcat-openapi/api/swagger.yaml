@@ -42,7 +42,7 @@ info:
     \ all API\nauthentication. The web interface includes macaroons in browser cookies\
     \ and\npasses them through to the API to authenticate editor actions.\n\n<!--\
     \ ReDoc-Inject: <security-definitions> -->\n<!-- ENDLONGDESCRIPTION -->\n"
-  version: "0.3.0"
+  version: "0.3.1"
   title: "fatcat"
   termsOfService: "https://guide.fatcat.wiki/policies.html"
   contact:
@@ -7521,6 +7521,85 @@ paths:
       path: "/auth/check"
       HttpMethod: "Get"
       httpmethod: "get"
+  /auth/token/{editor_id}:
+    post:
+      tags:
+      - "auth"
+      description: "Generate a new auth token for a given editor (internal method).\n\
+        \nThis method is used by the web interface to generate API tokens for\nusers.\
+        \ It can not be called by editors (human or bot) to generate new\ntokens for\
+        \ themselves, at least at this time.\n"
+      operationId: "create_auth_token"
+      parameters:
+      - name: "editor_id"
+        in: "path"
+        required: true
+        type: "string"
+        formatString: "\\\"{}\\\""
+        example: "\"editor_id_example\".to_string()"
+      - name: "duration_seconds"
+        in: "query"
+        description: "How long API token should be valid for (in seconds)"
+        required: false
+        type: "integer"
+        formatString: "{:?}"
+        example: "Some(56)"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/auth_token_result"
+          x-responseId: "Success"
+          x-uppercaseResponseId: "SUCCESS"
+          uppercase_operation_id: "CREATE_AUTH_TOKEN"
+          uppercase_data_type: "AUTHTOKENRESULT"
+          producesJson: true
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "BadRequest"
+          x-uppercaseResponseId: "BAD_REQUEST"
+          uppercase_operation_id: "CREATE_AUTH_TOKEN"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        401:
+          description: "Not Authorized"
+          schema:
+            $ref: "#/definitions/error_response"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+          x-responseId: "NotAuthorized"
+          x-uppercaseResponseId: "NOT_AUTHORIZED"
+          uppercase_operation_id: "CREATE_AUTH_TOKEN"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        403:
+          description: "Forbidden"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "Forbidden"
+          x-uppercaseResponseId: "FORBIDDEN"
+          uppercase_operation_id: "CREATE_AUTH_TOKEN"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+        500:
+          description: "Generic Error"
+          schema:
+            $ref: "#/definitions/error_response"
+          x-responseId: "GenericError"
+          x-uppercaseResponseId: "GENERIC_ERROR"
+          uppercase_operation_id: "CREATE_AUTH_TOKEN"
+          uppercase_data_type: "ERRORRESPONSE"
+          producesJson: true
+      security:
+      - Bearer: []
+      operation_id: "create_auth_token"
+      uppercase_operation_id: "CREATE_AUTH_TOKEN"
+      path: "/auth/token/:editor_id"
+      HttpMethod: "Post"
+      httpmethod: "post"
 securityDefinitions:
   Bearer:
     description: "The only current API authentication mechanism is HTTP bearer\nauthentication\
@@ -9951,6 +10030,17 @@ definitions:
         username: "zerocool93"
       token: "AgEPZGV2LmZhdGNhdC53aWtpAhYyMDE5MDEwMS1kZXYtZHVtbXkta2V5AAImZWRpdG9yX2lkID0gYWFhYWFhYWFhYWFhYmt2a2FhYWFhYWFhYWkAAht0aW1lID4gMjAxOS0wMS0wOVQwMDo1Nzo1MloAAAYgnroNha1hSftChtxHGTnLEmM/pY8MeQS/jBSV0UNvXug="
     upperCaseName: "AUTH_OIDC_RESULT"
+  auth_token_result:
+    type: "object"
+    required:
+    - "token"
+    properties:
+      token:
+        type: "string"
+        example: "AgEPZGV2LmZhdGNhdC53aWtpAhYyMDE5MDEwMS1kZXYtZHVtbXkta2V5AAImZWRpdG9yX2lkID0gYWFhYWFhYWFhYWFhYmt2a2FhYWFhYWFhYWkAAht0aW1lID4gMjAxOS0wMS0wOVQwMDo1Nzo1MloAAAYgnroNha1hSftChtxHGTnLEmM/pY8MeQS/jBSV0UNvXug="
+    example:
+      token: "AgEPZGV2LmZhdGNhdC53aWtpAhYyMDE5MDEwMS1kZXYtZHVtbXkta2V5AAImZWRpdG9yX2lkID0gYWFhYWFhYWFhYWFhYmt2a2FhYWFhYWFhYWkAAht0aW1lID4gMjAxOS0wMS0wOVQwMDo1Nzo1MloAAAYgnroNha1hSftChtxHGTnLEmM/pY8MeQS/jBSV0UNvXug="
+    upperCaseName: "AUTH_TOKEN_RESULT"
   editgroup_edits:
     properties:
       containers:

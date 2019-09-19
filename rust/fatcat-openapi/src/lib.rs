@@ -65,6 +65,20 @@ pub enum AuthOidcResponse {
 }
 
 #[derive(Debug, PartialEq)]
+pub enum CreateAuthTokenResponse {
+    /// Success
+    Success(models::AuthTokenResult),
+    /// Bad Request
+    BadRequest(models::ErrorResponse),
+    /// Not Authorized
+    NotAuthorized { body: models::ErrorResponse, www_authenticate: String },
+    /// Forbidden
+    Forbidden(models::ErrorResponse),
+    /// Generic Error
+    GenericError(models::ErrorResponse),
+}
+
+#[derive(Debug, PartialEq)]
 pub enum GetChangelogResponse {
     /// Success
     Success(Vec<models::ChangelogEntry>),
@@ -1342,6 +1356,8 @@ pub trait Api {
 
     fn auth_oidc(&self, oidc_params: models::AuthOidc, context: &Context) -> Box<Future<Item = AuthOidcResponse, Error = ApiError> + Send>;
 
+    fn create_auth_token(&self, editor_id: String, duration_seconds: Option<i32>, context: &Context) -> Box<Future<Item = CreateAuthTokenResponse, Error = ApiError> + Send>;
+
     fn get_changelog(&self, limit: Option<i64>, context: &Context) -> Box<Future<Item = GetChangelogResponse, Error = ApiError> + Send>;
 
     fn get_changelog_entry(&self, index: i64, context: &Context) -> Box<Future<Item = GetChangelogEntryResponse, Error = ApiError> + Send>;
@@ -1596,6 +1612,8 @@ pub trait ApiNoContext {
 
     fn auth_oidc(&self, oidc_params: models::AuthOidc) -> Box<Future<Item = AuthOidcResponse, Error = ApiError> + Send>;
 
+    fn create_auth_token(&self, editor_id: String, duration_seconds: Option<i32>) -> Box<Future<Item = CreateAuthTokenResponse, Error = ApiError> + Send>;
+
     fn get_changelog(&self, limit: Option<i64>) -> Box<Future<Item = GetChangelogResponse, Error = ApiError> + Send>;
 
     fn get_changelog_entry(&self, index: i64) -> Box<Future<Item = GetChangelogEntryResponse, Error = ApiError> + Send>;
@@ -1848,6 +1866,10 @@ impl<'a, T: Api> ApiNoContext for ContextWrapper<'a, T> {
 
     fn auth_oidc(&self, oidc_params: models::AuthOidc) -> Box<Future<Item = AuthOidcResponse, Error = ApiError> + Send> {
         self.api().auth_oidc(oidc_params, &self.context())
+    }
+
+    fn create_auth_token(&self, editor_id: String, duration_seconds: Option<i32>) -> Box<Future<Item = CreateAuthTokenResponse, Error = ApiError> + Send> {
+        self.api().create_auth_token(editor_id, duration_seconds, &self.context())
     }
 
     fn get_changelog(&self, limit: Option<i64>) -> Box<Future<Item = GetChangelogResponse, Error = ApiError> + Send> {
