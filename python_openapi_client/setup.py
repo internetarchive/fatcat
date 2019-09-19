@@ -20,7 +20,7 @@ DESCRIPTION = 'API client library for fatcat.wiki (a bibliographic catalog)'
 URL = 'https://github.com/internetarchive/fatcat'
 EMAIL = 'bnewbold@archive.org'
 AUTHOR = 'Bryan Newbold'
-REQUIRES_PYTHON = '>=3.4.0'
+REQUIRES_PYTHON = '>=3.5.0'
 VERSION = None
 LICENSE = "CC-0"
 
@@ -105,7 +105,7 @@ setup(
     description=DESCRIPTION,
     long_description=long_description,
     long_description_content_type='text/markdown',
-    keywords=["Swagger", "fatcat"],
+    keywords=["fatcat", "OpenAPI"],
     author=AUTHOR,
     author_email=EMAIL,
     python_requires=REQUIRES_PYTHON,
