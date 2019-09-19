@@ -45,6 +45,41 @@ patch -p0 << END_PATCH
      Ref: https://openapi-generator.tech
 END_PATCH
 
+# Another patch to fix nasty auth cross-contamination between instances of
+# Configuration object.
+patch -p0 << END_PATCH
+--- fatcat_openapi_client/configuration.py
++++ fatcat_openapi_client/configuration.py
+@@ -44,14 +44,11 @@ class Configuration(object):
+     Do not edit the class manually.
+ 
+     :param host: Base url
+-    :param api_key: Dict to store API key(s)
+-    :param api_key_prefix: Dict to store API prefix (e.g. Bearer)
+     :param username: Username for HTTP basic authentication
+     :param password: Password for HTTP basic authentication
+     """
+ 
+     def __init__(self, host="https://api.fatcat.wiki/v0",
+-                 api_key={}, api_key_prefix={},
+                  username="", password=""):
+         """Constructor
+         """
+@@ -62,10 +59,10 @@ class Configuration(object):
+         """Temp file folder for downloading files
+         """
+         # Authentication Settings
+-        self.api_key = api_key
++        self.api_key = {}
+         """dict to store API key(s)
+         """
+-        self.api_key_prefix = api_key_prefix
++        self.api_key_prefix = {}
+         """dict to store API prefix (e.g. Bearer)
+         """
+         self.refresh_api_key_hook = None
+END_PATCH
+
 # these tests are basically no-ops
 mkdir -p tests/codegen
 cp -r $OUTPUT/test/* tests/codegen

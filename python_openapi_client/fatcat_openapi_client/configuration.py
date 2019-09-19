@@ -44,14 +44,11 @@ class Configuration(object):
     Do not edit the class manually.
 
     :param host: Base url
-    :param api_key: Dict to store API key(s)
-    :param api_key_prefix: Dict to store API prefix (e.g. Bearer)
     :param username: Username for HTTP basic authentication
     :param password: Password for HTTP basic authentication
     """
 
     def __init__(self, host="https://api.fatcat.wiki/v0",
-                 api_key={}, api_key_prefix={},
                  username="", password=""):
         """Constructor
         """
@@ -62,10 +59,10 @@ class Configuration(object):
         """Temp file folder for downloading files
         """
         # Authentication Settings
-        self.api_key = api_key
+        self.api_key = {}
         """dict to store API key(s)
         """
-        self.api_key_prefix = api_key_prefix
+        self.api_key_prefix = {}
         """dict to store API prefix (e.g. Bearer)
         """
         self.refresh_api_key_hook = None
