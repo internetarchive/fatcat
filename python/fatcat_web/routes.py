@@ -846,7 +846,7 @@ def create_auth_token():
         app.csrf.protect()
 
     duration_seconds = request.form.get('duration_seconds', None)
-    if duration_seconds != None:
+    if duration_seconds:
         try:
             duration_seconds = int(duration_seconds)
             assert duration_seconds >= 1
