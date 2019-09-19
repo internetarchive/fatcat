@@ -1221,4 +1221,55 @@ impl Api for Server {
         };
         Box::new(futures::done(Ok(ret)))
     }
+
+    fn create_auth_token(
+        &self,
+        editor_id: String,
+        duration_seconds: Option<i32>,
+        context: &Context,
+    ) -> Box<dyn Future<Item = CreateAuthTokenResponse, Error = ApiError> + Send> {
+        let conn = self.db_pool.get().expect("db_pool error");
+        let ret = match conn
+            .transaction(|| {
+                let auth_context = self.auth_confectionary.require_auth(
+                    &conn,
+                    &context.auth_data,
+                    Some("create_auth_token"),
+                )?;
+                auth_context.require_role(FatcatRole::Superuser)?;
+                // create an auth token. default to 31 day duration
+                let duration = match duration_seconds {
+                    Some(seconds) => {
+                        assert!(seconds >= 1);
+                        chrono::Duration::seconds(seconds.into())
+                    }
+                    None => chrono::Duration::days(31),
+                };
+                // TODO: does logic checking if account is locked happen elsewhere?
+                let token = self
+                    .auth_confectionary
+                    .create_token(FatcatId::from_str(&editor_id)?, Some(duration))?;
+                let result = AuthTokenResult { token };
+                Ok(result)
+            })
+            .map_err(|e: Error| FatcatError::from(e))
+        {
+            Ok(result) => {
+                self.metrics.incr("account.create_token").ok();
+                CreateAuthTokenResponse::Success(result)
+            }
+            Err(fe) => match fe {
+                InvalidCredentials(_) | InsufficientPrivileges(_) => {
+                    CreateAuthTokenResponse::Forbidden(fe.into())
+                }
+                DatabaseError(_) | InternalError(_) => {
+                    error!("{}", fe);
+                    capture_fail(&fe);
+                    CreateAuthTokenResponse::GenericError(fe.into())
+                }
+                _ => CreateAuthTokenResponse::BadRequest(fe.into()),
+            },
+        };
+        Box::new(futures::done(Ok(ret)))
+    }
 }
