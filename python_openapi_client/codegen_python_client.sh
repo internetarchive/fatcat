@@ -25,7 +25,7 @@ docker run \
 sudo chown -R `whoami`:`whoami` $OUTPUT
 mkdir -p fatcat_openapi_client
 cp -r $OUTPUT/fatcat_openapi_client/* fatcat_openapi_client
-cp $OUTPUT/README.md README.md
+cp $OUTPUT/README.md README.md.new
 
 # I don't know what they were thinking with this TypeWithDefault stuff, but it
 # caused really gnarly config cross-contamination issues when running mulitple
