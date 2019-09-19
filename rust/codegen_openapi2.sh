@@ -1,9 +1,22 @@
-#!/bin/sh
+#!/bin/bash
 
-echo "Running cargo-swagger..."
-cargo swagger ../fatcat-openapi2.yml fatcat-openapi --docker-tag=v2.3.1
+set -exu
+set -o pipefail
+
+echo "Running openapi-generator..."
+OUTPUT=`pwd`/fatcat-openapi
+cat ../fatcat-openapi2.yml | grep -v "TAGLINE$" | perl -0777 -pe "s/<\!-- STARTLONGDESCRIPTION -->.*<\!-- ENDLONGDESCRIPTION -->//s" > $OUTPUT/api.yaml
+docker run \
+    -v $OUTPUT:/tmp/swagger/ \
+    openapitools/openapi-generator-cli:v4.1.2 \
+    generate \
+    --generator-name rust-server \
+    --input-spec /tmp/swagger/api.yaml \
+    --output /tmp/swagger/ \
+    --package-name=fatcat-openapi
+
 sudo chown `whoami`:`whoami` -R fatcat-openapi
-git checkout fatcat-openapi/Cargo.toml
+#git checkout fatcat-openapi/Cargo.toml
 
 echo "Patching..."
 
@@ -15,15 +28,15 @@ sed -i 's/extern crate fatcat;/extern crate fatcat_openapi;/g' fatcat-openapi/ex
 sed -i 's/\/\/\/ Create Mime objects/\/\/ Create Mime objects/g' fatcat-openapi/src/mimetypes.rs
 
 # 2019 edition crate imports
-sed -i 's/use models;/use crate::models;/g' fatcat-openapi/src/client.rs fatcat-openapi/src/server.rs fatcat-openapi/src/models.rs
-sed -i 's/use mimetypes;/use crate::mimetypes;/g' fatcat-openapi/src/client.rs fatcat-openapi/src/server.rs
-sed -i 's/use {/use crate::{/g' fatcat-openapi/src/client.rs fatcat-openapi/src/server.rs
+sed -i 's/use models;/use crate::models;/g' fatcat-openapi/src/client/*.rs fatcat-openapi/src/server/*.rs fatcat-openapi/src/models.rs
+sed -i 's/use mimetypes;/use crate::mimetypes;/g' fatcat-openapi/src/client/*.rs fatcat-openapi/src/server/*.rs
+sed -i 's/use {/use crate::{/g' fatcat-openapi/src/client/*.rs fatcat-openapi/src/server/*.rs
 
 # weird broken auth example
 sed -i 's/chain.link_before(AllowAllMiddleware/\/\/chain.link_before(AllowAllMiddleware/g' fatcat-openapi/examples/server.rs
 
 # Hack to handle "extra" JSON fields
-sed -i 's/Object/serde_json::Value/g' fatcat-openapi/src/models.rs
+sed -i 's/, object/, serde_json::Value/g' fatcat-openapi/src/models.rs
 sed -i 's/extern crate uuid;/extern crate serde_json;\nextern crate uuid;/g' fatcat-openapi/src/models.rs
 
 # Hack to fix "release_date" as Date, not DateTime
@@ -41,9 +54,9 @@ sed -i 's/withdrawn_date: Option<chrono::DateTime<chrono::Utc>>/withdrawn_date: 
 #    .and_then(|x| Some(x.parse::<i64>()))
 #    .map_or_else(|| Ok(None), |x| x.map(|v| Some(v)))
 #    .map_err(|x| Response::with((status::InternalServerError, "unparsable query parameter (expected integer)".to_string())))?;
-sed -i 's/.and_then(|x| x.parse::<i64>().ok());$/.and_then(|x| Some(x.parse::<i64>())).map_or_else(|| Ok(None), |x| x.map(|v| Some(v))).map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected integer)".to_string())))?;/g' fatcat-openapi/src/server.rs
-sed -i 's/.and_then(|x| x.parse::<bool>().ok());$/.and_then(|x| Some(x.to_lowercase().parse::<bool>())).map_or_else(|| Ok(None), |x| x.map(|v| Some(v))).map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected boolean)".to_string())))?;/g' fatcat-openapi/src/server.rs
-sed -i 's/.and_then(|x| x.parse::<chrono::DateTime<chrono::Utc>>().ok());$/.and_then(|x| Some(x.parse::<chrono::DateTime<chrono::Utc>>())).map_or_else(|| Ok(None), |x| x.map(|v| Some(v))).map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected UTC datetime in ISO\/RFC format)".to_string())))?;/g' fatcat-openapi/src/server.rs
+sed -i 's/.and_then(|x| x.parse::<i64>().ok());$/.and_then(|x| Some(x.parse::<i64>())).map_or_else(|| Ok(None), |x| x.map(|v| Some(v))).map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected integer)".to_string())))?;/g' fatcat-openapi/src/server/*.rs
+sed -i 's/.and_then(|x| x.parse::<bool>().ok());$/.and_then(|x| Some(x.to_lowercase().parse::<bool>())).map_or_else(|| Ok(None), |x| x.map(|v| Some(v))).map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected boolean)".to_string())))?;/g' fatcat-openapi/src/server/*.rs
+sed -i 's/.and_then(|x| x.parse::<chrono::DateTime<chrono::Utc>>().ok());$/.and_then(|x| Some(x.parse::<chrono::DateTime<chrono::Utc>>())).map_or_else(|| Ok(None), |x| x.map(|v| Some(v))).map_err(|x| Response::with((status::BadRequest, "unparsable query parameter (expected UTC datetime in ISO\/RFC format)".to_string())))?;/g' fatcat-openapi/src/server/*.rs
 
 # unnecessary duplicate copies of API spec
 rm fatcat-openapi/api.yaml
