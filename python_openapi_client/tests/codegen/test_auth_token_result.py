@@ -16,12 +16,12 @@ from __future__ import absolute_import
 import unittest
 
 import fatcat_openapi_client
-from fatcat_openapi_client.models.release_ext_ids import ReleaseExtIds  # noqa: E501
+from fatcat_openapi_client.models.auth_token_result import AuthTokenResult  # noqa: E501
 from fatcat_openapi_client.rest import ApiException
 
 
-class TestReleaseExtIds(unittest.TestCase):
-    """ReleaseExtIds unit test stubs"""
+class TestAuthTokenResult(unittest.TestCase):
+    """AuthTokenResult unit test stubs"""
 
     def setUp(self):
         pass
@@ -29,10 +29,10 @@ class TestReleaseExtIds(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def testReleaseExtIds(self):
-        """Test ReleaseExtIds"""
+    def testAuthTokenResult(self):
+        """Test AuthTokenResult"""
         # FIXME: construct object with mandatory attributes with example values
-        # model = fatcat_openapi_client.models.release_ext_ids.ReleaseExtIds()  # noqa: E501
+        # model = fatcat_openapi_client.models.auth_token_result.AuthTokenResult()  # noqa: E501
         pass
 
 
