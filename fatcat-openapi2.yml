@@ -4055,7 +4055,6 @@ paths:
         - name: duration_seconds
           in: query
           type: integer
-          example: 86400
           required: false
           description: "How long API token should be valid for (in seconds)"
       responses:
