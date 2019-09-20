@@ -6,11 +6,6 @@
 <div class="ui segment">
 <h1 class="ui header">Edit Container Entity</h1>
 
-<p>See <a href="https://guide.fatcat.wiki/entity_container.html">the catalog
-style guide</a> for schema notes, and <a
-href="https://guide.fatcat.wiki/editing_quickstart.html">the editing
-tutorial</a> if this is your first time making an edit.
-
 <form class="ui form" id="edit_container_form" method="POST" action="{% if editgroup %}/editgroup/{{ editgroup.editgroup_id }}{% endif %}/container/{{ existing_ident }}/edit">
 {% endblock %}
 
