@@ -13,7 +13,7 @@ def run_crossref(args):
         bezerk_mode=args.bezerk_mode)
     if args.kafka_mode:
         KafkaJsonPusher(fci, args.kafka_hosts, args.kafka_env, "api-crossref",
-            "fatcat-import", edit_batch_size=args.batch_size).run()
+            "fatcat-import", consume_batch_size=args.batch_size).run()
     else:
         JsonLinePusher(fci, args.json_file).run()
 

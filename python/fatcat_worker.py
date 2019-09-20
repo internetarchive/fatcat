@@ -65,7 +65,7 @@ def main():
     sub_changelog.set_defaults(func=run_changelog)
     sub_changelog.add_argument('--poll-interval',
         help="how long to wait between polling (seconds)",
-        default=10.0, type=float)
+        default=5.0, type=float)
 
     sub_entity_updates = subparsers.add_parser('entity-updates')
     sub_entity_updates.set_defaults(func=run_entity_updates)

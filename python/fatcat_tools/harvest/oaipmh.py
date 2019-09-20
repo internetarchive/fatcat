@@ -8,7 +8,7 @@ import itertools
 import datetime
 import requests
 import sickle
-from confluent_kafka import Producer
+from confluent_kafka import Producer, KafkaException
 
 from fatcat_tools.workers import most_recent_message
 from .harvest_common import HarvestState
