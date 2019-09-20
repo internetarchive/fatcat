@@ -775,7 +775,6 @@ def make_kafka_consumer(hosts, env, topic_suffix, group):
         'bootstrap.servers': hosts,
         'group.id': group,
         'on_commit': fail_fast,
-        'delivery.report.only.error': True,
         # messages don't have offset marked as stored until pushed to
         # elastic, but we do auto-commit stored offsets to broker
         'enable.auto.offset.store': False,

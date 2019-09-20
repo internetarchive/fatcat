@@ -39,10 +39,7 @@ class HarvestOaiPmhWorker:
         self.state_topic = state_topic
         self.kafka_config = {
             'bootstrap.servers': kafka_hosts,
-            'delivery.report.only.error': True,
             'message.max.bytes': 20000000, # ~20 MBytes; broker is ~50 MBytes
-            'default.topic.config':
-                {'request.required.acks': 'all'},
         }
 
         self.loop_sleep = 60*60 # how long to wait, in seconds, between date checks
@@ -62,7 +59,14 @@ class HarvestOaiPmhWorker:
                 # TODO: should it be sys.exit(-1)?
                 raise KafkaException(err)
 
-        producer = Producer(self.kafka_config)
+        producer_conf = self.kafka_config.copy()
+        producer_conf.update({
+            'delivery.report.only.error': True,
+            'default.topic.config': {
+                'request.required.acks': -1, # all brokers must confirm
+            },
+        })
+        producer = Producer(producer_conf)
 
         api = sickle.Sickle(self.endpoint_url)
         date_str = date.isoformat()
@@ -88,7 +92,6 @@ class HarvestOaiPmhWorker:
                 item.raw.encode('utf-8'),
                 key=item.header.identifier.encode('utf-8'),
                 on_delivery=fail_fast)
-            producer.poll(0)
         producer.flush()
 
     def run(self, continuous=False):
