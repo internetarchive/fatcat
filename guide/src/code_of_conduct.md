@@ -67,9 +67,8 @@ online and in-person, and constitute code of conduct violations.
   For example, telling someone they’re not a real programmer or that they don’t
   belong in the project.
 
-- **Being especially unpleasant:** for example, if we’ve received reports from
-  multiple Recursers or faculty of annoying, rude, or especially distracting
-  behavior.
+- **Being especially unpleasant:** for example, if multiple community members
+  report annoying, rude, or especially distracting behavior.
 
 - Spamming, trolling, flaming, baiting or other attention-stealing behavior is
   not welcome.
