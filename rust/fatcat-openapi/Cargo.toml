@@ -9,8 +9,11 @@ repository = "https://github.com/internetarchive/fatcat"
 license = "CC0-1.0"
 
 [features]
-default = ["client", "server"]
-client = ["serde_json", "serde_ignored", "hyper", "hyper-openssl", "uuid"]
+# Need to disable all openssl due to Xenial/Bionic dependency friction. Easiest
+# way seems to be entirely disabling 'client' option, and removing
+# 'hyper-openssl' below (which should be optional)
+#client = ["serde_json", "serde_ignored", "hyper", "hyper-openssl", "uuid"]
+default = ["server"]
 server = ["serde_json", "serde_ignored", "hyper", "iron", "router", "bodyparser", "urlencoded", "uuid"]
 
 [dependencies]
@@ -19,7 +22,7 @@ server = ["serde_json", "serde_ignored", "hyper", "iron", "router", "bodyparser"
 chrono = { version = "0.4", features = ["serde"] }
 futures = "0.1"
 hyper = {version = "0.10", optional = true}
-hyper-openssl = {version = "0.2", optional = true }
+#hyper-openssl = {version = "0.2", optional = true }
 iron = {version = "0.6", optional = true}
 swagger = "0.7"
 
