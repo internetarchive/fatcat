@@ -43,9 +43,12 @@ Copy `./example.env` to `./.env` and update the `DATABASE_URL` and
 
 As your regular user, use `diesel` to create and initialize the `fatcat`
 database (`diesel` and the fatcat tools will automatically use postgresql
-credentials from the `.env` file):
+credentials from the `.env` file) as well as the `fatcat_test` database for
+automated tests:
 
+    source .env
     diesel database reset
+    DATABASE_URL=$TEST_DATABASE_URL diesel database reset
 
 Build and run the API server:
 
