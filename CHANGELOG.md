@@ -20,6 +20,12 @@ See also:
 
 - Switch from swagger-codegen to openapi-generator for python client generation
 
+## Added
+
+- webface endpoints for entity view URLs with an underscore instead of slash,
+  as a redirect. Eg, `https://fatcat.wiki/release_asdf` =>
+  `https://fatcat.wiki/release/asdf`. A hack to make copy/paste easier.
+
 ## [0.3.1] - 2019-09-18
 
 Many small web interface improvements, bug fixes, and importer additions are
