@@ -34,6 +34,8 @@ def test_entity_basics(app):
         # good requests
         rv = app.get('/{}/{}'.format(entity_type, ident))
         assert rv.status_code == 200
+        rv = app.get('/{}_{}'.format(entity_type, ident))
+        assert rv.status_code == 302
         rv = app.get('/{}/{}/history'.format(entity_type, ident))
         assert rv.status_code == 200
         rv = app.get('/{}/{}/metadata'.format(entity_type, ident))

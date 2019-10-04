@@ -231,6 +231,10 @@ def generic_editgroup_entity_view(editgroup_id, entity_type, ident, view_templat
 def container_view(ident):
     return generic_entity_view('container', ident, 'container_view.html')
 
+@app.route('/container_<ident>', methods=['GET'])
+def container_underscore_view(ident):
+    return redirect('/container/{}'.format(ident))
+
 @app.route('/container/<ident>/coverage', methods=['GET'])
 def container_view_coverage(ident):
     return generic_entity_view('container', ident, 'container_view_coverage.html')
@@ -260,6 +264,10 @@ def container_editgroup_view_metadata(editgroup_id, ident):
 def creator_view(ident):
     return generic_entity_view('creator', ident, 'creator_view.html')
 
+@app.route('/creator_<ident>', methods=['GET'])
+def creator_underscore_view(ident):
+    return redirect('/creator/{}'.format(ident))
+
 @app.route('/creator/<ident>/metadata', methods=['GET'])
 def creator_view_metadata(ident):
     return generic_entity_view('creator', ident, 'entity_view_metadata.html')
@@ -284,6 +292,10 @@ def creator_editgroup_view_metadata(editgroup_id, ident):
 @app.route('/file/<ident>', methods=['GET'])
 def file_view(ident):
     return generic_entity_view('file', ident, 'file_view.html')
+
+@app.route('/file_<ident>', methods=['GET'])
+def file_underscore_view(ident):
+    return redirect('/file/{}'.format(ident))
 
 @app.route('/file/<ident>/metadata', methods=['GET'])
 def file_view_metadata(ident):
@@ -310,6 +322,10 @@ def file_editgroup_view_metadata(editgroup_id, ident):
 def fileset_view(ident):
     return generic_entity_view('fileset', ident, 'fileset_view.html')
 
+@app.route('/fileset_<ident>', methods=['GET'])
+def fileset_underscore_view(ident):
+    return redirect('/fileset/{}'.format(ident))
+
 @app.route('/fileset/<ident>/metadata', methods=['GET'])
 def fileset_view_metadata(ident):
     return generic_entity_view('fileset', ident, 'entity_view_metadata.html')
@@ -335,6 +351,10 @@ def fileset_editgroup_view_metadata(editgroup_id, ident):
 def webcapture_view(ident):
     return generic_entity_view('webcapture', ident, 'webcapture_view.html')
 
+@app.route('/webcapture_<ident>', methods=['GET'])
+def webcapture_underscore_view(ident):
+    return redirect('/webcapture/{}'.format(ident))
+
 @app.route('/webcapture/<ident>/metadata', methods=['GET'])
 def webcapture_view_metadata(ident):
     return generic_entity_view('webcapture', ident, 'entity_view_metadata.html')
@@ -359,6 +379,10 @@ def webcapture_editgroup_view_metadata(editgroup_id, ident):
 @app.route('/release/<ident>', methods=['GET'])
 def release_view(ident):
     return generic_entity_view('release', ident, 'release_view.html')
+
+@app.route('/release_<ident>', methods=['GET'])
+def release_underscore_view(ident):
+    return redirect('/release/{}'.format(ident))
 
 @app.route('/release/<ident>/contribs', methods=['GET'])
 def release_view_contribs(ident):
@@ -408,6 +432,10 @@ def release_editgroup_view_metadata(editgroup_id, ident):
 @app.route('/work/<ident>', methods=['GET'])
 def work_view(ident):
     return generic_entity_view('work', ident, 'work_view.html')
+
+@app.route('/work_<ident>', methods=['GET'])
+def work_underscore_view(ident):
+    return redirect('/work/{}'.format(ident))
 
 @app.route('/work/<ident>/metadata', methods=['GET'])
 def work_view_metadata(ident):
