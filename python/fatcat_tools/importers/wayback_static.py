@@ -8,7 +8,6 @@ Works as a stand-alone script (for debugging) or as library routines.
 
 import sys
 import json
-import base64
 import hashlib
 import requests
 import datetime
@@ -17,20 +16,12 @@ import subprocess
 from bs4 import BeautifulSoup
 
 from fatcat_openapi_client import *
+from .common import b32_hex
 
 CDX_API_BASE = "https://web.archive.org/cdx/search/cdx"
 GWB_URL_BASE = "https://web.archive.org/web"
 REQ_SESSION = requests.Session()
 
-
-def b32_hex(s):
-    """copy/pasta from elsewhere"""
-    s = s.strip().split()[0].lower()
-    if s.startswith("sha1:"):
-        s = s[5:]
-    if len(s) != 32:
-        return s
-    return base64.b16encode(base64.b32decode(s.upper())).lower().decode('utf-8')
 
 def parse_wbm_url(url):
     """Takes a wayback machine URL, and returns a tuple:

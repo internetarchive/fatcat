@@ -1,20 +1,10 @@
 
 import sys
 import json
-import base64
 import sqlite3
 import itertools
 import fatcat_openapi_client
-from .common import EntityImporter, clean, make_rel_url, SANE_MAX_RELEASES, SANE_MAX_URLS
-
-
-def b32_hex(s):
-    s = s.strip().split()[0].lower()
-    if s.startswith("sha1:"):
-        s = s[5:]
-    if len(s) != 32:
-        return s
-    return base64.b16encode(base64.b32decode(s.upper())).lower().decode('utf-8')
+from .common import EntityImporter, clean, make_rel_url, SANE_MAX_RELEASES, SANE_MAX_URLS, b32_hex
 
 
 ARABESQUE_MATCH_WHERE_CLAUSE='WHERE hit = 1 AND identifier IS NOT NULL'

@@ -4,6 +4,7 @@ import sys
 import csv
 import json
 import ftfy
+import base64
 import sqlite3
 import subprocess
 import unicodedata
@@ -140,6 +141,14 @@ def test_clean():
     assert clean('a&amp;b') == 'a&b'
     assert clean('<b>a&amp;b</b>') == '<b>a&amp;b</b>'
     assert clean('<b>a&amp;b</b>', force_xml=True) == '<b>a&b</b>'
+
+def b32_hex(s):
+    s = s.strip().split()[0].lower()
+    if s.startswith("sha1:"):
+        s = s[5:]
+    if len(s) != 32:
+        return s
+    return base64.b16encode(base64.b32decode(s.upper())).lower().decode('utf-8')
 
 def is_cjk(s):
     if not s:
