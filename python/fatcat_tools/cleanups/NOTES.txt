@@ -1,0 +1,24 @@
+
+design is to iterate over JSON list of full entities. perform transforms/fixes.
+if no changes, bail early. if changes, do a request to check that current rev
+of entity is same as processed, to prevent race conditions; if a match, do
+update (in import/merge batch style).
+
+should pre-filter entities piped in. also have a CLI mode to do a single
+entity; check+update code should be distinct from fix code.
+
+releases
+- extra.subtitle => subtitle
+- has pmid, type is journal-article, title like "Retraction:" => type is retraction
+- similar to above, title like "Retracted:" => status is retracted
+- longtail release year is bogus (like > 2030?) => remove release year
+
+files
+- URL has ://archive.org/ link with rel=repository => rel=archive
+- URL has ://web.archive.org/web/None/ link => delete URL
+- URL has short wayback date ("2017") and another url with that as prefix => delete URL
+- mimetype is bogus like (???) => clean mimetype
+
+container
+- extra.issnp = "NA" => delete key
+    => in general, issne or issnp not valid ISSNs -> delete key
