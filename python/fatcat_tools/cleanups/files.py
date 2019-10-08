@@ -13,8 +13,7 @@ class FileCleaner(EntityCleaner):
 
     def __init__(self, api, **kwargs):
 
-        eg_desc = kwargs.pop('editgroup_description',
-            "Automated cleanup of file entities (eg, remove bad URLs)")
+        eg_desc = kwargs.pop('editgroup_description', None) or "Automated cleanup of file entities (eg, remove bad URLs)"
         eg_extra = kwargs.pop('editgroup_extra', dict())
         eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.FileCleaner')
         super().__init__(api,
@@ -69,6 +68,6 @@ class FileCleaner(EntityCleaner):
             self.counts['skip-revision'] += 1
             return 0
 
-        self.update_file(self.get_editgroup_id(), entity.ident, entity)
+        self.api.update_file(self.get_editgroup_id(), entity.ident, entity)
         return 1
 

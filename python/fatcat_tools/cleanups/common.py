@@ -39,7 +39,7 @@ class EntityCleaner:
         self.entity_type = entity_type
         self.dry_run_mode = kwargs.get('dry_run_mode', True)
         self.edit_batch_size = kwargs.get('edit_batch_size', 50)
-        self.editgroup_description = kwargs.get('editgroup_description')
+        self.editgroup_description = kwargs.get('editgroup_description', "Generic Entity Cleaner Bot")
         self.editgroup_extra = eg_extra
         self.reset()
         self.ac = ApiClient()
@@ -93,7 +93,7 @@ class EntityCleaner:
         if updated:
             self.counts['updated'] += updated
             self._edit_count += updated
-            self._idents.inflight.append(entity.ident)
+            self._idents_inflight.append(entity.ident)
 
         if self._edit_count >= self.edit_batch_size:
             self.api.accept_editgroup(self._editgroup_id)
