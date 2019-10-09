@@ -9,11 +9,15 @@ this file should probably get merged into the guide at some point.
 
 This file should not turn in to a TODO list!
 
+## 2019-10
+
+Updated 304,308 file entities to remove broken
+"https://web.archive.org/web/None/*" URLs.
+
 ## 2019-09
 
 Created and updated metadata for tens of thousands of containers, using
 "chocula" pipeline.
-
 
 ## 2019-08
 
