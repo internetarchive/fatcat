@@ -11,12 +11,14 @@ from .common import EntityImporter, clean
 
 # The docs/guide should be the cannonical home for these mappings; update there
 # first
+# Can get a list of Crossref types (with counts) via API:
+# https://api.crossref.org/works?rows=0&facet=type-name:*
 CROSSREF_TYPE_MAP = {
     'book': 'book',
     'book-chapter': 'chapter',
     'book-part': 'chapter',
     'book-section': 'chapter',
-    'component': None,
+    'component': 'component',
     'dataset': 'dataset',
     'dissertation': 'thesis',
     'edited-book': 'book',
