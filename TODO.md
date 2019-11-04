@@ -165,6 +165,7 @@ new importers:
 
 ## Schema / Entity Fields
 
+- file+fileset "first seen" datetime
 - file type/scope/coverage: "fulltext", "abstract", etc
 - elastic transform should only include authors, not editors (?)
 - `translation_of` field on releases (or similar/general). `retraction_of` to a
