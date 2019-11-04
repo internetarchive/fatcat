@@ -174,10 +174,12 @@ class CrossrefImporter(EntityImporter):
         if obj.get('type') in (None, 'journal', 'proceedings',
                 'standard-series', 'report-series', 'book-series', 'book-set',
                 'book-track', 'proceedings-series'):
+            self.counts['skip-release-type'] += 1
             return None
 
         # Do require the 'title' keys to exsit, as release entities do
         if (not 'title' in obj) or (not obj['title']):
+            self.counts['skip-blank-title'] += 1
             return None
 
         release_type = self.map_release_type(obj['type'])
@@ -376,10 +378,13 @@ class CrossrefImporter(EntityImporter):
 
         # filter out unreasonably huge releases
         if len(abstracts) > 100:
+            self.counts['skip-huge-abstracts'] += 1
             return None
-        if len(refs) > 2000:
+        if len(contribs) > 2000:
+            self.counts['skip-huge-contribs'] += 1
             return None
         if len(refs) > 5000:
+            self.counts['skip-huge-refs'] += 1
             return None
 
         # release date parsing is amazingly complex
@@ -406,6 +411,7 @@ class CrossrefImporter(EntityImporter):
             title = clean(obj.get('title')[0], force_xml=True)
             if not title or len(title) <= 1:
                 # title can't be just a single character
+                self.counts['skip-blank-title'] += 1
                 return None
 
         subtitle = None
