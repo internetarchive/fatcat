@@ -58,7 +58,7 @@ def test_crossref_importer(crossref_importer):
 def test_crossref_mappings(crossref_importer):
     assert crossref_importer.map_release_type('journal-article') == "article-journal"
     assert crossref_importer.map_release_type('asdf') is None
-    assert crossref_importer.map_release_type('component') is None
+    assert crossref_importer.map_release_type('book-series') is None
     assert crossref_importer.map_release_type('standard') == 'standard'
 
 def test_crossref_importer_create(crossref_importer):
