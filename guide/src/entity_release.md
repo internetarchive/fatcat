@@ -216,6 +216,8 @@ with a small number of (proposed) extensions:
 - `stub` (fatcat extension) for releases which have notable external
   identifiers, and thus are included "for completeness", but don't seem to
   represent a "full work".
+- `component` (fatcat extension) for sub-components of a full paper (or other
+  work). Eg, figures or tables.
   
 An example of a `stub` might be a paper that gets an extra DOI by accident; the
 primary DOI should be a full release, and the accidental DOI can be a `stub`

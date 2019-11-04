@@ -540,6 +540,7 @@ pub fn check_release_type(raw: &str) -> Result<()> {
         "letter",
         "stub",
         "retraction",
+        "component",
     ];
     for good in valid_types {
         if raw == good {
