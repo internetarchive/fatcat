@@ -413,7 +413,7 @@ class CrossrefImporter(EntityImporter):
             subtitle = clean(obj.get('subtitle')[0], force_xml=True)
             if not subtitle or len(subtitle) <= 1:
                 # subtitle can't be just a single character
-                return None
+                subtitle = None
 
         if extra_crossref:
             extra['crossref'] = extra_crossref
