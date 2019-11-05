@@ -160,6 +160,7 @@ class CrossrefImporter(EntityImporter):
 
     def want(self, obj):
         if not obj.get('title'):
+            self.counts['skip-blank-title'] += 1
             return False
 
         # do most of these checks in-line below
