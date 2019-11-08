@@ -43,6 +43,11 @@ Almost all configuration is done via environment variables; see `example.env`
 for a list of settings. If you copy this file to `.env` it will be sourced by
 `pipenv` automatically; you can also load it in your shell like `source .env`.
 
+If elasticsearch is not set up, you might want to create two empty indices:
+
+    curl -XPUT localhost:9200/fatcat_release
+    curl -XPUT localhost:9200/fatcat_container
+
 ## Running Tests
 
 Many (though not all) python tests depend on access to a local running API
