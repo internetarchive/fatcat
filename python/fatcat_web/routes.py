@@ -673,9 +673,12 @@ def release_search():
     if container_id and query:
         query += ' container_id:"{}"'.format(container_id)
 
+    offset = request.args.get('offset', '0')
+    offset = max(0, int(offset)) if offset.isnumeric() else 0
+
     if 'q' in request.args.keys():
         # always do files for HTML
-        found = do_release_search(query, fulltext_only=fulltext_only)
+        found = do_release_search(query, fulltext_only=fulltext_only, offset=offset)
         return render_template('release_search.html', found=found, query=query, fulltext_only=fulltext_only)
     else:
         return render_template('release_search.html', query=query, fulltext_only=fulltext_only)
@@ -684,10 +687,12 @@ def release_search():
 def container_search():
 
     query = request.args.get('q')
+    offset = request.args.get('offset', '0')
+    offset = max(0, int(offset)) if offset.isnumeric() else 0
 
     if 'q' in request.args.keys():
         # always do files for HTML
-        found = do_container_search(query)
+        found = do_container_search(query, offset=offset)
         return render_template('container_search.html', found=found, query=query)
     else:
         return render_template('container_search.html', query=query)

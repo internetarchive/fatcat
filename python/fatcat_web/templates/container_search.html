@@ -30,7 +30,26 @@
 
 {% if found %}
 {% if found.results %}
-  <i>Showing top {{ found.count_returned }} out of {{ found.count_found }} results for: <code>{{ found.query.q }}</code></i>
+  <i>Showing
+    {% if found.offset == 0 %}
+      first
+    {% else %}
+      results {{ found.offset }} &mdash;
+    {% endif %}
+    {{ found.offset + found.count_returned }} out of {{ found.count_found }} results for: <code>{{ found.query.q }}</code></i>
+  <br>
+  {% if found.offset > 0 %}
+      {% if found.offset - found.limit < 0 %}
+        <a href="{{ url_for('release_search', q=query, offset=0) }}">Prev</a>
+      {% else %}
+        <a href="{{ url_for('release_search', q=query, offset=found.offset - found.limit) }}">Prev</a>
+      {% endif %}
+  {% endif %}
+
+  {% if found.offset + found.limit < found.count_found and found.offset + found.limit < found.deep_page_limit %}
+    <a href="{{ url_for('release_search', q=query, offset=found.offset + found.limit) }}">Next</a>
+  {% endif %}
+
 {% for entity in found.results %}
 <div>
   <h4 style="margin-top: 1em; margin-bottom: 4px; font-size: 1.1em;">

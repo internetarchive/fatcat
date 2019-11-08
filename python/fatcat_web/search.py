@@ -11,15 +11,20 @@ import requests
 from flask import abort, flash
 from fatcat_web import app
 
+def do_search(index, request, limit=30, offset=0, deep_page_limit=2000):
 
-def do_search(index, request, limit=30):
-
+    # Sanity checks
     if limit > 100:
-        # Sanity check
         limit = 100
+    if offset < 0:
+        offset = 0
+    if offset > deep_page_limit:
+        # Avoid deep paging problem.
+        offset = deep_page_limit
 
     request["size"] = int(limit)
-    #print(request)
+    request["from"] = int(offset)
+    # print(request)
     resp = requests.get("%s/%s/_search" %
             (app.config['ELASTICSEARCH_BACKEND'], index),
         json=request)
@@ -45,10 +50,12 @@ def do_search(index, request, limit=30):
 
     return {"count_returned": len(results),
             "count_found": content['hits']['total'],
-            "results": results }
+            "results": results,
+            "offset": offset,
+            "deep_page_limit": deep_page_limit}
 
 
-def do_release_search(q, limit=30, fulltext_only=True):
+def do_release_search(q, limit=30, fulltext_only=True, offset=0):
 
     #print("Search hit: " + q)
     if limit > 100:
@@ -75,17 +82,18 @@ def do_release_search(q, limit=30, fulltext_only=True):
         },
     }
 
-    resp = do_search(app.config['ELASTICSEARCH_RELEASE_INDEX'], search_request)
+    resp = do_search(app.config['ELASTICSEARCH_RELEASE_INDEX'], search_request, offset=offset)
     for h in resp['results']:
         # Ensure 'contrib_names' is a list, not a single string
         if type(h['contrib_names']) is not list:
             h['contrib_names'] = [h['contrib_names'], ]
         h['contrib_names'] = [name.encode('utf8', 'ignore').decode('utf8') for name in h['contrib_names']]
     resp["query"] = { "q": q }
+    resp["limit"] = limit
     return resp
 
 
-def do_container_search(q, limit=30):
+def do_container_search(q, limit=30, offset=0):
 
     # Convert raw ISSN-L to ISSN-L query
     if len(q.split()) == 1 and len(q) == 9 and q[0:4].isdigit() and q[4] == '-':
@@ -103,8 +111,9 @@ def do_container_search(q, limit=30):
         },
     }
 
-    resp = do_search(app.config['ELASTICSEARCH_CONTAINER_INDEX'], search_request, limit=limit)
+    resp = do_search(app.config['ELASTICSEARCH_CONTAINER_INDEX'], search_request, limit=limit, offset=offset)
     resp["query"] = { "q": q }
+    resp["limit"] = limit
     return resp
 
 def get_elastic_entity_stats():
