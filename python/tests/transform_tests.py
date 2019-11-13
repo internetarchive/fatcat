@@ -16,7 +16,7 @@ def test_basic_elasticsearch_convert(crossref_importer):
     r.state = 'active'
     release_to_elasticsearch(r)
 
-def test_rich_elasticsearch_convert(crossref_importer):
+def test_rich_elasticsearch_convert():
     r = ReleaseEntity(
         title="something",
         release_year=1234,
