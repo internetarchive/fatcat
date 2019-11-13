@@ -711,6 +711,7 @@ class KafkaJsonPusher(RecordPusher):
             kafka_env,
             topic_suffix,
             group,
+            kafka_namespace=kwargs.get('kafka_namespace', 'fatcat')
         )
         self.poll_interval = kwargs.get('poll_interval', 5.0)
         self.consume_batch_size = kwargs.get('consume_batch_size', 100)
@@ -758,8 +759,8 @@ class KafkaJsonPusher(RecordPusher):
         return counts
 
 
-def make_kafka_consumer(hosts, env, topic_suffix, group):
-    topic_name = "fatcat-{}.{}".format(env, topic_suffix)
+def make_kafka_consumer(hosts, env, topic_suffix, group, kafka_namespace="fatcat"):
+    topic_name = "{}-{}.{}".format(kafka_namespace, env, topic_suffix)
 
     def fail_fast(err, partitions):
         if err is not None:
