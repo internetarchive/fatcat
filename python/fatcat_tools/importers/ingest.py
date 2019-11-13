@@ -28,13 +28,33 @@ class IngestFileResultImporter(EntityImporter):
             print("Requiring GROBID status == 200")
         else:
             print("NOT checking GROBID success")
+        self.project_whitelist = ['fatcat-changelog']
 
     def want(self, row):
+        """
+        Logic here probably needs work:
+
+        - Direct ingests via DOI from fatcat-changelog should probably go
+          through regardless of GROBID status
+        - We should filter/block things like single-page PDFs here
+        - public/anonymous submissions could require successful biblio-glutton
+          match, or some other sanity check on the fatcat side (eg, fuzzy title
+          match)
+        - handle the case of release_stage not being 'published'; if pre-print,
+          potentially create a new release.
+
+        The current logic is intentionally conservative as a first step.
+        """
         if self.require_grobid and not row.get('grobid', {}).get('status_code') == 200:
+            self.counts['skip-grobid'] += 1
+            return False
+        if self.project_whitelist and row.get('project') not in self.project_whitelist:
+            self.counts['skip-project'] += 1
             return False
         if row.get('hit') == True and row.get('file_meta'):
             return True
         else:
+            self.counts['skip-hit'] += 1
             return False
 
     def parse_record(self, row):
@@ -43,7 +63,7 @@ class IngestFileResultImporter(EntityImporter):
         fatcat = request.get('fatcat')
         file_meta = row['file_meta']
 
-        # identify release by fatcat ident or extid lookup
+        # identify release by fatcat ident, or extid lookup, or biblio-glutton match
         release_ident = None
         if fatcat and fatcat.get('release_ident'):
             release_ident = fatcat.get('release_ident')
@@ -63,12 +83,19 @@ class IngestFileResultImporter(EntityImporter):
                         continue
                 release_ident = release.ident
                 break
+        if not release and row.get('grobid'):
+            # try biblio-glutton extracted hit
+            if row['grobid'].get('fatcat_ident'):
+                release = row['grobid']['fatcat_ident'].split('_')[-1]
 
         if not release:
             self.counts['skip-release-not-found'] += 1
+            return None
 
         cdx = row.get('cdx')
         if not cdx:
+            # TODO: support archive.org hits?
+            self.counts['skip-no-cdx'] += 1
             return None
 
         url = make_rel_url(cdx['url'], self.default_link_rel)

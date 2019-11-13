@@ -45,7 +45,7 @@ def release_ingest_request(release, oa_only=False, project='fatcat'):
         if v:
             ext_ids[k] = v
 
-    if oa_only and not ext_ids['arxiv'] and not ext_ids['pmcid']:
+    if oa_only and not ext_ids.get('arxiv') and not ext_ids.get('pmcid'):
         es = release_to_elasticsearch(release)
         if not es['is_oa']:
             return None
