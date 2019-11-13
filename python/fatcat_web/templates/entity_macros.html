@@ -234,3 +234,43 @@ yellow
 {% endif %}
 {%- endmacro %}
 
+{% macro top_results(found) -%}
+
+<i>Showing
+  {% if found.offset == 0 %}
+  first
+  {% else %}
+  results {{ found.offset }} &mdash;
+  {% endif %}
+  
+  {{ found.offset + found.count_returned }}
+  out of {{ found.count_found }} results
+</i>
+
+{%- endmacro %}
+
+
+{% macro bottom_results(found) -%}
+
+{% if found.offset > 0 %}
+  {% if found.offset - found.limit < 0 %}
+    <a href="{{ url_for('release_search', q=found.query.q, offset=0) }}">&#xab; Previous</a>
+  {% else %}
+    <a href="{{ url_for('release_search', q=found.query.q, offset=found.offset - found.limit) }}">&#xab; Previous</a>
+  {% endif %}
+{% else %}
+  &#xab; Previous
+{% endif %}
+
+&nbsp;&nbsp;<i>Showing results {{ found.offset }} &mdash; {{ found.offset +
+found.count_returned }} out of {{ found.count_found }} results</i>&nbsp;&nbsp;
+
+{% if found.offset + found.limit < found.count_found and found.offset + found.limit < found.deep_page_limit %}
+  <a href="{{ url_for('release_search', q=found.query.q, offset=found.offset + found.limit) }}">Next &#xbb;</a>
+  {% else %}
+  Next &#xbb;
+{% endif %}
+
+</div>
+
+{%- endmacro %}
