@@ -22,6 +22,10 @@ def handle_token_login(token):
         # TODO: what kind of Exceptions?
         app.log.warning("auth fail: MacaroonDeserializationException")
         return abort(400)
+    except pymacaroons.exceptions.MacaroonInitException:
+        # TODO: what kind of Exceptions?
+        app.log.warning("auth fail: must supply a valid token")
+        return abort(400)
     # extract editor_id
     editor_id = None
     for caveat in m.first_party_caveats():
