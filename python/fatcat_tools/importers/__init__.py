@@ -26,5 +26,4 @@ from .orcid import OrcidImporter
 from .arabesque import ArabesqueMatchImporter, ARABESQUE_MATCH_WHERE_CLAUSE
 from .wayback_static import auto_wayback_static
 from .cdl_dash_dat import auto_cdl_dash_dat
-#from .kafka_source import KafkaSource
-#from .file_source import FileSource
+from .ingest import IngestFileResultImporter

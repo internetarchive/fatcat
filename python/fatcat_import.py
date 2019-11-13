@@ -89,6 +89,19 @@ def run_arabesque_match(args):
     elif args.json_file:
         JsonLinePusher(ami, args.json_file).run()
 
+def run_ingest_file(args):
+    ifri = IngestFileResultImporter(args.api,
+        do_updates=args.do_updates,
+        default_link_rel=args.default_link_rel,
+        require_grobid=(not args.no_require_grobid),
+        edit_batch_size=args.batch_size)
+    if args.kafka_mode:
+        KafkaJsonPusher(ifri, args.kafka_hosts, args.kafka_env, "ingest-file-results",
+            "fatcat-ingest-file-result", kafka_namespace="sandcrawler",
+            consume_batch_size=args.batch_size).run()
+    else:
+        JsonLinePusher(ifri, args.json_file).run()
+
 def run_grobid_metadata(args):
     fmi = GrobidMetadataImporter(args.api,
         edit_batch_size=args.batch_size,
@@ -309,6 +322,27 @@ def main():
     sub_arabesque_match.add_argument('--crawl-id',
         help="crawl ID (optionally included in editgroup metadata)")
     sub_arabesque_match.add_argument('--default-link-rel',
+        default="web",
+        help="default URL rel for matches (eg, 'publisher', 'web')")
+
+    sub_ingest_file = subparsers.add_parser('ingest-file-result')
+    sub_ingest_file.set_defaults(
+        func=run_ingest_file,
+        auth_var="FATCAT_AUTH_WORKER_SANDCRAWLER",
+    )
+    sub_ingest_file.add_argument('json_file',
+        help="ingest_file JSON file to import from",
+        default=sys.stdin, type=argparse.FileType('r'))
+    sub_ingest_file.add_argument('--kafka-mode',
+        action='store_true',
+        help="consume from kafka topic (not stdin)")
+    sub_ingest_file.add_argument('--do-updates',
+        action='store_true',
+        help="update pre-existing file entities if new match (instead of skipping)")
+    sub_ingest_file.add_argument('--no-require-grobid',
+        action='store_true',
+        help="whether postproc_status column must be '200'")
+    sub_ingest_file.add_argument('--default-link-rel',
         default="web",
         help="default URL rel for matches (eg, 'publisher', 'web')")
 
