@@ -325,7 +325,7 @@ def main():
         default="web",
         help="default URL rel for matches (eg, 'publisher', 'web')")
 
-    sub_ingest_file = subparsers.add_parser('ingest-file-result')
+    sub_ingest_file = subparsers.add_parser('ingest-file-results')
     sub_ingest_file.set_defaults(
         func=run_ingest_file,
         auth_var="FATCAT_AUTH_WORKER_SANDCRAWLER",
