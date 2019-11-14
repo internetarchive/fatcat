@@ -28,7 +28,8 @@ class IngestFileResultImporter(EntityImporter):
             print("Requiring GROBID status == 200")
         else:
             print("NOT checking GROBID success")
-        self.project_whitelist = ['fatcat-changelog']
+        #self.project_whitelist = ['fatcat-changelog']
+        self.project_whitelist = []
 
     def want(self, row):
         """
@@ -83,12 +84,12 @@ class IngestFileResultImporter(EntityImporter):
                         continue
                 release_ident = release.ident
                 break
-        if not release and row.get('grobid'):
+        if not release_ident and row.get('grobid'):
             # try biblio-glutton extracted hit
             if row['grobid'].get('fatcat_ident'):
                 release = row['grobid']['fatcat_ident'].split('_')[-1]
 
-        if not release:
+        if not release_ident:
             self.counts['skip-release-not-found'] += 1
             return None
 
