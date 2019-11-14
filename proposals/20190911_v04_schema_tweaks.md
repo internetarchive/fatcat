@@ -15,6 +15,7 @@ SQL (and API, and elasticsearch):
   `abstract`, `component`. Unclear how to initialize this field; default to
   `article`/`work`?
 - TODO: release: switch how pages work? first/last?
+- TODO: indication of peer-review process? at release or container level?
 
 API tweaks:
 
