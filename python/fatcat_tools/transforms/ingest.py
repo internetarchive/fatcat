@@ -30,8 +30,8 @@ def release_ingest_request(release, oa_only=False, project='fatcat'):
         url = "https://arxiv.org/pdf/{}.pdf".format(release.ext_ids.arxiv)
         expect_mimetypes = ['application/pdf']
     elif release.ext_ids.pmcid:
-        #url = "https://www.ncbi.nlm.nih.gov/pmc/articles/{}/pdf/".format(release.pmcid)
-        url = "http://europepmc.org/backend/ptpmcrender.fcgi?accid={}&blobtype=pdf".format(release.pmcid)
+        #url = "https://www.ncbi.nlm.nih.gov/pmc/articles/{}/pdf/".format(release.ext_ids.pmcid)
+        url = "http://europepmc.org/backend/ptpmcrender.fcgi?accid={}&blobtype=pdf".format(release.ext_ids.pmcid)
         expect_mimetypes = ['application/pdf']
     elif release.ext_ids.doi:
         url = "https://doi.org/{}".format(release.ext_ids.doi)
