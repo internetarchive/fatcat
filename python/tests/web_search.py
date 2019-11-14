@@ -16,7 +16,7 @@ def test_release_search(app):
 
     rv = app.get('/release/search?q=blood')
     assert rv.status_code == 200
-    assert b"Showing top " in rv.data
+    assert b"Showing first " in rv.data
 
 @responses.activate
 def test_container_search(app):
@@ -29,7 +29,7 @@ def test_container_search(app):
 
     rv = app.get('/container/search?q=blood')
     assert rv.status_code == 200
-    assert b"Showing top " in rv.data
+    assert b"Showing first " in rv.data
     assert b"European Instructional Course Lectures" in rv.data
     assert b"British Editorial Society of Bone and Joint Surger" in rv.data
 
