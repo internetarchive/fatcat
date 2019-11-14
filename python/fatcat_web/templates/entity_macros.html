@@ -259,7 +259,7 @@ yellow
     <a href="{{ url_for('release_search', q=found.query.q, offset=found.offset - found.limit) }}">&#xab; Previous</a>
   {% endif %}
 {% else %}
-  &#xab; Previous
+  <span style="color:gray">&#xab; Previous</span>
 {% endif %}
 
 &nbsp;&nbsp;<i>Showing results {{ found.offset }} &mdash; {{ found.offset +
@@ -268,7 +268,7 @@ found.count_returned }} out of {{ found.count_found }} results</i>&nbsp;&nbsp;
 {% if found.offset + found.limit < found.count_found and found.offset + found.limit < found.deep_page_limit %}
   <a href="{{ url_for('release_search', q=found.query.q, offset=found.offset + found.limit) }}">Next &#xbb;</a>
   {% else %}
-  Next &#xbb;
+  <span style="color:gray">Next &#xbb;</span>
 {% endif %}
 
 </div>
