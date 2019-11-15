@@ -36,13 +36,16 @@
 
 {% if found %}
 {% if found.results %}
-  <i>Showing top {{ found.count_returned }} out of {{ found.count_found }} results for: <code>{{ found.query.q }}</code></i>
-{% for paper in found.results %}
+    {{ entity_macros.top_results(found) }}
+
+  {% for paper in found.results %}
   {{ entity_macros.release_search_result_row(paper) }}
 {% endfor %}
 {% if found.results|length > 8 %}
-  <br>
-  <i>Showing top {{ found.count_returned }} out of {{ found.count_found }} results for: <code>{{ found.query.q }}</code></i>
+  <div class="ui divider"></div>
+  <div style="text-align: center">
+  {{ entity_macros.bottom_results(found)}}
+  </div>
 {% endif %}
 {% else %}
 
