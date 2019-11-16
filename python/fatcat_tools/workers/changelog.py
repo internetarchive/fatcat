@@ -222,7 +222,7 @@ class EntityUpdatesWorker(FatcatWorker):
                 )
                 # filter to "new" active releases with no matched files
                 if release.ident in new_release_ids:
-                    ir = release_ingest_request(release, project='fatcat-changelog', oa_only=self.ingest_oa_only)
+                    ir = release_ingest_request(release, ingest_request_source='fatcat-changelog', oa_only=self.ingest_oa_only)
                     if ir and ir['ingest_type'] == 'file' and not release.files:
                         producer.produce(
                             self.ingest_file_request_topic,

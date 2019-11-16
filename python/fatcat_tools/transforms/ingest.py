@@ -1,7 +1,7 @@
 
 from .elasticsearch import release_to_elasticsearch
 
-def release_ingest_request(release, oa_only=False, project='fatcat'):
+def release_ingest_request(release, oa_only=False, ingest_request_source='fatcat'):
     """
     Takes a full release entity object and returns an ingest request (as dict),
     or None if it seems like this release shouldn't be ingested.
@@ -52,7 +52,7 @@ def release_ingest_request(release, oa_only=False, project='fatcat'):
 
     ingest_request = {
         'ingest_type': 'file',
-        'project': project,
+        'ingest_request_source': ingest_request_source,
         'base_url': url,
         'fatcat': {
             'release_stage': release.release_stage,

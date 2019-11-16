@@ -28,8 +28,8 @@ class IngestFileResultImporter(EntityImporter):
             print("Requiring GROBID status == 200")
         else:
             print("NOT checking GROBID success")
-        #self.project_whitelist = ['fatcat-changelog']
-        self.project_whitelist = []
+        self.ingest_request_source_whitelist = ['fatcat-changelog']
+        #self.ingest_request_source_whitelist = []
 
     def want(self, row):
         """
@@ -49,8 +49,8 @@ class IngestFileResultImporter(EntityImporter):
         if self.require_grobid and not row.get('grobid', {}).get('status_code') == 200:
             self.counts['skip-grobid'] += 1
             return False
-        if self.project_whitelist and row.get('project') not in self.project_whitelist:
-            self.counts['skip-project'] += 1
+        if self.ingest_request_source_whitelist and row.get('ingest_request_source') not in self.ingest_request_source_whitelist:
+            self.counts['skip-ingest_request_source'] += 1
             return False
         if row.get('hit') == True and row.get('file_meta'):
             return True
@@ -122,10 +122,10 @@ class IngestFileResultImporter(EntityImporter):
         )
         if fatcat and fatcat.get('edit_extra'):
             fe.edit_extra = fatcat['edit_extra']
-        if request.get('project'):
+        if request.get('ingest_request_source'):
             if not fe.edit_extra:
                 fe.edit_extra = dict()
-            fe.edit_extra['project'] = request['project']
+            fe.edit_extra['ingest_request_source'] = request['ingest_request_source']
         return fe
 
     def try_update(self, fe):
