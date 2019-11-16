@@ -46,17 +46,20 @@ class IngestFileResultImporter(EntityImporter):
 
         The current logic is intentionally conservative as a first step.
         """
-        if self.require_grobid and not row.get('grobid', {}).get('status_code') == 200:
-            self.counts['skip-grobid'] += 1
-            return False
-        if self.ingest_request_source_whitelist and row.get('ingest_request_source') not in self.ingest_request_source_whitelist:
-            self.counts['skip-ingest_request_source'] += 1
-            return False
-        if row.get('hit') == True and row.get('file_meta'):
-            return True
-        else:
+        if row.get('hit') != True:
             self.counts['skip-hit'] += 1
             return False
+        if self.ingest_request_source_whitelist and row['request'].get('ingest_request_source') not in self.ingest_request_source_whitelist:
+            self.counts['skip-ingest_request_source'] += 1
+            return False
+        if not row.get('file_meta'):
+            self.counts['skip-file-meta'] += 1
+            return False
+        if self.require_grobid and row.get('grobid', {}).get('status_code') != 200:
+            self.counts['skip-grobid'] += 1
+            return False
+
+        return True
 
     def parse_record(self, row):
 
