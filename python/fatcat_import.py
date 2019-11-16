@@ -328,7 +328,7 @@ def main():
     sub_ingest_file = subparsers.add_parser('ingest-file-results')
     sub_ingest_file.set_defaults(
         func=run_ingest_file,
-        auth_var="FATCAT_AUTH_WORKER_SANDCRAWLER",
+        auth_var="FATCAT_AUTH_WORKER_CRAWL",
     )
     sub_ingest_file.add_argument('json_file',
         help="ingest_file JSON file to import from",
