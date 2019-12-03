@@ -344,6 +344,9 @@ class FileEntityForm(EntityEditForm):
         """
         for simple_attr in FILE_SIMPLE_ATTRS:
             a = getattr(self, simple_attr).data
+            # be flexible about hash capitalization
+            if simple_attr in ('md5', 'sha1', 'sha256'):
+                a = a.lower()
             # special case blank strings
             if a == '':
                 a = None
