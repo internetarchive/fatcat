@@ -122,6 +122,16 @@ def test_web_file_create(app_admin, api):
         follow_redirects=True)
     assert rv.status_code == 200
 
+    # upper-case SHA-1
+    rv = app_admin.post('/file/create',
+        data={
+            'editgroup_id': eg.editgroup_id,
+            'size': '12345',
+            'sha1': '45BE56A396C4D03FAAA41E055170C23534DEC736',
+        },
+        follow_redirects=True)
+    assert rv.status_code == 200
+
 
 def test_web_edit_get(app_admin):
 
