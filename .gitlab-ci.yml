@@ -14,7 +14,7 @@ variables:
   PIPENV_VENV_IN_PROJECT: "true"
   CARGO_HOME: ".cargo_cache"
 
-image: "rust:1.35-stretch"
+image: "rust:1.36-stretch"
 
 unified_test:
   variables:
