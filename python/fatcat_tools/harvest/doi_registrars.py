@@ -18,9 +18,8 @@ class HarvestCrossrefWorker:
     Notes on crossref API:
 
     - from-index-date is the updated time
-    - is-update can be false, to catch only new or only old works
 
-    https://api.crossref.org/works?filter=from-index-date:2018-11-14,is-update:false&rows=2
+    https://api.crossref.org/works?filter=from-index-date:2018-11-14&rows=2
 
     I think the design is going to have to be a cronjob or long-running job
     (with long sleeps) which publishes "success through" to a separate state
@@ -47,13 +46,12 @@ class HarvestCrossrefWorker:
 
     def __init__(self, kafka_hosts, produce_topic, state_topic, contact_email,
             api_host_url="https://api.crossref.org/works", start_date=None,
-            end_date=None, is_update_filter=None):
+            end_date=None):
 
         self.api_host_url = api_host_url
         self.produce_topic = produce_topic
         self.state_topic = state_topic
         self.contact_email = contact_email
-        self.is_update_filter = is_update_filter
         self.kafka_config = {
             'bootstrap.servers': kafka_hosts,
             'message.max.bytes': 20000000, # ~20 MBytes; broker is ~50 MBytes
@@ -69,8 +67,6 @@ class HarvestCrossrefWorker:
     def params(self, date_str):
         filter_param = 'from-index-date:{},until-index-date:{}'.format(
             date_str, date_str)
-        if self.is_update_filter is not None:
-            filter_param += ',is_update:{}'.format(bool(self.is_update_filter))
         return {
             'filter': filter_param,
             'rows': self.api_batch_size,
