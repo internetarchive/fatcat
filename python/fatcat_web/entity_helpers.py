@@ -72,10 +72,16 @@ def enrich_release_entity(entity):
     # index=None go to end of list)
     authors = [c for c in entity.contribs if c.role in ('author', None)]
     entity._authors = sorted(authors, key=lambda c: (c.index == None and 99999999) or c.index)
-    # hack to show plain text instead of latex abstracts
     if entity.abstracts:
+        # hack to show plain text instead of latex abstracts
         if 'latex' in entity.abstracts[0].mimetype:
             entity.abstracts.reverse()
+        # hack to (partially) clean up common JATS abstract display case
+        if entity.abstracts[0].mimetype == 'application/xml+jats':
+            entity.abstracts[0].content = entity.abstracts[0].content.replace('<jats>', '')
+            entity.abstracts[0].content = entity.abstracts[0].content.replace('</jats>', '')
+            entity.abstracts[0].content = entity.abstracts[0].content.replace('<jats:p>', '')
+            entity.abstracts[0].content = entity.abstracts[0].content.replace('</jats:p>', '')
     return entity
 
 def enrich_work_entity(entity):
