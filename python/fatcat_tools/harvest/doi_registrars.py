@@ -8,6 +8,7 @@ import itertools
 import datetime
 import requests
 from confluent_kafka import Producer, KafkaException
+from urllib.parse import urlparse, parse_qs
 
 from fatcat_tools.workers import most_recent_message
 from .harvest_common import HarvestState, requests_retry_session
@@ -179,7 +180,7 @@ class HarvestDataciteWorker(HarvestCrossrefWorker):
     """
 
     def __init__(self, kafka_hosts, produce_topic, state_topic, contact_email,
-            api_host_url="https://api.datacite.org/works",
+            api_host_url="https://api.datacite.org/dois",
             start_date=None, end_date=None):
         super().__init__(kafka_hosts=kafka_hosts,
                          produce_topic=produce_topic,
@@ -193,11 +194,13 @@ class HarvestDataciteWorker(HarvestCrossrefWorker):
         self.name = "Datacite"
 
     def params(self, date_str):
+        """
+        Dates have to be supplied in 2018-10-27T22:36:30.000Z format.
+        """
         return {
-            'from-update-date': date_str,
-            'until-update-date': date_str,
+            'query': 'updated:[{}T00:00:00.000Z TO {}T23:59:59.000Z]'.format(date_str, date_str),
             'page[size]': self.api_batch_size,
-            'page[number]': 1,
+            'page[cursor]': 1,
         }
 
     def extract_items(self, resp):
@@ -210,5 +213,25 @@ class HarvestDataciteWorker(HarvestCrossrefWorker):
         return obj['attributes']['doi'].encode('utf-8')
 
     def update_params(self, params, resp):
-        params['page[number]'] = resp['meta']['page'] + 1
+        """
+        We need to parse out the cursor value from the next link.
+
+        $ curl -sL https://is.gd/cLbE5h | jq -r .links.next
+
+        https://api.datacite.org/dois?page%5Bcursor%5D=MTMxNjgwODE3NTAwMCwxMC41NDM5LzEwMjUxOTI&page%5Bsize%5D=50&query=updated%3A%5B2019-11-18T00%3A00%3A00.000Z+TO+2019-11-18T23%3A59%3A59.000Z%5D
+
+        Notes.
+
+        (1) HTTP 400 issues.
+
+        Funny "search_after has 3 value(s) but sort has 2." on
+        https://api.datacite.org/dois?page%5Bsize%5D=50&page%5Bcursor%5D=MTQyMzQ2ODQwMTAwMCwxMC41Njc1L0hZV0FfMjAxNSwxXzI&query=updated%3A%5B2019-11-20T00%3A00%3A00.000Z+TO+2019-11-20T23%3A59%3A59.000Z%5D
+
+        Reported as https://github.com/datacite/datacite/issues/897.
+        """
+        parsed = urlparse(resp['links']['next'])
+        page_cursor = parse_qs(parsed.query).get('page[cursor]')
+        if not page_cursor:
+            raise ValueError('no page[cursor] in .links.next')
+        params['page[cursor]'] = page_cursor[0]
         return params
