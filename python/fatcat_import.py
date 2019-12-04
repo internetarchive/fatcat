@@ -77,6 +77,7 @@ def run_arabesque_match(args):
             args.json_file):
         print("Supply one of --sqlite-file or --json-file")
     ami = ArabesqueMatchImporter(args.api,
+        editgroup_description=args.editgroup_description_override,
         do_updates=args.do_updates,
         require_grobid=(not args.no_require_grobid),
         extid_type=args.extid_type,
@@ -91,6 +92,8 @@ def run_arabesque_match(args):
 
 def run_ingest_file(args):
     ifri = IngestFileResultImporter(args.api,
+        editgroup_description=args.editgroup_description_override,
+        skip_source_whitelist=args.skip_source_whitelist,
         do_updates=args.do_updates,
         default_link_rel=args.default_link_rel,
         require_grobid=(not args.no_require_grobid),
@@ -333,6 +336,9 @@ def main():
     sub_ingest_file.add_argument('json_file',
         help="ingest_file JSON file to import from",
         default=sys.stdin, type=argparse.FileType('r'))
+    sub_ingest_file.add_argument('--skip-source-whitelist',
+        action='store_true',
+        help="don't filter import based on request source whitelist")
     sub_ingest_file.add_argument('--kafka-mode',
         action='store_true',
         help="consume from kafka topic (not stdin)")

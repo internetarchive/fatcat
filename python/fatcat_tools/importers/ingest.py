@@ -11,9 +11,9 @@ class IngestFileResultImporter(EntityImporter):
 
     def __init__(self, api, require_grobid=True, **kwargs):
 
-        eg_desc = kwargs.get('editgroup_description',
+        eg_desc = kwargs.pop('editgroup_description',
             "Files crawled from web using sandcrawler ingest tool")
-        eg_extra = kwargs.get('editgroup_extra', dict())
+        eg_extra = kwargs.pop('editgroup_extra', dict())
         eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.IngestFileResultImporter')
         super().__init__(api,
             editgroup_description=eg_desc,
@@ -29,7 +29,8 @@ class IngestFileResultImporter(EntityImporter):
         else:
             print("NOT checking GROBID success")
         self.ingest_request_source_whitelist = ['fatcat-changelog']
-        #self.ingest_request_source_whitelist = []
+        if kwargs.get('skip_source_whitelist', False):
+            self.ingest_request_source_whitelist = []
 
     def want(self, row):
         """
