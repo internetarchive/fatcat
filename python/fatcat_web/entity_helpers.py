@@ -78,10 +78,12 @@ def enrich_release_entity(entity):
             entity.abstracts.reverse()
         # hack to (partially) clean up common JATS abstract display case
         if entity.abstracts[0].mimetype == 'application/xml+jats':
-            entity.abstracts[0].content = entity.abstracts[0].content.replace('<jats>', '')
-            entity.abstracts[0].content = entity.abstracts[0].content.replace('</jats>', '')
-            entity.abstracts[0].content = entity.abstracts[0].content.replace('<jats:p>', '')
-            entity.abstracts[0].content = entity.abstracts[0].content.replace('</jats:p>', '')
+            for tag in ('p', 'jats', 'jats:p'):
+                entity.abstracts[0].content = entity.abstracts[0].content.replace('<{}>'.format(tag), '')
+                entity.abstracts[0].content = entity.abstracts[0].content.replace('</{}>'.format(tag), '')
+                # ugh, double encoding happens
+                entity.abstracts[0].content = entity.abstracts[0].content.replace('&lt;/{}&gt;'.format(tag), '')
+                entity.abstracts[0].content = entity.abstracts[0].content.replace('&lt;{}&gt;'.format(tag), '')
     return entity
 
 def enrich_work_entity(entity):
