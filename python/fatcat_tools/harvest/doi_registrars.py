@@ -214,20 +214,15 @@ class HarvestDataciteWorker(HarvestCrossrefWorker):
 
     def update_params(self, params, resp):
         """
-        We need to parse out the cursor value from the next link.
+        Using cursor mechanism (https://support.datacite.org/docs/pagination#section-cursor).
 
         $ curl -sL https://is.gd/cLbE5h | jq -r .links.next
 
-        https://api.datacite.org/dois?page%5Bcursor%5D=MTMxNjgwODE3NTAwMCwxMC41NDM5LzEwMjUxOTI&page%5Bsize%5D=50&query=updated%3A%5B2019-11-18T00%3A00%3A00.000Z+TO+2019-11-18T23%3A59%3A59.000Z%5D
+        Example: https://is.gd/cLbE5h
 
-        Notes.
-
-        (1) HTTP 400 issues.
-
-        Funny "search_after has 3 value(s) but sort has 2." on
-        https://api.datacite.org/dois?page%5Bsize%5D=50&page%5Bcursor%5D=MTQyMzQ2ODQwMTAwMCwxMC41Njc1L0hZV0FfMjAxNSwxXzI&query=updated%3A%5B2019-11-20T00%3A00%3A00.000Z+TO+2019-11-20T23%3A59%3A59.000Z%5D
-
-        Reported as https://github.com/datacite/datacite/issues/897.
+        Further API errors reported:
+            https://github.com/datacite/datacite/issues/897 (HTTP 400)
+            https://github.com/datacite/datacite/issues/898 (HTTP 500)
         """
         parsed = urlparse(resp['links']['next'])
         page_cursor = parse_qs(parsed.query).get('page[cursor]')
