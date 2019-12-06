@@ -14,6 +14,7 @@ services:
       KAFKA_ADVERTISED_HOST_NAME: 127.0.0.1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_CREATE_TOPICS: "fatcat-dev.changelog:1:1,fatcat-dev.release-updates:3:1:compact"
+      KAFKA_MESSAGE_MAX_BYTES: 50000000
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
   elasticsearch:
