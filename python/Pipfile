@@ -16,6 +16,7 @@ responses = ">=0.10"
 pytest-cov = "*"
 pylint = "*"
 pg-view = "*"
+pytest-mock = "*"
 
 [packages]
 fatcat-openapi-client = {path = "./../python_openapi_client"}
