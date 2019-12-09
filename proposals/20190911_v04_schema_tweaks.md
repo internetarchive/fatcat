@@ -16,6 +16,7 @@ SQL (and API, and elasticsearch):
   `article`/`work`?
 - TODO: release: switch how pages work? first/last?
 - TODO: indication of peer-review process? at release or container level?
+- TODO: container: separate canonical and disambiguating titles (?)
 
 API tweaks:
 
