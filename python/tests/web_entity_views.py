@@ -62,6 +62,31 @@ def test_entity_basics(app):
 
         # TODO: redirects and deleted entities
 
+def test_web_deleted_release(app, api):
+    # specific regresion test for view of a deleted release
+
+    # create release
+    eg = quick_eg(api)
+    r1 = ReleaseEntity(
+        title="some title",
+        ext_ids=ReleaseExtIds(),
+    )
+    r1edit = api.create_release(eg.editgroup_id, r1)
+    api.accept_editgroup(eg.editgroup_id)
+
+    # delete
+    eg = quick_eg(api)
+    api.delete_release(eg.editgroup_id, r1edit.ident)
+    api.accept_editgroup(eg.editgroup_id)
+    r2 = api.get_release(r1edit.ident)
+    assert r2.state == "deleted"
+
+    rv = app.get('/release/{}'.format(r2.ident))
+    assert rv.status_code == 200
+    rv = app.get('/release/{}/metadata'.format(r2.ident))
+    assert rv.status_code == 200
+    rv = app.get('/release/{}/history'.format(r2.ident))
+    assert rv.status_code == 200
 
 
 def test_lookups(app):
