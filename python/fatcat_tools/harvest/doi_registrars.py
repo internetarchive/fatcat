@@ -202,7 +202,7 @@ class HarvestDataciteWorker(HarvestCrossrefWorker):
         Dates have to be supplied in 2018-10-27T22:36:30.000Z format.
         """
         return {
-            'query': 'updated:[{}T00:00:00.000Z TO {}T23:59:59.000Z]'.format(date_str, date_str),
+            'query': 'updated:[{}T00:00:00.000Z TO {}T23:59:59.999Z]'.format(date_str, date_str),
             'page[size]': self.api_batch_size,
             'page[cursor]': 1,
         }
