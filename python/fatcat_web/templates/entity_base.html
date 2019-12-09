@@ -80,7 +80,7 @@
             {{ entity_tab("overview", "Overview", "") }}
             {% if entity_type == "container" and entity.state == 'active' and not editgroup %}
               {{ entity_tab("coverage", "Coverage", "/coverage") }}
-            {% elif entity_type == "release" %}
+            {% elif entity_type == "release" and entity.state != 'deleted' %}
               {{ entity_tab("contribs", "Authors", "/contribs", entity._authors|count ) }}
               {{ entity_tab("references", "References", "/references", entity.refs|count) }}
             {% endif %}
