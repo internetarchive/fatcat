@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "e2e05ace1d00d2859f8942ac21bbb7fcbde9dc2f28df74f4173b3dfd7c7d3932"
+            "sha256": "7ef50f1c42fdcd59e1016ca4581bf6ab1fe60cd3133417532eddb107dd402c8d"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -138,6 +138,22 @@
             ],
             "index": "pypi",
             "version": "==1.1.0"
+        },
+        "elasticsearch": {
+            "hashes": [
+                "sha256:1f0f633e3b500d5042424f75a505badf8c4b9962c1b4734cdfb3087fb67920be",
+                "sha256:fb5ab15ee283f104b5a7a5695c7e879cb2927e4eb5aed9c530811590b41259ad"
+            ],
+            "index": "pypi",
+            "version": "==6.4.0"
+        },
+        "elasticsearch-dsl": {
+            "hashes": [
+                "sha256:26416f4dd46ceca43d62ef74970d9de4bdd6f4b0f163316f0b432c9e61a08bec",
+                "sha256:f60aea7fd756ac1fbe7ce114bbf4949aefbf495dfe8896640e787c67344f12f6"
+            ],
+            "index": "pypi",
+            "version": "==6.4.0"
         },
         "fatcat-openapi-client": {
             "path": "./../python_openapi_client"
