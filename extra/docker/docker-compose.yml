@@ -17,6 +17,8 @@ services:
       KAFKA_MESSAGE_MAX_BYTES: 50000000
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - zookeeper
   elasticsearch:
     build: ../elasticsearch/
     ports:
@@ -26,4 +28,7 @@ services:
       cluster.name: "docker-cluster"
       bootstrap.memory_lock: "true"
       discovery.type: "single-node"
+      cluster.routing.allocation.disk.watermark.low: "500mb"
+      cluster.routing.allocation.disk.watermark.high: "500mb"
+      cluster.routing.allocation.disk.watermark.flood_stage: "100mb"
       ES_JAVA_OPTS: "-Xms512m -Xmx512m"
