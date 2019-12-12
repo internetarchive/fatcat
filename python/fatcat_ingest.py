@@ -44,7 +44,7 @@ def run_ingest_container(args):
     if args.container_id:
         s = s.filter("term", container_id=args.container_id)
     elif args.issnl:
-        s = s.filter("term", issnl=args.issnl)
+        s = s.filter("term", container_issnl=args.issnl)
     elif args.publisher:
         s = s.query("match", publisher=args.publisher)
     elif args.name:
