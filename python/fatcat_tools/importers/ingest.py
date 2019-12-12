@@ -28,13 +28,16 @@ class IngestFileResultImporter(EntityImporter):
             print("Requiring GROBID status == 200")
         else:
             print("NOT checking GROBID success")
-        self.ingest_request_source_whitelist = ['fatcat-changelog']
+        self.ingest_request_source_whitelist = [
+            'fatcat-changelog',
+            'fatcat-ingest-container',
+        ]
         if kwargs.get('skip_source_whitelist', False):
             self.ingest_request_source_whitelist = []
 
     def want(self, row):
         """
-        Logic here probably needs work:
+        Logic here probably needs work (TODO):
 
         - Direct ingests via DOI from fatcat-changelog should probably go
           through regardless of GROBID status
