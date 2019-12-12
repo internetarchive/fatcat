@@ -271,6 +271,11 @@ class EntityImporter:
             if didn't update or insert because of existing)
         self.counts['update'] += 1
             if updated an entity
+
+    Parameters:
+
+        submit_mode: instead of accepting editgroups, only submits them.
+            implementors must write insert_batch appropriately
     """
 
     def __init__(self, api, **kwargs):
@@ -282,6 +287,7 @@ class EntityImporter:
 
         self.api = api
         self.bezerk_mode = kwargs.get('bezerk_mode', False)
+        self.submit_mode = kwargs.get('submit_mode', False)
         self.edit_batch_size = kwargs.get('edit_batch_size', 100)
         self.editgroup_description = kwargs.get('editgroup_description')
         self.editgroup_extra = eg_extra
@@ -325,7 +331,10 @@ class EntityImporter:
 
     def finish(self):
         if self._edit_count > 0:
-            self.api.accept_editgroup(self._editgroup_id)
+            if self.submit_mode:
+                self.api.submit_editgroup(self._editgroup_id)
+            else:
+                self.api.accept_editgroup(self._editgroup_id)
             self._editgroup_id = None
             self._edit_count = 0
             self._edits_inflight = []
@@ -339,7 +348,10 @@ class EntityImporter:
 
     def get_editgroup_id(self, edits=1):
         if self._edit_count >= self.edit_batch_size:
-            self.api.accept_editgroup(self._editgroup_id)
+            if self.submit_mode:
+                self.api.submit_editgroup(self._editgroup_id)
+            else:
+                self.api.accept_editgroup(self._editgroup_id)
             self._editgroup_id = None
             self._edit_count = 0
             self._edits_inflight = []
