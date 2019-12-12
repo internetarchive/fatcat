@@ -105,6 +105,17 @@ def run_ingest_file(args):
     else:
         JsonLinePusher(ifri, args.json_file).run()
 
+def run_savepapernow_file(args):
+    ifri = SavePaperNowFileImporter(args.api,
+        editgroup_description=args.editgroup_description_override,
+        edit_batch_size=args.batch_size)
+    if args.kafka_mode:
+        KafkaJsonPusher(ifri, args.kafka_hosts, args.kafka_env, "ingest-file-results",
+            "savepapernow-file-result", kafka_namespace="sandcrawler",
+            consume_batch_size=args.batch_size).run()
+    else:
+        JsonLinePusher(ifri, args.json_file).run()
+
 def run_grobid_metadata(args):
     fmi = GrobidMetadataImporter(args.api,
         edit_batch_size=args.batch_size,
@@ -360,6 +371,19 @@ def main():
     sub_ingest_file.add_argument('--default-link-rel',
         default="web",
         help="default URL rel for matches (eg, 'publisher', 'web')")
+
+    sub_savepapernow_file = subparsers.add_parser('savepapernow-file-results',
+        help="add file entities crawled due to async Save Paper Now request")
+    sub_savepapernow_file.set_defaults(
+        func=run_savepapernow_file,
+        auth_var="FATCAT_AUTH_WORKER_SAVEPAPERNOW",
+    )
+    sub_savepapernow_file.add_argument('json_file',
+        help="ingest-file JSON file to import from",
+        default=sys.stdin, type=argparse.FileType('r'))
+    sub_savepapernow_file.add_argument('--kafka-mode',
+        action='store_true',
+        help="consume from kafka topic (not stdin)")
 
     sub_grobid_metadata = subparsers.add_parser('grobid-metadata',
         help="create release and file entities based on GROBID PDF metadata extraction")

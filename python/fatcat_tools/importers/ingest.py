@@ -11,8 +11,7 @@ class IngestFileResultImporter(EntityImporter):
 
     def __init__(self, api, require_grobid=True, **kwargs):
 
-        eg_desc = kwargs.pop('editgroup_description',
-            "Files crawled from web using sandcrawler ingest tool")
+        eg_desc = kwargs.pop('editgroup_description', None) or "Files crawled from web using sandcrawler ingest tool"
         eg_extra = kwargs.pop('editgroup_extra', dict())
         eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.IngestFileResultImporter')
         super().__init__(api,
@@ -53,8 +52,13 @@ class IngestFileResultImporter(EntityImporter):
         if row.get('hit') != True:
             self.counts['skip-hit'] += 1
             return False
-        if self.ingest_request_source_whitelist and row['request'].get('ingest_request_source') not in self.ingest_request_source_whitelist:
+        source = row['request'].get('ingest_request_source')
+        if self.ingest_request_source_whitelist and source not in self.ingest_request_source_whitelist:
             self.counts['skip-ingest_request_source'] += 1
+            return False
+        if source.startswith('savepapernow'):
+            # never process async savepapernow requests
+            self.counts['skip-savepapernow'] += 1
             return False
         if not row.get('file_meta'):
             self.counts['skip-file-meta'] += 1
@@ -166,4 +170,61 @@ class IngestFileResultImporter(EntityImporter):
                 description=self.editgroup_description,
                 extra=self.editgroup_extra),
             entity_list=batch))
+
+
+class SavePaperNowFileImporter(IngestFileResultImporter):
+    """
+    This worker ingests from the same feed as IngestFileResultImporter, but
+    only imports files from anonymous save-paper-now requests, and "submits"
+    them for further human review (as opposed to accepting by default).
+    """
+
+    def __init__(self, api, submit_mode=True, **kwargs):
+
+        eg_desc = kwargs.pop('editgroup_description', None) or "Files crawled after a public 'Save Paper Now' request"
+        eg_extra = kwargs.pop('editgroup_extra', dict())
+        eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.IngestFileSavePaperNow')
+        kwargs['submit_mode'] = submit_mode
+        kwargs['require_grobid'] = True
+        kwargs['do_updates'] = False
+        super().__init__(api,
+            editgroup_description=eg_desc,
+            editgroup_extra=eg_extra,
+            **kwargs)
+
+    def want(self, row):
+
+        source = row['request'].get('ingest_request_source')
+        if not source.startswith('savepapernow'):
+            self.counts['skip-not-savepapernow'] += 1
+            return False
+        if row.get('hit') != True:
+            self.counts['skip-hit'] += 1
+            return False
+        if not row.get('file_meta'):
+            self.counts['skip-file-meta'] += 1
+            return False
+        if self.require_grobid and row.get('grobid', {}).get('status_code') != 200:
+            self.counts['skip-grobid'] += 1
+            return False
+
+        return True
+
+    def insert_batch(self, batch):
+        """
+        Usually running in submit_mode, so we can't use auto_batch method
+        """
+        if self.submit_mode:
+            eg = self.api.create_editgroup(fatcat_openapi_client.Editgroup(
+                description=self.editgroup_description,
+                extra=self.editgroup_extra))
+            for fe in batch:
+                self.api.create_file(eg.editgroup_id, fe)
+            self.api.update_editgroup(eg.editgroup_id, eg, submit=True)
+        else:
+            self.api.create_file_auto_batch(fatcat_openapi_client.FileAutoBatch(
+                editgroup=fatcat_openapi_client.Editgroup(
+                    description=self.editgroup_description,
+                    extra=self.editgroup_extra),
+                entity_list=batch))
 
