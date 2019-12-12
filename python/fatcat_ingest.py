@@ -91,11 +91,9 @@ def run_ingest_container(args):
     print(counts, file=sys.stderr)
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--debug',
-        action='store_true',
-        help="enable debugging interface")
-    parser.add_argument('--host-url',
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('--fatcat-api-url',
         default="http://localhost:9411/v0",
         help="connect to this host/port")
     parser.add_argument('--enqueue-kafka',
@@ -129,7 +127,7 @@ def main():
         print("tell me what to do!")
         sys.exit(-1)
 
-    args.api = public_api(args.host_url)
+    args.api = public_api(args.fatcat_api_url)
     args.func(args)
 
 if __name__ == '__main__':
