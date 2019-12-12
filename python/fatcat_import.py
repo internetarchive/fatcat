@@ -156,10 +156,8 @@ def run_cdl_dash_dat(args):
     print("link: https://fatcat.wiki/fileset/{}".format(fs.ident))
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--debug',
-        action='store_true',
-        help="enable debugging interface")
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--host-url',
         default="http://localhost:9411/v0",
         help="connect to this host/port")
@@ -177,7 +175,8 @@ def main():
         default=None, type=str)
     subparsers = parser.add_subparsers()
 
-    sub_crossref = subparsers.add_parser('crossref')
+    sub_crossref = subparsers.add_parser('crossref',
+        help="import Crossref API metadata format (JSON)")
     sub_crossref.set_defaults(
         func=run_crossref,
         auth_var="FATCAT_AUTH_WORKER_CROSSREF",
@@ -201,7 +200,8 @@ def main():
         action='store_true',
         help="don't lookup existing DOIs, just insert (clobbers; only for fast bootstrap)")
 
-    sub_jalc = subparsers.add_parser('jalc')
+    sub_jalc = subparsers.add_parser('jalc',
+        help="import JALC DOI metadata from XML dump")
     sub_jalc.set_defaults(
         func=run_jalc,
         auth_var="FATCAT_AUTH_WORKER_JALC",
@@ -216,7 +216,8 @@ def main():
         help="DOI-to-other-identifiers sqlite3 database",
         default=None, type=str)
 
-    sub_arxiv = subparsers.add_parser('arxiv')
+    sub_arxiv = subparsers.add_parser('arxiv',
+        help="import arxiv.org metadata from XML files")
     sub_arxiv.set_defaults(
         func=run_arxiv,
         auth_var="FATCAT_AUTH_WORKER_ARXIV",
@@ -228,7 +229,8 @@ def main():
         action='store_true',
         help="consume from kafka topic (not stdin)")
 
-    sub_pubmed = subparsers.add_parser('pubmed')
+    sub_pubmed = subparsers.add_parser('pubmed',
+        help="import MEDLINE/PubMed work-level metadata (XML)")
     sub_pubmed.set_defaults(
         func=run_pubmed,
         auth_var="FATCAT_AUTH_WORKER_PUBMED",
@@ -246,7 +248,8 @@ def main():
         action='store_true',
         help="consume from kafka topic (not stdin)")
 
-    sub_jstor = subparsers.add_parser('jstor')
+    sub_jstor = subparsers.add_parser('jstor',
+        help="import JSTOR work-level metadata from XML dump")
     sub_jstor.set_defaults(
         func=run_jstor,
         auth_var="FATCAT_AUTH_WORKER_JSTOR",
@@ -258,7 +261,8 @@ def main():
         help="ISSN to ISSN-L mapping file",
         default=None, type=argparse.FileType('r'))
 
-    sub_orcid = subparsers.add_parser('orcid')
+    sub_orcid = subparsers.add_parser('orcid',
+        help="import creator entities from ORCID XML dump")
     sub_orcid.set_defaults(
         func=run_orcid,
         auth_var="FATCAT_AUTH_WORKER_ORCID"
@@ -267,7 +271,8 @@ def main():
         help="orcid JSON file to import from (or stdin)",
         default=sys.stdin, type=argparse.FileType('r'))
 
-    sub_journal_metadata = subparsers.add_parser('journal-metadata')
+    sub_journal_metadata = subparsers.add_parser('journal-metadata',
+        help="import/update container metadata from old manual munging format")
     sub_journal_metadata.set_defaults(
         func=run_journal_metadata,
         auth_var="FATCAT_AUTH_WORKER_JOURNAL_METADATA",
@@ -276,7 +281,8 @@ def main():
         help="Journal JSON metadata file to import from (or stdin)",
         default=sys.stdin, type=argparse.FileType('r'))
 
-    sub_chocula = subparsers.add_parser('chocula')
+    sub_chocula = subparsers.add_parser('chocula',
+        help="import/update container metadata from chocula JSON export")
     sub_chocula.set_defaults(
         func=run_chocula,
         auth_var="FATCAT_AUTH_WORKER_JOURNAL_METADATA",
@@ -285,7 +291,8 @@ def main():
         help="chocula JSON entities file (or stdin)",
         default=sys.stdin, type=argparse.FileType('r'))
 
-    sub_matched = subparsers.add_parser('matched')
+    sub_matched = subparsers.add_parser('matched',
+        help="add file entities matched against existing releases; custom JSON format")
     sub_matched.set_defaults(
         func=run_matched,
         auth_var="FATCAT_API_AUTH_TOKEN",
@@ -303,7 +310,8 @@ def main():
         default="web",
         help="default URL rel for matches (eg, 'publisher', 'web')")
 
-    sub_arabesque_match = subparsers.add_parser('arabesque')
+    sub_arabesque_match = subparsers.add_parser('arabesque',
+        help="add file entities matched to releases from crawl log analysis")
     sub_arabesque_match.set_defaults(
         func=run_arabesque_match,
         auth_var="FATCAT_AUTH_WORKER_CRAWL",
@@ -328,7 +336,8 @@ def main():
         default="web",
         help="default URL rel for matches (eg, 'publisher', 'web')")
 
-    sub_ingest_file = subparsers.add_parser('ingest-file-results')
+    sub_ingest_file = subparsers.add_parser('ingest-file-results',
+        help="add/update flie entities linked to releases based on sandcrawler ingest results")
     sub_ingest_file.set_defaults(
         func=run_ingest_file,
         auth_var="FATCAT_AUTH_WORKER_CRAWL",
@@ -352,7 +361,8 @@ def main():
         default="web",
         help="default URL rel for matches (eg, 'publisher', 'web')")
 
-    sub_grobid_metadata = subparsers.add_parser('grobid-metadata')
+    sub_grobid_metadata = subparsers.add_parser('grobid-metadata',
+        help="create release and file entities based on GROBID PDF metadata extraction")
     sub_grobid_metadata.set_defaults(
         func=run_grobid_metadata,
         auth_var="FATCAT_API_AUTH_TOKEN",
@@ -370,7 +380,8 @@ def main():
         action='store_true',
         help="don't lookup existing files, just insert (clobbers; only for fast bootstrap)")
 
-    sub_wayback_static = subparsers.add_parser('wayback-static')
+    sub_wayback_static = subparsers.add_parser('wayback-static',
+        help="crude crawl+ingest tool for single-page HTML docs from wayback")
     sub_wayback_static.set_defaults(
         func=run_wayback_static,
         auth_var="FATCAT_API_AUTH_TOKEN",
@@ -388,7 +399,8 @@ def main():
         type=str,
         help="use existing editgroup (instead of creating a new one)")
 
-    sub_cdl_dash_dat = subparsers.add_parser('cdl-dash-dat')
+    sub_cdl_dash_dat = subparsers.add_parser('cdl-dash-dat',
+        help="crude helper to import datasets from Dat/CDL mirror pilot project")
     sub_cdl_dash_dat.set_defaults(
         func=run_cdl_dash_dat,
         auth_var="FATCAT_API_AUTH_TOKEN",

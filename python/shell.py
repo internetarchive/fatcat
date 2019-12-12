@@ -11,12 +11,6 @@ from fatcat_openapi_client.rest import ApiException
 from fatcat_tools import *
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--debug',
-        action='store_true',
-        help="enable debugging interface")
-
-    args = parser.parse_args()
 
     #api = 
     print("  __       _            _   _ ")

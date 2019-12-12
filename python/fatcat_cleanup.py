@@ -14,8 +14,9 @@ def run_files(args):
     JsonLinePusher(fmi, args.json_file).run()
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--host-url',
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('--fatcat-api-url',
         default="http://localhost:9411/v0",
         help="connect to this host/port")
     parser.add_argument('--batch-size',
@@ -29,7 +30,8 @@ def main():
         default=False, type=bool)
     subparsers = parser.add_subparsers()
 
-    sub_files = subparsers.add_parser('files')
+    sub_files = subparsers.add_parser('files',
+        help="attempt metadata cleanups over a list of file entities")
     sub_files.set_defaults(
         func=run_files,
         auth_var="FATCAT_AUTH_WORKER_CLEANUP",
@@ -50,7 +52,7 @@ def main():
         args.editgroup_description_override = os.environ.get('FATCAT_EDITGROUP_DESCRIPTION')
 
     args.api = authenticated_api(
-        args.host_url,
+        args.fatcat_api_url,
         # token is an optional kwarg (can be empty string, None, etc)
         token=os.environ.get(args.auth_var))
     args.func(args)

@@ -73,10 +73,8 @@ def mkdate(raw):
     return datetime.datetime.strptime(raw, "%Y-%m-%d").date()
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--debug',
-        action='store_true',
-        help="enable debug logging")
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--kafka-hosts',
         default="localhost:9092",
         help="list of Kafka brokers (host/port) to use")
@@ -97,16 +95,20 @@ def main():
         help="continue harvesting indefinitely in a loop?")
     subparsers = parser.add_subparsers()
 
-    sub_crossref = subparsers.add_parser('crossref')
+    sub_crossref = subparsers.add_parser('crossref',
+        help="harvest DOI metadata from Crossref API (JSON)")
     sub_crossref.set_defaults(func=run_crossref)
 
-    sub_datacite = subparsers.add_parser('datacite')
+    sub_datacite = subparsers.add_parser('datacite',
+        help="harvest DOI metadata from Datacite API (JSON)")
     sub_datacite.set_defaults(func=run_datacite)
 
-    sub_arxiv = subparsers.add_parser('arxiv')
+    sub_arxiv = subparsers.add_parser('arxiv',
+        help="harvest metadata from arxiv.org OAI-PMH endpoint (XML)")
     sub_arxiv.set_defaults(func=run_arxiv)
 
-    sub_pubmed = subparsers.add_parser('pubmed')
+    sub_pubmed = subparsers.add_parser('pubmed',
+        help="harvest MEDLINE/PubMed metadata from daily FTP updates (XML)")
     sub_pubmed.set_defaults(func=run_pubmed)
 
     # DOAJ stuff disabled because API range-requests are broken

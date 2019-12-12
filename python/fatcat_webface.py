@@ -4,7 +4,8 @@ import argparse
 from fatcat_web import app
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--debug',
         action='store_true',
         help="enable debugging interface (note: not for everything)")

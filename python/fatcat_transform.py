@@ -60,16 +60,15 @@ def run_citeproc_releases(args):
         args.json_output.write(out + "\n")
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--debug',
-        action='store_true',
-        help="enable debugging interface")
-    parser.add_argument('--host-url',
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('--fatcat-api-url',
         default="http://localhost:9411/v0",
         help="connect to this host/port")
     subparsers = parser.add_subparsers()
 
-    sub_elasticsearch_releases = subparsers.add_parser('elasticsearch-releases')
+    sub_elasticsearch_releases = subparsers.add_parser('elasticsearch-releases',
+        help="convert fatcat release JSON schema to elasticsearch release schema")
     sub_elasticsearch_releases.set_defaults(func=run_elasticsearch_releases)
     sub_elasticsearch_releases.add_argument('json_input',
         help="JSON-per-line of release entities",
@@ -78,7 +77,8 @@ def main():
         help="where to send output",
         default=sys.stdout, type=argparse.FileType('w'))
 
-    sub_elasticsearch_containers = subparsers.add_parser('elasticsearch-containers')
+    sub_elasticsearch_containers = subparsers.add_parser('elasticsearch-containers',
+        help="convert fatcat container JSON schema to elasticsearch container schema")
     sub_elasticsearch_containers.set_defaults(func=run_elasticsearch_containers)
     sub_elasticsearch_containers.add_argument('json_input',
         help="JSON-per-line of container entities",
@@ -87,7 +87,8 @@ def main():
         help="where to send output",
         default=sys.stdout, type=argparse.FileType('w'))
 
-    sub_elasticsearch_changelogs = subparsers.add_parser('elasticsearch-changelogs')
+    sub_elasticsearch_changelogs = subparsers.add_parser('elasticsearch-changelogs',
+        help="convert fatcat changelog JSON schema to elasticsearch changelog schema")
     sub_elasticsearch_changelogs.set_defaults(func=run_elasticsearch_changelogs)
     sub_elasticsearch_changelogs.add_argument('json_input',
         help="JSON-per-line of changelog entries",
@@ -96,7 +97,8 @@ def main():
         help="where to send output",
         default=sys.stdout, type=argparse.FileType('w'))
 
-    sub_citeproc_releases = subparsers.add_parser('citeproc-releases')
+    sub_citeproc_releases = subparsers.add_parser('citeproc-releases',
+        help="convert fatcat release schema to any standard citation format using citeproc/CSL")
     sub_citeproc_releases.set_defaults(func=run_citeproc_releases)
     sub_citeproc_releases.add_argument('json_input',
         help="JSON-per-line of release entities",
@@ -116,7 +118,7 @@ def main():
         print("tell me what to do!")
         sys.exit(-1)
 
-    args.api = public_api(args.host_url)
+    args.api = public_api(args.fatcat_api_url)
     args.func(args)
 
 if __name__ == '__main__':

@@ -48,10 +48,8 @@ def run_elasticsearch_container(args):
     worker.run()
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--debug',
-        action='store_true',
-        help="enable debug logging")
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--api-host-url',
         default="http://localhost:9411/v0",
         help="fatcat API host/port to use")
@@ -63,16 +61,19 @@ def main():
         help="Kafka topic namespace to use (eg, prod, qa, dev)")
     subparsers = parser.add_subparsers()
 
-    sub_changelog = subparsers.add_parser('changelog')
+    sub_changelog = subparsers.add_parser('changelog',
+        help="poll fatcat API for changelog entries, push to kafka")
     sub_changelog.set_defaults(func=run_changelog)
     sub_changelog.add_argument('--poll-interval',
         help="how long to wait between polling (seconds)",
         default=5.0, type=float)
 
-    sub_entity_updates = subparsers.add_parser('entity-updates')
+    sub_entity_updates = subparsers.add_parser('entity-updates',
+        help="poll kafka for changelog entries; push entity changes to various kafka topics")
     sub_entity_updates.set_defaults(func=run_entity_updates)
 
-    sub_elasticsearch_release = subparsers.add_parser('elasticsearch-release')
+    sub_elasticsearch_release = subparsers.add_parser('elasticsearch-release',
+        help="consume kafka feed of new/updated releases, transform and push to search")
     sub_elasticsearch_release.set_defaults(func=run_elasticsearch_release)
     sub_elasticsearch_release.add_argument('--elasticsearch-backend',
         help="elasticsearch backend to connect to",
@@ -81,7 +82,8 @@ def main():
         help="elasticsearch index to push into",
         default="fatcat_release_v03")
 
-    sub_elasticsearch_container = subparsers.add_parser('elasticsearch-container')
+    sub_elasticsearch_container = subparsers.add_parser('elasticsearch-container',
+        help="consume kafka feed of new/updated containers, transform and push to search")
     sub_elasticsearch_container.set_defaults(func=run_elasticsearch_container)
     sub_elasticsearch_container.add_argument('--elasticsearch-backend',
         help="elasticsearch backend to connect to",
