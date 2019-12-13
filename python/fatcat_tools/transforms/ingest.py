@@ -1,7 +1,7 @@
 
 from .elasticsearch import release_to_elasticsearch
 
-def release_ingest_request(release, oa_only=False, ingest_request_source='fatcat'):
+def release_ingest_request(release, oa_only=False, ingest_request_source='fatcat', ingest_type='pdf'):
     """
     Takes a full release entity object and returns an ingest request (as dict),
     or None if it seems like this release shouldn't be ingested.
@@ -25,25 +25,20 @@ def release_ingest_request(release, oa_only=False, ingest_request_source='fatcat
 
     # generate a URL where we expect to find fulltext
     url = None
-    expect_mimetypes = []
     if release.ext_ids.arxiv:
         url = "https://arxiv.org/pdf/{}.pdf".format(release.ext_ids.arxiv)
-        expect_mimetypes = ['application/pdf']
-    elif release.ext_ids.pmcid:
-        #url = "https://www.ncbi.nlm.nih.gov/pmc/articles/{}/pdf/".format(release.ext_ids.pmcid)
-        url = "http://europepmc.org/backend/ptpmcrender.fcgi?accid={}&blobtype=pdf".format(release.ext_ids.pmcid)
-        expect_mimetypes = ['application/pdf']
     elif release.ext_ids.doi:
         url = "https://doi.org/{}".format(release.ext_ids.doi)
+    elif release.ext_ids.pmcid:
+        # TODO: how to tell if an author manuscript in PMC vs. published?
+        #url = "https://www.ncbi.nlm.nih.gov/pmc/articles/{}/pdf/".format(release.ext_ids.pmcid)
+        url = "http://europepmc.org/backend/ptpmcrender.fcgi?accid={}&blobtype=pdf".format(release.ext_ids.pmcid)
 
     if not url:
         return None
 
-    ext_ids = dict()
-    for k in ('doi', 'pmid', 'pmcid', 'arxiv'):
-        v = getattr(release.ext_ids, k)
-        if v:
-            ext_ids[k] = v
+    ext_ids = release.ext_ids.to_dict()
+    ext_ids = dict([(k, v) for (k, v) in ext_ids.items() if v])
 
     if oa_only and not ext_ids.get('arxiv') and not ext_ids.get('pmcid'):
         es = release_to_elasticsearch(release)
@@ -51,7 +46,7 @@ def release_ingest_request(release, oa_only=False, ingest_request_source='fatcat
             return None
 
     ingest_request = {
-        'ingest_type': 'file',
+        'ingest_type': ingest_type,
         'ingest_request_source': ingest_request_source,
         'base_url': url,
         'fatcat': {
@@ -60,7 +55,6 @@ def release_ingest_request(release, oa_only=False, ingest_request_source='fatcat
             'work_ident': release.work_id,
         },
         'ext_ids': ext_ids,
-        'expect_mimetypes': expect_mimetypes or None,
     }
     return ingest_request
 
