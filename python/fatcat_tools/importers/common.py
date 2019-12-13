@@ -256,7 +256,7 @@ class EntityImporter:
     The API that implementations are expected to fill in are:
 
         want(raw_record) -> boolean
-        parse(raw_record) -> entity
+        parse_record(raw_record) -> entity
         try_update(entity) -> boolean
         insert_batch([entity]) -> None
 
@@ -389,20 +389,11 @@ class EntityImporter:
         """
         return True
 
-    def parse(self, raw_record):
-        """
-        Returns an entity class type, or None if we should skip this one.
-
-        May have side-effects (eg, create related entities), but shouldn't
-        update/mutate the actual entity.
-        """
-        raise NotImplementedError
-
     def try_update(self, raw_record):
         """
-        Passed the output of parse(). Should try to find an existing entity and
-        update it (PUT), decide we should do nothing (based on the existing
-        record), or create a new one.
+        Passed the output of parse_record(). Should try to find an existing
+        entity and update it (PUT), decide we should do nothing (based on the
+        existing record), or create a new one.
 
         Implementations must update the exists/updated/skip counts
         appropriately in this method.
