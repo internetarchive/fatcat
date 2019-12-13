@@ -1,0 +1,73 @@
+{% set release = entity %}
+{% set entity_view = "save" %}
+{% set entity_type = "release" %}
+{% import "entity_macros.html" as entity_macros %}
+{% import "edit_macros.html" as edit_macros %}
+{% extends "entity_base.html" %}
+
+{% block entity_main %}
+
+<div class="ui container text" style="margin-top: 2em;">
+<div class="ui segment" style="padding: 3em;">
+<h1 class="ui header">"Save Paper Now"</h1>
+
+{% if spn_status == "not-configured" %}
+
+<div class="ui error message" style="margin: 2em;">
+  <div class="header">Error</div>
+  <p>Save Paper Now feature isn't configured, sorry about that.
+</div>
+
+{% elif spn_status == "kafka-error" %}
+
+<div class="ui error message" style="margin: 2em;">
+  <div class="header">Error</div>
+  <p>Whoops, something went wrong and we couldn't enqueue your request. This
+  didn't have anything to do with the URL you supplied; please try again later.
+</div>
+
+{% elif spn_status == "success" %}
+
+<div class="ui positive message" style="margin: 2em;">
+  <div class="header">Success</div>
+  <p>URL has been submitted to the bot queue for crawling. If fulltext content
+  is found, it will be imported into the catalog for review. Keep an eye on the
+  <a href="/reviewable">reviewable editgroups</a> list (can take 5-10 minutes
+  depending on throughput and batch sizes).
+</div>
+
+{% else %}
+<form class="ui form" id="save_release_form" method="POST" action="/release/{{ release.ident }}/save">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+  <br>
+  <p>Know of a legit fulltext copy of this publication on the public web?
+  Tell us the URL and we will crawl it and provide free perpetual access.
+
+  {{ edit_macros.form_field_basic(form.base_url) }}
+
+  <p style="margin-top: 2em; margin-bottom: 2em;"><b>Important:</b> check the publication stage of the file you are
+  submitting. We distinguish between pre-prints, manuscripts, and the
+  published version of record (if applicable).
+
+  <div class="ui equal width fields">
+    {{ edit_macros.form_field_basic(form.release_stage) }}
+    {{ edit_macros.form_field_basic(form.ingest_type) }}
+  </div>
+
+  <br>
+  <input class="ui primary submit button big left floated" type="submit" value="Submit URL" style="margin-right: 1em;">
+  <div>
+    <i>Your request will automatically be enqueued for our bots to crawl and
+    process. All new files will be reviewed before being included in the
+    catalog
+    </i>
+  </div>
+
+</form>
+{% endif %}
+
+</div>
+</div>
+
+{% endblock %}

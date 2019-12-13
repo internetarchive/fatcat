@@ -257,7 +257,31 @@
 {% elif entity.state == 'active' and entity.webcaptures != [] and entity.webcaptures[0].archive_urls != [] and entity.webcaptures[0].archive_urls[0].rel == "wayback" %}
 <a href="{{ entity.webcaptures[0].archive_urls[0].url }}{{ entity.webcaptures[0]._wayback_suffix }}" class="ui top attached fluid huge green button"><i class="file archive outline icon"></i>View Web Archive</a>
 {% elif entity.state == 'active' %}
-<span class="ui top attached fluid huge grey button"><i class="file cross icon"></i>No Full Text Available</span>
+<span class="ui top attached fluid huge grey button"><i class="ban icon"></i>No Full Text Available</span>
+
+<a href="/release/{{ release.ident }}/save" class="ui attached fluid huge blue button">
+  <i class="cloud download icon"></i>"Save Paper Now"
+  <div style="margin-top: 0.8em; font-size: smaller; text-align: left;">
+    Know of a fulltext copy of on the public web? Submit a URL and we will archive it
+  </div>
+</a>
+
+{# alternative SPN
+<div class="ui segment attached">
+  <center>
+    <a class="ui blue huge button" href="/release/{{ release.ident }}/save" title="save paper now">Save Paper Now</a>
+  </center>
+  <p style="margin-top: 0.5em;">Know of a fulltext copy on the public web? Submit a URL and we'll archive it
+</div>
+#}
+
+{# alternative SPN
+<div class="ui segment attached yellow inverted accordion">
+  <b><a href="/release/{{ release.ident }}/save" title="save paper now" style="color: black;">Save Paper Now</a></b>
+  <br>know of a fulltext copy on the public web? submit a URL and we'll archive it
+</div>
+#}
+
 {% endif %}
 
 {% if release.release_type or release.release_stage or release.release_year %}

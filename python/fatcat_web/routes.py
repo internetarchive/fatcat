@@ -1,5 +1,6 @@
 
 import os
+import sys
 import json
 from flask import Flask, render_template, make_response, send_from_directory, \
     request, url_for, abort, g, redirect, jsonify, session, flash, Response
@@ -10,12 +11,14 @@ from fatcat_openapi_client import Editgroup, EditgroupAnnotation
 from fatcat_openapi_client.rest import ApiException
 from fatcat_tools.transforms import *
 from fatcat_tools.normal import *
-from fatcat_web import app, api, auth_api, priv_api, mwoauth
+from fatcat_web import app, api, auth_api, priv_api, mwoauth, Config
 from fatcat_web.auth import handle_token_login, handle_logout, load_user, handle_ia_xauth, handle_wmoauth
 from fatcat_web.cors import crossdomain
 from fatcat_web.search import *
 from fatcat_web.entity_helpers import *
 from fatcat_web.graphics import *
+from fatcat_web.kafka import *
+from fatcat_web.forms import SavePaperNowForm
 
 
 ### Generic Entity Views ####################################################
@@ -627,6 +630,43 @@ def reviewable_view():
     except ApiException as ae:
         abort(ae.status)
     return render_template('editgroup_reviewable.html', entries=entries)
+
+@app.route('/release/<ident>/save', methods=['GET', 'POST'])
+def release_save(ident):
+
+    form = SavePaperNowForm()
+
+    # lookup release ident, ensure it exists
+    try:
+        release = api.get_release(ident)
+    except ApiException as ae:
+        abort(ae.status)
+
+    if not Config.KAFKA_PIXY_ENDPOINT:
+        return render_template('release_save.html', entity=release, form=form, spn_status='not-configured'), 501
+
+    if form.is_submitted():
+        if form.validate_on_submit():
+            # got a valid spn request! try to send to kafka-pixy
+            msg = form.to_ingest_request(release)
+            try:
+                kafka_pixy_produce(
+                    Config.KAFKA_SAVEPAPERNOW_TOPIC,
+                    json.dumps(msg),
+                )
+            except Exception as e:
+                print(e, file=sys.stderr)
+                return render_template('release_save.html', entity=release, form=form, spn_status='kafka-error'), 500
+            return render_template('release_save.html', entity=release, form=form, spn_status='success'), 200
+        elif form.errors:
+            return render_template('release_save.html', entity=release, form=form), 400
+
+    # form was not submitted; populate defaults
+    if release.release_stage:
+        form.release_stage.data = release.release_stage
+    if release.ext_ids.doi:
+        form.base_url.data = "https://doi.org/{}".format(release.ext_ids.doi)
+    return render_template('release_save.html', entity=release, form=form), 200
 
 ### Search ##################################################################
 

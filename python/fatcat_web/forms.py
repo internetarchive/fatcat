@@ -363,3 +363,50 @@ class FileEntityForm(EntityEditForm):
         if self.edit_description.data:
             fe.edit_extra = dict(description=self.edit_description.data)
 
+INGEST_TYPE_OPTIONS = [
+    ('pdf', 'PDF Fulltext'),
+    ('html', 'HTML Fulltext'),
+    ('xml', 'XML Fulltext'),
+]
+
+class SavePaperNowForm(FlaskForm):
+
+    base_url = StringField(
+        "URL",
+        [validators.DataRequired(),
+         validators.URL()])
+    ingest_type = SelectField(
+        "Content Type",
+        [validators.DataRequired()],
+        choices=INGEST_TYPE_OPTIONS,
+        default='pdf')
+    release_stage = SelectField(
+        "Publication Stage",
+        [validators.DataRequired()],
+        choices=release_stage_options,
+        default='')
+
+    def to_ingest_request(self, release, actor='savepapernow-web'):
+        base_url = self.base_url.data
+        ext_ids = release.ext_ids.to_dict()
+        # by default this dict has a bunch of empty values
+        ext_ids = dict([(k, v) for (k, v) in ext_ids.items() if v])
+        ingest_request = {
+            'ingest_type': self.ingest_type.data,
+            'ingest_request_source': actor, # TODO: deprecate?
+            'actor': actor,
+            'base_url': base_url,
+            'fatcat': {
+                'release_stage': release.release_stage,
+                'release_ident': release.ident,
+                'work_ident': release.work_id,
+            },
+            'ext_ids': ext_ids,
+        }
+        if self.release_stage.data:
+            ingest_request['release_stage'] = self.release_stage.data
+        if release.ext_ids.doi and base_url == "https://doi.org/{}".format(release.ext_ids.doi):
+            ingest_request['source'] = 'doi'
+            ingest_request['source_id'] = release.ext_ids.doi
+        return ingest_request
+
