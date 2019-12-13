@@ -42,8 +42,7 @@ class ArabesqueMatchImporter(EntityImporter):
 
     def __init__(self, api, extid_type, require_grobid=True, **kwargs):
 
-        eg_desc = kwargs.get('editgroup_description',
-            "Match web crawl files to releases based on identifier/URL seedlist")
+        eg_desc = kwargs.get('editgroup_description', None) or "Match web crawl files to releases based on identifier/URL seedlist"
         eg_extra = kwargs.get('editgroup_extra', dict())
         eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.ArabesqueMatchImporter')
         if kwargs.get('crawl_id'):

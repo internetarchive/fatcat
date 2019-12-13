@@ -35,8 +35,7 @@ class MatchedImporter(EntityImporter):
 
     def __init__(self, api, **kwargs):
 
-        eg_desc = kwargs.pop('editgroup_description',
-            "Import of large-scale file-to-release match results. Source of metadata varies.")
+        eg_desc = kwargs.pop('editgroup_description', None) or "Import of large-scale file-to-release match results. Source of metadata varies."
         eg_extra = kwargs.pop('editgroup_extra', dict())
         eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.MatchedImporter')
         super().__init__(api,

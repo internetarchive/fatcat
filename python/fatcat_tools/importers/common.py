@@ -6,6 +6,7 @@ import json
 import ftfy
 import base64
 import sqlite3
+import datetime
 import subprocess
 import unicodedata
 from collections import Counter
@@ -756,10 +757,11 @@ class KafkaJsonPusher(RecordPusher):
             print("... got {} kafka messages ({}sec poll interval)".format(
                 len(batch), self.poll_interval))
             if not batch:
-                if datetime.datetime.now() - last_push > datetime.timedelta(minutes=5):
+                if datetime.datetime.now() - last_push > datetime.timedelta(seconds=30): #XXX minutes=5
                     # it has been some time, so flush any current editgroup
                     self.importer.finish()
                     last_push = datetime.datetime.now()
+                    #print("Flushed any partial import batch: {}".format(self.importer.counts))
                 continue
             # first check errors on entire batch...
             for msg in batch:
