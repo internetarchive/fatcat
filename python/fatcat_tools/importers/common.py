@@ -113,7 +113,7 @@ def clean(thing, force_xml=False):
     This function is appropriate to be called on any random, non-markup string,
     such as author names, titles, etc.
 
-    It will try to clean up commong unicode mangles, HTML characters, etc.
+    It will try to clean up common unicode mangles, HTML characters, etc.
 
     This will detect XML/HTML and "do the right thing" (aka, not remove
     entities like '&amp' if there are tags in the string), unless you pass the
@@ -757,7 +757,7 @@ class KafkaJsonPusher(RecordPusher):
             print("... got {} kafka messages ({}sec poll interval)".format(
                 len(batch), self.poll_interval))
             if not batch:
-                if datetime.datetime.now() - last_push > datetime.timedelta(seconds=30): #XXX minutes=5
+                if datetime.datetime.now() - last_push > datetime.timedelta(minutes=5):
                     # it has been some time, so flush any current editgroup
                     self.importer.finish()
                     last_push = datetime.datetime.now()
