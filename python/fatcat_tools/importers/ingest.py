@@ -20,7 +20,6 @@ class IngestFileResultImporter(EntityImporter):
             **kwargs)
         self.default_link_rel = kwargs.get("default_link_rel", "web")
         assert self.default_link_rel
-        self.default_mimetype = kwargs.get("default_mimetype", None)
         self.do_updates = kwargs.get("do_updates", False)
         self.require_grobid = require_grobid
         if self.require_grobid:
@@ -127,7 +126,7 @@ class IngestFileResultImporter(EntityImporter):
             sha1=file_meta['sha1hex'],
             sha256=file_meta['sha256hex'],
             size=file_meta['size_bytes'],
-            mimetype=file_meta['mimetype'] or self.default_mimetype,
+            mimetype=file_meta['mimetype'],
             release_ids=[release_ident],
             urls=urls,
         )
