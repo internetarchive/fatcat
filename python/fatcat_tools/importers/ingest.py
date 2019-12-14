@@ -132,10 +132,15 @@ class IngestFileResultImporter(EntityImporter):
         )
         if fatcat and fatcat.get('edit_extra'):
             fe.edit_extra = fatcat['edit_extra']
+        else:
+            fe.edit_extra = dict()
         if request.get('ingest_request_source'):
-            if not fe.edit_extra:
-                fe.edit_extra = dict()
             fe.edit_extra['ingest_request_source'] = request['ingest_request_source']
+        if request.get('link_source') and request.get('link_source_id'):
+            fe.edit_extra['link_source'] = request['link_source']
+            fe.edit_extra['link_source_id'] = request['link_source_id']
+        if not fe.edit_extra:
+            fe.edit_extra = None
         return fe
 
     def try_update(self, fe):

@@ -648,11 +648,11 @@ def release_save(ident):
     if form.is_submitted():
         if form.validate_on_submit():
             # got a valid spn request! try to send to kafka-pixy
-            msg = form.to_ingest_request(release)
+            msg = form.to_ingest_request(release, ingest_request_source="savepapernow-web")
             try:
                 kafka_pixy_produce(
                     Config.KAFKA_SAVEPAPERNOW_TOPIC,
-                    json.dumps(msg),
+                    json.dumps(msg, sort_keys=True),
                 )
             except Exception as e:
                 print(e, file=sys.stderr)
@@ -666,6 +666,10 @@ def release_save(ident):
         form.release_stage.data = release.release_stage
     if release.ext_ids.doi:
         form.base_url.data = "https://doi.org/{}".format(release.ext_ids.doi)
+    elif release.ext_ids.arxiv:
+        form.base_url.data = "https://arxiv.org/pdf/{}.pdf".format(release.ext_ids.arxiv)
+    elif release.ext_ids.pmcid:
+        form.base_url.data = "http://europepmc.org/backend/ptpmcrender.fcgi?accid={}&blobtype=pdf".format(release.ext_ids.pmcid)
     return render_template('release_save.html', entity=release, form=form), 200
 
 ### Search ##################################################################

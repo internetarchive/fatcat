@@ -386,18 +386,16 @@ class SavePaperNowForm(FlaskForm):
         choices=release_stage_options,
         default='')
 
-    def to_ingest_request(self, release, actor='savepapernow-web'):
+    def to_ingest_request(self, release, ingest_request_source='savepapernow'):
         base_url = self.base_url.data
         ext_ids = release.ext_ids.to_dict()
         # by default this dict has a bunch of empty values
         ext_ids = dict([(k, v) for (k, v) in ext_ids.items() if v])
         ingest_request = {
             'ingest_type': self.ingest_type.data,
-            'ingest_request_source': actor, # TODO: deprecate?
-            'actor': actor,
+            'ingest_request_source': ingest_request_source,
             'base_url': base_url,
             'fatcat': {
-                'release_stage': release.release_stage,
                 'release_ident': release.ident,
                 'work_ident': release.work_id,
             },
@@ -405,8 +403,12 @@ class SavePaperNowForm(FlaskForm):
         }
         if self.release_stage.data:
             ingest_request['release_stage'] = self.release_stage.data
+
         if release.ext_ids.doi and base_url == "https://doi.org/{}".format(release.ext_ids.doi):
-            ingest_request['source'] = 'doi'
-            ingest_request['source_id'] = release.ext_ids.doi
+            ingest_request['link_source'] = 'doi'
+            ingest_request['link_source_id'] = release.ext_ids.doi
+        elif release.ext_ids.arxiv and base_url == "https://arxiv.org/pdf/{}.pdf".format(release.ext_ids.arxiv):
+            ingest_request['link_source'] = 'arxiv'
+            ingest_request['link_source_id'] = release.ext_ids.arxiv
         return ingest_request
 
