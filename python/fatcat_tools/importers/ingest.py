@@ -160,6 +160,12 @@ class IngestFileResultImporter(EntityImporter):
             self.counts['exists'] += 1
             return False
 
+        # check for existing edits-in-progress with same file hash
+        for other in self._entity_queue:
+            if other.sha1 == fe.sha1:
+                self.counts['skip-in-queue'] += 1
+                return False
+
         if not self.do_updates:
             self.counts['skip-update-disabled'] += 1
             return False
