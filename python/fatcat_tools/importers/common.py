@@ -320,6 +320,12 @@ class EntityImporter:
         return
 
     def parse_record(self, raw_record):
+        """
+        Returns an entity class type, or None if we should skip this one.
+
+        May have side-effects (eg, create related entities), but shouldn't
+        update/mutate the actual entity.
+        """
         # implementations should fill this in
         raise NotImplementedError
 
