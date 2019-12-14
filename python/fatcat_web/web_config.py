@@ -30,7 +30,7 @@ class Config(object):
 
     # for save-paper-now. set to None if not configured, so we don't display forms/links
     KAFKA_PIXY_ENDPOINT = os.environ.get("KAFKA_PIXY_ENDPOINT", default=None) or None
-    KAFKA_SAVEPAPERNOW_TOPIC="sandcrawler-dev.ingest-file-requests"
+    KAFKA_SAVEPAPERNOW_TOPIC = os.environ.get("KAFKA_SAVEPAPERNOW_TOPIC", default="sandcrawler-dev.ingest-file-requests")
 
     # for flask things, like session cookies
     FLASK_SECRET_KEY = os.environ.get("FLASK_SECRET_KEY", default=None)
