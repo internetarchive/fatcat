@@ -507,7 +507,7 @@ class EntityImporter:
         return container_id
 
     def read_issn_map_file(self, issn_map_file):
-        print("Loading ISSN map file...")
+        print("Loading ISSN map file...", file=sys.stderr)
         self._issn_issnl_map = dict()
         for line in issn_map_file:
             if line.startswith("ISSN") or len(line) == 0:
@@ -516,7 +516,7 @@ class EntityImporter:
             self._issn_issnl_map[issn] = issnl
             # double mapping makes lookups easy
             self._issn_issnl_map[issnl] = issnl
-        print("Got {} ISSN-L mappings.".format(len(self._issn_issnl_map)))
+        print("Got {} ISSN-L mappings.".format(len(self._issn_issnl_map)), file=sys.stderr)
 
     def issn2issnl(self, issn):
         if issn is None:
