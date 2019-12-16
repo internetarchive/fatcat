@@ -6,6 +6,7 @@ Example doc at: https://gist.github.com/miku/5610a2d64e3fee82d16f5d3f3a295fc8
 
 from .common import EntityImporter
 import dateparser
+import langcodes
 import datetime
 import fatcat_openapi_client
 import json
@@ -18,36 +19,132 @@ CONTAINER_TYPE_MAP = {
     'Book Series': 'book-series',
 }
 
+# The docs/guide should be the cannonical home for these mappings; update there
+# first.
+#
+# > select count(*), release_type from release_rev group by release_type order by count(*) desc;
+#
+#   count   |   release_type
+# ----------+-------------------
+#  95030004 | article-journal
+#  13477878 | chapter
+#   5926811 | paper-conference
+#   2169642 | article
+#   1806415 | dataset
+#   1548614 | book
+#   1390304 |
+#    818351 | report
+#    815684 | entry
+#    307998 | standard
+#    297769 | thesis
+#    261426 | letter
+#    148093 | post
+#    122736 | editorial
+#     99225 | stub
+#     96219 | review-book
+#     22854 | peer_review
+#     19078 | interview
+#     16278 | article-newspaper
+#      3973 | speech
+#      3536 | legal_case
+#      2264 | abstract
+#      1626 | legislation
+#      1053 | retraction
+#        85 | component
+# (25 rows)
+#
+# Map various datacite type types to CSL-ish types. None means TODO or remove.
+DATACITE_TYPE_MAP = {
+    'ris': {
+        'THES': 'thesis',
+        'SOUND': None,
+        'CHAP': 'chapter',
+        'FIGURE': None,
+        'RPRT': 'report',
+        'JOUR': 'article-journal',
+        'MPCT': None,
+        'GEN': None,
+        'BOOK': 'book',
+        'DATA': 'dataset',
+        'COMP': None,
+    },
+    'schemaOrg': {
+        'Dataset': 'dataset',
+        'Book': 'book',
+        'ScholarlyArticle': 'article',
+        'ImageObject': 'graphic',
+        'Collection': None,
+        'MediaObject': None,
+        'Event': None,
+        'SoftwareSourceCode': None,
+        'Chapter': 'chapter',
+        'CreativeWork': None,
+        'PublicationIssue': 'article',
+        'AudioObject': None,
+        'Thesis': 'thesis',
+    },
+    'citeproc': {
+        'dataset': 'dataset',
+        'chapter': 'chapter',
+        'article-journal': 'article-journal',
+        'song': 'song',
+        'article': 'article',
+        'report': 'report',
+        'graphic': 'graphic',
+        'thesis': 'thesis',
+        'book': 'book',
+    },
+    'bibtex': {
+        'phdthesis': 'thesis',
+        'inbook': 'chapter',
+        'misc': None,
+        'article': 'article-journal',
+        'book': 'book',
+    },
+    'resourceTypeGeneral': {
+        'Image': None,
+        'Dataset': 'dataset',
+        'PhysicalObject': None,
+        'Collection': None,
+        'Text': None,
+        'Sound': None,
+        'InteractiveResource': None,
+        'Event': None,
+        'Software': None,
+        'Other': None,
+        'Workflow': None,
+        'Audiovisual': None,
+    }
+}
+
+
 # TODO(martin): merge this with other maps, maybe.
 LICENSE_SLUG_MAP = {
-    "//creativecommons.org/licenses/by/2.0": "CC-BY",
+    "//creativecommons.org/licenses/by/2.0/": "CC-BY",
     "//creativecommons.org/licenses/by/2.0/uk/legalcode": "CC-BY",
-    "//creativecommons.org/licenses/by/3.0": "CC-BY",
+    "//creativecommons.org/licenses/by/3.0/": "CC-BY",
     "//creativecommons.org/licenses/by/3.0/us": "CC-BY",
-    "//creativecommons.org/licenses/by/4.0": "CC-BY",
-    "//creativecommons.org/licenses/by/4.0/deed.de": "CC-BY",
-    "//creativecommons.org/licenses/by/4.0/deed.en_US": "CC-BY",
-    "//creativecommons.org/licenses/by/4.0/legalcode": "CC-BY",
-    "//creativecommons.org/licenses/by-nc/2.0": "CC-BY-NC",
-    "//creativecommons.org/licenses/by-nc/3.0": "CC-BY-NC",
-    "//creativecommons.org/licenses/by-nc/4.0": "CC-BY-NC",
+    "//creativecommons.org/licenses/by/4.0/": "CC-BY",
+    "//creativecommons.org/licenses/by/4.0/deed.de/": "CC-BY",
+    "//creativecommons.org/licenses/by/4.0/deed.en_US/": "CC-BY",
+    "//creativecommons.org/licenses/by/4.0/legalcode/": "CC-BY",
+    "//creativecommons.org/licenses/by-nc/2.0/": "CC-BY-NC",
+    "//creativecommons.org/licenses/by-nc/3.0/": "CC-BY-NC",
+    "//creativecommons.org/licenses/by-nc/4.0/": "CC-BY-NC",
     "//creativecommons.org/licenses/by-nc/4.0/legalcode": "CC-BY-NC",
-    "//creativecommons.org/licenses/by-nc-nd/3.0": "CC-BY-NC-ND",
+    "//creativecommons.org/licenses/by-nc-nd/3.0/": "CC-BY-NC-ND",
     "//creativecommons.org/licenses/by-nc-nd/3.0/gr": "CC-BY-NC-ND",
-    "//creativecommons.org/licenses/by-nc-nd/4.0": "CC-BY-NC-ND",
-    "//creativecommons.org/licenses/by-nc-nd/4.0": "CC-BY-ND",
+    "//creativecommons.org/licenses/by-nc-nd/4.0/": "CC-BY-ND",
     "//creativecommons.org/licenses/by-nc-nd/4.0/legalcode": "CC-BY-ND",
-    "//creativecommons.org/licenses/by-nc-sa/4.0": "CC-BY-NC-SA",
-    "//creativecommons.org/licenses/by-nc-sa/4.0": "CC-BY-SA",
-    "//creativecommons.org/licenses/by-nd/4.0": "CC-BY-ND",
+    "//creativecommons.org/licenses/by-nc-sa/4.0/": "CC-BY-NC-SA",
+    "//creativecommons.org/licenses/by-nd/4.0/": "CC-BY-ND",
     "//creativecommons.org/licenses/by-sa/3.0/de": "CC-BY-SA",
     "//creativecommons.org/licenses/by-sa/3.0/gr": "CC-BY-SA",
-    "//creativecommons.org/licenses/by-sa/4.0": "CC-BY-SA",
+    "//creativecommons.org/licenses/by-sa/4.0/": "CC-BY-SA",
     "//creativecommons.org/licenses/by-sa/4.0/legalcode": "CC-BY-SA",
-    "//creativecommons.org/licenses/CC-BY/4.0": "CC-BY",
-    "//creativecommons.org/licenses/publicdomain/zero/1.0": "CC-0",
-    "//creativecommons.org/publicdomain/zero/1.0": "CC-0",
-    "//creativecommons.org/publicdomain/zero/1.0": "CC-0",
+    "//creativecommons.org/licenses/CC-BY/4.0/": "CC-BY",
+    "//creativecommons.org/licenses/publicdomain/zero/1.0/": "CC-0",
+    "//creativecommons.org/publicdomain/zero/1.0/": "CC-0",
     "//creativecommons.org/publicdomain/zero/1.0/legalcode": "CC-0",
     "//opensource.org/licenses/MIT": "MIT",
     "//www.elsevier.com/open-access/userlicense/1.0": "ELSEVIER-USER-1.0",
@@ -75,6 +172,7 @@ LICENSE_SLUG_MAP = {
     # "info:eu-repo/semantics/closedAccess": "", # https://wiki.surfnet.nl/display/standards/info-eu-repo/#info-eu-repo-AccessRights
     # "info:eu-repo/semantics/embargoedAccess": "",
     # "info:eu-repo/semantics/openAccess": "",
+    # Note: Some URLs pointing to licensing terms are not in WB yet (but would be nice).
 }
 
 class DataciteImporter(EntityImporter):
@@ -302,12 +400,12 @@ class DataciteImporter(EntityImporter):
         #      "identifierType": "ISSN"
         #    },
         #
-        # "attributes.container.type": [
-        #   "DataRepository",
-        #   "Journal",
-        #   "Series",
-        #   "Book Series"
-        # ],
+        #  "attributes.container.type": [
+        #    "DataRepository",
+        #    "Journal",
+        #    "Series",
+        #    "Book Series"
+        #  ],
         #
         #  "attributes.container.identifierType": [
         #    "Handle",
@@ -318,6 +416,7 @@ class DataciteImporter(EntityImporter):
         #    "URL",
         #    "ISSN"
         #  ],
+        #
 
         container_id = None
         container = attributes.get('container', {}) or {}
@@ -328,17 +427,18 @@ class DataciteImporter(EntityImporter):
                 if len(issn) == 8:
                     issn = issn[:4] + "-" + issn[4:]
                 issnl = self.issn2issnl(issn)
-                container_id = self.lookup_issnl(issnl)
+                if issnl is not None:
+                    container_id = self.lookup_issnl(issnl)
 
-                if container_id is None and container.get('title'):
-                    ce = fatcat_openapi_client.ContainerEntity(
-                        issnl=issnl,
-                        container_type=container_type,
-                        name=container.get('title'),
-                    )
-                    ce_edit = self.create_container(ce)
-                    container_id = ce_edit.ident
-                    self._issnl_id_map[issnl] = container_id
+                    if container_id is None and container.get('title'):
+                        ce = fatcat_openapi_client.ContainerEntity(
+                            issnl=issnl,
+                            container_type=container_type,
+                            name=container.get('title'),
+                        )
+                        ce_edit = self.create_container(ce)
+                        container_id = ce_edit.ident
+                        self._issnl_id_map[issnl] = container_id
 
         # > License
         #
@@ -376,11 +476,51 @@ class DataciteImporter(EntityImporter):
         #    "Workflow",
         #    "Audiovisual"
         #  ],
+        #  "attributes.types.citeproc": [
+        #    "dataset",
+        #    "chapter",
+        #    "article-journal",
+        #    "song",
+        #    "article",
+        #    "report",
+        #    "graphic",
+        #    "thesis",
+        #    "book"
+        #  ],
+        #
+        # There is RIS, also.
 
-        # > Extra information.
+        # attributes.types.resourceType contains too many things for now.
+        for typeType in ('citeproc', 'resourceTypeGeneral', 'schemaOrg', 'bibtex', 'ris'):
+            release_type = attributes.get('types', {}).get(typeType)
+            if release_type is not None:
+                break
+
+        # TODO(martin): Skip unmapped release_type entirely?
+        if release_type is None:
+            print("datacite unmapped type: {}".format(release_type), file=sys.stderr)
+
+        # > Language.
+        # attributes.language
+
+        language = None
+        value = attributes.get('language', '') or '' # As it is written.
+        try:
+            language = langcodes.find(value).language
+        except LookupError:
+            try:
+                language = langcodes.get(value).language
+            except langcodes.tag_parser.LanguageTagError:
+                pass
+
+        # > Extra information: license, subjects, ...
         extra, extra_datacite = dict(), dict()
         if license_extra:
-            extra_datacite['license'] = license_extra
+            extra_datacite = {
+                'license': license_extra,
+            }
+        if attributes.get('subjects'):
+            extra_datacite['subjects'] = attributes.get('subjects', [])
 
         if extra_datacite:
             extra['datacite'] = extra_datacite
@@ -389,7 +529,7 @@ class DataciteImporter(EntityImporter):
         re = fatcat_openapi_client.ReleaseEntity(
             work_id=None,
             container_id=container_id,
-            release_type=None,
+            release_type=release_type,
             release_stage=None,
             title=title, # attributes.titles, various titleType
             subtitle=subtitle,
@@ -405,7 +545,7 @@ class DataciteImporter(EntityImporter):
             volume=None,
             issue=None,
             pages=None,
-            language=None,
+            language=language,
             abstracts=None,
             refs=None,
             extra=extra,
