@@ -17,7 +17,7 @@
 - `release_type` (string, controlled set): represents the medium or form-factor
   of this release; eg, "book" versus "journal article". Not necessarily
   the same across all releases of a work. See definitions below.
-- `release_state` (string, controlled set): represents the publishing/review
+- `release_stage` (string, controlled set): represents the publishing/review
   lifecycle status of this particular release of the work. See definitions
   below.
 - `release_date` (string, ISO date format): when this release was first made
@@ -266,7 +266,7 @@ For the purpose of statistics, the following release types are considered
 - `paper-conference`
 - `thesis`
 
-#### `release_state` Vocabulary
+#### `release_stage` Vocabulary
 
 These roughly follow the [DRIVER](http://web.archive.org/web/20091109125137/http://www2.lse.ac.uk/library/versions/VERSIONS_Toolkit_v1_final.pdf) publication version guidelines, with the addition of a `retracted` status.
 
