@@ -8,10 +8,10 @@ verify_ssl = true
 name = "pypi"
 
 [dev-packages]
-pytest = ">=4"
+pytest = ">=4,<5.0.0"
 pytest-pythonpath = "*"
 pytest-pylint = "*"
-ipython = "*"
+ipython = "<7.0.0"
 responses = ">=0.10"
 pytest-cov = "*"
 pylint = "*"
@@ -29,7 +29,7 @@ flask-wtf = "*"
 Flask-Misaka = "*"
 flask-mwoauth = "*"
 WTForms = "*"
-loginpass = {ref = 'ed9e527502bd19be6793f88ed71ca0e1764e9034',git = 'https://github.com/authlib/loginpass.git'}
+loginpass = ">=0.4"
 requests = ">=2"
 raven = {extras = ['flask'],version = "*"}
 pykafka = ">=2"
@@ -39,14 +39,16 @@ sickle = "*"
 python-snappy = "*"
 pymacaroons = "*"
 ftfy = "*"
-citeproc-py = "*"
-citeproc-py-styles = "*"
+citeproc-py = ">=0.4"
+citeproc-py-styles = ">=0.1"
 bs4 = "*"
 python-magic = "*"
 pylatexenc = "*"
 pygal = "*"
 elasticsearch-dsl = ">=6.0.0,<7.0.0"
 elasticsearch = ">=6.0.0,<7.0.0"
+langcodes = ">=1.4"
+dateparser = ">=0.7"
 
 [requires]
 # Python 3.5 is the bundled (system) version of python for Ubuntu 16.04
