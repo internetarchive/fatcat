@@ -170,7 +170,10 @@ def run_datacite(args):
     dci = DataciteImporter(args.api,
         args.issn_map_file,
         edit_batch_size=args.batch_size,
-        bezerk_mode=args.bezerk_mode)
+        bezerk_mode=args.bezerk_mode,
+        debug=args.debug,
+        lang_detect=args.lang_detect,
+        insert_log_file=args.insert_log_file)
     if args.kafka_mode:
         KafkaJsonPusher(fci, args.kafka_hosts, args.kafka_env, "api-datacite",
             "fatcat-import", consume_batch_size=args.batch_size).run()
@@ -464,6 +467,16 @@ def main():
     sub_datacite.add_argument('--bezerk-mode',
         action='store_true',
         help="don't lookup existing DOIs, just insert (clobbers; only for fast bootstrap)")
+    sub_datacite.add_argument('--debug',
+        action='store_true',
+        help="write converted JSON to stdout")
+    sub_datacite.add_argument('--lang-detect',
+        action='store_true',
+        help="try to detect language (slow)")
+    sub_datacite.add_argument('--insert-log-file',
+        default='',
+        type=str,
+        help="write inserted documents into file (for debugging)")
     sub_datacite.set_defaults(
         func=run_datacite,
         auth_var="FATCAT_API_AUTH_TOKEN",

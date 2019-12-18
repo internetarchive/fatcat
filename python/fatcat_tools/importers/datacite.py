@@ -6,13 +6,14 @@ Example doc at: https://gist.github.com/miku/5610a2d64e3fee82d16f5d3f3a295fc8
 
 from .common import EntityImporter
 import dateparser
-import langcodes
 import datetime
-import langdetect
 import fatcat_openapi_client
-import json
-import sys
 import hashlib
+import json
+import langcodes
+import langdetect
+import sqlite3
+import sys
 
 # https://guide.fatcat.wiki/entity_container.html#container_type-vocabulary
 CONTAINER_TYPE_MAP = {
@@ -147,10 +148,11 @@ LICENSE_SLUG_MAP = {
 
 class DataciteImporter(EntityImporter):
     """
-    Importer for datacite records. TODO(martin): Do we need issn_map_file?
+    Importer for datacite records.
     """
 
-    def __init__(self, api, issn_map_file, **kwargs):
+    def __init__(self, api, issn_map_file, debug=False, lang_detect=False,
+                 insert_log_file=None, **kwargs):
 
         eg_desc = kwargs.get('editgroup_description',
             "Automated import of Datacite DOI metadata, harvested from REST API")
@@ -163,7 +165,42 @@ class DataciteImporter(EntityImporter):
             **kwargs)
 
         self.create_containers = kwargs.get('create_containers', True)
+        extid_map_file = kwargs.get('extid_map_file')
+        self.extid_map_db = None
+        if extid_map_file:
+            db_uri = "file:{}?mode=ro".format(extid_map_file)
+            print("Using external ID map: {}".format(db_uri), file=sys.stderr)
+            self.extid_map_db = sqlite3.connect(db_uri, uri=True)
+        else:
+            print("Not using external ID map", file=sys.stderr)
+
         self.read_issn_map_file(issn_map_file)
+        self.debug = debug
+        self.lang_detect = lang_detect
+        self.insert_log_file = insert_log_file
+
+        print('datacite with debug={}, lang_detect={}'.format(self.debug, self.lang_detect), file=sys.stderr)
+
+    def lookup_ext_ids(self, doi):
+        """
+        Return dictionary of identifiers refering to the same things as the given DOI.
+        """
+        if self.extid_map_db is None:
+            return dict(core_id=None, pmid=None, pmcid=None, wikidata_qid=None, arxiv_id=None, jstor_id=None)
+        row = self.extid_map_db.execute("SELECT core, pmid, pmcid, wikidata FROM ids WHERE doi=? LIMIT 1",
+            [doi.lower()]).fetchone()
+        if row is None:
+            return dict(core_id=None, pmid=None, pmcid=None, wikidata_qid=None, arxiv_id=None, jstor_id=None)
+        row = [str(cell or '') or None for cell in row]
+        return dict(
+            core_id=row[0],
+            pmid=row[1],
+            pmcid=row[2],
+            wikidata_qid=row[3],
+            # TODO:
+            arxiv_id=None,
+            jstor_id=None,
+        )
 
     def parse_record(self, obj):
         """
@@ -174,14 +211,14 @@ class DataciteImporter(EntityImporter):
 
         attributes = obj['attributes']
 
-        # Contributors. Many nameIdentifierSchemes, we do not use yet:
-        # "attributes.creators[].nameIdentifiers[].nameIdentifierScheme": [
-        # "LCNA", "GND", "email", "NAF", "OSF", "RRID", "ORCID", "SCOPUS",
-        # "NRCPID", "schema.org", "GRID", "MGDS", "VIAF", "JACoW-ID" ],
+        # Contributors. Many nameIdentifierSchemes, we do not use (yet):
+        # "attributes.creators[].nameIdentifiers[].nameIdentifierScheme":
+        # ["LCNA", "GND", "email", "NAF", "OSF", "RRID", "ORCID",
+        # "SCOPUS", "NRCPID", "schema.org", "GRID", "MGDS", "VIAF", "JACoW-ID"].
         contribs = []
 
         for i, c in enumerate(attributes['creators']):
-            if not c.get('nameType') == 'Personal':
+            if 'nameType' in c and not c.get('nameType') == 'Personal':
                 continue
             creator_id = None
             for nid in c.get('nameIdentifiers', []):
@@ -191,7 +228,7 @@ class DataciteImporter(EntityImporter):
                 if not orcid:
                     continue
                 creator_id = self.lookup_orcid(orcid)
-                # If creator_id is None, should we create creators?
+                # TODO(martin): If creator_id is None, should we create creators?
             contribs.append(fatcat_openapi_client.ReleaseContrib(
                 creator_id=creator_id,
                 index=i,
@@ -204,11 +241,27 @@ class DataciteImporter(EntityImporter):
         # "AlternativeTitle", "Other", "Subtitle", "TranslatedTitle"
         title, subtitle = None, None
 
-        for entry in attributes.get('titles', []):
-            if not title and 'titleType' not in entry:
-                title = entry.get('title').strip()
-            if entry.get('titleType') == 'Subtitle':
-                subtitle = entry.get('title').strip()
+        titles = attributes.get('titles', []) or []
+        if len(titles) == 0:
+            print('skipping record w/o title: {}'.format(obj), file=sys.stderr)
+            return False
+        elif len(titles) == 1:
+            # We do not care about the type then.
+            title = titles[0].get('title', '') or ''
+            title = title.strip()
+        else:
+            for entry in titles:
+                if not title and ('titleType' not in entry or not entry.get('titleType')):
+                    title = entry.get('title').strip()
+                if entry.get('titleType') == 'Subtitle':
+                    subtitle = entry.get('title', '').strip()
+
+        if not title:
+            print('skipping record w/o title: {}'.format(obj), file=sys.stderr)
+            return False
+
+        if not subtitle:
+            subtitle = None
 
         # Dates. A few internal dates (registered, created, updated) and
         # published (0..2554). We try to work with typed date list, in
@@ -217,14 +270,13 @@ class DataciteImporter(EntityImporter):
         # "Updated", "Valid".
         release_year, release_date = None, None
 
+        # Ignore: Collected, Issued.
         date_type_prio = (
             'Valid',
-            'Issued',
             'Available',
             'Accepted',
             'Submitted',
             'Copyrighted',
-            'Collected',
             'Created',
             'Updated',
         )
@@ -233,15 +285,36 @@ class DataciteImporter(EntityImporter):
             for item in dates:
                 if not item.get('dateType') == prio:
                     continue
-                try:
-                    result = dateparser.parse(item.get('date'))
-                except TypeError as err:
-                    print("{} failed with: {}".format(item.get('date'), err), file=sys.stderr)
-                    continue
+
+                # Parse out date, use common patterns first, fallback to dateparser.
+                result, value, year_only = None, item.get('date', ''), False
+
+                # Before using (expensive) dateparser, try a few common patterns.
+                common_patterns = ('%Y-%m-%d', '%Y', '%Y-%m', '%Y-%m-%dT%H:%M:%SZ', '%Y-%m-%dT%H:%M:%S')
+
+                for pattern in common_patterns:
+                    try:
+                        result = datetime.datetime.strptime(value, pattern)
+                    except ValueError:
+                        continue
+                    else:
+                        if pattern == '%Y':
+                            year_only = True
+                        break
+
+                if result is None:
+                    print('fallback for {}'.format(value), file=sys.stderr)
+                    try:
+                        result = dateparser.parse(value)
+                    except TypeError as err:
+                        print("{} date parsing failed with: {}".format(value, err), file=sys.stderr)
+                        continue
+
                 if result is None:
                     # Unparsable date.
                     continue
-                release_date = result
+                if not year_only:
+                    release_date = result.date()
                 release_year = result.year
                 if 1000 < release_year < datetime.date.today().year + 5:
                     # Skip possibly bogus dates.
@@ -280,10 +353,16 @@ class DataciteImporter(EntityImporter):
                     container_id = self.lookup_issnl(issnl)
 
                     if container_id is None and container.get('title'):
+                        container_title = container.get('title')
+                        if isinstance(container_title, list):
+                            if len(container_title) > 0:
+                                print('too many container titles: {}'.format(len(container_title)))
+                                container_title = container_title[0]
+                        assert isinstance(container_title, str)
                         ce = fatcat_openapi_client.ContainerEntity(
                             issnl=issnl,
                             container_type=container_type,
-                            name=container.get('title'),
+                            name=container_title,
                         )
                         ce_edit = self.create_container(ce)
                         container_id = ce_edit.ident
@@ -326,12 +405,12 @@ class DataciteImporter(EntityImporter):
         # closest, but not always supplied.
         for typeType in ('citeproc', 'resourceTypeGeneral', 'schemaOrg', 'bibtex', 'ris'):
             value = attributes.get('types', {}).get(typeType)
-            release_type = DATACITE_TYPE_MAP.get(value)
+            release_type = DATACITE_TYPE_MAP.get(typeType, {}).get(value)
             if release_type is not None:
                 break
 
         if release_type is None:
-            print("datacite unmapped type: {}".format(release_type), file=sys.stderr)
+            print("no mapped type: {}".format(value), file=sys.stderr)
 
         # Language values are varied ("ger", "es", "English", "ENG", "en-us",
         # "other", ...). Try to crush it with langcodes: "It may sound to you
@@ -347,7 +426,7 @@ class DataciteImporter(EntityImporter):
             try:
                 language = langcodes.get(value).language
             except langcodes.tag_parser.LanguageTagError:
-                print('could not determine language: {}'.format(value), file=sys.stderr)
+                pass
 
         # Abstracts appear in "attributes.descriptions[].descriptionType", some
         # of the observed values: "Methods", "TechnicalInfo",
@@ -355,8 +434,8 @@ class DataciteImporter(EntityImporter):
         # "Other" fields might contain references or related articles (with
         # DOI). TODO(martin): maybe try to parse out some of those refs.
         abstracts = []
-
-        for desc in attributes.get('descriptions', []):
+        descs = attributes.get('descriptions', []) or []
+        for desc in descs:
             if not desc.get('descriptionType') == 'Abstract':
                 continue
             if len(desc.get('description', '')) < 10:
@@ -364,10 +443,11 @@ class DataciteImporter(EntityImporter):
             text = desc.get('description')
             sha1 = hashlib.sha1(text.encode('utf-8')).hexdigest()
             lang = None
-            try:
-                lang = langdetect.detect(text)
-            except langdetect.lang_detect_exception.LangDetectException:
-                pass
+            if self.lang_detect:
+                try:
+                    lang = langdetect.detect(text)
+                except langdetect.lang_detect_exception.LangDetectException as err:
+                    print('language detection failed: {}'.format(err), file=sys.stderr)
             abstracts.append(fatcat_openapi_client.ReleaseAbstract(
                 mimetype="text/plain",
                 content=text,
@@ -386,7 +466,8 @@ class DataciteImporter(EntityImporter):
         # For the moment, we only care about References.
         refs, ref_index = [], 0
 
-        for rel in attributes.get('relatedIdentifiers', []):
+        relIds = attributes.get('relatedIdentifiers', []) or []
+        for rel in relIds:
             if not rel.get('relationType') == 'References':
                 continue
             ref_extra = dict()
@@ -422,6 +503,9 @@ class DataciteImporter(EntityImporter):
         if extra_datacite:
             extra['datacite'] = extra_datacite
 
+        doi = attributes.get('doi', '').lower()
+        extids = self.lookup_ext_ids(doi=doi)
+
         # Assemble release.
         re = fatcat_openapi_client.ReleaseEntity(
             work_id=None,
@@ -435,7 +519,13 @@ class DataciteImporter(EntityImporter):
             release_date=release_date,
             publisher=publisher,
             ext_ids=fatcat_openapi_client.ReleaseExtIds(
-                doi=attributes.get('doi'),
+                doi=doi,
+                pmid=extids['pmid'],
+                pmcid=extids['pmcid'],
+                wikidata_qid=extids['wikidata_qid'],
+                core=extids['core_id'],
+                arxiv=extids['arxiv_id'],
+                jstor=extids['jstor_id'],
             ),
             contribs=contribs,
             volume=volume,
@@ -449,11 +539,12 @@ class DataciteImporter(EntityImporter):
         )
         return re
 
-    def try_update(self, re, debug=True):
+    def try_update(self, re):
         """
-        When debug is true, write the RE to stdout.
+        When debug is true, write the RE to stdout, not to the database. Might
+        hide schema mismatch bugs.
         """
-        if debug is True:
+        if self.debug is True:
             print(json.dumps(re.to_dict(), default=extended_json_encoder))
             return False
 
@@ -476,10 +567,16 @@ class DataciteImporter(EntityImporter):
         return True
 
     def insert_batch(self, batch):
+        print('inserting batch ({})'.format(len(batch)), file=sys.stderr)
+        if self.insert_log_file:
+            with open(self.insert_log_file, 'a') as f:
+                for doc in batch:
+                    json.dump(doc.to_dict(), f, default=extended_json_encoder)
+                    f.write('\n')
         self.api.create_release_auto_batch(fatcat_openapi_client.ReleaseAutoBatch(
             editgroup=fatcat_openapi_client.Editgroup(
-                description=self.editgroup_description,
-                extra=self.editgroup_extra),
+            description=self.editgroup_description,
+            extra=self.editgroup_extra),
             entity_list=batch))
 
 def extended_json_encoder(value):
@@ -491,6 +588,7 @@ def extended_json_encoder(value):
         return value.isoformat()
     if isinstance(value, set):
         return list(value)
+    raise TypeError('cannot encode type: {}'.format(type(value)))
 
 def lookup_license_slug(raw):
     """
