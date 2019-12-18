@@ -47,6 +47,8 @@ pylatexenc = "*"
 pygal = "*"
 elasticsearch-dsl = ">=6.0.0,<7.0.0"
 elasticsearch = ">=6.0.0,<7.0.0"
+langcodes = ">=1.4"
+dateparser = ">=0.7"
 
 [requires]
 # Python 3.5 is the bundled (system) version of python for Ubuntu 16.04
