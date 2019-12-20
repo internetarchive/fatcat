@@ -394,6 +394,8 @@ class SavePaperNowForm(FlaskForm):
         ingest_request = {
             'ingest_type': self.ingest_type.data,
             'ingest_request_source': ingest_request_source,
+            'link_source': 'spn',
+            'link_source_id': release.ident,
             'base_url': base_url,
             'fatcat': {
                 'release_ident': release.ident,
