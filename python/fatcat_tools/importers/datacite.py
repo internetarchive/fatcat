@@ -280,6 +280,10 @@ class DataciteImporter(EntityImporter):
             'Created',
             'Updated',
         )
+
+        # Before using (expensive) dateparser, try a few common patterns.
+        common_patterns = ('%Y-%m-%d', '%Y-%m', '%Y-%m-%dT%H:%M:%SZ', '%Y-%m-%dT%H:%M:%S', '%Y')
+
         for prio in date_type_prio:
             dates = attributes.get('dates', []) or [] # Never be None.
             for item in dates:
@@ -288,9 +292,6 @@ class DataciteImporter(EntityImporter):
 
                 # Parse out date, use common patterns first, fallback to dateparser.
                 result, value, year_only = None, item.get('date', ''), False
-
-                # Before using (expensive) dateparser, try a few common patterns.
-                common_patterns = ('%Y-%m-%d', '%Y', '%Y-%m', '%Y-%m-%dT%H:%M:%SZ', '%Y-%m-%dT%H:%M:%S')
 
                 for pattern in common_patterns:
                     try:
