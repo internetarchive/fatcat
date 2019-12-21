@@ -405,11 +405,15 @@
 <div class="ui segment attached accordion">
   <div class="title" style="padding: 0px;"><i class="dropdown icon"></i><b>Lookup Links</b></div>
   <div class="content">
-  {% if release.container != None and release.container.issnl != None %}
-    <a href="http://www.sherpa.ac.uk/romeo/issn/{{ release.container.issnl }}/">SHERPA/RoMEO</a> (journal policies)<br/>
-  {% endif %}
   {% if release != None and release.ext_ids.doi != None %}
-    <a href="https://oadoi.org/{{ release.ext_ids.doi }}">oaDOI/unpaywall</a><br/>
+    <a href="https://oadoi.org/{{ release.ext_ids.doi }}">oaDOI/unpaywall</a> (OA fulltext)<br/>
+  {% endif %}
+  {% if release.ext_ids.doi %}
+    {% if release.extra.datacite %}
+      <a href="https://api.datacite.org/dois/{{ release.ext_ids.doi }}">Datacite Metadata</a> (via API)<br>
+    {% else %}
+      <a href="https://api.crossref.org/v1/works/http://dx.doi.org/{{ release.ext_ids.doi }}">Crossref Metadata</a> (via API)<br>
+    {% endif %}
   {% endif %}
   {% if release.ext_ids.isbn13 != None %}
     <a href="https://openlibrary.org/search?isbn={{ release.ext_ids.isbn13 }}">Open Library</a><br>
@@ -417,12 +421,12 @@
   {% else %}
     <a href="http://www.worldcat.org/search?qt=worldcat_org_art&q={{ release.title|urlencode }}">Worldcat</a><br>
   {% endif %}
-  {% if release.ext_ids.doi %}
-  <a href="https://api.crossref.org/v1/works/http://dx.doi.org/{{ release.ext_ids.doi }}">Crossref Metadata</a> (via API)<br>
+  {% if release.container != None and release.container.issnl != None %}
+    <a href="http://www.sherpa.ac.uk/romeo/issn/{{ release.container.issnl }}/">SHERPA/RoMEO</a> (journal policies)<br/>
   {% endif %}
   <a href="https://www.wikidata.org/w/index.php?search={{ release.title|urlencode  }}">wikidata.org</a><br>
   <a href="https://core.ac.uk/search?q={{ release.title|urlencode  }}">CORE.ac.uk</a><br>
-  <a href="https://www.semanticscholar.org/search?q={{ release.title|urlencode  }}">Semantic Scholar</a> (CS, neuro)<br>
+  <a href="https://www.semanticscholar.org/search?q={{ release.title|urlencode  }}">Semantic Scholar</a><br>
   <a href="https://scholar.google.com/scholar?q={{ release.title|urlencode  }}">Google Scholar</a><br>
 </div>
 </div>
