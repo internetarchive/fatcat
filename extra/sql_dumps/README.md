@@ -83,7 +83,7 @@ Or, in production:
     sudo su postgres
     time zcat fatcat_full_dbdump_2020-02-02.022209.tar.gz  | pg_restore --exit-on-error --clean --if-exists --dbname fatcat_prod
 
-In QA (as of 2019-01-30 dump), this takes about 5h15m.
+In QA (as of 2019-12-13 dump), this takes about 8 hours.
 
 To just inspect a dump:
 
