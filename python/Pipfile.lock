@@ -306,6 +306,13 @@
             "index": "pypi",
             "version": "==1.4.1"
         },
+        "langdetect": {
+            "hashes": [
+                "sha256:91a170d5f0ade380db809b3ba67f08e95fe6c6c8641f96d67a51ff7e98a9bf30"
+            ],
+            "index": "pypi",
+            "version": "==1.0.7"
+        },
         "loginpass": {
             "hashes": [
                 "sha256:717c87c1870a7e00547fd9d989aea9b22232b2f48826f552d79c34a47f9618c9",

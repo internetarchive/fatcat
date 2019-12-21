@@ -2,10 +2,12 @@
 Test datacite importer.
 """
 
+import collections
 import datetime
 import pytest
 import gzip
 from fatcat_tools.importers import DataciteImporter, JsonLinePusher
+from fatcat_tools.importers.datacite import find_original_language_title, parse_datacite_titles, parse_datacite_dates
 from fixtures import api
 import json
 
@@ -22,7 +24,6 @@ def datacite_importer_existing(api):
         yield DataciteImporter(api, issn_file, extid_map_file='tests/files/example_map.sqlite3',
                                bezerk_mode=False)
 
-
 @pytest.mark.skip(reason="larger datacite import slows tests down")
 def test_datacite_importer_huge(datacite_importer):
     last_index = datacite_importer.api.get_changelog(limit=1)[0].index
@@ -34,6 +35,179 @@ def test_datacite_importer_huge(datacite_importer):
     release = datacite_importer.api.get_release(change.editgroup.edits.releases[0].ident)
     assert len(release.contribs) == 3
 
+
+def test_find_original_language_title():
+    """
+    Original language might be included, in various ways.
+    """
+    Case = collections.namedtuple('Case', 'about input result')
+    cases = [
+        Case('defaults to None', {}, None),
+        Case('ignore unknown keys', {'broken': 'kv'}, None),
+        Case('just a title', {'title': 'Noise Reduction'}, None),
+        Case('same title should be ignored', {
+            'title': 'Noise Reduction',
+            'original_language_title': 'Noise Reduction'
+        }, None),
+        Case('empty subdict is ignored', {
+            'title': 'Noise Reduction',
+            'original_language_title': {},
+        }, None),
+        Case('unknown subdict keys are ignored', {
+            'title': 'Noise Reduction',
+            'original_language_title': {'broken': 'kv'},
+        }, None),
+        Case('original string', {
+            'title': 'Noise Reduction',
+            'original_language_title': 'Подавление шума',
+        }, 'Подавление шума'),
+        Case('language tag is ignored, since its broken', {
+            'title': 'Noise Reduction',
+            'original_language_title': {
+                'language': 'ja',
+                '__content__': 'Noise Reduction'
+            },
+        }, None),
+        Case('do not care about language', {
+            'title': 'Noise Reduction',
+            'original_language_title': {
+                'language': 'ja',
+                '__content__': 'Rauschunterdrückung',
+            },
+        }, 'Rauschunterdrückung'),
+        Case('ignore excessive questionmarks', {
+            'title': 'Noise Reduction',
+            'original_language_title': {
+                'language': 'ja',
+                '__content__': '???? However',
+            },
+        }, None),
+    ]
+
+    for case in cases:
+        result = find_original_language_title(case.input)
+        assert result == case.result
+
+def test_parse_datacite_titles():
+    """
+    Given a list of titles, find title, original_language_title and subtitle.
+    Result is a 3-tuple of title, original_language_title, subtitle.
+    """
+    Case = collections.namedtuple('Case', 'about input result')
+    cases = [
+        Case('handle None', None, (None, None, None)),
+        Case('empty list', [], (None, None, None)),
+        Case('empty item', [{}], (None, None, None)),
+        Case('broken keys', [{'broken': 'kv'}], (None, None, None)),
+        Case('title only', [{'title': 'Total carbon dioxide'}],
+             ('Total carbon dioxide', None, None),
+        ),
+        Case('title and subtitle', [
+            {'title': 'Total carbon dioxide'},
+            {'title': 'Station TT043_7-9', 'titleType': 'Subtitle'},
+        ],
+             ('Total carbon dioxide', None, 'Station TT043_7-9'),
+        ),
+        Case('title, subtitle order does not matter', [
+            {'title': 'Station TT043_7-9', 'titleType': 'Subtitle'},
+            {'title': 'Total carbon dioxide'},
+        ],
+             ('Total carbon dioxide', None, 'Station TT043_7-9'),
+        ),
+        Case('multiple titles, first wins', [
+            {'title': 'Total carbon dioxide'},
+            {'title': 'Meeting Heterogeneity'},
+        ],
+             ('Total carbon dioxide', None, None),
+        ),
+        Case('multiple titles, plus sub', [
+            {'title': 'Total carbon dioxide'},
+            {'title': 'Meeting Heterogeneity'},
+            {'title': 'Station TT043_7-9', 'titleType': 'Subtitle'},
+        ],
+             ('Total carbon dioxide', None, 'Station TT043_7-9'),
+        ),
+        Case('multiple titles, multiple subs', [
+            {'title': 'Total carbon dioxide'},
+            {'title': 'Meeting Heterogeneity'},
+            {'title': 'Station TT043_7-9', 'titleType': 'Subtitle'},
+            {'title': 'Some other subtitle', 'titleType': 'Subtitle'},
+        ],
+             ('Total carbon dioxide', None, 'Station TT043_7-9'),
+        ),
+        Case('title, original, sub', [
+            {'title': 'Total carbon dioxide', 'original_language_title': 'Всего углекислого газа'},
+            {'title': 'Station TT043_7-9', 'titleType': 'Subtitle'},
+        ],
+             ('Total carbon dioxide', 'Всего углекислого газа', 'Station TT043_7-9'),
+        ),
+        Case('title, original same as title, sub', [
+            {'title': 'Total carbon dioxide', 'original_language_title': {
+                '__content__': 'Total carbon dioxide',
+            }},
+            {'title': 'Station TT043_7-9', 'titleType': 'Subtitle'},
+        ],
+             ('Total carbon dioxide', None, 'Station TT043_7-9'),
+        ),
+        Case('title, original dict, sub', [
+            {'title': 'Total carbon dioxide', 'original_language_title': {
+                '__content__': 'Всего углекислого газа',
+            }},
+            {'title': 'Station TT043_7-9', 'titleType': 'Subtitle'},
+        ],
+             ('Total carbon dioxide', 'Всего углекислого газа', 'Station TT043_7-9'),
+        ),
+    ]
+
+    for case in cases:
+        result = parse_datacite_titles(case.input)
+        assert result == case.result, case.about
+
+def test_parse_datacite_dates():
+    """
+    Test datacite date parsing.
+    """
+    Case = collections.namedtuple('Case', 'about input result')
+    cases = [
+        Case('None is None', None, (None, None)),
+        Case('empty list is None', [], (None, None)),
+        Case('empty item is None', [{}], (None, None)),
+        Case('empty item is None', [{'date': '2019'}], (None, 2019)),
+        Case('first wins', [{'date': '2019'}, {'date': '2020'}], (None, 2019)),
+        Case('skip bogus year', [{'date': 'abc'}, {'date': '2020'}], (None, 2020)),
+        Case('first with type', [
+            {'date': '2019', 'dateType': 'Accepted'}, {'date': '2020'}
+        ], (None, 2019)),
+        Case('full date', [
+            {'date': '2019-12-01', 'dateType': 'Valid'},
+        ], (datetime.date(2019, 12, 1), 2019)),
+        Case('date type prio', [
+            {'date': '2000-12-01', 'dateType': 'Valid'},
+            {'date': '2010-01-01', 'dateType': 'Updated'},
+        ], (datetime.date(2000, 12, 1), 2000)),
+        Case('date type prio, Available > Updated', [
+            {'date': '2010-01-01', 'dateType': 'Updated'},
+            {'date': '2000-12-01', 'dateType': 'Available'},
+        ], (datetime.date(2000, 12, 1), 2000)),
+        Case('allow different date formats, Available > Updated', [
+            {'date': '2010-01-01T10:00:00', 'dateType': 'Updated'},
+            {'date': '2000-12-01T10:00:00', 'dateType': 'Available'},
+        ], (datetime.date(2000, 12, 1), 2000)),
+        Case('allow different date formats, Available > Updated', [
+            {'date': '2010-01-01T10:00:00Z', 'dateType': 'Updated'},
+            {'date': '2000-12-01T10:00:00Z', 'dateType': 'Available'},
+        ], (datetime.date(2000, 12, 1), 2000)),
+        Case('allow fuzzy date formats, Available > Updated', [
+            {'date': '2010', 'dateType': 'Updated'},
+            {'date': '2000 Dec 01', 'dateType': 'Available'},
+        ], (datetime.date(2000, 12, 1), 2000)),
+        Case('ignore broken date', [
+            {'date': 'Febrrr 45', 'dateType': 'Updated'},
+        ], (None, None)),
+    ]
+    for case in cases:
+        result = parse_datacite_dates(case.input)
+        assert result == case.result, case.about
 
 def test_datacite_importer(datacite_importer):
     last_index = datacite_importer.api.get_changelog(limit=1)[0].index
@@ -75,7 +249,7 @@ def test_datacite_dict_parse(datacite_importer):
         assert r.release_type == "article"
         assert r.release_stage == "published"
         assert r.license_slug == None
-        assert r.original_title == "Triticum turgidum L. subsp. durum (Desf.) Husn. 97090"
+        assert r.original_title == None
         assert r.ext_ids.doi == "10.18730/8dym9"
         assert r.ext_ids.isbn13 == None
         assert r.language == "enc"
