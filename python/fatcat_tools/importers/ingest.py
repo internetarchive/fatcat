@@ -152,19 +152,21 @@ class IngestFileResultImporter(EntityImporter):
             if err.status != 404:
                 raise err
 
-        if not existing:
-            return True
-
-        if (fe.release_ids[0] in existing.release_ids) and existing.urls:
-            # TODO: could still, in theory update with the new URL?
-            self.counts['exists'] += 1
-            return False
-
         # check for existing edits-in-progress with same file hash
         for other in self._entity_queue:
             if other.sha1 == fe.sha1:
                 self.counts['skip-in-queue'] += 1
                 return False
+
+        if not existing:
+            return True
+
+        # the following checks all assume there is an existing item
+
+        if (fe.release_ids[0] in existing.release_ids) and existing.urls:
+            # TODO: could still, in theory update with the new URL?
+            self.counts['exists'] += 1
+            return False
 
         if not self.do_updates:
             self.counts['skip-update-disabled'] += 1
