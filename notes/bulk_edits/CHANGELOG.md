@@ -9,12 +9,23 @@ this file should probably get merged into the guide at some point.
 
 This file should not turn in to a TODO list!
 
+## 2019-12
+
+Inserted about 154k new arxiv release entities. Still no automatic daily
+harvesting.
+
+"Save Paper Now" importer running. This bot only *submits* editgroups for
+review, doesn't auto-accept them.
+
+## 2019-11
+
+Daily ingest of fulltext for OA releases now enabled. New file entities created
+and merged automatically.
+
 ## 2019-10
 
 Inserted 1.45m new release entities from Crossref which had been missed during
 a previous gap in continuous metadata harvesting.
-
-## 2019-10
 
 Updated 304,308 file entities to remove broken
 "https://web.archive.org/web/None/*" URLs.
