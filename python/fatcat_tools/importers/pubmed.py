@@ -376,7 +376,7 @@ class PubmedImporter(EntityImporter):
         identifiers = pubmed.ArticleIdList
         pmid = medline.PMID.string.strip()
         doi = identifiers.find("ArticleId", IdType="doi")
-        if doi:
+        if doi and doi.string:
             doi = doi.string.lower().strip()
             if doi.startswith('doi:'):
                 doi = doi[4:]
