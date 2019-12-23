@@ -486,6 +486,8 @@ class PubmedImporter(EntityImporter):
         pub_date = medline.Article.find('ArticleDate')
         if not pub_date:
             pub_date = journal.PubDate
+        if not pub_date:
+            pub_date = journal.JournalIssue.PubDate
         release_date = None
         release_year = None
         if pub_date.Year:
@@ -500,6 +502,15 @@ class PubmedImporter(EntityImporter):
                 except ValueError as ve:
                     sys.stderr.write("bad date, skipping: {}\n".format(ve))
                     release_date = None
+        elif pub_date.MedlineDate:
+            medline_date = pub_date.MedlineDate.string.strip()
+            if len(medline_date) >= 4 and medline_date[:4].isdigit():
+                release_year = int(medline_date[:4])
+                if release_year < 1300 or release_year > 2040:
+                    print("bad medline year, skipping: {}\n".format(release_year), file=sys.stderr)
+                    release_year = None
+            else:
+                print("unparsable medline date, skipping: {}\n".format(medline_date), file=sys.stderr)
 
         if journal.find("Title"):
             container_name = journal.Title.string
