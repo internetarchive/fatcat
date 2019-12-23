@@ -119,3 +119,10 @@ def test_pubmed_xml_parse(pubmed_importer):
     assert r2.refs[0].extra['unstructured'] == "Microbiology. 2009 Jun;155(Pt 6):1840-6"
     assert r2.refs[0].extra['pmid'] == "19383690"
 
+def test_pubmed_xml_dates(pubmed_importer):
+    with open('tests/files/pubmed_31393839.xml', 'r') as f:
+        soup = BeautifulSoup(f, "xml")
+        r1 = pubmed_importer.parse_record(soup.find_all("PubmedArticle")[0])
+
+    assert r1.release_year == 2019
+

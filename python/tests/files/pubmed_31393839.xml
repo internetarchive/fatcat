@@ -1,0 +1,95 @@
+<PubmedArticle>
+    <MedlineCitation Status="MEDLINE" IndexingMethod="Automated" Owner="NLM">
+        <PMID Version="1">31393839</PMID>
+        <DateCompleted>
+            <Year>2019</Year>
+            <Month>12</Month>
+            <Day>17</Day>
+        </DateCompleted>
+        <DateRevised>
+            <Year>2019</Year>
+            <Month>12</Month>
+            <Day>17</Day>
+        </DateRevised>
+        <Article PubModel="Print">
+            <Journal>
+                <ISSN IssnType="Print">0022-3875</ISSN>
+                <JournalIssue CitedMedium="Print">
+                    <Volume>53</Volume>
+                    <Issue>6</Issue>
+                    <PubDate>
+                        <MedlineDate>2019</MedlineDate>
+                    </PubDate>
+                </JournalIssue>
+                <Title>Journal of clinical orthodontics : JCO</Title>
+                <ISOAbbreviation>J Clin Orthod</ISOAbbreviation>
+            </Journal>
+            <ArticleTitle>Career-Turning Moments.</ArticleTitle>
+            <Pagination>
+                <MedlinePgn>325</MedlinePgn>
+            </Pagination>
+            <AuthorList CompleteYN="Y">
+                <Author ValidYN="Y">
+                    <LastName>Keim</LastName>
+                    <ForeName>Robert G</ForeName>
+                    <Initials>RG</Initials>
+                    <AffiliationInfo>
+                        <Affiliation>J Clin Orthod, Greenwood Village, CO.</Affiliation>
+                    </AffiliationInfo>
+                </Author>
+            </AuthorList>
+            <Language>eng</Language>
+            <PublicationTypeList>
+                <PublicationType UI="D016428">Journal Article</PublicationType>
+            </PublicationTypeList>
+        </Article>
+        <MedlineJournalInfo>
+            <Country>United States</Country>
+            <MedlineTA>J Clin Orthod</MedlineTA>
+            <NlmUniqueID>0243471</NlmUniqueID>
+            <ISSNLinking>0022-3875</ISSNLinking>
+        </MedlineJournalInfo>
+        <CitationSubset>D</CitationSubset>
+        <MeshHeadingList>
+            <MeshHeading>
+                <DescriptorName UI="D001696" MajorTopicYN="N">Biomechanical Phenomena</DescriptorName>
+            </MeshHeading>
+            <MeshHeading>
+                <DescriptorName UI="D002321" MajorTopicYN="Y">Career Choice</DescriptorName>
+            </MeshHeading>
+            <MeshHeading>
+                <DescriptorName UI="D006801" MajorTopicYN="N">Humans</DescriptorName>
+            </MeshHeading>
+        </MeshHeadingList>
+    </MedlineCitation>
+    <PubmedData>
+        <History>
+            <PubMedPubDate PubStatus="entrez">
+                <Year>2019</Year>
+                <Month>8</Month>
+                <Day>9</Day>
+                <Hour>6</Hour>
+                <Minute>0</Minute>
+            </PubMedPubDate>
+            <PubMedPubDate PubStatus="pubmed">
+                <Year>2019</Year>
+                <Month>8</Month>
+                <Day>9</Day>
+                <Hour>6</Hour>
+                <Minute>0</Minute>
+            </PubMedPubDate>
+            <PubMedPubDate PubStatus="medline">
+                <Year>2019</Year>
+                <Month>12</Month>
+                <Day>18</Day>
+                <Hour>6</Hour>
+                <Minute>0</Minute>
+            </PubMedPubDate>
+        </History>
+        <PublicationStatus>ppublish</PublicationStatus>
+        <ArticleIdList>
+            <ArticleId IdType="pubmed">31393839</ArticleId>
+        </ArticleIdList>
+    </PubmedData>
+</PubmedArticle>
+
