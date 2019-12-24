@@ -35,12 +35,12 @@ def release_ingest_request(release, oa_only=False, ingest_request_source='fatcat
         url = "https://doi.org/{}".format(release.ext_ids.doi)
         link_source = "doi"
         link_source_id = release.ext_ids.doi
-    elif release.ext_ids.pmcid and release.ext_ids.pmid:
+    elif release.ext_ids.pmcid:
         # TODO: how to tell if an author manuscript in PMC vs. published?
         #url = "https://www.ncbi.nlm.nih.gov/pmc/articles/{}/pdf/".format(release.ext_ids.pmcid)
         url = "http://europepmc.org/backend/ptpmcrender.fcgi?accid={}&blobtype=pdf".format(release.ext_ids.pmcid)
-        link_source = "pubmed"
-        link_source_id = release.ext_ids.pmid
+        link_source = "pmc"
+        link_source_id = release.ext_ids.pmcid
 
     if not url:
         return None
@@ -48,7 +48,7 @@ def release_ingest_request(release, oa_only=False, ingest_request_source='fatcat
     ext_ids = release.ext_ids.to_dict()
     ext_ids = dict([(k, v) for (k, v) in ext_ids.items() if v])
 
-    if oa_only and link_source not in ('arxiv', 'pubmed'):
+    if oa_only and link_source not in ('arxiv', 'pmc'):
         es = release_to_elasticsearch(release)
         if not es['is_oa']:
             return None
