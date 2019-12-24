@@ -466,17 +466,17 @@ class PubmedImporter(EntityImporter):
                         int(pub_date.Day.string))
                     release_date = release_date.isoformat()
                 except ValueError as ve:
-                    sys.stderr.write("bad date, skipping: {}\n".format(ve))
+                    print("bad date, skipping: {}".format(ve), file=sys.stderr)
                     release_date = None
         elif pub_date.MedlineDate:
             medline_date = pub_date.MedlineDate.string.strip()
             if len(medline_date) >= 4 and medline_date[:4].isdigit():
                 release_year = int(medline_date[:4])
                 if release_year < 1300 or release_year > 2040:
-                    print("bad medline year, skipping: {}\n".format(release_year), file=sys.stderr)
+                    print("bad medline year, skipping: {}".format(release_year), file=sys.stderr)
                     release_year = None
             else:
-                print("unparsable medline date, skipping: {}\n".format(medline_date), file=sys.stderr)
+                print("unparsable medline date, skipping: {}".format(medline_date), file=sys.stderr)
 
         if journal.find("Title"):
             container_name = journal.Title.string
@@ -708,8 +708,9 @@ class PubmedImporter(EntityImporter):
                 if err.status != 404:
                     raise err
             if existing and existing.ext_ids.pmid and existing.ext_ids.pmid != re.ext_ids.pmid:
-                warnings.warn("PMID/DOI mismatch: release {}, pmid {} != {}".format(
-                    existing.ident, existing.ext_ids.pmid, re.ext_ids.pmid))
+                warn_str = "PMID/DOI mismatch: release {}, pmid {} != {}".format(
+                    existing.ident, existing.ext_ids.pmid, re.ext_ids.pmid)
+                warnings.warn(warn_str)
                 self.counts['warn-pmid-doi-mismatch'] += 1
                 # don't clobber DOI, but do group together
                 re.ext_ids.doi = None
