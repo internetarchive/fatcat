@@ -330,37 +330,8 @@ class PubmedImporter(EntityImporter):
             **kwargs)
 
         self.lookup_refs = lookup_refs
-        extid_map_file = kwargs.get('extid_map_file')
-        self.extid_map_db = None
-        if extid_map_file:
-            db_uri = "file:{}?mode=ro".format(extid_map_file)
-            print("Using external ID map: {}".format(db_uri))
-            self.extid_map_db = sqlite3.connect(db_uri, uri=True)
-        else:
-            print("Not using external ID map")
-
         self.create_containers = kwargs.get('create_containers', True)
         self.read_issn_map_file(issn_map_file)
-
-    def lookup_ext_ids(self, pmid):
-        if self.extid_map_db is None:
-            return dict(doi=None, core_id=None, pmid=None, pmcid=None,
-                wikidata_qid=None, arxiv_id=None, jstor_id=None)
-        row = self.extid_map_db.execute("SELECT core, doi, pmcid, wikidata FROM ids WHERE pmid=? LIMIT 1",
-            [pmid]).fetchone()
-        if row is None:
-            return dict(doi=None, core_id=None, pmid=None, pmcid=None,
-                wikidata_qid=None, arxiv_id=None, jstor_id=None)
-        row = [str(cell or '') or None for cell in row]
-        return dict(
-            core_id=row[0],
-            doi=row[1],
-            pmcid=row[2],
-            wikidata_qid=row[3],
-            # TODO:
-            arxiv_id=None,
-            jstor_id=None,
-        )
 
     def want(self, obj):
         return True
