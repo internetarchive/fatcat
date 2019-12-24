@@ -317,7 +317,7 @@ class PubmedImporter(EntityImporter):
     TODO: MEDLINE doesn't include PMC/OA license; could include in importer?
     """
 
-    def __init__(self, api, issn_map_file, lookup_refs=False, **kwargs):
+    def __init__(self, api, issn_map_file, lookup_refs=True, **kwargs):
 
         eg_desc = kwargs.get('editgroup_description',
             "Automated import of PubMed/MEDLINE XML metadata")
