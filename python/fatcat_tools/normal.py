@@ -22,6 +22,7 @@ def clean_doi(raw):
     if not raw:
         return None
     raw = raw.strip()
+    raw = raw.replace('\u2013', '-') # emdash
     if len(raw.split()) != 1:
         return None
     if raw.startswith("doi:"):
@@ -34,6 +35,8 @@ def clean_doi(raw):
         raw = raw[8:]
     if raw.startswith("dx.doi.org/"):
         raw = raw[11:]
+    if raw[7:9] == "//":
+        raw = raw[:8] + raw[9:]
     if not raw.startswith("10."):
         return None
     if not DOI_REGEX.fullmatch(raw):
@@ -42,6 +45,10 @@ def clean_doi(raw):
 
 def test_clean_doi():
     assert clean_doi("10.1234/asdf ") == "10.1234/asdf"
+    assert clean_doi("10.1037//0002-9432.72.1.50") == "10.1037/0002-9432.72.1.50"
+    assert clean_doi("10.1037/0002-9432.72.1.50") == "10.1037/0002-9432.72.1.50"
+    assert clean_doi("10.23750/abm.v88i2 -s.6506") == None
+    assert clean_doi("10.17167/mksz.2017.2.129–155") == "10.17167/mksz.2017.2.129-155"
     assert clean_doi("http://doi.org/10.1234/asdf ") == "10.1234/asdf"
     assert clean_doi("https://dx.doi.org/10.1234/asdf ") == "10.1234/asdf"
     assert clean_doi("doi:10.1234/asdf ") == "10.1234/asdf"
