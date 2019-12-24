@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 from bs4.element import NavigableString
 
 import fatcat_openapi_client
+from fatcat_tools.normal import *
 from .common import EntityImporter, clean, LANG_MAP_MARC
 
 # from: https://www.ncbi.nlm.nih.gov/books/NBK3827/table/pubmedhelp.T.publication_types/?report=objectonly
@@ -348,19 +349,13 @@ class PubmedImporter(EntityImporter):
         pmid = medline.PMID.string.strip()
         doi = identifiers.find("ArticleId", IdType="doi")
         if doi and doi.string:
-            doi = doi.string.lower().strip()
-            if doi.startswith('doi:'):
-                doi = doi[4:]
-            if not (doi.startswith('10.') and '/' in doi and doi.split('/')[1]) and len(doi.split()) == 1:
-                sys.stderr.write("BOGUS DOI: {}\n".format(doi))
-                doi = None
+            doi = clean_doi(doi.string)
+        else:
+            doi = None
 
         pmcid = identifiers.find("ArticleId", IdType="pmc")
         if pmcid:
-            pmcid = pmcid.string.strip().upper()
-            # got a bunch of weird ones like "wst_2018_399" in the 2019 baseline
-            if not pmcid.startswith("PMC"):
-                pmcid = None
+            pmcid = clean_pmcid(pmcid.string.strip().upper())
 
         release_type = None
         pub_types = []
@@ -623,19 +618,21 @@ class PubmedImporter(EntityImporter):
         if pubmed.ReferenceList:
             for ref in pubmed.ReferenceList.find_all('Reference'):
                 ref_extra = dict()
-                ref_pmid = ref.find("ArticleId", IdType="pubmed")
                 ref_doi = ref.find("ArticleId", IdType="doi")
-                ref_release_id = None
-                if ref_pmid:
-                    ref_pmid = ref_pmid.string.strip()
-                    ref_extra['pmid'] = ref_pmid
-                    if self.lookup_refs:
-                        ref_release_id = self.lookup_pmid(ref_pmid)
                 if ref_doi:
-                    ref_doi = ref_doi.string.lower().strip()
+                    ref_doi = clean_doi(ref_doi.string)
+                ref_pmid = ref.find("ArticleId", IdType="pubmed")
+                if ref_pmid:
+                    ref_pmid = clean_pmid(ref_pmid.string)
+                ref_release_id = None
+                if ref_doi:
                     ref_extra['doi'] = ref_doi
                     if self.lookup_refs:
                         ref_release_id = self.lookup_doi(ref_doi)
+                if ref_pmid:
+                    ref_extra['pmid'] = ref_pmid
+                    if self.lookup_refs:
+                        ref_release_id = self.lookup_pmid(ref_pmid)
                 ref_raw = ref.Citation
                 if ref_raw:
                     ref_extra['unstructured'] = ref_raw.string
