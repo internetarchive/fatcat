@@ -19,6 +19,8 @@ def clean_doi(raw):
 
     Returns None if not a valid DOI
     """
+    if not raw:
+        return None
     raw = raw.strip()
     if len(raw.split()) != 1:
         return None
@@ -54,6 +56,8 @@ def clean_arxiv_id(raw):
 
     Works with versioned or un-versioned arxiv identifiers.
     """
+    if not raw:
+        return None
     raw = raw.strip()
     if raw.lower().startswith("arxiv:"):
         raw = raw[6:]
@@ -90,7 +94,26 @@ def test_clean_arxiv_id():
     assert clean_arxiv_id("0806.v1") == None
     assert clean_arxiv_id("08062878v1") == None
 
+def clean_pmid(raw):
+    if not raw:
+        return None
+    raw = raw.strip()
+    if len(raw.split()) != 1:
+        return None
+    if raw.isdigit():
+        return raw
+    return None
+
+def test_clean_pmid():
+    assert clean_pmid("1234") == "1234"
+    assert clean_pmid("1234 ") == "1234"
+    assert clean_pmid("PMC123") == None
+    assert clean_sha1("qfba3") == None
+    assert clean_sha1("") == None
+
 def clean_pmcid(raw):
+    if not raw:
+        return None
     raw = raw.strip()
     if len(raw.split()) != 1:
         return None
@@ -99,6 +122,8 @@ def clean_pmcid(raw):
     return None
 
 def clean_sha1(raw):
+    if not raw:
+        return None
     raw = raw.strip().lower()
     if len(raw.split()) != 1:
         return None
@@ -134,6 +159,8 @@ def test_clean_sha256():
 ISSN_REGEX = re.compile("^\d{4}-\d{3}[0-9X]$")
 
 def clean_issn(raw):
+    if not raw:
+        return None
     raw = raw.strip().upper()
     if len(raw) != 9:
         return None
@@ -150,6 +177,8 @@ def test_clean_issn():
 ISBN13_REGEX = re.compile("^97(?:8|9)-\d{1,5}-\d{1,7}-\d{1,6}-\d$")
 
 def clean_isbn13(raw):
+    if not raw:
+        return None
     raw = raw.strip()
     if not ISBN13_REGEX.fullmatch(raw):
         return None
@@ -164,6 +193,8 @@ def test_clean_isbn13():
 ORCID_REGEX = re.compile("^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$")
 
 def clean_orcid(raw):
+    if not raw:
+        return None
     raw = raw.strip()
     if not ORCID_REGEX.fullmatch(raw):
         return None
