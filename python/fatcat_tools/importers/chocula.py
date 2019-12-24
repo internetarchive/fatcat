@@ -128,15 +128,15 @@ class ChoculaImporter(EntityImporter):
             existing.publisher = ce.publisher
             existing.container_type = existing.container_type or ce.container_type
             for k in ('urls', 'webarchive_urls'):
-                # update, or clobber/remove any existing values. often
-                # want/need to remove dead URLs
+                # update, which might clobber, but won't remove
                 if ce.extra.get(k):
                     existing.extra[k] = ce.extra.get(k, [])
-                elif k in existing.extra.keys():
-                    existing.extra.pop(k)
+                # note: in some cases we might *want* to clobber existing (if
+                # all URLs found to be bad), but being conservative for now so
+                # we don't clobber human edits
             for k in ('issne', 'issnp', 'country', 'sherpa_romeo', 'ezb',
                       'szczepanski', 'doaj'):
-                # update, but don't remove any existing value
+                # update/overwrite, but don't remove any existing value
                 if ce.extra.get(k):
                     existing.extra[k] = ce.extra[k]
             if ce.extra.get('languages'):
