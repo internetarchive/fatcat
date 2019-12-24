@@ -647,7 +647,6 @@ class PubmedImporter(EntityImporter):
 
         # extra:
         #   translation_of
-        #   subtitle
         #   aliases
         #   container_name
         #   group-title
@@ -728,6 +727,15 @@ class PubmedImporter(EntityImporter):
             existing.ext_ids.pmcid = existing.ext_ids.pmcid or re.ext_ids.pmcid
             existing.refs = existing.refs or re.refs
             existing.extra['pubmed'] = re.extra['pubmed']
+            # update subtitle in-place first
+            if not existing.subtitle and existing.extra.get('subtitle'):
+                subtitle = existing.extra.pop('subtitle')
+                if type(subtitle) == list:
+                    subtitle = subtitle[0]
+                if subtitle:
+                    existing.subtitle = subtitle
+            if not existing.subtitle:
+                existing.subtitle = re.subtitle
             try:
                 self.api.update_release(self.get_editgroup_id(), existing.ident, existing)
                 self.counts['update'] += 1
