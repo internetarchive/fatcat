@@ -8,6 +8,7 @@ import itertools
 import datetime
 import requests
 from confluent_kafka import Producer, KafkaException
+from urllib.parse import urlparse, parse_qs
 
 from fatcat_tools.workers import most_recent_message
 from .harvest_common import HarvestState, requests_retry_session
@@ -121,6 +122,10 @@ class HarvestCrossrefWorker:
                 self.producer.poll(0)
                 time.sleep(30.0)
                 continue
+            if http_resp.status_code == 400:
+                print("skipping batch for {}, due to HTTP 400. Marking complete. Related: https://github.com/datacite/datacite/issues/897".format(date_str),
+                      file=sys.stderr)
+                break
             http_resp.raise_for_status()
             resp = http_resp.json()
             items = self.extract_items(resp)
@@ -179,7 +184,7 @@ class HarvestDataciteWorker(HarvestCrossrefWorker):
     """
 
     def __init__(self, kafka_hosts, produce_topic, state_topic, contact_email,
-            api_host_url="https://api.datacite.org/works",
+            api_host_url="https://api.datacite.org/dois",
             start_date=None, end_date=None):
         super().__init__(kafka_hosts=kafka_hosts,
                          produce_topic=produce_topic,
@@ -193,11 +198,13 @@ class HarvestDataciteWorker(HarvestCrossrefWorker):
         self.name = "Datacite"
 
     def params(self, date_str):
+        """
+        Dates have to be supplied in 2018-10-27T22:36:30.000Z format.
+        """
         return {
-            'from-update-date': date_str,
-            'until-update-date': date_str,
+            'query': 'updated:[{}T00:00:00.000Z TO {}T23:59:59.999Z]'.format(date_str, date_str),
             'page[size]': self.api_batch_size,
-            'page[number]': 1,
+            'page[cursor]': 1,
         }
 
     def extract_items(self, resp):
@@ -210,5 +217,20 @@ class HarvestDataciteWorker(HarvestCrossrefWorker):
         return obj['attributes']['doi'].encode('utf-8')
 
     def update_params(self, params, resp):
-        params['page[number]'] = resp['meta']['page'] + 1
+        """
+        Using cursor mechanism (https://support.datacite.org/docs/pagination#section-cursor).
+
+        $ curl -sL https://is.gd/cLbE5h | jq -r .links.next
+
+        Example: https://is.gd/cLbE5h
+
+        Further API errors reported:
+            https://github.com/datacite/datacite/issues/897 (HTTP 400)
+            https://github.com/datacite/datacite/issues/898 (HTTP 500)
+        """
+        parsed = urlparse(resp['links']['next'])
+        page_cursor = parse_qs(parsed.query).get('page[cursor]')
+        if not page_cursor:
+            raise ValueError('no page[cursor] in .links.next')
+        params['page[cursor]'] = page_cursor[0]
         return params
