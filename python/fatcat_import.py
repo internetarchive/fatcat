@@ -483,7 +483,7 @@ def main():
         help="write inserted documents into file (for debugging)")
     sub_datacite.set_defaults(
         func=run_datacite,
-        auth_var="FATCAT_API_AUTH_TOKEN",
+        auth_var="FATCAT_AUTH_WORKER_DATACITE",
     )
 
     args = parser.parse_args()
