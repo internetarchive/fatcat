@@ -10,7 +10,7 @@ import datetime
 import fatcat_openapi_client
 import hashlib
 import json
-import langcodes
+import pycountry
 import langdetect
 import sqlite3
 import sys
@@ -433,12 +433,9 @@ class DataciteImporter(EntityImporter):
 
         value = attributes.get('language', '') or ''
         try:
-            language = langcodes.find(value).language
-        except LookupError:
-            try:
-                language = langcodes.get(value).language
-            except langcodes.tag_parser.LanguageTagError:
-                pass
+            language = pycountry.languages.lookup(value).alpha_2
+        except (LookupError, AttributeError) as err:
+            print('language lookup miss for {}: {}'.format(value, err), file=sys.stderr)
 
         # Abstracts appear in "attributes.descriptions[].descriptionType", some
         # of the observed values: "Methods", "TechnicalInfo",
