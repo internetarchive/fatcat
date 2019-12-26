@@ -476,7 +476,9 @@ class DataciteImporter(EntityImporter):
         try:
             language = pycountry.languages.lookup(value).alpha_2
         except (LookupError, AttributeError) as err:
-            print('[{}] language lookup miss for {}: {}'.format(doi, value, err), file=sys.stderr)
+            pass
+            # TODO(martin): Print this on debug level, only.
+            # print('[{}] language lookup miss for {}: {}'.format(doi, value, err), file=sys.stderr)
 
         # Abstracts appear in "attributes.descriptions[].descriptionType", some
         # of the observed values: "Methods", "TechnicalInfo",
