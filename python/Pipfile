@@ -47,7 +47,6 @@ pylatexenc = "*"
 pygal = "*"
 elasticsearch-dsl = ">=6.0.0,<7.0.0"
 elasticsearch = ">=6.0.0,<7.0.0"
-langcodes = ">=1.4"
 dateparser = ">=0.7"
 langdetect = "*"
 

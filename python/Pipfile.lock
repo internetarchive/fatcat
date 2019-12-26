@@ -299,13 +299,6 @@
             ],
             "version": "==2.5.0"
         },
-        "langcodes": {
-            "hashes": [
-                "sha256:22cff103b6c0f3c9907d9a51c2d634177a50a189672ad16d959a3e2cd48eadab"
-            ],
-            "index": "pypi",
-            "version": "==1.4.1"
-        },
         "langdetect": {
             "hashes": [
                 "sha256:91a170d5f0ade380db809b3ba67f08e95fe6c6c8641f96d67a51ff7e98a9bf30"
@@ -351,13 +344,6 @@
                 "sha256:f6ed60a62c5f1c44e789d2cf14009423cb1646b44a43e40a9cf6a21f077678a1"
             ],
             "version": "==4.4.2"
-        },
-        "marisa-trie": {
-            "hashes": [
-                "sha256:4419abb6b603c97e863fad994abe57ed247fb12491f4bbacb2d762bd2e8958b6",
-                "sha256:c73bc25d868e8c4ea7aa7f1e19892db07bba2463351269b05340ccfa06eb2baf"
-            ],
-            "version": "==0.7.5"
         },
         "markupsafe": {
             "hashes": [
