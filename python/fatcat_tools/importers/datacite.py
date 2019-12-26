@@ -264,6 +264,7 @@ class DataciteImporter(EntityImporter):
             return None
 
         attributes = obj['attributes']
+        doi = attributes.get('doi', '').lower()
 
         # Contributors. Many nameIdentifierSchemes, we do not use (yet):
         # "attributes.creators[].nameIdentifiers[].nameIdentifierScheme":
@@ -313,7 +314,7 @@ class DataciteImporter(EntityImporter):
                 contribs.append(fatcat_openapi_client.ReleaseContrib(
                     index=i, extra=extra))
             else:
-                print('unknown name type: {}'.format(nameType), file=sys.stderr)
+                print('[{}] unknown name type: {}'.format(doi, nameType), file=sys.stderr)
 
         # Title, may come with "attributes.titles[].titleType", like
         # "AlternativeTitle", "Other", "Subtitle", "TranslatedTitle"
@@ -322,7 +323,7 @@ class DataciteImporter(EntityImporter):
             titles)
 
         if not title:
-            print('skipping record w/o title: {}'.format(obj), file=sys.stderr)
+            print('[{}] skipping record w/o title: {}'.format(doi, obj), file=sys.stderr)
             return False
 
         if not subtitle:
@@ -370,7 +371,7 @@ class DataciteImporter(EntityImporter):
                         container_title = container.get('title')
                         if isinstance(container_title, list):
                             if len(container_title) > 0:
-                                print('too many container titles: {}'.format(
+                                print('[{}] too many container titles: {}'.format(doi,
                                     len(container_title)))
                                 container_title = container_title[0]
                         assert isinstance(container_title, str)
@@ -398,7 +399,7 @@ class DataciteImporter(EntityImporter):
                 int(first_page) < int(last_page)
                 pages = '{}-{}'.format(first_page, last_page)
             except ValueError as err:
-                print(err, file=sys.stderr)
+                print('[{}] {}'.format(doi, err), file=sys.stderr)
                 pass
 
         if not pages and first_page:
@@ -426,7 +427,7 @@ class DataciteImporter(EntityImporter):
                 break
 
         if release_type is None:
-            print("no mapped type: {}".format(value), file=sys.stderr)
+            print("[{}] no mapped type: {}".format(doi, value), file=sys.stderr)
 
         # Language values are varied ("ger", "es", "English", "ENG", "en-us",
         # "other", ...). Try to crush it with langcodes: "It may sound to you
@@ -439,7 +440,7 @@ class DataciteImporter(EntityImporter):
         try:
             language = pycountry.languages.lookup(value).alpha_2
         except (LookupError, AttributeError) as err:
-            print('language lookup miss for {}: {}'.format(value, err), file=sys.stderr)
+            print('[{}] language lookup miss for {}: {}'.format(doi, value, err), file=sys.stderr)
 
         # Abstracts appear in "attributes.descriptions[].descriptionType", some
         # of the observed values: "Methods", "TechnicalInfo",
@@ -461,7 +462,7 @@ class DataciteImporter(EntityImporter):
                 try:
                     lang = langdetect.detect(text)
                 except langdetect.lang_detect_exception.LangDetectException as err:
-                    print('language detection failed: {}'.format(err),
+                    print('[{}] language detection failed: {}'.format(doi, err),
                           file=sys.stderr)
             abstracts.append(
                 fatcat_openapi_client.ReleaseAbstract(
@@ -534,7 +535,6 @@ class DataciteImporter(EntityImporter):
         if extra_datacite:
             extra['datacite'] = extra_datacite
 
-        doi = attributes.get('doi', '').lower()
         extids = self.lookup_ext_ids(doi=doi)
 
         # Assemble release.
