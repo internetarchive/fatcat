@@ -40,6 +40,6 @@ def test_datacite_harvest_date(mocker):
 
     # check that we published the expected number of DOI objects were published
     # to the (mock) kafka topic
-    assert harvester.producer.produce.call_count == 25
+    assert harvester.producer.produce.call_count == 1
     assert harvester.producer.flush.call_count == 1
     assert harvester.producer.poll.called_once_with(0)
