@@ -252,7 +252,7 @@ def test_datacite_dict_parse(datacite_importer):
         assert r.original_title == None
         assert r.ext_ids.doi == "10.18730/8dym9"
         assert r.ext_ids.isbn13 == None
-        assert r.language == "enc"
+        assert r.language == "en"
         assert r.subtitle == None
         assert r.release_date == None
         assert r.release_year == 1986
@@ -262,7 +262,6 @@ def test_datacite_dict_parse(datacite_importer):
         assert 'funder' not in r.extra['datacite']
         # matched by ISSN, so shouldn't be in there
         #assert extra['container_name'] == "International Journal of Quantum Chemistry"
-        assert r.extra['datacite']['url'] == 'https://ssl.fao.org/glis/doi/10.18730/8DYM9'
         assert r.extra['datacite']['subjects'] == [{'subject': 'Plant Genetic Resource for Food and Agriculture'}]
         assert len(r.abstracts) == 1
         assert len(r.abstracts[0].content) == 421
