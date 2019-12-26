@@ -4,7 +4,7 @@ Prototype Importer for datacite.org data.
 Example doc at: https://gist.github.com/miku/5610a2d64e3fee82d16f5d3f3a295fc8
 """
 
-from .common import EntityImporter
+from .common import EntityImporter, clean
 import dateparser
 import datetime
 import fatcat_openapi_client
@@ -292,7 +292,20 @@ class DataciteImporter(EntityImporter):
                 if len(affiliations) == 0:
                     raw_affiliation = None
                 else:
-                    raw_affiliation = affiliations[0]
+                    raw_affiliation = clean(affiliations[0])
+
+                name = c.get('name')
+                given_name = c.get('givenName')
+                surname = c.get('familyName')
+
+                if name:
+                    name = clean(name)
+
+                if given_name:
+                    given_name = clean(given_name)
+
+                if surname:
+                    surname = clean(surname)
 
                 contribs.append(
                     fatcat_openapi_client.ReleaseContrib(
@@ -325,9 +338,13 @@ class DataciteImporter(EntityImporter):
         if not title:
             print('[{}] skipping record w/o title: {}'.format(doi, obj), file=sys.stderr)
             return False
+        else:
+            title = clean(title)
 
         if not subtitle:
             subtitle = None
+        else:
+            subtitle = clean(subtitle)
 
         # Dates. A few internal dates (registered, created, updated) and
         # published (0..2554). We try to work with typed date list, in
@@ -351,6 +368,9 @@ class DataciteImporter(EntityImporter):
             # Unbekannt, Nutzungsrechte müssen durch den Nutzer abgeklärt
             # werden"
             publisher = None
+
+        if publisher:
+            publisher = clean(publisher)
 
         # Container. For the moment, only ISSN as container.
         container_id = None
@@ -387,6 +407,12 @@ class DataciteImporter(EntityImporter):
         # Volume and issue.
         volume = container.get('volume')
         issue = container.get('issue')
+
+        if volume:
+            volume = clean(volume)
+
+        if issue:
+            issue = clean(issue)
 
         # Pages.
         pages = None
