@@ -374,6 +374,7 @@ class DataciteImporter(EntityImporter):
 
         # Container. For the moment, only ISSN as container.
         container_id = None
+        container_name = None
 
         container = attributes.get('container', {}) or {}
         if container.get('type') in CONTAINER_TYPE_MAP.keys():
@@ -388,21 +389,30 @@ class DataciteImporter(EntityImporter):
                     container_id = self.lookup_issnl(issnl)
 
                     if container_id is None and container.get('title'):
-                        container_title = container.get('title')
-                        if isinstance(container_title, list):
-                            if len(container_title) > 0:
+                        container_name = container.get('title')
+                        if isinstance(container_name, list):
+                            if len(container_name) > 0:
                                 print('[{}] too many container titles: {}'.format(doi,
-                                    len(container_title)))
-                                container_title = container_title[0]
-                        assert isinstance(container_title, str)
+                                    len(container_name)))
+                                container_name = container_name[0]
+                        assert isinstance(container_name, str)
                         ce = fatcat_openapi_client.ContainerEntity(
                             issnl=issnl,
                             container_type=container_type,
-                            name=container_title,
+                            name=container_name,
                         )
                         ce_edit = self.create_container(ce)
                         container_id = ce_edit.ident
                         self._issnl_id_map[issnl] = container_id
+                else:
+                    # TODO(martin): factor this out into a testable function.
+                    # TODO(martin): "container_name": "№1(1) (2018)" / 10.26087/inasan.2018.1.1.013
+                    container_name = container.get('title')
+                    if isinstance(container_name, list):
+                        if len(container_name) > 0:
+                            print('[{}] too many container titles: {}'.format(doi,
+                                len(container_name)))
+                            container_name = container_name[0]
 
         # Volume and issue.
         volume = container.get('volume')
@@ -557,6 +567,10 @@ class DataciteImporter(EntityImporter):
             extra_datacite['relations'] = relations
 
         extra = dict()
+
+        # top-level extra keys
+        if not container_id and container_name:
+            extra['container_name'] = container_name
 
         if extra_datacite:
             extra['datacite'] = extra_datacite
