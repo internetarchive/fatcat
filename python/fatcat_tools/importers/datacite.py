@@ -274,7 +274,7 @@ class DataciteImporter(EntityImporter):
 
         for i, c in enumerate(attributes['creators']):
             nameType = c.get('nameType', '') or ''
-            if nameType == 'Personal':
+            if nameType == 'Personal' or nameType == '':
                 creator_id = None
                 for nid in c.get('nameIdentifiers', []):
                     if not nid.get('nameIdentifierScheme').lower() == "orcid":
