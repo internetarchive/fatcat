@@ -435,7 +435,8 @@ class DataciteImporter(EntityImporter):
                 int(first_page) < int(last_page)
                 pages = '{}-{}'.format(first_page, last_page)
             except ValueError as err:
-                print('[{}] {}'.format(doi, err), file=sys.stderr)
+                # TODO(martin): This is more debug than info.
+                # print('[{}] {}'.format(doi, err), file=sys.stderr)
                 pass
 
         if not pages and first_page:
