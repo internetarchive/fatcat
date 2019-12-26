@@ -173,6 +173,7 @@ def run_datacite(args):
         bezerk_mode=args.bezerk_mode,
         debug=args.debug,
         lang_detect=args.lang_detect,
+        extid_map_file=args.extid_map_file,
         insert_log_file=args.insert_log_file)
     if args.kafka_mode:
         KafkaJsonPusher(fci, args.kafka_hosts, args.kafka_env, "api-datacite",
@@ -461,6 +462,9 @@ def main():
     sub_datacite.add_argument('issn_map_file',
         help="ISSN to ISSN-L mapping file",
         default=None, type=argparse.FileType('r'))
+    sub_datacite.add_argument('--extid-map-file',
+        help="DOI-to-other-identifiers sqlite3 database",
+        default=None, type=str)
     sub_datacite.add_argument('--kafka-mode',
         action='store_true',
         help="consume from kafka topic (not stdin)")
