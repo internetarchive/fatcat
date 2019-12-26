@@ -16,6 +16,10 @@ import sqlite3
 import sys
 from fatcat_tools.transforms import entity_to_dict
 
+
+# Cutoff length for abstracts.
+MAX_ABSTRACT_LENGTH = 2048
+
 # https://guide.fatcat.wiki/entity_container.html#container_type-vocabulary
 CONTAINER_TYPE_MAP = {
     'Journal': 'journal',
@@ -450,6 +454,8 @@ class DataciteImporter(EntityImporter):
             if len(desc.get('description', '')) < 10:
                 continue
             text = desc.get('description')
+            if len(text) > MAX_ABSTRACT_LENGTH:
+                text = text[:MAX_ABSTRACT_LENGTH] + " [...]"
             lang = None
             if self.lang_detect:
                 try:
