@@ -41,6 +41,10 @@ class OrcidImporter(EntityImporter):
         obj is a python dict (parsed from json).
         returns a CreatorEntity
         """
+
+        if not 'person' in obj:
+            return False
+
         name = obj['person']['name']
         if not name:
             return None
