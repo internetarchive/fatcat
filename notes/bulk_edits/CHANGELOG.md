@@ -11,6 +11,12 @@ This file should not turn in to a TODO list!
 
 ## 2019-12
 
+Started continuous harvesting Datacite DOI metadata; first date harvested was
+`2019-12-13`. No importer running yet.
+
+Imported about 3.3m new ORCID identifiers from 2019 bulk dump (after converting
+from XML to JSON): <https://archive.org/details/orcid-dump-2019>
+
 Inserted about 154k new arxiv release entities. Still no automatic daily
 harvesting.
 
@@ -45,21 +51,8 @@ invalid ISSN checksum).
 Imported files (matched to releases by DOI) from Semantic Scholar
 (`DIRECT-OA-CRAWL-2019` crawl).
 
-    Arabesque importer
-    crawl-bot
-    `s2_doi.sqlite`
-    TODO: archive.org link
-    TODO: rough count
-    TODO: date
-
 Imported files (matched to releases by DOI) from pre-1923/pre-1909 items uploaded
 by a user to archive.org.
-
-    Matched importer
-    internetarchive-bot (TODO:)
-    TODO: archive.org link
-    TODO: counts
-    TODO: date
 
 Imported files (matched to releases by DOI) from CORE.ac.uk
 (`DIRECT-OA-CRAWL-2019` crawl).
