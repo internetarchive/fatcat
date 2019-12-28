@@ -747,7 +747,9 @@ def parse_datacite_dates(dates):
     if not isinstance(dates, list):
         raise ValueError('expected a list of date items')
 
-    # Ignored: Collected, Issued.
+    # Observed values: "Available", "Submitted", "Valid", "Issued", "Accepted",
+    # "Collected", "Updated", "Copyrighted", "Created"
+    # Ignored for now: "Collected", "Issued"
     date_type_prio = (
         'Valid',
         'Available',
