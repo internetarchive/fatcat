@@ -335,11 +335,14 @@ class DataciteImporter(EntityImporter):
         title, original_language_title, subtitle = parse_datacite_titles(
             titles)
 
+        if title is None:
+            print('[{}] skipping record w/o title: {}'.format(doi, obj), file=sys.stderr)
+            return False
+
+        title = clean(title)
         if not title:
             print('[{}] skipping record w/o title: {}'.format(doi, obj), file=sys.stderr)
             return False
-        else:
-            title = clean(title)
 
         if not subtitle:
             subtitle = None
