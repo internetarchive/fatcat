@@ -307,13 +307,19 @@ class DataciteImporter(EntityImporter):
                 if surname:
                     surname = clean(surname)
 
+                if not name:
+                    continue
+
+                if raw_affiliation is not None and not raw_affiliation:
+                    continue
+
                 contribs.append(
                     fatcat_openapi_client.ReleaseContrib(
                         creator_id=creator_id,
                         index=i,
-                        raw_name=c.get('name'),
-                        given_name=c.get('givenName'),
-                        surname=c.get('familyName'),
+                        raw_name=name,
+                        given_name=given_name,
+                        surname=surname,
                         role='author',
                         raw_affiliation=raw_affiliation,
                     ))
