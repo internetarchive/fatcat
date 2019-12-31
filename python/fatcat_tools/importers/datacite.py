@@ -181,6 +181,12 @@ LICENSE_SLUG_MAP = {
     # Note: Some URLs pointing to licensing terms are not in WB yet (but would be nice).
 }
 
+# TODO(martin): drop this after 3.7 upgrade
+try:
+    isascii = str.isascii # new in 3.7, https://docs.python.org/3/library/stdtypes.html#str.isascii
+except AttributeError:
+    isascii = lambda s: len(s) == len(s.encode())
+
 
 class DataciteImporter(EntityImporter):
     """
@@ -270,7 +276,7 @@ class DataciteImporter(EntityImporter):
         attributes = obj['attributes']
         doi = clean_doi(attributes.get('doi', '').lower())
 
-        if not doi.isascii():
+        if not isascii(doi):
             print('[{}] skipping non-ascii doi for now'.format(doi))
             return None
 
