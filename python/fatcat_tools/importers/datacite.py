@@ -1,7 +1,11 @@
 """
-Prototype Importer for datacite.org data.
+Prototype importer for datacite.org data.
 
-Example doc at: https://gist.github.com/miku/5610a2d64e3fee82d16f5d3f3a295fc8
+Example input document at: https://gist.github.com/miku/5610a2d64e3fee82d16f5d3f3a295fc8.
+
+Datacite being a aggregator, the data is varied and exposes a couple of
+problems in content and structure. A few fields habe their own parsing
+functions (parse_datacite_...), which can be tested more easily.
 """
 
 from .common import EntityImporter, clean
@@ -682,6 +686,8 @@ def lookup_license_slug(raw):
 def find_original_language_title(item, min_length=4, max_questionmarks=3):
     """
     Perform a few checks before returning a potential original language title.
+
+    Example input: {'title': 'Some title', 'original_language_title': 'Some title'}
     """
     if not 'original_language_title' in item:
         return None
@@ -709,13 +715,7 @@ def parse_datacite_titles(titles):
     Given a list of title items from datacite, return 3-tuple (title,
     original_language_title, subtitle).
 
-    Example input:
-
-        [
-            {
-                 "title": "Meeting Heterogeneity in Consumer Demand"
-            }
-        ]
+    Example input: [{"title": "Meeting Heterogeneity in Consumer Demand"}]
     """
     title, original_language_title, subtitle = None, None, None
 
