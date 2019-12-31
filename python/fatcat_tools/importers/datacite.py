@@ -270,6 +270,10 @@ class DataciteImporter(EntityImporter):
         attributes = obj['attributes']
         doi = clean_doi(attributes.get('doi', '').lower())
 
+        if not doi.isascii():
+            print('[{}] skipping non-ascii doi for now'.format(doi))
+            return None
+
         # Contributors. Many nameIdentifierSchemes, we do not use (yet):
         # "attributes.creators[].nameIdentifiers[].nameIdentifierScheme":
         # ["LCNA", "GND", "email", "NAF", "OSF", "RRID", "ORCID",
