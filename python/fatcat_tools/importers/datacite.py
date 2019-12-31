@@ -291,7 +291,8 @@ class DataciteImporter(EntityImporter):
             if nameType == 'Personal' or nameType == '':
                 creator_id = None
                 for nid in c.get('nameIdentifiers', []):
-                    if not nid.get('nameIdentifierScheme').lower() == "orcid":
+                    name_scheme = nid.get('nameIdentifierScheme', '') or ''
+                    if not name_scheme.lower() == "orcid":
                         continue
                     orcid = nid.get('nameIdentifier',
                                     '').replace('https://orcid.org/', '')
