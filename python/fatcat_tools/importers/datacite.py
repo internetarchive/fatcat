@@ -268,7 +268,7 @@ class DataciteImporter(EntityImporter):
             return None
 
         attributes = obj['attributes']
-        doi = attributes.get('doi', '').lower()
+        doi = clean_doi(attributes.get('doi', '').lower())
 
         # Contributors. Many nameIdentifierSchemes, we do not use (yet):
         # "attributes.creators[].nameIdentifiers[].nameIdentifierScheme":
@@ -832,3 +832,15 @@ def parse_datacite_dates(dates):
                 break
 
     return release_date, release_year
+
+def clean_doi(doi):
+    """
+    10.25513/1812-3996.2017.1.34–42 // 8211, Hex 2013, Octal 20023
+    See also: https://github.com/miku/throwaway-check-doi
+
+    Replace unicode HYPHEN..HORIZONTAL BAR with HYPHEN-MINUS.
+    """
+    for c in ('\u2010', '\u2011', '\u2012', '\u2013', '\u2014', '\u2015'):
+        doi = doi.replace(c, "-")
+    return doi
+
