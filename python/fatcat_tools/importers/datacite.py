@@ -378,12 +378,21 @@ class DataciteImporter(EntityImporter):
         release_date, release_year = parse_datacite_dates(
             attributes.get('dates', []))
 
+        # Start with clear stages, e.g. published. TODO(martin): we could
+        # probably infer a bit more from the relations, e.g.
+        # "IsPreviousVersionOf" or "IsNewVersionOf".
+        release_stage = None
+        if attributes.get(
+                'state') == 'findable' or attributes.get('isActive') is True:
+            release_stage = 'published'
+
         # Publisher. A few NA values. A few bogus values.
         publisher = attributes.get('publisher')
 
         if publisher in ('(:unav)', 'Unknown', 'n.a.', '[s.n.]', '(:unap)',
-                         '(:none)'):
+                         '(:none)', 'Unpublished'):
             publisher = None
+            release_stage = None
         if publisher is not None and len(publisher) > 80:
             # Arbitrary magic value max length. TODO(martin): better heuristic,
             # but factored out; first we have to log misses. Example:
@@ -560,14 +569,6 @@ class DataciteImporter(EntityImporter):
                     extra=ref_extra,
                 ))
             ref_index += 1
-
-        # Start with clear stages, e.g. published. TODO(martin): we could
-        # probably infer a bit more from the relations, e.g.
-        # "IsPreviousVersionOf" or "IsNewVersionOf".
-        release_stage = None
-        if attributes.get(
-                'state') == 'findable' or attributes.get('isActive') is True:
-            release_stage = 'published'
 
         # Extra information.
         extra_datacite = dict()
