@@ -24,11 +24,11 @@
   publicly available. Blank if only year is known.
 - `release_year` (integer): year when this release was first made
   publicly available; should match `release_date` if both are known.
-- `withdrawn_status` (string, controlled set):
-- `release_date` (string, ISO date format): when this release was first made
-  publicly available. Blank if only year is known.
-- `release_year` (integer): year when this release was first made
-  publicly available; should match `release_date` if both are known.
+- `withdrawn_status` (optional, string, controlled set):
+- `withdrawn_date` (optional, string, ISO date format): when this release was withdrawn.
+  Blank if only year is known.
+- `withdrawn_year` (optional, integer): year when this release was withdrawn; should
+  match `withdrawn_date` if both are known.
 - `ext_ids` (key/value object of string-to-string mappings): external
   identifiers. At least an empty `ext_ids` object is always required for
   release entities, so individual identifiers can be accessed directly.
