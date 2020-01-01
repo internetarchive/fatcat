@@ -524,9 +524,9 @@ class DataciteImporter(EntityImporter):
         for desc in descs:
             if not desc.get('descriptionType') == 'Abstract':
                 continue
-            if len(desc.get('description', '')) < 10:
+            if len(desc.get('description', '') or '') < 10:
                 continue
-            text = desc.get('description')
+            text = desc.get('description', '')
             if len(text) > MAX_ABSTRACT_LENGTH:
                 text = text[:MAX_ABSTRACT_LENGTH] + " [...]"
             lang = None
@@ -556,10 +556,10 @@ class DataciteImporter(EntityImporter):
 
         relIds = attributes.get('relatedIdentifiers', []) or []
         for rel in relIds:
-            if not rel.get('relationType') == 'References':
+            if not rel.get('relationType', '') == 'References':
                 continue
             ref_extra = dict()
-            if rel.get('relatedIdentifierType') == 'DOI':
+            if rel.get('relatedIdentifierType', '') == 'DOI':
                 ref_extra['doi'] = rel.get('relatedIdentifier')
             if not ref_extra:
                 ref_extra = None
