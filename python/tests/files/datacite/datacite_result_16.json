@@ -1,0 +1,31 @@
+{
+    "extra": {
+        "datacite": {
+            "license": [
+                {
+                    "rights": "CC-BY",
+                    "rightsUri": "http://creativecommons.org/licenses/by/3.0/us"
+                }
+            ]
+        }
+    },
+    "title": "Testing the Connectivity of Networks",
+    "release_type": "dataset",
+    "release_stage": "published",
+    "release_year": 2014,
+    "ext_ids": {
+        "doi": "10.6084/m9.figshare.1282478"
+    },
+    "publisher": "Figshare",
+    "contribs": [
+        {
+            "index": 0,
+            "raw_name": "Sochi, Taha",
+            "given_name": "Taha",
+            "surname": "Sochi",
+            "role": "author"
+        }
+    ],
+    "refs": [],
+    "abstracts": []
+}

@@ -1,0 +1,72 @@
+{
+  "id": "10.7910/dvn/tsqfwc/yytj22",
+  "type": "dois",
+  "attributes": {
+    "doi": "10.7910/dvn/tsqfwc/yytj22",
+    "identifiers": [
+      {
+        "identifier": "https://doi.org/10.7910/dvn/tsqfwc/yytj22",
+        "identifierType": "DOI"
+      }
+    ],
+    "creators": [
+      {
+        "name": "Di Giovanna, Antonino Paolo (University Of Florence)",
+        "nameType": "Personal",
+        "affiliation": []
+      }
+    ],
+    "titles": [
+      {
+        "title": "gel_BSA-FITC_Markov_segmntation0343.tif"
+      }
+    ],
+    "publisher": "Harvard Dataverse",
+    "container": {},
+    "publicationYear": 2018,
+    "subjects": [],
+    "contributors": [],
+    "dates": [
+      {
+        "date": "2018",
+        "dateType": "Issued"
+      }
+    ],
+    "language": null,
+    "types": {
+      "ris": "DATA",
+      "bibtex": "misc",
+      "citeproc": "dataset",
+      "schemaOrg": "Dataset",
+      "resourceTypeGeneral": "Dataset"
+    },
+    "relatedIdentifiers": [],
+    "sizes": [],
+    "formats": [],
+    "version": null,
+    "rightsList": [],
+    "descriptions": [],
+    "geoLocations": [],
+    "fundingReferences": [],
+    "url": "https://dataverse.harvard.edu/file.xhtml?persistentId=doi:10.7910/DVN/TSQFWC/YYTJ22",
+    "contentUrl": null,
+    "metadataVersion": 0,
+    "schemaVersion": "http://datacite.org/schema/kernel-4",
+    "source": "mds",
+    "isActive": true,
+    "state": "findable",
+    "reason": null,
+    "created": "2018-08-22T17:36:10.000Z",
+    "registered": "2018-08-22T17:37:30.000Z",
+    "published": "2018",
+    "updated": "2019-08-02T19:43:20.000Z"
+  },
+  "relationships": {
+    "client": {
+      "data": {
+        "id": "gdcc.harvard-dv",
+        "type": "clients"
+      }
+    }
+  }
+}

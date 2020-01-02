@@ -1,0 +1,32 @@
+{
+    "extra": {
+        "datacite": {
+            "license": [
+                {
+                    "lang": "de",
+                    "rights": "Standard (Creative Commons - Namensnennung - Weitergabe unter gleichen Bedingungen) - http://www.ub.uni-heidelberg.de/helios/digi/nutzung/Welcome.html"
+                }
+            ]
+        }
+    },
+    "title": "Ferdinand Gaillard, [1]: n\u00e9 \u00e0 Paris le 16 janvier 1834, mort \u00e0 Paris le 19 janvier 1887",
+    "release_type": "article-journal",
+    "release_stage": "published",
+    "release_year": 1887,
+    "ext_ids": {
+        "doi": "10.11588/diglit.25558.39"
+    },
+    "publisher": "University Library Heidelberg",
+    "language": "fr",
+    "contribs": [
+        {
+            "index": 0,
+            "raw_name": "Dargenty, G.",
+            "given_name": "G.",
+            "surname": "Dargenty",
+            "role": "author"
+        }
+    ],
+    "refs": [],
+    "abstracts": []
+}

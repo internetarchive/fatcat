@@ -1,0 +1,26 @@
+{
+    "extra": {
+        "datacite": {
+            "license": [
+                {
+                    "rights": "ETH-Bibliothek Z\u00fcrich, Graphische Sammlung / D 6220 / Public Domain Mark 1.0"
+                }
+            ]
+        }
+    },
+    "title": "Der Eifer (Sedulitas), Blatt 7 der Folge \"Die Tugenden\"",
+    "release_type": "article",
+    "release_year": 1590,
+    "ext_ids": {
+        "doi": "10.16903/ethz-grs-d_006220"
+    },
+    "contribs": [
+        {
+            "index": 0,
+            "raw_name": "Crispijn De Passe (Der \u00c4ltere) (1564-1637)",
+            "role": "author"
+        }
+    ],
+    "refs": [],
+    "abstracts": []
+}

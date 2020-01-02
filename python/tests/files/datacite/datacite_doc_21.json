@@ -1,0 +1,42 @@
+{
+    "attributes": {
+      "doi": "10.7916/d86x0cg1",
+      "creators": [
+        {
+          "name": "(:Unav)",
+          "affiliation": [],
+          "nameIdentifiers": []
+        }
+      ],
+      "titles": [
+        {
+          "title": "ABC"
+        }
+      ],
+      "publicationYear": 2017,
+      "language": "GERMAN",
+      "types": {
+        "ris": "GEN",
+        "bibtex": "misc",
+        "citeproc": "article",
+        "schemaOrg": "CreativeWork"
+      },
+      "dates": [
+        {
+          "date": "2017-08-24",
+          "dateType": "Created"
+        },
+        {
+          "date": "2019-08-04",
+          "dateType": "Updated"
+        },
+        {
+          "date": "2017",
+          "dateType": "Issued"
+        }
+      ],
+      "isActive": true,
+      "state": "findable"
+    }
+  }
+  

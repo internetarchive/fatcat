@@ -1,0 +1,35 @@
+{
+    "extra": {
+        "datacite": {
+            "subjects": [
+                {
+                    "subject": "Direktdiodenlasersysteme"
+                },
+                {
+                    "subject": "Physics",
+                    "subjectScheme": "linsearch"
+                }
+            ]
+        }
+    },
+    "title": "BrightLas : TP3.3. Module f\u00fcr Direktdiodenstrahlquellen bis 4kW und Untersuchungen zur Leistungsskalierung (Diodemodul) : zum Verbundvorhaben Direktdiodenlaseranlagen und -systeme (VP3) im F\u00f6rderschwerpunkt innovative regionale Wachstumskerne, BMBF : Abschlussbericht",
+    "release_type": "report",
+    "release_stage": "published",
+    "release_year": 2016,
+    "ext_ids": {
+        "doi": "10.2314/gbv:880813733"
+    },
+    "publisher": "[Lumics GmbH]",
+    "language": "de",
+    "contribs": [
+        {
+            "index": 0,
+            "raw_name": "Kirstaedter, Nils",
+            "given_name": "Nils",
+            "surname": "Kirstaedter",
+            "role": "author"
+        }
+    ],
+    "refs": [],
+    "abstracts": []
+}

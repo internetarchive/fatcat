@@ -1,0 +1,83 @@
+{
+  "id": "10.16903/ethz-grs-d_006220",
+  "type": "dois",
+  "attributes": {
+    "doi": "10.16903/ethz-grs-d_006220",
+    "identifiers": [
+      {
+        "identifier": "https://doi.org/10.16903/ethz-grs-d_006220",
+        "identifierType": "DOI"
+      }
+    ],
+    "creators": [
+      {
+        "name": "Crispijn De Passe (Der Ältere) (1564-1637)",
+        "nameType": "Personal",
+        "affiliation": []
+      }
+    ],
+    "titles": [
+      {
+        "title": "Der Eifer (Sedulitas), Blatt 7 der Folge \"Die Tugenden\""
+      }
+    ],
+    "publisher": "n.a.",
+    "container": {},
+    "publicationYear": 1590,
+    "subjects": [],
+    "contributors": [],
+    "dates": [
+      {
+        "date": "1590",
+        "dateType": "Available"
+      },
+      {
+        "date": "1590",
+        "dateType": "Issued"
+      }
+    ],
+    "language": null,
+    "types": {
+      "ris": "GEN",
+      "bibtex": "misc",
+      "citeproc": "article",
+      "schemaOrg": "CreativeWork",
+      "resourceTypeGeneral": "InteractiveResource"
+    },
+    "relatedIdentifiers": [],
+    "sizes": [],
+    "formats": [
+      "Blattgrösse: 21.0 x 14.4 x 0.0 cm (beschnitten)",
+      "Kupferstich"
+    ],
+    "version": null,
+    "rightsList": [
+      {
+        "rights": "ETH-Bibliothek Zürich, Graphische Sammlung / D 6220 / Public Domain Mark 1.0"
+      }
+    ],
+    "descriptions": [],
+    "geoLocations": [],
+    "fundingReferences": [],
+    "url": "http://www.e-gs.ethz.ch/eMP/eMuseumPlus?service=ExternalInterface&module=collection&objectId=29469&viewType=detailView",
+    "contentUrl": null,
+    "metadataVersion": 1,
+    "schemaVersion": "http://datacite.org/schema/kernel-3",
+    "source": "mds",
+    "isActive": true,
+    "state": "findable",
+    "reason": null,
+    "created": "2017-12-13T12:03:09.000Z",
+    "registered": "2017-12-13T12:03:09.000Z",
+    "published": "1590",
+    "updated": "2019-08-02T17:20:02.000Z"
+  },
+  "relationships": {
+    "client": {
+      "data": {
+        "id": "ethz.gs",
+        "type": "clients"
+      }
+    }
+  }
+}

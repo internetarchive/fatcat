@@ -1,0 +1,530 @@
+{
+    "extra": {
+        "datacite": {
+            "license": [
+                {
+                    "rights": "Attribution-NonCommercial (CC BY-NC)",
+                    "rightsUri": "http://creativecommons.org/licenses/by-nc/4.0"
+                }
+            ]
+        }
+    },
+    "title": "SH409843.07FU",
+    "subtitle": "Gomphales",
+    "release_type": "dataset",
+    "release_stage": "published",
+    "release_date": "2014-10-05",
+    "release_year": 2014,
+    "ext_ids": {
+        "doi": "10.15156/bio/sh409843.07fu"
+    },
+    "publisher": "UNITE Community",
+    "language": "en",
+    "license_slug": "CC-BY-NC",
+    "contribs": [
+        {
+            "index": 0,
+            "raw_name": "K\u00f5ljalg, Urmas",
+            "given_name": "Urmas",
+            "surname": "K\u00f5ljalg",
+            "role": "author"
+        },
+        {
+            "index": 1,
+            "raw_name": "Abarenkov, Kessy",
+            "given_name": "Kessy",
+            "surname": "Abarenkov",
+            "role": "author"
+        },
+        {
+            "index": 2,
+            "raw_name": "Nilsson, R. Henrik",
+            "given_name": "R. Henrik",
+            "surname": "Nilsson",
+            "role": "author"
+        },
+        {
+            "index": 3,
+            "raw_name": "Larsson, Karl-Henrik",
+            "given_name": "Karl-Henrik",
+            "surname": "Larsson",
+            "role": "author"
+        },
+        {
+            "index": 4,
+            "raw_name": "Aas, Anders Bj\u00f8rnsgard",
+            "given_name": "Anders Bj\u00f8rnsgard",
+            "surname": "Aas",
+            "role": "author"
+        },
+        {
+            "index": 5,
+            "raw_name": "Adams, Rachel",
+            "given_name": "Rachel",
+            "surname": "Adams",
+            "role": "author"
+        },
+        {
+            "index": 6,
+            "raw_name": "Alves, Artur",
+            "given_name": "Artur",
+            "surname": "Alves",
+            "role": "author"
+        },
+        {
+            "index": 7,
+            "raw_name": "Ammirati, Joseph F.",
+            "given_name": "Joseph F.",
+            "surname": "Ammirati",
+            "role": "author"
+        },
+        {
+            "index": 8,
+            "raw_name": "Arnold, A. Elizabeth",
+            "given_name": "A. Elizabeth",
+            "surname": "Arnold",
+            "role": "author"
+        },
+        {
+            "index": 9,
+            "raw_name": "Bahram, Mohammad",
+            "given_name": "Mohammad",
+            "surname": "Bahram",
+            "role": "author"
+        },
+        {
+            "index": 10,
+            "raw_name": "Bengtsson-Palme, Johan",
+            "given_name": "Johan",
+            "surname": "Bengtsson-Palme",
+            "role": "author"
+        },
+        {
+            "index": 11,
+            "raw_name": "Berlin, Anna",
+            "given_name": "Anna",
+            "surname": "Berlin",
+            "role": "author"
+        },
+        {
+            "index": 12,
+            "raw_name": "Botnen, Synn\u00f8ve",
+            "given_name": "Synn\u00f8ve",
+            "surname": "Botnen",
+            "role": "author"
+        },
+        {
+            "index": 13,
+            "raw_name": "Bourlat, Sarah",
+            "given_name": "Sarah",
+            "surname": "Bourlat",
+            "role": "author"
+        },
+        {
+            "index": 14,
+            "raw_name": "Cheeke, Tanya",
+            "given_name": "Tanya",
+            "surname": "Cheeke",
+            "role": "author"
+        },
+        {
+            "index": 15,
+            "raw_name": "Dima, B\u00e1lint",
+            "given_name": "B\u00e1lint",
+            "surname": "Dima",
+            "role": "author"
+        },
+        {
+            "index": 16,
+            "raw_name": "Drenkhan, Rein",
+            "given_name": "Rein",
+            "surname": "Drenkhan",
+            "role": "author"
+        },
+        {
+            "index": 17,
+            "raw_name": "Duarte, Camila",
+            "given_name": "Camila",
+            "surname": "Duarte",
+            "role": "author"
+        },
+        {
+            "index": 18,
+            "raw_name": "Due\u00f1as, Margarita",
+            "given_name": "Margarita",
+            "surname": "Due\u00f1as",
+            "role": "author"
+        },
+        {
+            "index": 19,
+            "raw_name": "Eberhardt, Ursula",
+            "given_name": "Ursula",
+            "surname": "Eberhardt",
+            "role": "author"
+        },
+        {
+            "index": 20,
+            "raw_name": "Friberg, Hanna",
+            "given_name": "Hanna",
+            "surname": "Friberg",
+            "role": "author"
+        },
+        {
+            "index": 21,
+            "raw_name": "Fr\u00f8slev, Tobias G.",
+            "given_name": "Tobias G.",
+            "surname": "Fr\u00f8slev",
+            "role": "author"
+        },
+        {
+            "index": 22,
+            "raw_name": "Garnica, Sigisfredo",
+            "given_name": "Sigisfredo",
+            "surname": "Garnica",
+            "role": "author"
+        },
+        {
+            "index": 23,
+            "raw_name": "Geml, J\u00f3zsef",
+            "given_name": "J\u00f3zsef",
+            "surname": "Geml",
+            "role": "author"
+        },
+        {
+            "index": 24,
+            "raw_name": "Ghobad-Nejhad, Masoomeh",
+            "given_name": "Masoomeh",
+            "surname": "Ghobad-Nejhad",
+            "role": "author"
+        },
+        {
+            "index": 25,
+            "raw_name": "Grebenc, Tine",
+            "given_name": "Tine",
+            "surname": "Grebenc",
+            "role": "author"
+        },
+        {
+            "index": 26,
+            "raw_name": "Griffith, Gareth W.",
+            "given_name": "Gareth W.",
+            "surname": "Griffith",
+            "role": "author"
+        },
+        {
+            "index": 27,
+            "raw_name": "Hampe, Felix",
+            "given_name": "Felix",
+            "surname": "Hampe",
+            "role": "author"
+        },
+        {
+            "index": 28,
+            "raw_name": "Kennedy, Peter",
+            "given_name": "Peter",
+            "surname": "Kennedy",
+            "role": "author"
+        },
+        {
+            "index": 29,
+            "raw_name": "Khomich, Maryia",
+            "given_name": "Maryia",
+            "surname": "Khomich",
+            "role": "author"
+        },
+        {
+            "index": 30,
+            "raw_name": "Kohout, Petr",
+            "given_name": "Petr",
+            "surname": "Kohout",
+            "role": "author"
+        },
+        {
+            "index": 31,
+            "raw_name": "Kollom, Anu",
+            "given_name": "Anu",
+            "surname": "Kollom",
+            "role": "author"
+        },
+        {
+            "index": 32,
+            "raw_name": "Larsson, Ellen",
+            "given_name": "Ellen",
+            "surname": "Larsson",
+            "role": "author"
+        },
+        {
+            "index": 33,
+            "raw_name": "Laszlo, Irinyi",
+            "given_name": "Irinyi",
+            "surname": "Laszlo",
+            "role": "author"
+        },
+        {
+            "index": 34,
+            "raw_name": "Leavitt, Steven",
+            "given_name": "Steven",
+            "surname": "Leavitt",
+            "role": "author"
+        },
+        {
+            "index": 35,
+            "raw_name": "Liimatainen, Kare",
+            "given_name": "Kare",
+            "surname": "Liimatainen",
+            "role": "author"
+        },
+        {
+            "index": 36,
+            "raw_name": "Lindahl, Bj\u00f6rn",
+            "given_name": "Bj\u00f6rn",
+            "surname": "Lindahl",
+            "role": "author"
+        },
+        {
+            "index": 37,
+            "raw_name": "Lodge, Deborah J.",
+            "given_name": "Deborah J.",
+            "surname": "Lodge",
+            "role": "author"
+        },
+        {
+            "index": 38,
+            "raw_name": "Lumbsch, Helge Thorsten",
+            "given_name": "Helge Thorsten",
+            "surname": "Lumbsch",
+            "role": "author"
+        },
+        {
+            "index": 39,
+            "raw_name": "Mart\u00edn Esteban, Mar\u00eda Paz",
+            "given_name": "Mar\u00eda Paz",
+            "surname": "Mart\u00edn Esteban",
+            "role": "author"
+        },
+        {
+            "index": 40,
+            "raw_name": "Meyer, Wieland",
+            "given_name": "Wieland",
+            "surname": "Meyer",
+            "role": "author"
+        },
+        {
+            "index": 41,
+            "raw_name": "Miettinen, Otto",
+            "given_name": "Otto",
+            "surname": "Miettinen",
+            "role": "author"
+        },
+        {
+            "index": 42,
+            "raw_name": "Nguyen, Nhu",
+            "given_name": "Nhu",
+            "surname": "Nguyen",
+            "role": "author"
+        },
+        {
+            "index": 43,
+            "raw_name": "Niskanen, Tuula",
+            "given_name": "Tuula",
+            "surname": "Niskanen",
+            "role": "author"
+        },
+        {
+            "index": 44,
+            "raw_name": "Oono, Ryoko",
+            "given_name": "Ryoko",
+            "surname": "Oono",
+            "role": "author"
+        },
+        {
+            "index": 45,
+            "raw_name": "\u00d6pik, Maarja",
+            "given_name": "Maarja",
+            "surname": "\u00d6pik",
+            "role": "author"
+        },
+        {
+            "index": 46,
+            "raw_name": "Ordynets, Alexander",
+            "given_name": "Alexander",
+            "surname": "Ordynets",
+            "role": "author"
+        },
+        {
+            "index": 47,
+            "raw_name": "Paw\u0142owska, Julia",
+            "given_name": "Julia",
+            "surname": "Paw\u0142owska",
+            "role": "author"
+        },
+        {
+            "index": 48,
+            "raw_name": "Peintner, Ursula",
+            "given_name": "Ursula",
+            "surname": "Peintner",
+            "role": "author"
+        },
+        {
+            "index": 49,
+            "raw_name": "Pereira, Olinto Liparini",
+            "given_name": "Olinto Liparini",
+            "surname": "Pereira",
+            "role": "author"
+        },
+        {
+            "index": 50,
+            "raw_name": "Pinho, Danilo Batista",
+            "given_name": "Danilo Batista",
+            "surname": "Pinho",
+            "role": "author"
+        },
+        {
+            "index": 51,
+            "raw_name": "P\u00f5ldmaa, Kadri",
+            "given_name": "Kadri",
+            "surname": "P\u00f5ldmaa",
+            "role": "author"
+        },
+        {
+            "index": 52,
+            "raw_name": "Runnel, Kadri",
+            "given_name": "Kadri",
+            "surname": "Runnel",
+            "role": "author"
+        },
+        {
+            "index": 53,
+            "raw_name": "Ryberg, Martin",
+            "given_name": "Martin",
+            "surname": "Ryberg",
+            "role": "author"
+        },
+        {
+            "index": 54,
+            "raw_name": "Saar, Irja",
+            "given_name": "Irja",
+            "surname": "Saar",
+            "role": "author"
+        },
+        {
+            "index": 55,
+            "raw_name": "Sanli, Kemal",
+            "given_name": "Kemal",
+            "surname": "Sanli",
+            "role": "author"
+        },
+        {
+            "index": 56,
+            "raw_name": "Scott, James",
+            "given_name": "James",
+            "surname": "Scott",
+            "role": "author"
+        },
+        {
+            "index": 57,
+            "raw_name": "Spirin, Viacheslav",
+            "given_name": "Viacheslav",
+            "surname": "Spirin",
+            "role": "author"
+        },
+        {
+            "index": 58,
+            "raw_name": "Suija, Ave",
+            "given_name": "Ave",
+            "surname": "Suija",
+            "role": "author"
+        },
+        {
+            "index": 59,
+            "raw_name": "Svantesson, Sten",
+            "given_name": "Sten",
+            "surname": "Svantesson",
+            "role": "author"
+        },
+        {
+            "index": 60,
+            "raw_name": "Tadych, Mariusz",
+            "given_name": "Mariusz",
+            "surname": "Tadych",
+            "role": "author"
+        },
+        {
+            "index": 61,
+            "raw_name": "Takamatsu, Susumu",
+            "given_name": "Susumu",
+            "surname": "Takamatsu",
+            "role": "author"
+        },
+        {
+            "index": 62,
+            "raw_name": "Tamm, Heidi",
+            "given_name": "Heidi",
+            "surname": "Tamm",
+            "role": "author"
+        },
+        {
+            "index": 63,
+            "raw_name": "Taylor, AFS.",
+            "given_name": "AFS.",
+            "surname": "Taylor",
+            "role": "author"
+        },
+        {
+            "index": 64,
+            "raw_name": "Tedersoo, Leho",
+            "given_name": "Leho",
+            "surname": "Tedersoo",
+            "role": "author"
+        },
+        {
+            "index": 65,
+            "raw_name": "Telleria, M.T.",
+            "given_name": "M.T.",
+            "surname": "Telleria",
+            "role": "author"
+        },
+        {
+            "index": 66,
+            "raw_name": "Udayanga, Dhanushka",
+            "given_name": "Dhanushka",
+            "surname": "Udayanga",
+            "role": "author"
+        },
+        {
+            "index": 67,
+            "raw_name": "Unterseher, Martin",
+            "given_name": "Martin",
+            "surname": "Unterseher",
+            "role": "author"
+        },
+        {
+            "index": 68,
+            "raw_name": "Volobuev, Sergey",
+            "given_name": "Sergey",
+            "surname": "Volobuev",
+            "role": "author"
+        },
+        {
+            "index": 69,
+            "raw_name": "Weiss, Michael",
+            "given_name": "Michael",
+            "surname": "Weiss",
+            "role": "author"
+        },
+        {
+            "index": 70,
+            "raw_name": "Wurzbacher, Christian",
+            "given_name": "Christian",
+            "surname": "Wurzbacher",
+            "role": "author"
+        }
+    ],
+    "refs": [],
+    "abstracts": [
+        {
+            "content": "UNITE provides a unified way for delimiting, identifying, communicating, and working with DNA-based Species Hypotheses (SH). All fungal ITS sequences in the international nucleotide sequence databases are clustered to approximately the species level by applying a set of dynamic distance values (&lt;0.5 - 3.0%). All species hypotheses are given a unique, stable name in the form of a DOI, and their taxonomic and ecological annotations are verified through distributed, web-based third-party annotation efforts. SHs are connected to a taxon name and its classification as far as possible (phylum, class, order, etc.) by taking into account identifications for all sequences in the SH. An automatically or manually designated sequence is chosen to represent each such SH. These sequences are released (https://unite.ut.ee/repository.php) for use by the scientific community in, for example, local sequence similarity searches and next-generation sequencing analysis pipelines. The system and the data are updated automatically as the number of public fungal ITS sequences grows.",
+            "mimetype": "text/plain"
+        }
+    ]
+}

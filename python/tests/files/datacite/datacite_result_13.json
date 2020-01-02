@@ -1,0 +1,28 @@
+{
+    "extra": {},
+    "title": "[M\u00fcssen wir des Gl\u00fccks uns sch\u00e4men?]",
+    "release_type": "article-journal",
+    "release_stage": "published",
+    "release_date": "1940-10-05",
+    "release_year": 1940,
+    "ext_ids": {
+        "doi": "10.5169/seals-314104"
+    },
+    "publisher": "Buchdruckerei B\u00fcchler & Co.",
+    "contribs": [
+        {
+            "index": 0,
+            "raw_name": "O.M.",
+            "role": "author"
+        },
+        {
+            "index": 1,
+            "raw_name": "Hiltbrunner, Hermann",
+            "given_name": "Hermann",
+            "surname": "Hiltbrunner",
+            "role": "author"
+        }
+    ],
+    "refs": [],
+    "abstracts": []
+}

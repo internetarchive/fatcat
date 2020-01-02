@@ -1,0 +1,22 @@
+{
+    "extra": {},
+    "title": "ABC",
+    "release_type": "article",
+    "release_stage": "published",
+    "release_date": "2017-08-24",
+    "release_year": 2017,
+    "ext_ids": {
+        "doi": "10.7916/d86x0cg1"
+    },
+    "contribs": [
+        {
+            "raw_affiliation": "Department of pataphysics",
+            "index": 0,
+            "raw_name": "Anton Welch",
+            "role": "author"
+        }
+    ],
+    "refs": [],
+    "abstracts": [],
+    "language": "de"
+}

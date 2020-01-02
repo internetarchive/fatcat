@@ -1,0 +1,140 @@
+{
+  "id": "10.1007/s10870-008-9413-z",
+  "type": "dois",
+  "attributes": {
+    "doi": "10.1007/s10870-008-9413-z",
+    "identifiers": [
+      {
+        "identifier": "https://doi.org/10.1007/s10870-008-9413-z",
+        "identifierType": "DOI"
+      },
+      {
+        "identifier": "s10870-008-9413-z",
+        "identifierType": "Publisher ID"
+      }
+    ],
+    "creators": [
+      {
+        "name": "Li, Qian-Jin",
+        "nameType": "Personal",
+        "givenName": "Qian-Jin",
+        "familyName": "Li",
+        "affiliation": []
+      },
+      {
+        "name": "Yang, Chun-Long",
+        "nameType": "Personal",
+        "givenName": "Chun-Long",
+        "familyName": "Yang",
+        "affiliation": []
+      }
+    ],
+    "titles": [
+      {
+        "title": "Synthesis and Crystal Structure of a Compound with Two Conformational Isomers: N-(2-methylbenzoyl)-N′-(4-nitrophenyl)thiourea"
+      }
+    ],
+    "publisher": "Springer Science and Business Media LLC",
+    "container": {
+      "type": "Journal",
+      "issue": "12",
+      "title": "Journal of Chemical Crystallography",
+      "volume": "38",
+      "lastPage": "930",
+      "firstPage": "927",
+      "identifier": "1074-1542",
+      "identifierType": "ISSN"
+    },
+    "publicationYear": 2008,
+    "subjects": [],
+    "contributors": [],
+    "dates": [
+      {
+        "date": "2008-05-30",
+        "dateType": "Issued"
+      },
+      {
+        "date": "2019-05-31T04:04:23Z",
+        "dateType": "Updated"
+      }
+    ],
+    "language": null,
+    "types": {
+      "ris": "JOUR",
+      "bibtex": "article",
+      "citeproc": "article-journal",
+      "schemaOrg": "ScholarlyArticle",
+      "resourceType": "JournalArticle",
+      "resourceTypeGeneral": "Text"
+    },
+    "relatedIdentifiers": [
+      {
+        "relationType": "IsPartOf",
+        "relatedIdentifier": "1074-1542",
+        "resourceTypeGeneral": "Collection",
+        "relatedIdentifierType": "ISSN"
+      },
+      {
+        "relationType": "References",
+        "relatedIdentifier": "10.1016/j.bmcl.2005.09.033",
+        "relatedIdentifierType": "DOI"
+      },
+      {
+        "relationType": "References",
+        "relatedIdentifier": "10.1016/s0022-1139(02)00330-5",
+        "relatedIdentifierType": "DOI"
+      },
+      {
+        "relationType": "References",
+        "relatedIdentifier": "10.1016/s0010-8545(01)00337-x",
+        "relatedIdentifierType": "DOI"
+      },
+      {
+        "relationType": "References",
+        "relatedIdentifier": "10.1016/j.tetlet.2005.06.135",
+        "relatedIdentifierType": "DOI"
+      },
+      {
+        "relationType": "References",
+        "relatedIdentifier": "10.1039/p298700000s1",
+        "relatedIdentifierType": "DOI"
+      },
+      {
+        "relationType": "References",
+        "relatedIdentifier": "10.1002/anie.199515551",
+        "relatedIdentifierType": "DOI"
+      }
+    ],
+    "sizes": [],
+    "formats": [],
+    "version": null,
+    "rightsList": [
+      {
+        "rightsUri": "http://www.springer.com/tdm"
+      }
+    ],
+    "descriptions": [],
+    "geoLocations": [],
+    "fundingReferences": [],
+    "url": "http://link.springer.com/10.1007/s10870-008-9413-z",
+    "contentUrl": null,
+    "metadataVersion": 1,
+    "schemaVersion": "http://datacite.org/schema/kernel-4",
+    "source": "levriero",
+    "isActive": true,
+    "state": "findable",
+    "reason": null,
+    "created": "2019-06-18T14:52:19.000Z",
+    "registered": null,
+    "published": "2008",
+    "updated": "2019-08-03T00:03:40.000Z"
+  },
+  "relationships": {
+    "client": {
+      "data": {
+        "id": "crossref.citations",
+        "type": "clients"
+      }
+    }
+  }
+}

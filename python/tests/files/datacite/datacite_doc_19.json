@@ -1,0 +1,79 @@
+{
+  "id": "10.7916/d86x0cg1",
+  "type": "dois",
+  "attributes": {
+    "doi": "10.7916/d86x0cg1",
+    "identifiers": [
+      {
+        "identifier": "https://doi.org/10.7916/d86x0cg1",
+        "identifierType": "DOI"
+      }
+    ],
+    "creators": [
+      {
+        "name": "(:Unav)",
+        "affiliation": [],
+        "nameIdentifiers": []
+      }
+    ],
+    "titles": [
+      {
+        "title": "Eastern questionnaire, answer sheet for Interviewee 55236, page 092"
+      }
+    ],
+    "publisher": "Columbia University",
+    "container": {},
+    "publicationYear": 2017,
+    "subjects": [],
+    "contributors": [],
+    "dates": [
+      {
+        "date": "2017-08-24",
+        "dateType": "Created"
+      },
+      {
+        "date": "2019-08-04",
+        "dateType": "Updated"
+      },
+      {
+        "date": "2017",
+        "dateType": "Issued"
+      }
+    ],
+    "language": null,
+    "types": {
+      "ris": "GEN",
+      "bibtex": "misc",
+      "citeproc": "article",
+      "schemaOrg": "CreativeWork"
+    },
+    "relatedIdentifiers": [],
+    "sizes": [],
+    "formats": [],
+    "version": null,
+    "rightsList": [],
+    "descriptions": [],
+    "geoLocations": [],
+    "fundingReferences": [],
+    "url": "https://dlc.library.columbia.edu/lcaaj/cul:44j0zpc98s",
+    "contentUrl": null,
+    "metadataVersion": 3,
+    "schemaVersion": "http://datacite.org/schema/kernel-3",
+    "source": "ez",
+    "isActive": true,
+    "state": "findable",
+    "reason": null,
+    "created": "2017-11-29T09:29:33.000Z",
+    "registered": "2017-11-29T09:29:34.000Z",
+    "published": "2017",
+    "updated": "2019-08-04T23:43:40.000Z"
+  },
+  "relationships": {
+    "client": {
+      "data": {
+        "id": "cul.columbia",
+        "type": "clients"
+      }
+    }
+  }
+}

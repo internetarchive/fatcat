@@ -1,0 +1,70 @@
+{
+  "id": "10.13140/rg.2.2.30434.53446",
+  "type": "dois",
+  "attributes": {
+    "doi": "10.13140/rg.2.2.30434.53446",
+    "identifiers": [
+      {
+        "identifier": "https://doi.org/10.13140/rg.2.2.30434.53446",
+        "identifierType": "DOI"
+      }
+    ],
+    "creators": [
+      {
+        "name": "Mastura Yahya",
+        "affiliation": []
+      }
+    ],
+    "titles": [
+      {
+        "title": "midterm ah30903"
+      }
+    ],
+    "publisher": "Unpublished",
+    "container": {},
+    "publicationYear": 2016,
+    "subjects": [],
+    "contributors": [],
+    "dates": [
+      {
+        "date": "2016",
+        "dateType": "Issued"
+      }
+    ],
+    "language": "ms",
+    "types": {
+      "ris": "GEN",
+      "bibtex": "misc",
+      "citeproc": "article",
+      "schemaOrg": "CreativeWork"
+    },
+    "relatedIdentifiers": [],
+    "sizes": [],
+    "formats": [],
+    "version": null,
+    "rightsList": [],
+    "descriptions": [],
+    "geoLocations": [],
+    "fundingReferences": [],
+    "url": "http://rgdoi.net/10.13140/RG.2.2.30434.53446",
+    "contentUrl": null,
+    "metadataVersion": 0,
+    "schemaVersion": "http://datacite.org/schema/kernel-3",
+    "source": null,
+    "isActive": true,
+    "state": "findable",
+    "reason": null,
+    "created": "2016-11-03T09:07:08.000Z",
+    "registered": "2016-11-03T09:07:09.000Z",
+    "published": "2016",
+    "updated": "2019-08-02T12:51:15.000Z"
+  },
+  "relationships": {
+    "client": {
+      "data": {
+        "id": "rg.rg",
+        "type": "clients"
+      }
+    }
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "id": "10.5169/seals-314104",
+  "type": "dois",
+  "attributes": {
+    "doi": "10.5169/seals-314104",
+    "identifiers": [
+      {
+        "identifier": "https://doi.org/10.5169/seals-314104",
+        "identifierType": "DOI"
+      }
+    ],
+    "creators": [
+      {
+        "name": "O.M.",
+        "affiliation": []
+      },
+      {
+        "name": "Hiltbrunner, Hermann",
+        "nameType": "Personal",
+        "givenName": "Hermann",
+        "familyName": "Hiltbrunner",
+        "affiliation": []
+      }
+    ],
+    "titles": [
+      {
+        "title": "[Müssen wir des Glücks uns schämen?]"
+      }
+    ],
+    "publisher": "Buchdruckerei Büchler & Co.",
+    "container": {},
+    "publicationYear": 1940,
+    "subjects": [],
+    "contributors": [],
+    "dates": [
+      {
+        "date": "1940-10-05",
+        "dateType": "Available"
+      },
+      {
+        "date": "1940",
+        "dateType": "Issued"
+      }
+    ],
+    "language": null,
+    "types": {
+      "ris": "JOUR",
+      "bibtex": "article",
+      "citeproc": "article-journal",
+      "schemaOrg": "ScholarlyArticle",
+      "resourceType": "Journal Article",
+      "resourceTypeGeneral": "Text"
+    },
+    "relatedIdentifiers": [],
+    "sizes": [],
+    "formats": [
+      "text/html",
+      "application/pdf"
+    ],
+    "version": null,
+    "rightsList": [],
+    "descriptions": [],
+    "geoLocations": [],
+    "fundingReferences": [],
+    "url": "https://www.e-periodica.ch/digbib/view?pid=sle-001:1940-1941:45::13",
+    "contentUrl": null,
+    "metadataVersion": 17,
+    "schemaVersion": "http://datacite.org/schema/kernel-3",
+    "source": null,
+    "isActive": true,
+    "state": "findable",
+    "reason": null,
+    "created": "2013-03-22T14:02:08.000Z",
+    "registered": "2013-03-22T13:58:11.000Z",
+    "published": "1940",
+    "updated": "2019-08-02T02:22:55.000Z"
+  },
+  "relationships": {
+    "client": {
+      "data": {
+        "id": "ethz.seals",
+        "type": "clients"
+      }
+    }
+  }
+}

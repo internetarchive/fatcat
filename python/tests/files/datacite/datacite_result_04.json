@@ -1,0 +1,28 @@
+{
+    "extra": {},
+    "title": "On chain maps inducing isomorphisms in homology",
+    "release_type": "article-journal",
+    "release_stage": "published",
+    "release_year": 1973,
+    "ext_ids": {
+        "doi": "10.14288/1.0080520"
+    },
+    "publisher": "University of British Columbia",
+    "language": "en",
+    "contribs": [
+        {
+            "index": 0,
+            "raw_name": "Nicollerat, Marc Andre",
+            "given_name": "Marc Andre",
+            "surname": "Nicollerat",
+            "role": "author"
+        }
+    ],
+    "refs": [],
+    "abstracts": [
+        {
+            "content": "Let A be an abelian category, I the full subcategory of A consisting of injective objects of A, and K(A) the category whose objects are cochain complexes of elements of A, and whose morphisms are homotopy classes of cochain maps.  In (5), lemma 4.6., p. 42, R. Hartshorne has proved that, under certain conditions, a cochain complex X\u02d9 \u03b5. |KA)| can be embedded in a complex I\u02d9 \u03b5. |K(I)| in such a way that I\u02d9 has the same cohomology as X\u02d9.  In Chapter I we show that the construction given in the two first parts of Hartshorne's Lemma is natural i.e. there exists a functor  J : K(A) \u2192 K(I) and a natural transformation [formula omitted]  (where E : K(I) \u2192 K(A) is the embedding functor) such that [formula omitted] is  injective and induces isomorphism in cohomology. The question whether the construction given in the third part of the lemma is functorial is still open.  We also prove that J is left adjoint to E, so that K(I) is a reflective subcategory of K(A).  In the special case where A is a category [formula omitted] of left A-modules, and [formula omitted] the category of cochain complexes in [formula omitted] and cochain maps (not homotopy classes), we prove the existence of a functor [formula omitted]  In Chapter II we study the natural homomorphism [formula omitted]   where A, B are rings, and M, L, N modules or chain complexes. In particular we give several sufficient conditions under which v is an isomorphism, or induces isomorphism in homology.  In the appendix we give a detailed proof of Hartshorne's Lemma. We think that this is useful, as no complete proof is, to our knowledge, to be found in the literature.",
+            "mimetype": "text/plain"
+        }
+    ]
+}

@@ -1,0 +1,130 @@
+{
+  "id": "10.2314/gbv:880813733",
+  "type": "dois",
+  "attributes": {
+    "doi": "10.2314/gbv:880813733",
+    "identifiers": [
+      {
+        "identifier": "https://doi.org/10.2314/gbv:880813733",
+        "identifierType": "DOI"
+      },
+      {
+        "identifier": "880813733",
+        "identifierType": "ppn"
+      },
+      {
+        "identifier": "03WKCF3C",
+        "identifierType": "contract"
+      },
+      {
+        "identifier": "01132105",
+        "identifierType": "contract"
+      },
+      {
+        "identifier": "GBV:880813733",
+        "identifierType": "firstid"
+      },
+      {
+        "identifier": "TIBKAT:880813733",
+        "identifierType": "ftx-id"
+      }
+    ],
+    "creators": [
+      {
+        "name": "Kirstaedter, Nils",
+        "nameType": "Personal",
+        "givenName": "Nils",
+        "familyName": "Kirstaedter",
+        "affiliation": [],
+        "nameIdentifiers": []
+      }
+    ],
+    "titles": [
+      {
+        "title": "BrightLas : TP3.3. Module für Direktdiodenstrahlquellen bis 4kW und Untersuchungen zur Leistungsskalierung (Diodemodul) : zum Verbundvorhaben Direktdiodenlaseranlagen und -systeme (VP3) im Förderschwerpunkt innovative regionale Wachstumskerne, BMBF : Abschlussbericht"
+      },
+      {
+        "title": "Module für Direktdiodenstrahlquellen bis 4kW und Untersuchungen zur Leistungsskalierung (Diodemodul)",
+        "titleType": "AlternativeTitle"
+      },
+      {
+        "title": "Direktdiodenlaseranlagen und -systeme (VP3)",
+        "titleType": "AlternativeTitle"
+      }
+    ],
+    "publisher": "[Lumics GmbH]",
+    "container": {},
+    "publicationYear": 2016,
+    "subjects": [
+      {
+        "subject": "Direktdiodenlasersysteme"
+      },
+      {
+        "subject": "Physics",
+        "subjectScheme": "linsearch"
+      }
+    ],
+    "contributors": [
+      {
+        "name": "TIB-Technische Informationsbibliothek Universitätsbibliothek Hannover",
+        "nameType": "Organizational",
+        "affiliation": [],
+        "contributorType": "HostingInstitution",
+        "nameIdentifiers": []
+      },
+      {
+        "name": "Technische Informationsbibliothek (TIB)",
+        "affiliation": [],
+        "contributorType": "DataManager",
+        "nameIdentifiers": []
+      }
+    ],
+    "dates": [
+      {
+        "date": "2016",
+        "dateType": "Issued"
+      }
+    ],
+    "language": "de",
+    "types": {
+      "ris": "RPRT",
+      "bibtex": "article",
+      "citeproc": "report",
+      "schemaOrg": "ScholarlyArticle",
+      "resourceType": "Report",
+      "resourceTypeGeneral": "Text"
+    },
+    "relatedIdentifiers": [],
+    "sizes": [
+      "1 Online-Ressource (10 Seiten, 1,40 MB)"
+    ],
+    "formats": [
+      "application/pdf"
+    ],
+    "version": "1.0",
+    "rightsList": [],
+    "descriptions": [],
+    "geoLocations": [],
+    "fundingReferences": [],
+    "url": "https://www.tib.eu/suchen/id/TIBKAT:880813733/",
+    "contentUrl": null,
+    "metadataVersion": 9,
+    "schemaVersion": "http://datacite.org/schema/kernel-4",
+    "source": "mds",
+    "isActive": true,
+    "state": "findable",
+    "reason": null,
+    "created": "2017-02-25T00:00:18.000Z",
+    "registered": "2017-02-25T00:00:19.000Z",
+    "published": "2016",
+    "updated": "2019-08-03T05:53:51.000Z"
+  },
+  "relationships": {
+    "client": {
+      "data": {
+        "id": "tib.tib",
+        "type": "clients"
+      }
+    }
+  }
+}

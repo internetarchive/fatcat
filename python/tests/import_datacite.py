@@ -7,7 +7,8 @@ import datetime
 import pytest
 import gzip
 from fatcat_tools.importers import DataciteImporter, JsonLinePusher
-from fatcat_tools.importers.datacite import find_original_language_title, parse_datacite_titles, parse_datacite_dates
+from fatcat_tools.importers.datacite import find_original_language_title, parse_datacite_titles, parse_datacite_dates, clean_doi
+from fatcat_tools.transforms import entity_to_dict
 from fixtures import api
 import json
 
@@ -270,3 +271,26 @@ def test_datacite_dict_parse(datacite_importer):
         assert r.contribs[0].given_name == None
         assert r.contribs[0].surname == None
         assert len(r.refs) == 0
+
+def test_clean_doi():
+    assert clean_doi("10.25513/1812-3996.2017.1.34\u201342") == "10.25513/1812-3996.2017.1.34-42"
+    assert "123" == clean_doi("123")
+
+def test_datacite_conversions(datacite_importer):
+    """
+    Datacite JSON to release entity JSON representation. The count is hardcoded
+    for now.
+    """
+    datacite_importer.debug = True
+    for i in range(24):
+        src = 'tests/files/datacite/datacite_doc_{0:02d}.json'.format(i)
+        dst = 'tests/files/datacite/datacite_result_{0:02d}.json'.format(i)
+        print('testing mapping from {} => {}'.format(src, dst))
+        with open(src, 'r') as f:
+            re = datacite_importer.parse_record(json.load(f))
+            result = entity_to_dict(re)
+        with open(dst, 'r') as f:
+           expected = json.loads(f.read())
+
+        assert result == expected
+

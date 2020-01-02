@@ -1,0 +1,83 @@
+{
+  "id": "10.25549/wpacards-m6171",
+  "type": "dois",
+  "attributes": {
+    "doi": "10.25549/wpacards-m6171",
+    "identifiers": [
+      {
+        "identifier": "https://doi.org/10.25549/wpacards-m6171",
+        "identifierType": "DOI"
+      }
+    ],
+    "creators": [
+      {
+        "name": "Unknown",
+        "affiliation": []
+      }
+    ],
+    "titles": [
+      {
+        "title": "WPA household census for 210 E VERNON, Los Angeles"
+      }
+    ],
+    "publisher": "University of Southern California Digital Library (USC.DL)",
+    "container": {},
+    "publicationYear": 2012,
+    "subjects": [
+      {
+        "subject": "housing areas"
+      },
+      {
+        "subject": "Dwellings"
+      }
+    ],
+    "contributors": [],
+    "dates": [
+      {
+        "date": "2012",
+        "dateType": "Issued"
+      }
+    ],
+    "language": "eng",
+    "types": {
+      "ris": "DATA",
+      "bibtex": "misc",
+      "citeproc": "dataset",
+      "schemaOrg": "Dataset",
+      "resourceType": "Dataset",
+      "resourceTypeGeneral": "Dataset"
+    },
+    "relatedIdentifiers": [],
+    "sizes": [],
+    "formats": [],
+    "version": null,
+    "rightsList": [],
+    "descriptions": [
+      {
+        "descriptionType": "Abstract"
+      }
+    ],
+    "geoLocations": [],
+    "fundingReferences": [],
+    "url": "http://digitallibrary.usc.edu/cdm/ref/collection/p15799coll8/id/2608",
+    "contentUrl": null,
+    "metadataVersion": 0,
+    "schemaVersion": "http://datacite.org/schema/kernel-4",
+    "source": "mds",
+    "isActive": true,
+    "state": "findable",
+    "reason": null,
+    "created": "2018-09-09T08:32:09.000Z",
+    "registered": "2018-09-09T08:33:10.000Z",
+    "published": "2012",
+    "updated": "2019-08-02T20:03:32.000Z"
+  },
+  "relationships": {
+    "client": {
+      "data": {
+        "id": "usc.dl",
+        "type": "clients"
+      }
+    }
+  }
+}

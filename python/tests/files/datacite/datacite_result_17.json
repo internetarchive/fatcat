@@ -1,0 +1,20 @@
+{
+    "extra": {},
+    "title": "gel_BSA-FITC_Markov_segmntation0343.tif",
+    "release_type": "dataset",
+    "release_stage": "published",
+    "release_year": 2018,
+    "ext_ids": {
+        "doi": "10.7910/dvn/tsqfwc/yytj22"
+    },
+    "publisher": "Harvard Dataverse",
+    "contribs": [
+        {
+            "index": 0,
+            "raw_name": "Di Giovanna, Antonino Paolo (University Of Florence)",
+            "role": "author"
+        }
+    ],
+    "refs": [],
+    "abstracts": []
+}

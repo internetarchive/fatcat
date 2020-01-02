@@ -1,0 +1,81 @@
+{
+  "id": "10.11588/diglit.25558.39",
+  "type": "dois",
+  "attributes": {
+    "doi": "10.11588/diglit.25558.39",
+    "identifiers": [
+      {
+        "identifier": "https://doi.org/10.11588/diglit.25558.39",
+        "identifierType": "DOI"
+      }
+    ],
+    "creators": [
+      {
+        "name": "Dargenty, G.",
+        "nameType": "Personal",
+        "givenName": "G.",
+        "familyName": "Dargenty",
+        "affiliation": []
+      }
+    ],
+    "titles": [
+      {
+        "lang": "de",
+        "title": "Ferdinand Gaillard, [1]: né à Paris le 16 janvier 1834, mort à Paris le 19 janvier 1887"
+      }
+    ],
+    "publisher": "University Library Heidelberg",
+    "container": {},
+    "publicationYear": 1887,
+    "subjects": [],
+    "contributors": [],
+    "dates": [
+      {
+        "date": "1887",
+        "dateType": "Issued"
+      }
+    ],
+    "language": "fre",
+    "types": {
+      "ris": "RPRT",
+      "bibtex": "article",
+      "citeproc": "article-journal",
+      "schemaOrg": "ScholarlyArticle",
+      "resourceType": "DigitalisatDigital copy",
+      "resourceTypeGeneral": "Text"
+    },
+    "relatedIdentifiers": [],
+    "sizes": [],
+    "formats": [],
+    "version": null,
+    "rightsList": [
+      {
+        "lang": "de",
+        "rights": "Standard (Creative Commons - Namensnennung - Weitergabe unter gleichen Bedingungen) - http://www.ub.uni-heidelberg.de/helios/digi/nutzung/Welcome.html"
+      }
+    ],
+    "descriptions": [],
+    "geoLocations": [],
+    "fundingReferences": [],
+    "url": "http://digi.ub.uni-heidelberg.de/diglit/art1887_1/0172",
+    "contentUrl": null,
+    "metadataVersion": 4,
+    "schemaVersion": "http://datacite.org/schema/kernel-4",
+    "source": null,
+    "isActive": true,
+    "state": "findable",
+    "reason": null,
+    "created": "2016-12-08T07:43:15.000Z",
+    "registered": "2016-12-08T07:43:15.000Z",
+    "published": "1887",
+    "updated": "2019-08-02T14:27:33.000Z"
+  },
+  "relationships": {
+    "client": {
+      "data": {
+        "id": "gesis.ubhd",
+        "type": "clients"
+      }
+    }
+  }
+}

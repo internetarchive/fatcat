@@ -1,0 +1,120 @@
+{
+  "id": "10.18462/iir.icr.2015.0926",
+  "type": "dois",
+  "attributes": {
+    "doi": "10.18462/iir.icr.2015.0926",
+    "identifiers": [
+      {
+        "identifier": "https://doi.org/10.18462/iir.icr.2015.0926",
+        "identifierType": "DOI"
+      }
+    ],
+    "creators": [
+      {
+        "name": "ROTHUIZEN, E.",
+        "nameType": "Personal",
+        "givenName": "E.",
+        "familyName": "ROTHUIZEN",
+        "affiliation": []
+      },
+      {
+        "name": "ELMEGAARD, B.",
+        "nameType": "Personal",
+        "givenName": "B.",
+        "familyName": "ELMEGAARD",
+        "affiliation": []
+      },
+      {
+        "name": "MARKUSSEN W., B.",
+        "nameType": "Personal",
+        "givenName": "B.",
+        "familyName": "MARKUSSEN W.",
+        "affiliation": []
+      },
+      {
+        "name": "Et Al.",
+        "affiliation": []
+      }
+    ],
+    "titles": [
+      {
+        "title": "High efficient heat pump system using storage tanks to increase cop by means of the ISEC concept. 1: model validation."
+      }
+    ],
+    "publisher": "International Institute of Refrigeration (IIR)",
+    "container": {},
+    "publicationYear": 2015,
+    "subjects": [
+      {
+        "subject": "HEAT PUMP"
+      },
+      {
+        "subject": "HOT WATER"
+      },
+      {
+        "subject": "HEAT TRANSFER"
+      },
+      {
+        "subject": "PERFORMANCE"
+      },
+      {
+        "subject": "THERMAL STORAGE"
+      },
+      {
+        "subject": "TANK"
+      },
+      {
+        "subject": "MODEL"
+      }
+    ],
+    "contributors": [],
+    "dates": [
+      {
+        "date": "2015",
+        "dateType": "Issued"
+      }
+    ],
+    "language": "eng",
+    "types": {
+      "ris": "DATA",
+      "bibtex": "misc",
+      "citeproc": "dataset",
+      "schemaOrg": "Dataset",
+      "resourceType": "Dataset",
+      "resourceTypeGeneral": "Dataset"
+    },
+    "relatedIdentifiers": [],
+    "sizes": [],
+    "formats": [],
+    "version": null,
+    "rightsList": [],
+    "descriptions": [
+      {
+        "description": "The purpose of the ISEC concept is to provide a high-efficient heat pump system for hot water production. The ISEC concept uses two storage tanks for the water, one discharged and one charged. Hot water for the industrial process is tapped from the charged tank, while the other tank is charging. Charging is done by circulating the water in the tank through the condenser of a heat pump several times and thereby gradually heating the water. The charging is done with a higher mass flow rate than the discharging to reach several circulations of the water during the time frame of one discharging. This result in a lower condensing temperature than if the water was heated in one step. Two test setups were built, one to test the performance of the heat pump gradually heating the water and one to investigate the stratification in the storage tanks. Furthermore, a dynamic model of the system was implemented in Dymola, and validated by the use of test data from the two experimental setups. This paper shows that there is a good consistency between the model and the experimental tests.",
+        "descriptionType": "Abstract"
+      }
+    ],
+    "geoLocations": [],
+    "fundingReferences": [],
+    "url": "http://www.iifiir.org/clientBookline/service/reference.asp?INSTANCE=EXPLOITATION&OUTPUT=PORTAL&DOCID=IFD_REFDOC_0015008&DOCBASE=IFD_REFDOC_EN&SETLANGUAGE=EN",
+    "contentUrl": null,
+    "metadataVersion": 0,
+    "schemaVersion": null,
+    "source": null,
+    "isActive": true,
+    "state": "findable",
+    "reason": null,
+    "created": "2016-11-21T13:08:14.000Z",
+    "registered": "2016-11-21T13:08:14.000Z",
+    "published": "2015",
+    "updated": "2019-08-16T18:00:59.000Z"
+  },
+  "relationships": {
+    "client": {
+      "data": {
+        "id": "inist.iif",
+        "type": "clients"
+      }
+    }
+  }
+}

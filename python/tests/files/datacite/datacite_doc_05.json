@@ -1,0 +1,598 @@
+{
+  "id": "10.15156/bio/sh409843.07fu",
+  "type": "dois",
+  "attributes": {
+    "doi": "10.15156/bio/sh409843.07fu",
+    "identifiers": [
+      {
+        "identifier": "https://doi.org/10.15156/bio/sh409843.07fu",
+        "identifierType": "DOI"
+      }
+    ],
+    "creators": [
+      {
+        "name": "Kõljalg, Urmas",
+        "nameType": "Personal",
+        "givenName": "Urmas",
+        "familyName": "Kõljalg",
+        "affiliation": []
+      },
+      {
+        "name": "Abarenkov, Kessy",
+        "nameType": "Personal",
+        "givenName": "Kessy",
+        "familyName": "Abarenkov",
+        "affiliation": []
+      },
+      {
+        "name": "Nilsson, R. Henrik",
+        "nameType": "Personal",
+        "givenName": "R. Henrik",
+        "familyName": "Nilsson",
+        "affiliation": []
+      },
+      {
+        "name": "Larsson, Karl-Henrik",
+        "nameType": "Personal",
+        "givenName": "Karl-Henrik",
+        "familyName": "Larsson",
+        "affiliation": []
+      },
+      {
+        "name": "Aas, Anders Bjørnsgard",
+        "nameType": "Personal",
+        "givenName": "Anders Bjørnsgard",
+        "familyName": "Aas",
+        "affiliation": []
+      },
+      {
+        "name": "Adams, Rachel",
+        "nameType": "Personal",
+        "givenName": "Rachel",
+        "familyName": "Adams",
+        "affiliation": []
+      },
+      {
+        "name": "Alves, Artur",
+        "nameType": "Personal",
+        "givenName": "Artur",
+        "familyName": "Alves",
+        "affiliation": []
+      },
+      {
+        "name": "Ammirati, Joseph F.",
+        "nameType": "Personal",
+        "givenName": "Joseph F.",
+        "familyName": "Ammirati",
+        "affiliation": []
+      },
+      {
+        "name": "Arnold, A. Elizabeth",
+        "nameType": "Personal",
+        "givenName": "A. Elizabeth",
+        "familyName": "Arnold",
+        "affiliation": []
+      },
+      {
+        "name": "Bahram, Mohammad",
+        "nameType": "Personal",
+        "givenName": "Mohammad",
+        "familyName": "Bahram",
+        "affiliation": []
+      },
+      {
+        "name": "Bengtsson-Palme, Johan",
+        "nameType": "Personal",
+        "givenName": "Johan",
+        "familyName": "Bengtsson-Palme",
+        "affiliation": []
+      },
+      {
+        "name": "Berlin, Anna",
+        "nameType": "Personal",
+        "givenName": "Anna",
+        "familyName": "Berlin",
+        "affiliation": []
+      },
+      {
+        "name": "Botnen, Synnøve",
+        "nameType": "Personal",
+        "givenName": "Synnøve",
+        "familyName": "Botnen",
+        "affiliation": []
+      },
+      {
+        "name": "Bourlat, Sarah",
+        "nameType": "Personal",
+        "givenName": "Sarah",
+        "familyName": "Bourlat",
+        "affiliation": []
+      },
+      {
+        "name": "Cheeke, Tanya",
+        "nameType": "Personal",
+        "givenName": "Tanya",
+        "familyName": "Cheeke",
+        "affiliation": []
+      },
+      {
+        "name": "Dima, Bálint",
+        "nameType": "Personal",
+        "givenName": "Bálint",
+        "familyName": "Dima",
+        "affiliation": []
+      },
+      {
+        "name": "Drenkhan, Rein",
+        "nameType": "Personal",
+        "givenName": "Rein",
+        "familyName": "Drenkhan",
+        "affiliation": []
+      },
+      {
+        "name": "Duarte, Camila",
+        "nameType": "Personal",
+        "givenName": "Camila",
+        "familyName": "Duarte",
+        "affiliation": []
+      },
+      {
+        "name": "Dueñas, Margarita",
+        "nameType": "Personal",
+        "givenName": "Margarita",
+        "familyName": "Dueñas",
+        "affiliation": []
+      },
+      {
+        "name": "Eberhardt, Ursula",
+        "nameType": "Personal",
+        "givenName": "Ursula",
+        "familyName": "Eberhardt",
+        "affiliation": []
+      },
+      {
+        "name": "Friberg, Hanna",
+        "nameType": "Personal",
+        "givenName": "Hanna",
+        "familyName": "Friberg",
+        "affiliation": []
+      },
+      {
+        "name": "Frøslev, Tobias G.",
+        "nameType": "Personal",
+        "givenName": "Tobias G.",
+        "familyName": "Frøslev",
+        "affiliation": []
+      },
+      {
+        "name": "Garnica, Sigisfredo",
+        "nameType": "Personal",
+        "givenName": "Sigisfredo",
+        "familyName": "Garnica",
+        "affiliation": []
+      },
+      {
+        "name": "Geml, József",
+        "nameType": "Personal",
+        "givenName": "József",
+        "familyName": "Geml",
+        "affiliation": []
+      },
+      {
+        "name": "Ghobad-Nejhad, Masoomeh",
+        "nameType": "Personal",
+        "givenName": "Masoomeh",
+        "familyName": "Ghobad-Nejhad",
+        "affiliation": []
+      },
+      {
+        "name": "Grebenc, Tine",
+        "nameType": "Personal",
+        "givenName": "Tine",
+        "familyName": "Grebenc",
+        "affiliation": []
+      },
+      {
+        "name": "Griffith, Gareth W.",
+        "nameType": "Personal",
+        "givenName": "Gareth W.",
+        "familyName": "Griffith",
+        "affiliation": []
+      },
+      {
+        "name": "Hampe, Felix",
+        "nameType": "Personal",
+        "givenName": "Felix",
+        "familyName": "Hampe",
+        "affiliation": []
+      },
+      {
+        "name": "Kennedy, Peter",
+        "nameType": "Personal",
+        "givenName": "Peter",
+        "familyName": "Kennedy",
+        "affiliation": []
+      },
+      {
+        "name": "Khomich, Maryia",
+        "nameType": "Personal",
+        "givenName": "Maryia",
+        "familyName": "Khomich",
+        "affiliation": []
+      },
+      {
+        "name": "Kohout, Petr",
+        "nameType": "Personal",
+        "givenName": "Petr",
+        "familyName": "Kohout",
+        "affiliation": []
+      },
+      {
+        "name": "Kollom, Anu",
+        "nameType": "Personal",
+        "givenName": "Anu",
+        "familyName": "Kollom",
+        "affiliation": []
+      },
+      {
+        "name": "Larsson, Ellen",
+        "nameType": "Personal",
+        "givenName": "Ellen",
+        "familyName": "Larsson",
+        "affiliation": []
+      },
+      {
+        "name": "Laszlo, Irinyi",
+        "nameType": "Personal",
+        "givenName": "Irinyi",
+        "familyName": "Laszlo",
+        "affiliation": []
+      },
+      {
+        "name": "Leavitt, Steven",
+        "nameType": "Personal",
+        "givenName": "Steven",
+        "familyName": "Leavitt",
+        "affiliation": []
+      },
+      {
+        "name": "Liimatainen, Kare",
+        "nameType": "Personal",
+        "givenName": "Kare",
+        "familyName": "Liimatainen",
+        "affiliation": []
+      },
+      {
+        "name": "Lindahl, Björn",
+        "nameType": "Personal",
+        "givenName": "Björn",
+        "familyName": "Lindahl",
+        "affiliation": []
+      },
+      {
+        "name": "Lodge, Deborah J.",
+        "nameType": "Personal",
+        "givenName": "Deborah J.",
+        "familyName": "Lodge",
+        "affiliation": []
+      },
+      {
+        "name": "Lumbsch, Helge Thorsten",
+        "nameType": "Personal",
+        "givenName": "Helge Thorsten",
+        "familyName": "Lumbsch",
+        "affiliation": []
+      },
+      {
+        "name": "Martín Esteban, María Paz",
+        "nameType": "Personal",
+        "givenName": "María Paz",
+        "familyName": "Martín Esteban",
+        "affiliation": []
+      },
+      {
+        "name": "Meyer, Wieland",
+        "nameType": "Personal",
+        "givenName": "Wieland",
+        "familyName": "Meyer",
+        "affiliation": []
+      },
+      {
+        "name": "Miettinen, Otto",
+        "nameType": "Personal",
+        "givenName": "Otto",
+        "familyName": "Miettinen",
+        "affiliation": []
+      },
+      {
+        "name": "Nguyen, Nhu",
+        "nameType": "Personal",
+        "givenName": "Nhu",
+        "familyName": "Nguyen",
+        "affiliation": []
+      },
+      {
+        "name": "Niskanen, Tuula",
+        "nameType": "Personal",
+        "givenName": "Tuula",
+        "familyName": "Niskanen",
+        "affiliation": []
+      },
+      {
+        "name": "Oono, Ryoko",
+        "nameType": "Personal",
+        "givenName": "Ryoko",
+        "familyName": "Oono",
+        "affiliation": []
+      },
+      {
+        "name": "Öpik, Maarja",
+        "nameType": "Personal",
+        "givenName": "Maarja",
+        "familyName": "Öpik",
+        "affiliation": []
+      },
+      {
+        "name": "Ordynets, Alexander",
+        "nameType": "Personal",
+        "givenName": "Alexander",
+        "familyName": "Ordynets",
+        "affiliation": []
+      },
+      {
+        "name": "Pawłowska, Julia",
+        "nameType": "Personal",
+        "givenName": "Julia",
+        "familyName": "Pawłowska",
+        "affiliation": []
+      },
+      {
+        "name": "Peintner, Ursula",
+        "nameType": "Personal",
+        "givenName": "Ursula",
+        "familyName": "Peintner",
+        "affiliation": []
+      },
+      {
+        "name": "Pereira, Olinto Liparini",
+        "nameType": "Personal",
+        "givenName": "Olinto Liparini",
+        "familyName": "Pereira",
+        "affiliation": []
+      },
+      {
+        "name": "Pinho, Danilo Batista",
+        "nameType": "Personal",
+        "givenName": "Danilo Batista",
+        "familyName": "Pinho",
+        "affiliation": []
+      },
+      {
+        "name": "Põldmaa, Kadri",
+        "nameType": "Personal",
+        "givenName": "Kadri",
+        "familyName": "Põldmaa",
+        "affiliation": []
+      },
+      {
+        "name": "Runnel, Kadri",
+        "nameType": "Personal",
+        "givenName": "Kadri",
+        "familyName": "Runnel",
+        "affiliation": []
+      },
+      {
+        "name": "Ryberg, Martin",
+        "nameType": "Personal",
+        "givenName": "Martin",
+        "familyName": "Ryberg",
+        "affiliation": []
+      },
+      {
+        "name": "Saar, Irja",
+        "nameType": "Personal",
+        "givenName": "Irja",
+        "familyName": "Saar",
+        "affiliation": []
+      },
+      {
+        "name": "Sanli, Kemal",
+        "nameType": "Personal",
+        "givenName": "Kemal",
+        "familyName": "Sanli",
+        "affiliation": []
+      },
+      {
+        "name": "Scott, James",
+        "nameType": "Personal",
+        "givenName": "James",
+        "familyName": "Scott",
+        "affiliation": []
+      },
+      {
+        "name": "Spirin, Viacheslav",
+        "nameType": "Personal",
+        "givenName": "Viacheslav",
+        "familyName": "Spirin",
+        "affiliation": []
+      },
+      {
+        "name": "Suija, Ave",
+        "nameType": "Personal",
+        "givenName": "Ave",
+        "familyName": "Suija",
+        "affiliation": []
+      },
+      {
+        "name": "Svantesson, Sten",
+        "nameType": "Personal",
+        "givenName": "Sten",
+        "familyName": "Svantesson",
+        "affiliation": []
+      },
+      {
+        "name": "Tadych, Mariusz",
+        "nameType": "Personal",
+        "givenName": "Mariusz",
+        "familyName": "Tadych",
+        "affiliation": []
+      },
+      {
+        "name": "Takamatsu, Susumu",
+        "nameType": "Personal",
+        "givenName": "Susumu",
+        "familyName": "Takamatsu",
+        "affiliation": []
+      },
+      {
+        "name": "Tamm, Heidi",
+        "nameType": "Personal",
+        "givenName": "Heidi",
+        "familyName": "Tamm",
+        "affiliation": []
+      },
+      {
+        "name": "Taylor, AFS.",
+        "nameType": "Personal",
+        "givenName": "AFS.",
+        "familyName": "Taylor",
+        "affiliation": []
+      },
+      {
+        "name": "Tedersoo, Leho",
+        "nameType": "Personal",
+        "givenName": "Leho",
+        "familyName": "Tedersoo",
+        "affiliation": []
+      },
+      {
+        "name": "Telleria, M.T.",
+        "nameType": "Personal",
+        "givenName": "M.T.",
+        "familyName": "Telleria",
+        "affiliation": []
+      },
+      {
+        "name": "Udayanga, Dhanushka",
+        "nameType": "Personal",
+        "givenName": "Dhanushka",
+        "familyName": "Udayanga",
+        "affiliation": []
+      },
+      {
+        "name": "Unterseher, Martin",
+        "nameType": "Personal",
+        "givenName": "Martin",
+        "familyName": "Unterseher",
+        "affiliation": []
+      },
+      {
+        "name": "Volobuev, Sergey",
+        "nameType": "Personal",
+        "givenName": "Sergey",
+        "familyName": "Volobuev",
+        "affiliation": []
+      },
+      {
+        "name": "Weiss, Michael",
+        "nameType": "Personal",
+        "givenName": "Michael",
+        "familyName": "Weiss",
+        "affiliation": []
+      },
+      {
+        "name": "Wurzbacher, Christian",
+        "nameType": "Personal",
+        "givenName": "Christian",
+        "familyName": "Wurzbacher",
+        "affiliation": []
+      }
+    ],
+    "titles": [
+      {
+        "title": "SH409843.07FU"
+      },
+      {
+        "title": "Gomphales",
+        "titleType": "Subtitle"
+      }
+    ],
+    "publisher": "UNITE Community",
+    "container": {},
+    "publicationYear": 2015,
+    "subjects": [],
+    "contributors": [
+      {
+        "name": "Kessy Abarenkov",
+        "affiliation": []
+      },
+      {
+        "name": "NHM UT-University Of Tartu; Natural History Museum And Botanic Garden",
+        "affiliation": []
+      }
+    ],
+    "dates": [
+      {
+        "date": "2016-04-22",
+        "dateType": "Updated"
+      },
+      {
+        "date": "2014-10-05",
+        "dateType": "Created"
+      },
+      {
+        "date": "2015",
+        "dateType": "Issued"
+      }
+    ],
+    "language": "eng",
+    "types": {
+      "ris": "DATA",
+      "bibtex": "misc",
+      "citeproc": "dataset",
+      "schemaOrg": "Dataset",
+      "resourceType": "Dataset/UNITE Species Hypothesis",
+      "resourceTypeGeneral": "Dataset"
+    },
+    "relatedIdentifiers": [],
+    "sizes": [],
+    "formats": [
+      "application/json"
+    ],
+    "version": null,
+    "rightsList": [
+      {
+        "rights": "Attribution-NonCommercial (CC BY-NC)",
+        "rightsUri": "http://creativecommons.org/licenses/by-nc/4.0"
+      }
+    ],
+    "descriptions": [
+      {
+        "description": "UNITE provides a unified way for delimiting, identifying, communicating, and working with DNA-based Species Hypotheses (SH). All fungal ITS sequences in the international nucleotide sequence databases are clustered to approximately the species level by applying a set of dynamic distance values (&lt;0.5 - 3.0%). All species hypotheses are given a unique, stable name in the form of a DOI, and their taxonomic and ecological annotations are verified through distributed, web-based third-party annotation efforts. SHs are connected to a taxon name and its classification as far as possible (phylum, class, order, etc.) by taking into account identifications for all sequences in the SH. An automatically or manually designated sequence is chosen to represent each such SH. These sequences are released (https://unite.ut.ee/repository.php) for use by the scientific community in, for example, local sequence similarity searches and next-generation sequencing analysis pipelines. The system and the data are updated automatically as the number of public fungal ITS sequences grows.",
+        "descriptionType": "Abstract"
+      }
+    ],
+    "geoLocations": [],
+    "fundingReferences": [],
+    "url": "https://plutof.ut.ee/#/datacite/10.15156/BIO/SH409843.07FU",
+    "contentUrl": null,
+    "metadataVersion": 1,
+    "schemaVersion": "http://datacite.org/schema/kernel-3",
+    "source": null,
+    "isActive": true,
+    "state": "findable",
+    "reason": null,
+    "created": "2015-06-05T10:23:18.000Z",
+    "registered": "2015-06-05T10:23:19.000Z",
+    "published": "2015",
+    "updated": "2019-08-02T07:45:28.000Z"
+  },
+  "relationships": {
+    "client": {
+      "data": {
+        "id": "estdoi.bio",
+        "type": "clients"
+      }
+    }
+  }
+}
