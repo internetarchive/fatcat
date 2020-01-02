@@ -12,3 +12,5 @@ fi
 new=$((max+1))
 cp "datacite_doc_$max.json" "datacite_doc_$new.json"
 cp "datacite_result_$max.json" "datacite_result_$new.json"
+
+[ -f ./caseview.sh ] && ./caseview.sh "$new"
