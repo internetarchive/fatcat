@@ -325,7 +325,10 @@ class DataciteImporter(EntityImporter):
                 if not name:
                     continue
 
-                if raw_affiliation is not None and not raw_affiliation:
+                if raw_affiliation == '':
+                    continue
+
+                if name in ('(:Unav)', 'NA'):
                     continue
 
                 contribs.append(
