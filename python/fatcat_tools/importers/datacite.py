@@ -328,7 +328,7 @@ class DataciteImporter(EntityImporter):
                 if raw_affiliation == '':
                     continue
 
-                if name in ('(:Unav)', 'NA'):
+                if name in ('(:Unav)', 'NA', 'NN', '(:Null)'):
                     continue
 
                 contribs.append(
