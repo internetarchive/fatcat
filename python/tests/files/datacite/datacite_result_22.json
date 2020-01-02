@@ -8,15 +8,15 @@
     "ext_ids": {
         "doi": "10.7916/d86x0cg1"
     },
+    "language": "de",
     "contribs": [
         {
-            "raw_affiliation": "Department of pataphysics",
             "index": 0,
             "raw_name": "Anton Welch",
-            "role": "author"
+            "role": "author",
+            "raw_affiliation": "Department of pataphysics"
         }
     ],
     "refs": [],
-    "abstracts": [],
-    "language": "de"
+    "abstracts": []
 }

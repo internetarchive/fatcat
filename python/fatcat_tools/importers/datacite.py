@@ -331,6 +331,10 @@ class DataciteImporter(EntityImporter):
                 if name in ('(:Unav)', 'NA', 'NN', '(:Null)'):
                     continue
 
+                # Unpack name, if we have an index form (e.g. 'Razis, Panos A') into 'Panos A razis'.
+                if name:
+                    name = index_form_to_display_name(name)
+
                 contribs.append(
                     fatcat_openapi_client.ReleaseContrib(
                         creator_id=creator_id,
@@ -859,3 +863,42 @@ def clean_doi(doi):
         doi = doi.replace(c, "-")
     return doi
 
+def index_form_to_display_name(s):
+    """
+    Try to convert an index form name, like 'Razis, Panos A' into display_name,
+    e.g. 'Panos A Razis'.
+    """
+    if ',' not in s:
+        return s
+    skip_on_chars = ['(', ')', '*']
+    for char in skip_on_chars:
+        if char in s:
+            return s
+    if s.count(',') > 1:
+        # "Dr. Hina, Dr. Muhammad Usman Shahid, Dr. Muhammad Zeeshan Khan"
+        return s
+    stopwords = [
+        'Archive',
+        'Collection',
+        'Coordinator',
+        'Department',
+        'Germany',
+        'International',
+        'National',
+        'Netherlands',
+        'Office',
+        'Organisation',
+        'Organization',
+        'Service',
+        'Services',
+        'United States',
+        'University',
+        'Verein',
+        'Volkshochschule',
+    ]
+    for stop in stopwords:
+        if stop.lower() in s.lower():
+            return s
+
+    a, b = s.split(',')
+    return '{} {}'.format(b.strip(), a.strip())

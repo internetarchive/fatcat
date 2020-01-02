@@ -7,7 +7,7 @@ import datetime
 import pytest
 import gzip
 from fatcat_tools.importers import DataciteImporter, JsonLinePusher
-from fatcat_tools.importers.datacite import find_original_language_title, parse_datacite_titles, parse_datacite_dates, clean_doi
+from fatcat_tools.importers.datacite import find_original_language_title, parse_datacite_titles, parse_datacite_dates, clean_doi, index_form_to_display_name
 from fatcat_tools.transforms import entity_to_dict
 from fixtures import api
 import json
@@ -293,4 +293,20 @@ def test_datacite_conversions(datacite_importer):
            expected = json.loads(f.read())
 
         assert result == expected
+
+def test_index_form_to_display_name():
+    Case = collections.namedtuple('Case', 'input output')
+    cases = [
+        Case('', ''),
+        Case('ABC', 'ABC'),
+        Case('International Space Station', 'International Space Station'),
+        Case('Jin, Shan', 'Shan Jin'),
+        Case('Volkshochschule Der Bundesstadt Bonn', 'Volkshochschule Der Bundesstadt Bonn'),
+        Case('Solomon, P. M.', 'P. M. Solomon'),
+        Case('Sujeevan Ratnasingham', 'Sujeevan Ratnasingham'),
+        Case('Paul Stöckli (1906-1991), Künstler', 'Paul Stöckli (1906-1991), Künstler'),
+    ]
+
+    for c in cases:
+        assert c.output == index_form_to_display_name(c.input)
 
