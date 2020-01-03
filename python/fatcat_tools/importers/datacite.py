@@ -20,6 +20,7 @@ import langdetect
 import sqlite3
 import sys
 from fatcat_tools.transforms import entity_to_dict
+from fatcat_tools.normal import clean_doi
 
 
 # Cutoff length for abstracts.
@@ -871,17 +872,6 @@ def parse_datacite_dates(dates):
                 break
 
     return release_date, release_month, release_year
-
-def clean_doi(doi):
-    """
-    10.25513/1812-3996.2017.1.34–42 // 8211, Hex 2013, Octal 20023
-    See also: https://github.com/miku/throwaway-check-doi
-
-    Replace unicode HYPHEN..HORIZONTAL BAR with HYPHEN-MINUS.
-    """
-    for c in ('\u2010', '\u2011', '\u2012', '\u2013', '\u2014', '\u2015'):
-        doi = doi.replace(c, "-")
-    return doi
 
 def index_form_to_display_name(s):
     """

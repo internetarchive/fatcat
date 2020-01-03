@@ -281,10 +281,6 @@ def test_datacite_dict_parse(datacite_importer):
         assert r.contribs[0].surname == None
         assert len(r.refs) == 0
 
-def test_clean_doi():
-    assert clean_doi("10.25513/1812-3996.2017.1.34\u201342") == "10.25513/1812-3996.2017.1.34-42"
-    assert "123" == clean_doi("123")
-
 def test_datacite_conversions(datacite_importer):
     """
     Datacite JSON to release entity JSON representation. The count is hardcoded
