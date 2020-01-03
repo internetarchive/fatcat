@@ -872,7 +872,7 @@ def index_form_to_display_name(s):
     if s.count(',') > 1:
         # "Dr. Hina, Dr. Muhammad Usman Shahid, Dr. Muhammad Zeeshan Khan"
         return s
-    stopwords = [
+    stopwords = [s.lower() for s in (
         'Archive',
         'Collection',
         'Coordinator',
@@ -890,9 +890,10 @@ def index_form_to_display_name(s):
         'University',
         'Verein',
         'Volkshochschule',
-    ]
+    )]
+    lower = s.lower()
     for stop in stopwords:
-        if stop.lower() in s.lower():
+        if stop in lower:
             return s
 
     a, b = s.split(',')
