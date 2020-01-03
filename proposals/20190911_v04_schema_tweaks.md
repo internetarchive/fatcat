@@ -17,6 +17,9 @@ SQL (and API, and elasticsearch):
 - TODO: release: switch how pages work? first/last?
 - TODO: indication of peer-review process? at release or container level?
 - TODO: container: separate canonical and disambiguating titles (?)
+- TODO: release inter-references using SCHOLIX/Datacite schema
+    https://zenodo.org/record/1120265
+    https://support.datacite.org/docs/connecting-research-outputs#section-related-identifiers
 
 API tweaks:
 
