@@ -1,5 +1,5 @@
 {
-    "extra": {},
+    "extra": {"datacite": {}},
     "title": "On chain maps inducing isomorphisms in homology",
     "release_type": "article-journal",
     "release_stage": "published",

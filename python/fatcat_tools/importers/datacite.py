@@ -604,8 +604,8 @@ class DataciteImporter(EntityImporter):
         if not container_id and container_name:
             extra['container_name'] = container_name
 
-        if extra_datacite:
-            extra['datacite'] = extra_datacite
+        # Always include datacite key, even if value is empty (dict).
+        extra['datacite'] = extra_datacite
 
         extids = self.lookup_ext_ids(doi=doi)
 

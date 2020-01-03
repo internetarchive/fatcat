@@ -1,5 +1,5 @@
 {
-    "extra": {},
+    "extra": {"datacite": {}},
     "title": "ABC",
     "subtitle": "DEF",
     "release_type": "article",
