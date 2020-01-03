@@ -9,6 +9,7 @@ functions (parse_datacite_...), which can be tested more easily.
 """
 
 from .common import EntityImporter, clean
+import collections
 import dateparser
 import datetime
 import fatcat_openapi_client
@@ -783,42 +784,67 @@ def parse_datacite_dates(dates):
         'Updated',
     )
 
+    # We need to note the granularity, since a string like "2019" would be
+    # parsed into "2019-01-01", even though the month is unknown. Use 3
+    # granularity types: 'y', 'm', 'd'.
+    Pattern = collections.namedtuple('Pattern', 'layout granularity')
+
     # Before using (expensive) dateparser, try a few common patterns.
-    common_patterns = ('%Y-%m-%d', '%Y-%m', '%Y-%m-%dT%H:%M:%SZ',
-                       '%Y-%m-%dT%H:%M:%S', '%Y')
+    common_patterns = (
+        Pattern('%Y-%m-%d', 'd'),
+        Pattern('%Y-%m', 'm'),
+        Pattern('%Y-%m-%dT%H:%M:%SZ', 'd'),
+        Pattern('%Y-%m-%dT%H:%M:%S', 'd'),
+        Pattern('%Y', 'y'),
+    )
 
     def parse_item(item):
         result, value, year_only = None, item.get('date', ''), False
         release_date, release_month, release_year = None, None, None
 
-        for pattern in common_patterns:
+        for layout, granularity in common_patterns:
             try:
-                result = datetime.datetime.strptime(value, pattern)
+                result = datetime.datetime.strptime(value, layout)
             except ValueError:
                 continue
             else:
-                if pattern == '%Y':
+                if granularity == 'y':
                     year_only = True
                 break
 
         if result is None:
             print('fallback for {}'.format(value), file=sys.stderr)
+            parser = dateparser.DateDataParser()
             try:
-                result = dateparser.parse(value)
+                # Results in a dict with keys: date_obj, period, locale.
+                parse_result = parser.get_date_data(value)
+
+                # A datetime object, later we need a date, only.
+                result = parse_result['date_obj']
+                if result is not None:
+                    if parse_result['period'] == 'year':
+                        return None, None, result.year
+                    elif parse_result['period'] == 'month':
+                        return None, result.month, result.year
+                    else:
+                        return result.date(), result.month, result.year
             except TypeError as err:
                 print("{} date parsing failed with: {}".format(value, err),
                       file=sys.stderr)
-                return result_date, release_month, result_year
 
         if result is None:
             # Unparsable date.
             return release_date, release_month, release_year
 
-        if not year_only:
+        if granularity != 'y':
             release_date = result.date()
         release_year = result.year
+        if granularity in ('m', 'd'):
+            release_month = result.month
 
         return release_date, release_month, release_year
+
+    today = datetime.date.today()
 
     for prio in date_type_prio:
         for item in dates:
@@ -829,8 +855,7 @@ def parse_datacite_dates(dates):
             if release_date is None and release_year is None:
                 continue
 
-            if release_year < 1000 or release_year > datetime.date.today(
-            ).year + 5:
+            if release_year < 1000 or release_year > today.year + 5:
                 # Skip possibly bogus dates.
                 release_year = None
                 continue
