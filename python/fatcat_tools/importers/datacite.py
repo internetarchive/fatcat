@@ -196,7 +196,6 @@ class DataciteImporter(EntityImporter):
                  api,
                  issn_map_file,
                  debug=False,
-                 lang_detect=False,
                  insert_log_file=None,
                  **kwargs):
 
@@ -225,12 +224,9 @@ class DataciteImporter(EntityImporter):
 
         self.read_issn_map_file(issn_map_file)
         self.debug = debug
-        self.lang_detect = lang_detect
         self.insert_log_file = insert_log_file
 
-        print('datacite with debug={}, lang_detect={}'.format(
-            self.debug, self.lang_detect),
-              file=sys.stderr)
+        print('datacite with debug={}'.format(self.debug), file=sys.stderr)
 
     def lookup_ext_ids(self, doi):
         """
@@ -537,12 +533,11 @@ class DataciteImporter(EntityImporter):
             if len(text) > MAX_ABSTRACT_LENGTH:
                 text = text[:MAX_ABSTRACT_LENGTH] + " [...]"
             lang = None
-            if self.lang_detect:
-                try:
-                    lang = langdetect.detect(text)
-                except langdetect.lang_detect_exception.LangDetectException as err:
-                    print('[{}] language detection failed: {}'.format(doi, err),
-                          file=sys.stderr)
+            try:
+                lang = langdetect.detect(text)
+            except langdetect.lang_detect_exception.LangDetectException as err:
+                print('[{}] language detection failed: {}'.format(doi, err),
+                      file=sys.stderr)
             abstracts.append(
                 fatcat_openapi_client.ReleaseAbstract(
                     mimetype="text/plain",

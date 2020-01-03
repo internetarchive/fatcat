@@ -104,7 +104,8 @@
     "abstracts": [
         {
             "content": "An entry from the Cambridge Structural Database, the world\u2019s repository for small molecule crystal structures. The entry contains experimental data from a crystal diffraction study. The deposited dataset for this entry is freely available from the CCDC and typically includes 3D coordinates, cell parameters, space group, experimental conditions and quality measures.",
-            "mimetype": "text/plain"
+            "mimetype": "text/plain",
+            "lang": "en"
         }
     ]
 }

@@ -172,7 +172,6 @@ def run_datacite(args):
         edit_batch_size=args.batch_size,
         bezerk_mode=args.bezerk_mode,
         debug=args.debug,
-        lang_detect=args.lang_detect,
         extid_map_file=args.extid_map_file,
         insert_log_file=args.insert_log_file)
     if args.kafka_mode:
@@ -474,9 +473,6 @@ def main():
     sub_datacite.add_argument('--debug',
         action='store_true',
         help="write converted JSON to stdout")
-    sub_datacite.add_argument('--lang-detect',
-        action='store_true',
-        help="try to detect language (slow)")
     sub_datacite.add_argument('--insert-log-file',
         default='',
         type=str,

@@ -524,7 +524,8 @@
     "abstracts": [
         {
             "content": "UNITE provides a unified way for delimiting, identifying, communicating, and working with DNA-based Species Hypotheses (SH). All fungal ITS sequences in the international nucleotide sequence databases are clustered to approximately the species level by applying a set of dynamic distance values (&lt;0.5 - 3.0%). All species hypotheses are given a unique, stable name in the form of a DOI, and their taxonomic and ecological annotations are verified through distributed, web-based third-party annotation efforts. SHs are connected to a taxon name and its classification as far as possible (phylum, class, order, etc.) by taking into account identifications for all sequences in the SH. An automatically or manually designated sequence is chosen to represent each such SH. These sequences are released (https://unite.ut.ee/repository.php) for use by the scientific community in, for example, local sequence similarity searches and next-generation sequencing analysis pipelines. The system and the data are updated automatically as the number of public fungal ITS sequences grows.",
-            "mimetype": "text/plain"
+            "mimetype": "text/plain",
+            "lang": "en"
         }
     ]
 }
