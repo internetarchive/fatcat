@@ -378,7 +378,7 @@ class DataciteImporter(EntityImporter):
         # "attributes.dates[].dateType", values: "Accepted", "Available"
         # "Collected", "Copyrighted", "Created", "Issued", "Submitted",
         # "Updated", "Valid".
-        release_date, release_year = parse_datacite_dates(
+        release_date, release_month, release_year = parse_datacite_dates(
             attributes.get('dates', []))
 
         # Start with clear stages, e.g. published. TODO(martin): we could
@@ -762,10 +762,10 @@ def parse_datacite_dates(dates):
     Given a list of date fields (under .dates), return tuple, (release_date,
     release_year).
     """
-    release_date, release_year = None, None
+    release_date, release_month, release_year = None, None, None
 
     if not dates:
-        return release_date, release_year
+        return release_date, release_month, release_year
 
     if not isinstance(dates, list):
         raise ValueError('expected a list of date items')
@@ -789,7 +789,7 @@ def parse_datacite_dates(dates):
 
     def parse_item(item):
         result, value, year_only = None, item.get('date', ''), False
-        release_date, release_year = None, None
+        release_date, release_month, release_year = None, None, None
 
         for pattern in common_patterns:
             try:
@@ -808,24 +808,24 @@ def parse_datacite_dates(dates):
             except TypeError as err:
                 print("{} date parsing failed with: {}".format(value, err),
                       file=sys.stderr)
-                return result_date, result_year
+                return result_date, release_month, result_year
 
         if result is None:
             # Unparsable date.
-            return release_date, release_year
+            return release_date, release_month, release_year
 
         if not year_only:
             release_date = result.date()
         release_year = result.year
 
-        return release_date, release_year
+        return release_date, release_month, release_year
 
     for prio in date_type_prio:
         for item in dates:
             if not item.get('dateType') == prio:
                 continue
 
-            release_date, release_year = parse_item(item)
+            release_date, release_month, release_year = parse_item(item)
             if release_date is None and release_year is None:
                 continue
 
@@ -841,11 +841,11 @@ def parse_datacite_dates(dates):
 
     if release_date is None and release_year is None:
         for item in dates:
-            release_date, release_year = parse_item(item)
+            release_date, release_month, release_year = parse_item(item)
             if release_year or release_date:
                 break
 
-    return release_date, release_year
+    return release_date, release_month, release_year
 
 def clean_doi(doi):
     """

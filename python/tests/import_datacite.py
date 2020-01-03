@@ -170,41 +170,41 @@ def test_parse_datacite_dates():
     """
     Case = collections.namedtuple('Case', 'about input result')
     cases = [
-        Case('None is None', None, (None, None)),
-        Case('empty list is None', [], (None, None)),
-        Case('empty item is None', [{}], (None, None)),
-        Case('empty item is None', [{'date': '2019'}], (None, 2019)),
-        Case('first wins', [{'date': '2019'}, {'date': '2020'}], (None, 2019)),
-        Case('skip bogus year', [{'date': 'abc'}, {'date': '2020'}], (None, 2020)),
+        Case('None is None', None, (None, None, None)),
+        Case('empty list is None', [], (None, None, None)),
+        Case('empty item is None', [{}], (None, None, None)),
+        Case('empty item is None', [{'date': '2019'}], (None, None, 2019)),
+        Case('first wins', [{'date': '2019'}, {'date': '2020'}], (None, None, 2019)),
+        Case('skip bogus year', [{'date': 'abc'}, {'date': '2020'}], (None, None, 2020)),
         Case('first with type', [
             {'date': '2019', 'dateType': 'Accepted'}, {'date': '2020'}
-        ], (None, 2019)),
+        ], (None, None, 2019)),
         Case('full date', [
             {'date': '2019-12-01', 'dateType': 'Valid'},
-        ], (datetime.date(2019, 12, 1), 2019)),
+        ], (datetime.date(2019, 12, 1), None, 2019)),
         Case('date type prio', [
             {'date': '2000-12-01', 'dateType': 'Valid'},
             {'date': '2010-01-01', 'dateType': 'Updated'},
-        ], (datetime.date(2000, 12, 1), 2000)),
+        ], (datetime.date(2000, 12, 1), None, 2000)),
         Case('date type prio, Available > Updated', [
             {'date': '2010-01-01', 'dateType': 'Updated'},
             {'date': '2000-12-01', 'dateType': 'Available'},
-        ], (datetime.date(2000, 12, 1), 2000)),
+        ], (datetime.date(2000, 12, 1), None, 2000)),
         Case('allow different date formats, Available > Updated', [
             {'date': '2010-01-01T10:00:00', 'dateType': 'Updated'},
             {'date': '2000-12-01T10:00:00', 'dateType': 'Available'},
-        ], (datetime.date(2000, 12, 1), 2000)),
+        ], (datetime.date(2000, 12, 1), None, 2000)),
         Case('allow different date formats, Available > Updated', [
             {'date': '2010-01-01T10:00:00Z', 'dateType': 'Updated'},
             {'date': '2000-12-01T10:00:00Z', 'dateType': 'Available'},
-        ], (datetime.date(2000, 12, 1), 2000)),
+        ], (datetime.date(2000, 12, 1), None, 2000)),
         Case('allow fuzzy date formats, Available > Updated', [
             {'date': '2010', 'dateType': 'Updated'},
             {'date': '2000 Dec 01', 'dateType': 'Available'},
-        ], (datetime.date(2000, 12, 1), 2000)),
+        ], (datetime.date(2000, 12, 1), None, 2000)),
         Case('ignore broken date', [
             {'date': 'Febrrr 45', 'dateType': 'Updated'},
-        ], (None, None)),
+        ], (None, None, None)),
     ]
     for case in cases:
         result = parse_datacite_dates(case.input)
