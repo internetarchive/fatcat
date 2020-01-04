@@ -1,4 +1,6 @@
 
+Status: implemented
+
 # SQL (and API) schema changes
 
 Intend to make these changes at the same time as bumping OpenAPI schema from
@@ -139,4 +141,4 @@ Do these as separate commits, after merging back in to master, for v0.3:
 
 `release_month`: apprently pretty common to know the year and month but not
 date. I have avoided so far, seems like unnecessary complexity. Could start
-as an `extra_json` field?
+as an `extra_json` field? NOT IMPLEMENTED

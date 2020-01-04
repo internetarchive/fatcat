@@ -1,5 +1,7 @@
 
-status: work-in-progress
+Status: brainstorm
+
+## Search Query Parsing
 
 The default "release" search on fatcat.wiki currently uses the elasticsearch
 built-in `query_string` parser, which is explicitly not recommended for
@@ -20,3 +22,7 @@ A couple search issues this would help with:
 
 In the near future, we may also create a fulltext search index, which will have
 it's own issues.
+
+## Tech Changes
+
+If we haven't already, should also switch to using elasticsearch client library.

@@ -1,4 +1,6 @@
 
+Status: implemented
+
 # Editgroup API Endpoint Prefixes
 
 In summary, change the API URL design such that entity mutations (create,

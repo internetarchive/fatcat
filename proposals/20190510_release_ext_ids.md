@@ -1,4 +1,6 @@
 
+Status: implemented
+
 # Release External ID Refactor
 
 Goal is to make the external identifier "namespace" (number of external

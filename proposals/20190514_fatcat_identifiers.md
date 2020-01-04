@@ -1,4 +1,6 @@
 
+Status: brainstorm
+
 Fatcat Identifiers
 =======================
 

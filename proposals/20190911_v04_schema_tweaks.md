@@ -1,5 +1,7 @@
 
-status: work-in-progress
+Status: planned
+
+## Schema Changes for v0.4 Release
 
 Proposed schema changes for next fatcat iteration (v0.4? v0.5?).
 
