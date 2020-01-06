@@ -297,7 +297,7 @@ def test_datacite_conversions(datacite_importer):
         with open(dst, 'r') as f:
            expected = json.loads(f.read())
 
-        assert result == expected
+        assert result == expected, 'output mismatch in {}'.format(dst)
 
 def test_index_form_to_display_name():
     Case = collections.namedtuple('Case', 'input output')
