@@ -409,10 +409,11 @@ class DataciteImporter(EntityImporter):
         # Start with clear stages, e.g. published. TODO(martin): we could
         # probably infer a bit more from the relations, e.g.
         # "IsPreviousVersionOf" or "IsNewVersionOf".
-        release_stage = None
-        if attributes.get(
-                'state') == 'findable' or attributes.get('isActive') is True:
-            release_stage = 'published'
+        release_stage = 'published'
+
+        # TODO(martin): If 'state' is not 'findable' or 'isActive' is not true,
+        # we might want something else than 'published'. See also:
+        # https://support.datacite.org/docs/doi-states.
 
         # Publisher. A few NA values. A few bogus values.
         publisher = attributes.get('publisher')
