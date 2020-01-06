@@ -543,7 +543,7 @@ class DataciteImporter(EntityImporter):
             abstracts.append(
                 fatcat_openapi_client.ReleaseAbstract(
                     mimetype="text/plain",
-                    content=text,
+                    content=clean(text),
                     lang=lang,
                 ))
 
