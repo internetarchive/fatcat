@@ -1,5 +1,5 @@
 {
-    "extra": {"datacite": {"month": 8}},
+    "extra": {"datacite": {}, "month": 8},
     "title": "ABC",
     "release_type": "article",
     "release_stage": "published",

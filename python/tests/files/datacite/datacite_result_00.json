@@ -2,7 +2,6 @@
     "extra": {
         "container_name": "Journal of Chemical Crystallography",
         "datacite": {
-            "month": 5,
             "license": [
                 {
                     "rightsUri": "http://www.springer.com/tdm"
@@ -16,7 +15,8 @@
                     "relatedIdentifierType": "ISSN"
                 }
             ]
-        }
+        },
+        "month": 5
     },
     "title": "Synthesis and Crystal Structure of a Compound with Two Conformational Isomers: N-(2-methylbenzoyl)-N\u2032-(4-nitrophenyl)thiourea",
     "release_type": "article-journal",
