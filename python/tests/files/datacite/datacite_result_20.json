@@ -1,5 +1,5 @@
 {
-    "extra": {"datacite": {}},
+    "extra": {"datacite": {"month": 8}},
     "title": "<h1>Eastern questionnaire</h1>",
     "release_type": "article",
     "release_stage": "published",

@@ -603,6 +603,8 @@ class DataciteImporter(EntityImporter):
             extra_datacite['license'] = license_extra
         if attributes.get('subjects'):
             extra_datacite['subjects'] = attributes['subjects']
+        if release_month:
+            extra_datacite['month'] = release_month
 
         # Include certain relations from relatedIdentifiers. Keeping the
         # original structure of data here, which is a list of dicts, with

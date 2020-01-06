@@ -2,6 +2,7 @@
     "extra": {
         "container_name": "Journal of Chemical Crystallography",
         "datacite": {
+            "month": 5,
             "license": [
                 {
                     "rightsUri": "http://www.springer.com/tdm"
