@@ -125,6 +125,29 @@ DATACITE_TYPE_MAP = {
     }
 }
 
+# DATACITE_UNKNOWN_MARKERS via https://support.datacite.org/docs/schema-values-unknown-information-v43.
+DATACITE_UNKNOWN_MARKERS = (
+    '(:unac)',  # temporarily inaccessible
+    '(:unal)',  # unallowed, suppressed intentionally
+    '(:unap)',  # not applicable, makes no sense
+    '(:unas)',  # value unassigned (e.g., Untitled)
+    '(:unav)',  # value unavailable, possibly unknown
+    '(:unkn)',  # known to be unknown (e.g., Anonymous, Inconnue)
+    '(:none)',  # never had a value, never will
+    '(:null)',  # explicitly and meaningfully empty
+    '(:tba)',  # to be assigned or announced later
+    '(:etal)',  # too numerous to list (et alia)
+)
+
+# UNKNOWN_MARKERS joins official datacite markers with a generic tokens marking
+# unknown values.
+UNKNOWN_MARKERS = set(DATACITE_UNKNOWN_MARKERS).union(set((
+    'NA',
+    'NN',
+    'n.a.',
+    '[s.n.]',
+)))
+
 # TODO(martin): merge this with other maps, maybe.
 LICENSE_SLUG_MAP = {
     "//creativecommons.org/licenses/by/2.0/": "CC-BY",
@@ -326,7 +349,7 @@ class DataciteImporter(EntityImporter):
                 if raw_affiliation == '':
                     continue
 
-                if name in ('(:Unav)', 'NA', 'NN', '(:Null)'):
+                if name.lower() in UNKNOWN_MARKERS:
                     continue
 
                 # Unpack name, if we have an index form (e.g. 'Razis, Panos A') into 'Panos A razis'.
@@ -345,7 +368,7 @@ class DataciteImporter(EntityImporter):
                     ))
             elif nameType == 'Organizational':
                 name = c.get('name', '') or ''
-                if name == 'NN':
+                if name in UNKNOWN_MARKERS:
                     continue
                 if len(name) < 3:
                     continue
@@ -394,8 +417,7 @@ class DataciteImporter(EntityImporter):
         # Publisher. A few NA values. A few bogus values.
         publisher = attributes.get('publisher')
 
-        if publisher in ('(:unav)', 'Unknown', 'n.a.', '[s.n.]', '(:unap)',
-                         '(:none)', 'Unpublished'):
+        if publisher in UNKNOWN_MARKERS | set(('Unpublished', 'Unknown')):
             publisher = None
             release_stage = None
         if publisher is not None and len(publisher) > 80:
