@@ -560,7 +560,7 @@ class DataciteImporter(EntityImporter):
 
         relIds = attributes.get('relatedIdentifiers', []) or []
         for rel in relIds:
-            if not rel.get('relationType', '') == 'References':
+            if not rel.get('relationType', '') in ('References', 'Cites'):
                 continue
             ref_extra = dict()
             if rel.get('relatedIdentifierType', '') == 'DOI':
