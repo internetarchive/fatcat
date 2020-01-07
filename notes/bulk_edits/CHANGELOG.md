@@ -9,6 +9,11 @@ this file should probably get merged into the guide at some point.
 
 This file should not turn in to a TODO list!
 
+## 2020-01
+
+Imported around 2,500 new containers (journals, by ISSN-L) from chocula
+analysis script.
+
 ## 2019-12
 
 Started continuous harvesting Datacite DOI metadata; first date harvested was
