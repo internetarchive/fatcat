@@ -1,22 +1,25 @@
 {
-    "extra": {"datacite": {}, "month": 8},
-    "title": "ABC",
-    "release_type": "article",
-    "release_stage": "published",
-    "release_date": "2017-08-24",
-    "release_year": 2017,
-    "ext_ids": {
-        "doi": "10.7916/d86x0cg1"
-    },
-    "language": "de",
-    "contribs": [
-        {
-            "index": 0,
-            "raw_name": "Anton Welch",
-            "role": "author",
-            "raw_affiliation": "Department of pataphysics"
-        }
-    ],
-    "refs": [],
-    "abstracts": []
+  "extra": {
+    "datacite": {},
+    "month": 8
+  },
+  "title": "ABC",
+  "release_type": "article",
+  "release_stage": "published",
+  "release_date": "2017-08-24",
+  "release_year": 2017,
+  "ext_ids": {
+    "doi": "10.7916/d86x0cg1"
+  },
+  "language": "de",
+  "contribs": [
+    {
+      "index": 0,
+      "raw_name": "Anton Welch",
+      "role": "author",
+      "raw_affiliation": "Department of pataphysics"
+    }
+  ],
+  "refs": [],
+  "abstracts": []
 }

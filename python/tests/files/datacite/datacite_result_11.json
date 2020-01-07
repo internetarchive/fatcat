@@ -1,21 +1,27 @@
 {
-    "extra": {"datacite": {}},
-    "title": "N1 bei Safenwil",
-    "release_type": "graphic",
-    "release_stage": "published",
-    "release_year": 1965,
-    "ext_ids": {
-        "doi": "10.3932/ethz-a-000055869"
-    },
-    "publisher": "ETH-Bibliothek Z\u00fcrich, Bildarchiv",
-    "language": "de",
-    "contribs": [
-        {
-            "index": 0,
-            "raw_name": "Comet Photo AG (Z\u00fcrich)",
-            "role": "author"
-        }
-    ],
-    "refs": [],
-    "abstracts": []
+  "extra": {
+    "datacite": {
+      "metadataVersion": 6,
+      "resourceTypeGeneral": "Image",
+      "schemaVersion": "http://datacite.org/schema/kernel-3"
+    }
+  },
+  "title": "N1 bei Safenwil",
+  "release_type": "graphic",
+  "release_stage": "published",
+  "release_year": 1965,
+  "ext_ids": {
+    "doi": "10.3932/ethz-a-000055869"
+  },
+  "publisher": "ETH-Bibliothek Zürich, Bildarchiv",
+  "language": "de",
+  "contribs": [
+    {
+      "index": 0,
+      "raw_name": "Comet Photo AG (Zürich)",
+      "role": "author"
+    }
+  ],
+  "refs": [],
+  "abstracts": []
 }

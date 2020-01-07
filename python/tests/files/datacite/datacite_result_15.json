@@ -1,22 +1,29 @@
 {
-    "extra": {"datacite": {}},
-    "title": "Parramore Island of the Virginia Coast Reserve Permanent Plot Resurvey: Tree data 1997",
-    "release_type": "dataset",
-    "release_stage": "published",
-    "release_year": 2017,
-    "ext_ids": {
-        "doi": "10.6073/pasta/95296d8416aae24f3d39b4ecb27f0b28"
-    },
-    "publisher": "Environmental Data Initiative",
-    "contribs": [
-        {
-            "index": 0,
-            "raw_name": "David Richardson",
-            "given_name": "David",
-            "surname": "Richardson",
-            "role": "author"
-        }
-    ],
-    "refs": [],
-    "abstracts": []
+  "extra": {
+    "datacite": {
+      "metadataVersion": 1,
+      "resourceType": "dataPackage",
+      "resourceTypeGeneral": "Dataset",
+      "schemaVersion": "http://datacite.org/schema/kernel-2.2"
+    }
+  },
+  "title": "Parramore Island of the Virginia Coast Reserve Permanent Plot Resurvey: Tree data 1997",
+  "release_type": "dataset",
+  "release_stage": "published",
+  "release_year": 2017,
+  "ext_ids": {
+    "doi": "10.6073/pasta/95296d8416aae24f3d39b4ecb27f0b28"
+  },
+  "publisher": "Environmental Data Initiative",
+  "contribs": [
+    {
+      "index": 0,
+      "raw_name": "David Richardson",
+      "given_name": "David",
+      "surname": "Richardson",
+      "role": "author"
+    }
+  ],
+  "refs": [],
+  "abstracts": []
 }

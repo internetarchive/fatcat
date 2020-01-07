@@ -1,48 +1,47 @@
 {
-    "attributes": {
-      "doi": "10.7916/d86x0cg1",
-      "creators": [
-        {
-          "name": "Anton Welch",
-          "affiliation": [
-            "Department of pataphysics"
-          ],
-          "nameIdentifiers": []
-        }
-      ],
-      "titles": [
-        {
-          "title": "ABC"
-        },
-        {
-          "title": "DEF",
-          "titleType": "Subtitle"
-        }
-      ],
-      "publicationYear": 2016,
-      "language": "DE-CH",
-      "types": {
-        "ris": "GEN",
-        "bibtex": "misc",
-        "citeproc": "article",
-        "schemaOrg": "CreativeWork"
+  "attributes": {
+    "doi": "10.7916/d86x0cg1",
+    "creators": [
+      {
+        "name": "Anton Welch",
+        "affiliation": [
+          "Department of pataphysics"
+        ],
+        "nameIdentifiers": []
+      }
+    ],
+    "titles": [
+      {
+        "title": "ABC"
       },
-      "dates": [
-        {
-          "date": "2017-08-24",
-          "dateType": "Created"
-        },
-        {
-          "date": "2019-08-04",
-          "dateType": "Updated"
-        },
-        {
-          "date": "2017",
-          "dateType": "Issued"
-        }
-      ],
-      "isActive": true,
-      "state": "findable"
-    }
+      {
+        "title": "DEF",
+        "titleType": "Subtitle"
+      }
+    ],
+    "publicationYear": 2016,
+    "language": "DE-CH",
+    "types": {
+      "ris": "GEN",
+      "bibtex": "misc",
+      "citeproc": "article",
+      "schemaOrg": "CreativeWork"
+    },
+    "dates": [
+      {
+        "date": "2017-08-24",
+        "dateType": "Created"
+      },
+      {
+        "date": "2019-08-04",
+        "dateType": "Updated"
+      },
+      {
+        "date": "2017",
+        "dateType": "Issued"
+      }
+    ],
+    "isActive": true,
+    "state": "findable"
   }
-
+}

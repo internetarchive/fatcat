@@ -1,42 +1,41 @@
 {
-    "attributes": {
-      "doi": "10.7916/d86x0cg1",
-      "creators": [
-        {
-          "name": "(:Unav)",
-          "affiliation": [],
-          "nameIdentifiers": []
-        }
-      ],
-      "titles": [
-        {
-          "title": "<h1>Eastern questionnaire</h1>"
-        }
-      ],
-      "publicationYear": 2017,
-      "dates": [
-        {
-          "date": "2017-08-24",
-          "dateType": "Created"
-        },
-        {
-          "date": "2019-08-04",
-          "dateType": "Updated"
-        },
-        {
-          "date": "2017",
-          "dateType": "Issued"
-        }
-      ],
-      "language": null,
-      "types": {
-        "ris": "GEN",
-        "bibtex": "misc",
-        "citeproc": "article",
-        "schemaOrg": "CreativeWork"
+  "attributes": {
+    "doi": "10.7916/d86x0cg1",
+    "creators": [
+      {
+        "name": "(:Unav)",
+        "affiliation": [],
+        "nameIdentifiers": []
+      }
+    ],
+    "titles": [
+      {
+        "title": "<h1>Eastern questionnaire</h1>"
+      }
+    ],
+    "publicationYear": 2017,
+    "dates": [
+      {
+        "date": "2017-08-24",
+        "dateType": "Created"
       },
-      "isActive": true,
-      "state": "findable"
-    }
+      {
+        "date": "2019-08-04",
+        "dateType": "Updated"
+      },
+      {
+        "date": "2017",
+        "dateType": "Issued"
+      }
+    ],
+    "language": null,
+    "types": {
+      "ris": "GEN",
+      "bibtex": "misc",
+      "citeproc": "article",
+      "schemaOrg": "CreativeWork"
+    },
+    "isActive": true,
+    "state": "findable"
   }
-  
+}

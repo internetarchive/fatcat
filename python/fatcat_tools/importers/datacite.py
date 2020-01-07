@@ -607,6 +607,25 @@ class DataciteImporter(EntityImporter):
         if attributes.get('subjects'):
             extra_datacite['subjects'] = attributes['subjects']
 
+        # Include version information.
+        metadata_version = attributes.get('metadataVersion') or ''
+        schema_version = attributes.get('schemaVersion') or ''
+
+        if metadata_version:
+            extra_datacite['metadataVersion'] = metadata_version
+        if schema_version:
+            extra_datacite['schemaVersion'] = schema_version
+
+        # Include resource types.
+        types = attributes.get('types', {}) or {}
+        resource_type = types.get('resourceType', '') or ''
+        resource_type_general = types.get('resourceTypeGeneral', '') or ''
+
+        if resource_type:
+            extra_datacite['resourceType'] = resource_type
+        if resource_type_general:
+            extra_datacite['resourceTypeGeneral'] = resource_type_general
+
         # Include certain relations from relatedIdentifiers. Keeping the
         # original structure of data here, which is a list of dicts, with
         # relation type, identifer and identifier type (mostly).
@@ -624,6 +643,14 @@ class DataciteImporter(EntityImporter):
             extra_datacite['relations'] = relations
 
         extra = dict()
+
+        # "1.0.0", "v1.305.2019", "Final", "v1.0.0", "v0.3.0", "1", "0.19.0",
+        # "3.1", "v1.1", "{version}", "4.0", "10329", "11672", "11555",
+        # "v1.4.5", "2", "V1", "v3.0", "v0", "v0.6", "11124", "v1.0-beta", "1st
+        # Edition", "20191024", "v2.0.0", "v0.9.3", "10149", "2.0", null,
+        # "v0.1.1", "3.0", "1.0", "3", "v1.12.2", "20191018", "v0.3.1", "v1.0",
+        # "10161", "10010691", "10780", # "Presentación"
+        version = attributes.get('version')
 
         # top-level extra keys
         if not container_id and container_name:
@@ -666,6 +693,7 @@ class DataciteImporter(EntityImporter):
             refs=refs,
             extra=extra,
             license_slug=license_slug,
+            version=version,
         )
         return re
 

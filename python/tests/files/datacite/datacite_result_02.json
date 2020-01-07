@@ -1,36 +1,40 @@
 {
-    "extra": {
-        "datacite": {
-            "license": [
-                {
-                    "lang": "de",
-                    "rights": "Creative Commons - Namensnennung - Weitergabe unter gleichen Bedingungen - https://creativecommons.org/licenses/by-sa/3.0/de/"
-                },
-                {
-                    "lang": "en",
-                    "rights": "Creative Commons - Namensnennung - Weitergabe unter gleichen Bedingungen - https://creativecommons.org/licenses/by-sa/3.0/"
-                }
-            ]
-        }
-    },
-    "title": "Solinger Schwertschmiede-Familien, [4]",
-    "release_type": "article-journal",
-    "release_stage": "published",
-    "release_year": 1897,
-    "ext_ids": {
-        "doi": "10.11588/diglit.37715.57"
-    },
-    "publisher": "University Library Heidelberg",
-    "language": "de",
-    "contribs": [
+  "extra": {
+    "datacite": {
+      "license": [
         {
-            "index": 0,
-            "raw_name": "Albert Weyersberg",
-            "given_name": "Albert",
-            "surname": "Weyersberg",
-            "role": "author"
+          "lang": "de",
+          "rights": "Creative Commons - Namensnennung - Weitergabe unter gleichen Bedingungen - https://creativecommons.org/licenses/by-sa/3.0/de/"
+        },
+        {
+          "lang": "en",
+          "rights": "Creative Commons - Namensnennung - Weitergabe unter gleichen Bedingungen - https://creativecommons.org/licenses/by-sa/3.0/"
         }
-    ],
-    "refs": [],
-    "abstracts": []
+      ],
+      "metadataVersion": 2,
+      "resourceType": "DigitalisatDigital copy",
+      "resourceTypeGeneral": "Text",
+      "schemaVersion": "http://datacite.org/schema/kernel-4"
+    }
+  },
+  "title": "Solinger Schwertschmiede-Familien, [4]",
+  "release_type": "article-journal",
+  "release_stage": "published",
+  "release_year": 1897,
+  "ext_ids": {
+    "doi": "10.11588/diglit.37715.57"
+  },
+  "publisher": "University Library Heidelberg",
+  "language": "de",
+  "contribs": [
+    {
+      "index": 0,
+      "raw_name": "Albert Weyersberg",
+      "given_name": "Albert",
+      "surname": "Weyersberg",
+      "role": "author"
+    }
+  ],
+  "refs": [],
+  "abstracts": []
 }

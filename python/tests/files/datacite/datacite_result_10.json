@@ -1,32 +1,35 @@
 {
-    "extra": {
-        "datacite": {
-            "subjects": [
-                {
-                    "subject": "housing areas"
-                },
-                {
-                    "subject": "Dwellings"
-                }
-            ]
-        }
-    },
-    "title": "WPA household census for 210 E VERNON, Los Angeles",
-    "release_type": "dataset",
-    "release_stage": "published",
-    "release_year": 2012,
-    "ext_ids": {
-        "doi": "10.25549/wpacards-m6171"
-    },
-    "publisher": "University of Southern California Digital Library (USC.DL)",
-    "language": "en",
-    "contribs": [
+  "extra": {
+    "datacite": {
+      "subjects": [
         {
-            "index": 0,
-            "raw_name": "Unknown",
-            "role": "author"
+          "subject": "housing areas"
+        },
+        {
+          "subject": "Dwellings"
         }
-    ],
-    "refs": [],
-    "abstracts": []
+      ],
+      "resourceType": "Dataset",
+      "resourceTypeGeneral": "Dataset",
+      "schemaVersion": "http://datacite.org/schema/kernel-4"
+    }
+  },
+  "title": "WPA household census for 210 E VERNON, Los Angeles",
+  "release_type": "dataset",
+  "release_stage": "published",
+  "release_year": 2012,
+  "ext_ids": {
+    "doi": "10.25549/wpacards-m6171"
+  },
+  "publisher": "University of Southern California Digital Library (USC.DL)",
+  "language": "en",
+  "contribs": [
+    {
+      "index": 0,
+      "raw_name": "Unknown",
+      "role": "author"
+    }
+  ],
+  "refs": [],
+  "abstracts": []
 }

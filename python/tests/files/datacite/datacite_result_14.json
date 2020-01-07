@@ -1,111 +1,114 @@
 {
-    "extra": {
-        "datacite": {
-            "subjects": [
-                {
-                    "subject": "Crystal Structure"
-                },
-                {
-                    "subject": "Experimental 3D Coordinates"
-                },
-                {
-                    "subject": "Crystal System"
-                },
-                {
-                    "subject": "Space Group"
-                },
-                {
-                    "subject": "Cell Parameters"
-                },
-                {
-                    "subject": "Crystallography"
-                },
-                {
-                    "subject": "bis(mu~2~-5-(3,5-Di-t-butylphenyl)-15-(4-(2-(diphenylphosphino)ethynyl)phenyl)-2,8,12,18-tetrahexyl-3,7,13,17-tetramethylporphyrinato)-(5,15-bis(3,5-di-t-butylphenyl)-2,8,12,18-tetraethyl-3,7,13,17-tetramethylporphyrinato)-di-nickel-ruthenium chloroform solvate"
-                }
-            ],
-            "relations": [
-                {
-                    "relationType": "IsSupplementTo",
-                    "relatedIdentifier": "10.1021/ic034699w",
-                    "relatedIdentifierType": "DOI"
-                }
-            ]
+  "extra": {
+    "datacite": {
+      "subjects": [
+        {
+          "subject": "Crystal Structure"
+        },
+        {
+          "subject": "Experimental 3D Coordinates"
+        },
+        {
+          "subject": "Crystal System"
+        },
+        {
+          "subject": "Space Group"
+        },
+        {
+          "subject": "Cell Parameters"
+        },
+        {
+          "subject": "Crystallography"
+        },
+        {
+          "subject": "bis(mu~2~-5-(3,5-Di-t-butylphenyl)-15-(4-(2-(diphenylphosphino)ethynyl)phenyl)-2,8,12,18-tetrahexyl-3,7,13,17-tetramethylporphyrinato)-(5,15-bis(3,5-di-t-butylphenyl)-2,8,12,18-tetraethyl-3,7,13,17-tetramethylporphyrinato)-di-nickel-ruthenium chloroform solvate"
         }
+      ],
+      "relations": [
+        {
+          "relationType": "IsSupplementTo",
+          "relatedIdentifier": "10.1021/ic034699w",
+          "relatedIdentifierType": "DOI"
+        }
+      ],
+      "metadataVersion": 2,
+      "resourceTypeGeneral": "Dataset",
+      "schemaVersion": "http://datacite.org/schema/kernel-3"
+    }
+  },
+  "title": "CCDC 222635: Experimental Crystal Structure Determination",
+  "release_type": "dataset",
+  "release_stage": "published",
+  "release_year": 2004,
+  "ext_ids": {
+    "doi": "10.5517/cc7gns3"
+  },
+  "publisher": "Cambridge Crystallographic Data Centre",
+  "language": "en",
+  "contribs": [
+    {
+      "index": 0,
+      "raw_name": "E. Stulz",
+      "given_name": "E.",
+      "surname": "Stulz",
+      "role": "author"
     },
-    "title": "CCDC 222635: Experimental Crystal Structure Determination",
-    "release_type": "dataset",
-    "release_stage": "published",
-    "release_year": 2004,
-    "ext_ids": {
-        "doi": "10.5517/cc7gns3"
+    {
+      "index": 1,
+      "raw_name": "S.M. Scott",
+      "given_name": "S.M.",
+      "surname": "Scott",
+      "role": "author"
     },
-    "publisher": "Cambridge Crystallographic Data Centre",
-    "language": "en",
-    "contribs": [
-        {
-            "index": 0,
-            "raw_name": "E. Stulz",
-            "given_name": "E.",
-            "surname": "Stulz",
-            "role": "author"
-        },
-        {
-            "index": 1,
-            "raw_name": "S.M. Scott",
-            "given_name": "S.M.",
-            "surname": "Scott",
-            "role": "author"
-        },
-        {
-            "index": 2,
-            "raw_name": "Yiu-Fai Ng",
-            "given_name": "Yiu-Fai",
-            "surname": "Ng",
-            "role": "author"
-        },
-        {
-            "index": 3,
-            "raw_name": "A.D. Bond",
-            "given_name": "A.D.",
-            "surname": "Bond",
-            "role": "author"
-        },
-        {
-            "index": 4,
-            "raw_name": "S.J. Teat",
-            "given_name": "S.J.",
-            "surname": "Teat",
-            "role": "author"
-        },
-        {
-            "index": 5,
-            "raw_name": "S.L. Darling",
-            "given_name": "S.L.",
-            "surname": "Darling",
-            "role": "author"
-        },
-        {
-            "index": 6,
-            "raw_name": "N. Feeder",
-            "given_name": "N.",
-            "surname": "Feeder",
-            "role": "author"
-        },
-        {
-            "index": 7,
-            "raw_name": "J.K.M. Sanders",
-            "given_name": "J.K.M.",
-            "surname": "Sanders",
-            "role": "author"
-        }
-    ],
-    "refs": [],
-    "abstracts": [
-        {
-            "content": "An entry from the Cambridge Structural Database, the world's repository for small molecule crystal structures. The entry contains experimental data from a crystal diffraction study. The deposited dataset for this entry is freely available from the CCDC and typically includes 3D coordinates, cell parameters, space group, experimental conditions and quality measures.",
-            "mimetype": "text/plain",
-            "lang": "en"
-        }
-    ]
+    {
+      "index": 2,
+      "raw_name": "Yiu-Fai Ng",
+      "given_name": "Yiu-Fai",
+      "surname": "Ng",
+      "role": "author"
+    },
+    {
+      "index": 3,
+      "raw_name": "A.D. Bond",
+      "given_name": "A.D.",
+      "surname": "Bond",
+      "role": "author"
+    },
+    {
+      "index": 4,
+      "raw_name": "S.J. Teat",
+      "given_name": "S.J.",
+      "surname": "Teat",
+      "role": "author"
+    },
+    {
+      "index": 5,
+      "raw_name": "S.L. Darling",
+      "given_name": "S.L.",
+      "surname": "Darling",
+      "role": "author"
+    },
+    {
+      "index": 6,
+      "raw_name": "N. Feeder",
+      "given_name": "N.",
+      "surname": "Feeder",
+      "role": "author"
+    },
+    {
+      "index": 7,
+      "raw_name": "J.K.M. Sanders",
+      "given_name": "J.K.M.",
+      "surname": "Sanders",
+      "role": "author"
+    }
+  ],
+  "refs": [],
+  "abstracts": [
+    {
+      "content": "An entry from the Cambridge Structural Database, the world's repository for small molecule crystal structures. The entry contains experimental data from a crystal diffraction study. The deposited dataset for this entry is freely available from the CCDC and typically includes 3D coordinates, cell parameters, space group, experimental conditions and quality measures.",
+      "mimetype": "text/plain",
+      "lang": "en"
+    }
+  ]
 }
