@@ -14,13 +14,13 @@ class IngestFileResultImporter(EntityImporter):
         eg_desc = kwargs.pop('editgroup_description', None) or "Files crawled from web using sandcrawler ingest tool"
         eg_extra = kwargs.pop('editgroup_extra', dict())
         eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.IngestFileResultImporter')
+        kwargs['do_updates'] = kwargs.get("do_updates", False)
         super().__init__(api,
             editgroup_description=eg_desc,
             editgroup_extra=eg_extra,
             **kwargs)
         self.default_link_rel = kwargs.get("default_link_rel", "web")
         assert self.default_link_rel
-        self.do_updates = kwargs.get("do_updates", False)
         self.require_grobid = require_grobid
         if self.require_grobid:
             print("Requiring GROBID status == 200")

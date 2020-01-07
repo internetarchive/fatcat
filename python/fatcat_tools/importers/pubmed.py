@@ -715,6 +715,10 @@ class PubmedImporter(EntityImporter):
                 re.ext_ids.doi = None
                 re.work_id = existing.work_id
 
+        if existing and not self.do_updates:
+            self.counts['exists'] += 1
+            return False
+
         if existing and existing.ext_ids.pmid and (existing.refs or not re.refs):
             # TODO: any other reasons to do an update?
             # don't update if it already has PMID

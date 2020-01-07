@@ -61,7 +61,8 @@ def run_journal_metadata(args):
 
 def run_chocula(args):
     fii = ChoculaImporter(args.api,
-        edit_batch_size=args.batch_size)
+        edit_batch_size=args.batch_size,
+        do_updates=args.do_updates)
     JsonLinePusher(fii, args.json_file).run()
 
 def run_matched(args):
@@ -301,6 +302,9 @@ def main():
     sub_chocula.add_argument('json_file',
         help="chocula JSON entities file (or stdin)",
         default=sys.stdin, type=argparse.FileType('r'))
+    sub_chocula.add_argument('--do-updates',
+        action='store_true',
+        help="update pre-existing container entities")
 
     sub_matched = subparsers.add_parser('matched',
         help="add file entities matched against existing releases; custom JSON format")

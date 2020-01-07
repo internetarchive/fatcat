@@ -47,6 +47,7 @@ class ArabesqueMatchImporter(EntityImporter):
         eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.ArabesqueMatchImporter')
         if kwargs.get('crawl_id'):
             eg_extra['crawl_id'] = kwargs.get('crawl_id')
+        kwargs['do_updates'] = kwargs.get("do_updates", False)
         super().__init__(api,
             editgroup_description=eg_desc,
             editgroup_extra=eg_extra,
@@ -56,7 +57,6 @@ class ArabesqueMatchImporter(EntityImporter):
         self.default_link_rel = kwargs.get("default_link_rel", "web")
         assert self.default_link_rel
         self.default_mimetype = kwargs.get("default_mimetype", None)
-        self.do_updates = kwargs.get("do_updates", False)
         self.require_grobid = require_grobid
         if self.require_grobid:
             print("Requiring GROBID status == 200")

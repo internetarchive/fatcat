@@ -109,6 +109,9 @@ class ChoculaImporter(EntityImporter):
 
         # decide whether to update
         do_update = False
+        if not self.do_updates:
+            self.counts['exists'] += 1
+            return False
         if not existing.extra:
             existing.extra = dict()
         if set(ce.extra.get('urls', [])) != set(existing.extra.get('urls', [])):

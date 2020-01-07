@@ -287,6 +287,7 @@ class EntityImporter:
         eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.EntityImporter')
 
         self.api = api
+        self.do_updates = bool(kwargs.get('do_updates', True))
         self.bezerk_mode = kwargs.get('bezerk_mode', False)
         self.submit_mode = kwargs.get('submit_mode', False)
         self.edit_batch_size = kwargs.get('edit_batch_size', 100)
