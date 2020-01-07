@@ -8,20 +8,22 @@ problems in content and structure. A few fields habe their own parsing
 functions (parse_datacite_...), which can be tested more easily.
 """
 
-from .common import EntityImporter, clean
 import collections
-import dateparser
 import datetime
-import fatcat_openapi_client
 import hashlib
 import json
-import pycountry
-import langdetect
 import sqlite3
 import sys
-from fatcat_tools.transforms import entity_to_dict
-from fatcat_tools.normal import clean_doi
 
+import dateparser
+import fatcat_openapi_client
+import langdetect
+import pycountry
+
+from fatcat_tools.normal import clean_doi
+from fatcat_tools.transforms import entity_to_dict
+
+from .common import EntityImporter, clean
 
 # Cutoff length for abstracts.
 MAX_ABSTRACT_LENGTH = 2048
@@ -309,7 +311,7 @@ class DataciteImporter(EntityImporter):
 
         for i, c in enumerate(attributes['creators']):
             nameType = c.get('nameType', '') or ''
-            if nameType == 'Personal' or nameType == '':
+            if nameType in ('', 'Personal'):
                 creator_id = None
                 for nid in c.get('nameIdentifiers', []):
                     name_scheme = nid.get('nameIdentifierScheme', '') or ''
@@ -493,7 +495,7 @@ class DataciteImporter(EntityImporter):
 
         if first_page and last_page:
             try:
-                int(first_page) < int(last_page)
+                _ = int(first_page) < int(last_page)
                 pages = '{}-{}'.format(first_page, last_page)
             except ValueError as err:
                 # TODO(martin): This is more debug than info.
