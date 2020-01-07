@@ -175,7 +175,7 @@ def run_datacite(args):
         extid_map_file=args.extid_map_file,
         insert_log_file=args.insert_log_file)
     if args.kafka_mode:
-        KafkaJsonPusher(fci, args.kafka_hosts, args.kafka_env, "api-datacite",
+        KafkaJsonPusher(dci, args.kafka_hosts, args.kafka_env, "api-datacite",
             "fatcat-import", consume_batch_size=args.batch_size).run()
     else:
         JsonLinePusher(dci, args.json_file).run()

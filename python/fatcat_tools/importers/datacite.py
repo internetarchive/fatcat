@@ -699,7 +699,7 @@ class DataciteImporter(EntityImporter):
         if self.insert_log_file:
             with open(self.insert_log_file, 'a') as f:
                 for doc in batch:
-                    json.dump(entity_to_dict(re, api_client=None), f)
+                    json.dump(entity_to_dict(doc, api_client=None), f)
                     f.write('\n')
         self.api.create_release_auto_batch(
             fatcat_openapi_client.ReleaseAutoBatch(
