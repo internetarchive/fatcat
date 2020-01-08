@@ -1,0 +1,29 @@
+{
+  "abstracts": [],
+  "contribs": [
+    {
+      "index": 0,
+      "raw_name": "Crispijn De Passe (Der Ältere) (1564-1637)",
+      "role": "author"
+    }
+  ],
+  "ext_ids": {
+    "doi": "10.16903/ethz-grs-d_006220"
+  },
+  "extra": {
+    "datacite": {
+      "license": [
+        {
+          "rights": "ETH-Bibliothek Zürich, Graphische Sammlung / D 6220 / Public Domain Mark 1.0"
+        }
+      ],
+      "metadataVersion": 1,
+      "resourceTypeGeneral": "InteractiveResource",
+      "schemaVersion": "http://datacite.org/schema/kernel-3"
+    }
+  },
+  "refs": [],
+  "release_type": "article",
+  "release_year": 1590,
+  "title": "Der Eifer (Sedulitas), Blatt 7 der Folge \"Die Tugenden\""
+}

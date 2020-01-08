@@ -1,0 +1,51 @@
+{
+  "abstracts": [],
+  "contribs": [
+    {
+      "given_name": "Nils",
+      "index": 0,
+      "raw_name": "Nils Kirstaedter",
+      "role": "author",
+      "surname": "Kirstaedter"
+    },
+    {
+      "extra": {
+        "organization": "TIB-Technische Informationsbibliothek Universitätsbibliothek Hannover"
+      }
+    },
+    {
+      "extra": {
+        "type": "DataManager"
+      },
+      "raw_name": "Technische Informationsbibliothek (TIB)"
+    }
+  ],
+  "ext_ids": {
+    "doi": "10.2314/gbv:880813733"
+  },
+  "extra": {
+    "datacite": {
+      "metadataVersion": 9,
+      "resourceType": "Report",
+      "resourceTypeGeneral": "Text",
+      "schemaVersion": "http://datacite.org/schema/kernel-4",
+      "subjects": [
+        {
+          "subject": "Direktdiodenlasersysteme"
+        },
+        {
+          "subject": "Physics",
+          "subjectScheme": "linsearch"
+        }
+      ]
+    }
+  },
+  "language": "de",
+  "publisher": "[Lumics GmbH]",
+  "refs": [],
+  "release_stage": "published",
+  "release_type": "report",
+  "release_year": 2016,
+  "title": "BrightLas : TP3.3. Module für Direktdiodenstrahlquellen bis 4kW und Untersuchungen zur Leistungsskalierung (Diodemodul) : zum Verbundvorhaben Direktdiodenlaseranlagen und -systeme (VP3) im Förderschwerpunkt innovative regionale Wachstumskerne, BMBF : Abschlussbericht",
+  "version": "1.0"
+}

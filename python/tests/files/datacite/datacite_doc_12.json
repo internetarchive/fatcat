@@ -1,0 +1,103 @@
+{
+  "attributes": {
+    "container": {},
+    "contentUrl": null,
+    "contributors": [],
+    "created": "2019-06-27T01:01:35.000Z",
+    "creators": [
+      {
+        "affiliation": [],
+        "familyName": "Spanias",
+        "givenName": "Charalampos",
+        "name": "Spanias, Charalampos",
+        "nameIdentifiers": [],
+        "nameType": "Personal"
+      },
+      {
+        "affiliation": [],
+        "familyName": "Nikolaidis",
+        "givenName": "Pantelis T",
+        "name": "Nikolaidis, Pantelis T",
+        "nameIdentifiers": [],
+        "nameType": "Personal"
+      },
+      {
+        "affiliation": [],
+        "familyName": "Rosemann",
+        "givenName": "Thomas",
+        "name": "Rosemann, Thomas",
+        "nameIdentifiers": [],
+        "nameType": "Personal"
+      },
+      {
+        "affiliation": [],
+        "familyName": "Knechtle",
+        "givenName": "Beat",
+        "name": "Knechtle, Beat",
+        "nameIdentifiers": [],
+        "nameType": "Personal"
+      }
+    ],
+    "dates": [
+      {
+        "date": "2019-06-14",
+        "dateType": "Available"
+      },
+      {
+        "date": "2019",
+        "dateType": "Issued"
+      }
+    ],
+    "descriptions": [],
+    "doi": "10.5167/uzh-171449",
+    "formats": [],
+    "fundingReferences": [],
+    "geoLocations": [],
+    "identifiers": [
+      {
+        "identifier": "https://doi.org/10.5167/uzh-171449",
+        "identifierType": "DOI"
+      }
+    ],
+    "isActive": true,
+    "language": null,
+    "metadataVersion": 0,
+    "publicationYear": 2019,
+    "published": "2019",
+    "publisher": "MDPI Publishing",
+    "reason": null,
+    "registered": "2019-06-27T01:01:36.000Z",
+    "relatedIdentifiers": [],
+    "rightsList": [],
+    "schemaVersion": null,
+    "sizes": [],
+    "source": "mds",
+    "state": "findable",
+    "subjects": [],
+    "titles": [
+      {
+        "title": "Anthropometric and Physiological Profile of Mixed Martial Art Athletes: A Brief Review"
+      }
+    ],
+    "types": {
+      "bibtex": "article",
+      "citeproc": "article-journal",
+      "resourceTypeGeneral": "Text",
+      "ris": "RPRT",
+      "schemaOrg": "ScholarlyArticle"
+    },
+    "updated": "2019-09-26T16:44:24.000Z",
+    "url": "https://www.zora.uzh.ch/id/eprint/171449",
+    "version": null
+  },
+  "id": "10.5167/uzh-171449",
+  "relationships": {
+    "client": {
+      "data": {
+        "id": "ethz.zora",
+        "type": "clients"
+      }
+    }
+  },
+  "type": "dois"
+}

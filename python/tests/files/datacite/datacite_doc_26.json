@@ -1,0 +1,57 @@
+{
+  "attributes": {
+    "contributors": [
+      {
+        "affiliation": [],
+        "contributorType": "Editor",
+        "familyName": "Wemmer",
+        "givenName": "David",
+        "name": "Wemmer, David",
+        "nameType": "Personal"
+      }
+    ],
+    "creators": [
+      {
+        "affiliation": [
+          "Department of pataphysics"
+        ],
+        "name": "Anton Welch",
+        "nameIdentifiers": []
+      }
+    ],
+    "dates": [
+      {
+        "date": "2017-08-24",
+        "dateType": "Created"
+      },
+      {
+        "date": "2019-08-04",
+        "dateType": "Updated"
+      },
+      {
+        "date": "2017",
+        "dateType": "Issued"
+      }
+    ],
+    "doi": "10.7916/d86x0cg1",
+    "isActive": true,
+    "language": "DE-CH",
+    "publicationYear": 2016,
+    "state": "findable",
+    "titles": [
+      {
+        "title": "Additional file 123: ABC"
+      },
+      {
+        "title": "DEF",
+        "titleType": "Subtitle"
+      }
+    ],
+    "types": {
+      "bibtex": "misc",
+      "citeproc": "article",
+      "ris": "GEN",
+      "schemaOrg": "CreativeWork"
+    }
+  }
+}

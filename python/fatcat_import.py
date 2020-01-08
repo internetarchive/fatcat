@@ -167,6 +167,20 @@ def run_cdl_dash_dat(args):
     print("fileset id: {}".format(fs.ident))
     print("link: https://fatcat.wiki/fileset/{}".format(fs.ident))
 
+def run_datacite(args):
+    dci = DataciteImporter(args.api,
+        args.issn_map_file,
+        edit_batch_size=args.batch_size,
+        bezerk_mode=args.bezerk_mode,
+        debug=args.debug,
+        extid_map_file=args.extid_map_file,
+        insert_log_file=args.insert_log_file)
+    if args.kafka_mode:
+        KafkaJsonPusher(dci, args.kafka_hosts, args.kafka_env, "api-datacite",
+            "fatcat-import", consume_batch_size=args.batch_size).run()
+    else:
+        JsonLinePusher(dci, args.json_file).run()
+
 def main():
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -442,6 +456,35 @@ def main():
     sub_cdl_dash_dat.add_argument('--editgroup-id',
         type=str,
         help="use existing editgroup (instead of creating a new one)")
+
+    sub_datacite = subparsers.add_parser('datacite',
+        help="import datacite.org metadata")
+    sub_datacite.add_argument('json_file',
+        help="File with jsonlines from datacite.org v2 API to import from",
+        default=sys.stdin, type=argparse.FileType('r'))
+    sub_datacite.add_argument('issn_map_file',
+        help="ISSN to ISSN-L mapping file",
+        default=None, type=argparse.FileType('r'))
+    sub_datacite.add_argument('--extid-map-file',
+        help="DOI-to-other-identifiers sqlite3 database",
+        default=None, type=str)
+    sub_datacite.add_argument('--kafka-mode',
+        action='store_true',
+        help="consume from kafka topic (not stdin)")
+    sub_datacite.add_argument('--bezerk-mode',
+        action='store_true',
+        help="don't lookup existing DOIs, just insert (clobbers; only for fast bootstrap)")
+    sub_datacite.add_argument('--debug',
+        action='store_true',
+        help="write converted JSON to stdout")
+    sub_datacite.add_argument('--insert-log-file',
+        default='',
+        type=str,
+        help="write inserted documents into file (for debugging)")
+    sub_datacite.set_defaults(
+        func=run_datacite,
+        auth_var="FATCAT_AUTH_WORKER_DATACITE",
+    )
 
     args = parser.parse_args()
     if not args.__dict__.get("func"):

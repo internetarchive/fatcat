@@ -1,0 +1,542 @@
+{
+  "abstracts": [
+    {
+      "content": "UNITE provides a unified way for delimiting, identifying, communicating, and working with DNA-based Species Hypotheses (SH). All fungal ITS sequences in the international nucleotide sequence databases are clustered to approximately the species level by applying a set of dynamic distance values (<0.5 - 3.0%). All species hypotheses are given a unique, stable name in the form of a DOI, and their taxonomic and ecological annotations are verified through distributed, web-based third-party annotation efforts. SHs are connected to a taxon name and its classification as far as possible (phylum, class, order, etc.) by taking into account identifications for all sequences in the SH. An automatically or manually designated sequence is chosen to represent each such SH. These sequences are released (https://unite.ut.ee/repository.php) for use by the scientific community in, for example, local sequence similarity searches and next-generation sequencing analysis pipelines. The system and the data are updated automatically as the number of public fungal ITS sequences grows.",
+      "lang": "en",
+      "mimetype": "text/plain"
+    }
+  ],
+  "contribs": [
+    {
+      "given_name": "Urmas",
+      "index": 0,
+      "raw_name": "Urmas Kõljalg",
+      "role": "author",
+      "surname": "Kõljalg"
+    },
+    {
+      "given_name": "Kessy",
+      "index": 1,
+      "raw_name": "Kessy Abarenkov",
+      "role": "author",
+      "surname": "Abarenkov"
+    },
+    {
+      "given_name": "R. Henrik",
+      "index": 2,
+      "raw_name": "R. Henrik Nilsson",
+      "role": "author",
+      "surname": "Nilsson"
+    },
+    {
+      "given_name": "Karl-Henrik",
+      "index": 3,
+      "raw_name": "Karl-Henrik Larsson",
+      "role": "author",
+      "surname": "Larsson"
+    },
+    {
+      "given_name": "Anders Bjørnsgard",
+      "index": 4,
+      "raw_name": "Anders Bjørnsgard Aas",
+      "role": "author",
+      "surname": "Aas"
+    },
+    {
+      "given_name": "Rachel",
+      "index": 5,
+      "raw_name": "Rachel Adams",
+      "role": "author",
+      "surname": "Adams"
+    },
+    {
+      "given_name": "Artur",
+      "index": 6,
+      "raw_name": "Artur Alves",
+      "role": "author",
+      "surname": "Alves"
+    },
+    {
+      "given_name": "Joseph F.",
+      "index": 7,
+      "raw_name": "Joseph F. Ammirati",
+      "role": "author",
+      "surname": "Ammirati"
+    },
+    {
+      "given_name": "A. Elizabeth",
+      "index": 8,
+      "raw_name": "A. Elizabeth Arnold",
+      "role": "author",
+      "surname": "Arnold"
+    },
+    {
+      "given_name": "Mohammad",
+      "index": 9,
+      "raw_name": "Mohammad Bahram",
+      "role": "author",
+      "surname": "Bahram"
+    },
+    {
+      "given_name": "Johan",
+      "index": 10,
+      "raw_name": "Johan Bengtsson-Palme",
+      "role": "author",
+      "surname": "Bengtsson-Palme"
+    },
+    {
+      "given_name": "Anna",
+      "index": 11,
+      "raw_name": "Anna Berlin",
+      "role": "author",
+      "surname": "Berlin"
+    },
+    {
+      "given_name": "Synnøve",
+      "index": 12,
+      "raw_name": "Synnøve Botnen",
+      "role": "author",
+      "surname": "Botnen"
+    },
+    {
+      "given_name": "Sarah",
+      "index": 13,
+      "raw_name": "Sarah Bourlat",
+      "role": "author",
+      "surname": "Bourlat"
+    },
+    {
+      "given_name": "Tanya",
+      "index": 14,
+      "raw_name": "Tanya Cheeke",
+      "role": "author",
+      "surname": "Cheeke"
+    },
+    {
+      "given_name": "Bálint",
+      "index": 15,
+      "raw_name": "Bálint Dima",
+      "role": "author",
+      "surname": "Dima"
+    },
+    {
+      "given_name": "Rein",
+      "index": 16,
+      "raw_name": "Rein Drenkhan",
+      "role": "author",
+      "surname": "Drenkhan"
+    },
+    {
+      "given_name": "Camila",
+      "index": 17,
+      "raw_name": "Camila Duarte",
+      "role": "author",
+      "surname": "Duarte"
+    },
+    {
+      "given_name": "Margarita",
+      "index": 18,
+      "raw_name": "Margarita Dueñas",
+      "role": "author",
+      "surname": "Dueñas"
+    },
+    {
+      "given_name": "Ursula",
+      "index": 19,
+      "raw_name": "Ursula Eberhardt",
+      "role": "author",
+      "surname": "Eberhardt"
+    },
+    {
+      "given_name": "Hanna",
+      "index": 20,
+      "raw_name": "Hanna Friberg",
+      "role": "author",
+      "surname": "Friberg"
+    },
+    {
+      "given_name": "Tobias G.",
+      "index": 21,
+      "raw_name": "Tobias G. Frøslev",
+      "role": "author",
+      "surname": "Frøslev"
+    },
+    {
+      "given_name": "Sigisfredo",
+      "index": 22,
+      "raw_name": "Sigisfredo Garnica",
+      "role": "author",
+      "surname": "Garnica"
+    },
+    {
+      "given_name": "József",
+      "index": 23,
+      "raw_name": "József Geml",
+      "role": "author",
+      "surname": "Geml"
+    },
+    {
+      "given_name": "Masoomeh",
+      "index": 24,
+      "raw_name": "Masoomeh Ghobad-Nejhad",
+      "role": "author",
+      "surname": "Ghobad-Nejhad"
+    },
+    {
+      "given_name": "Tine",
+      "index": 25,
+      "raw_name": "Tine Grebenc",
+      "role": "author",
+      "surname": "Grebenc"
+    },
+    {
+      "given_name": "Gareth W.",
+      "index": 26,
+      "raw_name": "Gareth W. Griffith",
+      "role": "author",
+      "surname": "Griffith"
+    },
+    {
+      "given_name": "Felix",
+      "index": 27,
+      "raw_name": "Felix Hampe",
+      "role": "author",
+      "surname": "Hampe"
+    },
+    {
+      "given_name": "Peter",
+      "index": 28,
+      "raw_name": "Peter Kennedy",
+      "role": "author",
+      "surname": "Kennedy"
+    },
+    {
+      "given_name": "Maryia",
+      "index": 29,
+      "raw_name": "Maryia Khomich",
+      "role": "author",
+      "surname": "Khomich"
+    },
+    {
+      "given_name": "Petr",
+      "index": 30,
+      "raw_name": "Petr Kohout",
+      "role": "author",
+      "surname": "Kohout"
+    },
+    {
+      "given_name": "Anu",
+      "index": 31,
+      "raw_name": "Anu Kollom",
+      "role": "author",
+      "surname": "Kollom"
+    },
+    {
+      "given_name": "Ellen",
+      "index": 32,
+      "raw_name": "Ellen Larsson",
+      "role": "author",
+      "surname": "Larsson"
+    },
+    {
+      "given_name": "Irinyi",
+      "index": 33,
+      "raw_name": "Irinyi Laszlo",
+      "role": "author",
+      "surname": "Laszlo"
+    },
+    {
+      "given_name": "Steven",
+      "index": 34,
+      "raw_name": "Steven Leavitt",
+      "role": "author",
+      "surname": "Leavitt"
+    },
+    {
+      "given_name": "Kare",
+      "index": 35,
+      "raw_name": "Kare Liimatainen",
+      "role": "author",
+      "surname": "Liimatainen"
+    },
+    {
+      "given_name": "Björn",
+      "index": 36,
+      "raw_name": "Björn Lindahl",
+      "role": "author",
+      "surname": "Lindahl"
+    },
+    {
+      "given_name": "Deborah J.",
+      "index": 37,
+      "raw_name": "Deborah J. Lodge",
+      "role": "author",
+      "surname": "Lodge"
+    },
+    {
+      "given_name": "Helge Thorsten",
+      "index": 38,
+      "raw_name": "Helge Thorsten Lumbsch",
+      "role": "author",
+      "surname": "Lumbsch"
+    },
+    {
+      "given_name": "María Paz",
+      "index": 39,
+      "raw_name": "María Paz Martín Esteban",
+      "role": "author",
+      "surname": "Martín Esteban"
+    },
+    {
+      "given_name": "Wieland",
+      "index": 40,
+      "raw_name": "Wieland Meyer",
+      "role": "author",
+      "surname": "Meyer"
+    },
+    {
+      "given_name": "Otto",
+      "index": 41,
+      "raw_name": "Otto Miettinen",
+      "role": "author",
+      "surname": "Miettinen"
+    },
+    {
+      "given_name": "Nhu",
+      "index": 42,
+      "raw_name": "Nhu Nguyen",
+      "role": "author",
+      "surname": "Nguyen"
+    },
+    {
+      "given_name": "Tuula",
+      "index": 43,
+      "raw_name": "Tuula Niskanen",
+      "role": "author",
+      "surname": "Niskanen"
+    },
+    {
+      "given_name": "Ryoko",
+      "index": 44,
+      "raw_name": "Ryoko Oono",
+      "role": "author",
+      "surname": "Oono"
+    },
+    {
+      "given_name": "Maarja",
+      "index": 45,
+      "raw_name": "Maarja Öpik",
+      "role": "author",
+      "surname": "Öpik"
+    },
+    {
+      "given_name": "Alexander",
+      "index": 46,
+      "raw_name": "Alexander Ordynets",
+      "role": "author",
+      "surname": "Ordynets"
+    },
+    {
+      "given_name": "Julia",
+      "index": 47,
+      "raw_name": "Julia Pawłowska",
+      "role": "author",
+      "surname": "Pawłowska"
+    },
+    {
+      "given_name": "Ursula",
+      "index": 48,
+      "raw_name": "Ursula Peintner",
+      "role": "author",
+      "surname": "Peintner"
+    },
+    {
+      "given_name": "Olinto Liparini",
+      "index": 49,
+      "raw_name": "Olinto Liparini Pereira",
+      "role": "author",
+      "surname": "Pereira"
+    },
+    {
+      "given_name": "Danilo Batista",
+      "index": 50,
+      "raw_name": "Danilo Batista Pinho",
+      "role": "author",
+      "surname": "Pinho"
+    },
+    {
+      "given_name": "Kadri",
+      "index": 51,
+      "raw_name": "Kadri Põldmaa",
+      "role": "author",
+      "surname": "Põldmaa"
+    },
+    {
+      "given_name": "Kadri",
+      "index": 52,
+      "raw_name": "Kadri Runnel",
+      "role": "author",
+      "surname": "Runnel"
+    },
+    {
+      "given_name": "Martin",
+      "index": 53,
+      "raw_name": "Martin Ryberg",
+      "role": "author",
+      "surname": "Ryberg"
+    },
+    {
+      "given_name": "Irja",
+      "index": 54,
+      "raw_name": "Irja Saar",
+      "role": "author",
+      "surname": "Saar"
+    },
+    {
+      "given_name": "Kemal",
+      "index": 55,
+      "raw_name": "Kemal Sanli",
+      "role": "author",
+      "surname": "Sanli"
+    },
+    {
+      "given_name": "James",
+      "index": 56,
+      "raw_name": "James Scott",
+      "role": "author",
+      "surname": "Scott"
+    },
+    {
+      "given_name": "Viacheslav",
+      "index": 57,
+      "raw_name": "Viacheslav Spirin",
+      "role": "author",
+      "surname": "Spirin"
+    },
+    {
+      "given_name": "Ave",
+      "index": 58,
+      "raw_name": "Ave Suija",
+      "role": "author",
+      "surname": "Suija"
+    },
+    {
+      "given_name": "Sten",
+      "index": 59,
+      "raw_name": "Sten Svantesson",
+      "role": "author",
+      "surname": "Svantesson"
+    },
+    {
+      "given_name": "Mariusz",
+      "index": 60,
+      "raw_name": "Mariusz Tadych",
+      "role": "author",
+      "surname": "Tadych"
+    },
+    {
+      "given_name": "Susumu",
+      "index": 61,
+      "raw_name": "Susumu Takamatsu",
+      "role": "author",
+      "surname": "Takamatsu"
+    },
+    {
+      "given_name": "Heidi",
+      "index": 62,
+      "raw_name": "Heidi Tamm",
+      "role": "author",
+      "surname": "Tamm"
+    },
+    {
+      "given_name": "AFS.",
+      "index": 63,
+      "raw_name": "AFS. Taylor",
+      "role": "author",
+      "surname": "Taylor"
+    },
+    {
+      "given_name": "Leho",
+      "index": 64,
+      "raw_name": "Leho Tedersoo",
+      "role": "author",
+      "surname": "Tedersoo"
+    },
+    {
+      "given_name": "M.T.",
+      "index": 65,
+      "raw_name": "M.T. Telleria",
+      "role": "author",
+      "surname": "Telleria"
+    },
+    {
+      "given_name": "Dhanushka",
+      "index": 66,
+      "raw_name": "Dhanushka Udayanga",
+      "role": "author",
+      "surname": "Udayanga"
+    },
+    {
+      "given_name": "Martin",
+      "index": 67,
+      "raw_name": "Martin Unterseher",
+      "role": "author",
+      "surname": "Unterseher"
+    },
+    {
+      "given_name": "Sergey",
+      "index": 68,
+      "raw_name": "Sergey Volobuev",
+      "role": "author",
+      "surname": "Volobuev"
+    },
+    {
+      "given_name": "Michael",
+      "index": 69,
+      "raw_name": "Michael Weiss",
+      "role": "author",
+      "surname": "Weiss"
+    },
+    {
+      "given_name": "Christian",
+      "index": 70,
+      "raw_name": "Christian Wurzbacher",
+      "role": "author",
+      "surname": "Wurzbacher"
+    },
+    {
+      "raw_name": "Kessy Abarenkov"
+    },
+    {
+      "raw_name": "NHM UT-University Of Tartu; Natural History Museum And Botanic Garden"
+    }
+  ],
+  "ext_ids": {
+    "doi": "10.15156/bio/sh409843.07fu"
+  },
+  "extra": {
+    "datacite": {
+      "license": [
+        {
+          "rights": "Attribution-NonCommercial (CC BY-NC)",
+          "rightsUri": "http://creativecommons.org/licenses/by-nc/4.0"
+        }
+      ],
+      "metadataVersion": 1,
+      "resourceType": "Dataset/UNITE Species Hypothesis",
+      "resourceTypeGeneral": "Dataset",
+      "schemaVersion": "http://datacite.org/schema/kernel-3"
+    },
+    "release_month": 10
+  },
+  "language": "en",
+  "license_slug": "CC-BY-NC",
+  "publisher": "UNITE Community",
+  "refs": [],
+  "release_date": "2014-10-05",
+  "release_stage": "published",
+  "release_type": "dataset",
+  "release_year": 2014,
+  "subtitle": "Gomphales",
+  "title": "SH409843.07FU"
+}

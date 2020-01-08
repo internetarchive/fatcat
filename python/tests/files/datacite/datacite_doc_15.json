@@ -1,0 +1,79 @@
+{
+  "attributes": {
+    "container": {},
+    "contentUrl": null,
+    "contributors": [],
+    "created": "2017-02-01T18:20:04.000Z",
+    "creators": [
+      {
+        "affiliation": [],
+        "familyName": "Richardson",
+        "givenName": "David",
+        "name": "Richardson, David",
+        "nameType": "Personal"
+      }
+    ],
+    "dates": [
+      {
+        "date": "2017",
+        "dateType": "Issued"
+      }
+    ],
+    "descriptions": [],
+    "doi": "10.6073/pasta/95296d8416aae24f3d39b4ecb27f0b28",
+    "formats": [],
+    "fundingReferences": [],
+    "geoLocations": [],
+    "identifiers": [
+      {
+        "identifier": "https://doi.org/10.6073/pasta/95296d8416aae24f3d39b4ecb27f0b28",
+        "identifierType": "DOI"
+      },
+      {
+        "identifier": "https://pasta.lternet.edu/package/eml/knb-lter-vcr/102/16",
+        "identifierType": "URL"
+      }
+    ],
+    "isActive": true,
+    "language": null,
+    "metadataVersion": 1,
+    "publicationYear": 2017,
+    "published": "2017",
+    "publisher": "Environmental Data Initiative",
+    "reason": null,
+    "registered": "2017-02-01T18:20:05.000Z",
+    "relatedIdentifiers": [],
+    "rightsList": [],
+    "schemaVersion": "http://datacite.org/schema/kernel-2.2",
+    "sizes": [],
+    "source": null,
+    "state": "findable",
+    "subjects": [],
+    "titles": [
+      {
+        "title": "Parramore Island of the Virginia Coast Reserve Permanent Plot Resurvey: Tree data 1997"
+      }
+    ],
+    "types": {
+      "bibtex": "misc",
+      "citeproc": "dataset",
+      "resourceType": "dataPackage",
+      "resourceTypeGeneral": "Dataset",
+      "ris": "DATA",
+      "schemaOrg": "Dataset"
+    },
+    "updated": "2019-08-02T14:16:49.000Z",
+    "url": "https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-vcr.102.16",
+    "version": null
+  },
+  "id": "10.6073/pasta/95296d8416aae24f3d39b4ecb27f0b28",
+  "relationships": {
+    "client": {
+      "data": {
+        "id": "edi.edi",
+        "type": "clients"
+      }
+    }
+  },
+  "type": "dois"
+}

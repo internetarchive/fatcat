@@ -1,0 +1,86 @@
+{
+  "attributes": {
+    "container": {},
+    "contentUrl": null,
+    "contributors": [],
+    "created": "2019-03-04T23:56:42.000Z",
+    "creators": [
+      {
+        "affiliation": [],
+        "name": "Comet Photo AG (Zürich)"
+      }
+    ],
+    "dates": [
+      {
+        "date": "1965",
+        "dateType": "Available"
+      },
+      {
+        "date": "1965",
+        "dateType": "Issued"
+      }
+    ],
+    "descriptions": [
+      {
+        "description": "Download und Nutzung frei",
+        "descriptionType": "Other"
+      },
+      {
+        "description": "10, N1, Genève, Bern, Zürich, Sankt Gallen, Sankt Margrethen, Strassen, Strassenbau, 2.",
+        "descriptionType": "Other"
+      }
+    ],
+    "doi": "10.3932/ethz-a-000055869",
+    "formats": [
+      "TIFF-Bild"
+    ],
+    "fundingReferences": [],
+    "geoLocations": [],
+    "identifiers": [
+      {
+        "identifier": "https://doi.org/10.3932/ethz-a-000055869",
+        "identifierType": "DOI"
+      }
+    ],
+    "isActive": true,
+    "language": "de",
+    "metadataVersion": 6,
+    "publicationYear": 1965,
+    "published": "1965",
+    "publisher": "ETH-Bibliothek Zürich, Bildarchiv",
+    "reason": null,
+    "registered": "2019-07-30T13:17:45.000Z",
+    "relatedIdentifiers": [],
+    "rightsList": [],
+    "schemaVersion": "http://datacite.org/schema/kernel-3",
+    "sizes": [],
+    "source": "mds",
+    "state": "findable",
+    "subjects": [],
+    "titles": [
+      {
+        "title": "N1 bei Safenwil"
+      }
+    ],
+    "types": {
+      "bibtex": "misc",
+      "citeproc": "graphic",
+      "resourceTypeGeneral": "Image",
+      "ris": "FIGURE",
+      "schemaOrg": "ImageObject"
+    },
+    "updated": "2019-08-02T22:08:26.000Z",
+    "url": "http://ba.e-pics.ethz.ch/link.jsp?id=44861",
+    "version": null
+  },
+  "id": "10.3932/ethz-a-000055869",
+  "relationships": {
+    "client": {
+      "data": {
+        "id": "ethz.epics-ba",
+        "type": "clients"
+      }
+    }
+  },
+  "type": "dois"
+}

@@ -1,0 +1,86 @@
+{
+  "attributes": {
+    "container": {},
+    "contentUrl": null,
+    "contributors": [],
+    "created": "2013-03-22T14:02:08.000Z",
+    "creators": [
+      {
+        "affiliation": [],
+        "name": "O.M."
+      },
+      {
+        "affiliation": [],
+        "familyName": "Hiltbrunner",
+        "givenName": "Hermann",
+        "name": "Hiltbrunner, Hermann",
+        "nameType": "Personal"
+      }
+    ],
+    "dates": [
+      {
+        "date": "1940-10-05",
+        "dateType": "Available"
+      },
+      {
+        "date": "1940",
+        "dateType": "Issued"
+      }
+    ],
+    "descriptions": [],
+    "doi": "10.5169/seals-314104",
+    "formats": [
+      "text/html",
+      "application/pdf"
+    ],
+    "fundingReferences": [],
+    "geoLocations": [],
+    "identifiers": [
+      {
+        "identifier": "https://doi.org/10.5169/seals-314104",
+        "identifierType": "DOI"
+      }
+    ],
+    "isActive": true,
+    "language": null,
+    "metadataVersion": 17,
+    "publicationYear": 1940,
+    "published": "1940",
+    "publisher": "Buchdruckerei Büchler & Co.",
+    "reason": null,
+    "registered": "2013-03-22T13:58:11.000Z",
+    "relatedIdentifiers": [],
+    "rightsList": [],
+    "schemaVersion": "http://datacite.org/schema/kernel-3",
+    "sizes": [],
+    "source": null,
+    "state": "findable",
+    "subjects": [],
+    "titles": [
+      {
+        "title": "[Müssen wir des Glücks uns schämen?]"
+      }
+    ],
+    "types": {
+      "bibtex": "article",
+      "citeproc": "article-journal",
+      "resourceType": "Journal Article",
+      "resourceTypeGeneral": "Text",
+      "ris": "JOUR",
+      "schemaOrg": "ScholarlyArticle"
+    },
+    "updated": "2019-08-02T02:22:55.000Z",
+    "url": "https://www.e-periodica.ch/digbib/view?pid=sle-001:1940-1941:45::13",
+    "version": null
+  },
+  "id": "10.5169/seals-314104",
+  "relationships": {
+    "client": {
+      "data": {
+        "id": "ethz.seals",
+        "type": "clients"
+      }
+    }
+  },
+  "type": "dois"
+}

@@ -48,6 +48,9 @@ pygal = "*"
 elasticsearch-dsl = ">=6.0.0,<7.0.0"
 elasticsearch = ">=6.0.0,<7.0.0"
 dateparser = ">=0.7"
+langdetect = "*"
+pathlib2 = "*"
+pycountry = "*"
 
 [requires]
 # Python 3.5 is the bundled (system) version of python for Ubuntu 16.04

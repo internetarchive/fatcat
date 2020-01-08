@@ -1,0 +1,34 @@
+{
+  "abstracts": [],
+  "contribs": [
+    {
+      "given_name": "Taha",
+      "index": 0,
+      "raw_name": "Taha Sochi",
+      "role": "author",
+      "surname": "Sochi"
+    }
+  ],
+  "ext_ids": {
+    "doi": "10.6084/m9.figshare.1282478"
+  },
+  "extra": {
+    "datacite": {
+      "license": [
+        {
+          "rights": "CC-BY",
+          "rightsUri": "http://creativecommons.org/licenses/by/3.0/us"
+        }
+      ],
+      "resourceType": "Paper",
+      "resourceTypeGeneral": "Dataset",
+      "schemaVersion": "http://datacite.org/schema/kernel-3"
+    }
+  },
+  "publisher": "Figshare",
+  "refs": [],
+  "release_stage": "published",
+  "release_type": "dataset",
+  "release_year": 2014,
+  "title": "Testing the Connectivity of Networks"
+}

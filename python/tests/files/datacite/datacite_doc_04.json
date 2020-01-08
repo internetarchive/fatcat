@@ -1,0 +1,80 @@
+{
+  "attributes": {
+    "container": {},
+    "contentUrl": null,
+    "contributors": [],
+    "created": "2015-11-11T11:12:34.000Z",
+    "creators": [
+      {
+        "affiliation": [],
+        "familyName": "Nicollerat",
+        "givenName": "Marc Andre",
+        "name": "Nicollerat, Marc Andre",
+        "nameType": "Personal"
+      }
+    ],
+    "dates": [
+      {
+        "date": "1973",
+        "dateType": "Issued"
+      }
+    ],
+    "descriptions": [
+      {
+        "description": "Let A be an abelian category, I the full subcategory of A consisting of injective objects of A, and K(A) the category whose objects are cochain complexes of elements of A, and whose morphisms are homotopy classes of cochain maps.  In (5), lemma 4.6., p. 42, R. Hartshorne has proved that, under certain conditions, a cochain complex X˙ ε. |KA)| can be embedded in a complex I˙ ε. |K(I)| in such a way that I˙ has the same cohomology as X˙.  In Chapter I we show that the construction given in the two first parts of Hartshorne's Lemma is natural i.e. there exists a functor  J : K(A) → K(I) and a natural transformation [formula omitted]  (where E : K(I) → K(A) is the embedding functor) such that [formula omitted] is  injective and induces isomorphism in cohomology. The question whether the construction given in the third part of the lemma is functorial is still open.  We also prove that J is left adjoint to E, so that K(I) is a reflective subcategory of K(A).  In the special case where A is a category [formula omitted] of left A-modules, and [formula omitted] the category of cochain complexes in [formula omitted] and cochain maps (not homotopy classes), we prove the existence of a functor [formula omitted]  In Chapter II we study the natural homomorphism [formula omitted]   where A, B are rings, and M, L, N modules or chain complexes. In particular we give several sufficient conditions under which v is an isomorphism, or induces isomorphism in homology.  In the appendix we give a detailed proof of Hartshorne's Lemma. We think that this is useful, as no complete proof is, to our knowledge, to be found in the literature.",
+        "descriptionType": "Abstract"
+      }
+    ],
+    "doi": "10.14288/1.0080520",
+    "formats": [],
+    "fundingReferences": [],
+    "geoLocations": [],
+    "identifiers": [
+      {
+        "identifier": "https://doi.org/10.14288/1.0080520",
+        "identifierType": "DOI"
+      }
+    ],
+    "isActive": true,
+    "language": "en",
+    "metadataVersion": 5,
+    "publicationYear": 1973,
+    "published": "1973",
+    "publisher": "University of British Columbia",
+    "reason": null,
+    "registered": "2015-11-11T11:12:35.000Z",
+    "relatedIdentifiers": [],
+    "rightsList": [],
+    "schemaVersion": "http://datacite.org/schema/kernel-3",
+    "sizes": [],
+    "source": null,
+    "state": "findable",
+    "subjects": [],
+    "titles": [
+      {
+        "title": "On chain maps inducing isomorphisms in homology"
+      }
+    ],
+    "types": {
+      "bibtex": "article",
+      "citeproc": "article-journal",
+      "resourceType": "Text",
+      "resourceTypeGeneral": "Text",
+      "ris": "RPRT",
+      "schemaOrg": "ScholarlyArticle"
+    },
+    "updated": "2019-08-02T09:43:14.000Z",
+    "url": "https://doi.library.ubc.ca/10.14288/1.0080520",
+    "version": null
+  },
+  "id": "10.14288/1.0080520",
+  "relationships": {
+    "client": {
+      "data": {
+        "id": "cisti.ubc",
+        "type": "clients"
+      }
+    }
+  },
+  "type": "dois"
+}

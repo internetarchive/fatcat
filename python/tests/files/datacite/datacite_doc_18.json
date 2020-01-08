@@ -1,0 +1,79 @@
+{
+  "attributes": {
+    "container": {},
+    "contentUrl": null,
+    "contributors": [],
+    "created": "2017-11-29T02:15:31.000Z",
+    "creators": [
+      {
+        "affiliation": [],
+        "name": "(:Unav)",
+        "nameIdentifiers": []
+      }
+    ],
+    "dates": [
+      {
+        "date": "2017-08-21",
+        "dateType": "Created"
+      },
+      {
+        "date": "2019-08-04",
+        "dateType": "Updated"
+      },
+      {
+        "date": "2017",
+        "dateType": "Issued"
+      }
+    ],
+    "descriptions": [],
+    "doi": "10.7916/d81z522m",
+    "formats": [],
+    "fundingReferences": [],
+    "geoLocations": [],
+    "identifiers": [
+      {
+        "identifier": "https://doi.org/10.7916/d81z522m",
+        "identifierType": "DOI"
+      }
+    ],
+    "isActive": true,
+    "language": null,
+    "metadataVersion": 2,
+    "publicationYear": 2017,
+    "published": "2017",
+    "publisher": "Columbia University",
+    "reason": null,
+    "registered": "2017-11-29T02:15:32.000Z",
+    "relatedIdentifiers": [],
+    "rightsList": [],
+    "schemaVersion": "http://datacite.org/schema/kernel-3",
+    "sizes": [],
+    "source": "ez",
+    "state": "findable",
+    "subjects": [],
+    "titles": [
+      {
+        "title": "Eastern questionnaire, answer sheet for Interviewee 53215, page 064"
+      }
+    ],
+    "types": {
+      "bibtex": "misc",
+      "citeproc": "article",
+      "ris": "GEN",
+      "schemaOrg": "CreativeWork"
+    },
+    "updated": "2019-08-04T13:17:58.000Z",
+    "url": "https://dlc.library.columbia.edu/lcaaj/cul:k3j9kd52d6",
+    "version": null
+  },
+  "id": "10.7916/d81z522m",
+  "relationships": {
+    "client": {
+      "data": {
+        "id": "cul.columbia",
+        "type": "clients"
+      }
+    }
+  },
+  "type": "dois"
+}

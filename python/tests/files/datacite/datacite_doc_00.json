@@ -1,0 +1,140 @@
+{
+  "attributes": {
+    "container": {
+      "firstPage": "927",
+      "identifier": "1074-1542",
+      "identifierType": "ISSN",
+      "issue": "12",
+      "lastPage": "930",
+      "title": "Journal of Chemical Crystallography",
+      "type": "Journal",
+      "volume": "38"
+    },
+    "contentUrl": null,
+    "contributors": [],
+    "created": "2019-06-18T14:52:19.000Z",
+    "creators": [
+      {
+        "affiliation": [],
+        "familyName": "Li",
+        "givenName": "Qian-Jin",
+        "name": "Li, Qian-Jin",
+        "nameType": "Personal"
+      },
+      {
+        "affiliation": [],
+        "familyName": "Yang",
+        "givenName": "Chun-Long",
+        "name": "Yang, Chun-Long",
+        "nameType": "Personal"
+      }
+    ],
+    "dates": [
+      {
+        "date": "2008-05-30",
+        "dateType": "Issued"
+      },
+      {
+        "date": "2019-05-31T04:04:23Z",
+        "dateType": "Updated"
+      }
+    ],
+    "descriptions": [],
+    "doi": "10.1007/s10870-008-9413-z",
+    "formats": [],
+    "fundingReferences": [],
+    "geoLocations": [],
+    "identifiers": [
+      {
+        "identifier": "https://doi.org/10.1007/s10870-008-9413-z",
+        "identifierType": "DOI"
+      },
+      {
+        "identifier": "s10870-008-9413-z",
+        "identifierType": "Publisher ID"
+      }
+    ],
+    "isActive": true,
+    "language": null,
+    "metadataVersion": 1,
+    "publicationYear": 2008,
+    "published": "2008",
+    "publisher": "Springer Science and Business Media LLC",
+    "reason": null,
+    "registered": null,
+    "relatedIdentifiers": [
+      {
+        "relatedIdentifier": "1074-1542",
+        "relatedIdentifierType": "ISSN",
+        "relationType": "IsPartOf",
+        "resourceTypeGeneral": "Collection"
+      },
+      {
+        "relatedIdentifier": "10.1016/j.bmcl.2005.09.033",
+        "relatedIdentifierType": "DOI",
+        "relationType": "References"
+      },
+      {
+        "relatedIdentifier": "10.1016/s0022-1139(02)00330-5",
+        "relatedIdentifierType": "DOI",
+        "relationType": "References"
+      },
+      {
+        "relatedIdentifier": "10.1016/s0010-8545(01)00337-x",
+        "relatedIdentifierType": "DOI",
+        "relationType": "References"
+      },
+      {
+        "relatedIdentifier": "10.1016/j.tetlet.2005.06.135",
+        "relatedIdentifierType": "DOI",
+        "relationType": "References"
+      },
+      {
+        "relatedIdentifier": "10.1039/p298700000s1",
+        "relatedIdentifierType": "DOI",
+        "relationType": "References"
+      },
+      {
+        "relatedIdentifier": "10.1002/anie.199515551",
+        "relatedIdentifierType": "DOI",
+        "relationType": "References"
+      }
+    ],
+    "rightsList": [
+      {
+        "rightsUri": "http://www.springer.com/tdm"
+      }
+    ],
+    "schemaVersion": "http://datacite.org/schema/kernel-4",
+    "sizes": [],
+    "source": "levriero",
+    "state": "findable",
+    "subjects": [],
+    "titles": [
+      {
+        "title": "Synthesis and Crystal Structure of a Compound with Two Conformational Isomers: N-(2-methylbenzoyl)-N′-(4-nitrophenyl)thiourea"
+      }
+    ],
+    "types": {
+      "bibtex": "article",
+      "citeproc": "article-journal",
+      "resourceType": "JournalArticle",
+      "resourceTypeGeneral": "Text",
+      "ris": "JOUR",
+      "schemaOrg": "ScholarlyArticle"
+    },
+    "updated": "2019-08-03T00:03:40.000Z",
+    "url": "http://link.springer.com/10.1007/s10870-008-9413-z",
+    "version": null
+  },
+  "id": "10.1007/s10870-008-9413-z",
+  "relationships": {
+    "client": {
+      "data": {
+        "id": "crossref.citations",
+        "type": "clients"
+      }
+    }
+  },
+  "type": "dois"
+}

@@ -1,0 +1,57 @@
+{
+  "abstracts": [
+    {
+      "content": "International society recognizes that the scarcity of fresh water is increasing and farming sectors suffer from lack of irrigation water. However, if we look at this issue with a framework of relative factor endowment, a different view will arise. In emerging states with rapid industrialization and labor migration, labor scarcity increases at a faster pace than that of irrigation water. Using the historical review of Japan's irrigation policies as well as the case studies of India and China, this paper shows that the introduction of policies which do not reflect the actual relative resource scarcity may mislead the development path. We argue that under increasing relative labor scarcity it is important to realize the substitution of capital for labor for surface irrigation system management and that the substitution needs public support because the service of surface irrigation system has some externalities. Through this argument, this paper also intends to shed the light back to the role of the state for local resource management which seems to be unfairly undervalued since the boom of community participatory approach in the 1980s.",
+      "lang": "en",
+      "mimetype": "text/plain"
+    }
+  ],
+  "contribs": [
+    {
+      "given_name": "Kei",
+      "index": 0,
+      "raw_name": "Kei Kajisa",
+      "role": "author",
+      "surname": "Kajisa"
+    },
+    {
+      "given_name": "Kei",
+      "index": 1,
+      "raw_name": "Kei Kajisa",
+      "role": "author",
+      "surname": "Kajisa"
+    }
+  ],
+  "ext_ids": {
+    "doi": "10.22004/ag.econ.284864"
+  },
+  "extra": {
+    "datacite": {
+      "metadataVersion": 1,
+      "resourceType": "Text",
+      "resourceTypeGeneral": "Text",
+      "subjects": [
+        {
+          "subject": "Land Economics/Use"
+        },
+        {
+          "subject": "irrigation",
+          "subjectScheme": "keyword"
+        },
+        {
+          "subject": "industrialization",
+          "subjectScheme": "keyword"
+        },
+        {
+          "subject": "collective action",
+          "subjectScheme": "keyword"
+        }
+      ]
+    }
+  },
+  "language": "en",
+  "refs": [],
+  "release_type": "article-journal",
+  "release_year": 2017,
+  "title": "Irrigation Policies under Rapid Industrialization and Labor Migration: Lessons from Japan, China and India"
+}

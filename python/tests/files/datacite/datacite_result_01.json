@@ -1,0 +1,36 @@
+{
+  "abstracts": [],
+  "contribs": [
+    {
+      "given_name": "G.",
+      "index": 0,
+      "raw_name": "G. Dargenty",
+      "role": "author",
+      "surname": "Dargenty"
+    }
+  ],
+  "ext_ids": {
+    "doi": "10.11588/diglit.25558.39"
+  },
+  "extra": {
+    "datacite": {
+      "license": [
+        {
+          "lang": "de",
+          "rights": "Standard (Creative Commons - Namensnennung - Weitergabe unter gleichen Bedingungen) - http://www.ub.uni-heidelberg.de/helios/digi/nutzung/Welcome.html"
+        }
+      ],
+      "metadataVersion": 4,
+      "resourceType": "DigitalisatDigital copy",
+      "resourceTypeGeneral": "Text",
+      "schemaVersion": "http://datacite.org/schema/kernel-4"
+    }
+  },
+  "language": "fr",
+  "publisher": "University Library Heidelberg",
+  "refs": [],
+  "release_stage": "published",
+  "release_type": "article-journal",
+  "release_year": 1887,
+  "title": "Ferdinand Gaillard, [1]: né à Paris le 16 janvier 1834, mort à Paris le 19 janvier 1887"
+}

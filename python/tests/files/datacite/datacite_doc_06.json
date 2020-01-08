@@ -1,0 +1,83 @@
+{
+  "attributes": {
+    "container": {},
+    "contentUrl": null,
+    "contributors": [],
+    "created": "2017-12-13T12:03:09.000Z",
+    "creators": [
+      {
+        "affiliation": [],
+        "name": "Crispijn De Passe (Der Ältere) (1564-1637)",
+        "nameType": "Personal"
+      }
+    ],
+    "dates": [
+      {
+        "date": "1590",
+        "dateType": "Available"
+      },
+      {
+        "date": "1590",
+        "dateType": "Issued"
+      }
+    ],
+    "descriptions": [],
+    "doi": "10.16903/ethz-grs-d_006220",
+    "formats": [
+      "Blattgrösse: 21.0 x 14.4 x 0.0 cm (beschnitten)",
+      "Kupferstich"
+    ],
+    "fundingReferences": [],
+    "geoLocations": [],
+    "identifiers": [
+      {
+        "identifier": "https://doi.org/10.16903/ethz-grs-d_006220",
+        "identifierType": "DOI"
+      }
+    ],
+    "isActive": true,
+    "language": null,
+    "metadataVersion": 1,
+    "publicationYear": 1590,
+    "published": "1590",
+    "publisher": "n.a.",
+    "reason": null,
+    "registered": "2017-12-13T12:03:09.000Z",
+    "relatedIdentifiers": [],
+    "rightsList": [
+      {
+        "rights": "ETH-Bibliothek Zürich, Graphische Sammlung / D 6220 / Public Domain Mark 1.0"
+      }
+    ],
+    "schemaVersion": "http://datacite.org/schema/kernel-3",
+    "sizes": [],
+    "source": "mds",
+    "state": "findable",
+    "subjects": [],
+    "titles": [
+      {
+        "title": "Der Eifer (Sedulitas), Blatt 7 der Folge \"Die Tugenden\""
+      }
+    ],
+    "types": {
+      "bibtex": "misc",
+      "citeproc": "article",
+      "resourceTypeGeneral": "InteractiveResource",
+      "ris": "GEN",
+      "schemaOrg": "CreativeWork"
+    },
+    "updated": "2019-08-02T17:20:02.000Z",
+    "url": "http://www.e-gs.ethz.ch/eMP/eMuseumPlus?service=ExternalInterface&module=collection&objectId=29469&viewType=detailView",
+    "version": null
+  },
+  "id": "10.16903/ethz-grs-d_006220",
+  "relationships": {
+    "client": {
+      "data": {
+        "id": "ethz.gs",
+        "type": "clients"
+      }
+    }
+  },
+  "type": "dois"
+}

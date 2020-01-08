@@ -1,0 +1,85 @@
+{
+  "attributes": {
+    "container": {},
+    "contentUrl": null,
+    "contributors": [],
+    "created": "2018-11-29T12:04:12.000Z",
+    "creators": [
+      {
+        "affiliation": [],
+        "familyName": "Weyersberg",
+        "givenName": "Albert",
+        "name": "Weyersberg, Albert",
+        "nameType": "Personal"
+      }
+    ],
+    "dates": [
+      {
+        "date": "1897",
+        "dateType": "Issued"
+      }
+    ],
+    "descriptions": [],
+    "doi": "10.11588/diglit.37715.57",
+    "formats": [],
+    "fundingReferences": [],
+    "geoLocations": [],
+    "identifiers": [
+      {
+        "identifier": "https://doi.org/10.11588/diglit.37715.57",
+        "identifierType": "DOI"
+      }
+    ],
+    "isActive": true,
+    "language": "ger",
+    "metadataVersion": 2,
+    "publicationYear": 1897,
+    "published": "1897",
+    "publisher": "University Library Heidelberg",
+    "reason": null,
+    "registered": "2018-11-29T12:04:13.000Z",
+    "relatedIdentifiers": [],
+    "rightsList": [
+      {
+        "lang": "de",
+        "rights": "Creative Commons - Namensnennung - Weitergabe unter gleichen Bedingungen - https://creativecommons.org/licenses/by-sa/3.0/de/"
+      },
+      {
+        "lang": "en",
+        "rights": "Creative Commons - Namensnennung - Weitergabe unter gleichen Bedingungen - https://creativecommons.org/licenses/by-sa/3.0/"
+      }
+    ],
+    "schemaVersion": "http://datacite.org/schema/kernel-4",
+    "sizes": [],
+    "source": "mds",
+    "state": "findable",
+    "subjects": [],
+    "titles": [
+      {
+        "lang": "de",
+        "title": "Solinger Schwertschmiede-Familien, [4]"
+      }
+    ],
+    "types": {
+      "bibtex": "article",
+      "citeproc": "article-journal",
+      "resourceType": "DigitalisatDigital copy",
+      "resourceTypeGeneral": "Text",
+      "ris": "RPRT",
+      "schemaOrg": "ScholarlyArticle"
+    },
+    "updated": "2019-08-02T21:31:04.000Z",
+    "url": "https://digi.ub.uni-heidelberg.de/diglit/zhwk1897_1899/0131",
+    "version": null
+  },
+  "id": "10.11588/diglit.37715.57",
+  "relationships": {
+    "client": {
+      "data": {
+        "id": "gesis.ubhd",
+        "type": "clients"
+      }
+    }
+  },
+  "type": "dois"
+}
