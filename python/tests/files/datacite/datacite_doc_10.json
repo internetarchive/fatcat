@@ -1,28 +1,50 @@
 {
-  "id": "10.25549/wpacards-m6171",
-  "type": "dois",
   "attributes": {
+    "container": {},
+    "contentUrl": null,
+    "contributors": [],
+    "created": "2018-09-09T08:32:09.000Z",
+    "creators": [
+      {
+        "affiliation": [],
+        "name": "Unknown"
+      }
+    ],
+    "dates": [
+      {
+        "date": "2012",
+        "dateType": "Issued"
+      }
+    ],
+    "descriptions": [
+      {
+        "descriptionType": "Abstract"
+      }
+    ],
     "doi": "10.25549/wpacards-m6171",
+    "formats": [],
+    "fundingReferences": [],
+    "geoLocations": [],
     "identifiers": [
       {
         "identifier": "https://doi.org/10.25549/wpacards-m6171",
         "identifierType": "DOI"
       }
     ],
-    "creators": [
-      {
-        "name": "Unknown",
-        "affiliation": []
-      }
-    ],
-    "titles": [
-      {
-        "title": "WPA household census for 210 E VERNON, Los Angeles"
-      }
-    ],
-    "publisher": "University of Southern California Digital Library (USC.DL)",
-    "container": {},
+    "isActive": true,
+    "language": "eng",
+    "metadataVersion": 0,
     "publicationYear": 2012,
+    "published": "2012",
+    "publisher": "University of Southern California Digital Library (USC.DL)",
+    "reason": null,
+    "registered": "2018-09-09T08:33:10.000Z",
+    "relatedIdentifiers": [],
+    "rightsList": [],
+    "schemaVersion": "http://datacite.org/schema/kernel-4",
+    "sizes": [],
+    "source": "mds",
+    "state": "findable",
     "subjects": [
       {
         "subject": "housing areas"
@@ -31,47 +53,24 @@
         "subject": "Dwellings"
       }
     ],
-    "contributors": [],
-    "dates": [
+    "titles": [
       {
-        "date": "2012",
-        "dateType": "Issued"
+        "title": "WPA household census for 210 E VERNON, Los Angeles"
       }
     ],
-    "language": "eng",
     "types": {
-      "ris": "DATA",
       "bibtex": "misc",
       "citeproc": "dataset",
-      "schemaOrg": "Dataset",
       "resourceType": "Dataset",
-      "resourceTypeGeneral": "Dataset"
+      "resourceTypeGeneral": "Dataset",
+      "ris": "DATA",
+      "schemaOrg": "Dataset"
     },
-    "relatedIdentifiers": [],
-    "sizes": [],
-    "formats": [],
-    "version": null,
-    "rightsList": [],
-    "descriptions": [
-      {
-        "descriptionType": "Abstract"
-      }
-    ],
-    "geoLocations": [],
-    "fundingReferences": [],
+    "updated": "2019-08-02T20:03:32.000Z",
     "url": "http://digitallibrary.usc.edu/cdm/ref/collection/p15799coll8/id/2608",
-    "contentUrl": null,
-    "metadataVersion": 0,
-    "schemaVersion": "http://datacite.org/schema/kernel-4",
-    "source": "mds",
-    "isActive": true,
-    "state": "findable",
-    "reason": null,
-    "created": "2018-09-09T08:32:09.000Z",
-    "registered": "2018-09-09T08:33:10.000Z",
-    "published": "2012",
-    "updated": "2019-08-02T20:03:32.000Z"
+    "version": null
   },
+  "id": "10.25549/wpacards-m6171",
   "relationships": {
     "client": {
       "data": {
@@ -79,5 +78,6 @@
         "type": "clients"
       }
     }
-  }
+  },
+  "type": "dois"
 }

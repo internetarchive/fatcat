@@ -1,31 +1,16 @@
 {
-  "id": "10.7916/d81z522m",
-  "type": "dois",
   "attributes": {
-    "doi": "10.7916/d81z522m",
-    "identifiers": [
-      {
-        "identifier": "https://doi.org/10.7916/d81z522m",
-        "identifierType": "DOI"
-      }
-    ],
+    "container": {},
+    "contentUrl": null,
+    "contributors": [],
+    "created": "2017-11-29T02:15:31.000Z",
     "creators": [
       {
-        "name": "(:Unav)",
         "affiliation": [],
+        "name": "(:Unav)",
         "nameIdentifiers": []
       }
     ],
-    "titles": [
-      {
-        "title": "Eastern questionnaire, answer sheet for Interviewee 53215, page 064"
-      }
-    ],
-    "publisher": "Columbia University",
-    "container": {},
-    "publicationYear": 2017,
-    "subjects": [],
-    "contributors": [],
     "dates": [
       {
         "date": "2017-08-21",
@@ -40,34 +25,48 @@
         "dateType": "Issued"
       }
     ],
+    "descriptions": [],
+    "doi": "10.7916/d81z522m",
+    "formats": [],
+    "fundingReferences": [],
+    "geoLocations": [],
+    "identifiers": [
+      {
+        "identifier": "https://doi.org/10.7916/d81z522m",
+        "identifierType": "DOI"
+      }
+    ],
+    "isActive": true,
     "language": null,
+    "metadataVersion": 2,
+    "publicationYear": 2017,
+    "published": "2017",
+    "publisher": "Columbia University",
+    "reason": null,
+    "registered": "2017-11-29T02:15:32.000Z",
+    "relatedIdentifiers": [],
+    "rightsList": [],
+    "schemaVersion": "http://datacite.org/schema/kernel-3",
+    "sizes": [],
+    "source": "ez",
+    "state": "findable",
+    "subjects": [],
+    "titles": [
+      {
+        "title": "Eastern questionnaire, answer sheet for Interviewee 53215, page 064"
+      }
+    ],
     "types": {
-      "ris": "GEN",
       "bibtex": "misc",
       "citeproc": "article",
+      "ris": "GEN",
       "schemaOrg": "CreativeWork"
     },
-    "relatedIdentifiers": [],
-    "sizes": [],
-    "formats": [],
-    "version": null,
-    "rightsList": [],
-    "descriptions": [],
-    "geoLocations": [],
-    "fundingReferences": [],
+    "updated": "2019-08-04T13:17:58.000Z",
     "url": "https://dlc.library.columbia.edu/lcaaj/cul:k3j9kd52d6",
-    "contentUrl": null,
-    "metadataVersion": 2,
-    "schemaVersion": "http://datacite.org/schema/kernel-3",
-    "source": "ez",
-    "isActive": true,
-    "state": "findable",
-    "reason": null,
-    "created": "2017-11-29T02:15:31.000Z",
-    "registered": "2017-11-29T02:15:32.000Z",
-    "published": "2017",
-    "updated": "2019-08-04T13:17:58.000Z"
+    "version": null
   },
+  "id": "10.7916/d81z522m",
   "relationships": {
     "client": {
       "data": {
@@ -75,5 +74,6 @@
         "type": "clients"
       }
     }
-  }
+  },
+  "type": "dois"
 }

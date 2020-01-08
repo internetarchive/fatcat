@@ -1,4 +1,17 @@
 {
+  "abstracts": [],
+  "contribs": [
+    {
+      "given_name": "Albert",
+      "index": 0,
+      "raw_name": "Albert Weyersberg",
+      "role": "author",
+      "surname": "Weyersberg"
+    }
+  ],
+  "ext_ids": {
+    "doi": "10.11588/diglit.37715.57"
+  },
   "extra": {
     "datacite": {
       "license": [
@@ -17,24 +30,11 @@
       "schemaVersion": "http://datacite.org/schema/kernel-4"
     }
   },
-  "title": "Solinger Schwertschmiede-Familien, [4]",
-  "release_type": "article-journal",
-  "release_stage": "published",
-  "release_year": 1897,
-  "ext_ids": {
-    "doi": "10.11588/diglit.37715.57"
-  },
-  "publisher": "University Library Heidelberg",
   "language": "de",
-  "contribs": [
-    {
-      "index": 0,
-      "raw_name": "Albert Weyersberg",
-      "given_name": "Albert",
-      "surname": "Weyersberg",
-      "role": "author"
-    }
-  ],
+  "publisher": "University Library Heidelberg",
   "refs": [],
-  "abstracts": []
+  "release_stage": "published",
+  "release_type": "article-journal",
+  "release_year": 1897,
+  "title": "Solinger Schwertschmiede-Familien, [4]"
 }

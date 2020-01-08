@@ -1,4 +1,15 @@
 {
+  "abstracts": [],
+  "contribs": [
+    {
+      "index": 0,
+      "raw_name": "Crispijn De Passe (Der Ältere) (1564-1637)",
+      "role": "author"
+    }
+  ],
+  "ext_ids": {
+    "doi": "10.16903/ethz-grs-d_006220"
+  },
   "extra": {
     "datacite": {
       "license": [
@@ -11,19 +22,8 @@
       "schemaVersion": "http://datacite.org/schema/kernel-3"
     }
   },
-  "title": "Der Eifer (Sedulitas), Blatt 7 der Folge \"Die Tugenden\"",
+  "refs": [],
   "release_type": "article",
   "release_year": 1590,
-  "ext_ids": {
-    "doi": "10.16903/ethz-grs-d_006220"
-  },
-  "contribs": [
-    {
-      "index": 0,
-      "raw_name": "Crispijn De Passe (Der Ältere) (1564-1637)",
-      "role": "author"
-    }
-  ],
-  "refs": [],
-  "abstracts": []
+  "title": "Der Eifer (Sedulitas), Blatt 7 der Folge \"Die Tugenden\""
 }

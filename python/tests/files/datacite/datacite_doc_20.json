@@ -1,19 +1,12 @@
 {
   "attributes": {
-    "doi": "10.7916/d86x0cg1",
     "creators": [
       {
-        "name": "(:Unav)",
         "affiliation": [],
+        "name": "(:Unav)",
         "nameIdentifiers": []
       }
     ],
-    "titles": [
-      {
-        "title": "<h1>Eastern questionnaire</h1>"
-      }
-    ],
-    "publicationYear": 2017,
     "dates": [
       {
         "date": "2017-08-24",
@@ -28,14 +21,21 @@
         "dateType": "Issued"
       }
     ],
+    "doi": "10.7916/d86x0cg1",
+    "isActive": true,
     "language": null,
+    "publicationYear": 2017,
+    "state": "findable",
+    "titles": [
+      {
+        "title": "<h1>Eastern questionnaire</h1>"
+      }
+    ],
     "types": {
-      "ris": "GEN",
       "bibtex": "misc",
       "citeproc": "article",
+      "ris": "GEN",
       "schemaOrg": "CreativeWork"
-    },
-    "isActive": true,
-    "state": "findable"
+    }
   }
 }

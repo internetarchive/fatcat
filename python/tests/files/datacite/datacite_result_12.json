@@ -1,49 +1,49 @@
 {
+  "abstracts": [],
+  "contribs": [
+    {
+      "given_name": "Charalampos",
+      "index": 0,
+      "raw_name": "Charalampos Spanias",
+      "role": "author",
+      "surname": "Spanias"
+    },
+    {
+      "given_name": "Pantelis T",
+      "index": 1,
+      "raw_name": "Pantelis T Nikolaidis",
+      "role": "author",
+      "surname": "Nikolaidis"
+    },
+    {
+      "given_name": "Thomas",
+      "index": 2,
+      "raw_name": "Thomas Rosemann",
+      "role": "author",
+      "surname": "Rosemann"
+    },
+    {
+      "given_name": "Beat",
+      "index": 3,
+      "raw_name": "Beat Knechtle",
+      "role": "author",
+      "surname": "Knechtle"
+    }
+  ],
+  "ext_ids": {
+    "doi": "10.5167/uzh-171449"
+  },
   "extra": {
     "datacite": {
       "resourceTypeGeneral": "Text"
     },
     "release_month": 6
   },
-  "title": "Anthropometric and Physiological Profile of Mixed Martial Art Athletes: A Brief Review",
-  "release_type": "article-journal",
-  "release_stage": "published",
-  "release_date": "2019-06-14",
-  "release_year": 2019,
-  "ext_ids": {
-    "doi": "10.5167/uzh-171449"
-  },
   "publisher": "MDPI Publishing",
-  "contribs": [
-    {
-      "index": 0,
-      "raw_name": "Charalampos Spanias",
-      "given_name": "Charalampos",
-      "surname": "Spanias",
-      "role": "author"
-    },
-    {
-      "index": 1,
-      "raw_name": "Pantelis T Nikolaidis",
-      "given_name": "Pantelis T",
-      "surname": "Nikolaidis",
-      "role": "author"
-    },
-    {
-      "index": 2,
-      "raw_name": "Thomas Rosemann",
-      "given_name": "Thomas",
-      "surname": "Rosemann",
-      "role": "author"
-    },
-    {
-      "index": 3,
-      "raw_name": "Beat Knechtle",
-      "given_name": "Beat",
-      "surname": "Knechtle",
-      "role": "author"
-    }
-  ],
   "refs": [],
-  "abstracts": []
+  "release_date": "2019-06-14",
+  "release_stage": "published",
+  "release_type": "article-journal",
+  "release_year": 2019,
+  "title": "Anthropometric and Physiological Profile of Mixed Martial Art Athletes: A Brief Review"
 }

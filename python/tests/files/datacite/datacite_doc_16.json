@@ -1,74 +1,73 @@
 {
-  "id": "10.6084/m9.figshare.1282478",
-  "type": "dois",
   "attributes": {
-    "doi": "10.6084/m9.figshare.1282478",
-    "identifiers": [
-      {
-        "identifier": "https://doi.org/10.6084/m9.figshare.1282478",
-        "identifierType": "DOI"
-      }
-    ],
+    "container": {},
+    "contentUrl": null,
+    "contributors": [],
+    "created": "2014-12-31T15:38:16.000Z",
     "creators": [
       {
-        "name": "Sochi, Taha",
-        "nameType": "Personal",
-        "givenName": "Taha",
+        "affiliation": [],
         "familyName": "Sochi",
-        "affiliation": []
+        "givenName": "Taha",
+        "name": "Sochi, Taha",
+        "nameType": "Personal"
       }
     ],
-    "titles": [
-      {
-        "title": "Testing the Connectivity of Networks"
-      }
-    ],
-    "publisher": "Figshare",
-    "container": {},
-    "publicationYear": 2014,
-    "subjects": [],
-    "contributors": [],
     "dates": [
       {
         "date": "2014",
         "dateType": "Issued"
       }
     ],
-    "language": null,
-    "types": {
-      "ris": "DATA",
-      "bibtex": "misc",
-      "citeproc": "dataset",
-      "schemaOrg": "Dataset",
-      "resourceType": "Paper",
-      "resourceTypeGeneral": "Dataset"
-    },
-    "relatedIdentifiers": [],
-    "sizes": [],
+    "descriptions": [],
+    "doi": "10.6084/m9.figshare.1282478",
     "formats": [],
-    "version": null,
+    "fundingReferences": [],
+    "geoLocations": [],
+    "identifiers": [
+      {
+        "identifier": "https://doi.org/10.6084/m9.figshare.1282478",
+        "identifierType": "DOI"
+      }
+    ],
+    "isActive": true,
+    "language": null,
+    "metadataVersion": 0,
+    "publicationYear": 2014,
+    "published": "2014",
+    "publisher": "Figshare",
+    "reason": null,
+    "registered": "2014-12-31T15:38:18.000Z",
+    "relatedIdentifiers": [],
     "rightsList": [
       {
         "rights": "CC-BY",
         "rightsUri": "http://creativecommons.org/licenses/by/3.0/us"
       }
     ],
-    "descriptions": [],
-    "geoLocations": [],
-    "fundingReferences": [],
-    "url": "http://figshare.com/articles/Testing_the_Connectivity_of_Networks/1282478",
-    "contentUrl": null,
-    "metadataVersion": 0,
     "schemaVersion": "http://datacite.org/schema/kernel-3",
+    "sizes": [],
     "source": null,
-    "isActive": true,
     "state": "findable",
-    "reason": null,
-    "created": "2014-12-31T15:38:16.000Z",
-    "registered": "2014-12-31T15:38:18.000Z",
-    "published": "2014",
-    "updated": "2019-08-02T04:52:11.000Z"
+    "subjects": [],
+    "titles": [
+      {
+        "title": "Testing the Connectivity of Networks"
+      }
+    ],
+    "types": {
+      "bibtex": "misc",
+      "citeproc": "dataset",
+      "resourceType": "Paper",
+      "resourceTypeGeneral": "Dataset",
+      "ris": "DATA",
+      "schemaOrg": "Dataset"
+    },
+    "updated": "2019-08-02T04:52:11.000Z",
+    "url": "http://figshare.com/articles/Testing_the_Connectivity_of_Networks/1282478",
+    "version": null
   },
+  "id": "10.6084/m9.figshare.1282478",
   "relationships": {
     "client": {
       "data": {
@@ -76,5 +75,6 @@
         "type": "clients"
       }
     }
-  }
+  },
+  "type": "dois"
 }

@@ -1,18 +1,18 @@
 {
+  "abstracts": [],
+  "contribs": [],
+  "ext_ids": {
+    "doi": "10.7916/d86x0cg1"
+  },
   "extra": {
     "datacite": {},
     "release_month": 8
   },
-  "title": "ABC",
-  "release_type": "article",
-  "release_stage": "published",
-  "release_date": "2017-08-24",
-  "release_year": 2017,
-  "ext_ids": {
-    "doi": "10.7916/d86x0cg1"
-  },
   "language": "de",
-  "contribs": [],
   "refs": [],
-  "abstracts": []
+  "release_date": "2017-08-24",
+  "release_stage": "published",
+  "release_type": "article",
+  "release_year": 2017,
+  "title": "ABC"
 }

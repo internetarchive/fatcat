@@ -1,75 +1,74 @@
 {
-  "id": "10.11588/diglit.25558.39",
-  "type": "dois",
   "attributes": {
-    "doi": "10.11588/diglit.25558.39",
-    "identifiers": [
-      {
-        "identifier": "https://doi.org/10.11588/diglit.25558.39",
-        "identifierType": "DOI"
-      }
-    ],
+    "container": {},
+    "contentUrl": null,
+    "contributors": [],
+    "created": "2016-12-08T07:43:15.000Z",
     "creators": [
       {
-        "name": "Dargenty, G.",
-        "nameType": "Personal",
-        "givenName": "G.",
+        "affiliation": [],
         "familyName": "Dargenty",
-        "affiliation": []
+        "givenName": "G.",
+        "name": "Dargenty, G.",
+        "nameType": "Personal"
       }
     ],
-    "titles": [
-      {
-        "lang": "de",
-        "title": "Ferdinand Gaillard, [1]: né à Paris le 16 janvier 1834, mort à Paris le 19 janvier 1887"
-      }
-    ],
-    "publisher": "University Library Heidelberg",
-    "container": {},
-    "publicationYear": 1887,
-    "subjects": [],
-    "contributors": [],
     "dates": [
       {
         "date": "1887",
         "dateType": "Issued"
       }
     ],
-    "language": "fre",
-    "types": {
-      "ris": "RPRT",
-      "bibtex": "article",
-      "citeproc": "article-journal",
-      "schemaOrg": "ScholarlyArticle",
-      "resourceType": "DigitalisatDigital copy",
-      "resourceTypeGeneral": "Text"
-    },
-    "relatedIdentifiers": [],
-    "sizes": [],
+    "descriptions": [],
+    "doi": "10.11588/diglit.25558.39",
     "formats": [],
-    "version": null,
+    "fundingReferences": [],
+    "geoLocations": [],
+    "identifiers": [
+      {
+        "identifier": "https://doi.org/10.11588/diglit.25558.39",
+        "identifierType": "DOI"
+      }
+    ],
+    "isActive": true,
+    "language": "fre",
+    "metadataVersion": 4,
+    "publicationYear": 1887,
+    "published": "1887",
+    "publisher": "University Library Heidelberg",
+    "reason": null,
+    "registered": "2016-12-08T07:43:15.000Z",
+    "relatedIdentifiers": [],
     "rightsList": [
       {
         "lang": "de",
         "rights": "Standard (Creative Commons - Namensnennung - Weitergabe unter gleichen Bedingungen) - http://www.ub.uni-heidelberg.de/helios/digi/nutzung/Welcome.html"
       }
     ],
-    "descriptions": [],
-    "geoLocations": [],
-    "fundingReferences": [],
-    "url": "http://digi.ub.uni-heidelberg.de/diglit/art1887_1/0172",
-    "contentUrl": null,
-    "metadataVersion": 4,
     "schemaVersion": "http://datacite.org/schema/kernel-4",
+    "sizes": [],
     "source": null,
-    "isActive": true,
     "state": "findable",
-    "reason": null,
-    "created": "2016-12-08T07:43:15.000Z",
-    "registered": "2016-12-08T07:43:15.000Z",
-    "published": "1887",
-    "updated": "2019-08-02T14:27:33.000Z"
+    "subjects": [],
+    "titles": [
+      {
+        "lang": "de",
+        "title": "Ferdinand Gaillard, [1]: né à Paris le 16 janvier 1834, mort à Paris le 19 janvier 1887"
+      }
+    ],
+    "types": {
+      "bibtex": "article",
+      "citeproc": "article-journal",
+      "resourceType": "DigitalisatDigital copy",
+      "resourceTypeGeneral": "Text",
+      "ris": "RPRT",
+      "schemaOrg": "ScholarlyArticle"
+    },
+    "updated": "2019-08-02T14:27:33.000Z",
+    "url": "http://digi.ub.uni-heidelberg.de/diglit/art1887_1/0172",
+    "version": null
   },
+  "id": "10.11588/diglit.25558.39",
   "relationships": {
     "client": {
       "data": {
@@ -77,5 +76,6 @@
         "type": "clients"
       }
     }
-  }
+  },
+  "type": "dois"
 }

@@ -1,6 +1,46 @@
 {
+  "abstracts": [
+    {
+      "content": "The purpose of the ISEC concept is to provide a high-efficient heat pump system for hot water production. The ISEC concept uses two storage tanks for the water, one discharged and one charged. Hot water for the industrial process is tapped from the charged tank, while the other tank is charging. Charging is done by circulating the water in the tank through the condenser of a heat pump several times and thereby gradually heating the water. The charging is done with a higher mass flow rate than the discharging to reach several circulations of the water during the time frame of one discharging. This result in a lower condensing temperature than if the water was heated in one step. Two test setups were built, one to test the performance of the heat pump gradually heating the water and one to investigate the stratification in the storage tanks. Furthermore, a dynamic model of the system was implemented in Dymola, and validated by the use of test data from the two experimental setups. This paper shows that there is a good consistency between the model and the experimental tests.",
+      "lang": "en",
+      "mimetype": "text/plain"
+    }
+  ],
+  "contribs": [
+    {
+      "given_name": "E.",
+      "index": 0,
+      "raw_name": "E. ROTHUIZEN",
+      "role": "author",
+      "surname": "ROTHUIZEN"
+    },
+    {
+      "given_name": "B.",
+      "index": 1,
+      "raw_name": "B. ELMEGAARD",
+      "role": "author",
+      "surname": "ELMEGAARD"
+    },
+    {
+      "given_name": "B.",
+      "index": 2,
+      "raw_name": "B. MARKUSSEN W.",
+      "role": "author",
+      "surname": "MARKUSSEN W."
+    },
+    {
+      "index": 3,
+      "raw_name": "Et Al.",
+      "role": "author"
+    }
+  ],
+  "ext_ids": {
+    "doi": "10.18462/iir.icr.2015.0926"
+  },
   "extra": {
     "datacite": {
+      "resourceType": "Dataset",
+      "resourceTypeGeneral": "Dataset",
       "subjects": [
         {
           "subject": "HEAT PUMP"
@@ -23,54 +63,14 @@
         {
           "subject": "MODEL"
         }
-      ],
-      "resourceType": "Dataset",
-      "resourceTypeGeneral": "Dataset"
+      ]
     }
   },
-  "title": "High efficient heat pump system using storage tanks to increase cop by means of the ISEC concept. 1: model validation.",
-  "release_type": "dataset",
-  "release_stage": "published",
-  "release_year": 2015,
-  "ext_ids": {
-    "doi": "10.18462/iir.icr.2015.0926"
-  },
-  "publisher": "International Institute of Refrigeration (IIR)",
   "language": "en",
-  "contribs": [
-    {
-      "index": 0,
-      "raw_name": "E. ROTHUIZEN",
-      "given_name": "E.",
-      "surname": "ROTHUIZEN",
-      "role": "author"
-    },
-    {
-      "index": 1,
-      "raw_name": "B. ELMEGAARD",
-      "given_name": "B.",
-      "surname": "ELMEGAARD",
-      "role": "author"
-    },
-    {
-      "index": 2,
-      "raw_name": "B. MARKUSSEN W.",
-      "given_name": "B.",
-      "surname": "MARKUSSEN W.",
-      "role": "author"
-    },
-    {
-      "index": 3,
-      "raw_name": "Et Al.",
-      "role": "author"
-    }
-  ],
+  "publisher": "International Institute of Refrigeration (IIR)",
   "refs": [],
-  "abstracts": [
-    {
-      "content": "The purpose of the ISEC concept is to provide a high-efficient heat pump system for hot water production. The ISEC concept uses two storage tanks for the water, one discharged and one charged. Hot water for the industrial process is tapped from the charged tank, while the other tank is charging. Charging is done by circulating the water in the tank through the condenser of a heat pump several times and thereby gradually heating the water. The charging is done with a higher mass flow rate than the discharging to reach several circulations of the water during the time frame of one discharging. This result in a lower condensing temperature than if the water was heated in one step. Two test setups were built, one to test the performance of the heat pump gradually heating the water and one to investigate the stratification in the storage tanks. Furthermore, a dynamic model of the system was implemented in Dymola, and validated by the use of test data from the two experimental setups. This paper shows that there is a good consistency between the model and the experimental tests.",
-      "mimetype": "text/plain",
-      "lang": "en"
-    }
-  ]
+  "release_stage": "published",
+  "release_type": "dataset",
+  "release_year": 2015,
+  "title": "High efficient heat pump system using storage tanks to increase cop by means of the ISEC concept. 1: model validation."
 }

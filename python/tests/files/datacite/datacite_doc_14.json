@@ -1,8 +1,89 @@
 {
-  "id": "10.5517/cc7gns3",
-  "type": "dois",
   "attributes": {
+    "container": {},
+    "contentUrl": null,
+    "contributors": [],
+    "created": "2014-03-18T07:28:28.000Z",
+    "creators": [
+      {
+        "affiliation": [],
+        "familyName": "Stulz",
+        "givenName": "E.",
+        "name": "Stulz, E.",
+        "nameType": "Personal"
+      },
+      {
+        "affiliation": [],
+        "familyName": "Scott",
+        "givenName": "S.M.",
+        "name": "Scott, S.M.",
+        "nameType": "Personal"
+      },
+      {
+        "affiliation": [],
+        "familyName": "Ng",
+        "givenName": "Yiu-Fai",
+        "name": "Ng, Yiu-Fai",
+        "nameType": "Personal"
+      },
+      {
+        "affiliation": [],
+        "familyName": "Bond",
+        "givenName": "A.D.",
+        "name": "Bond, A.D.",
+        "nameType": "Personal"
+      },
+      {
+        "affiliation": [],
+        "familyName": "Teat",
+        "givenName": "S.J.",
+        "name": "Teat, S.J.",
+        "nameType": "Personal"
+      },
+      {
+        "affiliation": [],
+        "familyName": "Darling",
+        "givenName": "S.L.",
+        "name": "Darling, S.L.",
+        "nameType": "Personal"
+      },
+      {
+        "affiliation": [],
+        "familyName": "Feeder",
+        "givenName": "N.",
+        "name": "Feeder, N.",
+        "nameType": "Personal"
+      },
+      {
+        "affiliation": [],
+        "familyName": "Sanders",
+        "givenName": "J.K.M.",
+        "name": "Sanders, J.K.M.",
+        "nameType": "Personal"
+      }
+    ],
+    "dates": [
+      {
+        "date": "2004",
+        "dateType": "Issued"
+      }
+    ],
+    "descriptions": [
+      {
+        "description": "Related Article: E.Stulz, S.M.Scott, Yiu-Fai Ng, A.D.Bond, S.J.Teat, S.L.Darling, N.Feeder, J.K.M.Sanders|2003|Inorg.Chem.|42|6564|doi:10.1021/ic034699w",
+        "descriptionType": "Other"
+      },
+      {
+        "description": "An entry from the Cambridge Structural Database, the world’s repository for small molecule crystal structures. The entry contains experimental data from a crystal diffraction study. The deposited dataset for this entry is freely available from the CCDC and typically includes 3D coordinates, cell parameters, space group, experimental conditions and quality measures.",
+        "descriptionType": "Abstract"
+      }
+    ],
     "doi": "10.5517/cc7gns3",
+    "formats": [
+      "CIF"
+    ],
+    "fundingReferences": [],
+    "geoLocations": [],
     "identifiers": [
       {
         "identifier": "https://doi.org/10.5517/cc7gns3",
@@ -13,72 +94,26 @@
         "identifierType": "CCDC"
       }
     ],
-    "creators": [
-      {
-        "name": "Stulz, E.",
-        "nameType": "Personal",
-        "givenName": "E.",
-        "familyName": "Stulz",
-        "affiliation": []
-      },
-      {
-        "name": "Scott, S.M.",
-        "nameType": "Personal",
-        "givenName": "S.M.",
-        "familyName": "Scott",
-        "affiliation": []
-      },
-      {
-        "name": "Ng, Yiu-Fai",
-        "nameType": "Personal",
-        "givenName": "Yiu-Fai",
-        "familyName": "Ng",
-        "affiliation": []
-      },
-      {
-        "name": "Bond, A.D.",
-        "nameType": "Personal",
-        "givenName": "A.D.",
-        "familyName": "Bond",
-        "affiliation": []
-      },
-      {
-        "name": "Teat, S.J.",
-        "nameType": "Personal",
-        "givenName": "S.J.",
-        "familyName": "Teat",
-        "affiliation": []
-      },
-      {
-        "name": "Darling, S.L.",
-        "nameType": "Personal",
-        "givenName": "S.L.",
-        "familyName": "Darling",
-        "affiliation": []
-      },
-      {
-        "name": "Feeder, N.",
-        "nameType": "Personal",
-        "givenName": "N.",
-        "familyName": "Feeder",
-        "affiliation": []
-      },
-      {
-        "name": "Sanders, J.K.M.",
-        "nameType": "Personal",
-        "givenName": "J.K.M.",
-        "familyName": "Sanders",
-        "affiliation": []
-      }
-    ],
-    "titles": [
-      {
-        "title": "CCDC 222635: Experimental Crystal Structure Determination"
-      }
-    ],
-    "publisher": "Cambridge Crystallographic Data Centre",
-    "container": {},
+    "isActive": true,
+    "language": "eng",
+    "metadataVersion": 2,
     "publicationYear": 2004,
+    "published": "2004",
+    "publisher": "Cambridge Crystallographic Data Centre",
+    "reason": null,
+    "registered": "2014-03-18T07:28:29.000Z",
+    "relatedIdentifiers": [
+      {
+        "relatedIdentifier": "10.1021/ic034699w",
+        "relatedIdentifierType": "DOI",
+        "relationType": "IsSupplementTo"
+      }
+    ],
+    "rightsList": [],
+    "schemaVersion": "http://datacite.org/schema/kernel-3",
+    "sizes": [],
+    "source": null,
+    "state": "findable",
     "subjects": [
       {
         "subject": "Crystal Structure"
@@ -102,59 +137,23 @@
         "subject": "bis(mu~2~-5-(3,5-Di-t-butylphenyl)-15-(4-(2-(diphenylphosphino)ethynyl)phenyl)-2,8,12,18-tetrahexyl-3,7,13,17-tetramethylporphyrinato)-(5,15-bis(3,5-di-t-butylphenyl)-2,8,12,18-tetraethyl-3,7,13,17-tetramethylporphyrinato)-di-nickel-ruthenium chloroform solvate"
       }
     ],
-    "contributors": [],
-    "dates": [
+    "titles": [
       {
-        "date": "2004",
-        "dateType": "Issued"
+        "title": "CCDC 222635: Experimental Crystal Structure Determination"
       }
     ],
-    "language": "eng",
     "types": {
-      "ris": "DATA",
       "bibtex": "misc",
       "citeproc": "dataset",
-      "schemaOrg": "Dataset",
-      "resourceTypeGeneral": "Dataset"
+      "resourceTypeGeneral": "Dataset",
+      "ris": "DATA",
+      "schemaOrg": "Dataset"
     },
-    "relatedIdentifiers": [
-      {
-        "relationType": "IsSupplementTo",
-        "relatedIdentifier": "10.1021/ic034699w",
-        "relatedIdentifierType": "DOI"
-      }
-    ],
-    "sizes": [],
-    "formats": [
-      "CIF"
-    ],
-    "version": null,
-    "rightsList": [],
-    "descriptions": [
-      {
-        "description": "Related Article: E.Stulz, S.M.Scott, Yiu-Fai Ng, A.D.Bond, S.J.Teat, S.L.Darling, N.Feeder, J.K.M.Sanders|2003|Inorg.Chem.|42|6564|doi:10.1021/ic034699w",
-        "descriptionType": "Other"
-      },
-      {
-        "description": "An entry from the Cambridge Structural Database, the world’s repository for small molecule crystal structures. The entry contains experimental data from a crystal diffraction study. The deposited dataset for this entry is freely available from the CCDC and typically includes 3D coordinates, cell parameters, space group, experimental conditions and quality measures.",
-        "descriptionType": "Abstract"
-      }
-    ],
-    "geoLocations": [],
-    "fundingReferences": [],
+    "updated": "2019-08-02T03:38:32.000Z",
     "url": "http://www.ccdc.cam.ac.uk/services/structure_request?id=doi:10.5517/cc7gns3&sid=DataCite",
-    "contentUrl": null,
-    "metadataVersion": 2,
-    "schemaVersion": "http://datacite.org/schema/kernel-3",
-    "source": null,
-    "isActive": true,
-    "state": "findable",
-    "reason": null,
-    "created": "2014-03-18T07:28:28.000Z",
-    "registered": "2014-03-18T07:28:29.000Z",
-    "published": "2004",
-    "updated": "2019-08-02T03:38:32.000Z"
+    "version": null
   },
+  "id": "10.5517/cc7gns3",
   "relationships": {
     "client": {
       "data": {
@@ -162,5 +161,6 @@
         "type": "clients"
       }
     }
-  }
+  },
+  "type": "dois"
 }

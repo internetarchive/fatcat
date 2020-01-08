@@ -1,53 +1,44 @@
 {
-  "id": "10.11588/diglit.37715.57",
-  "type": "dois",
   "attributes": {
-    "doi": "10.11588/diglit.37715.57",
-    "identifiers": [
-      {
-        "identifier": "https://doi.org/10.11588/diglit.37715.57",
-        "identifierType": "DOI"
-      }
-    ],
+    "container": {},
+    "contentUrl": null,
+    "contributors": [],
+    "created": "2018-11-29T12:04:12.000Z",
     "creators": [
       {
-        "name": "Weyersberg, Albert",
-        "nameType": "Personal",
-        "givenName": "Albert",
+        "affiliation": [],
         "familyName": "Weyersberg",
-        "affiliation": []
+        "givenName": "Albert",
+        "name": "Weyersberg, Albert",
+        "nameType": "Personal"
       }
     ],
-    "titles": [
-      {
-        "lang": "de",
-        "title": "Solinger Schwertschmiede-Familien, [4]"
-      }
-    ],
-    "publisher": "University Library Heidelberg",
-    "container": {},
-    "publicationYear": 1897,
-    "subjects": [],
-    "contributors": [],
     "dates": [
       {
         "date": "1897",
         "dateType": "Issued"
       }
     ],
-    "language": "ger",
-    "types": {
-      "ris": "RPRT",
-      "bibtex": "article",
-      "citeproc": "article-journal",
-      "schemaOrg": "ScholarlyArticle",
-      "resourceType": "DigitalisatDigital copy",
-      "resourceTypeGeneral": "Text"
-    },
-    "relatedIdentifiers": [],
-    "sizes": [],
+    "descriptions": [],
+    "doi": "10.11588/diglit.37715.57",
     "formats": [],
-    "version": null,
+    "fundingReferences": [],
+    "geoLocations": [],
+    "identifiers": [
+      {
+        "identifier": "https://doi.org/10.11588/diglit.37715.57",
+        "identifierType": "DOI"
+      }
+    ],
+    "isActive": true,
+    "language": "ger",
+    "metadataVersion": 2,
+    "publicationYear": 1897,
+    "published": "1897",
+    "publisher": "University Library Heidelberg",
+    "reason": null,
+    "registered": "2018-11-29T12:04:13.000Z",
+    "relatedIdentifiers": [],
     "rightsList": [
       {
         "lang": "de",
@@ -58,22 +49,30 @@
         "rights": "Creative Commons - Namensnennung - Weitergabe unter gleichen Bedingungen - https://creativecommons.org/licenses/by-sa/3.0/"
       }
     ],
-    "descriptions": [],
-    "geoLocations": [],
-    "fundingReferences": [],
-    "url": "https://digi.ub.uni-heidelberg.de/diglit/zhwk1897_1899/0131",
-    "contentUrl": null,
-    "metadataVersion": 2,
     "schemaVersion": "http://datacite.org/schema/kernel-4",
+    "sizes": [],
     "source": "mds",
-    "isActive": true,
     "state": "findable",
-    "reason": null,
-    "created": "2018-11-29T12:04:12.000Z",
-    "registered": "2018-11-29T12:04:13.000Z",
-    "published": "1897",
-    "updated": "2019-08-02T21:31:04.000Z"
+    "subjects": [],
+    "titles": [
+      {
+        "lang": "de",
+        "title": "Solinger Schwertschmiede-Familien, [4]"
+      }
+    ],
+    "types": {
+      "bibtex": "article",
+      "citeproc": "article-journal",
+      "resourceType": "DigitalisatDigital copy",
+      "resourceTypeGeneral": "Text",
+      "ris": "RPRT",
+      "schemaOrg": "ScholarlyArticle"
+    },
+    "updated": "2019-08-02T21:31:04.000Z",
+    "url": "https://digi.ub.uni-heidelberg.de/diglit/zhwk1897_1899/0131",
+    "version": null
   },
+  "id": "10.11588/diglit.37715.57",
   "relationships": {
     "client": {
       "data": {
@@ -81,5 +80,6 @@
         "type": "clients"
       }
     }
-  }
+  },
+  "type": "dois"
 }

@@ -1,30 +1,15 @@
 {
-  "id": "10.3932/ethz-a-000055869",
-  "type": "dois",
   "attributes": {
-    "doi": "10.3932/ethz-a-000055869",
-    "identifiers": [
-      {
-        "identifier": "https://doi.org/10.3932/ethz-a-000055869",
-        "identifierType": "DOI"
-      }
-    ],
+    "container": {},
+    "contentUrl": null,
+    "contributors": [],
+    "created": "2019-03-04T23:56:42.000Z",
     "creators": [
       {
-        "name": "Comet Photo AG (Zürich)",
-        "affiliation": []
+        "affiliation": [],
+        "name": "Comet Photo AG (Zürich)"
       }
     ],
-    "titles": [
-      {
-        "title": "N1 bei Safenwil"
-      }
-    ],
-    "publisher": "ETH-Bibliothek Zürich, Bildarchiv",
-    "container": {},
-    "publicationYear": 1965,
-    "subjects": [],
-    "contributors": [],
     "dates": [
       {
         "date": "1965",
@@ -35,21 +20,6 @@
         "dateType": "Issued"
       }
     ],
-    "language": "de",
-    "types": {
-      "ris": "FIGURE",
-      "bibtex": "misc",
-      "citeproc": "graphic",
-      "schemaOrg": "ImageObject",
-      "resourceTypeGeneral": "Image"
-    },
-    "relatedIdentifiers": [],
-    "sizes": [],
-    "formats": [
-      "TIFF-Bild"
-    ],
-    "version": null,
-    "rightsList": [],
     "descriptions": [
       {
         "description": "Download und Nutzung frei",
@@ -60,21 +30,50 @@
         "descriptionType": "Other"
       }
     ],
-    "geoLocations": [],
+    "doi": "10.3932/ethz-a-000055869",
+    "formats": [
+      "TIFF-Bild"
+    ],
     "fundingReferences": [],
-    "url": "http://ba.e-pics.ethz.ch/link.jsp?id=44861",
-    "contentUrl": null,
-    "metadataVersion": 6,
-    "schemaVersion": "http://datacite.org/schema/kernel-3",
-    "source": "mds",
+    "geoLocations": [],
+    "identifiers": [
+      {
+        "identifier": "https://doi.org/10.3932/ethz-a-000055869",
+        "identifierType": "DOI"
+      }
+    ],
     "isActive": true,
-    "state": "findable",
-    "reason": null,
-    "created": "2019-03-04T23:56:42.000Z",
-    "registered": "2019-07-30T13:17:45.000Z",
+    "language": "de",
+    "metadataVersion": 6,
+    "publicationYear": 1965,
     "published": "1965",
-    "updated": "2019-08-02T22:08:26.000Z"
+    "publisher": "ETH-Bibliothek Zürich, Bildarchiv",
+    "reason": null,
+    "registered": "2019-07-30T13:17:45.000Z",
+    "relatedIdentifiers": [],
+    "rightsList": [],
+    "schemaVersion": "http://datacite.org/schema/kernel-3",
+    "sizes": [],
+    "source": "mds",
+    "state": "findable",
+    "subjects": [],
+    "titles": [
+      {
+        "title": "N1 bei Safenwil"
+      }
+    ],
+    "types": {
+      "bibtex": "misc",
+      "citeproc": "graphic",
+      "resourceTypeGeneral": "Image",
+      "ris": "FIGURE",
+      "schemaOrg": "ImageObject"
+    },
+    "updated": "2019-08-02T22:08:26.000Z",
+    "url": "http://ba.e-pics.ethz.ch/link.jsp?id=44861",
+    "version": null
   },
+  "id": "10.3932/ethz-a-000055869",
   "relationships": {
     "client": {
       "data": {
@@ -82,5 +81,6 @@
         "type": "clients"
       }
     }
-  }
+  },
+  "type": "dois"
 }

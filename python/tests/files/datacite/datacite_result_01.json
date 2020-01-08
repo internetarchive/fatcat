@@ -1,4 +1,17 @@
 {
+  "abstracts": [],
+  "contribs": [
+    {
+      "given_name": "G.",
+      "index": 0,
+      "raw_name": "G. Dargenty",
+      "role": "author",
+      "surname": "Dargenty"
+    }
+  ],
+  "ext_ids": {
+    "doi": "10.11588/diglit.25558.39"
+  },
   "extra": {
     "datacite": {
       "license": [
@@ -13,24 +26,11 @@
       "schemaVersion": "http://datacite.org/schema/kernel-4"
     }
   },
-  "title": "Ferdinand Gaillard, [1]: né à Paris le 16 janvier 1834, mort à Paris le 19 janvier 1887",
-  "release_type": "article-journal",
-  "release_stage": "published",
-  "release_year": 1887,
-  "ext_ids": {
-    "doi": "10.11588/diglit.25558.39"
-  },
-  "publisher": "University Library Heidelberg",
   "language": "fr",
-  "contribs": [
-    {
-      "index": 0,
-      "raw_name": "G. Dargenty",
-      "given_name": "G.",
-      "surname": "Dargenty",
-      "role": "author"
-    }
-  ],
+  "publisher": "University Library Heidelberg",
   "refs": [],
-  "abstracts": []
+  "release_stage": "published",
+  "release_type": "article-journal",
+  "release_year": 1887,
+  "title": "Ferdinand Gaillard, [1]: né à Paris le 16 janvier 1834, mort à Paris le 19 janvier 1887"
 }

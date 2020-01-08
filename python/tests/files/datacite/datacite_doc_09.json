@@ -1,8 +1,46 @@
 {
-  "id": "10.2314/gbv:880813733",
-  "type": "dois",
   "attributes": {
+    "container": {},
+    "contentUrl": null,
+    "contributors": [
+      {
+        "affiliation": [],
+        "contributorType": "HostingInstitution",
+        "name": "TIB-Technische Informationsbibliothek Universitätsbibliothek Hannover",
+        "nameIdentifiers": [],
+        "nameType": "Organizational"
+      },
+      {
+        "affiliation": [],
+        "contributorType": "DataManager",
+        "name": "Technische Informationsbibliothek (TIB)",
+        "nameIdentifiers": []
+      }
+    ],
+    "created": "2017-02-25T00:00:18.000Z",
+    "creators": [
+      {
+        "affiliation": [],
+        "familyName": "Kirstaedter",
+        "givenName": "Nils",
+        "name": "Kirstaedter, Nils",
+        "nameIdentifiers": [],
+        "nameType": "Personal"
+      }
+    ],
+    "dates": [
+      {
+        "date": "2016",
+        "dateType": "Issued"
+      }
+    ],
+    "descriptions": [],
     "doi": "10.2314/gbv:880813733",
+    "formats": [
+      "application/pdf"
+    ],
+    "fundingReferences": [],
+    "geoLocations": [],
     "identifiers": [
       {
         "identifier": "https://doi.org/10.2314/gbv:880813733",
@@ -29,14 +67,29 @@
         "identifierType": "ftx-id"
       }
     ],
-    "creators": [
+    "isActive": true,
+    "language": "de",
+    "metadataVersion": 9,
+    "publicationYear": 2016,
+    "published": "2016",
+    "publisher": "[Lumics GmbH]",
+    "reason": null,
+    "registered": "2017-02-25T00:00:19.000Z",
+    "relatedIdentifiers": [],
+    "rightsList": [],
+    "schemaVersion": "http://datacite.org/schema/kernel-4",
+    "sizes": [
+      "1 Online-Ressource (10 Seiten, 1,40 MB)"
+    ],
+    "source": "mds",
+    "state": "findable",
+    "subjects": [
       {
-        "name": "Kirstaedter, Nils",
-        "nameType": "Personal",
-        "givenName": "Nils",
-        "familyName": "Kirstaedter",
-        "affiliation": [],
-        "nameIdentifiers": []
+        "subject": "Direktdiodenlasersysteme"
+      },
+      {
+        "subject": "Physics",
+        "subjectScheme": "linsearch"
       }
     ],
     "titles": [
@@ -52,73 +105,19 @@
         "titleType": "AlternativeTitle"
       }
     ],
-    "publisher": "[Lumics GmbH]",
-    "container": {},
-    "publicationYear": 2016,
-    "subjects": [
-      {
-        "subject": "Direktdiodenlasersysteme"
-      },
-      {
-        "subject": "Physics",
-        "subjectScheme": "linsearch"
-      }
-    ],
-    "contributors": [
-      {
-        "name": "TIB-Technische Informationsbibliothek Universitätsbibliothek Hannover",
-        "nameType": "Organizational",
-        "affiliation": [],
-        "contributorType": "HostingInstitution",
-        "nameIdentifiers": []
-      },
-      {
-        "name": "Technische Informationsbibliothek (TIB)",
-        "affiliation": [],
-        "contributorType": "DataManager",
-        "nameIdentifiers": []
-      }
-    ],
-    "dates": [
-      {
-        "date": "2016",
-        "dateType": "Issued"
-      }
-    ],
-    "language": "de",
     "types": {
-      "ris": "RPRT",
       "bibtex": "article",
       "citeproc": "report",
-      "schemaOrg": "ScholarlyArticle",
       "resourceType": "Report",
-      "resourceTypeGeneral": "Text"
+      "resourceTypeGeneral": "Text",
+      "ris": "RPRT",
+      "schemaOrg": "ScholarlyArticle"
     },
-    "relatedIdentifiers": [],
-    "sizes": [
-      "1 Online-Ressource (10 Seiten, 1,40 MB)"
-    ],
-    "formats": [
-      "application/pdf"
-    ],
-    "version": "1.0",
-    "rightsList": [],
-    "descriptions": [],
-    "geoLocations": [],
-    "fundingReferences": [],
+    "updated": "2019-08-03T05:53:51.000Z",
     "url": "https://www.tib.eu/suchen/id/TIBKAT:880813733/",
-    "contentUrl": null,
-    "metadataVersion": 9,
-    "schemaVersion": "http://datacite.org/schema/kernel-4",
-    "source": "mds",
-    "isActive": true,
-    "state": "findable",
-    "reason": null,
-    "created": "2017-02-25T00:00:18.000Z",
-    "registered": "2017-02-25T00:00:19.000Z",
-    "published": "2016",
-    "updated": "2019-08-03T05:53:51.000Z"
+    "version": "1.0"
   },
+  "id": "10.2314/gbv:880813733",
   "relationships": {
     "client": {
       "data": {
@@ -126,5 +125,6 @@
         "type": "clients"
       }
     }
-  }
+  },
+  "type": "dois"
 }

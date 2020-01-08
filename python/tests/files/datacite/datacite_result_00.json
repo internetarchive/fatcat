@@ -1,4 +1,24 @@
 {
+  "abstracts": [],
+  "contribs": [
+    {
+      "given_name": "Qian-Jin",
+      "index": 0,
+      "raw_name": "Qian-Jin Li",
+      "role": "author",
+      "surname": "Li"
+    },
+    {
+      "given_name": "Chun-Long",
+      "index": 1,
+      "raw_name": "Chun-Long Yang",
+      "role": "author",
+      "surname": "Yang"
+    }
+  ],
+  "ext_ids": {
+    "doi": "10.1007/s10870-008-9413-z"
+  },
   "extra": {
     "container_name": "Journal of Chemical Crystallography",
     "datacite": {
@@ -7,86 +27,66 @@
           "rightsUri": "http://www.springer.com/tdm"
         }
       ],
+      "metadataVersion": 1,
       "relations": [
         {
-          "relationType": "IsPartOf",
           "relatedIdentifier": "1074-1542",
-          "resourceTypeGeneral": "Collection",
-          "relatedIdentifierType": "ISSN"
+          "relatedIdentifierType": "ISSN",
+          "relationType": "IsPartOf",
+          "resourceTypeGeneral": "Collection"
         }
       ],
       "resourceType": "JournalArticle",
       "resourceTypeGeneral": "Text",
-      "schemaVersion": "http://datacite.org/schema/kernel-4",
-      "metadataVersion": 1
+      "schemaVersion": "http://datacite.org/schema/kernel-4"
     },
     "release_month": 5
   },
-  "title": "Synthesis and Crystal Structure of a Compound with Two Conformational Isomers: N-(2-methylbenzoyl)-N′-(4-nitrophenyl)thiourea",
-  "release_type": "article-journal",
-  "release_stage": "published",
-  "release_date": "2019-05-31",
-  "release_year": 2019,
-  "ext_ids": {
-    "doi": "10.1007/s10870-008-9413-z"
-  },
-  "volume": "38",
   "issue": "12",
   "pages": "927-930",
   "publisher": "Springer Science and Business Media LLC",
-  "contribs": [
-    {
-      "index": 0,
-      "raw_name": "Qian-Jin Li",
-      "given_name": "Qian-Jin",
-      "surname": "Li",
-      "role": "author"
-    },
-    {
-      "index": 1,
-      "raw_name": "Chun-Long Yang",
-      "given_name": "Chun-Long",
-      "surname": "Yang",
-      "role": "author"
-    }
-  ],
   "refs": [
     {
-      "index": 0,
       "extra": {
         "doi": "10.1016/j.bmcl.2005.09.033"
-      }
+      },
+      "index": 0
     },
     {
-      "index": 1,
       "extra": {
         "doi": "10.1016/s0022-1139(02)00330-5"
-      }
+      },
+      "index": 1
     },
     {
-      "index": 2,
       "extra": {
         "doi": "10.1016/s0010-8545(01)00337-x"
-      }
+      },
+      "index": 2
     },
     {
-      "index": 3,
       "extra": {
         "doi": "10.1016/j.tetlet.2005.06.135"
-      }
+      },
+      "index": 3
     },
     {
-      "index": 4,
       "extra": {
         "doi": "10.1039/p298700000s1"
-      }
+      },
+      "index": 4
     },
     {
-      "index": 5,
       "extra": {
         "doi": "10.1002/anie.199515551"
-      }
+      },
+      "index": 5
     }
   ],
-  "abstracts": []
+  "release_date": "2019-05-31",
+  "release_stage": "published",
+  "release_type": "article-journal",
+  "release_year": 2019,
+  "title": "Synthesis and Crystal Structure of a Compound with Two Conformational Isomers: N-(2-methylbenzoyl)-N′-(4-nitrophenyl)thiourea",
+  "volume": "38"
 }

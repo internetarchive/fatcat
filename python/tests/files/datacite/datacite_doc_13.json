@@ -1,37 +1,22 @@
 {
-  "id": "10.5169/seals-314104",
-  "type": "dois",
   "attributes": {
-    "doi": "10.5169/seals-314104",
-    "identifiers": [
-      {
-        "identifier": "https://doi.org/10.5169/seals-314104",
-        "identifierType": "DOI"
-      }
-    ],
+    "container": {},
+    "contentUrl": null,
+    "contributors": [],
+    "created": "2013-03-22T14:02:08.000Z",
     "creators": [
       {
-        "name": "O.M.",
-        "affiliation": []
+        "affiliation": [],
+        "name": "O.M."
       },
       {
-        "name": "Hiltbrunner, Hermann",
-        "nameType": "Personal",
-        "givenName": "Hermann",
+        "affiliation": [],
         "familyName": "Hiltbrunner",
-        "affiliation": []
+        "givenName": "Hermann",
+        "name": "Hiltbrunner, Hermann",
+        "nameType": "Personal"
       }
     ],
-    "titles": [
-      {
-        "title": "[Müssen wir des Glücks uns schämen?]"
-      }
-    ],
-    "publisher": "Buchdruckerei Büchler & Co.",
-    "container": {},
-    "publicationYear": 1940,
-    "subjects": [],
-    "contributors": [],
     "dates": [
       {
         "date": "1940-10-05",
@@ -42,39 +27,53 @@
         "dateType": "Issued"
       }
     ],
-    "language": null,
-    "types": {
-      "ris": "JOUR",
-      "bibtex": "article",
-      "citeproc": "article-journal",
-      "schemaOrg": "ScholarlyArticle",
-      "resourceType": "Journal Article",
-      "resourceTypeGeneral": "Text"
-    },
-    "relatedIdentifiers": [],
-    "sizes": [],
+    "descriptions": [],
+    "doi": "10.5169/seals-314104",
     "formats": [
       "text/html",
       "application/pdf"
     ],
-    "version": null,
-    "rightsList": [],
-    "descriptions": [],
-    "geoLocations": [],
     "fundingReferences": [],
-    "url": "https://www.e-periodica.ch/digbib/view?pid=sle-001:1940-1941:45::13",
-    "contentUrl": null,
-    "metadataVersion": 17,
-    "schemaVersion": "http://datacite.org/schema/kernel-3",
-    "source": null,
+    "geoLocations": [],
+    "identifiers": [
+      {
+        "identifier": "https://doi.org/10.5169/seals-314104",
+        "identifierType": "DOI"
+      }
+    ],
     "isActive": true,
-    "state": "findable",
-    "reason": null,
-    "created": "2013-03-22T14:02:08.000Z",
-    "registered": "2013-03-22T13:58:11.000Z",
+    "language": null,
+    "metadataVersion": 17,
+    "publicationYear": 1940,
     "published": "1940",
-    "updated": "2019-08-02T02:22:55.000Z"
+    "publisher": "Buchdruckerei Büchler & Co.",
+    "reason": null,
+    "registered": "2013-03-22T13:58:11.000Z",
+    "relatedIdentifiers": [],
+    "rightsList": [],
+    "schemaVersion": "http://datacite.org/schema/kernel-3",
+    "sizes": [],
+    "source": null,
+    "state": "findable",
+    "subjects": [],
+    "titles": [
+      {
+        "title": "[Müssen wir des Glücks uns schämen?]"
+      }
+    ],
+    "types": {
+      "bibtex": "article",
+      "citeproc": "article-journal",
+      "resourceType": "Journal Article",
+      "resourceTypeGeneral": "Text",
+      "ris": "JOUR",
+      "schemaOrg": "ScholarlyArticle"
+    },
+    "updated": "2019-08-02T02:22:55.000Z",
+    "url": "https://www.e-periodica.ch/digbib/view?pid=sle-001:1940-1941:45::13",
+    "version": null
   },
+  "id": "10.5169/seals-314104",
   "relationships": {
     "client": {
       "data": {
@@ -82,5 +81,6 @@
         "type": "clients"
       }
     }
-  }
+  },
+  "type": "dois"
 }

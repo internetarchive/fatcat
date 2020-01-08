@@ -1,4 +1,22 @@
 {
+  "abstracts": [],
+  "contribs": [
+    {
+      "index": 0,
+      "raw_name": "O.M.",
+      "role": "author"
+    },
+    {
+      "given_name": "Hermann",
+      "index": 1,
+      "raw_name": "Hermann Hiltbrunner",
+      "role": "author",
+      "surname": "Hiltbrunner"
+    }
+  ],
+  "ext_ids": {
+    "doi": "10.5169/seals-314104"
+  },
   "extra": {
     "datacite": {
       "metadataVersion": 17,
@@ -8,29 +26,11 @@
     },
     "release_month": 10
   },
-  "title": "[Müssen wir des Glücks uns schämen?]",
-  "release_type": "article-journal",
-  "release_stage": "published",
-  "release_date": "1940-10-05",
-  "release_year": 1940,
-  "ext_ids": {
-    "doi": "10.5169/seals-314104"
-  },
   "publisher": "Buchdruckerei Büchler & Co.",
-  "contribs": [
-    {
-      "index": 0,
-      "raw_name": "O.M.",
-      "role": "author"
-    },
-    {
-      "index": 1,
-      "raw_name": "Hermann Hiltbrunner",
-      "given_name": "Hermann",
-      "surname": "Hiltbrunner",
-      "role": "author"
-    }
-  ],
   "refs": [],
-  "abstracts": []
+  "release_date": "1940-10-05",
+  "release_stage": "published",
+  "release_type": "article-journal",
+  "release_year": 1940,
+  "title": "[Müssen wir des Glücks uns schämen?]"
 }

@@ -1,28 +1,14 @@
 {
   "attributes": {
-    "doi": "10.7916/d86x0cg1–xxx",
     "creators": [
       {
-        "name": "Anton Welch",
         "affiliation": [
           "Department of pataphysics"
         ],
+        "name": "Anton Welch",
         "nameIdentifiers": []
       }
     ],
-    "titles": [
-      {
-        "title": "ABC"
-      }
-    ],
-    "publicationYear": 2017,
-    "language": "GERMAN",
-    "types": {
-      "ris": "GEN",
-      "bibtex": "misc",
-      "citeproc": "article",
-      "schemaOrg": "CreativeWork"
-    },
     "dates": [
       {
         "date": "2017-08-24",
@@ -37,7 +23,21 @@
         "dateType": "Issued"
       }
     ],
+    "doi": "10.7916/d86x0cg1–xxx",
     "isActive": true,
-    "state": "findable"
+    "language": "GERMAN",
+    "publicationYear": 2017,
+    "state": "findable",
+    "titles": [
+      {
+        "title": "ABC"
+      }
+    ],
+    "types": {
+      "bibtex": "misc",
+      "citeproc": "article",
+      "ris": "GEN",
+      "schemaOrg": "CreativeWork"
+    }
   }
 }
