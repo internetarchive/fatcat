@@ -41,28 +41,28 @@ CONTAINER_TYPE_MAP = {
 DATACITE_TYPE_MAP = {
     'ris': {
         'THES': 'thesis',
-        'SOUND': None,
+        'SOUND': 'song', # 99.9% maps to citeproc song, so use that (exception: report)
         'CHAP': 'chapter',
-        'FIGURE': None,
+        'FIGURE': 'figure',
         'RPRT': 'report',
         'JOUR': 'article-journal',
-        'MPCT': None,
-        'GEN': None,
+        'MPCT': 'motion_picture',
+        'GEN': 'article-journal', # GEN consist of 99% article and report, post-weblog, misc - and one dataset
         'BOOK': 'book',
         'DATA': 'dataset',
-        'COMP': None,
+        'COMP': 'software',
     },
     'schemaOrg': {
         'Dataset': 'dataset',
         'Book': 'book',
-        'ScholarlyArticle': 'article',
+        'ScholarlyArticle': 'article-journal',
         'ImageObject': 'graphic',
         'Collection': None,
         'MediaObject': None,
         'Event': None,
-        'SoftwareSourceCode': None,
+        'SoftwareSourceCode': 'software',
         'Chapter': 'chapter',
-        'CreativeWork': None,
+        'CreativeWork': None, # Seems to be a catch-all resourceType, from PGRFA Material, Pamphlet, to music score.
         'PublicationIssue': 'article',
         'AudioObject': None,
         'Thesis': 'thesis',
@@ -112,19 +112,19 @@ DATACITE_TYPE_MAP = {
         'book': 'book',
     },
     'resourceTypeGeneral': {
-        'Image': None,
+        'Image': 'graphic',
         'Dataset': 'dataset',
         'PhysicalObject': None,
         'Collection': None,
-        'Text': None,
+        'Text': None, # "Greyliterature, labnotes, accompanyingmaterials"
         'Sound': None,
         'InteractiveResource': None,
         'Event': None,
-        'Software': None,
+        'Software': 'software',
         'Other': None,
         'Workflow': None,
         'Audiovisual': None,
-    }
+    } # https://schema.datacite.org/meta/kernel-4.0/doc/DataCite-MetadataKernel_v4.0.pdf#page=32
 }
 
 # DATACITE_UNKNOWN_MARKERS via https://support.datacite.org/docs/schema-values-unknown-information-v43.
@@ -516,11 +516,12 @@ class DataciteImporter(EntityImporter):
             license_extra.append(l)
 
         # Release type. Try to determine the release type from a variety of
-        # types supplied in datacite. The "attributes.types.resourceType"
-        # contains too many (176 in sample) things for now; citeproc may be the
-        # closest, but not always supplied.
-        for typeType in ('citeproc', 'resourceTypeGeneral', 'schemaOrg',
-                         'bibtex', 'ris'):
+        # types supplied in datacite. The "attributes.types.resourceType" is
+        # uncontrolled (170000+ unique values, from "null", "Dataset" to
+        # "Jupyter Notebook" and "Macroseismic Data Points" or "2 days of IP
+        # flows in 2009") citeproc may be the closest, but not always supplied.
+        # Order lookup roughly by completeness of mapping.
+        for typeType in ('citeproc', 'ris', 'schemaOrg', 'bibtex', 'resourceTypeGeneral'):
             value = attributes.get('types', {}).get(typeType)
             release_type = DATACITE_TYPE_MAP.get(typeType, {}).get(value)
             if release_type is not None:
