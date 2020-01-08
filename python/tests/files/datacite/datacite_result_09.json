@@ -32,6 +32,17 @@
       "given_name": "Nils",
       "surname": "Kirstaedter",
       "role": "author"
+    },
+    {
+      "extra": {
+        "organization": "TIB-Technische Informationsbibliothek Universitätsbibliothek Hannover"
+      }
+    },
+    {
+      "raw_name": "Technische Informationsbibliothek (TIB)",
+      "extra": {
+        "type": "DataManager"
+      }
     }
   ],
   "refs": [],

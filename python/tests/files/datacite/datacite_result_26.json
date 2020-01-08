@@ -1,0 +1,31 @@
+{
+  "extra": {
+    "datacite": {},
+    "release_month": 8
+  },
+  "title": "Additional file 123: ABC",
+  "subtitle": "DEF",
+  "release_type": "stub",
+  "release_stage": "published",
+  "release_date": "2017-08-24",
+  "release_year": 2017,
+  "ext_ids": {
+    "doi": "10.7916/d86x0cg1"
+  },
+  "contribs": [
+    {
+      "index": 0,
+      "raw_name": "Anton Welch",
+      "role": "author",
+      "raw_affiliation": "Department of pataphysics"
+    },
+      {
+        "extra": {"type": "Editor"},
+        "raw_name": "David Wemmer",
+        "given_name": "David",
+        "surname": "Wemmer"
+      }
+  ],
+  "refs": [],
+  "abstracts": []
+}

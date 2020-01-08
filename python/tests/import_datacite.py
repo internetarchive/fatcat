@@ -275,7 +275,7 @@ def test_datacite_dict_parse(datacite_importer):
         assert r.extra['datacite']['subjects'] == [{'subject': 'Plant Genetic Resource for Food and Agriculture'}]
         assert len(r.abstracts) == 1
         assert len(r.abstracts[0].content) == 421
-        assert len(r.contribs) == 1
+        assert len(r.contribs) == 2
         assert r.contribs[0].raw_name == "GLIS Of The ITPGRFA"
         assert r.contribs[0].given_name == None
         assert r.contribs[0].surname == None
@@ -287,7 +287,7 @@ def test_datacite_conversions(datacite_importer):
     for now.
     """
     datacite_importer.debug = True
-    for i in range(26):
+    for i in range(27):
         src = 'tests/files/datacite/datacite_doc_{0:02d}.json'.format(i)
         dst = 'tests/files/datacite/datacite_result_{0:02d}.json'.format(i)
         print('testing mapping from {} => {}'.format(src, dst))

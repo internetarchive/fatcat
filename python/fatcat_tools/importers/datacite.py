@@ -303,88 +303,11 @@ class DataciteImporter(EntityImporter):
             print('[{}] skipping non-ascii doi for now'.format(doi))
             return None
 
-        # Contributors. Many nameIdentifierSchemes, we do not use (yet):
-        # "attributes.creators[].nameIdentifiers[].nameIdentifierScheme":
-        # ["LCNA", "GND", "email", "NAF", "OSF", "RRID", "ORCID",
-        # "SCOPUS", "NRCPID", "schema.org", "GRID", "MGDS", "VIAF", "JACoW-ID"].
-        contribs = []
 
-        # Names, that should be ignored right away.
-        name_blacklist = set(('Occdownload Gbif.Org',))
+        creators = attributes.get('creators', []) or []
+        contributors = attributes.get('contributors', []) or []  # Much fewer than creators.
 
-        for i, c in enumerate(attributes['creators']):
-            nameType = c.get('nameType', '') or ''
-            if nameType in ('', 'Personal'):
-                creator_id = None
-                for nid in c.get('nameIdentifiers', []):
-                    name_scheme = nid.get('nameIdentifierScheme', '') or ''
-                    if not name_scheme.lower() == "orcid":
-                        continue
-                    orcid = nid.get('nameIdentifier',
-                                    '').replace('https://orcid.org/', '')
-                    if not orcid:
-                        continue
-                    creator_id = self.lookup_orcid(orcid)
-                    # TODO(martin): If creator_id is None, should we create creators?
-
-                # If there are multiple affiliation strings, use the first one.
-                affiliations = c.get('affiliation', []) or []
-                raw_affiliation = None
-                if len(affiliations) == 0:
-                    raw_affiliation = None
-                else:
-                    raw_affiliation = clean(affiliations[0])
-
-                name = c.get('name')
-                given_name = c.get('givenName')
-                surname = c.get('familyName')
-
-                if name:
-                    name = clean(name)
-
-                if name in name_blacklist:
-                    continue
-
-                if given_name:
-                    given_name = clean(given_name)
-
-                if surname:
-                    surname = clean(surname)
-
-                if not name:
-                    continue
-
-                if raw_affiliation == '':
-                    continue
-
-                if name.lower() in UNKNOWN_MARKERS:
-                    continue
-
-                # Unpack name, if we have an index form (e.g. 'Razis, Panos A') into 'Panos A razis'.
-                if name:
-                    name = index_form_to_display_name(name)
-
-                contribs.append(
-                    fatcat_openapi_client.ReleaseContrib(
-                        creator_id=creator_id,
-                        index=i,
-                        raw_name=name,
-                        given_name=given_name,
-                        surname=surname,
-                        role='author',
-                        raw_affiliation=raw_affiliation,
-                    ))
-            elif nameType == 'Organizational':
-                name = c.get('name', '') or ''
-                if name in UNKNOWN_MARKERS:
-                    continue
-                if len(name) < 3:
-                    continue
-                extra = {'organization': name}
-                contribs.append(fatcat_openapi_client.ReleaseContrib(
-                    index=i, extra=extra))
-            else:
-                print('[{}] unknown name type: {}'.format(doi, nameType), file=sys.stderr)
+        contribs = self.parse_datacite_creators(creators) + self.parse_datacite_creators(contributors, role=None, set_index=False)
 
         # Title, may come with "attributes.titles[].titleType", like
         # "AlternativeTitle", "Other", "Subtitle", "TranslatedTitle"
@@ -767,6 +690,104 @@ class DataciteImporter(EntityImporter):
                     extra=self.editgroup_extra),
                 entity_list=batch))
 
+    def parse_datacite_creators(self, creators, role='author', set_index=True):
+        """
+        Parses a list of creators into a list of ReleaseContrib objects. Set
+        set_index to False, if the index contrib field should be left blank.
+        """
+        # Contributors. Many nameIdentifierSchemes, we do not use (yet):
+        # "attributes.creators[].nameIdentifiers[].nameIdentifierScheme":
+        # ["LCNA", "GND", "email", "NAF", "OSF", "RRID", "ORCID",
+        # "SCOPUS", "NRCPID", "schema.org", "GRID", "MGDS", "VIAF", "JACoW-ID"].
+        contribs = []
+
+        # Names, that should be ignored right away.
+        name_blacklist = set(('Occdownload Gbif.Org',))
+
+        for i, c in enumerate(creators):
+            if not set_index:
+                i = None
+            nameType = c.get('nameType', '') or ''
+            if nameType in ('', 'Personal'):
+                creator_id = None
+                for nid in c.get('nameIdentifiers', []):
+                    name_scheme = nid.get('nameIdentifierScheme', '') or ''
+                    if not name_scheme.lower() == "orcid":
+                        continue
+                    orcid = nid.get('nameIdentifier', '').replace('https://orcid.org/', '')
+                    if not orcid:
+                        continue
+                    creator_id = self.lookup_orcid(orcid)
+                    # TODO(martin): If creator_id is None, should we create creators?
+
+                # If there are multiple affiliation strings, use the first one.
+                affiliations = c.get('affiliation', []) or []
+                raw_affiliation = None
+                if len(affiliations) == 0:
+                    raw_affiliation = None
+                else:
+                    raw_affiliation = clean(affiliations[0])
+
+                name = c.get('name')
+                given_name = c.get('givenName')
+                surname = c.get('familyName')
+
+                if name:
+                    name = clean(name)
+                if not name:
+                    continue
+                if name in name_blacklist:
+                    continue
+                if name.lower() in UNKNOWN_MARKERS:
+                    continue
+                # Unpack name, if we have an index form (e.g. 'Razis, Panos A') into 'Panos A razis'.
+                if name:
+                    name = index_form_to_display_name(name)
+
+                if given_name:
+                    given_name = clean(given_name)
+                if surname:
+                    surname = clean(surname)
+                if raw_affiliation == '':
+                    continue
+
+                extra = None
+
+                # "DataManager", "DataCurator", "ContactPerson", "Distributor",
+                # "RegistrationAgency", "Sponsor", "Researcher",
+                # "RelatedPerson", "ProjectLeader", "Editor", "Other",
+                # "ProjectMember", "Funder", "RightsHolder", "DataCollector",
+                # "Supervisor", "Producer", "HostingInstitution", "ResearchGroup"
+                contributorType = c.get('contributorType', '') or ''
+
+                if contributorType:
+                    extra = {'type': contributorType}
+
+                contribs.append(
+                    fatcat_openapi_client.ReleaseContrib(
+                        creator_id=creator_id,
+                        index=i,
+                        raw_name=name,
+                        given_name=given_name,
+                        surname=surname,
+                        role=role,
+                        raw_affiliation=raw_affiliation,
+                        extra=extra,
+                    ))
+            elif nameType == 'Organizational':
+                name = c.get('name', '') or ''
+                if name in UNKNOWN_MARKERS:
+                    continue
+                if len(name) < 3:
+                    continue
+                extra = {'organization': name}
+                contribs.append(fatcat_openapi_client.ReleaseContrib(
+                    index=i, extra=extra))
+            else:
+                print('[{}] unknown name type: {}'.format(doi, nameType), file=sys.stderr)
+
+        return contribs
+
 
 def lookup_license_slug(raw):
     """
@@ -971,6 +992,8 @@ def index_form_to_display_name(s):
     if s.count(',') > 1:
         # "Dr. Hina, Dr. Muhammad Usman Shahid, Dr. Muhammad Zeeshan Khan"
         return s
+
+    # Not names, but sprinkled in fields where authors live.
     stopwords = [s.lower() for s in (
         'Archive',
         'Collection',
