@@ -530,6 +530,13 @@ class DataciteImporter(EntityImporter):
         if release_type is None:
             print("[{}] no mapped type: {}".format(doi, value), file=sys.stderr)
 
+        # release_type exception: Global Biodiversity Information Facility
+        # publishes highly interesting datasets, but titles are mostly the same
+        # ("GBIF Occurrence Download" or "Occurrence Download"); set
+        # release_type to "stub" (CSL/FC).
+        if publisher == 'The Global Biodiversity Information Facility':
+            release_type = 'stub'
+
         # Language values are varied ("ger", "es", "English", "ENG", "en-us",
         # "other", ...). Try to crush it with langcodes: "It may sound to you
         # like langcodes solves a pretty boring problem. At one level, that's
