@@ -12,7 +12,7 @@
       "resourceTypeGeneral": "Dataset",
       "schemaVersion": "http://datacite.org/schema/kernel-3"
     },
-    "month": 10
+    "release_month": 10
   },
   "title": "SH409843.07FU",
   "subtitle": "Gomphales",
