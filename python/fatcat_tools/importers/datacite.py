@@ -543,6 +543,10 @@ class DataciteImporter(EntityImporter):
         if publisher == 'The Global Biodiversity Information Facility':
             release_type = 'stub'
 
+        # release_type exception: lots of "Experimental Crystal Structure Determination"
+        if publisher == 'Cambridge Crystallographic Data Centre':
+            release_type = 'entry'
+
         # Language values are varied ("ger", "es", "English", "ENG", "en-us",
         # "other", ...). Try to crush it with langcodes: "It may sound to you
         # like langcodes solves a pretty boring problem. At one level, that's
