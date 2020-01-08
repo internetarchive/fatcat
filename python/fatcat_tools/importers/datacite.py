@@ -613,6 +613,12 @@ class DataciteImporter(EntityImporter):
                 ))
             ref_index += 1
 
+        # More specific release_type via 'Reviews' relationsship.
+        for rel in relIds:
+            if rel.get('relatedIdentifierType', '') != 'Reviews':
+                continue
+            release_type = 'review'
+
         # Extra information.
         extra_datacite = dict()
 
