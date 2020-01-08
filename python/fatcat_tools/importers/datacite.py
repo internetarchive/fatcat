@@ -307,7 +307,7 @@ class DataciteImporter(EntityImporter):
         creators = attributes.get('creators', []) or []
         contributors = attributes.get('contributors', []) or []  # Much fewer than creators.
 
-        contribs = self.parse_datacite_creators(creators) + self.parse_datacite_creators(contributors, role=None, set_index=False)
+        contribs = self.parse_datacite_creators(creators, doi=doi) + self.parse_datacite_creators(contributors, role=None, set_index=False, doi=doi)
 
         # Title, may come with "attributes.titles[].titleType", like
         # "AlternativeTitle", "Other", "Subtitle", "TranslatedTitle"
@@ -690,10 +690,11 @@ class DataciteImporter(EntityImporter):
                     extra=self.editgroup_extra),
                 entity_list=batch))
 
-    def parse_datacite_creators(self, creators, role='author', set_index=True):
+    def parse_datacite_creators(self, creators, role='author', set_index=True, doi=None):
         """
         Parses a list of creators into a list of ReleaseContrib objects. Set
         set_index to False, if the index contrib field should be left blank.
+        The doi parameter is only used for debugging.
         """
         # Contributors. Many nameIdentifierSchemes, we do not use (yet):
         # "attributes.creators[].nameIdentifiers[].nameIdentifierScheme":
