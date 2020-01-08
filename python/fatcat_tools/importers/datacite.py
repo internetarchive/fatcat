@@ -547,6 +547,10 @@ class DataciteImporter(EntityImporter):
         if publisher == 'Cambridge Crystallographic Data Centre':
             release_type = 'entry'
 
+        # Supplement files, e.g. "Additional file 1: ASE constructs in questionnaire."
+        if title.lower().startswith('additional file'):
+            release_type = 'stub'
+
         # Language values are varied ("ger", "es", "English", "ENG", "en-us",
         # "other", ...). Try to crush it with langcodes: "It may sound to you
         # like langcodes solves a pretty boring problem. At one level, that's
