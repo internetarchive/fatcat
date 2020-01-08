@@ -686,8 +686,10 @@ class DataciteImporter(EntityImporter):
 
         # Always include datacite key, even if value is empty (dict).
         extra['datacite'] = extra_datacite
+
+        # Preparation for a schema update.
         if release_month:
-            extra['month'] = release_month
+            extra['release_month'] = release_month
 
         extids = self.lookup_ext_ids(doi=doi)
 
