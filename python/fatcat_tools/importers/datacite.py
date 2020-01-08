@@ -309,6 +309,9 @@ class DataciteImporter(EntityImporter):
         # "SCOPUS", "NRCPID", "schema.org", "GRID", "MGDS", "VIAF", "JACoW-ID"].
         contribs = []
 
+        # Names, that should be ignored right away.
+        name_blacklist = set(('Occdownload Gbif.Org',))
+
         for i, c in enumerate(attributes['creators']):
             nameType = c.get('nameType', '') or ''
             if nameType in ('', 'Personal'):
@@ -338,6 +341,9 @@ class DataciteImporter(EntityImporter):
 
                 if name:
                     name = clean(name)
+
+                if name in name_blacklist:
+                    continue
 
                 if given_name:
                     given_name = clean(given_name)
