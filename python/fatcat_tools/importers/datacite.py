@@ -148,7 +148,11 @@ UNKNOWN_MARKERS = set(DATACITE_UNKNOWN_MARKERS).union(set((
     'NN',
     'n.a.',
     '[s.n.]',
+    'Unknown',
 )))
+
+# UNKNOWN_MARKERS_LOWER are lowercase version of UNKNOWN blacklist.
+UNKNOWN_MARKERS_LOWER = set((v.lower() for v in UNKNOWN_MARKERS))
 
 # TODO(martin): merge this with other maps, maybe.
 LICENSE_SLUG_MAP = {
@@ -736,7 +740,7 @@ class DataciteImporter(EntityImporter):
                     continue
                 if name in name_blacklist:
                     continue
-                if name.lower() in UNKNOWN_MARKERS:
+                if name.lower() in UNKNOWN_MARKERS_LOWER:
                     continue
                 # Unpack name, if we have an index form (e.g. 'Razis, Panos A') into 'Panos A razis'.
                 if name:
