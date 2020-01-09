@@ -468,11 +468,24 @@ class DataciteImporter(EntityImporter):
         for desc in descs:
             if not desc.get('descriptionType') == 'Abstract':
                 continue
-            if len(desc.get('description', '') or '') < 10:
-                continue
+
+            # Description maybe a string or list.
             text = desc.get('description', '')
+            if not text:
+                continue
+            if isinstance(text, list):
+                try:
+                    text = "\n".join(text)
+                except TypeError as err:
+                    continue # Bail out, if it is not a list of strings.
+
+            # Limit length.
+            if len(text) < 10:
+                continue
             if len(text) > MAX_ABSTRACT_LENGTH:
                 text = text[:MAX_ABSTRACT_LENGTH] + " [...]"
+
+            # Detect language.
             lang = None
             try:
                 lang = langdetect.detect(text)
