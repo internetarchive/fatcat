@@ -16,8 +16,7 @@
     "datacite": {
       "metadataVersion": 1,
       "resourceType": "dataPackage",
-      "resourceTypeGeneral": "Dataset",
-      "schemaVersion": "http://datacite.org/schema/kernel-2.2"
+      "resourceTypeGeneral": "Dataset"
     }
   },
   "publisher": "Environmental Data Initiative",

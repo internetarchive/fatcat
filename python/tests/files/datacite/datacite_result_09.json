@@ -28,7 +28,6 @@
       "metadataVersion": 9,
       "resourceType": "Report",
       "resourceTypeGeneral": "Text",
-      "schemaVersion": "http://datacite.org/schema/kernel-4",
       "subjects": [
         {
           "subject": "Direktdiodenlasersysteme"

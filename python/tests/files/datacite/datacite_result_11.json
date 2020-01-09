@@ -13,8 +13,7 @@
   "extra": {
     "datacite": {
       "metadataVersion": 6,
-      "resourceTypeGeneral": "Image",
-      "schemaVersion": "http://datacite.org/schema/kernel-3"
+      "resourceTypeGeneral": "Image"
     }
   },
   "language": "de",

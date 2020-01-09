@@ -22,8 +22,7 @@
     "datacite": {
       "metadataVersion": 5,
       "resourceType": "Text",
-      "resourceTypeGeneral": "Text",
-      "schemaVersion": "http://datacite.org/schema/kernel-3"
+      "resourceTypeGeneral": "Text"
     }
   },
   "language": "en",

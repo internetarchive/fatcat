@@ -12,8 +12,7 @@
   },
   "extra": {
     "datacite": {
-      "resourceTypeGeneral": "Dataset",
-      "schemaVersion": "http://datacite.org/schema/kernel-4"
+      "resourceTypeGeneral": "Dataset"
     }
   },
   "publisher": "Harvard Dataverse",

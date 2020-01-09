@@ -78,7 +78,6 @@
         }
       ],
       "resourceTypeGeneral": "Dataset",
-      "schemaVersion": "http://datacite.org/schema/kernel-3",
       "subjects": [
         {
           "subject": "Crystal Structure"

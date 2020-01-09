@@ -21,8 +21,7 @@
     "datacite": {
       "metadataVersion": 17,
       "resourceType": "Journal Article",
-      "resourceTypeGeneral": "Text",
-      "schemaVersion": "http://datacite.org/schema/kernel-3"
+      "resourceTypeGeneral": "Text"
     },
     "release_month": 10
   },

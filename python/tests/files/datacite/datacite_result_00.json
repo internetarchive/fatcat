@@ -37,8 +37,7 @@
         }
       ],
       "resourceType": "JournalArticle",
-      "resourceTypeGeneral": "Text",
-      "schemaVersion": "http://datacite.org/schema/kernel-4"
+      "resourceTypeGeneral": "Text"
     },
     "release_month": 5
   },

@@ -22,8 +22,7 @@
       ],
       "metadataVersion": 4,
       "resourceType": "DigitalisatDigital copy",
-      "resourceTypeGeneral": "Text",
-      "schemaVersion": "http://datacite.org/schema/kernel-4"
+      "resourceTypeGeneral": "Text"
     }
   },
   "language": "fr",

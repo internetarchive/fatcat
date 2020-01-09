@@ -524,8 +524,7 @@
       ],
       "metadataVersion": 1,
       "resourceType": "Dataset/UNITE Species Hypothesis",
-      "resourceTypeGeneral": "Dataset",
-      "schemaVersion": "http://datacite.org/schema/kernel-3"
+      "resourceTypeGeneral": "Dataset"
     },
     "release_month": 10
   },

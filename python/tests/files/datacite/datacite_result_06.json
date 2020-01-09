@@ -18,8 +18,7 @@
         }
       ],
       "metadataVersion": 1,
-      "resourceTypeGeneral": "InteractiveResource",
-      "schemaVersion": "http://datacite.org/schema/kernel-3"
+      "resourceTypeGeneral": "InteractiveResource"
     }
   },
   "refs": [],

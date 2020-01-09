@@ -21,8 +21,7 @@
         }
       ],
       "resourceType": "Paper",
-      "resourceTypeGeneral": "Dataset",
-      "schemaVersion": "http://datacite.org/schema/kernel-3"
+      "resourceTypeGeneral": "Dataset"
     }
   },
   "publisher": "Figshare",

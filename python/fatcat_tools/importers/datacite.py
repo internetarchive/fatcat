@@ -559,12 +559,9 @@ class DataciteImporter(EntityImporter):
 
         # Include version information.
         metadata_version = attributes.get('metadataVersion') or ''
-        schema_version = attributes.get('schemaVersion') or ''
 
         if metadata_version:
             extra_datacite['metadataVersion'] = metadata_version
-        if schema_version:
-            extra_datacite['schemaVersion'] = schema_version
 
         # Include resource types.
         types = attributes.get('types', {}) or {}

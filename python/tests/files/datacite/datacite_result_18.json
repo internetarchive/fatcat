@@ -6,8 +6,7 @@
   },
   "extra": {
     "datacite": {
-      "metadataVersion": 2,
-      "schemaVersion": "http://datacite.org/schema/kernel-3"
+      "metadataVersion": 2
     },
     "release_month": 8
   },
