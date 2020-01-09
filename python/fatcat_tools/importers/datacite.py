@@ -158,6 +158,7 @@ UNKNOWN_MARKERS_LOWER = set((v.lower() for v in UNKNOWN_MARKERS))
 # TODO(martin): merge this with other maps and lookup functions, eventually.
 LICENSE_SLUG_MAP = {
     "//archaeologydataservice.ac.uk/advice/termsofuseandaccess.xhtml/": "ADS-UK",
+    "//archaeologydataservice.ac.uk/advice/termsofuseandaccess/": "ADS-UK",
     "//arxiv.org/licenses/nonexclusive-distrib/1.0/": "ARXIV-1.0",
     "//doi.wiley.com/10.1002/tdm_license_1.1/": "WILEY-TDM-1.1",
     "//homepage.data-planet.com/terms-use/": "SAGE-DATA-PLANET",

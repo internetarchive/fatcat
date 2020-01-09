@@ -330,6 +330,7 @@ def test_lookup_license_slug():
         Case('http://homepage.data-planet.com/terms-use', 'SAGE-DATA-PLANET'),
         Case('http://www.springer.com/tdm', 'SPRINGER-TDM'),
         Case('https://archaeologydataservice.ac.uk/advice/termsOfUseAndAccess.xhtml', 'ADS-UK'),
+        Case('https://archaeologydataservice.ac.uk/advice/termsOfUseAndAccess', 'ADS-UK'),
         Case('https://creativecommons.org/public-domain/cc0', 'CC-0'),
         Case('https://creativecommons.org/publicdomain/zero/1.0', 'CC-0'),
         Case('https://creativecommons.org/share-your-work/public-domain/cc0', 'CC-0'),
