@@ -550,9 +550,9 @@ class DataciteImporter(EntityImporter):
         resource_type = types.get('resourceType', '') or ''
         resource_type_general = types.get('resourceTypeGeneral', '') or ''
 
-        if resource_type:
+        if resource_type and resource_type.lower() not in UNKNOWN_MARKERS_LOWER:
             extra_datacite['resourceType'] = resource_type
-        if resource_type_general:
+        if resource_type_general and resource_type_general.lower() not in UNKNOWN_MARKERS_LOWER:
             extra_datacite['resourceTypeGeneral'] = resource_type_general
 
         # Include certain relations from relatedIdentifiers. Keeping the
