@@ -7,7 +7,7 @@ import datetime
 import pytest
 import gzip
 from fatcat_tools.importers import DataciteImporter, JsonLinePusher
-from fatcat_tools.importers.datacite import find_original_language_title, parse_datacite_titles, parse_datacite_dates, clean_doi, index_form_to_display_name
+from fatcat_tools.importers.datacite import find_original_language_title, parse_datacite_titles, parse_datacite_dates, clean_doi, index_form_to_display_name, lookup_license_slug
 from fatcat_tools.transforms import entity_to_dict
 from fixtures import api
 import json
@@ -315,3 +315,32 @@ def test_index_form_to_display_name():
     for c in cases:
         assert c.output == index_form_to_display_name(c.input)
 
+
+def test_lookup_license_slug():
+    Case = collections.namedtuple('Case', 'input output')
+    cases = [
+        Case('https://opensource.org/licenses/MIT', 'MIT'),
+        Case('creativecommons.org/licenses/by-nc-nd/3.0/', 'CC-BY-NC-ND'),
+        Case('http://creativecommons.org/licences/by-nc-sa/4.0', 'CC-BY-NC-SA'),
+        Case('http://creativecommons.org/licenses/by-nc-nd/2.5/co', 'CC-BY-NC-ND'),
+        Case('http://creativecommons.org/licenses/by-nd/4.0/legalcode', 'CC-BY-ND'),
+        Case('http://creativecommons.org/licenses/by/2.0/uk/legalcode', 'CC-BY'),
+        Case('http://creativecommons.org/publicdomain/zero/1.0/legalcode', 'CC-0'),
+        Case('http://doi.wiley.com/10.1002/tdm_license_1.1', 'WILEY-TDM-1.1'),
+        Case('http://homepage.data-planet.com/terms-use', 'SAGE-DATA-PLANET'),
+        Case('http://www.springer.com/tdm', 'SPRINGER-TDM'),
+        Case('https://archaeologydataservice.ac.uk/advice/termsOfUseAndAccess.xhtml', 'ADS-UK'),
+        Case('https://creativecommons.org/public-domain/cc0', 'CC-0'),
+        Case('https://creativecommons.org/publicdomain/zero/1.0', 'CC-0'),
+        Case('https://creativecommons.org/share-your-work/public-domain/cc0', 'CC-0'),
+        Case('https://www.elsevier.com/tdm/userlicense/1.0', 'ELSEVIER-USER-1.0'),
+        Case('https://www.gnu.org/licenses/gpl-3.0.html', 'GPL-3.0'),
+        Case('http://rightsstatements.org/page/InC/1.0?language=en', 'RS-INC'),
+        Case('http://onlinelibrary.wiley.com/termsAndConditions', 'WILEY'),
+        Case('https://publikationen.bibliothek.kit.edu/kitopen-lizenz', 'KIT-OPEN'),
+        Case('http://journals.sagepub.com/page/policies/text-and-data-mining-license', 'SAGE-TDM'),
+    ]
+
+    for c in cases:
+        got = lookup_license_slug(c.input)
+        assert c.output == got, '{}: got {}, want {}'.format(c.input, got, c.output)

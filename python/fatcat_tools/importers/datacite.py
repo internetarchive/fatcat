@@ -11,6 +11,7 @@ functions (parse_datacite_...), which can be tested more easily.
 import collections
 import datetime
 import hashlib
+import re
 import json
 import sqlite3
 import sys
@@ -154,62 +155,26 @@ UNKNOWN_MARKERS = set(DATACITE_UNKNOWN_MARKERS).union(set((
 # UNKNOWN_MARKERS_LOWER are lowercase version of UNKNOWN blacklist.
 UNKNOWN_MARKERS_LOWER = set((v.lower() for v in UNKNOWN_MARKERS))
 
-# TODO(martin): merge this with other maps, maybe.
+# TODO(martin): merge this with other maps and lookup functions, eventually.
 LICENSE_SLUG_MAP = {
-    "//creativecommons.org/licenses/by/2.0/": "CC-BY",
-    "//creativecommons.org/licenses/by/2.0/uk/legalcode": "CC-BY",
-    "//creativecommons.org/licenses/by/3.0/": "CC-BY",
-    "//creativecommons.org/licenses/by/3.0/us": "CC-BY",
-    "//creativecommons.org/licenses/by/4.0/": "CC-BY",
-    "//creativecommons.org/licenses/by/4.0/deed.de/": "CC-BY",
-    "//creativecommons.org/licenses/by/4.0/deed.en_US/": "CC-BY",
-    "//creativecommons.org/licenses/by/4.0/legalcode/": "CC-BY",
-    "//creativecommons.org/licenses/by-nc/2.0/": "CC-BY-NC",
-    "//creativecommons.org/licenses/by-nc/3.0/": "CC-BY-NC",
-    "//creativecommons.org/licenses/by-nc/4.0/": "CC-BY-NC",
-    "//creativecommons.org/licenses/by-nc/4.0/legalcode": "CC-BY-NC",
-    "//creativecommons.org/licenses/by-nc-nd/3.0/": "CC-BY-NC-ND",
-    "//creativecommons.org/licenses/by-nc-nd/3.0/gr": "CC-BY-NC-ND",
-    "//creativecommons.org/licenses/by-nc-nd/4.0/": "CC-BY-ND",
-    "//creativecommons.org/licenses/by-nc-nd/4.0/legalcode": "CC-BY-ND",
-    "//creativecommons.org/licenses/by-nc-sa/4.0/": "CC-BY-NC-SA",
-    "//creativecommons.org/licenses/by-nd/4.0/": "CC-BY-ND",
-    "//creativecommons.org/licenses/by-sa/3.0/de": "CC-BY-SA",
-    "//creativecommons.org/licenses/by-sa/3.0/gr": "CC-BY-SA",
-    "//creativecommons.org/licenses/by-sa/4.0/": "CC-BY-SA",
-    "//creativecommons.org/licenses/by-sa/4.0/legalcode": "CC-BY-SA",
-    "//creativecommons.org/licenses/CC-BY/4.0/": "CC-BY",
-    "//creativecommons.org/licenses/publicdomain/zero/1.0/": "CC-0",
-    "//creativecommons.org/publicdomain/zero/1.0/": "CC-0",
-    "//creativecommons.org/publicdomain/zero/1.0/legalcode": "CC-0",
-    "//opensource.org/licenses/MIT": "MIT",
-    "//www.elsevier.com/open-access/userlicense/1.0": "ELSEVIER-USER-1.0",
-    "//www.gnu.org/licenses/gpl-3.0.en.html": "GPLv3",
-    "//www.gnu.org/licenses/old-licenses/gpl-2.0.en.html": "GPLv2",
-    "//www.karger.com/Services/SiteLicenses": "KARGER",
-    "//www.opensource.org/licenses/Apache-2.0": "Apache-2.0",
-    "//www.opensource.org/licenses/BSD-3-Clause": "BSD-3-Clause",
-    "//www.opensource.org/licenses/EUPL-1.1":
-    "EUPL-1.1",  # redirects to EUPL-1.2
-    "//www.opensource.org/licenses/MIT": "MIT",
-    # "http://royalsocietypublishing.org/licence": "", # OA and "normal", https://royalsociety.org/journals/authors/licence-to-publish/
-    # "http://rsc.li/journals-terms-of-use": "RSC",
-    # "http://www.fu-berlin.de/sites/refubium/rechtliches/Nutzungsbedingungen": "", # 53 UrhG.
-    # "http://www.nrcresearchpress.com/page/about/CorporateTextAndDataMining": "",
-    # "http://www.springer.com/tdm": "",
-    # "https://cds.unistra.fr/vizier-org/licences_vizier.html": "", # Maybe try to "SPN" those: https://web.archive.org/web/*/https://cds.unistra.fr/vizier-org/licences_vizier.html
-    # "https://link.aps.org/licenses/aps-default-accepted-manuscript-license": "",
-    # "https://oparu.uni-ulm.de/xmlui/license_opod_v1": "",
-    # "https://publikationen.bibliothek.kit.edu/kitopen-lizenz": "",
-    # "https://rightsstatements.org/page/InC/1.0?language=en": "",
-    # "https://services.ceda.ac.uk/cedasite/register/info": "",
-    # "https://wdc.dlr.de/ndmc/userfiles/file/NDMC-Data_Sharing_Principles.pdf": "", # 404
-    # "https://www.cambridge.org/core/terms": "",
-    # "https://www.elsevier.com/tdm/userlicense/1.0",
-    # "info:eu-repo/semantics/closedAccess": "", # https://wiki.surfnet.nl/display/standards/info-eu-repo/#info-eu-repo-AccessRights
-    # "info:eu-repo/semantics/embargoedAccess": "",
-    # "info:eu-repo/semantics/openAccess": "",
-    # Note: Some URLs pointing to licensing terms are not in WB yet (but would be nice).
+    "//archaeologydataservice.ac.uk/advice/termsofuseandaccess.xhtml/": "ADS-UK",
+    "//arxiv.org/licenses/nonexclusive-distrib/1.0/": "ARXIV-1.0",
+    "//doi.wiley.com/10.1002/tdm_license_1.1/": "WILEY-TDM-1.1",
+    "//homepage.data-planet.com/terms-use/": "SAGE-DATA-PLANET",
+    "//onlinelibrary.wiley.com/termsandconditions/": "WILEY",
+    "//publikationen.bibliothek.kit.edu/kitopen-lizenz/": "KIT-OPEN",
+    "//pubs.acs.org/page/policy/authorchoice_ccby_termsofuse.html/": "CC-BY",
+    "//pubs.acs.org/page/policy/authorchoice_termsofuse.html/": "ACS-CHOICE",
+    "//www.ametsoc.org/PUBSReuseLicenses/": "AMETSOC",
+    "//www.apa.org/pubs/journals/resources/open-access.aspx/": "APA",
+    "//www.biologists.com/user-licence-1-1/": "BIOLOGISTS-USER",
+    "//www.elsevier.com/open-access/userlicense/1.0/": "ELSEVIER-USER-1.0",
+    "//www.elsevier.com/tdm/userlicense/1.0/": "ELSEVIER-USER-1.0",
+    "//www.gnu.org/licenses/gpl-3.0.en.html/": "GPLv3",
+    "//www.gnu.org/licenses/old-licenses/gpl-2.0.en.html/": "GPLv2",
+    "//www.karger.com/Services/SiteLicenses/": "KARGER",
+    "//www.springer.com/tdm/": "SPRINGER-TDM",
+    "//journals.sagepub.com/page/policies/text-and-data-mining-license/": "SAGE-TDM",
 }
 
 # TODO(martin): drop this after 3.7 upgrade
@@ -793,16 +758,92 @@ class DataciteImporter(EntityImporter):
 
 def lookup_license_slug(raw):
     """
+    Resolve a variety of strings into a some pseudo-canonical form, e.g.
+    CC-BY-ND, CC-0, MIT and so on.
     TODO(martin): reuse from or combine with crossref, maybe.
     """
     if not raw:
         return None
-    raw = raw.strip().replace('http://', '//').replace('https://', '//')
-    if 'creativecommons.org' in raw.lower():
+
+    if 'creativecommons.org/publicdomain/zero' in raw:
+        return 'CC-0'
+    if raw.lower().endswith('/cc0'):
+        return 'CC-0'
+
+    if 'creativecommons' in raw:
+        # https://creativecommons.org/licenses/by/4.0/deed.es_ES
         raw = raw.lower()
-        raw = raw.replace('/legalcode', '/').replace('/uk', '')
-        if not raw.endswith('/'):
-            raw = raw + '/'
+        match = re.search(r'creativecommons.org/licen[sc]es/(?P<name>[a-z-]+)', raw)
+        if not match:
+            print('missed potential license: {}'.format(raw), file=sys.stderr)
+            return None
+        name = match.groupdict().get('name')
+        if not name:
+            return None
+        if not name.startswith('cc'):
+            name = 'cc-{}'.format(name)
+        return name.upper()
+
+    if 'opensource.org' in raw:
+        # https://opensource.org/licenses/alphabetical, e.g. opensource.org/licenses/EUPL-1.2
+        match = re.search(r'opensource.org/licenses/(?P<name>[^/]+)', raw)
+        if not match:
+            print('missed potential license: {}'.format(raw), file=sys.stderr)
+            return None
+        name = match.groupdict().get('name')
+        if not name:
+            return None
+        if len(name) > 11:
+            return None
+        return name
+
+    if 'gnu.org' in raw:
+        # http://www.gnu.org/copyleft/gpl, https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html
+        match = re.search(r'/(?P<name>fdl(-[0-9.]*[0-9]+)?|gpl(-[0-9.]*[0-9]+)?|lgpl(-[0-9.]*[0-9]+)|aglp(-[0-9.]*[0-9]+)?)', raw)
+        if not match:
+            print('missed potential license: {}'.format(raw), file=sys.stderr)
+            return None
+        name = match.groupdict().get('name')
+        if not name:
+            return None
+        if len(name) > 8:
+            return None
+        return name.upper()
+
+    if 'spdx.org' in raw:
+        # https://spdx.org/licenses/CC-BY-NC-ND-4.0.html
+        match = re.search(r'spdx.org/licenses/(?P<name>[a-z0-9-]+)', raw)
+        if not match:
+            print('missed potential license: {}'.format(raw), file=sys.stderr)
+            return None
+        name = match.groupdict().get('name')
+        if not name:
+            return None
+        if name.startswith('cc'):
+            name = re.sub(r"-[.0-9-]*html", "", name)
+            return name
+        if len(name) > 36:
+            return None
+        return name
+
+    if 'rightsstatements.org' in raw:
+        # http://rightsstatements.org/vocab/InC/1.0/
+        match = re.search(r'rightsstatements.org/(vocab|page)/(?P<name>[^/]*)', raw)
+        if not match:
+            print('missed potential license: {}'.format(raw), file=sys.stderr)
+            return None
+        name = match.groupdict().get('name')
+        if not name:
+            return None
+        if len(name) > 9:
+            return None
+        return 'RS-{}'.format(name.upper())
+
+    # Fallback to mapped values.
+    raw = raw.lower()
+    raw = raw.strip().replace('http://', '//').replace('https://', '//')
+    if not raw.endswith('/'):
+        raw = raw + '/'
     return LICENSE_SLUG_MAP.get(raw)
 
 
