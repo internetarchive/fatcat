@@ -9,11 +9,16 @@ import sys
 import json
 import argparse
 from collections import Counter
+import raven
+import elasticsearch
+from elasticsearch_dsl import Search
 
 from fatcat_tools import public_api, simple_kafka_producer, kafka_fail_fast
 from fatcat_tools.transforms import release_ingest_request
-import elasticsearch
-from elasticsearch_dsl import Search
+
+
+# Yep, a global. Gets DSN from `SENTRY_DSN` environment variable
+sentry_client = raven.Client()
 
 
 def run_ingest_container(args):
