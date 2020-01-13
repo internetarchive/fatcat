@@ -269,6 +269,10 @@ class DataciteImporter(EntityImporter):
         attributes = obj['attributes']
         doi = clean_doi(attributes.get('doi', '').lower())
 
+        if not doi:
+            print('skipping record without a DOI', file=sys.stderr)
+            return
+
         if not isascii(doi):
             print('[{}] skipping non-ascii doi for now'.format(doi))
             return None
