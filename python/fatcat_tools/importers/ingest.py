@@ -112,9 +112,18 @@ class IngestFileResultImporter(EntityImporter):
 
         terminal = row.get('terminal')
         if not terminal:
-            # TODO: support archive.org hits?
-            self.counts['skip-no-terminal'] += 1
-            return None
+            # support old cdx-only ingest results
+            cdx = row.get('cdx')
+            if not cdx:
+                # TODO: support archive.org hits?
+                self.counts['skip-no-terminal'] += 1
+                return None
+            else:
+                terminal = {
+                    'terminal_url': cdx['url'],
+                    'terminal_dt': cdx['datetime'],
+                    'terminal_status_code': cdx.get('status_code') or cdx.get('http_status'),
+                }
 
         # work around old schema
         if not 'terminal_url' in terminal:
