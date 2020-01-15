@@ -12,6 +12,7 @@ SELECT
       FROM (
           SELECT ('"' || table_schema || '"."' || table_name || '"') AS table_name
           FROM information_schema.tables
+          WHERE table_schema = 'public'
       ) AS all_tables
       ORDER BY total_size DESC
   ) AS pretty_sizes;
