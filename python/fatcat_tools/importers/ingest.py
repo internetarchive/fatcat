@@ -102,27 +102,34 @@ class IngestFileResultImporter(EntityImporter):
                 break
         if not release_ident and row.get('grobid'):
             # try biblio-glutton extracted hit
-            if row['grobid'].get('fatcat_ident'):
-                release = row['grobid']['fatcat_ident'].split('_')[-1]
+            if row['grobid'].get('fatcat_release'):
+                release_ident = row['grobid']['fatcat_release'].split('_')[-1]
+                self.counts['glutton-match'] += 1
 
         if not release_ident:
             self.counts['skip-release-not-found'] += 1
             return None
 
-        cdx = row.get('cdx')
-        if not cdx:
+        terminal = row.get('terminal')
+        if not terminal:
             # TODO: support archive.org hits?
-            self.counts['skip-no-cdx'] += 1
+            self.counts['skip-no-terminal'] += 1
             return None
 
-        url = make_rel_url(cdx['url'], self.default_link_rel)
+        # work around old schema
+        if not 'terminal_url' in terminal:
+            terminal['terminal_url'] = terminal['url']
+        if not 'terminal_dt' in terminal:
+            terminal['terminal_dt'] = terminal['dt']
+        assert len(terminal['terminal_dt']) == 14
+        url = make_rel_url(terminal['terminal_url'], self.default_link_rel)
 
         if not url:
             self.counts['skip-url'] += 1
             return None
         wayback = "https://web.archive.org/web/{}/{}".format(
-            cdx['datetime'],
-            cdx['url'])
+            terminal['terminal_dt'],
+            terminal['terminal_url'])
         urls = [url, ("webarchive", wayback)]
 
         urls = [fatcat_openapi_client.FileUrl(rel=rel, url=url) for (rel, url) in urls]
