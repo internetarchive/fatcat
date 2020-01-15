@@ -29,6 +29,7 @@ class IngestFileResultImporter(EntityImporter):
         self.ingest_request_source_whitelist = [
             'fatcat-changelog',
             'fatcat-ingest-container',
+            'fatcat-ingest',
             'arabesque',
         ]
         if kwargs.get('skip_source_whitelist', False):
@@ -57,7 +58,7 @@ class IngestFileResultImporter(EntityImporter):
             self.counts['skip-ingest_request_source'] += 1
             return False
         if source.startswith('arabesque'):
-            if row['reqeust'].get('link_source') not in ('arxiv', 'pmc'):
+            if row['reqeust'].get('link_source') not in ('arxiv', 'pmc', 'unpaywall', 'doi'):
                 self.counts['skip-arabesque-source'] += 1
                 return False
         if source.startswith('savepapernow'):
