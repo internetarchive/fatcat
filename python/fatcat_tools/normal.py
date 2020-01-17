@@ -22,7 +22,10 @@ def clean_doi(raw):
     if not raw:
         return None
     raw = raw.strip()
-    raw = raw.replace('\u2013', '-') # emdash
+    if '\u2013' in raw:
+        # Do not attempt to normalize "en dash" and since FC does not allow
+        # unicode in DOI, treat this as invalid.
+        return None
     if len(raw.split()) != 1:
         return None
     if raw.startswith("doi:"):
@@ -48,7 +51,7 @@ def test_clean_doi():
     assert clean_doi("10.1037//0002-9432.72.1.50") == "10.1037/0002-9432.72.1.50"
     assert clean_doi("10.1037/0002-9432.72.1.50") == "10.1037/0002-9432.72.1.50"
     assert clean_doi("10.23750/abm.v88i2 -s.6506") == None
-    assert clean_doi("10.17167/mksz.2017.2.129–155") == "10.17167/mksz.2017.2.129-155"
+    assert clean_doi("10.17167/mksz.2017.2.129–155") == None
     assert clean_doi("http://doi.org/10.1234/asdf ") == "10.1234/asdf"
     assert clean_doi("https://dx.doi.org/10.1234/asdf ") == "10.1234/asdf"
     assert clean_doi("doi:10.1234/asdf ") == "10.1234/asdf"
