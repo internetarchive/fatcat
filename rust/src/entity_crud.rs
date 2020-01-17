@@ -2395,7 +2395,8 @@ impl EntityCrud for ReleaseEntity {
                 .execute(conn)?;
         }
 
-        // limit is much smaller for abstracts, so don't need to batch
+        // abstracts-per-release limit is much smaller for abstracts (won't ever hit 65k row
+        // limit), so don't need to chunk these inserts
         if !abstract_rows.is_empty() {
             // Sort of an "upsert"; only inserts new abstract rows if they don't already exist
             insert_into(abstracts::table)
@@ -2403,6 +2404,8 @@ impl EntityCrud for ReleaseEntity {
                 .on_conflict(abstracts::sha1)
                 .do_nothing()
                 .execute(conn)?;
+        }
+        if !release_abstract_rows.is_empty() {
             insert_into(release_rev_abstract::table)
                 .values(release_abstract_rows)
                 .execute(conn)?;
