@@ -53,7 +53,7 @@
 {% if found.results|length > 8 %}
   <div class="ui divider"></div>
   <div style="text-align: center">
-  {{ entity_macros.bottom_results(found)}}
+  {{ entity_macros.bottom_results(found, endpoint='container_search')}}
   </div>
 {% endif %}
 {% else %}
