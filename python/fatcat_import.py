@@ -42,7 +42,7 @@ def run_pubmed(args):
     pi = PubmedImporter(args.api,
         args.issn_map_file,
         edit_batch_size=args.batch_size,
-        do_updates=args.do_updates)
+        do_updates=args.do_updates,
         lookup_refs=(not args.no_lookup_refs))
     if args.kafka_mode:
         raise NotImplementedError
