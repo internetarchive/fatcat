@@ -881,7 +881,7 @@ definitions:
         type: string
         description: "PubMed Central Identifier"
       core:
-        exmaple: "9234592"
+        example: "9234592"
         type: string
         #format: custom
         description: "CORE (https://core.ac.uk) identifier"
