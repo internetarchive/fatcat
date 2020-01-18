@@ -42,6 +42,7 @@ def run_pubmed(args):
     pi = PubmedImporter(args.api,
         args.issn_map_file,
         edit_batch_size=args.batch_size,
+        do_updates=args.do_updates)
         lookup_refs=(not args.no_lookup_refs))
     if args.kafka_mode:
         raise NotImplementedError
@@ -276,6 +277,9 @@ def main():
     sub_pubmed.add_argument('--no-lookup-refs',
         action='store_true',
         help="skip lookup of references (PMID or DOI)")
+    sub_pubmed.add_argument('--do-updates',
+        action='store_true',
+        help="update pre-existing release entities")
     sub_pubmed.add_argument('--kafka-mode',
         action='store_true',
         help="consume from kafka topic (not stdin)")
