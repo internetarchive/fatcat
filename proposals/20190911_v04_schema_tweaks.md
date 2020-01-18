@@ -41,5 +41,7 @@ Elasticsearch schema:
 - releases *may* need an "_all" field (or `biblio`?) containing most fields to
   make some search experiences work
 - releases should include volume, issue, pages
-- releases *could* include reference and creator lists, as a faster/cheaper
-  mechanism for doing reverse lookups
+- releases *could* include reference and creator fatcat identifier lists, as a
+  faster/cheaper mechanism for doing reverse lookups
+- doi_prefix
+- doi_registrar (?)
