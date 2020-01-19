@@ -25,123 +25,20 @@
  "public"."container_rev"                                     | 74 MB      | 22 MB        | 96 MB
  "public"."container_edit"                                    | 24 MB      | 30 MB        | 54 MB
  "public"."container_ident"                                   | 10 MB      | 19 MB        | 29 MB
- "pg_catalog"."pg_statistic"                                  | 1448 kB    | 40 kB        | 1488 kB
- "pg_catalog"."pg_depend"                                     | 568 kB     | 848 kB       | 1416 kB
- "pg_catalog"."pg_proc"                                       | 648 kB     | 352 kB       | 1000 kB
- "pg_catalog"."pg_attribute"                                  | 664 kB     | 288 kB       | 952 kB
- "pg_catalog"."pg_rewrite"                                    | 584 kB     | 32 kB        | 616 kB
- "pg_catalog"."pg_description"                                | 360 kB     | 184 kB       | 544 kB
- "pg_catalog"."pg_class"                                      | 160 kB     | 136 kB       | 296 kB
- "pg_catalog"."pg_collation"                                  | 216 kB     | 80 kB        | 296 kB
- "pg_catalog"."pg_constraint"                                 | 152 kB     | 128 kB       | 280 kB
- "pg_catalog"."pg_operator"                                   | 152 kB     | 88 kB        | 240 kB
- "pg_catalog"."pg_type"                                       | 144 kB     | 80 kB        | 224 kB
- "pg_catalog"."pg_amop"                                       | 88 kB      | 112 kB       | 200 kB
- "pg_catalog"."pg_trigger"                                    | 80 kB      | 64 kB        | 144 kB
- "pg_catalog"."pg_amproc"                                     | 64 kB      | 64 kB        | 128 kB
- "pg_catalog"."pg_index"                                      | 80 kB      | 32 kB        | 112 kB
- "pg_catalog"."pg_conversion"                                 | 56 kB      | 48 kB        | 104 kB
  "public"."webcapture_rev_cdx"                                | 64 kB      | 32 kB        | 96 kB
- "information_schema"."sql_features"                          | 96 kB      | 0 bytes      | 96 kB
- "pg_catalog"."pg_attrdef"                                    | 56 kB      | 32 kB        | 88 kB
- "pg_catalog"."pg_opclass"                                    | 56 kB      | 32 kB        | 88 kB
- "pg_catalog"."pg_cast"                                       | 48 kB      | 32 kB        | 80 kB
- "pg_catalog"."pg_opfamily"                                   | 48 kB      | 32 kB        | 80 kB
- "pg_catalog"."pg_ts_config_map"                              | 48 kB      | 32 kB        | 80 kB
  "public"."fileset_rev_file"                                  | 48 kB      | 32 kB        | 80 kB
- "pg_catalog"."pg_am"                                         | 40 kB      | 32 kB        | 72 kB
- "pg_catalog"."pg_language"                                   | 40 kB      | 32 kB        | 72 kB
- "pg_catalog"."pg_namespace"                                  | 40 kB      | 32 kB        | 72 kB
- "pg_catalog"."pg_database"                                   | 40 kB      | 32 kB        | 72 kB
- "pg_catalog"."pg_tablespace"                                 | 40 kB      | 32 kB        | 72 kB
- "pg_catalog"."pg_auth_members"                               | 40 kB      | 32 kB        | 72 kB
- "pg_catalog"."pg_shdepend"                                   | 40 kB      | 32 kB        | 72 kB
- "pg_catalog"."pg_ts_config"                                  | 40 kB      | 32 kB        | 72 kB
- "pg_catalog"."pg_ts_dict"                                    | 40 kB      | 32 kB        | 72 kB
- "pg_catalog"."pg_ts_parser"                                  | 40 kB      | 32 kB        | 72 kB
- "pg_catalog"."pg_ts_template"                                | 40 kB      | 32 kB        | 72 kB
- "pg_catalog"."pg_extension"                                  | 40 kB      | 32 kB        | 72 kB
- "pg_catalog"."pg_authid"                                     | 40 kB      | 32 kB        | 72 kB
  "public"."editor"                                            | 16 kB      | 48 kB        | 64 kB
  "public"."editgroup_annotation"                              | 16 kB      | 48 kB        | 64 kB
  "public"."auth_oidc"                                         | 16 kB      | 48 kB        | 64 kB
  "public"."fileset_edit"                                      | 16 kB      | 48 kB        | 64 kB
- "pg_catalog"."pg_init_privs"                                 | 48 kB      | 16 kB        | 64 kB
  "public"."webcapture_edit"                                   | 16 kB      | 48 kB        | 64 kB
- "pg_catalog"."pg_shdescription"                              | 48 kB      | 16 kB        | 64 kB
- "pg_catalog"."pg_aggregate"                                  | 48 kB      | 16 kB        | 64 kB
- "pg_catalog"."pg_range"                                      | 40 kB      | 16 kB        | 56 kB
- "pg_catalog"."pg_pltemplate"                                 | 40 kB      | 16 kB        | 56 kB
- "information_schema"."sql_sizing"                            | 48 kB      | 0 bytes      | 48 kB
- "information_schema"."sql_packages"                          | 48 kB      | 0 bytes      | 48 kB
- "information_schema"."sql_languages"                         | 48 kB      | 0 bytes      | 48 kB
- "information_schema"."sql_implementation_info"               | 48 kB      | 0 bytes      | 48 kB
  "public"."webcapture_rev_url"                                | 16 kB      | 32 kB        | 48 kB
  "public"."fileset_rev_url"                                   | 16 kB      | 32 kB        | 48 kB
- "information_schema"."sql_parts"                             | 48 kB      | 0 bytes      | 48 kB
  "public"."webcapture_ident"                                  | 8192 bytes | 32 kB        | 40 kB
  "public"."fileset_ident"                                     | 8192 bytes | 32 kB        | 40 kB
  "public"."fileset_rev_release"                               | 8192 bytes | 32 kB        | 40 kB
  "public"."webcapture_rev_release"                            | 8192 bytes | 32 kB        | 40 kB
  "public"."webcapture_rev"                                    | 16 kB      | 16 kB        | 32 kB
  "public"."fileset_rev"                                       | 16 kB      | 16 kB        | 32 kB
- "pg_catalog"."pg_statistic_ext"                              | 8192 bytes | 24 kB        | 32 kB
- "pg_catalog"."pg_sequence"                                   | 8192 bytes | 16 kB        | 24 kB
- "pg_catalog"."pg_enum"                                       | 0 bytes    | 24 kB        | 24 kB
  "public"."__diesel_schema_migrations"                        | 8192 bytes | 16 kB        | 24 kB
- "pg_catalog"."pg_inherits"                                   | 0 bytes    | 16 kB        | 16 kB
- "pg_catalog"."pg_user_mapping"                               | 0 bytes    | 16 kB        | 16 kB
- "pg_catalog"."pg_subscription"                               | 0 bytes    | 16 kB        | 16 kB
- "pg_catalog"."pg_shseclabel"                                 | 8192 bytes | 8192 bytes   | 16 kB
- "pg_catalog"."pg_transform"                                  | 0 bytes    | 16 kB        | 16 kB
- "pg_catalog"."pg_seclabel"                                   | 8192 bytes | 8192 bytes   | 16 kB
- "pg_catalog"."pg_publication"                                | 0 bytes    | 16 kB        | 16 kB
- "pg_catalog"."pg_publication_rel"                            | 0 bytes    | 16 kB        | 16 kB
- "pg_catalog"."pg_default_acl"                                | 0 bytes    | 16 kB        | 16 kB
- "pg_catalog"."pg_replication_origin"                         | 0 bytes    | 16 kB        | 16 kB
- "pg_catalog"."pg_policy"                                     | 0 bytes    | 16 kB        | 16 kB
- "pg_catalog"."pg_foreign_server"                             | 0 bytes    | 16 kB        | 16 kB
- "pg_catalog"."pg_event_trigger"                              | 0 bytes    | 16 kB        | 16 kB
- "pg_catalog"."pg_foreign_data_wrapper"                       | 0 bytes    | 16 kB        | 16 kB
- "pg_catalog"."pg_db_role_setting"                            | 8192 bytes | 8192 bytes   | 16 kB
- "pg_catalog"."pg_largeobject_metadata"                       | 0 bytes    | 8192 bytes   | 8192 bytes
- "pg_catalog"."pg_largeobject"                                | 0 bytes    | 8192 bytes   | 8192 bytes
- "pg_catalog"."pg_partitioned_table"                          | 0 bytes    | 8192 bytes   | 8192 bytes
- "pg_catalog"."pg_subscription_rel"                           | 0 bytes    | 8192 bytes   | 8192 bytes
- "pg_catalog"."pg_foreign_table"                              | 0 bytes    | 8192 bytes   | 8192 bytes
- "information_schema"."sql_sizing_profiles"                   | 8192 bytes | 0 bytes      | 8192 bytes
- "pg_catalog"."pg_stat_xact_user_tables"                      | 0 bytes    | 0 bytes      | 0 bytes
- "pg_catalog"."pg_statio_all_tables"                          | 0 bytes    | 0 bytes      | 0 bytes
- "pg_catalog"."pg_statio_sys_tables"                          | 0 bytes    | 0 bytes      | 0 bytes
- "pg_catalog"."pg_statio_user_tables"                         | 0 bytes    | 0 bytes      | 0 bytes
- "pg_catalog"."pg_stat_all_indexes"                           | 0 bytes    | 0 bytes      | 0 bytes
- "pg_catalog"."pg_stat_sys_indexes"                           | 0 bytes    | 0 bytes      | 0 bytes
- "pg_catalog"."pg_stat_user_indexes"                          | 0 bytes    | 0 bytes      | 0 bytes
- "pg_catalog"."pg_statio_user_indexes"                        | 0 bytes    | 0 bytes      | 0 bytes
- "pg_catalog"."pg_statio_all_sequences"                       | 0 bytes    | 0 bytes      | 0 bytes
- "pg_catalog"."pg_statio_sys_sequences"                       | 0 bytes    | 0 bytes      | 0 bytes
- "pg_catalog"."pg_statio_user_sequences"                      | 0 bytes    | 0 bytes      | 0 bytes
- "pg_catalog"."pg_stat_activity"                              | 0 bytes    | 0 bytes      | 0 bytes
- "pg_catalog"."pg_stat_replication"                           | 0 bytes    | 0 bytes      | 0 bytes
- "pg_catalog"."pg_stat_wal_receiver"                          | 0 bytes    | 0 bytes      | 0 bytes
- "pg_catalog"."pg_stat_subscription"                          | 0 bytes    | 0 bytes      | 0 bytes
- "pg_catalog"."pg_stat_ssl"                                   | 0 bytes    | 0 bytes      | 0 bytes
- "pg_catalog"."pg_replication_slots"                          | 0 bytes    | 0 bytes      | 0 bytes
- "pg_catalog"."pg_stat_database"                              | 0 bytes    | 0 bytes      | 0 bytes
- "pg_catalog"."pg_stat_database_conflicts"                    | 0 bytes    | 0 bytes      | 0 bytes
- "pg_catalog"."pg_stat_user_functions"                        | 0 bytes    | 0 bytes      | 0 bytes
- "pg_catalog"."pg_stat_xact_user_functions"                   | 0 bytes    | 0 bytes      | 0 bytes
- "pg_catalog"."pg_stat_archiver"                              | 0 bytes    | 0 bytes      | 0 bytes
- "pg_catalog"."pg_stat_bgwriter"                              | 0 bytes    | 0 bytes      | 0 bytes
- "pg_catalog"."pg_stat_progress_vacuum"                       | 0 bytes    | 0 bytes      | 0 bytes
- "pg_catalog"."pg_user_mappings"                              | 0 bytes    | 0 bytes      | 0 bytes
- "information_schema"."key_column_usage"                      | 0 bytes    | 0 bytes      | 0 bytes
- "information_schema"."information_schema_catalog_name"       | 0 bytes    | 0 bytes      | 0 bytes
- "information_schema"."column_privileges"                     | 0 bytes    | 0 bytes      | 0 bytes
- "information_schema"."applicable_roles"                      | 0 bytes    | 0 bytes      | 0 bytes
- "information_schema"."administrable_role_authorizations"     | 0 bytes    | 0 bytes      | 0 bytes
- "information_schema"."domain_udt_usage"                      | 0 bytes    | 0 bytes      | 0 bytes
- "information_schema"."attributes"                            | 0 bytes    | 0 bytes      | 0 bytes
- "information_schema"."column_udt_usage"                      | 0 bytes    | 0 bytes      | 0 bytes
- "information_schema"."character_sets"                        | 0 bytes    | 0 bytes      | 0 bytes
 [...]
