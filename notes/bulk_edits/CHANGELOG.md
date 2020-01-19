@@ -14,6 +14,13 @@ This file should not turn in to a TODO list!
 Imported around 2,500 new containers (journals, by ISSN-L) from chocula
 analysis script.
 
+Imported DOIs from Datacite (around 16 million, plus or minus a couple
+million).
+
+Imported new release entities from 2020 Pubmed/MEDLINE baseline. This import
+included only new Pubmed works cataloged in 2019 (up until December or so).
+Only a few hundred thousand new release entities.
+
 ## 2019-12
 
 Started continuous harvesting Datacite DOI metadata; first date harvested was
