@@ -1442,7 +1442,7 @@ paths:
         Create a single Container entity as part of an existing editgroup.
 
         Editgroup must be mutable (aka, not accepted) and editor must have
-        permission (aka, have created the editgrou p or have `admin` role).
+        permission (aka, have created the editgroup or have `admin` role).
       parameters:
         - name: entity
           in: body
@@ -1533,7 +1533,7 @@ paths:
       description: |
         Updates an existing entity as part of a specific (existing) editgroup.
         The editgroup must be open for updates (aka, not accepted/merged), and
-        the editor making the requiest must have permissions (aka, must have
+        the editor making the request must have permissions (aka, must have
         created the editgroup or have `admin` role).
 
         This method can also be used to update an existing entity edit as part
