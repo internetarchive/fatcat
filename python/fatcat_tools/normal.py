@@ -40,6 +40,14 @@ def clean_doi(raw):
         raw = raw[11:]
     if raw[7:9] == "//":
         raw = raw[:8] + raw[9:]
+
+    # fatcatd uses same REGEX, but Rust regex rejects these characters, while
+    # python doesn't. DOIs are syntaxtually valid, but very likely to be typos;
+    # for now filter them out.
+    for c in ('¬', ):
+        if c in raw:
+            return None
+
     if not raw.startswith("10."):
         return None
     if not DOI_REGEX.fullmatch(raw):
@@ -56,6 +64,7 @@ def test_clean_doi():
     assert clean_doi("https://dx.doi.org/10.1234/asdf ") == "10.1234/asdf"
     assert clean_doi("doi:10.1234/asdf ") == "10.1234/asdf"
     assert clean_doi("doi:10.1234/ asdf ") == None
+    assert clean_doi("10.4149/gpb¬_2017042") == None  # "logical negation" character
 
 ARXIV_ID_REGEX = re.compile("^(\d{4}.\d{4,5}|[a-z\-]+(\.[A-Z]{2})?/\d{7})(v\d+)?$")
 
