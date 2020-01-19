@@ -45,7 +45,7 @@ edit it to add new URLs (locations), or add/update any release links.
 Assuming a file entity doesn't already exist, go to [create
 file](https://fatcat.wiki/file/create). We will want to start a new "editgroup"
 for these changes. If you don't have any editgroups in progress, you can just
-enter a description sentance and a new one will be created; if you did have
+enter a description sentence and a new one will be created; if you did have
 edits in progress, you'll need to select the "create new editgroup" option from
 the drop-down of your existing editgroups.
 
@@ -59,7 +59,7 @@ for a bot to verify and archive the URL later. The left drop-down menu lets you
 set the "type" of each URL. Add the release identifier you found earlier to the
 "Releases" list.
 
-Add a one-sentance description of your change, and submit the form. You will be
+Add a one-sentence description of your change, and submit the form. You will be
 redirected to a provisional ("work in progress") view of the new entity. Edits
 are not immediately merged into the catalog proper; the first need to be
 "submitted" and then accepted (eg, by a human moderator or robot).
