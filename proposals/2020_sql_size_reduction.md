@@ -120,14 +120,16 @@ the search index (would, of course, increase that index size).
      public | release_ref_target_release_idx | index | postgres | release_ref | 1843 MB | 
     (2 rows)
 
-Looks like about 13 GByte could be saved here.
+Looks like about 13 GByte of index could be saved here, or around 4% of total
+release disk utilization.
 
 ## Idea: re-order table columns
 
 I've read that there can be some data storage savings by moving fields which
 are often null to the end of table schemas.
 
-Need to research/calculate what savings might be.
+Need to research/calculate what savings might be. Probably small, but maybe
+significant for edit tables.
 
 Not sure how implementation would work... dump data values (plain or custom
 `pg_dump`?) then reload, probably.
@@ -151,4 +153,22 @@ Feels like there might be a bunch of waste here. Could make `{editgroup,
 ident}` the primary key, which would remove need for a separate identifier and
 index (we already have a UNIQ constraint on this).
 
-TODO: investigate further.
+    fatcat_prod=# \di+ work*
+                                              List of relations
+     Schema |                Name                 | Type  |  Owner   |   Table    |  Size   | Desc
+    --------+-------------------------------------+-------+----------+------------+---------+-----
+     public | work_edit_editgroup_id_ident_id_key | index | postgres | work_edit  | 6674 MB | 
+     public | work_edit_ident_idx                 | index | postgres | work_edit  | 4233 MB | 
+     public | work_edit_pkey                      | index | postgres | work_edit  | 4233 MB | 
+     public | work_ident_pkey                     | index | postgres | work_ident | 4233 MB | 
+     public | work_ident_redirect_idx             | index | postgres | work_ident | 3014 MB | 
+     public | work_ident_rev_idx                  | index | postgres | work_ident | 4233 MB | 
+     public | work_rev_pkey                       | index | postgres | work_rev   | 4233 MB | 
+    (7 rows)
+
+For the example of work edits (13 GB data, 20 GB index, 33 GB total), this
+would drop ~20% of data size and ~20% of index size.
+
+Would it make more sense to use {ident, editgroup} as the primary key and UNIQ,
+then have a separate index on `editgroup`? On the assumption that `editgroup`
+cardinality is much smaller, thus the index disk usage would be smaller.
