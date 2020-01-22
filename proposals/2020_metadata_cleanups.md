@@ -45,7 +45,8 @@ is of the compressed body, not the actual inner file).
 The current file URL metadata has a few warts:
 
 - inconsistent or incorrect tagging of URL "rel" type. It is possible we should
-  just strip/skip this tag and always recompute from scratch
+  just strip/skip this tag and always recompute from scratch. Or target just
+  those domains with >= 1% of links, or top 100 domains
 - duplicate URLs (lack of normalization):
     - `http://example.com/file.pdf`
     - `http://example.com:80/file.pdf`
@@ -72,7 +73,8 @@ a reasonable constraint, but am open to other opinions. I think that all web
 URLs should be normalized for issues like `jsessionid` and `:80` port
 specification.
 
-In user interface we should limit to a single wayback link, and single link per domain.
+In user interface we should limit to a single wayback link, and single link per
+domain.
 
 NOTE: "host" means the fully qualified domain hostname; domain means the
 "registered" part of the domain.
@@ -81,6 +83,8 @@ NOTE: "host" means the fully qualified domain hostname; domain means the
 ## Container Metadata
 
 At some point, had many "NULL" publishers.
+
+"NA" in ISSNe, ISSNp. Eg: <https://fatcat.wiki/container/s3gm7274mfe6fcs7e3jterqlri>
 
 "Type" coverage should be improved.
 
@@ -106,4 +110,24 @@ A partial list:
     - "ADVERTISEMENT"
     - "Full title page with Editorial board (with Elsevier tree)"
     - "Advisory Board Editorial Board"
+
+
+## Very Long Titles
+
+These are likely stubs, but the title is also "just too long". Could stash full
+title in `extra`?
+
+- https://fatcat.wiki/release/4b7swn2zsvguvkzmt
+    => crossref updated
+
+## Abstracts
+
+Bad:
+
+- https://qa.fatcat.wiki/release/nwd5kkilybf5vdhm3iduvhvbvq
+- https://qa.fatcat.wiki/release/rkigixosmvgcvmlkb5aqeyznim
+
+Very long:
+
+- https://qa.fatcat.wiki/release/s2cafgwepvfqnjp4xicsx6amsa
 

@@ -19,6 +19,7 @@ SQL (and API, and elasticsearch):
 - TODO: release: switch how pages work? first/last?
 - TODO: indication of peer-review process? at release or container level?
 - TODO: container: separate canonical and disambiguating titles (?)
+- TODO: container: "imprint" field?
 - TODO: release inter-references using SCHOLIX/Datacite schema
     https://zenodo.org/record/1120265
     https://support.datacite.org/docs/connecting-research-outputs#section-related-identifiers
@@ -37,11 +38,3 @@ API endpoints:
   specific editor
 
 See `2020_search_improvements` for elasticsearch-only schema updates.
-
-- releases *may* need an "_all" field (or `biblio`?) containing most fields to
-  make some search experiences work
-- releases should include volume, issue, pages
-- releases *could* include reference and creator fatcat identifier lists, as a
-  faster/cheaper mechanism for doing reverse lookups
-- doi_prefix
-- doi_registrar (?)

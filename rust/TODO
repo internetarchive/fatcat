@@ -23,6 +23,10 @@ edit lifecycle
 - account helper tool: set admin bit
 
 later:
+- #![forbid(unsafe_code)]
+- show deployed version:
+    https://github.com/jkcclemens/paste/blob/942d1ede8abe80a594553197f2b03c1d6d70efd0/webserver/build.rs
+    https://github.com/jkcclemens/paste/blob/942d1ede8abe80a594553197f2b03c1d6d70efd0/webserver/src/main.rs#L44
 - "prev_rev" required in updates
 - tried using sync::Once to wrap test database initilization (so it would only
   run migrations once), but it didn't seem to work, maybe I had a bug or it

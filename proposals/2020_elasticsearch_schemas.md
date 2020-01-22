@@ -18,6 +18,7 @@ Simple additions:
 - OA license slug (?)
 - `doi_prefix`
 - `doi_registrar` (based on extra)
+- `first_author` (surname; for matching)
 
 "Array" keyword types for reverse lookups:
 
@@ -50,6 +51,8 @@ able to do a better job of indicating OA status/policy for published works.
 
 Not clear if this should be for "published" only, or whether we should try to
 handle embargo time spans and dates.
+
+Maybe also container `sherpa_romeo` color as a field?
 
 
 ## Release Merged Default Field
