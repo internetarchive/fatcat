@@ -4,21 +4,9 @@
 
 ## Next Up
 
-- more/better identifier normalization in normalize.py
-    => then use this code in importers
-- update existing 1.5 mil longtail OA PDFs with container/ISSN-L
-- use collapsing fields in default release search
-    => start using elasticsearch-py
 
 ## Bugs
 
-- identifier and hash duplication
-    => couple dozen SHA-1
-    => couple thousand DOI
-    => 400k PMID (!)
-- did, somehow, end up with web.archive.org/web/None/ URLs (should remove)
-- searching 'N/A' is a bug, because not quoted; auto-quote it?
-- author (contrib) names not getting included in search (unless explicit)
 
 ## Next Full Release "Touch"
 
@@ -27,7 +15,7 @@ Want to minimize edit counts, so will bundle a bunch of changes
 
 - structured contrib names (given, sur)
 - reference linking (release-to-release), via crossref DOI refs
-- subtitle as string, not array
+- subtitle as field; remove from extra
 - remove crossref alt ids that are just the DOI (?)
 
 ## Production Public Launch Blockers
@@ -44,9 +32,9 @@ Want to minimize edit counts, so will bundle a bunch of changes
 
 ## Unsorted
 
+- broader use of external identifier normalizer functions
 - "delete entity" and "merge entity" webface flows
 - update editor, editgroup, changelog views?
-- ability to "edit edits" (update in-progress edits)
 - review bots:
     - tests
     - not actually processing work entities
@@ -79,12 +67,10 @@ Want to minimize edit counts, so will bundle a bunch of changes
         should `release_year` be of date type, instead of int?
     files: domain list; mimetype; release count; url count; web/publisher/etc;
         size; has_md5/sha256/sha1; in_ia, in_shadow
-- should elastic `release_year` be of date type, instead of int?
 - webface: still need to collapse links by domain better, and also vs. www.x/x
 - entity edit JSON objects could include `entity_type`
 - refactor 'fatcatd' to 'fatcat-api'
 - changelog elastic stuff (is there even a fatcat-export for this?)
-- container count "enrich"
 - 'hide' flag for exporter (eg, to skip abstracts and refs in some release dumps)
 - https://tech.labs.oliverwyman.com/blog/2019/01/14/serialising-rust-tests/
 - changelog elastic index (for stats)
@@ -121,20 +107,12 @@ Want to minimize edit counts, so will bundle a bunch of changes
 - crossref: many ISBNs not getting copied; use python library to convert?
 - remove 'first' from contrib crossref 'seq' (not helpful?)
 - should probably check for 'jats:' in abstract before setting mimetype, even from crossref
-- web.archive.org response not SHA1 match? => need /<dt>id_/ thing
 - XML etc in metadata
     => (python) tests for these!
     https://qa.fatcat.wiki/release/search?q=xmlns
     https://qa.fatcat.wiki/release/search?q=%24gt
-- bad/weird titles
-    "[Blank page]", "blank page"
-    "Temporary Empty DOI 0"
-    "ADVERTISEMENT"
-    "Full title page with Editorial board (with Elsevier tree)"
-    "Advisory Board Editorial Board"
 - better/complete reltypes probably good (eg, list of IRs, academic domain)
 - include crossref-capitalized DOI in extra
-- manifest: multiple URLs per SHA1
 - crossref: relations ("is-preprint-of")
 - crossref: two phase: no citations, then matched citations (via DOI table)
 - special "alias" DOIs... in crossref metadata?
@@ -148,21 +126,6 @@ new importers:
 
 - more+better terms+policies: https://tosdr.org/index.html
 
-## Fun Features
-
-- "save paper now"
-    => is it in GWB? if not, SPN
-    => get hash + url from GWB, verify mimetype acceptable
-    => is file in fatcat?
-    => what about HBase? GROBID?
-    => create edit, redirect user to editgroup submit page
-- python client tool and library in pypi
-    => or maybe rust?
-
-## Metadata Harvesting
-
-- datacite ingest seems to have failed... got a non-HTTP-200 status code, but also "got 50 (161950 of 21084)"
-
 ## Schema / Entity Fields
 
 - file+fileset "first seen" datetime
@@ -171,8 +134,6 @@ new importers:
 - `translation_of` field on releases (or similar/general). `retraction_of` to a
   specific release? `alias_of`/`duplicate_of`
 - 'part-of' relation for releases (release to release, eg for book chapters) and possibly containers
-- `container_type` for containers (journal, conference, book series, etc)
-    => in schema, needs vocabulary and implementation
 
 ## API Schema / Design
 
@@ -185,8 +146,6 @@ new importers:
 
 ## Other / Backburner
 
-- file entity full update with all hashes, file size, corrected/expanded wayback links
-    => some number of files *did* get inserted to fatcat with short (year) datetimes, from old manifest. also no file size.
 - regression test imports for missing orcid display and journal metadata name
 - try out beautifulsoup? (https://stackoverflow.com/a/34532382/4682349)
 - `doi` field for containers (at least for "journal" type; maybe for "series" as well?)

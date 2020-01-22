@@ -36,7 +36,7 @@ API endpoints:
 - `GET /editor/<ident>/bots` (?) endpoint to enumerate bots wrangled by a
   specific editor
 
-Elasticsearch schema:
+See `2020_search_improvements` for elasticsearch-only schema updates.
 
 - releases *may* need an "_all" field (or `biblio`?) containing most fields to
   make some search experiences work
