@@ -1,19 +1,11 @@
 
-from .elasticsearch import release_to_elasticsearch
-
-def release_ingest_request(release, oa_only=False, ingest_request_source='fatcat', ingest_type=None):
+def release_ingest_request(release, ingest_request_source='fatcat', ingest_type=None):
     """
     Takes a full release entity object and returns an ingest request (as dict),
     or None if it seems like this release shouldn't be ingested.
 
     The release entity should have the container, file, fileset, and webcapture
     fields set.
-
-    The 'oa_only' boolean flag indicates that we should only return an ingest
-    request if we have reason to believe this is an OA release (or, eg, in
-    arxiv or pubmed central). Respecting this flag means we are likely to miss
-    a lot of "hybrid" and "bronze" content, but could reduce crawl load
-    significantly.
 
     The type of the ingest request may depend on release type and container
     metadata (eg, as to whether we expect a PDF, datasets, web page), so
@@ -47,11 +39,6 @@ def release_ingest_request(release, oa_only=False, ingest_request_source='fatcat
 
     ext_ids = release.ext_ids.to_dict()
     ext_ids = dict([(k, v) for (k, v) in ext_ids.items() if v])
-
-    if oa_only and link_source not in ('arxiv', 'pmc'):
-        es = release_to_elasticsearch(release)
-        if not es['is_oa']:
-            return None
 
     # TODO: infer ingest type based on release_type or container metadata?
     if not ingest_type:

@@ -75,7 +75,6 @@ def run_ingest_container(args):
         release = args.api.get_release(esr.ident)
         ingest_request = release_ingest_request(
             release,
-            oa_only=False,
             ingest_request_source="fatcat-ingest-container",
         )
         if not ingest_request:
