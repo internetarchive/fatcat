@@ -3,7 +3,8 @@ import json
 import time
 from confluent_kafka import Consumer, Producer, KafkaException
 
-from fatcat_tools.transforms import release_ingest_request
+from fatcat_tools.transforms import release_ingest_request, release_to_elasticsearch
+
 from .worker_common import FatcatWorker, most_recent_message
 
 
@@ -89,6 +90,36 @@ class EntityUpdatesWorker(FatcatWorker):
         self.poll_interval = poll_interval
         self.consumer_group = "entity-updates"
         self.ingest_oa_only = True
+        self.ingest_pdf_doi_prefix_blocklist = [
+            # gbif.org: many DOIs, not PDF fulltext
+            "10.15468/",
+        ]
+
+    def want_live_ingest(self, release, ingest_request):
+        """
+        This function looks at ingest requests and decides whether they are
+        worth enqueing for ingest.
+
+        In theory crawling all DOIs to a landing page is valuable.  It is
+        intended to be an operational point of control to reduce load on daily
+        ingest crawling (via wayback SPN).
+        """
+
+        link_source = ingest_request.get('ingest_request')
+        ingest_type = ingest_request.get('ingest_type')
+
+        if self.ingest_oa_only and link_source not in ('arxiv', 'pmc'):
+            es = release_to_elasticsearch(release)
+            if not es['is_oa']:
+                return False
+
+        doi = ingest_request.get('ext_ids', {}).get('doi')
+        if ingest_type == "pdf" and doi:
+            for prefix in self.ingest_pdf_doi_prefix_blocklist:
+                if doi.startswith(prefix):
+                    return False
+
+        return True
 
     def run(self):
 
@@ -222,8 +253,8 @@ class EntityUpdatesWorker(FatcatWorker):
                 )
                 # filter to "new" active releases with no matched files
                 if release.ident in new_release_ids:
-                    ir = release_ingest_request(release, ingest_request_source='fatcat-changelog', oa_only=self.ingest_oa_only)
-                    if ir and not release.files:
+                    ir = release_ingest_request(release, ingest_request_source='fatcat-changelog')
+                    if ir and not release.files and self.want_live_ingest(release, ir):
                         producer.produce(
                             self.ingest_file_request_topic,
                             json.dumps(ir).encode('utf-8'),
