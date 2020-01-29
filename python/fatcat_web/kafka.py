@@ -4,7 +4,7 @@ import requests
 from fatcat_web import Config
 
 
-def kafka_pixy_produce(topic, msg, key=None, sync=True, timeout=5):
+def kafka_pixy_produce(topic, msg, key=None, sync=True, timeout=25):
     """
     Simple helper to public a message to the given Kafka topic, via the
     configured kafka-pixy HTTP gateway
