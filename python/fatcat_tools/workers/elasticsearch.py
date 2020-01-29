@@ -46,7 +46,7 @@ class ElasticsearchReleaseWorker(FatcatWorker):
                     print("Kafka consumer commit error: {}".format(p.error))
                     print("Bailing out...")
                     # TODO: should it be sys.exit(-1)?
-                    raise KafkaException(err)
+                    raise KafkaException(p.error)
             #print("Kafka consumer commit successful")
             pass
 
