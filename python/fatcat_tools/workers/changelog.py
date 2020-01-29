@@ -93,6 +93,14 @@ class EntityUpdatesWorker(FatcatWorker):
         self.ingest_pdf_doi_prefix_blocklist = [
             # gbif.org: many DOIs, not PDF fulltext
             "10.15468/",
+            # ssl.fao.org: gene data
+            "10.18730/",
+            # plutof.ut.ee: gene data
+            "10.15156/",
+            # ba.e-pics.ethz.ch: swiss image (photo) archive
+            "10.3932/",
+            # ccdc.cam.ac.uk: crystal structures
+            "10.5517/",
         ]
 
     def want_live_ingest(self, release, ingest_request):
