@@ -40,9 +40,11 @@ Drop and rebuild the schema:
 
     http delete :9200/fatcat_release
     http delete :9200/fatcat_container
+    http delete :9200/fatcat_file
     http delete :9200/fatcat_changelog
     http put :9200/fatcat_release < release_schema.json
     http put :9200/fatcat_container < container_schema.json
+    http put :9200/fatcat_file < file_schema.json
     http put :9200/fatcat_changelog < changelog_schema.json
 
 Put a single object (good for debugging):
