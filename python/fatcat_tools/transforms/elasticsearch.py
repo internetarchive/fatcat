@@ -50,6 +50,10 @@ def release_to_elasticsearch(entity, force_bool=True):
         release_stage = release.release_stage,
         withdrawn_status = release.withdrawn_status,
         language = release.language,
+        volume = release.volume,
+        issue = release.issue,
+        pages = release.pages,
+        number = release.number,
         license = release.license_slug,
         doi = release.ext_ids.doi,
         pmid = release.ext_ids.pmid,
@@ -72,7 +76,7 @@ def release_to_elasticsearch(entity, force_bool=True):
     in_dweb = False
     in_ia = False
     in_ia_sim = False
-    in_shadow = False
+    in_shadows = False
 
     release_year = release.release_year
     if release.release_date:
@@ -85,11 +89,15 @@ def release_to_elasticsearch(entity, force_bool=True):
 
     t['any_abstract'] = len(release.abstracts or []) > 0
     t['ref_count'] = len(release.refs or [])
-    t['ref_linked_count'] = 0
-    if release.refs:
-        t['ref_linked_count'] = len([1 for ref in release.refs if ref.target_release_id])
+    ref_release_ids = []
+    for r in (release.refs or []):
+        if r.target_release_id:
+            ref_release_ids.append(r.target_release_id)
+    t['ref_release_ids'] = ref_release_ids
+    t['ref_linked_count'] = len(ref_release_ids)
     t['contrib_count'] = len(release.contribs or [])
     contrib_names = []
+    contrib_affiliations = []
     creator_ids = []
     for c in (release.contribs or []):
         if c.raw_name:
@@ -98,8 +106,14 @@ def release_to_elasticsearch(entity, force_bool=True):
             contrib_names.append(c.surname)
         if c.creator_id:
             creator_ids.append(c.creator_id)
+        if c.raw_affiliation:
+            contrib_affiliations.append(c.raw_affiliation)
     t['contrib_names'] = contrib_names
     t['creator_ids'] = creator_ids
+    t['affiliations'] = contrib_affiliations
+
+    # TODO: mapping... probably by lookup?
+    t['affiliation_rors'] = None
 
     container = release.container
     if container:
@@ -140,8 +154,13 @@ def release_to_elasticsearch(entity, force_bool=True):
             if c_extra.get('szczepanski'):
                 if c_extra['szczepanski'].get('as_of'):
                     is_oa = True
-    else:
+
+    # fall back to release-level container metadata if container not linked or
+    # missing context
+    if not t.get('publisher'):
         t['publisher'] = release.publisher
+    if not t.get('container_name') and release.extra:
+        t['container_name'] = release.extra.get('container_name')
 
     if release.ext_ids.jstor or (release.ext_ids.doi and release.ext_ids.doi.startswith('10.2307/')):
         in_jstor = True
@@ -203,6 +222,46 @@ def release_to_elasticsearch(entity, force_bool=True):
             if extra['crossref'].get('archive'):
                 # all crossref archives are KBART, I believe
                 in_kbart = True
+        # backwards compatible subtitle fetching
+        if not t['subtitle'] and extra.get('subtitle'):
+            if type(extra['subtitle']) == list:
+                t['subtitle'] = extra['subtitle'][0]
+            else:
+                t['subtitle'] = extra['subtitle']
+
+    t['first_page'] = None
+    if release.pages:
+        first = release.pages.split('-')[0]
+        first = first.replace('p', '')
+        if release.pages.isdigit():
+            t['first_page'] = release.pages
+        # TODO: non-numerical first pages
+
+    t['ia_microfilm_url'] = None
+    if in_ia_sim:
+        # TODO: determine URL somehow? I think this is in flux. Will probably
+        # need extra metadata in the container extra field.
+        # special case as a demo for now.
+        if release.container_id == "hl5g6d5msjcl7hlbyyvcsbhc2u" \
+                and release.year in (2011, 2013) \
+                and release.volume.isdigit() \
+                and t['first_page']:
+            t['ia_microfilm_url'] = "https://archive.org/details/sim_bjog_{}-{:02d}/page/n{}".format(
+                release.year,
+                release.volume - 1,
+                t['first_page'],
+            )
+
+    t['doi_registrar'] = None
+    if extra and t['doi']:
+        for k in ('crossref', 'datacite', 'jalc'):
+            if k in extra:
+                t['doi_registrar'] = k
+        if not 'doi_registrar' in t:
+            t['doi_registrar'] = 'crossref'
+
+    if t['doi']:
+        t['doi_prefix'] = t['doi'].split('/')[0]
 
     if is_longtail_oa:
         is_oa = True
@@ -215,6 +274,7 @@ def release_to_elasticsearch(entity, force_bool=True):
         t['in_jstor'] = bool(in_jstor)
         t['in_web'] = bool(in_web)
         t['in_dweb'] = bool(in_dweb)
+        t['in_shadows'] = bool(in_shadows)
     else:
         t['is_oa'] = is_oa
         t['is_longtail_oa'] = is_longtail_oa
@@ -223,9 +283,20 @@ def release_to_elasticsearch(entity, force_bool=True):
         t['in_jstor'] = in_jstor
         t['in_web'] = in_web
         t['in_dweb'] = in_dweb
+        t['in_shadows'] = in_shadows
 
     t['in_ia'] = bool(in_ia)
     t['is_preserved'] = bool(is_preserved or in_ia or in_kbart or in_jstor)
+
+    if in_ia:
+        t['preservation'] = 'bright'
+    elif in_kbart or in_jstor:
+        t['preservation'] = 'dark_only'
+    elif in_shadows:
+        t['preservation'] = 'shadows_only'
+    else:
+        t['preservation'] = 'none'
+
     return t
 
 def container_to_elasticsearch(entity, force_bool=True):
