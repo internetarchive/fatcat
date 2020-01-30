@@ -21,7 +21,7 @@ def test_shadow_importer(shadow_importer):
         counts = JsonLinePusher(shadow_importer, f).run()
     assert counts['insert'] == 2
     assert counts['exists'] == 0
-    assert counts['skip'] == 10
+    assert counts['skip'] == 8
 
     # fetch most recent editgroup
     change = shadow_importer.api.get_changelog_entry(index=last_index+1)
@@ -38,16 +38,18 @@ def test_shadow_importer(shadow_importer):
         counts = JsonLinePusher(shadow_importer, f).run()
     assert counts['insert'] == 0
     assert counts['exists'] == 2
-    assert counts['skip'] == 10
+    assert counts['skip'] == 8
 
 def test_shadow_dict_parse(shadow_importer):
     with open('tests/files/example_shadow.json', 'r') as f:
         raw = json.loads(f.readline())
         f = shadow_importer.parse_record(raw)
-        assert f.sha1 == "000008bc38cb80636b647b38653fc1574936c03e"
-        assert f.md5 == "629e84885be85bc8d88345b98cffa0b0"
-        assert f.mimetype == None # "application/pdf"
-        assert f.size == 39955
+
+        assert f.sha1 == "0000002922264275f11cca7b1c3fb662070d0dd7"
+        assert f.md5 == "debd8db178fa08a7a0aaec6e42832a8e"
+        assert f.sha256 == "b4728210cc0f70d8a8f8c39bd97fcbbab3eaca4309ac4bdfbce5df3b66c82f79"
+        assert f.mimetype == "application/pdf"
+        assert f.size == 206121
         assert len(f.urls) == 2
         for u in f.urls:
             if u.rel == "publisher":

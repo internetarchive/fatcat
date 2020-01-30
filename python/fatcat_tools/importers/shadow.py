@@ -43,6 +43,16 @@ class ShadowLibraryImporter(EntityImporter):
         self.default_link_rel = kwargs.get("default_link_rel", "web")
 
     def want(self, raw_record):
+        """
+        Only want to import records with complete file-level metadata
+        """
+        fm = raw_record['file_meta']
+        if not (fm['mimetype'] and fm['md5hex'] and fm['sha256hex'] and fm['size_bytes']):
+            self.counts['skip-file-meta-incomplete'] += 1
+            return False
+        if fm['mimetype'] != 'application/pdf':
+            self.counts['skip-not-pdf'] += 1
+            return False
         return True
 
     def parse_record(self, obj):
