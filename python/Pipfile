@@ -51,6 +51,7 @@ dateparser = ">=0.7"
 langdetect = "*"
 pathlib2 = "*"
 pycountry = "*"
+tldextract = "*"
 
 [requires]
 # Python 3.5 is the bundled (system) version of python for Ubuntu 16.04
