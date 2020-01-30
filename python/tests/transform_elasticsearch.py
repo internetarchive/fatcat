@@ -74,8 +74,18 @@ def test_rich_elasticsearch_convert():
     assert es['ref_linked_count'] == 1
 
 def test_elasticsearch_release_from_json():
-    r = entity_from_json(open('./tests/files/math_universe.json', 'r').read(), ReleaseEntity)
-    release_to_elasticsearch(r)
+    r = entity_from_json(open('./tests/files/release_etodop5banbndg3faecnfm6ozi.json', 'r').read(), ReleaseEntity)
+    es = release_to_elasticsearch(r)
+
+    assert es['subtitle'] == "Correpondence"
+    assert es['ident'] == "etodop5banbndg3faecnfm6ozi"
+    assert es['container_name'] == "BJOG: an International Journal of Obstetrics and Gynaecology"
+    assert es['first_page'] == "1404"
+    assert es['issue'] == "11"
+    assert es['volume'] == "118"
+    assert es['number'] == None
+    assert es['in_ia_sim'] == True
+    assert es['in_kbart'] == True
 
 def test_elasticsearch_container_transform(journal_metadata_importer):
     with open('tests/files/journal_metadata.sample.json', 'r') as f:
@@ -86,9 +96,7 @@ def test_elasticsearch_container_transform(journal_metadata_importer):
     assert es['publisher'] == c.publisher
 
 def test_elasticsearch_file_transform(matched_importer):
-    with open('tests/files/example_matched.json', 'r') as f:
-        raw = json.loads(f.readline())
-        f = matched_importer.parse_record(raw)
+    f = entity_from_json(open('./tests/files/file_bcah4zp5tvdhjl5bqci2c2lgfa.json', 'r').read(), FileEntity)
 
     f.state = 'active'
     es = file_to_elasticsearch(f)

@@ -20,6 +20,7 @@ def test_check_kbart():
     assert check_kbart(1950, dict(year_spans=[[1900, 1920], [1990, 2000]])) == False
     assert check_kbart(1950, dict(year_spans=[[1900, 1920], [1930, 2000]])) == True
 
+
 def release_to_elasticsearch(entity, force_bool=True):
     """
     Converts from an entity model/schema to elasticsearch oriented schema.
@@ -233,8 +234,8 @@ def release_to_elasticsearch(entity, force_bool=True):
     if release.pages:
         first = release.pages.split('-')[0]
         first = first.replace('p', '')
-        if release.pages.isdigit():
-            t['first_page'] = release.pages
+        if first.isdigit():
+            t['first_page'] = first
         # TODO: non-numerical first pages
 
     t['ia_microfilm_url'] = None
@@ -243,12 +244,12 @@ def release_to_elasticsearch(entity, force_bool=True):
         # need extra metadata in the container extra field.
         # special case as a demo for now.
         if release.container_id == "hl5g6d5msjcl7hlbyyvcsbhc2u" \
-                and release.year in (2011, 2013) \
-                and release.volume.isdigit() \
+                and release.release_year in (2011, 2013) \
+                and release.issue.isdigit() \
                 and t['first_page']:
             t['ia_microfilm_url'] = "https://archive.org/details/sim_bjog_{}-{:02d}/page/n{}".format(
-                release.year,
-                release.volume - 1,
+                release.release_year,
+                int(release.issue) - 1,
                 t['first_page'],
             )
 
@@ -298,6 +299,7 @@ def release_to_elasticsearch(entity, force_bool=True):
         t['preservation'] = 'none'
 
     return t
+
 
 def container_to_elasticsearch(entity, force_bool=True):
     """
