@@ -1,6 +1,6 @@
 
-
 import collections
+import tldextract
 from fatcat_openapi_client import ApiClient
 
 
@@ -499,15 +499,11 @@ def file_to_elasticsearch(entity):
         md5 = entity.md5,
     )
 
-    # TODO: domain, hosts (from urls; use proper urlcanon)
+    parsed_urls = [tldextract.extract(u.url) for u in entity.urls]
+    t['hosts'] = list(set(['.'.join(pu) for pu in parsed_urls]))
+    t['domains'] = list(set([pu.registered_domain for pu in parsed_urls]))
     t['rels'] = list(set([u.rel for u in entity.urls]))
-    t['hosts'] = []
-    t['domains'] = []
 
-    in_ia = False
-    for u in entity.urls:
-        if '://archive.org/' in u.url or '://web.archive.org/' in u.url:
-            in_ia = True
-    t['in_ia'] = bool(in_ia)
+    t['in_ia'] = bool('archive.org' in t['domains'])
 
     return t

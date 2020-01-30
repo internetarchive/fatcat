@@ -106,11 +106,10 @@ def test_elasticsearch_file_transform(matched_importer):
     assert es['size_bytes'] == f.size
     assert es['mimetype'] == f.mimetype
     assert es['in_ia'] == True
-    assert 'web' in es['rels']
 
-    # XXX: implement hosts and domain parsing with urlcanon
-    #assert 'journals.plos.org' in es['host']
-    #assert 'plos.org' in es['domain']
+    assert 'web' in es['rels']
+    assert 'www.zhros.ru' in es['hosts']
+    assert 'zhros.ru' in es['domains']
 
 def test_elasticsearch_changelog_transform(matched_importer):
     ce = entity_from_json(open('./tests/files/changelog_3469683.json', 'r').read(), ChangelogEntry)
