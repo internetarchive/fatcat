@@ -1,0 +1,46 @@
+{
+"settings": {
+    "index": {
+        "analysis": {
+            "analyzer": {
+                "default": {
+                    "type": "custom",
+                    "tokenizer": "standard",
+                    "filter": [ "lowercase", "asciifolding" ]
+                }
+            }
+        }
+    }
+},
+"mappings": {
+    "changelog": {
+        "properties": {
+            "ident":            { "type": "keyword", "doc_values": false },
+            "state":            { "type": "keyword" },
+            "revision":         { "type": "keyword", "doc_values": false },
+
+            "release_ids":      { "type": "keyword", "doc_values": false },
+            "release_count":    { "type": "integer" },
+            "mimetype":         { "type": "keyword" },
+            "size_bytes":       { "type": "integer" },
+            "sha1":             { "type": "keyword", "doc_values": false },
+            "sha256":           { "type": "keyword", "doc_values": false },
+            "md5":              { "type": "keyword", "doc_values": false },
+
+            "domains":          { "type": "keyword" },
+            "hosts":            { "type": "keyword" },
+            "rels":             { "type": "keyword" },
+            "in_ia":            { "type": "boolean" },
+
+            "release_id":       { "type": "alias", "path": "release_ids" },
+            "sha1hex":          { "type": "alias", "path": "sha1hex" },
+            "sha256hex":        { "type": "alias", "path": "sha256hex" },
+            "md5hex":           { "type": "alias", "path": "md5hex" },
+            "size":             { "type": "alias", "path": "size_bytes" },
+            "domain":           { "type": "alias", "path": "domains" },
+            "host":             { "type": "alias", "path": "host" },
+            "rel":              { "type": "alias", "path": "rel" }
+        }
+    }
+}
+}

@@ -357,3 +357,48 @@ def changelog_to_elasticsearch(entity):
     #t['deleted'] = deleted
     #t['total'] = created + updated + deleted
     return t
+
+
+def file_to_elasticsearch(entity):
+    """
+    Converts from an entity model/schema to elasticsearch oriented schema.
+
+    Returns: dict
+    Raises exception on error (never returns None)
+    """
+
+    if entity.state in ('redirect', 'deleted'):
+        return dict(
+            ident = entity.ident,
+            state = entity.state,
+        )
+    elif entity.state != 'active':
+        raise ValueError("Unhandled entity state: {}".format(entity.state))
+
+    # First, the easy ones (direct copy)
+    t = dict(
+        ident = entity.ident,
+        state = entity.state,
+        revision = entity.revision,
+        release_ids = entity.release_ids,
+        release_count = len(entity.release_ids),
+        mimetype = entity.mimetype,
+        size_bytes = entity.size,
+        sha1 = entity.sha1,
+        sha256 = entity.sha256,
+        md5 = entity.md5,
+        rel = [u.rel for u in entity.urls],
+    )
+
+    # TODO: domain, hosts (from urls; use proper urlcanon)
+    t['rel'] = list(set([u.rel for u in entity.urls]))
+    t['host'] = []
+    t['domain'] = []
+
+    in_ia = False
+    for u in entity.urls:
+        if '://archive.org/' in u.url or '://web.archive.org/' in u.url:
+            in_ia = True
+    t['in_ia'] = bool(in_ia)
+
+    return t

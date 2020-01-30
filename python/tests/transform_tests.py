@@ -7,6 +7,7 @@ from fixtures import api
 from import_journal_metadata import journal_metadata_importer
 
 from import_crossref import crossref_importer
+from import_matched import matched_importer
 
 def test_basic_elasticsearch_convert(crossref_importer):
     with open('tests/files/crossref-works.single.json', 'r') as f:
@@ -72,14 +73,34 @@ def test_rich_elasticsearch_convert():
     assert es['ref_count'] == 2
     assert es['ref_linked_count'] == 1
 
-def test_elasticsearch_from_json():
+def test_elasticsearch_release_from_json():
     r = entity_from_json(open('./tests/files/math_universe.json', 'r').read(), ReleaseEntity)
     release_to_elasticsearch(r)
 
-def test_elasticsearch_container_convert(journal_metadata_importer):
+def test_elasticsearch_container_transform(journal_metadata_importer):
     with open('tests/files/journal_metadata.sample.json', 'r') as f:
         raw = json.loads(f.readline())
         c = journal_metadata_importer.parse_record(raw)
     c.state = 'active'
     es = container_to_elasticsearch(c)
     assert es['publisher'] == c.publisher
+
+def test_elasticsearch_file_transform(matched_importer):
+    with open('tests/files/example_matched.json', 'r') as f:
+        raw = json.loads(f.readline())
+        f = matched_importer.parse_record(raw)
+
+    f.state = 'active'
+    es = file_to_elasticsearch(f)
+    assert es['sha1'] == f.sha1
+    assert es['sha256'] == f.sha256
+    assert es['md5'] == f.md5
+    assert es['size_bytes'] == f.size
+    assert es['mimetype'] == f.mimetype
+    assert es['in_ia'] == True
+    assert 'publisher' in es['rel']
+
+    # XXX: implement hosts and domain parsing with urlcanon
+    #assert 'journals.plos.org' in es['host']
+    #assert 'plos.org' in es['domain']
+
