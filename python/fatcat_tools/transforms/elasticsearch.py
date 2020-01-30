@@ -248,6 +248,7 @@ def release_to_elasticsearch(entity, force_bool=True):
         # special case as a demo for now.
         if release.container_id == "hl5g6d5msjcl7hlbyyvcsbhc2u" \
                 and release.release_year in (2011, 2013) \
+                and release.issue \
                 and release.issue.isdigit() \
                 and t['first_page']:
             t['ia_microfilm_url'] = "https://archive.org/details/sim_bjog_{}-{:02d}/page/n{}".format(
