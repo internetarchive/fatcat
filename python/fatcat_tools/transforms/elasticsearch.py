@@ -155,6 +155,8 @@ def release_to_elasticsearch(entity, force_bool=True):
             if c_extra.get('szczepanski'):
                 if c_extra['szczepanski'].get('as_of'):
                     is_oa = True
+            if c_extra.get('country'):
+                t['country'] = c_extra['country']
 
     # fall back to release-level container metadata if container not linked or
     # missing context

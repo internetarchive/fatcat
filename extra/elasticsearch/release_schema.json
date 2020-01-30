@@ -40,6 +40,7 @@
             "release_stage":  { "type": "keyword" },
             "withdrawn_status": { "type": "keyword", "copy_to": "biblio" },
             "language":       { "type": "keyword" },
+            "country":        { "type": "keyword" },
             "volume":         { "type": "keyword", "copy_to": "biblio" },
             "issue":          { "type": "keyword", "copy_to": "biblio" },
             "pages":          { "type": "keyword", "copy_to": "biblio" },
