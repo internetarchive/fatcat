@@ -401,36 +401,64 @@ def container_to_elasticsearch(entity, force_bool=True):
     return t
 
 
+def _type_of_edit(edit):
+    if edit.revision == None and edit.redirect_ident == None:
+        return 'delete'
+    elif edit.redirect_ident:
+        # redirect
+        return 'update'
+    elif edit.prev_revision == None and edit.redirect_ident == None and edit.revision:
+        return 'create'
+    else:
+        return 'update'
+
+
 def changelog_to_elasticsearch(entity):
 
     editgroup = entity.editgroup
     t = dict(
         index=entity.index,
         editgroup_id=entity.editgroup_id,
-        timestamp=entity.timestamp,
+        timestamp=entity.timestamp.isoformat(),
         editor_id=editgroup.editor_id,
+        username=editgroup.editor.username,
+        is_bot=editgroup.editor.is_bot,
+        is_admin=editgroup.editor.is_admin,
     )
 
     extra = editgroup.extra or dict()
     if extra.get('agent'):
         t['agent'] = extra['agent']
 
-    t['containers'] = len(editgroup.edits.containers)
-    t['creators'] = len(editgroup.edits.containers)
-    t['files'] = len(editgroup.edits.containers)
-    t['filesets'] = len(editgroup.edits.containers)
-    t['webcaptures'] = len(editgroup.edits.containers)
-    t['releases'] = len(editgroup.edits.containers)
-    t['works'] = len(editgroup.edits.containers)
+    containers = [_type_of_edit(e) for e in editgroup.edits.containers]
+    creators = [_type_of_edit(e) for e in editgroup.edits.creators]
+    files = [_type_of_edit(e) for e in editgroup.edits.files]
+    filesets = [_type_of_edit(e) for e in editgroup.edits.filesets]
+    webcaptures = [_type_of_edit(e) for e in editgroup.edits.webcaptures]
+    releases = [_type_of_edit(e) for e in editgroup.edits.releases]
+    works = [_type_of_edit(e) for e in editgroup.edits.works]
 
-    # TODO: parse and pull out counts
-    #created = 0
-    #updated = 0
-    #deleted = 0
-    #t['created'] = created
-    #t['updated'] = updated
-    #t['deleted'] = deleted
-    #t['total'] = created + updated + deleted
+    t['containers'] = len(containers)
+    t['new_containers'] = len([e for e in containers if e == 'create'])
+    t['creators'] = len(creators)
+    t['new_creators'] = len([e for e in creators if e == 'create'])
+    t['files'] = len(files)
+    t['new_files'] = len([e for e in files if e == 'create'])
+    t['filesets'] = len(filesets)
+    t['new_filesets'] = len([e for e in filesets if e == 'create'])
+    t['webcaptures'] = len(webcaptures)
+    t['new_webcaptures'] = len([e for e in webcaptures if e == 'create'])
+    t['releases'] = len(releases)
+    t['new_releases'] = len([e for e in releases if e == 'create'])
+    t['works'] = len(works)
+    t['new_works'] = len([e for e in works if e == 'create'])
+
+    all_edits = containers + creators + files + filesets + webcaptures + releases + works
+
+    t['created'] = len([e for e in all_edits if e == 'create'])
+    t['updated'] = len([e for e in all_edits if e == 'update'])
+    t['deleted'] = len([e for e in all_edits if e == 'delete'])
+    t['total'] = len(all_edits)
     return t
 
 

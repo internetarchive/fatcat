@@ -106,9 +106,31 @@ def test_elasticsearch_file_transform(matched_importer):
     assert es['size_bytes'] == f.size
     assert es['mimetype'] == f.mimetype
     assert es['in_ia'] == True
-    assert 'publisher' in es['rel']
+    assert 'web' in es['rel']
 
     # XXX: implement hosts and domain parsing with urlcanon
     #assert 'journals.plos.org' in es['host']
     #assert 'plos.org' in es['domain']
 
+def test_elasticsearch_changelog_transform(matched_importer):
+    ce = entity_from_json(open('./tests/files/changelog_3469683.json', 'r').read(), ChangelogEntry)
+
+    es = changelog_to_elasticsearch(ce)
+    assert es['index'] == 3469683
+    # len("2020-01-30T05:04:39") => 19
+    assert es['timestamp'][:19] == "2020-01-30T05:04:39.738601Z"[:19]
+    assert es['editor_id'] == "scmbogxw25evtcesfcab5qaboa"
+    assert es['username'] == "crawl-bot"
+    assert es['is_bot'] == True
+    assert es['is_admin'] == True
+    assert es['agent'] == "fatcat_tools.IngestFileResultImporter"
+
+    assert es['total'] == 50
+    assert es['files'] == 50
+    assert es['new_files'] == 50
+    assert es['created'] == 50
+
+    assert es['releases'] == 0
+    assert es['new_releases'] == 0
+    assert es['updated'] == 0
+    assert es['deleted'] == 0
