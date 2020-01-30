@@ -257,23 +257,24 @@ def container_to_elasticsearch(entity, force_bool=True):
         wikidata_qid = entity.wikidata_qid,
     )
 
-    # TODO: region, discipline
-    # TODO: single primary language?
     if not entity.extra:
         entity.extra = dict()
-    for key in ('country', 'languages', 'mimetypes', 'first_year', 'last_year'):
+    for key in ('country', 'languages', 'mimetypes', 'original_name',
+                'first_year', 'last_year', 'aliases', 'abbrev', 'region',
+                'discipline'):
         if entity.extra.get(key):
             t[key] = entity.extra[key]
 
+    t['issns'] = []
+    if entity.issnl:
+        t['issns'].append(entity.issnl)
+    for key in ('issnp', 'issne'):
+        if entity.extra.get(key):
+            t['issns'].append(entity.extra[key])
+
     in_doaj = None
     in_road = None
-    # TODO: not currently implemented
-    in_doi = None
-    # TODO: would be nice to have 'in_doaj_works', or maybe just "any_pid"
-    #in_doaj_works = None
-    in_sherpa_romeo = None
     is_oa = None
-    # TODO: not actually set/stored anywhere?
     is_longtail_oa = None
     any_kbart = None
     any_jstor = None
@@ -295,8 +296,9 @@ def container_to_elasticsearch(entity, force_bool=True):
     if extra.get('default_license'):
         if extra['default_license'].startswith('CC-'):
             is_oa = True
+    t['sherpa_romeo_color'] = None
     if extra.get('sherpa_romeo'):
-        in_sherpa_romeo = True
+        t['sherpa_romeo_color'] = extra['sherpa_romeo'].get('color')
         if extra['sherpa_romeo'].get('color') == 'white':
             is_oa = False
     if extra.get('kbart'):
@@ -306,21 +308,21 @@ def container_to_elasticsearch(entity, force_bool=True):
     if extra.get('ia'):
         if extra['ia'].get('sim'):
             any_ia_sim = True
+        if extra['ia'].get('longtail_oa'):
+            is_longtail_oa = True
     t['is_superceded'] = bool(extra.get('superceded'))
 
     t['in_doaj'] = bool(in_doaj)
     t['in_road'] = bool(in_road)
-    t['in_sherpa_romeo'] = bool(in_sherpa_romeo)
     t['any_kbart'] = bool(any_kbart)
-    t['is_longtail_oa'] = bool(is_longtail_oa)
     if force_bool:
-        t['in_doi'] = bool(in_doi)
-        t['is_oa'] = bool(in_doaj or in_road or is_longtail_oa or is_oa)
+        t['is_oa'] = bool(in_doaj or in_road or is_oa)
+        t['is_longtail_oa'] = bool(is_longtail_oa)
         t['any_jstor'] = bool(any_jstor)
         t['any_ia_sim'] = bool(any_ia_sim)
     else:
-        t['in_doi'] = in_doi
-        t['is_oa'] = in_doaj or in_road or is_longtail_oa or is_oa
+        t['is_oa'] = in_doaj or in_road or is_oa
+        t['is_longtail_oa'] = is_longtail_oa
         t['any_jstor'] = any_jstor
         t['any_ia_sim'] = any_ia_sim
     return t
