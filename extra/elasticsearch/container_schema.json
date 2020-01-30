@@ -20,6 +20,18 @@
                     "char_filter": [ "icu_normalizer" ],
                     "filter": [ "icu_folding" ]
                 }
+            },
+            "normalizer": {
+                "default": {
+                    "type": "custom",
+                    "char_filter": [],
+                    "filter": ["lowercase"]
+                },
+                "caseSensitive": {
+                    "type": "custom",
+                    "char_filter": [],
+                    "filter": []
+                }
             }
         }
     }
@@ -27,23 +39,23 @@
 "mappings": {
     "container": {
         "properties": {
-            "ident":          { "type": "keyword", "doc_values": false },
-            "state":          { "type": "keyword" },
-            "revision":       { "type": "keyword", "doc_values": false },
+            "ident":          { "type": "keyword", "normalizer": "default", "doc_values": false },
+            "state":          { "type": "keyword", "normalizer": "default" },
+            "revision":       { "type": "keyword", "normalizer": "default", "doc_values": false },
             "name":           { "type": "text", "index": true, "analyzer": "textIcu", "search_analyzer":"textIcuSearch", "copy_to": "biblio" },
             "original_name":  { "type": "text", "index": true, "analyzer": "textIcu", "search_analyzer":"textIcuSearch", "copy_to": "biblio" },
             "publisher":      { "type": "text", "index": true, "analyzer": "textIcu", "search_analyzer":"textIcuSearch", "copy_to": "biblio" },
             "abbrev":         { "type": "text", "index": true, "analyzer": "textIcu", "search_analyzer":"textIcuSearch", "copy_to": "biblio" },
             "aliases":        { "type": "text", "index": true, "analyzer": "textIcu", "search_analyzer":"textIcuSearch", "copy_to": "biblio" },
-            "container_type": { "type": "keyword" },
-            "issnl":          { "type": "keyword" },
-            "issns":          { "type": "keyword" },
-            "wikidata_qid":   { "type": "keyword" },
-            "country":        { "type": "keyword" },
-            "region":         { "type": "keyword" },
-            "discipline":     { "type": "keyword" },
-            "languages":      { "type": "keyword" },
-            "mimetypes":      { "type": "keyword" },
+            "container_type": { "type": "keyword", "normalizer": "default" },
+            "issnl":          { "type": "keyword", "normalizer": "default" },
+            "issns":          { "type": "keyword", "normalizer": "default" },
+            "wikidata_qid":   { "type": "keyword", "normalizer": "default" },
+            "country":        { "type": "keyword", "normalizer": "default" },
+            "region":         { "type": "keyword", "normalizer": "default" },
+            "discipline":     { "type": "keyword", "normalizer": "default" },
+            "languages":      { "type": "keyword", "normalizer": "default" },
+            "mimetypes":      { "type": "keyword", "normalizer": "default" },
             "first_year":     { "type": "integer" },
             "last_year":      { "type": "integer" },
 
@@ -57,7 +69,7 @@
             "any_kbart":            { "type": "boolean" },
             "any_jstor":            { "type": "boolean" },
             "any_ia_sim":           { "type": "boolean" },
-            "sherpa_romeo_color":   { "type": "keyword" },
+            "sherpa_romeo_color":   { "type": "keyword", "normalizer": "default" },
 
             "releases_total": { "type": "integer" },
             "releases_kbart": { "type": "integer" },

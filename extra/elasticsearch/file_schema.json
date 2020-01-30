@@ -8,6 +8,18 @@
                     "tokenizer": "standard",
                     "filter": [ "lowercase", "asciifolding" ]
                 }
+            },
+            "normalizer": {
+                "default": {
+                    "type": "custom",
+                    "char_filter": [],
+                    "filter": ["lowercase"]
+                },
+                "caseSensitive": {
+                    "type": "custom",
+                    "char_filter": [],
+                    "filter": []
+                }
             }
         }
     }
@@ -15,21 +27,21 @@
 "mappings": {
     "file": {
         "properties": {
-            "ident":            { "type": "keyword", "doc_values": false },
-            "state":            { "type": "keyword" },
-            "revision":         { "type": "keyword", "doc_values": false },
+            "ident":            { "type": "keyword", "normalizer": "default", "doc_values": false },
+            "state":            { "type": "keyword", "normalizer": "default" },
+            "revision":         { "type": "keyword", "normalizer": "default", "doc_values": false },
 
-            "release_ids":      { "type": "keyword", "doc_values": false },
+            "release_ids":      { "type": "keyword", "normalizer": "default", "doc_values": false },
             "release_count":    { "type": "integer" },
-            "mimetype":         { "type": "keyword" },
+            "mimetype":         { "type": "keyword", "normalizer": "default" },
             "size_bytes":       { "type": "integer" },
-            "sha1":             { "type": "keyword", "doc_values": false },
-            "sha256":           { "type": "keyword", "doc_values": false },
-            "md5":              { "type": "keyword", "doc_values": false },
+            "sha1":             { "type": "keyword", "normalizer": "default", "doc_values": false },
+            "sha256":           { "type": "keyword", "normalizer": "default", "doc_values": false },
+            "md5":              { "type": "keyword", "normalizer": "default", "doc_values": false },
 
-            "domains":          { "type": "keyword" },
-            "hosts":            { "type": "keyword" },
-            "rels":             { "type": "keyword" },
+            "domains":          { "type": "keyword", "normalizer": "default" },
+            "hosts":            { "type": "keyword", "normalizer": "default" },
+            "rels":             { "type": "keyword", "normalizer": "default" },
             "in_ia":            { "type": "boolean" },
             "in_ia_petabox":    { "type": "boolean" },
 

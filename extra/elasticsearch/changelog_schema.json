@@ -8,6 +8,18 @@
                     "tokenizer": "standard",
                     "filter": [ "lowercase", "asciifolding" ]
                 }
+            },
+            "normalizer": {
+                "default": {
+                    "type": "custom",
+                    "char_filter": [],
+                    "filter": ["lowercase"]
+                },
+                "caseSensitive": {
+                    "type": "custom",
+                    "char_filter": [],
+                    "filter": []
+                }
             }
         }
     }
@@ -16,13 +28,13 @@
     "changelog": {
         "properties": {
             "index":            { "type": "integer" },
-            "editgroup_id":     { "type": "keyword", "doc_values": false },
+            "editgroup_id":     { "type": "keyword", "normalizer": "default", "doc_values": false },
             "timestamp":        { "type": "date" },
-            "editor_id":        { "type": "keyword" },
-            "username":         { "type": "keyword" },
+            "editor_id":        { "type": "keyword", "normalizer": "default" },
+            "username":         { "type": "keyword", "normalize": "caseSensitive" },
             "is_bot":           { "type": "boolean" },
             "is_admin":         { "type": "boolean" },
-            "agent":            { "type": "keyword" },
+            "agent":            { "type": "keyword", "normalize": "caseSensitive" },
 
             "containers":       { "type": "integer" },
             "new_containers":   { "type": "integer" },
