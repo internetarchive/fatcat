@@ -157,6 +157,7 @@ def release_to_elasticsearch(entity, force_bool=True):
                     is_oa = True
             if c_extra.get('country'):
                 t['country'] = c_extra['country']
+                t['country_upper'] = c_extra['country'].upper()
 
     # fall back to release-level container metadata if container not linked or
     # missing context

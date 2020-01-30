@@ -53,6 +53,7 @@
             "withdrawn_status": { "type": "keyword", "normalizer": "default", "copy_to": "biblio" },
             "language":       { "type": "keyword", "normalizer": "default" },
             "country":        { "type": "keyword", "normalizer": "default" },
+            "country_upper":  { "type": "keyword", "normalizer": "caseSensitive" },
             "volume":         { "type": "keyword", "normalizer": "default", "copy_to": "biblio" },
             "issue":          { "type": "keyword", "normalizer": "default", "copy_to": "biblio" },
             "pages":          { "type": "keyword", "normalizer": "default", "copy_to": "biblio" },
