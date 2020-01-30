@@ -497,13 +497,12 @@ def file_to_elasticsearch(entity):
         sha1 = entity.sha1,
         sha256 = entity.sha256,
         md5 = entity.md5,
-        rel = [u.rel for u in entity.urls],
     )
 
     # TODO: domain, hosts (from urls; use proper urlcanon)
-    t['rel'] = list(set([u.rel for u in entity.urls]))
-    t['host'] = []
-    t['domain'] = []
+    t['rels'] = list(set([u.rel for u in entity.urls]))
+    t['hosts'] = []
+    t['domains'] = []
 
     in_ia = False
     for u in entity.urls:

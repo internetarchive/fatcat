@@ -106,7 +106,7 @@ def test_elasticsearch_file_transform(matched_importer):
     assert es['size_bytes'] == f.size
     assert es['mimetype'] == f.mimetype
     assert es['in_ia'] == True
-    assert 'web' in es['rel']
+    assert 'web' in es['rels']
 
     # XXX: implement hosts and domain parsing with urlcanon
     #assert 'journals.plos.org' in es['host']
