@@ -416,6 +416,11 @@ def _type_of_edit(edit):
 
 
 def changelog_to_elasticsearch(entity):
+    """
+    Note that this importer requires expanded fill info to work. Calling code
+    may need to re-fetch editgroup from API to get the 'editor' field. Some of
+    the old kafka feed content doesn't includes editor in particular.
+    """
 
     editgroup = entity.editgroup
     t = dict(

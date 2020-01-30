@@ -13,7 +13,7 @@
     }
 },
 "mappings": {
-    "changelog": {
+    "file": {
         "properties": {
             "ident":            { "type": "keyword", "doc_values": false },
             "state":            { "type": "keyword" },
@@ -33,13 +33,13 @@
             "in_ia":            { "type": "boolean" },
 
             "release_id":       { "type": "alias", "path": "release_ids" },
-            "sha1hex":          { "type": "alias", "path": "sha1hex" },
-            "sha256hex":        { "type": "alias", "path": "sha256hex" },
-            "md5hex":           { "type": "alias", "path": "md5hex" },
+            "sha1hex":          { "type": "alias", "path": "sha1" },
+            "sha256hex":        { "type": "alias", "path": "sha256" },
+            "md5hex":           { "type": "alias", "path": "md5" },
             "size":             { "type": "alias", "path": "size_bytes" },
             "domain":           { "type": "alias", "path": "domains" },
-            "host":             { "type": "alias", "path": "host" },
-            "rel":              { "type": "alias", "path": "rel" }
+            "host":             { "type": "alias", "path": "hosts" },
+            "rel":              { "type": "alias", "path": "rels" }
         }
     }
 }

@@ -99,7 +99,7 @@
 
             "affilation":     { "type": "alias", "path": "affiliations" },
             "ror":            { "type": "alias", "path": "affiliation_rors" },
-            "creator_id":     { "type": "alias", "path": "creator_id" },
+            "creator_id":     { "type": "alias", "path": "creator_ids" },
             "ref_release_id": { "type": "alias", "path": "ref_release_ids" },
             "author":         { "type": "alias", "path": "contrib_names" },
             "journal":        { "type": "alias", "path": "container_name" },
