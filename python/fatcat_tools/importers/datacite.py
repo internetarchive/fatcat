@@ -319,8 +319,7 @@ class DataciteImporter(EntityImporter):
                 release_date, release_month, release_year = parse_single_date(attributes.get('published'))
 
         if not any((release_date, release_month, release_year)):
-            print('[{}] skipping record w/o date: {}'.format(doi, obj), file=sys.stderr)
-            return False
+            print('[{}] record w/o date: {}'.format(doi, obj), file=sys.stderr)
 
         # Start with clear stages, e.g. published. TODO(martin): we could
         # probably infer a bit more from the relations, e.g.
