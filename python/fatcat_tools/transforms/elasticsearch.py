@@ -502,7 +502,7 @@ def file_to_elasticsearch(entity):
     )
 
     parsed_urls = [tldextract.extract(u.url) for u in entity.urls]
-    t['hosts'] = list(set(['.'.join(pu) for pu in parsed_urls]))
+    t['hosts'] = list(set(['.'.join([seg for seg in pu if seg]) for pu in parsed_urls]))
     t['domains'] = list(set([pu.registered_domain for pu in parsed_urls]))
     t['rels'] = list(set([u.rel for u in entity.urls]))
 
@@ -512,6 +512,6 @@ def file_to_elasticsearch(entity):
     # ok, but actually remove archive.org hosts, because they make other
     # aggregations hard and are a waste of storage
     t['hosts'] = [h for h in t['hosts'] if h not in ('archive.org', 'web.archive.org')]
-    t['domains'] = [h for h in t['hosts'] if h not in ('archive.org')]
+    t['domains'] = [h for h in t['domains'] if h not in ('archive.org')]
 
     return t
