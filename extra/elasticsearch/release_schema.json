@@ -110,7 +110,7 @@
             "is_retracted":         { "type": "boolean" },
             "preservation":         { "type": "keyword", "normalizer": "default" },
 
-            "affilation":     { "type": "alias", "path": "affiliations" },
+            "affiliation":     { "type": "alias", "path": "affiliations" },
             "ror":            { "type": "alias", "path": "affiliation_rors" },
             "creator_id":     { "type": "alias", "path": "creator_ids" },
             "ref_release_id": { "type": "alias", "path": "ref_release_ids" },
