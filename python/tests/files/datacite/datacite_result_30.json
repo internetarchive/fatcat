@@ -1,0 +1,39 @@
+{
+  "abstracts": [
+    {
+      "content": "Biological liquid-liquid phase separation",
+      "lang": "fr",
+      "mimetype": "text/plain"
+    }
+  ],
+  "contribs": [
+    {
+      "index": 0,
+      "given_name": "Celja J",
+      "surname": "Uebel",
+      "raw_name": "Celja J Uebel",
+      "role": "author"
+    },
+    {
+      "index": 1,
+      "given_name": "Carolyn M",
+      "raw_name": "Carolyn M Phillips",
+      "surname": "Phillips",
+      "role": "author"
+    }
+  ],
+  "ext_ids": {
+    "doi": "10.17912/micropub.biology.000143"
+  },
+  "extra": {
+    "datacite": {
+      "resourceTypeGeneral": "DataPaper"
+    },
+    "container_name": "microPublication Biology"
+  },
+  "refs": [],
+  "release_stage": "published",
+  "release_year": 2019,
+  "publisher": "microPublication Biology",
+  "title": "Phase-separated protein dynamics are affected by fluorescent tag choice"
+}

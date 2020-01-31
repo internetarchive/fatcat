@@ -287,10 +287,9 @@ def test_datacite_conversions(datacite_importer):
     for now.
     """
     datacite_importer.debug = True
-    for i in range(30):
+    for i in range(31):
         src = 'tests/files/datacite/datacite_doc_{0:02d}.json'.format(i)
         dst = 'tests/files/datacite/datacite_result_{0:02d}.json'.format(i)
-        print('testing mapping from {} => {}'.format(src, dst))
         with open(src, 'r') as f:
             re = datacite_importer.parse_record(json.load(f))
             result = entity_to_dict(re)

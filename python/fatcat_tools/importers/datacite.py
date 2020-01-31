@@ -1,11 +1,11 @@
 """
 Prototype importer for datacite.org data.
 
-Example input document at: https://gist.github.com/miku/5610a2d64e3fee82d16f5d3f3a295fc8.
+Example input document: https://api.datacite.org/dois/10.7916/d8-f93n-rk51
 
-Datacite being an aggregator, the data is varied and exposes a couple of
-problems in content and structure. A few fields habe their own parsing
-functions (parse_datacite_...), which can be tested more easily.
+Datacite being an aggregator, the data is heterogenous and exposes a couple of
+problems in content and structure. A few fields have their own parsing
+functions (parse_datacite_...), which may help testing.
 """
 
 import collections
@@ -311,6 +311,16 @@ class DataciteImporter(EntityImporter):
         release_date, release_month, release_year = parse_datacite_dates(
             attributes.get('dates', []))
 
+        # Some records do not use the "dates" field (e.g. micropub), but:
+        # "attributes.published" or "attributes.publicationYear"
+        if not any((release_date, release_month, release_year)):
+            release_date, release_month, release_year = parse_single_date(attributes.get('publicationYear'))
+            if not any((release_date, release_month, release_year)):
+                release_date, release_month, release_year = parse_single_date(attributes.get('published'))
+
+        if not any((release_date, release_month, release_year)):
+            print('[{}] record w/o date: {}'.format(doi, obj), file=sys.stderr)
+
         # Start with clear stages, e.g. published. TODO(martin): we could
         # probably infer a bit more from the relations, e.g.
         # "IsPreviousVersionOf" or "IsNewVersionOf".
@@ -379,6 +389,11 @@ class DataciteImporter(EntityImporter):
                             print('[{}] too many container titles: {}'.format(doi,
                                 len(container_name)))
                             container_name = container_name[0]
+
+        # Exception: https://www.micropublication.org/, see: !MR24.
+        if container_id is None and container_name is None:
+            if publisher and publisher.lower().startswith('micropublication'):
+                container_name = publisher
 
         # Volume and issue.
         volume = container.get('volume')
@@ -490,7 +505,7 @@ class DataciteImporter(EntityImporter):
             if len(text) > MAX_ABSTRACT_LENGTH:
                 text = text[:MAX_ABSTRACT_LENGTH] + " [...]"
 
-            # Detect language.
+            # Detect language. This is fuzzy and may be removed, if too unreliable.
             lang = None
             try:
                 lang = langdetect.detect(text)
@@ -719,8 +734,10 @@ class DataciteImporter(EntityImporter):
 
                 if name:
                     name = clean(name)
-                if not name:
+                if not any((name, given_name, surname)):
                     continue
+                if not name:
+                    name = "{} {}".format(given_name or '', surname or '').strip()
                 if name in name_blacklist:
                     continue
                 if name.lower() in UNKNOWN_MARKERS_LOWER:
@@ -924,6 +941,32 @@ def parse_datacite_titles(titles):
 
     return title, original_language_title, subtitle
 
+def parse_single_date(value):
+    """
+    Given a single string containing a date in arbitrary format, try to return
+    tuple (date: datetime.date, month: int, year: int).
+    """
+    if not value:
+        return None, None, None
+    if isinstance(value, int):
+        value = str(value)
+    parser = dateparser.DateDataParser()
+    try:
+        # Results in a dict with keys: date_obj, period, locale.
+        parse_result = parser.get_date_data(value)
+        # A datetime object, later we need a date, only.
+        result = parse_result['date_obj']
+        if result is not None:
+            if parse_result['period'] == 'year':
+                return None, None, result.year
+            elif parse_result['period'] == 'month':
+                return None, result.month, result.year
+            else:
+                return result.date(), result.month, result.year
+    except TypeError as err:
+        print("{} date parsing failed with: {}".format(value, err), file=sys.stderr)
+
+    return None, None, None
 
 def parse_datacite_dates(dates):
     """
@@ -981,23 +1024,7 @@ def parse_datacite_dates(dates):
 
         if result is None:
             print('fallback for {}'.format(value), file=sys.stderr)
-            parser = dateparser.DateDataParser()
-            try:
-                # Results in a dict with keys: date_obj, period, locale.
-                parse_result = parser.get_date_data(value)
-
-                # A datetime object, later we need a date, only.
-                result = parse_result['date_obj']
-                if result is not None:
-                    if parse_result['period'] == 'year':
-                        return None, None, result.year
-                    elif parse_result['period'] == 'month':
-                        return None, result.month, result.year
-                    else:
-                        return result.date(), result.month, result.year
-            except TypeError as err:
-                print("{} date parsing failed with: {}".format(value, err),
-                      file=sys.stderr)
+            release_date, release_month, release_year = parse_single_date(value)
 
         if result is None:
             # Unparsable date.

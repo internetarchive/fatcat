@@ -1,0 +1,72 @@
+{
+  "id": "10.17912/micropub.biology.000143",
+  "type": "dois",
+  "attributes": {
+    "doi": "10.17912/micropub.biology.000143",
+    "identifiers": null,
+    "creators": [
+      {
+        "raw_name": "Celja J Uebel",
+        "givenName": "Celja J",
+        "familyName": "Uebel",
+        "affiliation": [],
+        "role": "author"
+      },
+      {
+        "raw_name": "Carolyn M Phillips",
+        "givenName": "Carolyn M",
+        "familyName": "Phillips",
+        "affiliation": [],
+        "role": "author"
+      }
+    ],
+    "titles": [
+      {
+        "title": "Phase-separated protein dynamics are affected by fluorescent tag choice"
+      }
+    ],
+    "publisher": "microPublication Biology",
+    "container": {},
+    "publicationYear": 2019,
+    "subjects": [],
+    "contributors": [],
+    "dates": null,
+    "language": null,
+    "types": {
+      "resourceTypeGeneral": "DataPaper"
+    },
+    "relatedIdentifiers": [],
+    "sizes": [],
+    "formats": [],
+    "version": null,
+    "rightsList": [],
+    "descriptions": [
+      {
+        "description": "Biological liquid-liquid phase separation",
+        "descriptionType": "Abstract"
+      }
+    ],
+    "geoLocations": [],
+    "fundingReferences": [],
+    "url": "https://www.micropublication.org/journals/biology/micropub.biology.000143",
+    "contentUrl": null,
+    "metadataVersion": 0,
+    "schemaVersion": null,
+    "source": null,
+    "isActive": true,
+    "state": "findable",
+    "reason": null,
+    "created": "2019-08-19T14:43:08.000Z",
+    "registered": "2019-08-19T14:43:09.000Z",
+    "published": "2019",
+    "updated": "2019-11-09T12:32:02.000Z"
+  },
+  "relationships": {
+    "client": {
+      "data": {
+        "id": "caltech.micropub",
+        "type": "clients"
+      }
+    }
+  }
+}
