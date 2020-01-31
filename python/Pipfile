@@ -53,6 +53,10 @@ pathlib2 = "*"
 pycountry = "*"
 tldextract = "*"
 
+# this is only to lock to a python3.5-compatible version. needed by an
+# importlib-metadata, under pytest
+zipp = "<2.0.0"
+
 [requires]
 # Python 3.5 is the bundled (system) version of python for Ubuntu 16.04
 # (Xenial), currently the default on Internet Archive production VMs, as well
