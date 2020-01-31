@@ -390,6 +390,11 @@ class DataciteImporter(EntityImporter):
                                 len(container_name)))
                             container_name = container_name[0]
 
+        # Exception: https://www.micropublication.org/, see: !MR24.
+        if container_id is None and container_name is None:
+            if publisher and publisher.lower().startswith('micropublication'):
+                container_name = publisher
+
         # Volume and issue.
         volume = container.get('volume')
         issue = container.get('issue')

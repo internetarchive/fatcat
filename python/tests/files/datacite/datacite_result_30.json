@@ -28,7 +28,8 @@
   "extra": {
     "datacite": {
       "resourceTypeGeneral": "DataPaper"
-    }
+    },
+    "container_name": "microPublication Biology"
   },
   "refs": [],
   "release_stage": "published",
