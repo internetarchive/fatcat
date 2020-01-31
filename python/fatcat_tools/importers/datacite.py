@@ -1009,7 +1009,7 @@ def parse_datacite_dates(dates):
     )
 
     def parse_item(item):
-        result, value, year_only = None, item.get('date', ''), False
+        result, value, year_only = None, item.get('date', '') or '', False
         release_date, release_month, release_year = None, None, None
 
         for layout, granularity in common_patterns:
