@@ -737,7 +737,7 @@ class DataciteImporter(EntityImporter):
                 if not any((name, given_name, surname)):
                     continue
                 if not name:
-                    name = "{} {}".format(given_name, surname).strip()
+                    name = "{} {}".format(given_name or '', surname or '').strip()
                 if name in name_blacklist:
                     continue
                 if name.lower() in UNKNOWN_MARKERS_LOWER:
