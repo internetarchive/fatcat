@@ -1,11 +1,11 @@
 """
 Prototype importer for datacite.org data.
 
-Example input document at: https://gist.github.com/miku/5610a2d64e3fee82d16f5d3f3a295fc8.
+Example input document: https://api.datacite.org/dois/10.7916/d8-f93n-rk51
 
-Datacite being an aggregator, the data is varied and exposes a couple of
-problems in content and structure. A few fields habe their own parsing
-functions (parse_datacite_...), which can be tested more easily.
+Datacite being an aggregator, the data is heterogenous and exposes a couple of
+problems in content and structure. A few fields have their own parsing
+functions (parse_datacite_...), which may help testing.
 """
 
 import collections
