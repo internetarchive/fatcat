@@ -130,6 +130,9 @@ class ShadowLibraryImporter(EntityImporter):
         if not existing:
             return True
 
+        if not existing.extra:
+            existing.extra = {}
+
         if existing.extra.get('shadows') and list(fe.extra['shadows'].keys())[0] in existing.extra['shadows']:
             # already imported from this shadow library; skip
             self.counts['exists'] += 1
@@ -172,6 +175,9 @@ class ShadowLibraryImporter(EntityImporter):
         existing.sha1 = existing.sha1 or fe.sha1
         existing.sha256 = existing.sha256 or fe.sha256
         edit = self.api.update_file(self.get_editgroup_id(), existing.ident, existing)
+        # add sha1 to non-entity edit row, so we can do more aggressive
+        # group-level de-dupe
+        edit.sha1 = existing.sha1
         self._edits_inflight.append(edit)
         self.counts['update'] += 1
         return False

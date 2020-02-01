@@ -482,7 +482,7 @@ def main():
         help="create release and file entities based on GROBID PDF metadata extraction")
     sub_shadow_lib.set_defaults(
         func=run_shadow_lib,
-        auth_var="FATCAT_API_AUTH_TOKEN",
+        auth_var="FATCAT_AUTH_WORKER_SHADOW",
     )
     sub_shadow_lib.add_argument('json_file',
         help="JSON file to import from (or stdin)",
