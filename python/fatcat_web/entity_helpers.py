@@ -53,6 +53,10 @@ def enrich_release_entity(entity):
         entity._es = release_to_elasticsearch(entity, force_bool=False)
     if entity.container and entity.container.state == "active":
         entity.container._es = container_to_elasticsearch(entity.container, force_bool=False)
+    if entity.files:
+        # remove shadows-only files with no URLs
+        entity.files = [f for f in entity.files
+            if not (not f.urls and f.extra and f.extra.get('shadows'))]
     if entity.filesets:
         for fs in entity.filesets:
             fs._total_size = sum([f.size for f in fs.manifest])
