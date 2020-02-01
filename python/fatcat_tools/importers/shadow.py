@@ -152,10 +152,20 @@ class ShadowLibraryImporter(EntityImporter):
             u = existing.urls[i]
             if u.rel == 'repository' and '://archive.org/download/' in u.url:
                 existing.urls[i].rel = 'archive'
+            if u.rel == 'social':
+                u.rel = 'academicsocial'
+
+        # new wayback URLs, could replace bad old short wayback URLs (from arabesque bug)
+        new_wb_urls = [u.url for u in fe.urls]
+        new_short_wb_urls = ['https://web.archive.org/web/{}/{}'.format(
+            u.split('/')[4][:12], '/'.join(u.split('/')[5:])) for u in new_wb_urls]
+        existing.urls = [u for u in existing.urls if not u.url in new_short_wb_urls]
 
         # merge the existing into this one and update
-        existing.urls = list(set([(u.rel, u.url) for u in fe.urls + existing.urls]))
-        existing.urls = [fatcat_openapi_client.FileUrl(rel=rel, url=url) for (rel, url) in existing.urls]
+        merged_urls = {}
+        for u in fe.urls + existing.urls:
+            merged_urls[u.url] = u
+        existing.urls = list(merged_urls.values())
         if not existing.extra.get('shadows'):
             existing.extra['shadows'] = fe.extra['shadows']
         else:
