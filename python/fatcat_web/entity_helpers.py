@@ -56,7 +56,7 @@ def enrich_release_entity(entity):
     if entity.files:
         # remove shadows-only files with no URLs
         entity.files = [f for f in entity.files
-            if not (not f.urls and f.extra and f.extra.get('shadows'))]
+            if not (f.extra and f.extra.get('shadows') and not f.urls)]
     if entity.filesets:
         for fs in entity.filesets:
             fs._total_size = sum([f.size for f in fs.manifest])
