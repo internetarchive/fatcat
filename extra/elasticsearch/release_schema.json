@@ -67,7 +67,7 @@
             "isbn13":         { "type": "keyword", "normalizer": "default", "doc_values": false },
             "wikidata_qid":   { "type": "keyword", "normalizer": "default", "doc_values": false },
             "core_id":        { "type": "keyword", "normalizer": "default", "doc_values": false },
-            "axiv_id":        { "type": "keyword", "normalizer": "default", "doc_values": false },
+            "arxiv_id":       { "type": "keyword", "normalizer": "default", "doc_values": false },
             "jstor_id":       { "type": "keyword", "normalizer": "default", "doc_values": false },
             "ark_id":         { "type": "keyword", "normalizer": "default", "doc_values": false },
             "mag_id":         { "type": "keyword", "normalizer": "default", "doc_values": false },
