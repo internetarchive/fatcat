@@ -23,16 +23,16 @@ def release_ingest_request(release, ingest_request_source='fatcat', ingest_type=
         url = "https://arxiv.org/pdf/{}.pdf".format(release.ext_ids.arxiv)
         link_source = "arxiv"
         link_source_id = release.ext_ids.arxiv
-    elif release.ext_ids.doi:
-        url = "https://doi.org/{}".format(release.ext_ids.doi)
-        link_source = "doi"
-        link_source_id = release.ext_ids.doi
     elif release.ext_ids.pmcid:
         # TODO: how to tell if an author manuscript in PMC vs. published?
         #url = "https://www.ncbi.nlm.nih.gov/pmc/articles/{}/pdf/".format(release.ext_ids.pmcid)
         url = "http://europepmc.org/backend/ptpmcrender.fcgi?accid={}&blobtype=pdf".format(release.ext_ids.pmcid)
         link_source = "pmc"
         link_source_id = release.ext_ids.pmcid
+    elif release.ext_ids.doi:
+        url = "https://doi.org/{}".format(release.ext_ids.doi)
+        link_source = "doi"
+        link_source_id = release.ext_ids.doi
 
     if not url:
         return None
