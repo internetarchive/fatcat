@@ -225,9 +225,6 @@ def main():
     sub_query.set_defaults(func=run_ingest_query)
     sub_query.add_argument('query',
         help="search query (same DSL as web interface search)")
-    sub_query.add_argument('--allow-non-oa',
-        action='store_true',
-        help="by default, we limit to OA releases. This removes that filter")
 
     sub_extid = subparsers.add_parser('extid',
         help="Create ingest requests for releases that have given extid defined")
