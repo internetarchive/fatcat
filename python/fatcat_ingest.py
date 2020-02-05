@@ -42,7 +42,7 @@ def _run_search_dump(args, search):
         print("Will send ingest requests to kafka topic: {}".format(ingest_file_request_topic), file=sys.stderr)
         kafka_producer = simple_kafka_producer(args.kafka_hosts)
 
-    if args.limit != None:
+    if args.limit is not None:
         search = search[:args.limit]
 
     if args.before_year:
@@ -93,7 +93,7 @@ def _run_search_dump(args, search):
         counts['ingest_request'] += 1
         if args.dry_run:
             continue
-        if kafka_producer != None:
+        if kafka_producer is not None:
             kafka_producer.produce(
                 ingest_file_request_topic,
                 json.dumps(ingest_request).encode('utf-8'),
@@ -103,7 +103,7 @@ def _run_search_dump(args, search):
             counts['kafka'] += 1
         else:
             print(json.dumps(ingest_request))
-    if kafka_producer != None:
+    if kafka_producer is not None:
         kafka_producer.flush()
     print(counts, file=sys.stderr)
     if args.dry_run:
