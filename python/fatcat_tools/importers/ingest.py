@@ -31,6 +31,9 @@ class IngestFileResultImporter(EntityImporter):
             'fatcat-ingest-container',
             'fatcat-ingest',
             'arabesque',
+            'mag-corpus',
+            'unpaywall-corpus',
+            's2-corpus',
         ]
         if kwargs.get('skip_source_whitelist', False):
             self.ingest_request_source_whitelist = []
