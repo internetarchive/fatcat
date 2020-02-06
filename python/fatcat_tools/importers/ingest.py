@@ -54,6 +54,9 @@ class IngestFileResultImporter(EntityImporter):
             self.counts['skip-hit'] += 1
             return False
         source = row['request'].get('ingest_request_source')
+        if not source:
+            self.counts['skip-ingest_request_source'] += 1
+            return False
         if self.ingest_request_source_whitelist and source not in self.ingest_request_source_whitelist:
             self.counts['skip-ingest_request_source'] += 1
             return False
