@@ -61,7 +61,7 @@ class IngestFileResultImporter(EntityImporter):
             self.counts['skip-ingest_request_source'] += 1
             return False
         if source.startswith('arabesque'):
-            if row['request'].get('link_source') not in ('arxiv', 'pmc', 'unpaywall', 'doi'):
+            if row['request'].get('link_source') not in ('arxiv', 'pmc', 'unpaywall', 'doi', 'mag', 's2'):
                 self.counts['skip-arabesque-source'] += 1
                 return False
         if source.startswith('savepapernow'):
