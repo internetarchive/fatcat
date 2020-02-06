@@ -235,6 +235,9 @@ class SavePaperNowFileImporter(IngestFileResultImporter):
     def want(self, row):
 
         source = row['request'].get('ingest_request_source')
+        if not source:
+            self.counts['skip-ingest_request_source'] += 1
+            return False
         if not source.startswith('savepapernow'):
             self.counts['skip-not-savepapernow'] += 1
             return False
