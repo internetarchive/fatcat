@@ -509,9 +509,4 @@ def file_to_elasticsearch(entity):
     t['in_ia'] = bool('archive.org' in t['domains'])
     t['in_ia_petabox'] = bool('archive.org' in t['hosts'])
 
-    # ok, but actually remove archive.org hosts, because they make other
-    # aggregations hard and are a waste of storage
-    t['hosts'] = [h for h in t['hosts'] if h not in ('archive.org', 'web.archive.org')]
-    t['domains'] = [h for h in t['domains'] if h not in ('archive.org')]
-
     return t
