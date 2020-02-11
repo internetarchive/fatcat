@@ -102,6 +102,10 @@ class EntityUpdatesWorker(FatcatWorker):
             # ccdc.cam.ac.uk: crystal structures
             "10.5517/",
         ]
+        self.live_pdf_ingest_doi_prefix_acceptlist = [
+            # biorxiv and medrxiv
+            "10.1101/",
+        ]
 
     def want_live_ingest(self, release, ingest_request):
         """
@@ -115,13 +119,19 @@ class EntityUpdatesWorker(FatcatWorker):
 
         link_source = ingest_request.get('ingest_request')
         ingest_type = ingest_request.get('ingest_type')
+        doi = ingest_request.get('ext_ids', {}).get('doi')
+
+        in_acceptlist = False
+        if doi:
+            for prefix in self.live_pdf_ingest_doi_prefix_acceptlist:
+                if doi.startswith(prefix):
+                    in_acceptlist = True
 
         if self.ingest_oa_only and link_source not in ('arxiv', 'pmc'):
             es = release_to_elasticsearch(release)
-            if not es['is_oa']:
+            if not es['is_oa'] and not in_acceptlist:
                 return False
 
-        doi = ingest_request.get('ext_ids', {}).get('doi')
         if ingest_type == "pdf" and doi:
             for prefix in self.ingest_pdf_doi_prefix_blocklist:
                 if doi.startswith(prefix):
