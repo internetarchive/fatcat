@@ -59,7 +59,7 @@
             "pages":          { "type": "keyword", "normalizer": "default", "copy_to": "biblio" },
             "first_page":     { "type": "keyword", "normalizer": "default" },
             "number":         { "type": "keyword", "normalizer": "default", "copy_to": "biblio" },
-            "doi":            { "type": "keyword", "normalizer": "default", "doc_values": false },
+            "doi":            { "type": "keyword", "normalizer": "default" },
             "doi_prefix":     { "type": "keyword", "normalizer": "default" },
             "doi_registrar":  { "type": "keyword", "normalizer": "default" },
             "pmid":           { "type": "keyword", "normalizer": "default", "doc_values": false },
