@@ -57,6 +57,10 @@ class HarvestState:
         if catchup_days or start_date or end_date:
             self.enqueue_period(start_date, end_date, catchup_days)
 
+    def __str__(self):
+        return '<HarvestState to_process={}, completed={}>'.format(
+            len(self.to_process), len(self.completed))
+
     def enqueue_period(self, start_date=None, end_date=None, catchup_days=14):
         """
         This function adds a time period to the "TODO" list, unless the dates
@@ -129,7 +133,7 @@ class HarvestState:
             def fail_fast(err, msg):
                 if err:
                     raise KafkaException(err)
-            print("Commiting status to Kafka: {}".format(kafka_topic))
+            print("Commiting status to Kafka: {}".format(kafka_topic), file=sys.stderr)
             producer_conf = kafka_config.copy()
             producer_conf.update({
                 'delivery.report.only.error': True,
@@ -154,7 +158,7 @@ class HarvestState:
         if not kafka_topic:
             return
 
-        print("Fetching state from kafka topic: {}".format(kafka_topic))
+        print("Fetching state from kafka topic: {}".format(kafka_topic), file=sys.stderr)
         def fail_fast(err, msg):
             if err:
                 raise KafkaException(err)
@@ -191,4 +195,4 @@ class HarvestState:
 
         # verify that we got at least to HWM
         assert c >= hwm[1]
-        print("... got {} state update messages, done".format(c))
+        print("... got {} state update messages, done".format(c), file=sys.stderr)

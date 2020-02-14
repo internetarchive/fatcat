@@ -70,8 +70,8 @@ class HarvestCrossrefWorker:
 
         def fail_fast(err, msg):
             if err is not None:
-                print("Kafka producer delivery error: {}".format(err))
-                print("Bailing out...")
+                print("Kafka producer delivery error: {}".format(err), file=sys.stderr)
+                print("Bailing out...", file=sys.stderr)
                 # TODO: should it be sys.exit(-1)?
                 raise KafkaException(err)
 
@@ -117,7 +117,7 @@ class HarvestCrossrefWorker:
             if http_resp.status_code == 503:
                 # crude backoff; now redundant with session exponential
                 # backoff, but allows for longer backoff/downtime on remote end
-                print("got HTTP {}, pausing for 30 seconds".format(http_resp.status_code))
+                print("got HTTP {}, pausing for 30 seconds".format(http_resp.status_code), file=sys.stderr)
                 # keep kafka producer connection alive
                 self.producer.poll(0)
                 time.sleep(30.0)
@@ -131,7 +131,7 @@ class HarvestCrossrefWorker:
             items = self.extract_items(resp)
             count += len(items)
             print("... got {} ({} of {}), HTTP fetch took {}".format(len(items), count,
-                self.extract_total(resp), http_resp.elapsed))
+                self.extract_total(resp), http_resp.elapsed), file=sys.stderr)
             #print(json.dumps(resp))
             for work in items:
                 self.producer.produce(
@@ -156,7 +156,7 @@ class HarvestCrossrefWorker:
         while True:
             current = self.state.next(continuous)
             if current:
-                print("Fetching DOIs updated on {} (UTC)".format(current))
+                print("Fetching DOIs updated on {} (UTC)".format(current), file=sys.stderr)
                 self.fetch_date(current)
                 self.state.complete(current,
                     kafka_topic=self.state_topic,
@@ -164,11 +164,11 @@ class HarvestCrossrefWorker:
                 continue
 
             if continuous:
-                print("Sleeping {} seconds...".format(self.loop_sleep))
+                print("Sleeping {} seconds...".format(self.loop_sleep), file=sys.stderr)
                 time.sleep(self.loop_sleep)
             else:
                 break
-        print("{} DOI ingest caught up".format(self.name))
+        print("{} DOI ingest caught up".format(self.name), file=sys.stderr)
 
 
 class HarvestDataciteWorker(HarvestCrossrefWorker):
