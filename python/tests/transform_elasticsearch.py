@@ -110,9 +110,10 @@ def test_elasticsearch_file_transform(matched_importer):
     assert 'web' in es['rels']
     assert 'www.zhros.ru' in es['hosts']
     assert 'zhros.ru' in es['domains']
+    assert 'archive.org' in (es['hosts'] + es['domains'])
+    assert 'web.archive.org' in (es['hosts'] + es['domains'])
+    # old regression
     assert not '.archive.org' in (es['hosts'] + es['domains'])
-    assert not 'archive.org' in (es['hosts'] + es['domains'])
-    assert not 'web.archive.org' in (es['hosts'] + es['domains'])
 
 def test_elasticsearch_changelog_transform(matched_importer):
     ce = entity_from_json(open('./tests/files/changelog_3469683.json', 'r').read(), ChangelogEntry)
