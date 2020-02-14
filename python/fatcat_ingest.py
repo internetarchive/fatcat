@@ -86,7 +86,7 @@ def _run_search_dump(args, search):
         release = args.api.get_release(esr.ident)
         ingest_request = release_ingest_request(
             release,
-            ingest_request_source="fatcat-ingest-container",
+            ingest_request_source="fatcat-ingest",
         )
         if not ingest_request:
             continue
