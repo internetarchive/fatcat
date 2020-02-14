@@ -142,6 +142,21 @@ class HarvestPubmedWorker(HarvestOaiPmhWorker):
     - https://www.ncbi.nlm.nih.gov/pmc/tools/oai/
     - https://www.ncbi.nlm.nih.gov/pmc/oai/oai.cgi?verb=GetRecord&identifier=oai:pubmedcentral.nih.gov:152494&metadataPrefix=pmc_fm
     - https://github.com/titipata/pubmed_parser
+
+    TODO(martin): OAI does not seem to support the format we already have an
+    importer for. Maybe we can use "Daily Update Files" --
+
+    Daily Update Files
+    ------------------
+    Each day, NLM produces update files that include new, revised and deleted
+    citations. The first Update file to be loaded after loading the complete
+    set of 2019 MEDLINE/PubMed Baseline files is pubmed20n1016.xml.
+    ftp://ftp.ncbi.nlm.nih.gov/pubmed/updatefiles
+
+    NOTES:
+
+    * OAI: https://dtd.nlm.nih.gov/archiving/2.3/xsd/archivearticle.xsd
+    * FTP: https://dtd.nlm.nih.gov/ncbi/pubmed/out/pubmed_190101.dtd
     """
 
     def __init__(self, **kwargs):
