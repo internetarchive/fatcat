@@ -155,12 +155,6 @@ class ShadowLibraryImporter(EntityImporter):
             if u.rel == 'social':
                 u.rel = 'academicsocial'
 
-        # new wayback URLs, could replace bad old short wayback URLs (from arabesque bug)
-        new_wb_urls = [u.url for u in fe.urls]
-        new_short_wb_urls = ['https://web.archive.org/web/{}/{}'.format(
-            u.split('/')[4][:12], '/'.join(u.split('/')[5:])) for u in new_wb_urls]
-        existing.urls = [u for u in existing.urls if not u.url in new_short_wb_urls]
-
         # merge the existing into this one and update
         merged_urls = {}
         for u in fe.urls + existing.urls:
