@@ -105,6 +105,8 @@ class EntityUpdatesWorker(FatcatWorker):
         self.live_pdf_ingest_doi_prefix_acceptlist = [
             # biorxiv and medrxiv
             "10.1101/",
+            # researchgate
+            "10.13140/",
         ]
 
     def want_live_ingest(self, release, ingest_request):
