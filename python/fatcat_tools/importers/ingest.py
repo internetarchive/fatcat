@@ -137,7 +137,12 @@ class IngestFileResultImporter(EntityImporter):
         if not 'terminal_dt' in terminal:
             terminal['terminal_dt'] = terminal['dt']
         assert len(terminal['terminal_dt']) == 14
-        url = make_rel_url(terminal['terminal_url'], self.default_link_rel)
+
+        default_rel = self.default_link_rel
+        if request.get('link_source') == 'doi':
+            default_rel = 'publisher'
+        default_rel = request.get('rel', default_rel)
+        url = make_rel_url(terminal['terminal_url'], default_rel)
 
         if not url:
             self.counts['skip-url'] += 1
