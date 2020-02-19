@@ -167,7 +167,7 @@ class IngestFileResultImporter(EntityImporter):
             urls=urls,
         )
         if request.get('edit_extra'):
-            fe.edit_extra = fatcat['edit_extra']
+            fe.edit_extra = request['edit_extra']
         else:
             fe.edit_extra = dict()
         if request.get('ingest_request_source'):
