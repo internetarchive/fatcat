@@ -122,7 +122,7 @@ class PubmedFTPWorker:
 
         count = 0
         for path in paths:
-            filename = ftpretr(urljoin(self.host, path))
+            filename = ftpretr("ftp://{}".format(urljoin(self.host, path)))
             for blob in xmlstream(filename, 'PubmedArticle', encoding='utf-8'):
                 soup = BeautifulSoup(blob)
                 pmid = soup.find('PMID')
@@ -157,11 +157,13 @@ class PubmedFTPWorker:
         print("{} DOI ingest caught up".format(self.name))
 
 
-class ftpretr(uri):
+class ftpretr(url):
     """
-    Fetch (RETR) a remote file to a local temporary file.
+    Fetch (RETR) a remote file given by its URL (e.g.
+    "ftp://ftp.ncbi.nlm.nih.gov/pubmed/updatefiles/pubmed20n1016.xml.gz") to a
+    local temporary file.
     """
-    parsed = urlparse(uri)
+    parsed = urlparse(url)
     server, path = parsed.netloc, parsed.path
     ftp = FTP(self.server)
     ftp.login()
