@@ -60,7 +60,7 @@ def run_pubmed(args):
             pi,
             args.kafka_hosts,
             args.kafka_env,
-            "oaipmh-pubmed",
+            "ftp-pubmed",
             "fatcat-{}-import-pubmed".format(args.kafka_env),
         ).run()
     else:
