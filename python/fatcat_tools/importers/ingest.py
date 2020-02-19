@@ -166,7 +166,7 @@ class IngestFileResultImporter(EntityImporter):
             release_ids=[release_ident],
             urls=urls,
         )
-        if fatcat and fatcat.get('edit_extra'):
+        if request.get('edit_extra'):
             fe.edit_extra = fatcat['edit_extra']
         else:
             fe.edit_extra = dict()
