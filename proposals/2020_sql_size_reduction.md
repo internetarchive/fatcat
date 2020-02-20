@@ -52,6 +52,8 @@ Other growth is expected to be much smaller, let's say a few GB of disk.
 
 This works out to a bit over 600 GByte total disk size.
 
+NOTE: math was wrong? 470 + 80 + 100 -> 650 GByte, call it 700 GByte
+
 
 ## Idea: finish `ext_id` migration and drop columns+index from `release_rev`
 
@@ -172,3 +174,17 @@ would drop ~20% of data size and ~20% of index size.
 Would it make more sense to use {ident, editgroup} as the primary key and UNIQ,
 then have a separate index on `editgroup`? On the assumption that `editgroup`
 cardinality is much smaller, thus the index disk usage would be smaller.
+
+## Idea: use binary for hashes
+
+We currently store file hashes (SHA-1, SHA-256, MD5) and abstracts/`ref_blobs`
+keys as TEXT in lower-case hex encoding. Using binary instead could be as much
+as a 50% size savings for both column and index storage. The difference becomes
+more apparent when all files have all hashes populated.
+
+base32 encoded strings would be smaller (but non-negligable) savings.
+
+This change has a reasonable migration path, is entirely internal to postgres
+and fatcatd, and would be no change to API schema. Postgres also allows `hex`
+encoding on `bytea` data type, which can make reading/debugging reasonable.
+
