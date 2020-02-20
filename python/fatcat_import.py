@@ -166,6 +166,11 @@ def run_grobid_metadata(args):
         bezerk_mode=args.bezerk_mode)
     LinePusher(fmi, args.tsv_file).run()
 
+def run_shadow_lib(args):
+    fmi = ShadowLibraryImporter(args.api,
+        edit_batch_size=100)
+    JsonLinePusher(fmi, args.json_file).run()
+
 def run_wayback_static(args):
     api = args.api
 
@@ -472,6 +477,16 @@ def main():
     sub_grobid_metadata.add_argument('--bezerk-mode',
         action='store_true',
         help="don't lookup existing files, just insert (clobbers; only for fast bootstrap)")
+
+    sub_shadow_lib = subparsers.add_parser('shadow-lib',
+        help="create release and file entities based on GROBID PDF metadata extraction")
+    sub_shadow_lib.set_defaults(
+        func=run_shadow_lib,
+        auth_var="FATCAT_AUTH_WORKER_SHADOW",
+    )
+    sub_shadow_lib.add_argument('json_file',
+        help="JSON file to import from (or stdin)",
+        default=sys.stdin, type=argparse.FileType('r'))
 
     sub_wayback_static = subparsers.add_parser('wayback-static',
         help="crude crawl+ingest tool for single-page HTML docs from wayback")
