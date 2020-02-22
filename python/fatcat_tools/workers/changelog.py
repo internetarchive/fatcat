@@ -123,6 +123,33 @@ class EntityUpdatesWorker(FatcatWorker):
         ingest_type = ingest_request.get('ingest_type')
         doi = ingest_request.get('ext_ids', {}).get('doi')
 
+        is_document = release.release_type in (
+            'article-journal',
+            'paper-conference',
+            'article',
+            'report',
+            'chapter',
+            'manuscript',
+            'review',
+            'thesis',
+            'letter',
+            'editorial',
+            'abstract',
+            'entry',
+            'patent',
+            'post',
+            'review-book',
+        )
+        is_not_pdf = release.release_type in (
+            'dataset',
+            'stub',
+            'software',
+            'figure',
+            'graphic',
+        )
+
+        # accept list sets a default "crawl it" despite OA metadata for
+        # known-OA DOI prefixes
         in_acceptlist = False
         if doi:
             for prefix in self.live_pdf_ingest_doi_prefix_acceptlist:
@@ -131,8 +158,17 @@ class EntityUpdatesWorker(FatcatWorker):
 
         if self.ingest_oa_only and link_source not in ('arxiv', 'pmc'):
             es = release_to_elasticsearch(release)
-            if not es['is_oa'] and not in_acceptlist:
+            # most datacite documents are in IRs and should be crawled
+            is_datacite_doc = False
+            if release.extra and ('datacite' in release.extra) and is_document:
+                is_datacite_doc = True
+            if not (es['is_oa'] or in_acceptlist or is_datacite_doc):
                 return False
+
+        # if ingest_type is pdf but release_type is almost certainly not a PDF,
+        # skip it. This is mostly a datacite thing.
+        if ingest_type == "pdf" and is_not_pdf:
+            return False
 
         if ingest_type == "pdf" and doi:
             for prefix in self.ingest_pdf_doi_prefix_blocklist:
