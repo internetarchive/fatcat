@@ -194,6 +194,8 @@ DOMAIN_REL_MAP = {
     "www.scielo.cl": "repository",
     "www.scielo.org.mx": "repository",
     "zenodo.org": "repository",
+    "www.biorxiv.org": "repository",
+    "www.medrxiv.org": "repository",
 
     "citeseerx.ist.psu.edu": "aggregator",
     "publisher-connector.core.ac.uk": "aggregator",
@@ -220,6 +222,13 @@ DOMAIN_REL_MAP = {
     "www.nature.com": "publisher",
     "www.pnas.org": "publisher",
     "www.tandfonline.com": "publisher",
+    "www.frontiersin.org": "publisher",
+    "www.degruyter.com": "publisher",
+    "www.mdpi.com": "publisher",
+    "www.ahajournals.org": "publisher",
+    "ehp.niehs.nih.gov": "publisher",
+    "journals.tsu.ru": "publisher",
+    "www.cogentoa.com": "publisher",
 
     "www.researchgate.net": "academicsocial",
     "academia.edu": "academicsocial",
