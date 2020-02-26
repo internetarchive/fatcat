@@ -342,6 +342,9 @@ def container_to_elasticsearch(entity, force_bool=True):
         if entity.extra.get(key):
             t[key] = entity.extra[key]
 
+    if 'country' in t:
+        t['country_code'] = t.pop('country')
+
     t['issns'] = []
     if entity.issnl:
         t['issns'].append(entity.issnl)
