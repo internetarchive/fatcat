@@ -30,6 +30,8 @@ def run_elasticsearch_releases(args):
         if not line:
             continue
         entity = entity_from_json(line, ReleaseEntity, api_client=args.api.api_client)
+        if entity['state'] != 'active':
+            continue
         args.json_output.write(
             json.dumps(release_to_elasticsearch(entity)) + '\n')
 
@@ -39,6 +41,8 @@ def run_elasticsearch_containers(args):
         if not line:
             continue
         entity = entity_from_json(line, ContainerEntity, api_client=args.api.api_client)
+        if entity['state'] != 'active':
+            continue
         args.json_output.write(
             json.dumps(container_to_elasticsearch(entity)) + '\n')
 
@@ -48,6 +52,8 @@ def run_elasticsearch_files(args):
         if not line:
             continue
         entity = entity_from_json(line, FileEntity, api_client=args.api.api_client)
+        if entity['state'] != 'active':
+            continue
         args.json_output.write(
             json.dumps(file_to_elasticsearch(entity)) + '\n')
 
@@ -66,6 +72,8 @@ def run_citeproc_releases(args):
         if not line:
             continue
         entity = entity_from_json(line, ReleaseEntity, api_client=args.api.api_client)
+        if entity['state'] != 'active':
+            continue
         csl_json = release_to_csl(entity)
         csl_json['id'] = "release:" + (entity.ident or "unknown")
         out = citeproc_csl(csl_json, args.style, args.html)
