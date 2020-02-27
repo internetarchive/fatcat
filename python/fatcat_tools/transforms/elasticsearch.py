@@ -149,9 +149,6 @@ def release_to_elasticsearch(entity, force_bool=True):
             if c_extra.get('road'):
                 if c_extra['road'].get('as_of'):
                     is_oa = True
-            if c_extra.get('ezb'):
-                if c_extra['ezb'].get('color') == 'green':
-                    is_oa = True
             if c_extra.get('szczepanski'):
                 if c_extra['szczepanski'].get('as_of'):
                     is_oa = True
@@ -209,6 +206,8 @@ def release_to_elasticsearch(entity, force_bool=True):
     if release.license_slug:
         # TODO: more/better checks here, particularly strict *not* OA licenses
         if release.license_slug.startswith("CC-"):
+            is_oa = True
+        if release.license_slug.startswith("ARXIV-"):
             is_oa = True
 
     extra = release.extra or dict()
@@ -293,10 +292,10 @@ def release_to_elasticsearch(entity, force_bool=True):
     t['in_ia'] = bool(in_ia)
     t['is_preserved'] = bool(is_preserved or in_ia or in_kbart or in_jstor)
 
-    if in_ia:
+    if in_ia or t.get('pmcid') or t.get('arxiv_id'):
         t['preservation'] = 'bright'
     elif in_kbart or in_jstor:
-        t['preservation'] = 'dark_only'
+        t['preservation'] = 'dark'
     elif in_shadows:
         t['preservation'] = 'shadows_only'
     else:
@@ -367,9 +366,6 @@ def container_to_elasticsearch(entity, force_bool=True):
     if extra.get('road'):
         if extra['road'].get('as_of'):
             in_road = True
-    if extra.get('ezb'):
-        if extra['ezb'].get('color') == 'green':
-            is_oa = True
     if extra.get('szczepanski'):
         if extra['szczepanski'].get('as_of'):
             is_oa = True

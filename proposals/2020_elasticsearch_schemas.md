@@ -33,8 +33,8 @@ status (from `in_kbart`, `in_ia`, etc) to a `preservation_status` flag which
 is:
 
 - `bright`
-- `dark_only`
-- `shadow_only`
+- `dark`
+- `shadows_only`
 - `none`
 
 Note that these don't align with OA color or work-level preservation (aka, no
