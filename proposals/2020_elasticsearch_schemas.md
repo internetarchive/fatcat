@@ -14,8 +14,6 @@ Simple additions:
 - pages
 - `first_page` (parsed from pages) (?)
 - number
-- `in_shadow`
-- OA license slug (?)
 - `doi_prefix`
 - `doi_registrar` (based on extra)
 - `first_author` (surname; for matching)
@@ -25,6 +23,8 @@ Simple additions:
 - referenced releases idents
 - contrib creator idents
 
+Add affiliations, both as raw strings and ROR identifiers.
+
 
 ## Preservation Summary Field
 
@@ -33,8 +33,8 @@ status (from `in_kbart`, `in_ia`, etc) to a `preservation_status` flag which
 is:
 
 - `bright`
-- `dark_only`
-- `shadow_only`
+- `dark`
+- `shadows_only`
 - `none`
 
 Note that these don't align with OA color or work-level preservation (aka, no
@@ -128,8 +128,8 @@ hit does not}").
 
 ## Container Fields
 
-- `all_issns`
-- `release_count`
+- `issn` (all issns)
+- `original_name`
 
 The `release_count` would not be indexed (left null) by default, and would be
 "patched" in to entities by a separate script (periodically?).

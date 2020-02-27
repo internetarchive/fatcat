@@ -1,0 +1,59 @@
+{
+"settings": {
+    "index": {
+        "analysis": {
+            "analyzer": {
+                "default": {
+                    "type": "custom",
+                    "tokenizer": "standard",
+                    "filter": [ "lowercase", "asciifolding" ]
+                }
+            },
+            "normalizer": {
+                "default": {
+                    "type": "custom",
+                    "char_filter": [],
+                    "filter": ["lowercase"]
+                },
+                "caseSensitive": {
+                    "type": "custom",
+                    "char_filter": [],
+                    "filter": []
+                }
+            }
+        }
+    }
+},
+"mappings": {
+    "file": {
+        "properties": {
+            "ident":            { "type": "keyword", "normalizer": "default", "doc_values": false },
+            "state":            { "type": "keyword", "normalizer": "default" },
+            "revision":         { "type": "keyword", "normalizer": "default", "doc_values": false },
+
+            "release_ids":      { "type": "keyword", "normalizer": "default", "doc_values": false },
+            "release_count":    { "type": "integer" },
+            "mimetype":         { "type": "keyword", "normalizer": "default" },
+            "size_bytes":       { "type": "integer" },
+            "sha1":             { "type": "keyword", "normalizer": "default", "doc_values": false },
+            "sha256":           { "type": "keyword", "normalizer": "default", "doc_values": false },
+            "md5":              { "type": "keyword", "normalizer": "default", "doc_values": false },
+
+            "domains":          { "type": "keyword", "normalizer": "default" },
+            "hosts":            { "type": "keyword", "normalizer": "default" },
+            "rels":             { "type": "keyword", "normalizer": "default" },
+            "in_ia":            { "type": "boolean" },
+            "in_ia_petabox":    { "type": "boolean" },
+
+            "release_id":       { "type": "alias", "path": "release_ids" },
+            "sha1hex":          { "type": "alias", "path": "sha1" },
+            "sha256hex":        { "type": "alias", "path": "sha256" },
+            "md5hex":           { "type": "alias", "path": "md5" },
+            "size":             { "type": "alias", "path": "size_bytes" },
+            "domain":           { "type": "alias", "path": "domains" },
+            "host":             { "type": "alias", "path": "hosts" },
+            "rel":              { "type": "alias", "path": "rels" }
+        }
+    }
+}
+}

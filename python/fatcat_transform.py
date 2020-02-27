@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 """
+Utility script for doing bulk conversion/tranforms of entity JSON schema to
+other formats
 """
 
 import sys
@@ -15,10 +17,11 @@ from citeproc_styles import get_style_filepath
 
 import fatcat_openapi_client
 from fatcat_openapi_client.rest import ApiException
-from fatcat_openapi_client import ReleaseEntity, ContainerEntity, ChangelogEntry
+from fatcat_openapi_client import ReleaseEntity, ContainerEntity, FileEntity, ChangelogEntry
 from fatcat_tools import uuid2fcid, entity_from_json, entity_to_dict, \
     release_to_elasticsearch, container_to_elasticsearch, \
-    changelog_to_elasticsearch, public_api, release_to_csl, citeproc_csl
+    file_to_elasticsearch, changelog_to_elasticsearch, public_api, \
+    release_to_csl, citeproc_csl
 
 
 def run_elasticsearch_releases(args):
@@ -27,6 +30,8 @@ def run_elasticsearch_releases(args):
         if not line:
             continue
         entity = entity_from_json(line, ReleaseEntity, api_client=args.api.api_client)
+        if entity.state != 'active':
+            continue
         args.json_output.write(
             json.dumps(release_to_elasticsearch(entity)) + '\n')
 
@@ -36,8 +41,21 @@ def run_elasticsearch_containers(args):
         if not line:
             continue
         entity = entity_from_json(line, ContainerEntity, api_client=args.api.api_client)
+        if entity.state != 'active':
+            continue
         args.json_output.write(
             json.dumps(container_to_elasticsearch(entity)) + '\n')
+
+def run_elasticsearch_files(args):
+    for line in args.json_input:
+        line = line.strip()
+        if not line:
+            continue
+        entity = entity_from_json(line, FileEntity, api_client=args.api.api_client)
+        if entity.state != 'active':
+            continue
+        args.json_output.write(
+            json.dumps(file_to_elasticsearch(entity)) + '\n')
 
 def run_elasticsearch_changelogs(args):
     for line in args.json_input:
@@ -54,6 +72,8 @@ def run_citeproc_releases(args):
         if not line:
             continue
         entity = entity_from_json(line, ReleaseEntity, api_client=args.api.api_client)
+        if entity.state != 'active':
+            continue
         csl_json = release_to_csl(entity)
         csl_json['id'] = "release:" + (entity.ident or "unknown")
         out = citeproc_csl(csl_json, args.style, args.html)
@@ -84,6 +104,16 @@ def main():
         help="JSON-per-line of container entities",
         default=sys.stdin, type=argparse.FileType('r'))
     sub_elasticsearch_containers.add_argument('json_output',
+        help="where to send output",
+        default=sys.stdout, type=argparse.FileType('w'))
+
+    sub_elasticsearch_files = subparsers.add_parser('elasticsearch-files',
+        help="convert fatcat file JSON schema to elasticsearch file schema")
+    sub_elasticsearch_files.set_defaults(func=run_elasticsearch_files)
+    sub_elasticsearch_files.add_argument('json_input',
+        help="JSON-per-line of file entities",
+        default=sys.stdin, type=argparse.FileType('r'))
+    sub_elasticsearch_files.add_argument('json_output',
         help="where to send output",
         default=sys.stdout, type=argparse.FileType('w'))
 

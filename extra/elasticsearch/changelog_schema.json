@@ -8,6 +8,18 @@
                     "tokenizer": "standard",
                     "filter": [ "lowercase", "asciifolding" ]
                 }
+            },
+            "normalizer": {
+                "default": {
+                    "type": "custom",
+                    "char_filter": [],
+                    "filter": ["lowercase"]
+                },
+                "caseSensitive": {
+                    "type": "custom",
+                    "char_filter": [],
+                    "filter": []
+                }
             }
         }
     }
@@ -16,20 +28,29 @@
     "changelog": {
         "properties": {
             "index":            { "type": "integer" },
-            "editgroup_id":     { "type": "keyword" },
+            "editgroup_id":     { "type": "keyword", "normalizer": "default", "doc_values": false },
             "timestamp":        { "type": "date" },
-            "editor_id":        { "type": "keyword" },
-            "username":         { "type": "keyword" },
+            "editor_id":        { "type": "keyword", "normalizer": "default" },
+            "username":         { "type": "keyword", "normalizer": "caseSensitive" },
             "is_bot":           { "type": "boolean" },
             "is_admin":         { "type": "boolean" },
-            "agent":            { "type": "keyword" },
+            "agent":            { "type": "keyword", "normalizer": "caseSensitive" },
+
             "containers":       { "type": "integer" },
+            "new_containers":   { "type": "integer" },
             "creators":         { "type": "integer" },
+            "new_creators":     { "type": "integer" },
             "files":            { "type": "integer" },
+            "new_files":        { "type": "integer" },
             "filessets":        { "type": "integer" },
+            "new_filessets":    { "type": "integer" },
             "webcaptures":      { "type": "integer" },
+            "new_webcaptures":  { "type": "integer" },
             "releases":         { "type": "integer" },
+            "new_releases":     { "type": "integer" },
             "works":            { "type": "integer" },
+            "new_works":        { "type": "integer" },
+
             "created":          { "type": "integer" },
             "updated":          { "type": "integer" },
             "deleted":          { "type": "integer" },

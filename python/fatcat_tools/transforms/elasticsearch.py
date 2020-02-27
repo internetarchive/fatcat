@@ -1,6 +1,6 @@
 
-
 import collections
+import tldextract
 from fatcat_openapi_client import ApiClient
 
 
@@ -19,6 +19,7 @@ def test_check_kbart():
     assert check_kbart(2000, dict(year_spans=[[2000, 2000]])) == True
     assert check_kbart(1950, dict(year_spans=[[1900, 1920], [1990, 2000]])) == False
     assert check_kbart(1950, dict(year_spans=[[1900, 1920], [1930, 2000]])) == True
+
 
 def release_to_elasticsearch(entity, force_bool=True):
     """
@@ -50,6 +51,10 @@ def release_to_elasticsearch(entity, force_bool=True):
         release_stage = release.release_stage,
         withdrawn_status = release.withdrawn_status,
         language = release.language,
+        volume = release.volume,
+        issue = release.issue,
+        pages = release.pages,
+        number = release.number,
         license = release.license_slug,
         doi = release.ext_ids.doi,
         pmid = release.ext_ids.pmid,
@@ -72,7 +77,7 @@ def release_to_elasticsearch(entity, force_bool=True):
     in_dweb = False
     in_ia = False
     in_ia_sim = False
-    in_shadow = False
+    in_shadows = False
 
     release_year = release.release_year
     if release.release_date:
@@ -85,11 +90,15 @@ def release_to_elasticsearch(entity, force_bool=True):
 
     t['any_abstract'] = len(release.abstracts or []) > 0
     t['ref_count'] = len(release.refs or [])
-    t['ref_linked_count'] = 0
-    if release.refs:
-        t['ref_linked_count'] = len([1 for ref in release.refs if ref.target_release_id])
+    ref_release_ids = []
+    for r in (release.refs or []):
+        if r.target_release_id:
+            ref_release_ids.append(r.target_release_id)
+    t['ref_release_ids'] = ref_release_ids
+    t['ref_linked_count'] = len(ref_release_ids)
     t['contrib_count'] = len(release.contribs or [])
     contrib_names = []
+    contrib_affiliations = []
     creator_ids = []
     for c in (release.contribs or []):
         if c.raw_name:
@@ -98,8 +107,14 @@ def release_to_elasticsearch(entity, force_bool=True):
             contrib_names.append(c.surname)
         if c.creator_id:
             creator_ids.append(c.creator_id)
+        if c.raw_affiliation:
+            contrib_affiliations.append(c.raw_affiliation)
     t['contrib_names'] = contrib_names
     t['creator_ids'] = creator_ids
+    t['affiliations'] = contrib_affiliations
+
+    # TODO: mapping... probably by lookup?
+    t['affiliation_rors'] = None
 
     container = release.container
     if container:
@@ -134,14 +149,19 @@ def release_to_elasticsearch(entity, force_bool=True):
             if c_extra.get('road'):
                 if c_extra['road'].get('as_of'):
                     is_oa = True
-            if c_extra.get('ezb'):
-                if c_extra['ezb'].get('color') == 'green':
-                    is_oa = True
             if c_extra.get('szczepanski'):
                 if c_extra['szczepanski'].get('as_of'):
                     is_oa = True
-    else:
+            if c_extra.get('country'):
+                t['country_code'] = c_extra['country']
+                t['country_code_upper'] = c_extra['country'].upper()
+
+    # fall back to release-level container metadata if container not linked or
+    # missing context
+    if not t.get('publisher'):
         t['publisher'] = release.publisher
+    if not t.get('container_name') and release.extra:
+        t['container_name'] = release.extra.get('container_name')
 
     if release.ext_ids.jstor or (release.ext_ids.doi and release.ext_ids.doi.startswith('10.2307/')):
         in_jstor = True
@@ -187,6 +207,8 @@ def release_to_elasticsearch(entity, force_bool=True):
         # TODO: more/better checks here, particularly strict *not* OA licenses
         if release.license_slug.startswith("CC-"):
             is_oa = True
+        if release.license_slug.startswith("ARXIV-"):
+            is_oa = True
 
     extra = release.extra or dict()
     if extra:
@@ -203,6 +225,47 @@ def release_to_elasticsearch(entity, force_bool=True):
             if extra['crossref'].get('archive'):
                 # all crossref archives are KBART, I believe
                 in_kbart = True
+        # backwards compatible subtitle fetching
+        if not t['subtitle'] and extra.get('subtitle'):
+            if type(extra['subtitle']) == list:
+                t['subtitle'] = extra['subtitle'][0]
+            else:
+                t['subtitle'] = extra['subtitle']
+
+    t['first_page'] = None
+    if release.pages:
+        first = release.pages.split('-')[0]
+        first = first.replace('p', '')
+        if first.isdigit():
+            t['first_page'] = first
+        # TODO: non-numerical first pages
+
+    t['ia_microfilm_url'] = None
+    if in_ia_sim:
+        # TODO: determine URL somehow? I think this is in flux. Will probably
+        # need extra metadata in the container extra field.
+        # special case as a demo for now.
+        if release.container_id == "hl5g6d5msjcl7hlbyyvcsbhc2u" \
+                and release.release_year in (2011, 2013) \
+                and release.issue \
+                and release.issue.isdigit() \
+                and t['first_page']:
+            t['ia_microfilm_url'] = "https://archive.org/details/sim_bjog_{}-{:02d}/page/n{}".format(
+                release.release_year,
+                int(release.issue) - 1,
+                t['first_page'],
+            )
+
+    t['doi_registrar'] = None
+    if extra and t['doi']:
+        for k in ('crossref', 'datacite', 'jalc'):
+            if k in extra:
+                t['doi_registrar'] = k
+        if not 'doi_registrar' in t:
+            t['doi_registrar'] = 'crossref'
+
+    if t['doi']:
+        t['doi_prefix'] = t['doi'].split('/')[0]
 
     if is_longtail_oa:
         is_oa = True
@@ -215,6 +278,7 @@ def release_to_elasticsearch(entity, force_bool=True):
         t['in_jstor'] = bool(in_jstor)
         t['in_web'] = bool(in_web)
         t['in_dweb'] = bool(in_dweb)
+        t['in_shadows'] = bool(in_shadows)
     else:
         t['is_oa'] = is_oa
         t['is_longtail_oa'] = is_longtail_oa
@@ -223,10 +287,22 @@ def release_to_elasticsearch(entity, force_bool=True):
         t['in_jstor'] = in_jstor
         t['in_web'] = in_web
         t['in_dweb'] = in_dweb
+        t['in_shadows'] = in_shadows
 
     t['in_ia'] = bool(in_ia)
     t['is_preserved'] = bool(is_preserved or in_ia or in_kbart or in_jstor)
+
+    if in_ia or t.get('pmcid') or t.get('arxiv_id'):
+        t['preservation'] = 'bright'
+    elif in_kbart or in_jstor:
+        t['preservation'] = 'dark'
+    elif in_shadows:
+        t['preservation'] = 'shadows_only'
+    else:
+        t['preservation'] = 'none'
+
     return t
+
 
 def container_to_elasticsearch(entity, force_bool=True):
     """
@@ -257,23 +333,27 @@ def container_to_elasticsearch(entity, force_bool=True):
         wikidata_qid = entity.wikidata_qid,
     )
 
-    # TODO: region, discipline
-    # TODO: single primary language?
     if not entity.extra:
         entity.extra = dict()
-    for key in ('country', 'languages', 'mimetypes', 'first_year', 'last_year'):
+    for key in ('country', 'languages', 'mimetypes', 'original_name',
+                'first_year', 'last_year', 'aliases', 'abbrev', 'region',
+                'discipline'):
         if entity.extra.get(key):
             t[key] = entity.extra[key]
 
+    if 'country' in t:
+        t['country_code'] = t.pop('country')
+
+    t['issns'] = []
+    if entity.issnl:
+        t['issns'].append(entity.issnl)
+    for key in ('issnp', 'issne'):
+        if entity.extra.get(key):
+            t['issns'].append(entity.extra[key])
+
     in_doaj = None
     in_road = None
-    # TODO: not currently implemented
-    in_doi = None
-    # TODO: would be nice to have 'in_doaj_works', or maybe just "any_pid"
-    #in_doaj_works = None
-    in_sherpa_romeo = None
     is_oa = None
-    # TODO: not actually set/stored anywhere?
     is_longtail_oa = None
     any_kbart = None
     any_jstor = None
@@ -286,17 +366,15 @@ def container_to_elasticsearch(entity, force_bool=True):
     if extra.get('road'):
         if extra['road'].get('as_of'):
             in_road = True
-    if extra.get('ezb'):
-        if extra['ezb'].get('color') == 'green':
-            is_oa = True
     if extra.get('szczepanski'):
         if extra['szczepanski'].get('as_of'):
             is_oa = True
     if extra.get('default_license'):
         if extra['default_license'].startswith('CC-'):
             is_oa = True
+    t['sherpa_romeo_color'] = None
     if extra.get('sherpa_romeo'):
-        in_sherpa_romeo = True
+        t['sherpa_romeo_color'] = extra['sherpa_romeo'].get('color')
         if extra['sherpa_romeo'].get('color') == 'white':
             is_oa = False
     if extra.get('kbart'):
@@ -306,54 +384,128 @@ def container_to_elasticsearch(entity, force_bool=True):
     if extra.get('ia'):
         if extra['ia'].get('sim'):
             any_ia_sim = True
+        if extra['ia'].get('longtail_oa'):
+            is_longtail_oa = True
     t['is_superceded'] = bool(extra.get('superceded'))
 
     t['in_doaj'] = bool(in_doaj)
     t['in_road'] = bool(in_road)
-    t['in_sherpa_romeo'] = bool(in_sherpa_romeo)
     t['any_kbart'] = bool(any_kbart)
-    t['is_longtail_oa'] = bool(is_longtail_oa)
     if force_bool:
-        t['in_doi'] = bool(in_doi)
-        t['is_oa'] = bool(in_doaj or in_road or is_longtail_oa or is_oa)
+        t['is_oa'] = bool(in_doaj or in_road or is_oa)
+        t['is_longtail_oa'] = bool(is_longtail_oa)
         t['any_jstor'] = bool(any_jstor)
         t['any_ia_sim'] = bool(any_ia_sim)
     else:
-        t['in_doi'] = in_doi
-        t['is_oa'] = in_doaj or in_road or is_longtail_oa or is_oa
+        t['is_oa'] = in_doaj or in_road or is_oa
+        t['is_longtail_oa'] = is_longtail_oa
         t['any_jstor'] = any_jstor
         t['any_ia_sim'] = any_ia_sim
     return t
 
 
+def _type_of_edit(edit):
+    if edit.revision == None and edit.redirect_ident == None:
+        return 'delete'
+    elif edit.redirect_ident:
+        # redirect
+        return 'update'
+    elif edit.prev_revision == None and edit.redirect_ident == None and edit.revision:
+        return 'create'
+    else:
+        return 'update'
+
+
 def changelog_to_elasticsearch(entity):
+    """
+    Note that this importer requires expanded fill info to work. Calling code
+    may need to re-fetch editgroup from API to get the 'editor' field. Some of
+    the old kafka feed content doesn't includes editor in particular.
+    """
 
     editgroup = entity.editgroup
     t = dict(
         index=entity.index,
         editgroup_id=entity.editgroup_id,
-        timestamp=entity.timestamp,
+        timestamp=entity.timestamp.isoformat(),
         editor_id=editgroup.editor_id,
+        username=editgroup.editor.username,
+        is_bot=editgroup.editor.is_bot,
+        is_admin=editgroup.editor.is_admin,
     )
 
     extra = editgroup.extra or dict()
     if extra.get('agent'):
         t['agent'] = extra['agent']
 
-    t['containers'] = len(editgroup.edits.containers)
-    t['creators'] = len(editgroup.edits.containers)
-    t['files'] = len(editgroup.edits.containers)
-    t['filesets'] = len(editgroup.edits.containers)
-    t['webcaptures'] = len(editgroup.edits.containers)
-    t['releases'] = len(editgroup.edits.containers)
-    t['works'] = len(editgroup.edits.containers)
+    containers = [_type_of_edit(e) for e in editgroup.edits.containers]
+    creators = [_type_of_edit(e) for e in editgroup.edits.creators]
+    files = [_type_of_edit(e) for e in editgroup.edits.files]
+    filesets = [_type_of_edit(e) for e in editgroup.edits.filesets]
+    webcaptures = [_type_of_edit(e) for e in editgroup.edits.webcaptures]
+    releases = [_type_of_edit(e) for e in editgroup.edits.releases]
+    works = [_type_of_edit(e) for e in editgroup.edits.works]
 
-    # TODO: parse and pull out counts
-    #created = 0
-    #updated = 0
-    #deleted = 0
-    #t['created'] = created
-    #t['updated'] = updated
-    #t['deleted'] = deleted
-    #t['total'] = created + updated + deleted
+    t['containers'] = len(containers)
+    t['new_containers'] = len([e for e in containers if e == 'create'])
+    t['creators'] = len(creators)
+    t['new_creators'] = len([e for e in creators if e == 'create'])
+    t['files'] = len(files)
+    t['new_files'] = len([e for e in files if e == 'create'])
+    t['filesets'] = len(filesets)
+    t['new_filesets'] = len([e for e in filesets if e == 'create'])
+    t['webcaptures'] = len(webcaptures)
+    t['new_webcaptures'] = len([e for e in webcaptures if e == 'create'])
+    t['releases'] = len(releases)
+    t['new_releases'] = len([e for e in releases if e == 'create'])
+    t['works'] = len(works)
+    t['new_works'] = len([e for e in works if e == 'create'])
+
+    all_edits = containers + creators + files + filesets + webcaptures + releases + works
+
+    t['created'] = len([e for e in all_edits if e == 'create'])
+    t['updated'] = len([e for e in all_edits if e == 'update'])
+    t['deleted'] = len([e for e in all_edits if e == 'delete'])
+    t['total'] = len(all_edits)
+    return t
+
+
+def file_to_elasticsearch(entity):
+    """
+    Converts from an entity model/schema to elasticsearch oriented schema.
+
+    Returns: dict
+    Raises exception on error (never returns None)
+    """
+
+    if entity.state in ('redirect', 'deleted'):
+        return dict(
+            ident = entity.ident,
+            state = entity.state,
+        )
+    elif entity.state != 'active':
+        raise ValueError("Unhandled entity state: {}".format(entity.state))
+
+    # First, the easy ones (direct copy)
+    t = dict(
+        ident = entity.ident,
+        state = entity.state,
+        revision = entity.revision,
+        release_ids = entity.release_ids,
+        release_count = len(entity.release_ids),
+        mimetype = entity.mimetype,
+        size_bytes = entity.size,
+        sha1 = entity.sha1,
+        sha256 = entity.sha256,
+        md5 = entity.md5,
+    )
+
+    parsed_urls = [tldextract.extract(u.url) for u in entity.urls]
+    t['hosts'] = list(set(['.'.join([seg for seg in pu if seg]) for pu in parsed_urls]))
+    t['domains'] = list(set([pu.registered_domain for pu in parsed_urls]))
+    t['rels'] = list(set([u.rel for u in entity.urls]))
+
+    t['in_ia'] = bool('archive.org' in t['domains'])
+    t['in_ia_petabox'] = bool('archive.org' in t['hosts'])
+
     return t

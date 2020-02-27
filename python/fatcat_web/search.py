@@ -77,7 +77,7 @@ def do_release_search(q, limit=30, fulltext_only=True, offset=0):
                 "default_operator": "AND",
                 "analyze_wildcard": True,
                 "lenient": True,
-                "fields": ["title^5", "contrib_names^2", "container_title"],
+                "fields": ["biblio"],
             },
         },
     }
@@ -106,7 +106,7 @@ def do_container_search(q, limit=30, offset=0):
                 "default_operator": "AND",
                 "analyze_wildcard": True,
                 "lenient": True,
-                "fields": ["name^5", "publisher"],
+                "fields": ["biblio"],
             },
         },
     }
