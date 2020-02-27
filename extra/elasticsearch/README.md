@@ -59,9 +59,9 @@ Bulk insert from a file on disk:
 Or, in a bulk production live-stream conversion:
 
     export LC_ALL=C.UTF-8
-    time zcat /srv/fatcat/snapshots/release_export_expanded.json.gz | pv -l | parallel -j20 --linebuffer --round-robin --pipe ./fatcat_transform.py elasticsearch-releases - - | esbulk -verbose -size 2000 -id ident -w 8 -index fatcat_release -type release
-    time zcat /srv/fatcat/snapshots/container_export.json.gz | pv -l | ./fatcat_transform.py elasticsearch-containers - - | esbulk -verbose -size 2000 -id ident -w 8 -index fatcat_container -type container
-    time zcat /srv/fatcat/snapshots/file_export.json.gz | pv -l | parallel -j20 --linebuffer --round-robin --pipe ./fatcat_transform.py elasticsearch-files - - | esbulk -verbose -size 2000 -id ident -w 8 -index fatcat_file -type file
+    time zcat /srv/fatcat/snapshots/release_export_expanded.json.gz | pv -l | parallel -j20 --linebuffer --round-robin --pipe ./fatcat_transform.py elasticsearch-releases - - | esbulk -verbose -size 1000 -id ident -w 8 -index fatcat_release -type release
+    time zcat /srv/fatcat/snapshots/container_export.json.gz | pv -l | ./fatcat_transform.py elasticsearch-containers - - | esbulk -verbose -size 1000 -id ident -w 8 -index fatcat_container -type container
+    time zcat /srv/fatcat/snapshots/file_export.json.gz | pv -l | parallel -j20 --linebuffer --round-robin --pipe ./fatcat_transform.py elasticsearch-files - - | esbulk -verbose -size 1000 -id ident -w 8 -index fatcat_file -type file
 
 ## Index Aliases
 
