@@ -90,6 +90,8 @@ def _run_search_dump(args, search):
         )
         if not ingest_request:
             continue
+        if args.force_recrawl:
+            ingest_request['force_recrawl'] = True
         counts['ingest_request'] += 1
         if args.dry_run:
             continue
@@ -206,6 +208,9 @@ def main():
     parser.add_argument('--allow-non-oa',
         action='store_true',
         help="By default, we limit to OA releases. This removes that filter")
+    parser.add_argument('--force-recrawl',
+        action='store_true',
+        help="Tell ingest worker to skip GWB history lookup and do SPNv2 crawl")
     subparsers = parser.add_subparsers()
 
     sub_container = subparsers.add_parser('container',
