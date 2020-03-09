@@ -143,7 +143,7 @@ class PubmedFTPWorker:
         while True:
             current = self.state.next(continuous)
             if current:
-                print("Fetching DOIs updated on {} (UTC)".format(current), file=sys.stderr)
+                print("Fetching citations updated on {} (UTC)".format(current), file=sys.stderr)
                 self.fetch_date(current)
                 self.state.complete(current, kafka_topic=self.state_topic, kafka_config=self.kafka_config)
                 continue
