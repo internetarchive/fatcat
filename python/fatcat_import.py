@@ -47,6 +47,8 @@ def run_arxiv(args):
             "fatcat-{}-import-arxiv".format(args.kafka_env),
         ).run()
     else:
+        if args.xml_file == sys.stdin:
+            print('note: reading from stdin', file=sys.stderr)
         Bs4XmlFilePusher(ari, args.xml_file, "record").run()
 
 def run_pubmed(args):
