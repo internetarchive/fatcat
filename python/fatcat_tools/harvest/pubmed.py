@@ -155,7 +155,7 @@ class PubmedFTPWorker:
                 self.date_file_map = generate_date_file_map(host=self.host)
             else:
                 break
-        print("{} DOI ingest caught up".format(self.name))
+        print("{} FTP ingest caught up".format(self.name))
 
 
 def generate_date_file_map(host='ftp.ncbi.nlm.nih.gov'):
