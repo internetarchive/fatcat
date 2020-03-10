@@ -94,13 +94,12 @@ class PubmedFTPWorker:
     def fetch_date(self, date):
         """
         Fetch file for a given date and feed Kafka one article per message. If
-        the fetched XML does not contain a PMID, this method will fail. We
-        build up the mapping from dates to filenames on first run.
+        the fetched XML does not contain a PMID, this method will fail.
+
+        If no date file mapping is found, this will fail.
         """
         if self.date_file_map is None:
-            self.date_file_map = generate_date_file_map(host=self.host)
-            if len(self.date_file_map) == 0:
-                raise ValueError("map from dates to files should not be empty, maybe the HTML changed?")
+            raise ValueError("cannot fetch date without date file mapping")
 
         date_str = date.strftime('%Y-%m-%d')
         paths = self.date_file_map.get(date_str)
@@ -141,6 +140,10 @@ class PubmedFTPWorker:
 
     def run(self, continuous=False):
         while True:
+            self.date_file_map = generate_date_file_map(host=self.host)
+            if len(self.date_file_map) == 0:
+                raise ValueError("map from dates to files should not be empty, maybe the HTML changed?")
+
             current = self.state.next(continuous)
             if current:
                 print("Fetching citations updated on {} (UTC)".format(current), file=sys.stderr)
@@ -151,8 +154,6 @@ class PubmedFTPWorker:
             if continuous:
                 print("Sleeping {} seconds...".format(self.loop_sleep))
                 time.sleep(self.loop_sleep)
-                # Need to keep the mapping fresh.
-                self.date_file_map = generate_date_file_map(host=self.host)
             else:
                 break
         print("{} FTP ingest caught up".format(self.name))

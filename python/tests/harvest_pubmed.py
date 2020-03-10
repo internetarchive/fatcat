@@ -9,6 +9,7 @@ import os
 import pytest
 
 from fatcat_tools.harvest import *
+from fatcat_tools.harvest.pubmed import generate_date_file_map
 
 
 def test_pubmed_harvest_date(mocker):
@@ -40,6 +41,7 @@ def test_pubmed_harvest_date(mocker):
     )
 
     harvester.producer = mocker.Mock()
+    harvester.date_file_map = generate_date_file_map()
     # Since we mock out the FTP fetch, the concrete date does not matter here.
     harvester.fetch_date(datetime.datetime.strptime(test_date, '%Y-%m-%d'))
 
