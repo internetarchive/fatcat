@@ -187,7 +187,7 @@ def generate_date_file_map(host='ftp.ncbi.nlm.nih.gov'):
         fullpath = '/pubmed/updatefiles/{}.gz'.format(filename)
         date_str = date.strftime('%Y-%m-%d')
         mapping[date_str].add(fullpath)
-        print('added entry for {}: {}'.format(date_str, fullpath))
+        print('added entry for {}: {}'.format(date_str, fullpath), file=sys.stderr)
 
     print('generated date-file mapping for {} dates'.format(len(mapping)), file=sys.stderr)
     return mapping
