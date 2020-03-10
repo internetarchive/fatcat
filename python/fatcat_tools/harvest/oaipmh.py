@@ -132,25 +132,6 @@ class HarvestArxivWorker(HarvestOaiPmhWorker):
         self.name = "arxiv"
 
 
-class HarvestPubmedWorker(HarvestOaiPmhWorker):
-    """
-    Will likely be doing MEDLINE daily batch imports for primary metadata, but
-    might also want to run a PMC importer to update fulltext and assign OA
-    licenses (when appropriate).
-
-    Pubmed refs:
-    - https://www.ncbi.nlm.nih.gov/pmc/tools/oai/
-    - https://www.ncbi.nlm.nih.gov/pmc/oai/oai.cgi?verb=GetRecord&identifier=oai:pubmedcentral.nih.gov:152494&metadataPrefix=pmc_fm
-    - https://github.com/titipata/pubmed_parser
-    """
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.endpoint_url = "https://www.ncbi.nlm.nih.gov/pmc/oai/oai.cgi"
-        self.metadata_prefix = "pmc_fm"
-        self.name = "pubmed"
-
-
 class HarvestDoajJournalWorker(HarvestOaiPmhWorker):
     """
     WARNING: DOAJ OAI-PMH doesn't seem to respect 'from' and 'until' params

@@ -5,8 +5,8 @@ import argparse
 import datetime
 import raven
 from fatcat_tools.harvest import HarvestCrossrefWorker, HarvestDataciteWorker,\
-    HarvestArxivWorker, HarvestPubmedWorker, HarvestDoajArticleWorker,\
-    HarvestDoajJournalWorker
+    HarvestArxivWorker, HarvestDoajArticleWorker, HarvestDoajJournalWorker,\
+    PubmedFTPWorker
 
 # Yep, a global. Gets DSN from `SENTRY_DSN` environment variable
 sentry_client = raven.Client()
@@ -42,10 +42,17 @@ def run_arxiv(args):
     worker.run(continuous=args.continuous)
 
 def run_pubmed(args):
-    worker = HarvestPubmedWorker(
+    # worker = HarvestPubmedWorker(
+    #     kafka_hosts=args.kafka_hosts,
+    #     produce_topic="fatcat-{}.oaipmh-pubmed".format(args.env),
+    #     state_topic="fatcat-{}.oaipmh-pubmed-state".format(args.env),
+    #     start_date=args.start_date,
+    #     end_date=args.end_date)
+    # worker.run(continuous=args.continuous)
+    worker = PubmedFTPWorker(
         kafka_hosts=args.kafka_hosts,
-        produce_topic="fatcat-{}.oaipmh-pubmed".format(args.env),
-        state_topic="fatcat-{}.oaipmh-pubmed-state".format(args.env),
+        produce_topic="fatcat-{}.ftp-pubmed".format(args.env),
+        state_topic="fatcat-{}.ftp-pubmed-state".format(args.env),
         start_date=args.start_date,
         end_date=args.end_date)
     worker.run(continuous=args.continuous)

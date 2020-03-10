@@ -39,15 +39,16 @@ def run_arxiv(args):
     ari = ArxivRawImporter(args.api,
         edit_batch_size=args.batch_size)
     if args.kafka_mode:
-        raise NotImplementedError
-        #KafkaBs4XmlPusher(
-        #    ari,
-        #    args.kafka_hosts,
-        #    args.kafka_env,
-        #    "api-arxiv",
-        #    "fatcat-{}-import-arxiv".format(args.kafka_env),
-        #).run()
+        KafkaBs4XmlPusher(
+            ari,
+            args.kafka_hosts,
+            args.kafka_env,
+            "oaipmh-arxiv",
+            "fatcat-{}-import-arxiv".format(args.kafka_env),
+        ).run()
     else:
+        if args.xml_file == sys.stdin:
+            print('note: reading from stdin', file=sys.stderr)
         Bs4XmlFilePusher(ari, args.xml_file, "record").run()
 
 def run_pubmed(args):
@@ -57,14 +58,13 @@ def run_pubmed(args):
         do_updates=args.do_updates,
         lookup_refs=(not args.no_lookup_refs))
     if args.kafka_mode:
-        raise NotImplementedError
-        #KafkaBs4XmlPusher(
-        #    pi,
-        #    args.kafka_hosts,
-        #    args.kafka_env,
-        #    "api-pubmed",
-        #    "fatcat-{}import-arxiv".format(args.kafka_env),
-        #).run()
+        KafkaBs4XmlPusher(
+            pi,
+            args.kafka_hosts,
+            args.kafka_env,
+            "ftp-pubmed",
+            "fatcat-{}-import-pubmed".format(args.kafka_env),
+        ).run()
     else:
         Bs4XmlLargeFilePusher(
             pi,
@@ -302,6 +302,7 @@ def main():
         auth_var="FATCAT_AUTH_WORKER_ARXIV",
     )
     sub_arxiv.add_argument('xml_file',
+        nargs='?',
         help="arXivRaw XML file to import from",
         default=sys.stdin, type=argparse.FileType('r'))
     sub_arxiv.add_argument('--kafka-mode',
@@ -315,6 +316,7 @@ def main():
         auth_var="FATCAT_AUTH_WORKER_PUBMED",
     )
     sub_pubmed.add_argument('xml_file',
+        nargs='?',
         help="Pubmed XML file to import from",
         default=sys.stdin, type=argparse.FileType('r'))
     sub_pubmed.add_argument('issn_map_file',
