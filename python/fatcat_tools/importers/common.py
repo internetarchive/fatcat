@@ -735,7 +735,7 @@ class KafkaBs4XmlPusher(RecordPusher):
             kafka_namespace=kwargs.get('kafka_namespace', 'fatcat')
         )
         self.poll_interval = kwargs.get('poll_interval', 5.0)
-        self.consume_batch_size = kwargs.get('consume_batch_size', 100)
+        self.consume_batch_size = kwargs.get('consume_batch_size', 25)
 
     def run(self):
         count = 0
