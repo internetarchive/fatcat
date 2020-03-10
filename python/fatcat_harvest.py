@@ -5,8 +5,8 @@ import argparse
 import datetime
 import raven
 from fatcat_tools.harvest import HarvestCrossrefWorker, HarvestDataciteWorker,\
-    HarvestArxivWorker, HarvestPubmedWorker, HarvestDoajArticleWorker,\
-    HarvestDoajJournalWorker, PubmedFTPWorker
+    HarvestArxivWorker, HarvestDoajArticleWorker, HarvestDoajJournalWorker,\
+    PubmedFTPWorker
 
 # Yep, a global. Gets DSN from `SENTRY_DSN` environment variable
 sentry_client = raven.Client()
