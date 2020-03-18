@@ -20,10 +20,9 @@ search for an existing record missing that identifier, or create a new container
 entity. 
 {% if lookup_key == "issnl" %}
 <p>You can check if it is a registered ISSN-L by visiting:
-<b><a href="https://portal.issn.org/{{ lookup_value
-}}">https://portal.issn.org/{{ lookup_value }}</a></b>. If this is a valid
-electronic or print ISSN, but not the ISSN-L for the container, you need to use
-the indicated "linking" ISSN.
+<b><a href="https://portal.issn.org/api/search?search[]=MUST=allissnbis={{ lookup_value }}">https://portal.issn.org/api/search?search[]=MUST=allissnbis={{ lookup_value }}</a></b>.
+If this is a valid electronic or print ISSN, but not the ISSN-L for the
+container, you need to use the indicated "linking" ISSN.
 {% elif lookup_key == "wikidata_qid" %}
 <p>You can check if it is a real Wikidata entity by visiting:
 <b><a href="https://www.wikidata.org/wiki/{{ lookup_value }}">https://www.wikidata.org/wiki/{{ lookup_value }}</a></b>
