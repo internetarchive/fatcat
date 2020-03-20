@@ -729,8 +729,29 @@ class PubmedImporter(EntityImporter):
             existing.ext_ids.doi = existing.ext_ids.doi or re.ext_ids.doi
             existing.ext_ids.pmid = existing.ext_ids.pmid or re.ext_ids.pmid
             existing.ext_ids.pmcid = existing.ext_ids.pmcid or re.ext_ids.pmcid
+
+            existing.container_id = existing.container_id or re.container_id
             existing.refs = existing.refs or re.refs
+            existing.abstracts = existing.abstracts or re.abstracts
             existing.extra['pubmed'] = re.extra['pubmed']
+
+            # fix stub titles
+            if existing.title in [
+                    "OUP accepted manuscript",
+                ]:
+                existing.title = re.title
+
+            existing.original_title = existing.original_title or re.original_title
+            existing.release_type = existing.release_type or re.release_type
+            existing.release_stage = existing.release_stage or re.release_stage
+            existing.release_date = existing.release_date or re.release_date
+            existing.release_year = existing.release_year or re.release_year
+            existing.withdrawn_status = existing.withdrawn_status or re.withdrawn_status
+            existing.volume = existing.volume or re.volume
+            existing.issue = existing.issue or re.issue
+            existing.pages = existing.pages or re.pages
+            existing.language = existing.language or re.language
+
             # update subtitle in-place first
             if not existing.subtitle and existing.extra.get('subtitle'):
                 subtitle = existing.extra.pop('subtitle')
@@ -740,6 +761,7 @@ class PubmedImporter(EntityImporter):
                     existing.subtitle = subtitle
             if not existing.subtitle:
                 existing.subtitle = re.subtitle
+
             try:
                 self.api.update_release(self.get_editgroup_id(), existing.ident, existing)
                 self.counts['update'] += 1
