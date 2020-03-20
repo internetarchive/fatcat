@@ -163,6 +163,14 @@ class CrossrefImporter(EntityImporter):
             self.counts['skip-blank-title'] += 1
             return False
 
+        # these are pre-registered DOIs before the actual record is ready
+        # title is a list of titles
+        if obj.get('title')[0].strip().lower() in [
+                "OUP accepted manuscript".lower(),
+            ]:
+            self.counts['skip-stub-title'] += 1
+            return False
+
         # do most of these checks in-line below
         return True
 
