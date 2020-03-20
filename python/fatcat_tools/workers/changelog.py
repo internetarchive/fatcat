@@ -107,6 +107,9 @@ class EntityUpdatesWorker(FatcatWorker):
             "10.1101/",
             # researchgate
             "10.13140/",
+            # the lancet (often hybrid OA)
+            "10.1016/s0140-6736",
+            "10.1016/s2213-2600",
         ]
 
     def want_live_ingest(self, release, ingest_request):
