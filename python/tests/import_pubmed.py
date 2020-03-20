@@ -118,6 +118,7 @@ def test_pubmed_xml_parse(pubmed_importer):
 
     assert r2.refs[0].extra['unstructured'] == "Microbiology. 2009 Jun;155(Pt 6):1840-6"
     assert r2.refs[0].extra['pmid'] == "19383690"
+    assert len(r2.refs) > 1
 
 def test_pubmed_xml_dates(pubmed_importer):
     with open('tests/files/pubmed_31393839.xml', 'r') as f:
@@ -125,4 +126,15 @@ def test_pubmed_xml_dates(pubmed_importer):
         r1 = pubmed_importer.parse_record(soup.find_all("PubmedArticle")[0])
 
     assert r1.release_year == 2019
+
+def test_pubmed_xml_parse_refs(pubmed_importer):
+    """
+    Tests the case of multiple nested ReferenceList/Reference objects, instead
+    of a single ReferenceList with multiple Reference
+    """
+    with open('tests/files/pubmed_19129924.xml', 'r') as f:
+        soup = BeautifulSoup(f, "xml")
+        r1 = pubmed_importer.parse_record(soup.find_all("PubmedArticle")[0])
+
+    assert len(r1.refs) > 1
 

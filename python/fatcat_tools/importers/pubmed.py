@@ -616,7 +616,10 @@ class PubmedImporter(EntityImporter):
         ### References
         refs = []
         if pubmed.ReferenceList:
-            for ref in pubmed.ReferenceList.find_all('Reference'):
+            # note that Reference always exists within a ReferenceList, but
+            # that there may be multiple ReferenceList (eg, sometimes one per
+            # Reference)
+            for ref in pubmed.find_all('Reference'):
                 ref_extra = dict()
                 ref_doi = ref.find("ArticleId", IdType="doi")
                 if ref_doi:

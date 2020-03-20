@@ -1,0 +1,206 @@
+<PubmedArticle>
+    <MedlineCitation Owner="NLM" Status="PubMed-not-MEDLINE">
+      <PMID Version="1">19129924</PMID>
+      <DateCompleted>
+        <Year>2011</Year>
+        <Month>07</Month>
+        <Day>14</Day>
+      </DateCompleted>
+      <DateRevised>
+        <Year>2020</Year>
+        <Month>03</Month>
+        <Day>06</Day>
+      </DateRevised>
+      <Article PubModel="Electronic-eCollection">
+        <Journal>
+          <ISSN IssnType="Electronic">1662-5196</ISSN>
+          <JournalIssue CitedMedium="Internet">
+            <Volume>2</Volume>
+            <PubDate>
+              <Year>2008</Year>
+            </PubDate>
+          </JournalIssue>
+          <Title>Frontiers in neuroinformatics</Title>
+          <ISOAbbreviation>Front Neuroinform</ISOAbbreviation>
+        </Journal>
+        <ArticleTitle>PyMOOSE: Interoperable Scripting in Python for MOOSE.</ArticleTitle>
+        <Pagination>
+          <MedlinePgn>6</MedlinePgn>
+        </Pagination>
+        <ELocationID EIdType="doi" ValidYN="Y">10.3389/neuro.11.006.2008</ELocationID>
+        <Abstract>
+          <AbstractText>Python is emerging as a common scripting language for simulators. This opens up many possibilities for interoperability in the form of analysis, interfaces, and communications between simulators. We report the integration of Python scripting with the Multi-scale Object Oriented Simulation Environment (MOOSE). MOOSE is a general-purpose simulation system for compartmental neuronal models and for models of signaling pathways based on chemical kinetics. We show how the Python-scripting version of MOOSE, PyMOOSE, combines the power of a compiled simulator with the versatility and ease of use of Python. We illustrate this by using Python numerical libraries to analyze MOOSE output online, and by developing a GUI in Python/Qt for a MOOSE simulation. Finally, we build and run a composite neuronal/signaling model that uses both the NEURON and MOOSE numerical engines, and Python as a bridge between the two. Thus PyMOOSE has a high degree of interoperability with analysis routines, with graphical toolkits, and with other simulators.</AbstractText>
+        </Abstract>
+        <AuthorList CompleteYN="Y">
+          <Author ValidYN="Y">
+            <LastName>Ray</LastName>
+            <ForeName>Subhasis</ForeName>
+            <Initials>S</Initials>
+            <AffiliationInfo>
+              <Affiliation>National Centre for Biological Sciences Bangalore, India.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Bhalla</LastName>
+            <ForeName>Upinder S</ForeName>
+            <Initials>US</Initials>
+          </Author>
+        </AuthorList>
+        <Language>eng</Language>
+        <PublicationTypeList>
+          <PublicationType UI="D016428">Journal Article</PublicationType>
+        </PublicationTypeList>
+        <ArticleDate DateType="Electronic">
+          <Year>2008</Year>
+          <Month>12</Month>
+          <Day>19</Day>
+        </ArticleDate>
+      </Article>
+      <MedlineJournalInfo>
+        <Country>Switzerland</Country>
+        <MedlineTA>Front Neuroinform</MedlineTA>
+        <NlmUniqueID>101477957</NlmUniqueID>
+        <ISSNLinking>1662-5196</ISSNLinking>
+      </MedlineJournalInfo>
+      <KeywordList Owner="NOTNLM">
+        <Keyword MajorTopicYN="N">GENESIS</Keyword>
+        <Keyword MajorTopicYN="N">MOOSE</Keyword>
+        <Keyword MajorTopicYN="N">NEURON</Keyword>
+        <Keyword MajorTopicYN="N">Python</Keyword>
+        <Keyword MajorTopicYN="N">compartmental models</Keyword>
+        <Keyword MajorTopicYN="N">multi-scale models</Keyword>
+        <Keyword MajorTopicYN="N">simulators</Keyword>
+        <Keyword MajorTopicYN="N">systems biology</Keyword>
+      </KeywordList>
+    </MedlineCitation>
+    <PubmedData>
+      <History>
+        <PubMedPubDate PubStatus="received">
+          <Year>2008</Year>
+          <Month>09</Month>
+          <Day>15</Day>
+        </PubMedPubDate>
+        <PubMedPubDate PubStatus="accepted">
+          <Year>2008</Year>
+          <Month>11</Month>
+          <Day>01</Day>
+        </PubMedPubDate>
+        <PubMedPubDate PubStatus="entrez">
+          <Year>2009</Year>
+          <Month>1</Month>
+          <Day>9</Day>
+          <Hour>9</Hour>
+          <Minute>0</Minute>
+        </PubMedPubDate>
+        <PubMedPubDate PubStatus="pubmed">
+          <Year>2009</Year>
+          <Month>1</Month>
+          <Day>9</Day>
+          <Hour>9</Hour>
+          <Minute>0</Minute>
+        </PubMedPubDate>
+        <PubMedPubDate PubStatus="medline">
+          <Year>2009</Year>
+          <Month>1</Month>
+          <Day>9</Day>
+          <Hour>9</Hour>
+          <Minute>1</Minute>
+        </PubMedPubDate>
+      </History>
+      <PublicationStatus>epublish</PublicationStatus>
+      <ArticleIdList>
+        <ArticleId IdType="pubmed">19129924</ArticleId>
+        <ArticleId IdType="doi">10.3389/neuro.11.006.2008</ArticleId>
+        <ArticleId IdType="pmc">PMC2614320</ArticleId>
+      </ArticleIdList>
+      <ReferenceList>
+        <Reference>
+          <Citation>Eur J Neurosci. 2004 Nov;20(10):2671-80</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">15548210</ArticleId>
+          </ArticleIdList>
+        </Reference>
+      </ReferenceList>
+      <ReferenceList>
+        <Reference>
+          <Citation>Science. 2002 Aug 9;297(5583):1018-23</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">12169734</ArticleId>
+          </ArticleIdList>
+        </Reference>
+      </ReferenceList>
+      <ReferenceList>
+        <Reference>
+          <Citation>Philos Trans R Soc Lond B Biol Sci. 2001 Aug 29;356(1412):1209-28</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">11545699</ArticleId>
+          </ArticleIdList>
+        </Reference>
+      </ReferenceList>
+      <ReferenceList>
+        <Reference>
+          <Citation>Biol Cybern. 1985;53(1):41-56</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">3841014</ArticleId>
+          </ArticleIdList>
+        </Reference>
+      </ReferenceList>
+      <ReferenceList>
+        <Reference>
+          <Citation>Neuroinformatics. 2007 Summer;5(2):96-104</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">17873371</ArticleId>
+          </ArticleIdList>
+        </Reference>
+      </ReferenceList>
+      <ReferenceList>
+        <Reference>
+          <Citation>Science. 1999 Jan 15;283(5400):381-7</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">9888852</ArticleId>
+          </ArticleIdList>
+        </Reference>
+      </ReferenceList>
+      <ReferenceList>
+        <Reference>
+          <Citation>Neuroinformatics. 2007 Summer;5(2):127-38</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">17873374</ArticleId>
+          </ArticleIdList>
+        </Reference>
+      </ReferenceList>
+      <ReferenceList>
+        <Reference>
+          <Citation>Nat Biotechnol. 2005 Dec;23(12):1509-15</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">16333295</ArticleId>
+          </ArticleIdList>
+        </Reference>
+      </ReferenceList>
+      <ReferenceList>
+        <Reference>
+          <Citation>Biol Cybern. 1985;53(1):27-40</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">3841013</ArticleId>
+          </ArticleIdList>
+        </Reference>
+      </ReferenceList>
+      <ReferenceList>
+        <Reference>
+          <Citation>J Neurophysiol. 1995 Mar;73(3):1157-68</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">7608762</ArticleId>
+          </ArticleIdList>
+        </Reference>
+      </ReferenceList>
+      <ReferenceList>
+        <Reference>
+          <Citation>Bioinformatics. 2003 Mar 1;19(4):524-31</Citation>
+          <ArticleIdList>
+            <ArticleId IdType="pubmed">12611808</ArticleId>
+          </ArticleIdList>
+        </Reference>
+      </ReferenceList>
+    </PubmedData>
+  </PubmedArticle>
+  
