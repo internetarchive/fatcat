@@ -222,6 +222,7 @@ class DataciteImporter(EntityImporter):
         self.read_issn_map_file(issn_map_file)
         self.debug = debug
         self.insert_log_file = insert_log_file
+        self.this_year = datetime.datetime.now().year
 
         print('datacite with debug={}'.format(self.debug), file=sys.stderr)
 
@@ -310,6 +311,12 @@ class DataciteImporter(EntityImporter):
         # "Updated", "Valid".
         release_date, release_month, release_year = parse_datacite_dates(
             attributes.get('dates', []))
+
+        # block bogus far-future years/dates
+        if release_year is not None and (release_year > (self.this_year + 5) or release_year < 1000):
+            release_date = None
+            release_month = None
+            release_year = None
 
         # Some records do not use the "dates" field (e.g. micropub), but:
         # "attributes.published" or "attributes.publicationYear"
