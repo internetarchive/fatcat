@@ -209,10 +209,14 @@ class JalcImporter(EntityImporter):
                 release_year = int(date)
 
         pages = None
-        if record.startingPage:
-            pages = record.startingPage.string
-            if record.endingPage:
-                pages = "{}-{}".format(pages, record.endingPage.string)
+        if record.startingPage and record.startingPage.string.strip():
+            pages = record.startingPage.string.strip()
+            if record.endingPage and record.endingPage.string.strip():
+                pages = "{}-{}".format(pages, record.endingPage.string.strip())
+        # double check to prevent "-" as pages
+        if pages and pages.strip() == '-':
+            pages = None
+
         volume = None
         if record.volume:
             volume = record.volume.string
