@@ -1,6 +1,6 @@
 
 On 2020-03-20, automated daily harvesting and importing of arxiv and pubmed
-medata started. In the case of pubmed, updates are enabled, so that recently
+metadata started. In the case of pubmed, updates are enabled, so that recently
 created DOI releases get updated with PMID and extra metdata.
 
 We also want to do last backfills of metadata since the last import up through
@@ -34,4 +34,24 @@ Ran fairly quickly only some ~80-90k entities to process.
 
 ## PubMed
 
-TODO: martin will import daily update files from the 2020 baseline through XYZ date.
+First, mirror update files from FTP, e.g. via lftp:
+
+    mkdir -p /srv/fatcat/datasets/pubmed_updates
+    lftp -e 'mirror -c /pubmed/updatefiles /srv/fatcat/datasets/pubmed_updates; bye' ftp://ftp.ncbi.nlm.nih.gov
+
+Inspect completed dates from kafka:
+
+    kafkacat -b $KAFKA_BROKER -t fatcat-prod.ftp-pubmed-state -C
+
+Show dates and corresponding files:
+
+    find /srv/fatcat/datasets/pubmed_updates -name "*html" | xargs cat | grep "Created" | sort
+
+For this bulk import, we used files pubmed20n1016.xml.gz (2019-12-16) up to pubmed20n1110.xml.gz (2020-03-06).
+
+To import the corresponding files, run:
+
+    printf "%s\n" /srv/fatcat/datasets/pubmed_updates/pubmed20n{1016..1110}.xml.gz | shuf | \
+        parallel -j16 'gunzip -c {} | ./fatcat_import.py pubmed --do-updates - /srv/fatcat/datasets/ISSN-to-ISSN-L.txt'
+
+Import took 254 min, there were 1715427 PubmedArticle docs in these update files.
