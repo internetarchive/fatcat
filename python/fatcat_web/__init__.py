@@ -11,6 +11,7 @@ from authlib.flask.client import OAuth
 from loginpass import create_flask_blueprint, Gitlab, GitHub, ORCiD
 from raven.contrib.flask import Sentry
 import fatcat_openapi_client
+import elasticsearch
 
 from fatcat_web.web_config import Config
 
@@ -71,7 +72,9 @@ mwoauth = MWOAuth(
 mwoauth.handshaker.user_agent = "fatcat.wiki;python_web_interface"
 app.register_blueprint(mwoauth.bp, url_prefix='/auth/wikipedia')
 
-from fatcat_web import routes, editing_routes, auth, cors, forms  # noqa: E402
+app.es_client = elasticsearch.Elasticsearch(Config.ELASTICSEARCH_BACKEND)
+
+from fatcat_web import routes, editing_routes, auth, cors, forms
 
 # TODO: blocking on ORCID support in loginpass
 if Config.ORCID_CLIENT_ID:
