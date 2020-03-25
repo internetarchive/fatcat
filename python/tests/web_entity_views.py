@@ -42,6 +42,8 @@ def test_entity_basics(app):
         assert rv.status_code == 200
         rv = app.get('/{}/rev/{}'.format(entity_type, revision))
         assert rv.status_code == 200
+        rv = app.get('/{}/rev/{}_something'.format(entity_type, revision))
+        assert rv.status_code == 400
         rv = app.get('/{}/rev/{}/metadata'.format(entity_type, revision))
         assert rv.status_code == 200
         print('/editgroup/aaaaaaaaaaaabo53aaaaaaaaaq/{}/{}'.format(entity_type, ident))
