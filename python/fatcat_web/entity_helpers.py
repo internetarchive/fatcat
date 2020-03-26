@@ -1,6 +1,6 @@
 
 from flask import abort
-from fatcat_openapi_client.rest import ApiException
+from fatcat_openapi_client.rest import ApiException, ApiValueError
 from fatcat_tools.transforms import *
 from fatcat_web import app, api
 from fatcat_web.search import get_elastic_container_stats, get_elastic_container_random_releases
@@ -123,6 +123,8 @@ def generic_get_entity(entity_type, ident):
             raise NotImplementedError
     except ApiException as ae:
         abort(ae.status)
+    except ApiValueError:
+        abort(400)
 
 def generic_get_entity_revision(entity_type, revision_id):
     try:
@@ -144,6 +146,8 @@ def generic_get_entity_revision(entity_type, revision_id):
             raise NotImplementedError
     except ApiException as ae:
         abort(ae.status)
+    except ApiValueError:
+        abort(400)
 
 def generic_get_editgroup_entity(editgroup, entity_type, ident):
     if entity_type == 'container':
@@ -172,6 +176,12 @@ def generic_get_editgroup_entity(editgroup, entity_type, ident):
         # couldn't find relevent edit in this editgroup
         abort(404)
 
-    entity = generic_get_entity_revision(entity_type, revision_id)
+    try:
+        entity = generic_get_entity_revision(entity_type, revision_id)
+    except ApiException as ae:
+        abort(ae.status)
+    except ApiValueError:
+        abort(400)
+
     entity.ident = ident
     return entity, edit
