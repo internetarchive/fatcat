@@ -721,7 +721,8 @@ class DataciteImporter(EntityImporter):
                     name_scheme = nid.get('nameIdentifierScheme', '') or ''
                     if not name_scheme.lower() == "orcid":
                         continue
-                    orcid = nid.get('nameIdentifier', '').replace('https://orcid.org/', '')
+                    orcid = nid.get('nameIdentifier') or ''
+                    orcid = orcid.replace('https://orcid.org/', '')
                     if not orcid:
                         continue
                     creator_id = self.lookup_orcid(orcid)
