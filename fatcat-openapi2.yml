@@ -50,7 +50,7 @@ info:
     ### Other Nitty Gritties
 
     Cross-origin requests are allowed for the API service, to enable third
-    parties to bulid in-browser applications.
+    parties to build in-browser applications.
 
     A metadata search service is available at <https://search.fatcat.wiki> (and
     <https://search.qa.fatcat.wiki>). The API is currently the raw
