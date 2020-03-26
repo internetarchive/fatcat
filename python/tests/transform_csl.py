@@ -12,21 +12,21 @@ def test_csl_crossref(crossref_importer):
         # not a single line
         raw = json.loads(f.read())
         r = crossref_importer.parse_record(raw)
-    # this work has some null contrib names; these should cause errors
-    with pytest.raises(ValueError):
-        release_to_csl(r)
-    with pytest.raises(ValueError):
-        csl = release_to_csl(r)
-        citeproc_csl(csl, 'csl-json')
-    # set with dummy so we can run other tests
-    for c in r.contribs:
-        if not c.raw_name:
-            c.raw_name = "dummy"
     csl = release_to_csl(r)
     citeproc_csl(csl, 'csl-json')
     citeproc_csl(csl, 'bibtex')
     citeproc_csl(csl, 'harvard1')
     citeproc_csl(csl, 'harvard1', html=True)
+
+    # check that with no author surnames, can't run
+    for c in r.contribs:
+        c.raw_name = None
+        c.surname = None
+    with pytest.raises(ValueError):
+        release_to_csl(r)
+    with pytest.raises(ValueError):
+        csl = release_to_csl(r)
+        citeproc_csl(csl, 'csl-json')
 
 def test_csl_pubmed(crossref_importer):
     with open('tests/files/example_releases_pubmed19n0972.json', 'r') as f:

@@ -37,8 +37,9 @@ def release_to_csl(entity):
             # Default to "local" (publication-specific) metadata; fall back to
             # creator-level
             family = contrib.surname or contrib.creator.surname or (contrib.raw_name and contrib.raw_name.split()[-1])
-            if not contrib.raw_name:
-                raise ValueError("CSL requires some surname (family name)")
+            if not family:
+                # CSL requires some surname (family name)
+                continue
             c = dict(
                 family=family,
                 given=contrib.given_name or contrib.creator.given_name,
@@ -49,22 +50,27 @@ def release_to_csl(entity):
                 #static-ordering
                 literal=contrib.raw_name or contrib.creator.display_name,
                 #parse-names,
-                role=contrib.role,
+                # role must be defined; default to author
+                role=contrib.role or 'author',
             )
         else:
             family = contrib.surname or (contrib.raw_name and contrib.raw_name.split()[-1])
-            if not contrib.raw_name:
-                raise ValueError("CSL requires some surname (family name)")
+            if not family:
+                # CSL requires some surname (family name)
+                continue
             c = dict(
                 family=family,
                 given=contrib.given_name,
                 literal=contrib.raw_name,
-                role=contrib.role,
+                # role must be defined; default to author
+                role=contrib.role or 'author',
             )
         for k in list(c.keys()):
             if not c[k]:
                 c.pop(k)
         contribs.append(c)
+    if not contribs:
+        raise ValueError("citeproc requires at least one author with a surname")
     abstract = None
     if entity.abstracts:
         abstract = entity.abstracts[0].content

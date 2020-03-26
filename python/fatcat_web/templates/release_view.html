@@ -388,8 +388,7 @@ accessible version.
   <br>grouping other versions (eg, pre-print) and variants of this release
 </div>
 
-{# this restriction, for CSL-JSON generation, rules out almost everything #}
-{% if release.contribs and release.contribs[0].creator_id %}
+{% if release._can_citeproc %}
 <div class="ui segment attached accordion">
   <div class="title" style="padding: 0px;">
     <i class="dropdown icon"></i><b>Cite This Release</b>
