@@ -75,7 +75,7 @@ def test_stats(app):
         json=elastic_resp3.copy(), status=200)
     rv = app.get('/stats')
     assert rv.status_code == 200
-    # TODO: probe these reponses better
+    # TODO: robe these responses better
 
 @responses.activate
 def test_stats_json(app):
@@ -112,7 +112,7 @@ def test_container_stats(app):
         json=elastic_resp, status=200)
     rv = app.get('/container/issnl/1234-5678/stats.json')
     assert rv.status_code == 200
-    # TODO: probe this reponse better
+    # TODO: probe this response better
 
 # TODO: container stats
 # TODO: container ISSN-L query

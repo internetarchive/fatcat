@@ -61,7 +61,7 @@ else:
     print("No privileged token found")
     priv_api = None
 
-# TODO: refactor integration so this doesn't always need to be definied. If
+# TODO: refactor integration so this doesn't always need to be defined. If
 # key/secret are empty, library will not init; if init is skipped, get
 # undefined errors elsewhere.
 mwoauth = MWOAuth(

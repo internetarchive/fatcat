@@ -9,7 +9,7 @@ import fatcat_openapi_client
 from .common import EntityImporter, clean
 
 
-# The docs/guide should be the cannonical home for these mappings; update there
+# The docs/guide should be the canonical home for these mappings; update there
 # first
 # Can get a list of Crossref types (with counts) via API:
 # https://api.crossref.org/works?rows=0&facet=type-name:*
@@ -180,7 +180,7 @@ class CrossrefImporter(EntityImporter):
             self.counts['skip-release-type'] += 1
             return None
 
-        # Do require the 'title' keys to exsit, as release entities do
+        # Do require the 'title' keys to exist, as release entities do
         if (not 'title' in obj) or (not obj['title']):
             self.counts['skip-blank-title'] += 1
             return None

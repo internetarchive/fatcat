@@ -63,7 +63,7 @@ def test_entity_basics(app):
         # TODO: redirects and deleted entities
 
 def test_web_deleted_release(app, api):
-    # specific regresion test for view of a deleted release
+    # specific regression test for view of a deleted release
 
     # create release
     eg = quick_eg(api)

@@ -164,7 +164,7 @@ def generic_get_editgroup_entity(editgroup, entity_type, ident):
             edit = e
             break
     if not revision_id:
-        # couldn't find relevent edit in this editgroup
+        # couldn't find relevant edit in this editgroup
         abort(404)
 
     entity = generic_get_entity_revision(entity_type, revision_id)
