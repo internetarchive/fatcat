@@ -416,7 +416,7 @@ def main():
         help="whether postproc_status column must be '200'")
     sub_arabesque_match.add_argument('--extid-type',
         default="doi",
-        help="identifer type in the database (eg, 'doi', 'pmcid'")
+        help="identifier type in the database (eg, 'doi', 'pmcid'")
     sub_arabesque_match.add_argument('--crawl-id',
         help="crawl ID (optionally included in editgroup metadata)")
     sub_arabesque_match.add_argument('--default-link-rel',
@@ -424,7 +424,7 @@ def main():
         help="default URL rel for matches (eg, 'publisher', 'web')")
 
     sub_ingest_file = subparsers.add_parser('ingest-file-results',
-        help="add/update flie entities linked to releases based on sandcrawler ingest results")
+        help="add/update file entities linked to releases based on sandcrawler ingest results")
     sub_ingest_file.set_defaults(
         func=run_ingest_file,
         auth_var="FATCAT_AUTH_WORKER_CRAWL",

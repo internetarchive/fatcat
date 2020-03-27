@@ -299,7 +299,7 @@ def get_elastic_container_histogram(ident):
     """
     Fetches a stacked histogram of 
 
-    Filters to the past 500 years (at most), or about 1000 vaules.
+    Filters to the past 500 years (at most), or about 1000 values.
 
     Returns a list of tuples:
         (year, in_ia, count)

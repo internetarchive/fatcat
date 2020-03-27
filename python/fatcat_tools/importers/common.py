@@ -816,7 +816,7 @@ class KafkaJsonPusher(RecordPusher):
         while True:
             # Note: this is batch-oriented, because underlying importer is
             # often batch-oriented, but this doesn't confirm that entire batch
-            # has been pushed to fatcat before commiting offset. Eg, consider
+            # has been pushed to fatcat before committing offset. Eg, consider
             # case where there there is one update and thousands of creates;
             # update would be lingering in importer, and if importer crashed
             # never created.

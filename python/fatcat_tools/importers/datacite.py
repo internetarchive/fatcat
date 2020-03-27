@@ -3,7 +3,7 @@ Prototype importer for datacite.org data.
 
 Example input document: https://api.datacite.org/dois/10.7916/d8-f93n-rk51
 
-Datacite being an aggregator, the data is heterogenous and exposes a couple of
+Datacite being an aggregator, the data is heterogeneous and exposes a couple of
 problems in content and structure. A few fields have their own parsing
 functions (parse_datacite_...), which may help testing.
 """
@@ -36,7 +36,7 @@ CONTAINER_TYPE_MAP = {
     'Book Series': 'book-series',
 }
 
-# The docs/guide should be the cannonical home for these mappings; update there
+# The docs/guide should be the canonical home for these mappings; update there
 # first.  Map various datacite type types to CSL-ish types. None means TODO or
 # remove.
 DATACITE_TYPE_MAP = {
@@ -228,7 +228,7 @@ class DataciteImporter(EntityImporter):
 
     def lookup_ext_ids(self, doi):
         """
-        Return dictionary of identifiers refering to the same things as the given DOI.
+        Return dictionary of identifiers referring to the same things as the given DOI.
         """
         if self.extid_map_db is None:
             return dict(core_id=None,
@@ -584,7 +584,7 @@ class DataciteImporter(EntityImporter):
 
         # Include certain relations from relatedIdentifiers. Keeping the
         # original structure of data here, which is a list of dicts, with
-        # relation type, identifer and identifier type (mostly).
+        # relation type, identifier and identifier type (mostly).
         relations = []
         for rel in relIds:
             if rel.get('relationType') in ('IsPartOf', 'Reviews', 'Continues',

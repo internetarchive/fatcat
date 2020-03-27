@@ -133,7 +133,7 @@ class HarvestState:
             def fail_fast(err, msg):
                 if err:
                     raise KafkaException(err)
-            print("Commiting status to Kafka: {}".format(kafka_topic), file=sys.stderr)
+            print("Committing status to Kafka: {}".format(kafka_topic), file=sys.stderr)
             producer_conf = kafka_config.copy()
             producer_conf.update({
                 'delivery.report.only.error': True,
@@ -164,7 +164,7 @@ class HarvestState:
                 raise KafkaException(err)
         conf = kafka_config.copy()
         conf.update({
-            'group.id': 'dummy_init_group', # should never be commited
+            'group.id': 'dummy_init_group', # should never be committed
             'enable.auto.commit': False,
             'auto.offset.reset': 'earliest',
             'session.timeout.ms': 10000,

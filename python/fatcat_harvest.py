@@ -83,7 +83,7 @@ def main():
         help="Kafka topic namespace to use (eg, prod, qa, dev)")
     parser.add_argument('--start-date',
         default=None, type=mkdate,
-        help="begining of harvest period")
+        help="beginning of harvest period")
     parser.add_argument('--end-date',
         default=None, type=mkdate,
         help="end of harvest period")

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Utility script for doing bulk conversion/tranforms of entity JSON schema to
+Utility script for doing bulk conversion/transforms of entity JSON schema to
 other formats
 """
 
