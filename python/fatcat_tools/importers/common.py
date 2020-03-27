@@ -322,7 +322,7 @@ class EntityImporter:
         Returns nothing.
         """
         self.counts['total'] += 1
-        if (not raw_record) or (not self.want(raw_record)):
+        if not raw_record or not self.want(raw_record):
             self.counts['skip'] += 1
             return
         entity = self.parse_record(raw_record)

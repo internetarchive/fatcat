@@ -88,16 +88,16 @@ class MatchedImporter(EntityImporter):
         release_ids = list(re_list)
         if len(release_ids) == 0:
             self.counts['skip-no-releases'] += 1
-            return None
+            return
         if len(release_ids) > SANE_MAX_RELEASES:
             self.counts['skip-too-many-releases'] += 1
-            return None
+            return
 
         # parse URLs and CDX
         urls = set()
         for url in obj.get('urls', []):
             url = make_rel_url(url, default_link_rel=self.default_link_rel)
-            if url != None:
+            if url is not None:
                 urls.add(url)
         for cdx in obj.get('cdx', []):
             original = cdx['url']
@@ -107,15 +107,15 @@ class MatchedImporter(EntityImporter):
                     original)
                 urls.add(("webarchive", wayback))
             url = make_rel_url(original, default_link_rel=self.default_link_rel)
-            if url != None:
+            if url is not None:
                 urls.add(url)
         urls = [fatcat_openapi_client.FileUrl(rel=rel, url=url) for (rel, url) in urls]
         if len(urls) == 0:
             self.counts['skip-no-urls'] += 1
-            return None
+            return
         if len(urls) > SANE_MAX_URLS:
             self.counts['skip-too-many-urls'] += 1
-            return None
+            return
 
         size = obj.get('size')
         if size:

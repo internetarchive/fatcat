@@ -285,28 +285,26 @@ class JstorImporter(EntityImporter):
             except fatcat_openapi_client.rest.ApiException as err:
                 if err.status != 404:
                     raise err
+            return True
 
-        if existing and existing.ext_ids.jstor:
+        if existing.ext_ids.jstor:
             # don't update if it already has JSTOR ID
             self.counts['exists'] += 1
             return False
-        elif existing:
-            # but do update if only DOI was set
-            existing.ext_ids.jstor = re.ext_ids.jstor
-            existing.extra['jstor'] = re.extra['jstor']
-            # better release_type detection, and some other fields
-            # TODO: don't do this over-writing in the future? assuming here
-            # this is a one-time batch import over/extending bootstrap crossref
-            # metadata
-            existing.release_type = re.release_type
-            existing.publisher = re.publisher
-            existing.contribs = re.contribs
-            existing.language = re.language
-            self.api.update_release(self.get_editgroup_id(), existing.ident, existing)
-            self.counts['update'] += 1
-            return False
-
-        return True
+        # but do update if only DOI was set
+        existing.ext_ids.jstor = re.ext_ids.jstor
+        existing.extra['jstor'] = re.extra['jstor']
+        # better release_type detection, and some other fields
+        # TODO: don't do this over-writing in the future? assuming here
+        # this is a one-time batch import over/extending bootstrap crossref
+        # metadata
+        existing.release_type = re.release_type
+        existing.publisher = re.publisher
+        existing.contribs = re.contribs
+        existing.language = re.language
+        self.api.update_release(self.get_editgroup_id(), existing.ident, existing)
+        self.counts['update'] += 1
+        return False
 
     def insert_batch(self, batch):
         self.api.create_release_auto_batch(fatcat_openapi_client.ReleaseAutoBatch(

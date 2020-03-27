@@ -66,15 +66,12 @@ class ArabesqueMatchImporter(EntityImporter):
     def want(self, row):
         if self.require_grobid and not row['postproc_status'] == "200":
             return False
-        if (row['hit'] == True
+        return (row['hit']
                 and row['final_sha1']
                 and row['final_timestamp'] and row['final_timestamp'] != "-"
                 and row['final_mimetype']
-                and row['hit'] == True
-                and row['identifier']):
-            return True
-        else:
-            return False
+                and row['hit']
+                and row['identifier'])
 
     def parse_record(self, row):
 
@@ -89,7 +86,7 @@ class ArabesqueMatchImporter(EntityImporter):
                 extid = extid[4:]
             if not extid.startswith('10.'):
                 self.counts['skip-extid-invalid']
-                return None
+                return
 
         # lookup extid
         try:
@@ -98,10 +95,10 @@ class ArabesqueMatchImporter(EntityImporter):
             if err.status == 404:
                 # bail on 404 (release not in DB)
                 self.counts['skip-extid-not-found'] += 1
-                return None
+                return
             elif err.status == 400:
                 self.counts['skip-extid-invalid'] += 1
-                return None
+                return
             else:
                 raise err
 

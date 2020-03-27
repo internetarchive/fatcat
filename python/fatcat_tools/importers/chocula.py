@@ -30,9 +30,7 @@ class ChoculaImporter(EntityImporter):
         if not raw_record.get('fatcat_ident') and not raw_record.get('_known_issnl'):
             self.counts['skip-unknown-new-issnl'] += 1
             return False
-        if raw_record.get('issnl') and raw_record.get('name'):
-            return True
-        return False
+        return raw_record.get('issnl') and raw_record.get('name')
 
     def parse_record(self, row):
         """
@@ -44,7 +42,7 @@ class ChoculaImporter(EntityImporter):
         name = clean(row.get('name'))
         if not name:
             # Name is required (by schema)
-            return None
+            return
 
         name = name.strip()
 

@@ -152,8 +152,8 @@ def handle_wmoauth(username):
 def load_user(editor_id):
     # looks for extra info in session, and updates the user object with that.
     # If session isn't loaded/valid, should return None
-    if (not session.get('editor')) or (not session.get('api_token')):
-        return None
+    if not session.get('editor') or not session.get('api_token'):
+        return
     editor = session['editor']
     token = session['api_token']
     user = UserMixin()

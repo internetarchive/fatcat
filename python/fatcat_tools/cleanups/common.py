@@ -64,7 +64,7 @@ class EntityCleaner:
         Returns nothing.
         """
         self.counts['lines'] += 1
-        if (not record):
+        if not record:
             self.counts['skip-null'] += 1
             return
 

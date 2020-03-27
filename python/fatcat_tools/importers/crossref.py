@@ -178,12 +178,12 @@ class CrossrefImporter(EntityImporter):
                 'standard-series', 'report-series', 'book-series', 'book-set',
                 'book-track', 'proceedings-series'):
             self.counts['skip-release-type'] += 1
-            return None
+            return
 
         # Do require the 'title' keys to exsit, as release entities do
-        if (not 'title' in obj) or (not obj['title']):
+        if not obj.get('title'):
             self.counts['skip-blank-title'] += 1
-            return None
+            return
 
         release_type = self.map_release_type(obj['type'])
 

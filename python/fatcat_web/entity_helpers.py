@@ -36,7 +36,7 @@ def enrich_fileset_entity(entity):
     if entity.state in ('redirect', 'deleted'):
         return entity
     entity._total_size = None
-    if entity.manifest != None:
+    if entity.manifest is not None:
         entity._total_size = sum([f.size for f in entity.manifest]) or 0
     return entity
 

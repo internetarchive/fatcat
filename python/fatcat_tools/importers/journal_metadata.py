@@ -1,29 +1,21 @@
 
-import sys
-import json
-import itertools
 import fatcat_openapi_client
 from .common import EntityImporter, clean
 
 
 def or_none(s):
-    if s is None:
-        return None
-    if len(s) == 0:
-        return None
-    return s
+    if s is not None and len(s):
+        return s
 
 def truthy(s):
     if s is None:
-        return None
+        return
     s = s.lower()
 
     if s in ('true', 't', 'yes', 'y', '1'):
         return True
     elif s in ('false', 'f', 'no', 'n', '0'):
         return False
-    else:
-        return None
 
 class JournalMetadataImporter(EntityImporter):
     """
@@ -45,9 +37,7 @@ class JournalMetadataImporter(EntityImporter):
             **kwargs)
 
     def want(self, raw_record):
-        if raw_record.get('issnl') and raw_record.get('name'):
-            return True
-        return False
+        return raw_record.get('issnl') and raw_record.get('name')
 
     def parse_record(self, row):
         """
@@ -58,7 +48,7 @@ class JournalMetadataImporter(EntityImporter):
 
         if not row.get('name'):
             # Name is required (by schema)
-            return None
+            return
 
         extra = dict()
         for key in ('issne', 'issnp', 'languages', 'country', 'urls', 'abbrev',
@@ -91,7 +81,7 @@ class JournalMetadataImporter(EntityImporter):
 
         name = clean(row.get('name'))
         if not name:
-            return None
+            return
 
         ce = fatcat_openapi_client.ContainerEntity(
             issnl=row['issnl'],
@@ -123,11 +113,9 @@ class JournalMetadataImporter(EntityImporter):
                 existing.extra['kbart'] = {}
             existing.extra['kbart'].update(ce.extra['kbart'])
             self.api.update_container(self.get_editgroup_id(), existing.ident, existing)
-            self.counts['update'] += 1
-            return False
-        else:
-            self.counts['exists'] += 1
-            return False
+
+        self.counts['exists'] += 1
+        return False
 
         # if we got this far, it's a bug
         raise NotImplementedError

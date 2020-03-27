@@ -715,46 +715,47 @@ class PubmedImporter(EntityImporter):
                 re.ext_ids.doi = None
                 re.work_id = existing.work_id
 
-        if existing and not self.do_updates:
+        if not existing:
+            return True
+
+        if not self.do_updates:
             self.counts['exists'] += 1
             return False
 
-        if existing and existing.ext_ids.pmid and (existing.refs or not re.refs):
+        if existing.ext_ids.pmid and (existing.refs or not re.refs):
             # TODO: any other reasons to do an update?
             # don't update if it already has PMID
             self.counts['exists'] += 1
             return False
-        elif existing:
-            # but do update if only DOI was set
-            existing.ext_ids.doi = existing.ext_ids.doi or re.ext_ids.doi
-            existing.ext_ids.pmid = existing.ext_ids.pmid or re.ext_ids.pmid
-            existing.ext_ids.pmcid = existing.ext_ids.pmcid or re.ext_ids.pmcid
-            existing.refs = existing.refs or re.refs
-            existing.extra['pubmed'] = re.extra['pubmed']
-            # update subtitle in-place first
-            if not existing.subtitle and existing.extra.get('subtitle'):
-                subtitle = existing.extra.pop('subtitle')
-                if type(subtitle) == list:
-                    subtitle = subtitle[0]
-                if subtitle:
-                    existing.subtitle = subtitle
-            if not existing.subtitle:
-                existing.subtitle = re.subtitle
-            try:
-                self.api.update_release(self.get_editgroup_id(), existing.ident, existing)
-                self.counts['update'] += 1
-            except fatcat_openapi_client.rest.ApiException as err:
-                # there is a code path where we try to update the same release
-                # twice in a row; if that happens, just skip
-                # NOTE: API behavior might change in the future?
-                if "release_edit_editgroup_id_ident_id_key" in err.body:
-                    self.counts['skip-update-conflict'] += 1
-                else:
-                    raise err
-            finally:
-                return False
+        # but do update if only DOI was set
+        existing.ext_ids.doi = existing.ext_ids.doi or re.ext_ids.doi
+        existing.ext_ids.pmid = existing.ext_ids.pmid or re.ext_ids.pmid
+        existing.ext_ids.pmcid = existing.ext_ids.pmcid or re.ext_ids.pmcid
+        existing.refs = existing.refs or re.refs
+        existing.extra['pubmed'] = re.extra['pubmed']
+        # update subtitle in-place first
+        if not existing.subtitle and existing.extra.get('subtitle'):
+            subtitle = existing.extra.pop('subtitle')
+            if type(subtitle) == list:
+                subtitle = subtitle[0]
+            if subtitle:
+                existing.subtitle = subtitle
+        if not existing.subtitle:
+            existing.subtitle = re.subtitle
+        try:
+            self.api.update_release(self.get_editgroup_id(), existing.ident, existing)
+            self.counts['update'] += 1
+        except fatcat_openapi_client.rest.ApiException as err:
+            # there is a code path where we try to update the same release
+            # twice in a row; if that happens, just skip
+            # NOTE: API behavior might change in the future?
+            if "release_edit_editgroup_id_ident_id_key" in err.body:
+                self.counts['skip-update-conflict'] += 1
+            else:
+                raise err
+        finally:
+            return False
 
-        return True
 
     def insert_batch(self, batch):
         self.api.create_release_auto_batch(fatcat_openapi_client.ReleaseAutoBatch(

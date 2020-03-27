@@ -81,7 +81,7 @@ def generic_entity_edit(editgroup_id, entity_type, existing_ident, edit_template
             abort(ae.status)
 
         # check that editgroup is edit-able
-        if editgroup.changelog_index != None:
+        if editgroup.changelog_index is not None:
             flash("Editgroup already merged")
             abort(400)
 
@@ -208,7 +208,7 @@ def generic_edit_delete(editgroup_id, entity_type, edit_id):
             abort(ae.status)
 
         # check that editgroup is edit-able
-        if editgroup.changelog_index != None:
+        if editgroup.changelog_index is not None:
             flash("Editgroup already merged")
             abort(400)
 
