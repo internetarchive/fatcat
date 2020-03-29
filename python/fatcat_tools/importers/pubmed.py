@@ -392,7 +392,7 @@ class PubmedImporter(EntityImporter):
         if pages:
             pages = pages.string
 
-        title = medline.Article.ArticleTitle.string # always present
+        title = medline.Article.ArticleTitle.get_text() # always present
         if title:
             if title.endswith('.'):
                 title = title[:-1]
@@ -406,20 +406,20 @@ class PubmedImporter(EntityImporter):
 
         original_title = medline.Article.find("VernacularTitle", recurse=False)
         if original_title:
-            original_title = original_title.string or None
+            original_title = original_title.get_text() or None
             if original_title and original_title.endswith('.'):
                 original_title = original_title[:-1]
 
         # TODO: happening in alpha order, not handling multi-language well.
         language = medline.Article.Language
         if language:
-            language = language.string
+            language = language.get_text()
             if language in ("und", "un"):
                 # "undetermined"
                 language = None
             else:
                 language = LANG_MAP_MARC.get(language)
-                if not language and not (medline.Article.Language.string in LANG_MAP_MARC):
+                if not language and not (medline.Article.Language.get_text() in LANG_MAP_MARC):
                     warnings.warn("MISSING MARC LANG: {}".format(medline.Article.Language.string))
 
         ### Journal/Issue Metadata
@@ -479,7 +479,7 @@ class PubmedImporter(EntityImporter):
                 print("unparsable medline date, skipping: {}".format(medline_date), file=sys.stderr)
 
         if journal.find("Title"):
-            container_name = journal.Title.string
+            container_name = journal.Title.get_text()
 
         if (container_id is None and self.create_containers and (issnl is not None)
                 and container_name):
@@ -558,15 +558,15 @@ class PubmedImporter(EntityImporter):
                 surname = None
                 raw_name = None
                 if author.ForeName:
-                    given_name = author.ForeName.string
+                    given_name = author.ForeName.get_text()
                 if author.LastName:
-                    surname = author.LastName.string
+                    surname = author.LastName.get_text()
                 if given_name and surname:
                     raw_name = "{} {}".format(given_name, surname)
                 elif surname:
                     raw_name = surname
-                if not raw_name and author.CollectiveName and author.CollectiveName.string:
-                    raw_name = author.CollectiveName.string
+                if not raw_name and author.CollectiveName and author.CollectiveName.get_text():
+                    raw_name = author.CollectiveName.get_text()
                 contrib_extra = dict()
                 orcid = author.find("Identifier", Source="ORCID")
                 if orcid:
@@ -588,9 +588,9 @@ class PubmedImporter(EntityImporter):
                 affiliations = author.find_all("Affiliation")
                 raw_affiliation = None
                 if affiliations:
-                    raw_affiliation = affiliations[0].string
+                    raw_affiliation = affiliations[0].get_text()
                     if len(affiliations) > 1:
-                        contrib_extra['more_affiliations'] = [ra.string for ra in affiliations[1:]]
+                        contrib_extra['more_affiliations'] = [ra.get_text() for ra in affiliations[1:]]
                 if author.find("EqualContrib"):
                     # TODO: schema for this?
                     contrib_extra['equal'] = True
@@ -638,7 +638,7 @@ class PubmedImporter(EntityImporter):
                         ref_release_id = self.lookup_pmid(ref_pmid)
                 ref_raw = ref.Citation
                 if ref_raw:
-                    ref_extra['unstructured'] = ref_raw.string
+                    ref_extra['unstructured'] = ref_raw.get_text()
                 if not ref_extra:
                     ref_extra = None
                 refs.append(fatcat_openapi_client.ReleaseRef(
