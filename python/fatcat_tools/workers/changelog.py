@@ -110,6 +110,32 @@ class EntityUpdatesWorker(FatcatWorker):
             # the lancet (often hybrid OA)
             "10.1016/s0140-6736",
             "10.1016/s2213-2600",
+            # journal of virology
+            "10.1128/jvi.",
+            # FEBS letters
+            "10.1002/1873-3468.",
+            # Journal of Neuroscience
+            "10.1523/jneurosci.",
+            # Chemical and pharmaceutical bulletin
+            "10.1248/cpb.",
+            # Japanese Journal of Radiological Technology
+            "10.6009/jjrt.",
+            # Seibutsu Butsuri
+            "10.2142/biophys.",
+            # Chemical Communications
+            "10.1039/d0cc",
+            # Yakugaku zasshi
+            "10.1248/yakushi.",
+            # bulletin AMS
+            "10.1090/s0002-9904",
+            # Current Biology
+            "10.1016/j.cub.",
+            # Antarctica A Keystone in a Changing World
+            "10.3133/ofr",
+            # Clinical Cancer Research
+            "10.1158/1078-0432.",
+            # Transactions of the Japan Society of Mechanical Engineers
+            "10.1299/kikai",
         ]
 
     def want_live_ingest(self, release, ingest_request):
