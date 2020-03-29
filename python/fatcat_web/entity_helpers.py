@@ -72,6 +72,10 @@ def enrich_release_entity(entity):
         # November 1.
         if ref.extra and ref.extra.get('unstructured'):
             ref.extra['unstructured'] = strip_extlink_xml(ref.extra['unstructured'])
+    # for backwards compatability, copy extra['subtitle'] to subtitle
+    if not entity.subtitle and entity.extra and entity.extra.get('subtitle'):
+        if isinstance(entity.extra['subtitle'], str):
+            entity.subtitle = entity.extra['subtitle']
     # author list to display; ensure it's sorted by index (any othors with
     # index=None go to end of list)
     authors = [c for c in entity.contribs if
