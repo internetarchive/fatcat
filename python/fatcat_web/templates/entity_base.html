@@ -26,8 +26,8 @@
         <h1 class="ui header">
           {% if entity_type == "container" %}
             {{ entity.name }}
-            {% if entity.extra.original_title %}
-              <br><span style="font-size: smaller; font-weight: normal;">{{ entity.extra.original_title }}</span>
+            {% if entity.extra.original_name %}
+              <br><span style="font-size: smaller; font-weight: normal;">{{ entity.extra.original_name }}</span>
             {% endif %}
           {% elif entity_type == "creator" %}
             {{ entity.display_name }}

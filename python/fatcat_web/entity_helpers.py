@@ -76,6 +76,8 @@ def enrich_release_entity(entity):
     if not entity.subtitle and entity.extra and entity.extra.get('subtitle'):
         if isinstance(entity.extra['subtitle'], str):
             entity.subtitle = entity.extra['subtitle']
+        elif isinstance(entity.extra['subtitle'], list):
+            entity.subtitle = entity.extra['subtitle'][0] or None
     # author list to display; ensure it's sorted by index (any othors with
     # index=None go to end of list)
     authors = [c for c in entity.contribs if
