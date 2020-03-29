@@ -74,7 +74,7 @@ def enrich_release_entity(entity):
             ref.extra['unstructured'] = strip_extlink_xml(ref.extra['unstructured'])
     # for backwards compatability, copy extra['subtitle'] to subtitle
     if not entity.subtitle and entity.extra and entity.extra.get('subtitle'):
-        if type(entity.extra['subtitle']) == str:
+        if isinstance(entity.extra['subtitle'], str):
             entity.subtitle = entity.extra['subtitle']
     # author list to display; ensure it's sorted by index (any othors with
     # index=None go to end of list)
