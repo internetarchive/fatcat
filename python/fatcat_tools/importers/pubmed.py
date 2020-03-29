@@ -768,7 +768,12 @@ class PubmedImporter(EntityImporter):
             self.counts["exists"] += 1
             return False
 
-        if existing and existing.ext_ids.pmid and (existing.refs or not re.refs):
+        if (
+            existing
+            and existing.ext_ids.pmid
+            and (existing.ext_ids.pmcid or not re.ext_ids.pmcid)
+            and (existing.refs or not re.refs)
+        ):
             # TODO: any other reasons to do an update?
             # don't update if it already has PMID
             self.counts["exists"] += 1
