@@ -107,7 +107,7 @@ class HarvestCrossrefWorker:
         return Producer(producer_conf)
 
     def params(self, date_str):
-        filter_param = 'from-index-date:{},until-index-date:{}'.format(
+        filter_param = 'from-update-date:{},until-update-date:{}'.format(
             date_str, date_str)
         return {
             'filter': filter_param,
