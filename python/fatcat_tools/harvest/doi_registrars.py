@@ -16,11 +16,31 @@ from .harvest_common import HarvestState, requests_retry_session
 
 class HarvestCrossrefWorker:
     """
-    Notes on crossref API:
+    Crossref API date fields (and our interpretation)::
 
-    - from-index-date is the updated time
+    - https://github.com/CrossRef/rest-api-doc#filter-names
+    - *-index-date: "metadata indexed" is the API/index record update time
+    - *-deposit-date: "metadata last (re)deposited" is the catalog record update time
+    - *-update-date: "Metadata updated (Currently the same as *-deposit-date)"
+    - *-created-date: "metadata first deposited"
+    - *-pub-date (etc): publisher-supplied, not "meta-meta-data"
 
     https://api.crossref.org/works?filter=from-index-date:2018-11-14&rows=2
+
+    Also from the REST API:
+
+        Notes on incremental metadata updates
+
+        When using time filters to retrieve periodic, incremental metadata
+        updates, the from-index-date filter should be used over
+        from-update-date, from-deposit-date, from-created-date and
+        from-pub-date. The timestamp that from-index-date filters on is
+        guaranteed to be updated every time there is a change to metadata
+        requiring a reindex.
+
+    However, when Crossref re-indexes tens of millions of rows, using
+    from-index-date can be very slow, taking several days to process a single
+    day of updates.
 
     I think the design is going to have to be a cronjob or long-running job
     (with long sleeps) which publishes "success through" to a separate state
@@ -87,7 +107,7 @@ class HarvestCrossrefWorker:
         return Producer(producer_conf)
 
     def params(self, date_str):
-        filter_param = 'from-index-date:{},until-index-date:{}'.format(
+        filter_param = 'from-update-date:{},until-update-date:{}'.format(
             date_str, date_str)
         return {
             'filter': filter_param,

@@ -36,7 +36,7 @@ def test_crossref_harvest_date(mocker):
     assert "mailto:test@fatcat.wiki" in responses.calls[0].request.headers['User-Agent']
 
     # check that correct date param was passed as expected
-    assert "filter=from-index-date%3A2019-02-03" in responses.calls[0].request.url
+    assert "filter=from-update-date%3A2019-02-03" in responses.calls[0].request.url
 
     # check that we published the expected number of DOI objects were published
     # to the (mock) kafka topic
