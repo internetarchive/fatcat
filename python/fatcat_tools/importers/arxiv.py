@@ -118,13 +118,13 @@ class ArxivRawImporter(EntityImporter):
             if not (doi.startswith('10.') and '/' in doi and doi.split('/')[1]):
                 sys.stderr.write("BOGUS DOI: {}\n".format(doi))
                 doi = None
-        title = latex_to_text(metadata.title.string)
-        authors = parse_arxiv_authors(metadata.authors.string)
+        title = latex_to_text(metadata.title.get_text().replace('\n', ' '))
+        authors = parse_arxiv_authors(metadata.authors.get_text().replace('\n', ' '))
         contribs = [fatcat_openapi_client.ReleaseContrib(index=i, raw_name=a, role='author') for i, a in enumerate(authors)]
 
         lang = "en"     # the vast majority in english
-        if metadata.comments and metadata.comments.string:
-            comments = metadata.comments.string.strip()
+        if metadata.comments and metadata.comments.get_text():
+            comments = metadata.comments.get_text().replace('\n', ' ').strip()
             extra_arxiv['comments'] = comments
             if 'in french' in comments.lower():
                 lang = 'fr'
@@ -145,8 +145,8 @@ class ArxivRawImporter(EntityImporter):
             # more languages?
 
         number = None
-        if metadata.find('journal-ref') and metadata.find('journal-ref').string:
-            journal_ref = metadata.find('journal-ref').string.strip()
+        if metadata.find('journal-ref') and metadata.find('journal-ref').get_text():
+            journal_ref = metadata.find('journal-ref').get_text().replace('\n', ' ').strip()
             extra_arxiv['journal_ref'] = journal_ref
             if "conf." in journal_ref.lower() or "proc." in journal_ref.lower():
                 release_type = "paper-conference"
@@ -160,16 +160,16 @@ class ArxivRawImporter(EntityImporter):
                 release_type = "report"
         if metadata.find('acm-class') and metadata.find('acm-class').string:
             extra_arxiv['acm_class'] = metadata.find('acm-class').string.strip()
-        if metadata.categories and metadata.categories.string:
-            extra_arxiv['categories'] = metadata.categories.string.split()
+        if metadata.categories and metadata.categories.get_text():
+            extra_arxiv['categories'] = metadata.categories.get_text().split()
         license_slug = None
-        if metadata.license and metadata.license.string:
-            license_slug = lookup_license_slug(metadata.license.string)
+        if metadata.license and metadata.license.get_text():
+            license_slug = lookup_license_slug(metadata.license.get_text())
         abstracts = None
         if metadata.abstract:
             # TODO: test for this multi-abstract code path
             abstracts = []
-            abst = metadata.abstract.string.strip()
+            abst = metadata.abstract.get_text().strip()
             orig = None
             if '-----' in abst:
                 both = abst.split('-----')
