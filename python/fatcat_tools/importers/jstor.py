@@ -64,12 +64,12 @@ class JstorImporter(EntityImporter):
         release_type = JSTOR_TYPE_MAP.get(article['article-type'])
         title = article_meta.find("article-title")
         if title and title.get_text():
-            title = title.get_text().strip()
+            title = title.get_text().replace('\n', ' ').strip()
         elif title and not title.get_text():
             title = None
 
         if not title and release_type.startswith('review') and article_meta.product.source:
-            title = "Review: {}".format(article_meta.product.source.get_text())
+            title = "Review: {}".format(article_meta.product.source.replace('\n', ' ').get_text())
 
         if not title:
             return None
@@ -96,8 +96,8 @@ class JstorImporter(EntityImporter):
         if journal_ids:
             extra_jstor['journal_ids'] = journal_ids
 
-        journal_title = journal_meta.find("journal-title").get_text()
-        publisher = journal_meta.find("publisher-name").get_text()
+        journal_title = journal_meta.find("journal-title").get_text().replace('\n', ' ')
+        publisher = journal_meta.find("publisher-name").get_text().replace('\n', ' ')
         issn = journal_meta.find("issn")
         if issn:
             issn = issn.string
@@ -141,13 +141,13 @@ class JstorImporter(EntityImporter):
             for c in cgroup.find_all("contrib"):
                 given = c.find("given-names")
                 if given:
-                    given = clean(given.get_text())
+                    given = clean(given.get_text().replace('\n', ' '))
                 surname = c.find("surname")
                 if surname:
-                    surname = clean(surname.get_text())
+                    surname = clean(surname.get_text().replace('\n', ' '))
                 raw_name = c.find("string-name")
                 if raw_name:
-                    raw_name = clean(raw_name.get_text())
+                    raw_name = clean(raw_name.get_text().replace('\n', ' '))
 
                 if not raw_name:
                     if given and surname:

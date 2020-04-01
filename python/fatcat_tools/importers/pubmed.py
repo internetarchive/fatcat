@@ -394,6 +394,7 @@ class PubmedImporter(EntityImporter):
 
         title = medline.Article.ArticleTitle.get_text() # always present
         if title:
+            title = title.replace('\n', ' ')
             if title.endswith('.'):
                 title = title[:-1]
             # this hides some "special" titles, but the vast majority are
@@ -407,6 +408,7 @@ class PubmedImporter(EntityImporter):
         original_title = medline.Article.find("VernacularTitle", recurse=False)
         if original_title:
             original_title = original_title.get_text() or None
+            original_title = original_title.replace('\n', ' ')
             if original_title and original_title.endswith('.'):
                 original_title = original_title[:-1]
 
@@ -558,15 +560,15 @@ class PubmedImporter(EntityImporter):
                 surname = None
                 raw_name = None
                 if author.ForeName:
-                    given_name = author.ForeName.get_text()
+                    given_name = author.ForeName.get_text().replace('\n', ' ')
                 if author.LastName:
-                    surname = author.LastName.get_text()
+                    surname = author.LastName.get_text().replace('\n', ' ')
                 if given_name and surname:
                     raw_name = "{} {}".format(given_name, surname)
                 elif surname:
                     raw_name = surname
                 if not raw_name and author.CollectiveName and author.CollectiveName.get_text():
-                    raw_name = author.CollectiveName.get_text()
+                    raw_name = author.CollectiveName.get_text().replace('\n', ' ')
                 contrib_extra = dict()
                 orcid = author.find("Identifier", Source="ORCID")
                 if orcid:
@@ -588,9 +590,9 @@ class PubmedImporter(EntityImporter):
                 affiliations = author.find_all("Affiliation")
                 raw_affiliation = None
                 if affiliations:
-                    raw_affiliation = affiliations[0].get_text()
+                    raw_affiliation = affiliations[0].get_text().replace('\n', ' ')
                     if len(affiliations) > 1:
-                        contrib_extra['more_affiliations'] = [ra.get_text() for ra in affiliations[1:]]
+                        contrib_extra['more_affiliations'] = [ra.get_text().replace('\n', ' ') for ra in affiliations[1:]]
                 if author.find("EqualContrib"):
                     # TODO: schema for this?
                     contrib_extra['equal'] = True

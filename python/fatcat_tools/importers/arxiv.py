@@ -118,13 +118,13 @@ class ArxivRawImporter(EntityImporter):
             if not (doi.startswith('10.') and '/' in doi and doi.split('/')[1]):
                 sys.stderr.write("BOGUS DOI: {}\n".format(doi))
                 doi = None
-        title = latex_to_text(metadata.title.get_text())
-        authors = parse_arxiv_authors(metadata.authors.get_text())
+        title = latex_to_text(metadata.title.get_text().replace('\n', ' '))
+        authors = parse_arxiv_authors(metadata.authors.get_text().replace('\n', ' '))
         contribs = [fatcat_openapi_client.ReleaseContrib(index=i, raw_name=a, role='author') for i, a in enumerate(authors)]
 
         lang = "en"     # the vast majority in english
         if metadata.comments and metadata.comments.get_text():
-            comments = metadata.comments.get_text().strip()
+            comments = metadata.comments.get_text().replace('\n', ' ').strip()
             extra_arxiv['comments'] = comments
             if 'in french' in comments.lower():
                 lang = 'fr'
@@ -146,7 +146,7 @@ class ArxivRawImporter(EntityImporter):
 
         number = None
         if metadata.find('journal-ref') and metadata.find('journal-ref').get_text():
-            journal_ref = metadata.find('journal-ref').get_text().strip()
+            journal_ref = metadata.find('journal-ref').get_text().replace('\n', ' ').strip()
             extra_arxiv['journal_ref'] = journal_ref
             if "conf." in journal_ref.lower() or "proc." in journal_ref.lower():
                 release_type = "paper-conference"

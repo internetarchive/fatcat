@@ -35,13 +35,13 @@ def parse_jalc_persons(raw_persons):
     for raw in raw_persons:
         name = raw.find('name') or None
         if name:
-            name = clean(name.get_text())
+            name = clean(name.get_text().replace('\n', ' '))
         surname = raw.find('familyName') or None
         if surname:
-            surname = clean(surname.get_text())
+            surname = clean(surname.get_text().replace('\n', ' '))
         given_name = raw.find('givenName') or None
         if given_name:
-            given_name = clean(given_name.get_text())
+            given_name = clean(given_name.get_text().replace('\n', ' '))
         lang = 'en'
         if is_cjk(name):
             lang = 'ja'
@@ -163,12 +163,12 @@ class JalcImporter(EntityImporter):
         titles = record.find_all("title")
         if not titles:
             return None
-        title = titles[0].get_text().strip()
+        title = titles[0].get_text().replace('\n', ' ').strip()
         original_title = None
         if title.endswith('.'):
             title = title[:-1]
         if len(titles) > 1:
-            original_title = titles[1].get_text().strip()
+            original_title = titles[1].get_text().replace('\n', ' ').strip()
             if original_title.endswith('.'):
                 original_title = original_title[:-1]
 
@@ -242,7 +242,7 @@ class JalcImporter(EntityImporter):
         container_extra = dict()
 
         if record.publicationName:
-            pubs = [p.get_text().strip() for p in record.find_all("publicationName") if p.get_text()]
+            pubs = [p.get_text().replace('\n', ' ').strip() for p in record.find_all("publicationName") if p.get_text()]
             pubs = [clean(p) for p in pubs if p]
             assert(pubs)
             if len(pubs) > 1 and pubs[0] == pubs[1]:
@@ -255,7 +255,7 @@ class JalcImporter(EntityImporter):
                 container_extra['original_name'] = clean(pubs[1])
 
         if record.publisher:
-            pubs = [p.get_text().strip() for p in record.find_all("publisher") if p.get_text()]
+            pubs = [p.get_text().replace('\n', ' ').strip() for p in record.find_all("publisher") if p.get_text()]
             pubs = [p for p in pubs if p]
             if len(pubs) > 1 and pubs[0] == pubs[1]:
                 pubs = [pubs[0]]
