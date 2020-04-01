@@ -412,6 +412,12 @@ class PubmedImporter(EntityImporter):
             if original_title and original_title.endswith('.'):
                 original_title = original_title[:-1]
 
+        if original_title and not title:
+            # if we only have an "original" title, but not translated/english
+            # title, sub in the original title so the entity can be created
+            title = original_title
+            original_title = None
+
         # TODO: happening in alpha order, not handling multi-language well.
         language = medline.Article.Language
         if language:
