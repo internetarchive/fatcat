@@ -27,7 +27,7 @@ def _init_search(args):
     args.api.get_changelog()
 
     client = elasticsearch.Elasticsearch(args.elasticsearch_endpoint)
-    search = Search(using=client, index="fatcat_release")
+    search = Search(using=client, index=args.elasticsearch_index)
     return search
 
 
@@ -186,6 +186,9 @@ def main():
     parser.add_argument('--elasticsearch-endpoint',
         default="https://search.fatcat.wiki",
         help="elasticsearch API. internal endpoint preferred, but public is default")
+    parser.add_argument('--elasticsearch-index',
+        default="fatcat_release",
+        help="elasticsearch index to query")
     parser.add_argument('--env',
         default="dev",
         help="Kafka topic namespace to use (eg, prod, qa, dev)")
