@@ -61,7 +61,6 @@ zipp = "<2.0.0"
 
 [requires]
 # Python 3.5 is the bundled (system) version of python for Ubuntu 16.04
-# (Xenial), currently the default on Internet Archive production VMs, as well
-# as Debian stable (stretch). Will probably bump to 3.6 in early 2019 when
-# updating both of these environments.
-python_version = "3.5"
+# (Xenial), currently the default on Internet Archive production VMs. But we
+# install Python 3.7 using an external package repository.
+python_version = "3.7"
