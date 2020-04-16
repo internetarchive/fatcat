@@ -153,15 +153,12 @@ class EntityUpdatesWorker(FatcatWorker):
         doi = ingest_request.get('ext_ids', {}).get('doi')
 
         is_document = release.release_type in (
-            'abstract',
             'article',
             'article-journal',
             'article-newspaper',
             'book',
             'chapter',
-            'component',
             'editorial',
-            'entry',
             'interview',
             'legal_case',
             'legislation',
@@ -170,8 +167,6 @@ class EntityUpdatesWorker(FatcatWorker):
             'paper-conference',
             'patent',
             'peer_review',
-            'post',
-            'post-weblog',
             'report',
             'retraction',
             'review',
@@ -179,6 +174,7 @@ class EntityUpdatesWorker(FatcatWorker):
             'thesis',
         )
         is_not_pdf = release.release_type in (
+            'component',
             'dataset',
             'figure',
             'graphic',
