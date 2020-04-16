@@ -91,7 +91,7 @@ class ReleaseEntityForm(EntityEditForm):
         [validators.Optional(True)])
     #release_year
     doi = StringField('DOI',
-        [validators.Regexp('^10\..*\/.*', message="DOI must be valid"),
+        [validators.Regexp(r'^10\..*\/.*', message="DOI must be valid"),
          validators.Optional(True)])
     wikidata_qid = StringField('Wikidata QID')
     isbn13 = StringField('ISBN-13')
