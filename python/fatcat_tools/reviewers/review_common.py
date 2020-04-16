@@ -3,6 +3,7 @@ import time
 import datetime
 import subprocess
 from collections import Counter
+from typing import Optional, List, Any
 
 import fatcat_openapi_client
 
@@ -42,8 +43,8 @@ class CheckResult:
 
 class EditCheck:
 
-    scope = []
-    name = None
+    scope: List[Any] = []
+    name: Optional[str] = None
 
     def check_editgroup(self, editgroup):
         raise NotImplementedError
