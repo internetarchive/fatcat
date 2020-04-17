@@ -9,6 +9,13 @@ this file should probably get merged into the guide at some point.
 
 This file should not turn in to a TODO list!
 
+## 2020-03
+
+Started harvesting both Arxiv and Pubmed metadata daily and importing to
+fatcat. Did backfill imports for both sources.
+
+JALC DOI register update from 2019 dump.
+
 ## 2020-01
 
 Imported around 2,500 new containers (journals, by ISSN-L) from chocula
@@ -20,6 +27,8 @@ million).
 Imported new release entities from 2020 Pubmed/MEDLINE baseline. This import
 included only new Pubmed works cataloged in 2019 (up until December or so).
 Only a few hundred thousand new release entities.
+
+Daily "ingest" (crawling) pipeline running.
 
 ## 2019-12
 

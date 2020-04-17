@@ -16,15 +16,45 @@ See also:
 
 ## [Unreleased]
 
-## Changed
+## [0.3.2] - 2020-04-08
 
+This release was tagged retro-actively; it was the last commit before upgrading
+to Python 3.7.
+
+Many small changes and tweaks to importers, web interface, etc were made in
+this release.
+
+### Fixed
+
+- pubmed importer `text` vs. `get_text()` for HTML tags
+
+### Changed
+
+- minimum rust version now 1.36
 - Switch from swagger-codegen to openapi-generator for python client generation
+- switch python Kafka code from pykafka to confluent-kafka
+- update release and container elasticsearch schemas to v03b. Release search is
+  now over "biblio" field, allowing matches on multiple fields at the same time
+- Crossref harvester using 'update-date' not 'index-date' to detect updated documents
 
-## Added
+### Removed
+
+- OpenSSL support removed from fatcatd (Rust)
+
+#@# Added
 
 - webface endpoints for entity view URLs with an underscore instead of slash,
   as a redirect. Eg, `https://fatcat.wiki/release_asdf` =>
   `https://fatcat.wiki/release/asdf`. A hack to make copy/paste easier.
+- pagination of search results in web interface
+- sandcrawler daily crawling pipeline, including ingest-file importer and
+  publishing requests to sandcrawler kafka topic
+- "Save Paper Now" feature (using sandcrawler pipeline)
+- Datacite DOI registrar daily harvesting and importing
+- Arxiv daily harvesting, using OAI-PMH worker
+- Pubmed daily harvesting, using FTP worker
+- "file" entity elasticsearch schema (though pipeline not yet running
+  continuously)
 
 ## [0.3.1] - 2019-09-18
 
