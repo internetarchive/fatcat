@@ -17,3 +17,7 @@ TODO:
 - postgres
 - fatcatd (rust)
 - kibana
+
+## Test Base Image
+
+    docker build -t bnewbold/fatcat-test-base -f Dockerfile.test-base .

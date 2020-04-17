@@ -1,0 +1,47 @@
+
+FROM ubuntu:xenial
+
+ENV RUSTUP_HOME=/usr/local/rustup \
+    CARGO_HOME=/usr/local/cargo \
+    PATH=/usr/local/cargo/bin:$PATH \
+    RUST_VERSION=1.42.0 \
+    LC_ALL=C.UTF-8 \
+    LANG=C.UTF-8
+
+
+# Add deadsnakes repo
+RUN set -eux; \
+    apt update -qy; \
+    apt install -y software-properties-common; \
+    add-apt-repository -y ppa:deadsnakes/ppa;
+
+# APT dependencies
+RUN set -eux; \
+    apt update -qy; \
+    apt install -y python3-dev python3-pip python3-wheel python3-requests python3-six python3-pytest libsnappy-dev libsodium-dev software-properties-common python3.7 python3.7-dev python3.7-venv python3.7-distutils wget libpq-dev
+
+# Rust setup from docker-rust debian Dockerfile
+RUN set -eux; \
+    dpkgArch="$(dpkg --print-architecture)"; \
+    rustArch='x86_64-unknown-linux-gnu'; rustupSha256='ad1f8b5199b3b9e231472ed7aa08d2e5d1d539198a15c5b1e53c746aad81d27b' ; \
+    url="https://static.rust-lang.org/rustup/archive/1.21.1/${rustArch}/rustup-init"; \
+    wget "$url"; \
+    echo "${rustupSha256} *rustup-init" | sha256sum -c -; \
+    chmod +x rustup-init; \
+    ./rustup-init -y --no-modify-path --profile minimal --default-toolchain $RUST_VERSION; \
+    rm rustup-init; \
+    chmod -R a+w $RUSTUP_HOME $CARGO_HOME; \
+    rustup --version; \
+    cargo --version; \
+    rustc --version;
+
+# Compile and install diesel
+RUN set -eux; \
+    cargo install diesel_cli --version 1.3.1 --no-default-features --features postgres; \
+    diesel --version
+
+# Install pipenv
+RUN set -eux; \
+    pip3 install pipenv; \
+    pipenv --version
+
