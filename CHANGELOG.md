@@ -16,6 +16,10 @@ See also:
 
 ## [Unreleased]
 
+### Changed
+
+- require Python 3.7 (upgrade from Python 3.5)
+
 ## [0.3.2] - 2020-04-08
 
 This release was tagged retro-actively; it was the last commit before upgrading
