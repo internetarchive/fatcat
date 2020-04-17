@@ -103,13 +103,20 @@ class ElasticsearchReleaseWorker(FatcatWorker):
                     if entity_dict.get('name') and not entity_dict.get('title'):
                         continue
                 entity = entity_from_json(json_str, self.entity_type, api_client=ac)
+                if self.entity_type == "changelog":
+                    key = entity.index
+                    # might need to fetch from API
+                    if not (entity.editgroup and entity.editgroup.editor):
+                        entity = ac.get_changelog_entry(entity.index, expand="editgroup,editor")
+                else:
+                    key = entity.ident
                 # TODO: handle deletions from index
                 bulk_actions.append(json.dumps({
-                    "index": { "_id": entity.ident, },
+                    "index": { "_id": key, },
                 }))
                 bulk_actions.append(json.dumps(
                     self.transform_func(entity)))
-            print("Upserting, eg, {} (of {} releases in elasticsearch)".format(entity.ident, len(batch)))
+            print("Upserting, eg, {} (of {} {} in elasticsearch)".format(entity.ident, len(batch), self.entity_type))
             elasticsearch_endpoint = "{}/{}/{}/_bulk".format(
                 self.elasticsearch_backend,
                 self.elasticsearch_index,
