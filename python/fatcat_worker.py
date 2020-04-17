@@ -6,7 +6,7 @@ import datetime
 import raven
 
 from fatcat_tools import public_api
-from fatcat_tools.workers import ChangelogWorker, EntityUpdatesWorker, ElasticsearchReleaseWorker, ElasticsearchContainerWorker
+from fatcat_tools.workers import ChangelogWorker, EntityUpdatesWorker, ElasticsearchReleaseWorker, ElasticsearchContainerWorker, ElasticsearchChangelogWorker
 
 # Yep, a global. Gets DSN from `SENTRY_DSN` environment variable
 sentry_client = raven.Client()
@@ -43,6 +43,13 @@ def run_elasticsearch_release(args):
 def run_elasticsearch_container(args):
     consume_topic = "fatcat-{}.container-updates".format(args.env)
     worker = ElasticsearchContainerWorker(args.kafka_hosts, consume_topic,
+        elasticsearch_backend=args.elasticsearch_backend,
+        elasticsearch_index=args.elasticsearch_index)
+    worker.run()
+
+def run_elasticsearch_changelog(args):
+    consume_topic = "fatcat-{}.changelog".format(args.env)
+    worker = ElasticsearchChangelogWorker(args.kafka_hosts, consume_topic,
         elasticsearch_backend=args.elasticsearch_backend,
         elasticsearch_index=args.elasticsearch_index)
     worker.run()
@@ -91,6 +98,16 @@ def main():
     sub_elasticsearch_container.add_argument('--elasticsearch-index',
         help="elasticsearch index to push into",
         default="fatcat_container")
+
+    sub_elasticsearch_changelog = subparsers.add_parser('elasticsearch-changelog',
+        help="consume changelog kafka feed, transform and push to search")
+    sub_elasticsearch_changelog.set_defaults(func=run_elasticsearch_changelog)
+    sub_elasticsearch_changelog.add_argument('--elasticsearch-backend',
+        help="elasticsearch backend to connect to",
+        default="http://localhost:9200")
+    sub_elasticsearch_changelog.add_argument('--elasticsearch-index',
+        help="elasticsearch index to push into",
+        default="fatcat_changelog")
 
     args = parser.parse_args()
     if not args.__dict__.get("func"):
