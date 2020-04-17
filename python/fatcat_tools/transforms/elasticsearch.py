@@ -1,6 +1,6 @@
 
 import datetime
-from typing import Optional
+from typing import Dict, List, Any, Optional
 
 import tldextract
 
@@ -24,7 +24,7 @@ def test_check_kbart() -> None:
     assert check_kbart(1950, dict(year_spans=[[1900, 1920], [1930, 2000]])) is True
 
 
-def release_to_elasticsearch(entity: ReleaseEntity, force_bool: bool = True) -> dict:
+def release_to_elasticsearch(entity: ReleaseEntity, force_bool: bool = True) -> Dict[str, Any]:
     """
     Converts from an entity model/schema to elasticsearch oriented schema.
 
@@ -45,7 +45,7 @@ def release_to_elasticsearch(entity: ReleaseEntity, force_bool: bool = True) -> 
 
     # First, the easy ones (direct copy)
     release = entity
-    t = dict(
+    t: Dict[str, Any] = dict(
         doc_index_ts=datetime.datetime.utcnow().isoformat()+"Z",
         ident = release.ident,
         state = release.state,
@@ -510,7 +510,7 @@ def container_to_elasticsearch(entity, force_bool=True, stats=None):
     return t
 
 
-def _type_of_edit(edit):
+def _type_of_edit(edit: EntityEdit) -> str:
     if edit.revision == None and edit.redirect_ident == None:
         return 'delete'
     elif edit.redirect_ident:
@@ -522,7 +522,7 @@ def _type_of_edit(edit):
         return 'update'
 
 
-def changelog_to_elasticsearch(entity):
+def changelog_to_elasticsearch(entity: ChangelogEntry) -> Dict[str, Any]:
     """
     Note that this importer requires expanded fill info to work. Calling code
     may need to re-fetch editgroup from API to get the 'editor' field. Some of
@@ -577,7 +577,7 @@ def changelog_to_elasticsearch(entity):
     return t
 
 
-def file_to_elasticsearch(entity):
+def file_to_elasticsearch(entity: FileEntity) -> Dict[str, Any]:
     """
     Converts from an entity model/schema to elasticsearch oriented schema.
 

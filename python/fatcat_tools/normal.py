@@ -15,7 +15,8 @@ import pycountry
 
 DOI_REGEX = re.compile(r"^10.\d{3,6}/\S+$")
 
-def clean_doi(raw):
+
+def clean_doi(raw: str) -> Optional[str]:
     """
     Removes any:
     - padding whitespace
@@ -91,7 +92,7 @@ def test_clean_doi():
 
 ARXIV_ID_REGEX = re.compile(r"^(\d{4}.\d{4,5}|[a-z\-]+(\.[A-Z]{2})?/\d{7})(v\d+)?$")
 
-def clean_arxiv_id(raw):
+def clean_arxiv_id(raw: str) -> Optional[str]:
     """
     Removes any:
     - 'arxiv:' prefix
@@ -162,7 +163,7 @@ def test_clean_wikidata_qid():
     assert clean_wikidata_qid("qfba3") == None
     assert clean_wikidata_qid("") == None
 
-def clean_pmid(raw):
+def clean_pmid(raw: str) -> Optional[str]:
     if not raw:
         return None
     raw = raw.strip()
@@ -179,7 +180,7 @@ def test_clean_pmid():
     assert clean_pmid("qfba3") == None
     assert clean_pmid("") == None
 
-def clean_pmcid(raw):
+def clean_pmcid(raw: str) -> Optional[str]:
     if not raw:
         return None
     raw = raw.strip()
@@ -189,7 +190,7 @@ def clean_pmcid(raw):
         return raw
     return None
 
-def clean_sha1(raw):
+def clean_sha1(raw: str) -> Optional[str]:
     if not raw:
         return None
     raw = raw.strip().lower()
@@ -209,7 +210,7 @@ def test_clean_sha1():
     assert clean_sha1("qfba3fba0e1937aa0297de3836b768b5dfb23d7b") == None
     assert clean_sha1("0fba3fb a0e1937aa0297de3836b768b5dfb23d7b") == None
 
-def clean_sha256(raw):
+def clean_sha256(raw: str) -> Optional[str]:
     raw = raw.strip().lower()
     if len(raw.split()) != 1:
         return None
@@ -226,7 +227,7 @@ def test_clean_sha256():
 
 ISSN_REGEX = re.compile(r"^\d{4}-\d{3}[0-9X]$")
 
-def clean_issn(raw):
+def clean_issn(raw: str) -> Optional[str]:
     if not raw:
         return None
     raw = raw.strip().upper()
@@ -244,7 +245,7 @@ def test_clean_issn():
 
 ISBN13_REGEX = re.compile(r"^97(?:8|9)-\d{1,5}-\d{1,7}-\d{1,6}-\d$")
 
-def clean_isbn13(raw):
+def clean_isbn13(raw: str) -> Optional[str]:
     if not raw:
         return None
     raw = raw.strip()
@@ -260,7 +261,7 @@ def test_clean_isbn13():
 
 ORCID_REGEX = re.compile(r"^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$")
 
-def clean_orcid(raw):
+def clean_orcid(raw: str) -> Optional[str]:
     if not raw:
         return None
     raw = raw.strip()

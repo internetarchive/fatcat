@@ -7,7 +7,7 @@ import sqlite3
 import datetime
 import subprocess
 from collections import Counter
-from typing import Optional, Tuple
+from typing import Dict, Any, List, Optional
 import lxml
 import xml.etree.ElementTree as ET
 
@@ -26,11 +26,12 @@ import fuzzycat.verify
 from fatcat_tools.normal import (clean_str as clean, is_cjk, b32_hex, LANG_MAP_MARC) # noqa: F401
 from fatcat_tools.transforms import entity_to_dict
 
-DATE_FMT = "%Y-%m-%d"
-SANE_MAX_RELEASES = 200
-SANE_MAX_URLS = 100
 
-DOMAIN_REL_MAP = {
+DATE_FMT: str = "%Y-%m-%d"
+SANE_MAX_RELEASES: int = 200
+SANE_MAX_URLS: int = 100
+
+DOMAIN_REL_MAP: Dict[str, str] = {
     "archive.org": "archive",
     # LOCKSS, Portico, DuraSpace, etc would also be "archive"
 
@@ -94,7 +95,7 @@ DOMAIN_REL_MAP = {
     "archive.is": "webarchive",
 }
 
-def make_rel_url(raw_url, default_link_rel="web"):
+def make_rel_url(raw_url: str, default_link_rel: str = "web"):
     # this is where we map specific domains to rel types, and also filter out
     # bad domains, invalid URLs, etc
     rel = default_link_rel
@@ -153,33 +154,33 @@ class EntityImporter:
 
         self.api = api
         self.do_updates = bool(kwargs.get('do_updates', True))
-        self.do_fuzzy_match = kwargs.get('do_fuzzy_match', True)
-        self.bezerk_mode = kwargs.get('bezerk_mode', False)
-        self.submit_mode = kwargs.get('submit_mode', False)
-        self.edit_batch_size = kwargs.get('edit_batch_size', 100)
-        self.editgroup_description = kwargs.get('editgroup_description')
-        self.editgroup_extra = eg_extra
+        self.do_fuzzy_match: bool = kwargs.get('do_fuzzy_match', True)
+        self.bezerk_mode: bool = kwargs.get('bezerk_mode', False)
+        self.submit_mode: bool = kwargs.get('submit_mode', False)
+        self.edit_batch_size: int = kwargs.get('edit_batch_size', 100)
+        self.editgroup_description: Optional[str] = kwargs.get('editgroup_description')
+        self.editgroup_extra: Optional[Any] = eg_extra
 
         self.es_client = kwargs.get('es_client')
         if not self.es_client:
             self.es_client = elasticsearch.Elasticsearch("https://search.fatcat.wiki", timeout=120)
 
-        self._issnl_id_map = dict()
-        self._orcid_id_map = dict()
+        self._issnl_id_map: Dict[str, Any] = dict()
+        self._orcid_id_map: Dict[str, Any] = dict()
         self._orcid_regex = re.compile(r"^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$")
-        self._doi_id_map = dict()
-        self._pmid_id_map = dict()
+        self._doi_id_map: Dict[str, Any] = dict()
+        self._pmid_id_map: Dict[str, Any] = dict()
 
         self.reset()
 
-    def reset(self):
+    def reset(self) -> None:
         self.counts = Counter({'total': 0, 'skip': 0, 'insert': 0, 'update': 0, 'exists': 0})
-        self._edit_count = 0
-        self._editgroup_id = None
-        self._entity_queue = []
-        self._edits_inflight = []
+        self._edit_count: int = 0
+        self._editgroup_id: Optional[str] = None
+        self._entity_queue: List[Any] = []
+        self._edits_inflight: List[Any] = []
 
-    def push_record(self, raw_record):
+    def push_record(self, raw_record: Any) -> None:
         """
         Returns nothing.
         """
@@ -198,7 +199,7 @@ class EntityImporter:
             self.push_entity(entity)
         return
 
-    def parse_record(self, raw_record):
+    def parse_record(self, raw_record: Any) -> Optional[Any]:
         """
         Returns an entity class type, or None if we should skip this one.
 
@@ -282,7 +283,7 @@ class EntityImporter:
             self.counts['insert'] += len(self._entity_queue)
             self._entity_queue = []
 
-    def want(self, raw_record):
+    def want(self, raw_record: Any) -> bool:
         """
         Implementations can override for optional fast-path to drop a record.
         Must have no side-effects; returns bool.
@@ -302,14 +303,14 @@ class EntityImporter:
         """
         raise NotImplementedError
 
-    def insert_batch(self, raw_record):
+    def insert_batch(self, raw_records: List[Any]):
         raise NotImplementedError
 
-    def is_orcid(self, orcid):
+    def is_orcid(self, orcid: str) -> bool:
         # TODO: replace with clean_orcid() from fatcat_tools.normal
         return self._orcid_regex.match(orcid) is not None
 
-    def lookup_orcid(self, orcid):
+    def lookup_orcid(self, orcid: str):
         """Caches calls to the Orcid lookup API endpoint in a local dict"""
         if not self.is_orcid(orcid):
             return None
@@ -326,11 +327,11 @@ class EntityImporter:
         self._orcid_id_map[orcid] = creator_id # might be None
         return creator_id
 
-    def is_doi(self, doi):
+    def is_doi(self, doi: str) -> bool:
         # TODO: replace with clean_doi() from fatcat_tools.normal
         return doi.startswith("10.") and doi.count("/") >= 1
 
-    def lookup_doi(self, doi):
+    def lookup_doi(self, doi: str):
         """Caches calls to the doi lookup API endpoint in a local dict
 
         For identifier lookups only (not full object fetches)"""
@@ -349,7 +350,7 @@ class EntityImporter:
         self._doi_id_map[doi] = release_id # might be None
         return release_id
 
-    def lookup_pmid(self, pmid):
+    def lookup_pmid(self, pmid: str):
         """Caches calls to the pmid lookup API endpoint in a local dict
 
         For identifier lookups only (not full object fetches)"""
@@ -366,10 +367,10 @@ class EntityImporter:
         self._pmid_id_map[pmid] = release_id # might be None
         return release_id
 
-    def is_issnl(self, issnl):
+    def is_issnl(self, issnl: str) -> bool:
         return len(issnl) == 9 and issnl[4] == '-'
 
-    def lookup_issnl(self, issnl):
+    def lookup_issnl(self, issnl: str):
         """Caches calls to the ISSN-L lookup API endpoint in a local dict"""
         if issnl in self._issnl_id_map:
             return self._issnl_id_map[issnl]
@@ -396,7 +397,7 @@ class EntityImporter:
             self._issn_issnl_map[issnl] = issnl
         print("Got {} ISSN-L mappings.".format(len(self._issn_issnl_map)), file=sys.stderr)
 
-    def issn2issnl(self, issn):
+    def issn2issnl(self, issn: str) -> Optional[str]:
         if issn is None:
             return None
         return self._issn_issnl_map.get(issn)

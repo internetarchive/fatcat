@@ -9,7 +9,7 @@ from .common import EntityImporter, clean
 # first
 # Can get a list of Crossref types (with counts) via API:
 # https://api.crossref.org/works?rows=0&facet=type-name:*
-CROSSREF_TYPE_MAP = {
+CROSSREF_TYPE_MAP: Dict[str, Optional[str]] = {
     'book': 'book',
     'book-chapter': 'chapter',
     'book-part': 'chapter',
@@ -30,7 +30,7 @@ CROSSREF_TYPE_MAP = {
     'standard': 'standard',
 }
 
-CONTAINER_TYPE_MAP = {
+CONTAINER_TYPE_MAP: Dict[str, str] = {
     'article-journal': 'journal',
     'paper-conference': 'conference',
     'book': 'book-series',
@@ -41,7 +41,7 @@ CONTAINER_TYPE_MAP = {
 # popular are here; many were variants of the CC URLs. Would be useful to
 # normalize CC licenses better.
 # The current norm is to only add license slugs that are at least partially OA.
-LICENSE_SLUG_MAP = {
+LICENSE_SLUG_MAP: Dict[str, str] = {
     "//creativecommons.org/publicdomain/mark/1.0": "CC-0",
     "//creativecommons.org/publicdomain/mark/1.0/": "CC-0",
     "//creativecommons.org/publicdomain/mark/1.0/deed.de": "CC-0",
@@ -87,7 +87,7 @@ LICENSE_SLUG_MAP = {
     "//arxiv.org/licenses/nonexclusive-distrib/1.0/": "ARXIV-1.0",
 }
 
-def lookup_license_slug(raw):
+def lookup_license_slug(raw: str) -> Optional[str]:
     if not raw:
         return None
     raw = raw.strip().replace('http://', '//').replace('https://', '//')
@@ -121,9 +121,9 @@ class CrossrefImporter(EntityImporter):
 
     def __init__(self, api, issn_map_file, **kwargs):
 
-        eg_desc = kwargs.get('editgroup_description',
+        eg_desc: Optional[str] = kwargs.get('editgroup_description',
             "Automated import of Crossref DOI metadata, harvested from REST API")
-        eg_extra = kwargs.get('editgroup_extra', dict())
+        eg_extra: Optional[dict] = kwargs.get('editgroup_extra', dict())
         eg_extra['agent'] = eg_extra.get('agent', 'fatcat_tools.CrossrefImporter')
         super().__init__(api,
             issn_map_file=issn_map_file,
@@ -131,9 +131,9 @@ class CrossrefImporter(EntityImporter):
             editgroup_extra=eg_extra,
             **kwargs)
 
-        self.create_containers = kwargs.get('create_containers', True)
+        self.create_containers: bool = kwargs.get('create_containers', True)
         extid_map_file = kwargs.get('extid_map_file')
-        self.extid_map_db = None
+        self.extid_map_db: Optional[Any] = None
         if extid_map_file:
             db_uri = "file:{}?mode=ro".format(extid_map_file)
             print("Using external ID map: {}".format(db_uri))
@@ -143,7 +143,7 @@ class CrossrefImporter(EntityImporter):
 
         self.read_issn_map_file(issn_map_file)
 
-    def lookup_ext_ids(self, doi):
+    def lookup_ext_ids(self, doi: str) -> Optional[Any]:
         if self.extid_map_db is None:
             return dict(core_id=None, pmid=None, pmcid=None, wikidata_qid=None, arxiv_id=None, jstor_id=None)
         row = self.extid_map_db.execute("SELECT core, pmid, pmcid, wikidata FROM ids WHERE doi=? LIMIT 1",
@@ -161,20 +161,23 @@ class CrossrefImporter(EntityImporter):
             jstor_id=None,
         )
 
-    def map_release_type(self, crossref_type):
+    def map_release_type(self, crossref_type: str) -> Optional[str]:
         return CROSSREF_TYPE_MAP.get(crossref_type)
 
-    def map_container_type(self, crossref_type):
+    def map_container_type(self, crossref_type: Optional[str]) -> Optional[str]:
+        if not crossref_type:
+            return None
         return CONTAINER_TYPE_MAP.get(crossref_type)
 
-    def want(self, obj):
+    def want(self, obj: Dict[str, Any]) -> bool:
         if not obj.get('title'):
             self.counts['skip-blank-title'] += 1
             return False
 
         # these are pre-registered DOIs before the actual record is ready
         # title is a list of titles
-        if obj.get('title')[0].strip().lower() in [
+        titles = obj.get('title')
+        if titles is not None and titles[0].strip().lower() in [
                 "OUP accepted manuscript".lower(),
             ]:
             self.counts['skip-stub-title'] += 1
@@ -183,7 +186,7 @@ class CrossrefImporter(EntityImporter):
         # do most of these checks in-line below
         return True
 
-    def parse_record(self, obj):
+    def parse_record(self, obj: Dict[str, Any]) -> Optional[ReleaseEntity]:
         """
         obj is a python dict (parsed from json).
         returns a ReleaseEntity
@@ -292,14 +295,15 @@ class CrossrefImporter(EntityImporter):
         refs = []
         for i, rm in enumerate(obj.get('reference', [])):
             try:
-                year = int(rm.get('year'))
+                year: Optional[int] = int(rm.get('year'))
                 # TODO: will need to update/config in the future!
                 # NOTE: are there crossref works with year < 100?
-                if year > 2025 or year < 100:
-                    year = None
+                if year is not None:
+                    if year > 2025 or year < 100:
+                        year = None
             except (TypeError, ValueError):
                 year = None
-            ref_extra = dict()
+            ref_extra: Dict[str, Any] = dict()
             key = rm.get('key')
             if key and key.startswith(obj['DOI'].upper()):
                 key = key.replace(obj['DOI'].upper() + "-", '')
@@ -394,7 +398,7 @@ class CrossrefImporter(EntityImporter):
             release_stage = None
 
         # external identifiers
-        extids = self.lookup_ext_ids(doi=obj['DOI'].lower())
+        extids: Dict[str, Any] = self.lookup_ext_ids(doi=obj['DOI'].lower())
 
         # filter out unreasonably huge releases
         if len(abstracts) > 100:
@@ -421,11 +425,14 @@ class CrossrefImporter(EntityImporter):
             release_year = raw_date[0]
             release_date = None
 
-        original_title = None
-        if obj.get('original-title'):
-            original_title = clean(obj.get('original-title')[0], force_xml=True)
 
-        title = None
+        original_title: Optional[str] = None
+        if obj.get('original-title'):
+            ot = obj.get('original-title')
+            if ot is not None:
+                original_title = clean(ot[0], force_xml=True)
+
+        title: Optional[str] = None
         if obj.get('title'):
             title = clean(obj.get('title')[0], force_xml=True)
             if not title or len(title) <= 1:
