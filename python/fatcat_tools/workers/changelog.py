@@ -153,28 +153,33 @@ class EntityUpdatesWorker(FatcatWorker):
         doi = ingest_request.get('ext_ids', {}).get('doi')
 
         is_document = release.release_type in (
-            'article-journal',
-            'paper-conference',
             'article',
-            'report',
+            'article-journal',
+            'article-newspaper',
+            'book',
             'chapter',
-            'manuscript',
-            'review',
-            'thesis',
-            'letter',
             'editorial',
-            'abstract',
-            'entry',
+            'interview',
+            'legal_case',
+            'legislation',
+            'letter',
+            'manuscript',
+            'paper-conference',
             'patent',
-            'post',
+            'peer_review',
+            'report',
+            'retraction',
+            'review',
             'review-book',
+            'thesis',
         )
         is_not_pdf = release.release_type in (
+            'component',
             'dataset',
-            'stub',
-            'software',
             'figure',
             'graphic',
+            'software',
+            'stub',
         )
 
         # accept list sets a default "crawl it" despite OA metadata for
