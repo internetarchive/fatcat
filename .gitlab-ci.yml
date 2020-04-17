@@ -14,7 +14,7 @@ variables:
   PIPENV_VENV_IN_PROJECT: "true"
   CARGO_HOME: ".cargo_cache"
 
-image: "rust:1.42-buster"
+image: "bnewbold/fatcat-test-base:latest"
 
 unified_test:
   variables:
