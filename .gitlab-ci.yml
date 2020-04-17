@@ -29,8 +29,8 @@ unified_test:
     - export PATH="$PATH:$CARGO_HOME/bin"
     - apt update -qy
     - apt install -y python3-dev python3-pip python3-wheel python3-requests python3-six python3-pytest libsnappy-dev libsodium-dev software-properties-common python3.7 python3.7-dev python3.7-venv python3.7-distutils libpq-dev
-    - cargo install diesel_cli --version 1.3.1 --no-default-features --features postgres
-    - pip3 install pipenv
+    - diesel --version || cargo install diesel_cli --version 1.3.1 --no-default-features --features postgres
+    - pipenv --version || python3.7 -m pip install pipenv
     - pipenv --version
   script:
     - rustc --version && cargo --version && diesel --version
