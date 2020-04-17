@@ -28,7 +28,7 @@ unified_test:
   before_script:
     - export PATH="$PATH:$CARGO_HOME/bin"
     - apt update -qy
-    - apt install -y python3-dev python3-pip python3-wheel python3-requests python3-six python3-pytest libsnappy-dev libsodium-dev software-properties-common python3.7 python3.7-dev python3.7-venv python3.7-distutils libpq-dev
+    - apt install -y python3-dev python3-pip python3-wheel python3-requests python3-six python3-pytest libsnappy-dev libsodium-dev software-properties-common python3.7 python3.7-dev python3.7-venv python3.7-distutils libpq-dev pkg-config python3-pytest git
     - diesel --version || cargo install diesel_cli --version 1.3.1 --no-default-features --features postgres
     - pipenv --version || python3.7 -m pip install pipenv
     - pipenv --version
@@ -43,7 +43,7 @@ unified_test:
     - cargo test -- --test-threads 1
     - cargo run --bin fatcatd &
     - cd ../python_openapi_client
-    - pytest-3
+    # TODO: - pytest-3
     - cd ../python
     - cp example.env .env
     - pipenv install --dev --deploy
