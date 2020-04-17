@@ -306,7 +306,7 @@ class EntityImporter:
 
         self._issnl_id_map = dict()
         self._orcid_id_map = dict()
-        self._orcid_regex = re.compile("^\\d{4}-\\d{4}-\\d{4}-\\d{3}[\\dX]$")
+        self._orcid_regex = re.compile(r"^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$")
         self._doi_id_map = dict()
         self._pmid_id_map = dict()
 

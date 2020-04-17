@@ -6,7 +6,7 @@ free-form input, titles, etc.
 
 import re
 
-DOI_REGEX = re.compile("^10.\d{3,6}/\S+$")
+DOI_REGEX = re.compile(r"^10.\d{3,6}/\S+$")
 
 def clean_doi(raw):
     """
@@ -66,7 +66,7 @@ def test_clean_doi():
     assert clean_doi("doi:10.1234/ asdf ") == None
     assert clean_doi("10.4149/gpb¬_2017042") == None  # "logical negation" character
 
-ARXIV_ID_REGEX = re.compile("^(\d{4}.\d{4,5}|[a-z\-]+(\.[A-Z]{2})?/\d{7})(v\d+)?$")
+ARXIV_ID_REGEX = re.compile(r"^(\d{4}.\d{4,5}|[a-z\-]+(\.[A-Z]{2})?/\d{7})(v\d+)?$")
 
 def clean_arxiv_id(raw):
     """
@@ -175,7 +175,7 @@ def test_clean_sha256():
     assert clean_sha256("6cc853f2ae75696b2e45f476c76b946b0fc2df7c52bb38287cb074aceb77bc7f") == "6cc853f2ae75696b2e45f476c76b946b0fc2df7c52bb38287cb074aceb77bc7f"
     assert clean_sha256("0fba3fba0e1937aa0297de3836b768b5dfb23d7b") == None
 
-ISSN_REGEX = re.compile("^\d{4}-\d{3}[0-9X]$")
+ISSN_REGEX = re.compile(r"^\d{4}-\d{3}[0-9X]$")
 
 def clean_issn(raw):
     if not raw:
@@ -193,7 +193,7 @@ def test_clean_issn():
     assert clean_issn("134-4567") == None
     assert clean_issn("123X-4567") == None
 
-ISBN13_REGEX = re.compile("^97(?:8|9)-\d{1,5}-\d{1,7}-\d{1,6}-\d$")
+ISBN13_REGEX = re.compile(r"^97(?:8|9)-\d{1,5}-\d{1,7}-\d{1,6}-\d$")
 
 def clean_isbn13(raw):
     if not raw:
@@ -209,7 +209,7 @@ def test_clean_isbn13():
     assert clean_isbn13("978-1-56619-909-4 ") == "978-1-56619-909-4"
     assert clean_isbn13("9781566199094") == None
 
-ORCID_REGEX = re.compile("^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$")
+ORCID_REGEX = re.compile(r"^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$")
 
 def clean_orcid(raw):
     if not raw:

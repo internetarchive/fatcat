@@ -11,7 +11,7 @@ name = "pypi"
 pytest = ">=5,<6.0.0"
 pytest-pythonpath = "*"
 pytest-pylint = "*"
-ipython = "<7.0.0"
+ipython = "*"
 responses = ">=0.10"
 pytest-cov = "*"
 pylint = "*"
@@ -55,12 +55,8 @@ pathlib2 = "*"
 pycountry = "*"
 tldextract = "*"
 
-# this is only to lock to a python3.5-compatible version. needed by an
-# importlib-metadata, under pytest
-zipp = "<2.0.0"
-
 [requires]
-# Python 3.5 is the bundled (system) version of python for Ubuntu 16.04
-# (Xenial), currently the default on Internet Archive production VMs. But we
-# install Python 3.7 using an external package repository.
+# We install Python 3.7 using a PPA (deadsnakes) on Internet Archive cluster
+# machines, which as of Spring 2020 are still running Ubuntu Xenial (16.04),
+# which has a system default of Python 3.5.
 python_version = "3.7"
