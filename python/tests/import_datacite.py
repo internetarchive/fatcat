@@ -287,7 +287,7 @@ def test_datacite_conversions(datacite_importer):
     for now.
     """
     datacite_importer.debug = True
-    for i in range(32):
+    for i in range(33):
         src = 'tests/files/datacite/datacite_doc_{0:02d}.json'.format(i)
         dst = 'tests/files/datacite/datacite_result_{0:02d}.json'.format(i)
         with open(src, 'r') as f:

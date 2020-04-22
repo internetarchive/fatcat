@@ -496,10 +496,12 @@ class DataciteImporter(EntityImporter):
             if not desc.get('descriptionType') == 'Abstract':
                 continue
 
-            # Description maybe a string or list.
+            # Description maybe a string, int or list.
             text = desc.get('description', '')
             if not text:
                 continue
+            if isinstance(text, int):
+                text = '{}'.format(text)
             if isinstance(text, list):
                 try:
                     text = "\n".join(text)
